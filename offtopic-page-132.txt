@@ -1,0 +1,1560 @@
+January 31, 2024
+[smx2460]
+smx2460 01/31/2024 10:50 PM
+Concat(ApplyPreProcessSource_, codeMnemonic)
+01/31/2024 10:49 PM
+it's constructing the function name to call
+01/31/2024 10:49 PM
+    applyPreProcessSourceName( Concat ): ApplyPreProcessSource_, codeMnemonic[ 0 ];
+    applyPreProcessSource( ApplyPreProcessSource_RAW / applyPreProcessSourceName[ 0 ] ): code[ 0 ], flagsInt[ 0 ], source[ 0 ], preProcessBuffer[ 1 ], targetSize[ 0 ];
+01/31/2024 10:49 PM
+wait look
+01/31/2024 10:48 PM
+but it can have multiple outputs?
+01/31/2024 10:48 PM
+so input are the arguments and output is the result
+01/31/2024 10:48 PM
+ApplyPreProcessSource_RAW code:
+    code( InputSharedInt ): input[ 0 ];
+    flagsInt( InputSharedInt ): input[ 1 ];
+    source( PassBuffer ): input[ 2 ];
+    preProcessBuffer( InputSharedBuffer ): input[ 3 ];
+    targetSize( InputSharedInt ): input[ 4 ];
+    riftTable( CreateEmptyRiftTable ):;
+    compressionRiftTable( CreateEmptyRiftTable ):;
+    output: source[ 0 ], compressionRiftTable[ 0 ];
+01/31/2024 10:46 PM
+i am wondering about the / as well
+01/31/2024 10:46 PM
+    applyPreProcessSource( ApplyPreProcessSource_RAW / applyPreProcessSourceName[ 0 ] ): code[ 0 ], flagsInt[ 0 ], source[ 0 ], preProcessBuffer[ 1 ], targetSize[ 0 ];
+01/31/2024 10:44 PM
+doesn't even touch output
+01/31/2024 10:44 PM
+it's a function that does
+    fileName( InputSharedBuffer ): input[ 0 ];
+    buffer( InputSharedBuffer ): input[ 1 ];
+and nothing else, strange
+01/31/2024 10:43 PM
+maybe you need to enable some debugging
+01/31/2024 10:43 PM
+i wonder where it writes it
+01/31/2024 10:43 PM
+01/31/2024 10:43 PM
+it could be the name of the file to write
+hellobox. 01/31/2024 10:43 PM
+like output filename?
+[smx2460]
+smx2460 01/31/2024 10:43 PM
+oh
+[] smx2460 but wait that's an argument to `DebugWriteFile`
+hellobox. 01/31/2024 10:43 PM
+string?
+[smx2460]
+smx2460 01/31/2024 10:42 PM
+but wait that's an argument to DebugWriteFile (edited)
+hellobox. 01/31/2024 10:42 PM
+what's ApplyPreProcessSource_RAW / applyPreProcessSourceName[ 0 ]?
+[smx2460]
+smx2460 01/31/2024 10:42 PM
+maybe it's compression%d
+01/31/2024 10:42 PM
+hmm i can't find "compression5" (edited)
+hellobox. 01/31/2024 10:42 PM
+applyPreProcessSourceName( Concat ): ApplyPreProcessSource_, codeMnemonic[ 0 ];
+ApplyPreProcessSource_ isn't an array?
+01/31/2024 10:41 PM
+or structures
+01/31/2024 10:41 PM
+so objects? compression9.apply.rift
+01/31/2024 10:41 PM
+preProcessTarget.create.image
+[smx2460]
+smx2460 01/31/2024 10:41 PM
+then compare
+01/31/2024 10:41 PM
+and write out the output
+01/31/2024 10:41 PM
+we need a way to run the individual steps of the patch
+01/31/2024 10:40 PM
+hellobox. 01/31/2024 10:40 PM
+> An opened BitReader (or is it a Buffer?) is "chained" through multiple
+BitReadInt via [ 0 ], with the obtained int value in [ 1 ]...
+01/31/2024 10:38 PM
+some related stuff here, but i think they're just calling the exported
+functions
+https://github.com/R3zk0n/PitchPatch/blob/668a9eb4ab9c72543ac42ea5aab0f1badbfac4ed/modules/delta.py#L148
+[smx2460]
+smx2460 01/31/2024 10:38 PM
+DebugWriteFile is called, interesting (edited)
+01/31/2024 10:38 PM
+    code( CopyInt ): input[ 0 ];
+    flagsInt( CopyInt ): input[ 1 ];
+    source( PassBuffer ): input[ 2 ];
+    bitReader( PassBitReader ): input[ 3 ];
+    targetBuffer( PassBuffer ): input[ 4 ];
+    reverseRequested( CopyInt ): input[ 5 ];
+    sourceSize( BufferSize ): source[ 0 ];
+    targetSize( BufferSize ): targetBuffer[ 0 ];
+    preProcessBuffer( BitReadBuffer ): bitReader[ 0 ];
+    codeMnemonic( GetFileTypeMnemonic ): code[ 0 ];
+    applyPreProcessSourceName( Concat ): ApplyPreProcessSource_, codeMnemonic[ 0 ];
+    applyPreProcessSource( ApplyPreProcessSource_RAW / applyPreProcessSourceName[ 0 ] ): code[ 0 ], flagsInt[ 0 ], source[ 0 ], preProcessBuffer[ 1 ], targetSize[ 0 ];
+    debugWritePreProcessSource( DebugWriteFile ): preProcessSource.apply.image, applyPreProcessSource[ 0 ];
+    compressionRiftTable5( PassRiftTable ): applyPreProcessSource[ 1 ];
+    debugWriteCompression5( DebugWriteFileRiftTable ): compression5.apply.rift, compressionRiftTable5[ 0 ];
+    compressionRiftTable6( CreateEmptyRiftTable ):;
+    compressionRiftTable7( AddRiftEntry ): compressionRiftTable6[ 0 ], sourceSize[ 0 ], 0;
+    debugWriteCompression7( DebugWriteFileRiftTable ): compression7.apply.rift, compressionRiftTable7[ 0 ];
+    compressionRiftTable8( MultiplyRiftTables ): compressionRiftTable7[ 0 ], compressionRiftTable5[ 0 ];
+    debugWriteCompression8( DebugWriteFileRiftTable ): compression8.apply.rift, compressionRiftTable8[ 0 ];
+     compressionRiftTable9( ReduceRiftTable ): compressionRiftTable8[ 0 ];
+    debugWriteCompression9( DebugWriteFileRiftTable ): compression9.apply.rift, compressionRiftTable9[ 0 ];
+    patchBuffer( BitReadBuffer ): preProcessBuffer[ 0 ];
+    target1( ApplyPseudoLzxPatchTargetBufferProvided ): applyPreProcessSource[ 0 ], patchBuffer[ 1 ], targetBuffer[ 0 ], compressionRiftTable9[ 0 ], reverseRequested[ 0 ];
+    debugWritePreProcessTarget( DebugWriteFile ): preProcessTarget.create.image, target1[ 0 ];
+    target( ApplyPostProcessTarget ): flagsInt[ 0 ], target1[ 0 ];
+    output: patchBuffer[ 0 ], target[ 0 ], target1[ 1 ];
+01/31/2024 10:37 PM
+wait
+01/31/2024 10:37 PM
+which is a function
+01/31/2024 10:36 PM
+well all the work is in ApplyPayload anyways
+01/31/2024 10:36 PM
+pretty unripe
+01/31/2024 10:35 PM
+hmm what's the state of that code
+hellobox. 01/31/2024 10:34 PM
+> The third argument to CheckBuffersIdentity is probably an internal
+error code thrown when the buffers don't match...
+01/31/2024 10:34 PM
+https://github.com/smilingthax/msdelta-pa30-format
+[smx2460]
+smx2460 01/31/2024 10:34 PM
+let's see
+01/31/2024 10:33 PM
+01/31/2024 10:33 PM
+c) by the time i do, someone will beat me to it
+01/31/2024 10:33 PM
+b) i don't have the time to do a massive RE
+01/31/2024 10:33 PM
+but a) i don't have a blog
+01/31/2024 10:33 PM
+this would make up for a nice blog post
+01/31/2024 10:33 PM
+it's not exposed i think
+hellobox. 01/31/2024 10:33 PM
+is there an API to execute it?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/31/2024 10:33 PM
+if the scripts can be in packages
+hellobox. 01/31/2024 10:33 PM
+lol
+[smx2460]
+smx2460 01/31/2024 10:32 PM
+[_._._._._._._._._._._.]
+[] smx2460 ``` ApplyPayload code( CopyInt ): input[ 0 ];flagsInt(
+CopyInt ): input[ 1 ];source( PassBuffer ): i...
+_._._._._._._._._._._. 01/31/2024 10:32 PM
+NSExpression windows edition, look for it in the next stuxnet
+[smx2460]
+smx2460 01/31/2024 10:32 PM
+also wondering what that magic 0x040302 is
+01/31/2024 10:32 PM
+so item[0]
+01/31/2024 10:32 PM
+if it's just one item, it's [item]
+01/31/2024 10:31 PM
+yeah it looks like everything is an array
+01/31/2024 10:31 PM
+source+patch
+01/31/2024 10:31 PM
+well you have 2 inputs for the patch
+hellobox. 01/31/2024 10:31 PM
+or does CheckBuffersIdentity just raise an exception?
+01/31/2024 10:30 PM
+what about checkHashIdentity? what reads that?
+[smx2460]
+smx2460 01/31/2024 10:30 PM
+i'm not sure what the [] notation is
+hellobox. 01/31/2024 10:30 PM
+everything is an array?
+[smx2460]
+smx2460 01/31/2024 10:29 PM
+i guess input and output are predefined (edited)
+01/31/2024 10:28 PM
+yeah the first thing is the var name
+hellobox. 01/31/2024 10:28 PM
+e.g. source = PassBuffer(input[ 0 ]);
+[smx2460]
+smx2460 01/31/2024 10:28 PM
+hmmm
+hellobox. 01/31/2024 10:28 PM
+result( function ): args?
+[smx2460]
+smx2460 01/31/2024 10:27 PM
+    source( PassBuffer ): input[ 0 ];
+    patch( PassBuffer ): input[ 1 ];
+    split( SplitPatchHeader ): patch[ 0 ];
+    targetBuffer( CreateBuffer ): split[ 4 ];
+    apply( ApplyPayload ): split[ 2 ], split[ 3 ], source[ 0 ], split[ 0 ], targetBuffer[ 0 ], 0;
+    bitReaderClose( BitReaderClose ): apply[ 0 ], 1;
+    hash( CalculateHash ): split[ 6 ], apply[ 1 ];
+    checkHashIdentity( CheckBuffersIdentity ): hash[ 0 ], split[ 7 ], 0x040302;
+    output: apply[ 1 ];
+(edited)
+01/31/2024 10:27 PM
+i think it needs to be formatted
+01/31/2024 10:26 PM
+whatever it means
+01/31/2024 10:26 PM
+    source( PassBuffer ): input[ 0 ];patch( PassBuffer ): input[ 1 ];split( SplitPatchHeader ): patch[ 0 ];targetBuffer( CreateBuffer ): split[ 4 ];apply( ApplyPayload ): split[ 2 ], split[ 3 ], source[ 0 ], split[ 0 ], targetBuffer[ 0 ], 0;bitReaderClose( BitReaderClose ): apply[ 0 ], 1;hash( CalculateHash ): split[ 6 ], apply[ 1 ];checkHashIdentity( CheckBuffersIdentity ): hash[ 0 ], split[ 7 ], 0x040302;output: apply[ 1 ];
+01/31/2024 10:26 PM
+code for ApplyPatch is
+01/31/2024 10:26 PM
+the other to ApplyReversePatch
+01/31/2024 10:26 PM
+g_applyPatchFactory is mapped to the script function ApplyPatch
+01/31/2024 10:25 PM
+so ApplyDeltaB calls either g_applyReversePatchFactory or
+g_applyPatchFactory depending on the patch order/type (edited)
+01/31/2024 10:24 PM
+err, sorry, to a class (points to a vftable) (edited)
+01/31/2024 10:24 PM
+for example RiftTransformDisasmARM is mapped to a function
+01/31/2024 10:24 PM
+some methods can be bound to native code
+01/31/2024 10:23 PM
+TToAscii -> wrap( CopyBuffer ):;
+01/31/2024 10:22 PM
+    DebugWriteFilePe
+    is defined as
+    fileName( InputSharedBuffer ): input[ 0 ];pe( InputSharedPe ): input[ 1 ]; 
+01/31/2024 10:22 PM
+e.g
+01/31/2024 10:22 PM
+there's some notion of functions
+01/31/2024 10:22 PM
+oh interesting
+01/31/2024 10:21 PM
+with or without the script giving hints
+01/31/2024 10:21 PM
+it's kind of a mess regardless 
+01/31/2024 10:21 PM
+it defines all the primitives
+01/31/2024 10:20 PM
+the function is ?PutAllComponentFactories@Environment@compo@@QEAAXXZ
+(edited)
+[smx2460]
+hellobox. ... why?
+smx2460 01/31/2024 10:19 PM
+yeah lol
+[smx2460]
+smx2460 01/31/2024 10:19 PM
+to see how it works
+01/31/2024 10:19 PM
+but on the other it makes it slightly easier for me
+01/31/2024 10:19 PM
+on one end, it's convoluted
+hellobox. 01/31/2024 10:19 PM
+... why?
+[smx2460]
+smx2460 01/31/2024 10:18 PM
+i guess this is used to implement multiple algorithms
+01/31/2024 10:18 PM
+and basically the script can call them in the order it wants
+01/31/2024 10:18 PM
+the dll also defines all those primitives it references
+01/31/2024 10:18 PM
+that full big string
+01/31/2024 10:18 PM
+it's in msdelta.dll (edited)
+[] smx2460 ``` ApplyPayload code( CopyInt ): input[ 0 ];flagsInt(
+CopyInt ): input[ 1 ];source( PassBuffer ): i...
+hellobox. 01/31/2024 10:18 PM
+where?
+[smx2460]
+smx2460 01/31/2024 10:17 PM
+    ApplyPayload
+    code( CopyInt ): input[ 0 ];flagsInt( CopyInt ): input[ 1 ];source( PassBuffer ): input[ 2 ];bitReader( PassBitReader ): input[ 3 ];targetBuffer( PassBuffer ): input[ 4 ];reverseRequested( CopyInt ): input[ 5 ];sourceSize( BufferSize ): source[ 0 ];targetSize( BufferSize ): targetBuffer[ 0 ];preProcessBuffer( BitReadBuffer ): bitReader[ 0 ];codeMnemonic( GetFileTypeMnemonic ): code[ 0 ];applyPreProcessSourceName( Concat ): "ApplyPreProcessSource_", codeMnemonic[ 0 ];applyPreProcessSource( ApplyPreProcessSource_RAW / applyPreProcessSourceName[ 0 ] ): code[ 0 ], flagsInt[ 0 ], source[ 0 ], preProcessBuffer[ 1 ], targetSize[ 0 ];debugWritePreProcessSource( DebugWriteFile ): "preProcessSource.apply.image", applyPreProcessSource[ 0 ];compressionRiftTable5( PassRiftTable ): applyPreProcessSource[ 1 ];debugWriteCompression5( DebugWriteFileRiftTable ): "compression5.apply.rift", compressionRiftTable5[ 0 ];compressionRiftTable6( CreateEmptyRiftTable ):;compressionRiftTable7( AddRiftEntry ): compressionRiftTable6[ 0 ], sourceSize[ 0 ], 0;debugWriteCompression7( DebugWriteFileRiftTable ): "compression7.apply.rift", compressionRiftTable7[ 0 ];compressionRiftTable8( MultiplyRiftTables ): compressionRiftTable7[ 0 ], compressionRiftTable5[ 0 ];debugWriteCompression8( DebugWriteFileRiftTable ): "compression8.apply.rift", compressionRiftTable8[ 0 ]; compressionRiftTable9( ReduceRiftTable ): compressionRiftTable8[ 0 ];debugWriteCompression9( DebugWriteFileRiftTable ): "compression9.apply.rift", compressionRiftTable9[ 0 ];patchBuffer( BitReadBuffer ): preProcessBuffer[ 0 ];target1( ApplyPseudoLzxPatchTargetBufferProvided ): applyPreProcessSource[ 0 ], patchBuffer[ 1 ], targetBuffer[ 0 ], compressionRiftTable9[ 0 ], reverseRequested[ 0 ];debugWritePreProcessTarget( DebugWriteFile ): "preProcessTarget.create.image", target1[ 0 ];target( ApplyPostProcessTarget ): flagsInt[ 0 ], target1[ 0 ];output: patchBuffer[ 0 ], target[ 0 ], target1[ 1 ];
+    full( CopyBuffer ): input[ 0 ];asciiPatchSignature( TToAscii ): "PA30";asciiPatchSignatureSize( BufferSize ): asciiPatchSignature[ 0 ];signature( Unconcat ): full[ 0 ], asciiPatchSignatureSize[ 0 ];checkSignature( CheckBuffersIdentity ): signature[ 0 ], asciiPatchSignature[ 0 ], 0x044601;intFixedBuffer( IntToFixedBuffer ): 0;intFixedBufferSize( BufferSize ): intFixedBuffer[ 0 ];fileTimeBuffer( Unconcat ): signature[ 1 ], intFixedBufferSize[ 0 ];fileTime( IntFromFixedBuffer ): fileTimeBuffer[ 0 ];bitReader( BitReaderOpen ): fileTimeBuffer[ 1 ];version( BitReadInt ): bitReader[ 0 ];code( BitReadInt ): version[ 0 ];flagsInt( BitReadInt ): code[ 0 ];targetSize( BitReadInt ): flagsInt[ 0 ];hashAlgId( BitReadInt ): targetSize[ 0 ];hash( BitReadBuffer ): hashAlgId[ 0 ];output: hash[ 0 ], version[ 1 ], code[ 1 ], flagsInt[ 1 ], targetSize[ 1 ], fileTime[ 0 ], hashAlgId[ 1 ], hash[ 1 ];
+    source( PassBuffer ): input[ 0 ];patch( PassBuffer ): input[ 1 ];targetBuffer( PassBuffer ): input[ 2 ];split( SplitPatchHeader ): patch[ 0 ];targetBufferSize( BufferSize ): targetBuffer[ 0 ];checkTargetSize( CheckIntsIdentity ): split[ 4 ], targetBufferSize[ 0 ], 0x040303;apply( ApplyPayload ): split[ 2 ], split[ 3 ], source[ 0 ], split[ 0 ], targetBuffer[ 0 ], 0;bitReaderClose( BitReaderClose ): apply[ 0 ], 1;hash( CalculateHash ): split[ 6 ], apply[ 1 ];checkHashIdentity( CheckBuffersIdentity ): hash[ 0 ], split[ 7 ], 0x040302;output: apply[ 1 ];
+(edited)
+01/31/2024 10:17 PM
+@hellobox did you know that msdelta uses a scripting language to encode
+the flow?
+hellobox. 01/31/2024 5:53 PM
+https://en.wikipedia.org/wiki/Most_vexing_parse
+01/31/2024 5:46 PM
+it's basically impossible to figure out what the compiler (or even
+~~preprocessor~~ whatever the hell does template shit) is going to
+output for any non-trivial code (edited)
+01/31/2024 5:44 PM
+isn't C++ wonderful?
+01/31/2024 5:44 PM
+oh, and if you use a typedef and an explicit instantiation, you get less
+than if you just did the typedef in fact you just get what you'd get
+with the instantiation plus the single type you define (edited)
+01/31/2024 5:43 PM
+whatever. i guess i should just use what (apparently) works better and
+not worry about it
+01/31/2024 5:42 PM
+i guess the std::conditionals aren't that useful...
+hellobox. 01/31/2024 5:34 PM
+when i am using idaclang to generate TILs, why do i get more stuff with
+a typedef
+    typedef map<string, vector<string>> map_string_vector_string;than with explicit instantiation?c++
+    template class std::map<string, vector<string>>;
+    i haven't figured out the pattern of what else i get (but it's not just the one type)
+    these are some of the extra definitions:c++
+    std::initializer_list<std::pair<const std::basic_string<char>, std::vector<std::basic_string<char>>>>::const_iterator __cdecl ZNKSt16initializer_listISt4pairIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt6vectorIS6_SaIS6_EEEE3endEv(const std::initializer_list<std::pair<const std::basic_string<char>, std::vector<std::basic_string<char>>>> *__hidden this);
+    std::initializer_list<_E>::size_type __cdecl ZNKSt16initializer_listISt4pairIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt6vectorIS6_SaIS6_EEEE4sizeEv(const std::initializer_list<std::pair<const std::basic_string<char>, std::vector<std::basic_string<char>>>> *__hidden this);
+    c++
+    typedef const std::__nonesuch_no_braces *std::conditional<false, const std::pair<std::_Rb_tree_iterator<std::pair<const std::basic_string<char>, std::vector<std::basic_string<char>>>>, bool> &, const std::__nonesuch_no_braces &>::type;
+    typedef const std::pair<std::_Rb_tree_iterator<std::pair<const std::basic_string<char>, std::vector<std::basic_string<char>>>>, bool> *std::conditional<true, const std::pair<std::_Rb_tree_iterator<std::pair<const std::basic_string<char>, std::vector<std::basic_string<char>>>>, bool> &, const std::__nonesuch_no_braces &>::type;
+    typedef std::pair<std::_Rb_tree_iterator<std::pair<const std::basic_string<char>, std::vector<std::basic_string<char>>>>, bool> *std::conditional<true, std::pair<std::_Rb_tree_iterator<std::pair<const std::basic_string<char>, std::vector<std::basic_string<char>>>>, bool> &&, std::__nonesuch_no_braces &&>::type;
+(edited)
+[kitsuned]
+kitsuned 01/31/2024 9:05 AM
+https://www.ubicloud.com/docs/github-actions-integration/migrate-to-arm-runners
+01/31/2024 9:05 AM
+@Smx https://www.ubicloud.com
+Ubicloud - Open and portable cloud
+Ubicloud is an open and portable cloud. Think of it as an open
+alternative to cloud providers, like what Linux is to proprietary
+operating systems. Ubicloud provides IaaS cloud features on bare metal
+providers, such as Hetzner, OVH, and AWS Bare Metal. You can set it up
+yourself or use our managed platform.
+[]
+[smx2460]
+smx2460 01/31/2024 2:10 AM
+(no content)
+[image.png]
+ image.png
+37.12 KB External
+January 30, 2024
+hellobox. 01/30/2024 11:40 PM
+(no content)
+[image.png]
+ image.png
+88.41 KB External
+[image.png]
+ image.png
+27.47 KB External
+01/30/2024 11:39 PM
+(no content)
+[image.png]
+ image.png
+199.07 KB External
+[halal_beef]
+halal_beef 01/30/2024 11:32 PM
+i agree to the message
+01/30/2024 11:31 PM
+well
+01/30/2024 11:31 PM
+gamers against weed
+hellobox. 01/30/2024 11:30 PM
+but aren't the certs used for this kind of stuff hardcoded?
+01/30/2024 11:30 PM
+i guess you'd have to install their cert to use it?
+[image.png]
+ image.png
+12.6 KB External
+01/30/2024 11:27 PM
+lol https://github.com/asdcorp/gamerEnablement it's a cab containing
+manifests for a bunch of (empty?) assemblies with version 69.0.1.0 e.g.
+    <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    <assembly xmlns="urn:schemas-microsoft-com:asm.v3" manifestVersion="1.0" copyright="(c) Gamers Against Weed">
+      <assemblyIdentity name="f54ce57847d6b180d05ac92a469e052a09b0a2b2" version="69.0.1.0" processorArchitecture="amd64" language="neutral" buildType="release" publicKeyToken="31bf3856ad364e35" versionScope="nonSxS" />
+      <deployment xmlns="urn:schemas-microsoft-com:asm.v3" />
+      <dependency discoverable="false">
+        <dependentAssembly dependencyType="install">
+          <assemblyIdentity name="Microsoft-Windows-Update-MusNotificationUxExe" version="69.0.1.0" processorArchitecture="amd64" language="neutral" buildType="release" publicKeyToken="31bf3856ad364e35" versionScope="nonSxS" />
+        </dependentAssembly>
+      </dependency>
+    </assembly>
+    xml
+    <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    <assembly xmlns="urn:schemas-microsoft-com:asm.v3" manifestVersion="1.0" copyright="(c) Gamers Against Weed">
+      <assemblyIdentity name="Microsoft-Windows-Update-MusNotificationUxExe" version="69.0.1.0" processorArchitecture="amd64" language="neutral" buildType="release" publicKeyToken="31bf3856ad364e35" versionScope="nonSxS" />
+    </assembly>        
+(edited)
+[halal_beef]
+halal_beef 01/30/2024 11:27 PM
+good question
+[] halal_beef those are the hashes i suppose?
+hellobox. 01/30/2024 11:24 PM
+of?
+[halal_beef]
+halal_beef 01/30/2024 11:24 PM
+those are the hashes i suppose?
+hellobox. 01/30/2024 11:22 PM
+what are these hex strings at the bottom?
+[image.png]
+ image.png
+46.9 KB External
+01/30/2024 11:18 PM
+how does this work though? just manual registry access?
+[] smx2460 do i quit? 
+hellobox. 01/30/2024 11:17 PM
+no
+[] smx2460 i impersonate TI
+hellobox. 01/30/2024 11:16 PM
+https://en.wikipedia.org/wiki/T.I.
+T.I.
+Clifford Joseph Harris Jr. (born September 25, 1980), better known by
+the stage names T.I. and Tip (often stylized as TIP or T.I.P.), is an
+American rapper. Born and raised in Atlanta, Georgia, Harris is known as
+one of the pioneers of the hip hop subgenre trap music, along with
+fellow Atlanta-based rappers Jeezy and Gucci Mane. Harris signed hi...
+[]
+[smx2460]
+smx2460 01/30/2024 11:16 PM
+or do i try to make something better
+01/30/2024 11:16 PM
+do i quit? 
+[smx2460]
+hellobox. ?
+smx2460 01/30/2024 11:16 PM
+the question is
+[smx2460]
+smx2460 01/30/2024 11:16 PM
+i impersonate TI
+01/30/2024 11:16 PM
+and requires taking ownership
+[] smx2460 although it's Pascal
+hellobox. 01/30/2024 11:16 PM
+yeah... wtf?
+[smx2460]
+smx2460 01/30/2024 11:16 PM
+although it's Pascal
+01/30/2024 11:15 PM
+the fact that that exists
+[] smx2460 that's a bigger fail
+hellobox. 01/30/2024 11:15 PM
+?
+[smx2460]
+smx2460 01/30/2024 11:15 PM
+that's a bigger fail
+01/30/2024 11:15 PM
+lol
+hellobox. 01/30/2024 11:14 PM
+@Smx https://github.com/himselfv/cbsenum
+hellobox. 01/30/2024 10:52 PM
+there's going to be an MS office 2024? ProPlus2024Volume-Preview
+https://massgrave.dev/ohook.html
+[smx2460]
+smx2460 01/30/2024 10:50 PM
+well they are in C:\Windows\servicing\Packages
+01/30/2024 10:49 PM
+he requires the source mum 
+01/30/2024 10:49 PM
+although
+hellobox. 01/30/2024 10:48 PM
+https://github.com/asdcorp/haveSxS/commit/306d229faf5b98ecf19f526a24db964abd235d86
+[smx2460]
+smx2460 01/30/2024 10:47 PM
+base.manifest is extracted from wcp.dll
+hellobox. 01/30/2024 10:47 PM
+that's one of them
+[smx2460]
+smx2460 01/30/2024 10:46 PM
+he's that guy?
+hellobox. 01/30/2024 10:44 PM
+https://github.com/nekoppai
+nekoppai - Overview
+meow~. GitHub is where nekoppai builds software.
+[]
+01/30/2024 10:43 PM
+the only time they use MS APIs is:
+    result = ctypes.windll.msdelta.ApplyDeltaW(
+01/30/2024 10:42 PM
+that code looks surprisingly decent for something written by "UwU as a
+Service" and containing
+    Copyright (C) 2022 Gamers Against Weed
+[smx2460]
+smx2460 01/30/2024 10:41 PM
+Mostly
+[] smx2460 Rip
+hellobox. 01/30/2024 10:41 PM
+they beat you to it?
+[smx2460]
+smx2460 01/30/2024 10:40 PM
+Rip
+01/30/2024 10:40 PM
+https://github.com/asdcorp/pureSxS/blob/principalis/puresxs.py
+pureSxS/puresxs.py at principalis · asdcorp/pureSxS
+A tool to export Component Based Servicing packages. - asdcorp/pureSxS
+[]
+hellobox. 01/30/2024 10:28 PM
+they're probably like 13 though (or might as well be) (edited)
+01/30/2024 10:27 PM
+> rearm (Rearm Every Activation-Related Mechanism)
+01/30/2024 10:27 PM
+their stuff is pretty funny
+[] smx2460 https://github.com/asdcorp/haveSxS
+hellobox. 01/30/2024 10:26 PM
+what the hell? https://github.com/asdcorp
+[smx2460]
+smx2460 01/30/2024 10:19 PM
+https://github.com/asdcorp/haveSxS
+GitHub - asdcorp/haveSxS: WinSxS is no longer winning.
+WinSxS is no longer winning. Contribute to asdcorp/haveSxS development
+by creating an account on GitHub.
+[]
+01/30/2024 10:18 PM
+This too
+01/30/2024 10:18 PM
+https://github.com/gus33000/GetLumiaBSP/blob/c3c42bd6d1f7226fab5c28508ad1492f488139f2/GetLumiaBSP/Delta/Helpers.cs
+GetLumiaBSP/GetLumiaBSP/Delta/Helpers.cs at c3c42bd6d1f7226fab5c285...
+A tool to deal with Windows Phone Board support packages on Windows
+Phone images - gus33000/GetLumiaBSP
+[]
+01/30/2024 10:13 PM
+And the Readme too
+01/30/2024 10:13 PM
+He pasted the whole GPL in it lol
+01/30/2024 10:13 PM
+It's kind of a meme though
+01/30/2024 10:13 PM
+He did the same
+01/30/2024 10:13 PM
+Damn
+01/30/2024 10:12 PM
+https://github.com/echnobas/sxsc/blob/master/havesxs.py
+sxsc/havesxs.py at master · echnobas/sxsc
+Contribute to echnobas/sxsc development by creating an account on
+GitHub.
+[]
+[smx2460]
+smx2460 01/30/2024 9:09 PM
+it apparently was a WPF only thing
+01/30/2024 9:09 PM
+oh
+01/30/2024 9:03 PM
+i need to recompile CefSharp to allow interop on non-localhost
+01/30/2024 8:57 PM
+not Release
+01/30/2024 8:57 PM
+if it was, 0 would be QueryInterface
+01/30/2024 8:56 PM
+it's actually not a COM interface i think (edited)
+01/30/2024 8:56 PM
+to attach an external debugger before the call (edited)
+01/30/2024 8:56 PM
+by using these, i can wrap the call into a for(;;);
+01/30/2024 8:56 PM
+            /// <summary>
+            /// wraps a function pointer in a trampoline that stalls the call
+            /// until a debugger removes the endless loop
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="address"></param>
+            /// <returns></returns>
+            private static T MakeDebuggerTrap<T>(nint address)
+            {
+                var mem = new byte[16];
+                var wr = new BinaryWriter(new MemoryStream(mem));
+                // debugger trap
+                wr.Write((ushort)0xFEEB);
+                wr.Write((byte)0x68);
+                wr.Write((uint)(address & 0xFFFFFFFF));
+                wr.Write((uint)0x042444C7);
+                wr.Write((uint)(address >> 32) & 0xFFFFFFFF);
+                wr.Write((byte)0xC3);
+                nint pMem;
+                unsafe
+                {
+                    pMem = new nint(PInvoke.VirtualAlloc(null, (uint)mem.Length, 0
+                           | VIRTUAL_ALLOCATION_TYPE.MEM_COMMIT
+                           | VIRTUAL_ALLOCATION_TYPE.MEM_RESERVE,
+                           PAGE_PROTECTION_FLAGS.PAGE_EXECUTE_READWRITE));
+                }
+                Marshal.Copy(mem, 0, pMem, mem.Length);
+                return Marshal.GetDelegateForFunctionPointer<T>(pMem);
+            }
+            public T GetDebugWrappedDelegate<T>(string functionName)
+            {
+                var fn = Marshal.ReadIntPtr(pVtbl + Marshal.OffsetOf<IRtlAppIdAuthority>(functionName));
+                return MakeDebuggerTrap<T>(fn);
+            }
+01/30/2024 8:55 PM
+to call the original methods
+01/30/2024 8:55 PM
+this is a partial RE of the WCP COM interfaces
+01/30/2024 8:55 PM
+https://github.com/smx-smx/Winter/blob/master/Winter/WcpLibrary.cs#L30-L115
+Winter/Winter/WcpLibrary.cs at master · smx-smx/Winter
+Winter is a tool to interface with the Component Based Storage, and
+other Windows internals - smx-smx/Winter
+[]
+01/30/2024 8:53 PM
+but it's not very readable
+01/30/2024 8:53 PM
+they could have just used say a sha256
+[smx2460]
+hellobox. i guess it can differentiate between names that would
+otherwise be shortened to the same thing
+smx2460 01/30/2024 8:53 PM
+yep
+[smx2460]
+smx2460 01/30/2024 8:53 PM
+the filename is more like a key
+hellobox. 01/30/2024 8:53 PM
+i guess it can differentiate between names that would otherwise be
+shortened to the same thing
+[smx2460]
+smx2460 01/30/2024 8:52 PM
+which is in the registry
+01/30/2024 8:52 PM
+the source of the hash is the original AppID
+01/30/2024 8:52 PM
+the filename is lowercased, stripped of some chars, trimmed in length
+with ..
+01/30/2024 8:51 PM
+the filename is not the input
+01/30/2024 8:51 PM
+well actually no
+01/30/2024 8:51 PM
+the problem is
+01/30/2024 8:51 PM
+¯\_(ツ)_/¯
+[] smx2460 <@803885040827629628>
+https://github.com/smx-smx/Winter/blob/master/Winter/ComponentAppId.cs#L123
+hellobox. 01/30/2024 8:49 PM
+it looks like the hash is of stuff that's already in the filename. so
+what's the point?
+[smx2460]
+smx2460 01/30/2024 8:48 PM
+although the UI that i published there is a stub and will be removed
+01/30/2024 8:47 PM
+opensourced
+01/30/2024 8:47 PM
+@hellobox
+https://github.com/smx-smx/Winter/blob/master/Winter/ComponentAppId.cs#L123
+Winter/Winter/ComponentAppId.cs at master · smx-smx/Winter
+Winter is a tool to interface with the Component Based Storage, and
+other Windows internals - smx-smx/Winter
+[]
+hellobox. what exactly is an "electronics otaku"?
+<https://en.wikipedia.org/wiki/Otaku> also, this is a bit m...
+hellobox. 01/30/2024 7:54 PM
+am i an "electronics otaku"? 
+hellobox. 01/30/2024 7:52 PM
+i made like 15 different aliexpress orders at the same time, and the
+order IDs are all identical except for a couple digits in the *middle*.
+i thought they were all the same ID at first
+hellobox. 01/30/2024 6:14 PM
+what exactly is an "electronics otaku"?
+https://en.wikipedia.org/wiki/Otaku also, this is a bit much for the
+introduction of a wikipedia article about people who like anime: > The
+advent of information technology and databases, first and foremost,
+enriched the means for the homeostasis of the self, that is,
+self-defense; and, secondly, it thereby rapidly weakened the sense that
+"reality" (or embodied communication) is more fruitful than "fiction"
+(or virtual reality). (i was trying to figure out what
+"https://www.youtube.com/@DENKI-OTAKU" target="_blank" rel="noopener
+noreferrer">denki otaku" means) (edited)
+[lightfire]
+lightfire 01/30/2024 11:17 AM
+[image0.png]
+ image0.png
+773.84 KB External
+ 2
+01/30/2024 11:16 AM
+(no content)
+[image0.png]
+ image0.png
+968.15 KB External
+[] lightfire i get a different number of errors every time i rebuild
+hellobox. 01/30/2024 10:51 AM
+fun
+[lightfire]
+lightfire 01/30/2024 10:50 AM
+i get a different number of errors every time i rebuild 
+01/30/2024 10:50 AM
+you have to be doing awful things when even rider just gives up tbh
+[lightfire]
+lightfire 01/30/2024 10:42 AM
+i think they just drop some messages and report back as delivered 
+01/30/2024 10:41 AM
+why is your email not reaching anyone using microsoft for email? sign up
+to whatever the fuck to find out (you actually wont find out what the
+obscure error code means)
+01/30/2024 10:39 AM
+01/30/2024 10:39 AM
+better than outlook server errors tbh
+hellobox. 01/30/2024 10:29 AM
+they don't explain anything
+01/30/2024 10:29 AM
+and the error messages are just ridiculous
+01/30/2024 10:29 AM
+it's a big ugly legacy mess
+[lightfire]
+lightfire 01/30/2024 10:28 AM
+could be azure data studio is just drawing it poorly or everyone i work
+with is too dumb to figure things out [:ahegao:]
+01/30/2024 10:27 AM
+wish someone had a cross platform tool that could explain wtf is going
+on with your queries
+hellobox. 01/30/2024 10:27 AM
+cool how VS (code?) just casually breaks localdb
+[lightfire]
+lightfire 01/30/2024 10:26 AM
+not sure if dumb or poor tooling on mac i cant figure out [:meep:]
+[lightfire]
+hellobox. i'm in hell``` Cannot specify a schema name as a prefix to the
+trigger name for database and server ...
+lightfire 01/30/2024 10:25 AM
+[lightfire]
+lightfire 01/30/2024 10:25 AM
+[lightfire]
+hellobox. how do people work with mssql on a daily basis? ``` Stop of
+LocalDB instance "MSSQLLocalDB" failed b...
+lightfire 01/30/2024 10:24 AM
+I was about to say but you found out
+rembihnutur 01/30/2024 9:36 AM
+I never had this problems with my AMD GPU
+01/30/2024 9:35 AM
+And it keeps resetting my settings for the HDMI port when I unplug the
+hdmi cable. I set my pc as a gaming console, this works als lot better.
+But it gets reset to a pc and than it doesn’t work as it should
+01/30/2024 9:34 AM
+Anyone here with a NVIDIA GPU and a LG OLED? I bought a 4070 Ti super
+yesterday and have some problems with it and my LG B1. When I unplug the
+hdmi cable and plug it in again I don’t get a picture anymore. I have to
+restart the TV or the PC. Sometimes the picture comes back after a
+couple of minutes but the display flickers. Or I just get a beige Color.
+hellobox. 01/30/2024 9:04 AM
+damn! tried with a .edu email, but still getting > Please log in with
+valid business or university email ID for free samples. Alternately, add
+paid version of product to cart.
+hellobox. 01/30/2024 8:53 AM
+i may have slightly abused it
+01/30/2024 8:52 AM
+lol they require a university or business email for free samples now.
+01/30/2024 8:49 AM
+2 USARTs... hmm
+01/30/2024 8:49 AM
+i kind of want to design something with it
+01/30/2024 8:48 AM
+STM32 Cortex-M0+ in SO-8 package. $1.24 single, dropping to <=$0.50 for
+5k+ https://mou.sr/3HE4iIM
+[smx2460]
+smx2460 01/30/2024 8:38 AM
+Files and features
+01/30/2024 8:38 AM
+Like installing files from other windows SKUs
+[smx2460]
+ww8543 why do you need to generate those?
+smx2460 01/30/2024 8:37 AM
+Idea was to make something to modify the CBS without using MS apis
+hellobox. 01/30/2024 5:23 AM
+it works again 
+01/30/2024 5:18 AM
+i'm in hell
+    Cannot specify a schema name as a prefix to the trigger name for database and server level triggers
+hellobox. 01/30/2024 5:01 AM
+how do people work with mssql on a daily basis?
+    Stop of LocalDB instance "MSSQLLocalDB" failed because of the following error:
+    Unexpected error occurred inside a LocalDB instance API method call. See the Windows Application event log for error details.
+    oh my god the errors are all this:
+    Windows API call LogSqlDiagRec returned error code: 0. Windows system error message is: The operation completed successfully.
+    Reported at line: 3884. [Microsoft][ODBC SQL Server Driver][SQL Server]Changed language setting to us_english.
+(edited)
+hellobox. 01/30/2024 4:49 AM
+what.
+[image.png]
+ image.png
+38.64 KB External
+01/30/2024 4:42 AM
+anyone know why VAMT/LocalDB is doing this all of a sudden? it's this.
+https://stackoverflow.com/a/76307290 for future reference:
+SqlLocalDB.exe stop MSSQLLocalDB -k look in log for missing database
+files. recreate them by copying some other database to the filenames in
+the logs.
+    SqlLocalDB.exe start MSSQLLocalDB
+    sqlcmd -S "(localdb)\MSSQLLocalDB"sql
+    SELECT * FROM sys.server_triggers; -- list the triggers
+    GO
+    DROP TRIGGER [Trigger_Repository_Microsoft.VsCodeIndex_Drop] ON ALL SERVER; -- these are the triggers that existed for me
+    DROP TRIGGER [Trigger_Repository_Microsoft.VsCodeIndex_Repository.Item_Logon_SetSecurityClaims] ON ALL SERVER;
+    GO
+i ended up logging in as sa. not sure if that was necessary (edited)
+[image.png]
+ image.png
+8.28 KB External
+hellobox. 01/30/2024 4:28 AM
+https://www.youtube.com/watch?v=zZdSNUoifV4
+Henry Segerman
+Symmetry and gears: Six axis racks
+A kinetic sculpture in which 12 sticks with 24 racks interact with 12
+gears. Print one yourself:
+https://www.printables.com/model/736088-six-axis-racks Print the
+diagonal racks demo:
+https://www.printables.com/model/736078-diagonal-racks-demo
+[] Watch video
+January 29, 2024
+[] smx2460 ever wondered how this is generated?
+ww8543 01/29/2024 11:58 PM
+why do you need to generate those?
+ 3
+[smx2460]
+smx2460 01/29/2024 11:24 PM
+This is mostly trivia
+01/29/2024 11:24 PM
+The other one is XP format
+01/29/2024 11:23 PM
+Shortened to LH
+01/29/2024 11:23 PM
+Amother thing is that in the DLL this is called "LongHorn format" 
+01/29/2024 11:21 PM
+It's hardened against all sorts of input
+01/29/2024 11:21 PM
+It also handles non printable chars and so on
+01/29/2024 11:21 PM
+But there's a table in the DLL so there are more
+01/29/2024 11:21 PM
+I encountered space and ()
+01/29/2024 11:21 PM
+Another thing it does before shortening it is making everything
+lowercase and trimming special chars
+01/29/2024 11:20 PM
+40 is the limit for the name field
+01/29/2024 11:20 PM
+This was my PoC before i ported it to C#
+01/29/2024 11:19 PM
+    <?php
+    $s = 'Microsoft-Windows-Authentication-SmartcardCredentialProvider';
+    $l = 40;
+    $mid = $l/2;
+    $l_end = $mid-1;
+    $r_start = strlen($s) - $l_end;
+    print(''
+        . substr($s, 0, $l_end)
+        . '..'
+        . substr($s, $r_start, $mid)
+        . "\n"
+    );
+    print("\n");
+01/29/2024 11:19 PM
+But yeah it's how you say
+01/29/2024 11:19 PM
+I messed up the pseudo
+hellobox. 01/29/2024 11:18 PM
+though i had never actually counted to see if both sides of the .. had
+equal length
+01/29/2024 11:16 PM
+i figured it was basically that
+[smx2460]
+smx2460 01/29/2024 11:16 PM
+That's it
+[] smx2460 Actually pivot is (limit/2)-1
+hellobox. 01/29/2024 11:16 PM
+makes sense
+[smx2460]
+smx2460 01/29/2024 11:16 PM
+Actually pivot is (limit/2)-1
+01/29/2024 11:16 PM
+str[0..pivot] + ".." + str[pivot..]
+01/29/2024 11:15 PM
+And that's your pivot
+01/29/2024 11:15 PM
+So if you exceed that, it takes limit/2
+01/29/2024 11:15 PM
+And was mismatching the file name
+hellobox. 01/29/2024 11:15 PM
+interesting
+[smx2460]
+smx2460 01/29/2024 11:15 PM
+Yes it is, i found one that does
+[] smx2460 Culture another
+hellobox. 01/29/2024 11:15 PM
+but is stuff like that ever going to hit the limit?
+[smx2460]
+smx2460 01/29/2024 11:15 PM
+I'm on my phone since I'm exhausted, too much coding today and I'm
+chilling
+01/29/2024 11:14 PM
+Culture another
+01/29/2024 11:14 PM
+Name has some limit
+[] smx2460 For each part of the assembly ID, there are max lengths
+hellobox. 01/29/2024 11:14 PM
+each part?
+[smx2460]
+smx2460 01/29/2024 11:14 PM
+For each part of the assembly ID, there are max lengths
+01/29/2024 11:14 PM
+That was surprisingly simple
+[] smx2460 I also added the shortening algorithm that generates the ..
+name
+hellobox. 01/29/2024 11:13 PM
+wondered about that also
+[smx2460]
+smx2460 01/29/2024 11:13 PM
+And add some kind of sensical UI
+01/29/2024 11:13 PM
+Now i need to put everything together, clean up
+01/29/2024 11:13 PM
+So i can get from full name -> file name
+01/29/2024 11:13 PM
+I also added the shortening algorithm that generates the .. name
+01/29/2024 11:12 PM
+And i can, for 100% of them, generate the correct hash
+01/29/2024 11:12 PM
+I ran it on all the keys in the CBS
+01/29/2024 11:12 PM
+Today i fine tuned the algo
+hellobox. 01/29/2024 11:02 PM
+i didn't realize it was semi-secret (or at least undocumented) until i
+found out from you. i had assumed it was published in some obscure .NET
+documentation or something
+[] smx2460 ever wondered how this is generated?
+hellobox. 01/29/2024 11:00 PM
+ofc
+[smx2460]
+smx2460 01/29/2024 6:31 PM
+now it's on par with the Microsoft DLL
+01/29/2024 6:31 PM
+no? well i refined the algo i reversed 
+01/29/2024 6:31 PM
+ever wondered how this is generated?
+[image.png]
+ image.png
+19.24 KB External
+hellobox. > 9:UART DEBUG : Access to serial port and connect a computer
+if set to HK. oh, is this where you sa...
+Deleted User 01/29/2024 5:38 AM
+yeah
+hellobox. 01/29/2024 1:56 AM
+@Smx @Deleted User @meep
+https://send.vis.ee/download/895643757f192939/#6-FDbZLGEthYKSK1p3VD5Q"
+target="_blank" rel="noopener noreferrer">aml_npu_sdk_6.4.4.3.7z,
+password is lol
+ 2
+hellobox. 01/29/2024 12:08 AM
+wait, GB? 42GB6500-CA
+01/29/2024 12:07 AM
+huh. https://www.ebay.com/itm/176153848514
+NAND chip for LG TV with MB LC/LD/LE42B,42G EAX65384004(1.5) / EAX6...
+Find many great new & used options and get the best deals for NAND chip
+for LG TV with MB LC/LD/LE42B,42G EAX65384004(1.5) / EAX65384005(1.2) at
+the best online prices at eBay! Free shipping for many products!
+[]
+01/29/2024 12:05 AM
+are those the ones with DVB-S(2) tuners or something?
+01/29/2024 12:05 AM
+why do they only have CI slots sometimes?
+01/29/2024 12:05 AM
+$30 for... idk, some MStar MIPS
+https://www.aliexpress.us/item/3256805664826229.html
+01/29/2024 12:04 AM
+LM18A for $24 https://www.aliexpress.us/item/3256803457705152.html
+01/29/2024 12:04 AM
+probably an S7LR or some other MIPS board (didn't check) for $10
+https://www.aliexpress.us/item/3256805332710759.html
+01/29/2024 12:03 AM
+aliexpress is so weird
+[image.png]
+ image.png
+45.95 KB External
+[image.png]
+ image.png
+65.07 KB External
+01/29/2024 12:03 AM
+i don't know why they're so much more expensive outside the US
+01/29/2024 12:02 AM
+LM18A from china for $27
+https://www.aliexpress.us/item/3256803455837535.html
+[smx2460]
+[] bochenekk Don't have the tv anymore tho
+smx2460 01/29/2024 12:02 AM
+rip 
+[smx2460]
+hellobox. AEON is an architecture that <@310158180728700929>, Uxmal
+(creator of reko), and i reversed
+smx2460 01/29/2024 12:01 AM
+in reverse order of effort 
+[smx2460]
+hellobox. HK is "housekeeping", which i think is the main core (so ARM
+or MIPS)... right <@310158180728700929>...
+smx2460 01/29/2024 12:01 AM
+yes
+[smx2460]
+hellobox. and i believe somebody got it semi-working (no graphics or
+something; <@310158180728700929> knows th...
+smx2460 01/29/2024 12:00 AM
+that "somebody" is @Erfan Abdi
+January 28, 2024
+hellobox. 01/28/2024 11:26 PM
+i guess there must be a VDEC core/peripheral
+01/28/2024 11:26 PM
+> 9:UART DEBUG : Access to serial port and connect a computer if set to
+HK. oh, is this where you saw "HK", "AEON", "VDEC"?
+01/28/2024 11:25 PM
+they don't show any of the JTAG pins
+01/28/2024 11:25 PM
+at least it's all on SPI flash, which is much easier to access/modify
+than parallel NAND or even eMMC
+01/28/2024 11:24 PM
+@Deleted User do you know how these straps are set?
+[image.png]
+ image.png
+82.67 KB External
+01/28/2024 11:23 PM
+i have never heard them called "push-up/down" resistors
+[image.png]
+ image.png
+25.03 KB External
+01/28/2024 11:22 PM
+yeah, it's on the DDC pins. i haven't actually ever used the VGA DDC
+breakout cable i made yet
+[image.png]
+ image.png
+32.57 KB External
+01/28/2024 11:22 PM
+[image.png]
+ image.png
+3.02 KB External
+01/28/2024 11:21 PM
+PM_UART is probably disabled
+[image.png]
+ image.png
+36.4 KB External
+01/28/2024 11:20 PM
+oh, found it. always thought these guys were a bit weird
+[image.png]
+ image.png
+107.6 KB External
+01/28/2024 11:19 PM
+i guess it's a laptop TV
+[image.png]
+ image.png
+45.12 KB External
+01/28/2024 11:17 PM
+i think this may actually be original
+[run-dmv-complete-comic-add.png]
+ run-dmv-complete-comic-add.png
+98.18 KB External
+01/28/2024 11:15 PM
+photo of different guy https://sqltechblog.com/ links in sidebar are all
+404s (although they're from 2016-2018, so they're probably just old
+because that's when they were stolen from someone else's site) (edited)
+01/28/2024 11:13 PM
+good thing this includes the TV's "throttle potentiometer", "oxygen
+sensors", and "ignition feed"!
+[image.png]
+ image.png
+516.77 KB External
+01/28/2024 11:11 PM
+wow, this is 100% fake
+https://www.diy-laptoprepair.com/forum/LE40B8000TF-MS308C0-ZC01-01-V400HJ6-PE1-repair-guide-schematics.html
+links to this totally generic page with a stock photo of someone futzing
+around with a random component on a random PCB
+https://www.technozblog.com/motherboard.html (edited)
+01/28/2024 11:10 PM
+i can't seem to find IT6263FN for sale anywhere. are they shy about
+selling it because it has secret squirrel HDCP keys?
+hellobox. 01/28/2024 11:02 PM
+these LVDS->HDMI adapters look better (in that they have some
+documentation, at the very least), but they're a bit more expensive
+https://wiki.geekworm.com/LVDS_Adapter
+hellobox. 01/28/2024 10:53 PM
+where'd you get the service manual?
+Deleted User 01/28/2024 10:52 PM
+where's the AC plug (edited)
+01/28/2024 10:51 PM
+wait no
+01/28/2024 10:50 PM
+power maybe?
+01/28/2024 10:50 PM
+i dont know
+hellobox. 01/28/2024 10:49 PM
+and what is the 4-pin connector?
+Deleted User 01/28/2024 10:49 PM
+Lemme check
+01/28/2024 10:49 PM
+i think so
+hellobox. 01/28/2024 10:49 PM
+are the 3.5mm jacks for audio?
+ 1
+01/28/2024 10:48 PM
+so this?
+[s-l1600.png]
+ s-l1600.png
+4.54 MB External
+ 1
+Deleted User 01/28/2024 10:48 PM
+It's a MS308C0-ZC01-01
+hellobox. 01/28/2024 10:47 PM
+is it something like this?
+[s-l1600.png]
+ s-l1600.png
+3.98 MB External
+Deleted User 01/28/2024 10:45 PM
+also it uses the MSD308C
+01/28/2024 10:42 PM
+No mentions of RAM tho
+01/28/2024 10:40 PM
+yeah
+Deleted User also, I found the board's schematics
+hellobox. 01/28/2024 10:39 PM
+always helpful
+Deleted User 01/28/2024 10:39 PM
+also, I found the board's schematics
+01/28/2024 10:38 PM
+oh cool
+hellobox. 01/28/2024 10:32 PM
+there is plenty of MStar MIPS linux 2.6 code floating around
+01/28/2024 10:31 PM
+maybe a really old version
+Deleted User 01/28/2024 10:31 PM
+lemme google it
+hellobox. 01/28/2024 10:31 PM
+probably not
+Deleted User 01/28/2024 10:31 PM
+idk
+Deleted User would this be able to run linux (preferably run it well)
+hellobox. 01/28/2024 10:31 PM
+uhhh how much RAM does it have?
+Deleted User it's mips on this tv, more specifically mips34k
+Deleted User 01/28/2024 10:31 PM
+would this be able to run linux (preferably run it well)
+hellobox. 01/28/2024 10:29 PM
+so i'm not sure it's actually "encrypted"
+01/28/2024 10:29 PM
+although... it's not like the video data is going through that SO-8
+01/28/2024 10:29 PM
+but does it mean you can't swap your tcon with another identical one?
+Deleted User why is it encrypted
+hellobox. 01/28/2024 10:28 PM
+i think sony is more sensitive about  since they're also a media
+company (just a guess) (edited)
+Deleted User 01/28/2024 10:28 PM
+why is it encrypted
+hellobox. does anybody know about the sony tcon encryption stuff i found
+last night? https://discord.com/chann...
+Deleted User 01/28/2024 10:27 PM
+what the fuck, why
+hellobox. 01/28/2024 10:26 PM
+like i assume once you get to LVDS/Vx1, it's usually unencrypted. right?
+which seems like a pretty big hole in the "secure video path", but
+whatever (edited)
+01/28/2024 10:26 PM
+does anybody know about the sony tcon encryption stuff i found last
+night?
+https://discord.com/channels/407937994037919756/843456930726805528/1201000408760467588
+(edited)
+[halal_beef]
+halal_beef 01/28/2024 10:26 PM
+ive gotten over it (still mad on how you half assed this and didnt take
+it seriously tho) (edited)
+[halal_beef]
+[] bochenekk <@708328635207123390> mad as fuck
+halal_beef 01/28/2024 10:26 PM
+yeah
+Deleted User 01/28/2024 10:26 PM
+like the phone has Cortex A76 cores, why is userspace 32bit
+01/28/2024 10:25 PM
+cheap m-series samsungs too
+01/28/2024 10:25 PM
+eh
+hellobox. 01/28/2024 10:24 PM
+i guess they don't want to have to worry about potential porting
+problems
+Deleted User Why are you running 32bit userspace
+Deleted User 01/28/2024 10:24 PM
+hate it when manufacturers do that
+Deleted User typical LG
+hellobox. 01/28/2024 10:24 PM
+on some newer models they run a 64-bit kernel but still 32-bit userspace
+Deleted User like you have a 64bit CPU
+Deleted User 01/28/2024 10:24 PM
+Why are you running 32bit userspace
+[bochenekk]
+bochenekk 01/28/2024 10:24 PM
+aarch64 SOC runs 32bit hserspace
+Deleted User 01/28/2024 10:24 PM
+like you have a 64bit CPU
+[bochenekk]
+bochenekk 01/28/2024 10:23 PM
+they do the same for their phones
+hellobox. LG just runs it in 32-bit mode
+Deleted User 01/28/2024 10:23 PM
+typical LG
+[bochenekk]
+bochenekk 01/28/2024 10:23 PM
+lol
+01/28/2024 10:23 PM
+but mstar happened
+hellobox. 01/28/2024 10:23 PM
+LG just runs it in 32-bit mode
+01/28/2024 10:23 PM
+it is capable of aarch64
+Deleted User 01/28/2024 10:23 PM
+oh
+Deleted User cortex a9
+hellobox. 01/28/2024 10:23 PM
+it's Cortex-A53
+Deleted User 01/28/2024 10:23 PM
+wow that will run at most A10
+[bochenekk]
+bochenekk 01/28/2024 10:23 PM
+mstar whatever
+Deleted User 01/28/2024 10:23 PM
+cortex a9
+[bochenekk]
+bochenekk 01/28/2024 10:22 PM
+That's why its so good
+[bochenekk]
+Deleted User is LM18A arm64
+bochenekk 01/28/2024 10:22 PM
+No
+[bochenekk]
+bochenekk 01/28/2024 10:22 PM
+(never had any other)
+Deleted User 01/28/2024 10:22 PM
+is LM18A arm64
+[bochenekk]
+bochenekk 01/28/2024 10:22 PM
+lm18a best board
+Deleted User 01/28/2024 10:22 PM
+I may buy a TV with an LM18A
+[bochenekk]
+bochenekk 01/28/2024 10:22 PM
+@halal_beef mad as fuck
+hellobox. 01/28/2024 10:21 PM
+i believe this is what i bought. it uses the same ITE chip that LG uses
+in their STBs https://www.aliexpress.us/item/3256805641542790.html
+Deleted User 01/28/2024 10:21 PM
+sad
+01/28/2024 10:21 PM
+oh
+[bochenekk]
+bochenekk 01/28/2024 10:21 PM
+and when I had to debug I had to give the tv away to a family member
+01/28/2024 10:21 PM
+some goofy segfault
+Deleted User 01/28/2024 10:21 PM
+not that nice
+01/28/2024 10:21 PM
+Nice
+[bochenekk]
+bochenekk 01/28/2024 10:21 PM
+crashed early
+01/28/2024 10:20 PM
+kind if
+Deleted User 01/28/2024 10:20 PM
+anyways, did android boot
+01/28/2024 10:20 PM
+lineage recovery is easy to boot too
+01/28/2024 10:20 PM
+yeah
+[bochenekk]
+bochenekk 01/28/2024 10:20 PM
+easy to boot
+Deleted User 01/28/2024 10:20 PM
+TWRP? blegh
+[bochenekk]
+bochenekk 01/28/2024 10:19 PM
+https://gitlab.com/lm18a-devs
+lm18a-devs · GitLab
+GitLab.com
+[]
+Deleted User 01/28/2024 10:19 PM
+or android in general
+01/28/2024 10:19 PM
+yeah
+[bochenekk]
+bochenekk 01/28/2024 10:19 PM
+alex u interested in ATV?
+Deleted User mind sending a link?
+hellobox. 01/28/2024 10:19 PM
+to the one i bought?
+Deleted User 01/28/2024 10:19 PM
+mind sending a link?
+hellobox. 01/28/2024 10:18 PM
+if i can get it to work, there are also Vx1->LVDS boards
+[bochenekk]
+bochenekk 01/28/2024 10:18 PM
+and i can't login right now
+01/28/2024 10:18 PM
+don't remember the model
+ 1
+hellobox. 01/28/2024 10:18 PM
+which one?
+[bochenekk]
+bochenekk 01/28/2024 10:18 PM
+same, ali
+hellobox. 01/28/2024 10:18 PM
+what is yours/where did you get it?
+[bochenekk]
+bochenekk 01/28/2024 10:18 PM
+Lol
+[] bochenekk HDMI
+hellobox. 01/28/2024 10:18 PM
+i just ordered one from aliexpress last night
+[bochenekk]
+bochenekk 01/28/2024 10:17 PM
+HDMI
+ 1
+[] bochenekk I have a lvds adapter no cable though
+hellobox. 01/28/2024 10:17 PM
+LVDS to what?
+[bochenekk]
+bochenekk 01/28/2024 10:17 PM
+So it'd be a bit shit
+01/28/2024 10:17 PM
+I have a lvds adapter no cable though
+Deleted User 01/28/2024 10:17 PM
+probably vx1
+[] bochenekk It's lvds?
+hellobox. 01/28/2024 10:17 PM
+depends. LVDS or Vx1 (depending on specific model). i'm working on that
+(edited)
+Deleted User 01/28/2024 10:17 PM
+Vx1 probably
+[bochenekk]
+hellobox. $30 is kind of high
+bochenekk 01/28/2024 10:17 PM
+Only one here :(
+[] bochenekk How would I even get video out of it
+hellobox. 01/28/2024 10:17 PM
+[bochenekk]
+bochenekk 01/28/2024 10:17 PM
+It's lvds?
+hellobox. 01/28/2024 10:17 PM
+you can get them for ~$15 (incl. shipping) here
+[bochenekk]
+bochenekk 01/28/2024 10:17 PM
+How would I even get video out of it
+[] bochenekk Click to see attachment
+hellobox. 01/28/2024 10:16 PM
+$30 is kind of high
+[bochenekk]
+bochenekk 01/28/2024 10:16 PM
+(no content)
+[Screenshot_20240128_221624.jpg]
+ Screenshot_20240128_221624.jpg
+190.36 KB External
+[] bochenekk What should I even look for
+hellobox. 01/28/2024 10:15 PM
+UK6xxx: UK62, UK63, UK65 (there are almost certainly more, but those are
+the ones i have) (edited)
+[bochenekk]
+bochenekk 01/28/2024 10:15 PM
+What should I even look for
+hellobox. 01/28/2024 10:15 PM
+i know they have a factory(/ies?) there, but they also have some in
+mexico, and i don't think LG is as popular there
+[bochenekk]
+bochenekk 01/28/2024 10:15 PM
+I mean
+01/28/2024 10:15 PM
+XD (edited)
+[:xd:] 4
+01/28/2024 10:15 PM
+they are
+01/28/2024 10:15 PM
+yes
+hellobox. 01/28/2024 10:15 PM
+for some reason LG seems to be big in poland
+01/28/2024 10:15 PM
+probably especially in poland
+[bochenekk]
+bochenekk 01/28/2024 10:15 PM
+I'd be interested
+01/28/2024 10:14 PM
+Couldnt find one
+hellobox. 01/28/2024 10:14 PM
+i think they're still pretty cheap there
+[bochenekk]
+bochenekk 01/28/2024 10:14 PM
+EU
+01/28/2024 10:14 PM
+Not here
+[] bochenekk Don't have the tv anymore tho
+hellobox. 01/28/2024 10:14 PM
+well, if you're still interested, LM18A boards are cheap
+hellobox. well, basically: does it have built-in netflix (or similar)
+support that would require secure storag...
+Deleted User 01/28/2024 10:14 PM
+no
+hellobox. 01/28/2024 10:13 PM
+well, basically: does it have built-in netflix (or similar) support that
+would require secure storage of keys
+[bochenekk]
+hellobox. although <@800680565266579458> was working on it for LM18A
+~recently
+bochenekk 01/28/2024 10:13 PM
+Don't have the tv anymore tho
+ 4
+Deleted User 01/28/2024 10:13 PM
+no
+Deleted User it's mips on this tv, more specifically mips34k
+hellobox. 01/28/2024 10:13 PM
+is this a "smart" TV?
+hellobox. 01/28/2024 10:12 PM
+sometimes there are also 8051 cores, although it seems like MStar kind
+of replaced 8051 with aeon for many purposes in the early 2000s. you may
+still find an 8051 core used for power management (PM) (edited)
+01/28/2024 10:11 PM
+MStar likes to use separate aeon cores for audio decoding/playback
+(decR2, sndR2)
+01/28/2024 10:11 PM
+it could refer to that code, or there might be a separate (probably
+aeon) core for it
+01/28/2024 10:11 PM
+VDEC is just the video decoding subsystem
+hellobox. HK is "housekeeping", which i think is the main core (so ARM
+or MIPS)... right <@310158180728700929>...
+Deleted User 01/28/2024 10:10 PM
+it's mips on this tv, more specifically mips34k (edited)
+hellobox. 01/28/2024 10:06 PM
+it's (loosely) based on OpenRISC
+01/28/2024 10:06 PM
+AEON is an architecture that @Smx, Uxmal (creator of reko), and i
+reversed
+Deleted User what do HK, AEON and VDEC mean under UART DEBUG?
+hellobox. 01/28/2024 10:06 PM
+HK is "housekeeping", which i think is the main core (so ARM or MIPS)...
+right @Smx?
+Deleted User 01/28/2024 10:05 PM
+what do HK, AEON and VDEC mean under UART DEBUG? (edited)
+hellobox. 01/28/2024 10:05 PM
+although sometimes you get lucky and have a header or pads on the board
+Deleted User can't I just connect to UART through the VGA port with an
+adapter
+hellobox. 01/28/2024 10:04 PM
+yeah, that (specifically, the DDC pins) is often where it is on older
+MStar boards (edited)
+Deleted User 01/28/2024 10:04 PM
+sucks
+01/28/2024 10:04 PM
+ohh
+01/28/2024 10:03 PM
+can't I just connect to UART through the VGA port with an adapter
+hellobox. 01/28/2024 10:03 PM
+unfortunately MStar's ISP is password-protected. each SoC has a unique
+id that you're supposed to send to MStar to get the password (edited)
+Deleted User 01/28/2024 10:03 PM
+ok
+Deleted User not yet
+hellobox. 01/28/2024 10:03 PM
+you'll need that to do anything
+Deleted User 01/28/2024 9:58 PM
+i've seen a bunch of TVs (and a projector) with it (edited)
+01/28/2024 9:58 PM
+also, it runs on a generic firmware
+01/28/2024 9:57 PM
+not yet
+Deleted User wait, can I get the codename from the service menu?
+hellobox. 01/28/2024 9:57 PM
+probably not. do you have UART access?
+Deleted User 01/28/2024 9:57 PM
+wait, can I get the codename from the service menu?
+Deleted User how hackable would that be
+hellobox. 01/28/2024 9:57 PM
+no idea. depends how it was configured i guess
+Deleted User 01/28/2024 9:57 PM
+no
+Deleted User also, I have another TV, still MStar, runs eCos though
+hellobox. 01/28/2024 9:57 PM
+do you know what SoC? especially the codename?
+Deleted User 01/28/2024 9:57 PM
+like could it run custom programs
+01/28/2024 9:57 PM
+how hackable would that be
+01/28/2024 9:56 PM
+also, I have another TV, still MStar, runs eCos though
+hellobox. 01/28/2024 9:56 PM
+and M1L(p/+) is aeon
+01/28/2024 9:56 PM
+M1(A) was (actually they're probably still using it lol) a thing, but
+that's MIPS (edited)
+01/28/2024 9:55 PM
+there was a separate lineage of low-end MStar chips: M2, M2R, M3, M3R
+01/28/2024 9:55 PM
+well, i'm not sure how directly they're related. but it's the lower-end
+MStar SoC from that year
+01/28/2024 9:54 PM
+M3 is like a cheaper version of LM18A
+Deleted User 01/28/2024 9:54 PM
+ok
+hellobox. 01/28/2024 9:54 PM
+yeah, definitely M3 then
+Deleted User it's a cheap TV tho
+hellobox. 01/28/2024 9:54 PM
+is it an LK model?
+ 1
+Deleted User 01/28/2024 9:54 PM
+It's like 250KB/s for me
+hellobox. 01/28/2024 9:53 PM
+i went up a couple tiers with my ISP, and it got better. but i don't
+understand, because i had fine speeds from ~everywhere else it is still
+occasionally slow (edited)
+Deleted User why are korean opensource pages so slow
+hellobox. 01/28/2024 9:52 PM
+LG's was super slow for me for a while
+Deleted User 01/28/2024 9:52 PM
+samsung's is, lg's is
+01/28/2024 9:52 PM
+why are korean opensource pages so slow
+Deleted User it is mstar
+hellobox. 01/28/2024 9:52 PM
+M3 then
+hellobox. 01/28/2024 9:52 PM
+lol, tricked again by LG's open source site 
+Deleted User 01/28/2024 9:51 PM
+it is mstar
+hellobox. 01/28/2024 9:51 PM
+or is it mstar?
+Deleted User 01/28/2024 9:51 PM
+it's a cheap TV tho
+hellobox. 01/28/2024 9:51 PM
+so M16(P*)
+Deleted User 01/28/2024 9:51 PM
+oh
+Deleted User it doesn't? It just says webOS 4.0 GM MR 2.0
+hellobox. 01/28/2024 9:51 PM
+i believe that's LX
+hellobox. 01/28/2024 9:50 PM
+the
+https://discord.com/channels/407937994037919756/926881570512572456/1195497082442756188"
+target="_blank" rel="noopener noreferrer">OTAID will also tell you the
+SoC
+Deleted User 01/28/2024 9:50 PM
+it doesn't? It just says webOS 4.0 GM MR 2.0
+01/28/2024 9:49 PM
+oh ok
+Deleted User idk, I got it without knowing it
+hellobox. 01/28/2024 9:49 PM
+the description on the LG open source site will tell you (although they
+use a different naming convention there that i haven't seen anywhere
+else... [:lg:]) (edited)
+Deleted User 01/28/2024 9:49 PM
+idk, I got it without knowing it
+hellobox. 01/28/2024 9:48 PM
+you basically have to know the SoC to get the kernel source except they
+release the exact same archives for multiple SoCs sometimes; i've
+downloaded god knows how many GB of the same 2023 rtk packages (edited)
+Deleted User any other way? like in the kernel source?
+hellobox. 01/28/2024 9:47 PM
+what do you mean?
+Deleted User 01/28/2024 9:47 PM
+any other way? like in the kernel source?
+01/28/2024 9:47 PM
+ok
+Deleted User how do I check what SoC my TV uses
+hellobox. 01/28/2024 9:47 PM
+it'll be in /var/run/nyx
+hellobox. 01/28/2024 9:47 PM
+and i believe somebody got it semi-working (no graphics or something;
+@Smx knows the details) on an older LX SoC a while back
+Deleted User 01/28/2024 9:47 PM
+how do I check what SoC my TV uses
+01/28/2024 9:46 PM
+cool
+hellobox. 01/28/2024 9:46 PM
+although @bochenek was working on it for LM18A ~recently

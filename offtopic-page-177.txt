@@ -1,0 +1,1713 @@
+December 12, 2021
+[smx2460]
+smx2460 12/12/2021 6:12 PM
+i mean you could get usb gadget to work for this
+12/12/2021 6:11 PM
+i tried once to build a custom kernel for it (edited)
+[dustyangel47]
+dustyangel47 12/12/2021 6:11 PM
+although yeah no network port sounds annoying
+[smx2460]
+smx2460 12/12/2021 6:11 PM
+the annoyance here is the custom hardware
+12/12/2021 6:11 PM
+ah
+[dustyangel47]
+dustyangel47 12/12/2021 6:11 PM
+i mean openwrt can run on mips which is probably objectively worse
+[smx2460]
+smx2460 12/12/2021 6:11 PM
+no it runs on ARM
+[dustyangel47]
+dustyangel47 12/12/2021 6:11 PM
+i mean, it runs on mips so seems achivable
+[smx2460]
+smx2460 12/12/2021 6:11 PM
+without a network port?
+12/12/2021 6:10 PM
+@DustyAngel47 on armv4? 
+[dustyangel47]
+dustyangel47 12/12/2021 6:10 PM
+~~this seems awfully complicated when you could just install/port
+openwrt~~
+[smx2460]
+smx2460 12/12/2021 6:07 PM
+ahahah it worked
+12/12/2021 6:07 PM
+    $ ssh root@192.168.145.1
+    The authenticity of host '192.168.145.1 (192.168.145.1)' can't be established.
+    ED25519 key fingerprint is SHA256:ZCZFQ/o9wvkH0P4oP40B8ql5z8vX/AUkpwDiuRFn+ss.
+    This key is not known by any other names
+    Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+    Warning: Permanently added '192.168.145.1' (ED25519) to the list of known hosts.
+    ~ #
+12/12/2021 6:04 PM
+sp33d
+12/12/2021 6:04 PM
+    $ cat sbin/dropbear | pv | nc 192.168.145.1 1338
+    2,54MiB 0:00:21 [93,5KiB/s] [     
+[smx2460]
+smx2460 12/12/2021 5:47 PM
+and i can get a proper shell hopefully
+12/12/2021 5:47 PM
+so i don't need to push files with zmodem or nc (edited)
+12/12/2021 5:46 PM
+i'll cross compile dropbear for it
+12/12/2021 5:40 PM
+    0x0000806c in ?? ()
+    (gdb) x/5i $pc
+    => 0x806c:      b       0x806c
+       0x8070:      ldr     r0, [r0, #36]   ; 0x24
+       0x8074:      ldr     r1, [r3, #40]   ; 0x28
+       0x8078:      ldr     r2, [r3, #44]   ; 0x2c
+       0x807c:      ldr     r3, [r3, #8]
+landed at my trap (my usulal technique is to place an endless loop and
+skip or remove it with gdb) (edited)
+[smx2460]
+[] _._._._._._._._._._._. > gcc 3.x Anyone remember EGCS?
+smx2460 12/12/2021 5:39 PM
+nop
+[smx2460]
+smx2460 12/12/2021 5:39 PM
+    pid=1016
+    &main=0x8ce4
+    &return2=0x8b34
+    &func2=0x8b88
+    arg1: 0, arg2: 1
+    return1() = 1
+    /mnt/sdcard/ezinject # Remote debugging from host 192.168.145.2
+    Attached; pid = 1016
+12/12/2021 5:36 PM
+which is why i'm going to fire up gdbserver through pppd
+12/12/2021 5:36 PM
+there is probably some other magic corruption going on
+12/12/2021 5:35 PM
+so, given that, it should not be a surprise that it crashes later
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 12/12/2021 5:35 PM
+> gcc 3.x Anyone remember EGCS?
+[smx2460]
+smx2460 12/12/2021 5:35 PM
+but the write is generated incorrectly
+12/12/2021 5:35 PM
+which means the CPU can read unaligned
+12/12/2021 5:35 PM
+in fact, with the memcpy, the code works
+12/12/2021 5:35 PM
+i refuse to believe ARM v4 doesn't support unaligned reads
+12/12/2021 5:35 PM
+but i blame GCC 3.x for this
+12/12/2021 5:35 PM
+it works
+12/12/2021 5:35 PM
+if you replace that first write with a memcpy of size 4
+12/12/2021 5:34 PM
+or not where it should be
+12/12/2021 5:34 PM
+and also ends up writing the length "shifted"
+12/12/2021 5:34 PM
+it corrupts up to 3 bytes of the string
+12/12/2021 5:34 PM
+if your string length is not divisible by 4
+[infowski]
+infowski 12/12/2021 5:34 PM
+ahhhh
+[smx2460]
+smx2460 12/12/2021 5:34 PM
+but strings aren't necessarily 4-byte aligned
+12/12/2021 5:34 PM
+the first one is converted by the compiler (gcc 3.x) to an aligned write
+(edited)
+12/12/2021 5:33 PM
+these are the 2 statements that write to memory
+12/12/2021 5:33 PM
+        *(unsigned int *)(*strData) = sizeof(unsigned int) + str.len;
+        memcpy(*strData, str.str, str.len);
+12/12/2021 5:33 PM
+so
+12/12/2021 5:33 PM
+this is retarded
+[infowski]
+infowski 12/12/2021 5:33 PM
+what was it?
+[smx2460]
+smx2460 12/12/2021 5:33 PM
+nah it's not you
+[infowski]
+infowski 12/12/2021 5:33 PM
+yeah, nah, I am too stupid for this 
+[smx2460]
+smx2460 12/12/2021 5:32 PM
+and no, that is the wrong road, nothing wrong in ezinj_str (the layout
+or the contents) (edited)
+12/12/2021 5:32 PM
+and probably even unsigned, so you're safe there
+12/12/2021 5:32 PM
+it's int
+[infowski]
+infowski 12/12/2021 5:32 PM
+is str.len uint8_t?
+[smx2460]
+smx2460 12/12/2021 5:32 PM
+why would that be?
+12/12/2021 5:32 PM
+i read a string, and the length of the string is not right
+[infowski]
+infowski 12/12/2021 5:31 PM
+hmmm... let me think...
+[smx2460]
+smx2460 12/12/2021 5:31 PM
+lol
+12/12/2021 5:31 PM
+@infowski without context, i bet you will not be able to tell me what's
+wrong with this code
+12/12/2021 5:31 PM
+    /**
+     * Marshals the string @str into @strData, advancing the data pointer as needed
+     * 
+     * @param[in]  str
+     *     structure describing the string to copy
+     * @param[out] strData  
+     *     pointer (pass by reference) to a block of memory where the string will be copied
+     *     the pointer will be incremented by the number of bytes copied
+     **/
+    void strPush(char **strData, struct ezinj_str str){
+        // write the number of bytes we need to skip to get to the next string
+        *(unsigned int *)(*strData) = sizeof(unsigned int) + str.len;
+        *strData += sizeof(unsigned int);
+        // write the string itself
+        memcpy(*strData, str.str, str.len);
+        *strData += str.len;
+    }
+12/12/2021 5:30 PM
+i also found a very insideous crash
+12/12/2021 5:30 PM
+    /mnt/sdcard/ezinject # ./gdbserver --multi 0.0.0.0:1337
+    Listening on port 1337
+12/12/2021 5:30 PM
+no static builds for armv4 around
+12/12/2021 5:29 PM
+i had to cross compile it myself
+12/12/2021 5:29 PM
+@infowski gdbserver for ezinject debugging will be funnier 
+[infowski]
+infowski 12/12/2021 5:28 PM
+funny.
+[smx2460]
+smx2460 12/12/2021 5:28 PM
+    /mnt/sdcard/extras/TTbtconsole # cat /proc/net/route
+    Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+    ppp0    0291A8C0        00000000        0005    0       0       0       FFFFFFFF        0       0       0
+    ppp0    00000000        00000000        0001    0       0       0       00000000        0       0       0
+12/12/2021 5:28 PM
+proof
+12/12/2021 5:28 PM
+    /mnt/sdcard/extras/TTbtconsole # uname -a
+    Linux TomTom GO 910 2.6.13-tt842337 #1 Thu Aug 22 08:11:08 CEST 2013 armv4tl unknown
+    /mnt/sdcard/extras/TTbtconsole # cat /proc/cpuinfo
+    Processor       : ARM920Tid(wb) rev 0 (v4l)
+    BogoMIPS        : 188.00
+    Features        : swp half thumb
+    CPU implementer : 0x41
+    CPU architecture: 4T
+    CPU variant     : 0x1
+    CPU part        : 0x920
+    CPU revision    : 0
+    Cache type      : write-back
+    Cache clean     : cp15 c7 ops
+    Cache lockdown  : format A
+    Cache format    : Harvard
+    I size          : 16384
+    I assoc         : 64
+    I line length   : 32
+    I sets          : 8
+    D size          : 16384
+    D assoc         : 64
+    D line length   : 32
+    D sets          : 8
+    Hardware        : TomTom GO
+    Revision        : 0000
+    Serial          : 0000000000000000
+12/12/2021 5:27 PM
+lol
+12/12/2021 5:27 PM
+my TomTom GO GPS telnetting to my router through pppd through bluetooth
+12/12/2021 5:27 PM
+    BusyBox v1.17.3 (2018-04-11 12:29:54 CEST) built-in shell (ash)
+    Enter 'help' for a list of built-in commands.
+          ___           ___           ___           ___
+         |\__\         /\  \         /\  \         /\  \
+         |:|  |       /::\  \       /::\  \       /::\  \
+         |:|  |      /:/\:\  \     /:/\:\  \     /:/\:\  \
+         |:|__|__   /::\~\:\  \   /::\~\:\  \   _\:\~\:\  \
+         /::::\__\ /:/\:\ \:\__\ /:/\:\ \:\__\ /\ \:\ \:\__\
+        /:/~~/~    \/__\:\/:/  / \/__\:\/:/  / \:\ \:\ \/__/
+       /:/  /           \::/  /       \::/  /   \:\ \:\__\
+       \/__/            /:/  /         \/__/     \:\/:/  /
+                       /:/  /                     \::/  /
+                       \/__/                       \/__/    r41358.07b1b3a7
+    ..................................................................
+     yet another purposeful solution by  Advanced Digital Broadcast SA
+    ..................................................................
+    root@dlinkrouter:~#
+    root@dlinkrouter:~# exit
+    exit
+Deleted User 12/12/2021 1:39 PM
+Bluetooth
+[infowski]
+infowski 12/12/2021 1:39 PM
+turn off what?
+Deleted User 12/12/2021 1:39 PM
+How to turn it off via shell?
+[IMG_8208.jpg]
+ IMG_8208.jpg
+718.6 KB External
+December 11, 2021
+[infowski]
+infowski 12/11/2021 10:21 PM
+yeah, likely log4j fuckery
+[smx2460]
+smx2460 12/11/2021 9:47 PM
+and they were aware of it on twitter
+12/11/2021 9:47 PM
+but it was totally broken for me
+12/11/2021 9:47 PM
+i didn't notice your post
+[smx2460]
+[] infowski is it just me, or is discord search broken now?
+smx2460 12/11/2021 9:47 PM
+no
+December 10, 2021
+[maryjohanna42069]
+maryjohanna42069 12/10/2021 7:51 PM
+I am unsure about the content of your message but yeah, they are always
+that specific if you mean that 
+[infowski]
+infowski 12/10/2021 7:50 PM
+the good shit
+12/10/2021 7:50 PM
+this is what i am talking about
+12/10/2021 7:50 PM
+the issue
+[maryjohanna42069]
+maryjohanna42069 12/10/2021 7:50 PM
+lol
+[unknown.png]
+ unknown.png
+19.74 KB External
+12/10/2021 7:50 PM
+https://discordstatus.com/ indeed (edited)
+12/10/2021 7:49 PM
+I assume they disabled it again to reduce load
+12/10/2021 7:49 PM
+it is
+[infowski]
+infowski 12/10/2021 7:43 PM
+is it just me, or is discord search broken now?
+December 8, 2021
+[smx2460]
+smx2460 12/08/2021 4:59 PM
+    #define VM_F_PUTS(f, x) (f)->vm->action = INJ_PUTS; VM_REG((f)->vm, acc, s_val) = x; break
+12/08/2021 4:59 PM
+for example, to print a string
+12/08/2021 4:59 PM
+oh right, it also has a few registers (right now: an accumulator, 2
+argument registers, a return register)
+12/08/2021 4:59 PM
+            switch(vm->action){
+                case INJ_DCHAR:
+                    inj_dchar(br, VM_REG(vm, acc, c_val));
+                    VM_SETOP(vm, INJ_NOOP);
+                    break;
+                case INJ_DBGPTR:
+                    inj_dbgptr(br, VM_REG(vm, acc, p_val));
+                    VM_SETOP(vm, INJ_NOOP);
+                    break;
+                case INJ_PUTS:
+                    inj_puts(br, VM_REG(vm, acc, s_val));
+                    VM_SETOP(vm, INJ_NOOP);
+                    break;
+12/08/2021 4:58 PM
+that should reduce the number of inlines
+12/08/2021 4:58 PM
+this little "vm" has opcodes (or rather "action codes") (edited)
+12/08/2021 4:58 PM
+    INLINE intptr_t _inj_entry(struct injcode_ctx *ctx){
+        struct injcode_exec_ctx *vm = &ctx->vm;
+        struct injcode_exec_frame *frame = VM_FRAME(vm);
+        switch(frame->step++){
+            case 0: VM_F_DCHAR(frame, 'e');
+            case 1: VM_PROC_EXIT(vm); break;
+        }
+    }
+12/08/2021 4:57 PM
+            switch(frame->step++){
+                case 0: VM_PROC_ENTRY(vm); break;
+                case 1: VM_FX_CALL(frame, _inj_entry, ctx); break;
+                case 2: VM_PROC_ENTRY(vm); break;
+                case 3: VM_FX_CALL(frame, _inj_libdl, ctx); break;
+            }
+12/08/2021 4:57 PM
+so i'm playing around with implementing suspending functions, or
+coroutines (edited)
+12/08/2021 4:57 PM
+the payload we inject in executables is not PIC and cannot perform any
+call
+12/08/2021 4:56 PM
+i'm experimenting with virtual machine concepts in ezinject
+[dustyangel47]
+dustyangel47 12/08/2021 2:39 AM
+i'm pretty sure this normally works
+12/08/2021 2:38 AM
+[]
+12/08/2021 2:38 AM
+wait no the ip is broken for me too
+12/08/2021 2:38 AM
+works fine for me
+[dustyangel47]
+[] _._._._._._._._._._._. that's not right
+dustyangel47 12/08/2021 2:37 AM
+ weird
+[dustyangel47]
+dustyangel47 12/08/2021 2:37 AM
+yeah discord crawls it to create a preview
+12/08/2021 2:37 AM
+oh wait never mind
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 12/08/2021 2:37 AM
+that's not right
+12/08/2021 2:37 AM
+> UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101
+Firefox/95.0 > IP: 10.1.17.204
+[dustyangel47]
+dustyangel47 12/08/2021 2:37 AM
+i dont think so?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 12/08/2021 2:36 AM
+no I mean discord is, right?
+[dustyangel47]
+dustyangel47 12/08/2021 2:36 AM
+the gif originally came from tenor
+12/08/2021 2:36 AM
+well i mean i guess it is
+12/08/2021 2:36 AM
+~~its not mirroring media~~
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 12/08/2021 2:35 AM
+I hate services that mirror media! I hate services that mirror media!
+[dustyangel47]
+dustyangel47 12/08/2021 2:35 AM
+i know its a very simple thing but i still got entertainment out of it
+12/08/2021 2:35 AM
+click Open Original on this gif :)
+https://discord-gif-poc.herokuapp.com/sfw.gif
+[]
+December 7, 2021
+[maryjohanna42069]
+maryjohanna42069 12/07/2021 11:28 PM
+sick
+12/07/2021 11:28 PM
+woah
+[smx2460]
+smx2460 12/07/2021 11:25 PM
+ezinject injecting Frida in a static binary, lol (they don't support
+this) (edited)
+[unknown.png]
+ unknown.png
+279.24 KB External
+ 4
+December 5, 2021
+[retr0id]
+retr0id 12/05/2021 11:11 PM
+just wait a few decades for quantum computers, heh
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 12/05/2021 11:09 PM
+I hate asymmetric cryptography! I hate asymmetric cryptography!
+[retr0id]
+retr0id 12/05/2021 11:06 PM
+https://news.ycombinator.com/item?id=29452890
+username190
+Termination of LG Mobile Developer website service
+[]Hacker News12/5/2021, 9:31:50 PM
+ww8543 12/05/2021 12:02 PM
+ 1  1  1  1  1
+[smx2460]
+ww8543 whats wrong with that? 
+smx2460 12/05/2021 12:02 PM
+Not everyone understands German fluently ;)
+[smx2460]
+smx2460 12/05/2021 12:01 PM
+(no content)
+[IMG_20211205_120137.jpg]
+ IMG_20211205_120137.jpg
+385.55 KB External
+ 1
+12/05/2021 12:01 PM
+[] infowski dammit, it's in german only again?
+ww8543 12/05/2021 11:23 AM
+whats wrong with that? 
+[infowski]
+infowski 12/05/2021 11:09 AM
+dammit, it's in german only again?
+[smx2460]
+smx2460 12/05/2021 11:06 AM
+https://howto.rc3.world/maps.html
+[infowski]
+infowski 12/05/2021 11:04 AM
+Yeah, basically it. It's kind of fun, if we can't really have on-site
+congress.
+[smx2460]
+smx2460 12/05/2021 11:03 AM
+XD
+12/05/2021 11:03 AM
+[]
+12/05/2021 11:02 AM
+[]
+[infowski]
+infowski 12/05/2021 11:02 AM
+lol
+[smx2460]
+smx2460 12/05/2021 11:01 AM
+[]
+[infowski]
+infowski 12/05/2021 11:01 AM
+I think on rc3 they will again use workadventure, which is rpg-style
+walking simulator. They build up a map for main halls, and assemblies
+after registration build up their own maps. On the maps you can have
+"video call zones", which will just open up jitsi together with all the
+other people in that zone.
+[smx2460]
+smx2460 12/05/2021 11:00 AM
+I could represent the history of the project xD
+12/05/2021 10:59 AM
+Who speaks 
+12/05/2021 10:59 AM
+Video feed
+12/05/2021 10:59 AM
+And would we have a public feed or something?
+[infowski]
+infowski 12/05/2021 10:58 AM
+Yeah, basically.
+[smx2460]
+smx2460 12/05/2021 10:58 AM
+So if I understand it correctly, we're making a sort of public gathering
+where people can "step in and see"?
+[smx2460]
+[] retr0id how does that work exactly?
+smx2460 12/05/2021 10:56 AM
+Yeah how does that work
+[smx2460]
+smx2460 12/05/2021 10:56 AM
+Even in Scratch
+[smx2460]
+[] 4434 <@!291024996896210944> god damnit lmfao i keep seeing you places
+https://scratch.mit.edu/projects/55...
+smx2460 12/05/2021 10:56 AM
+XD
+[4434]
+4434 12/05/2021 3:32 AM
+this is amazing, it's so unbelievably cursed
+12/05/2021 3:27 AM
+@retr0id god damnit lmfao i keep seeing you places
+https://scratch.mit.edu/projects/555156198/
+December 4, 2021
+[retr0id]
+retr0id 12/04/2021 7:10 PM
+?
+[e99.tuxuser]
+e99.tuxuser 12/04/2021 6:25 PM
+Circumvent DRM protections ?
+[infowski]
+infowski 12/04/2021 6:20 PM
+Highly overengineered jitsi session.
+12/04/2021 6:19 PM
+https://events.ccc.de/tag/assemblies/#rc3-2021-call-for-assemblies-en-version
+there
+Assemblies - CCC Event Blog
+12/04/2021 6:18 PM
+Let me see...
+12/04/2021 6:17 PM
+You just register on some management website and you can then set a git
+repo with workadventure map they will mirror/redirect to.
+[retr0id]
+retr0id 12/04/2021 6:01 PM
+how does that work exactly?
+[infowski]
+infowski 12/04/2021 5:25 PM
+Sooo... Are we organizing openlgtv assembly on rc3? :^)
+December 2, 2021
+[mrhackcz]
+mrhackcz 12/02/2021 10:33 AM
+And absolute newbies  https://www.hackthissite.org/
+[retr0id]
+retr0id 12/02/2021 10:22 AM
+btw, the later challenges will have more of a mixed difficulty
+[e99.tuxuser]
+e99.tuxuser 12/02/2021 10:04 AM
+slightly less beginner - agree!
+[e99.tuxuser]
+e99.tuxuser 12/02/2021 9:52 AM
+a little bit of self promotion is good 
+12/02/2021 9:52 AM
+cheers!
+[retr0id]
+retr0id 12/02/2021 9:23 AM
+for slightly less beginner stuff:
+https://twitter.com/OverTheWireCTF/status/1465742422751821829
+[]OverTheWire.org (@OverTheWireCTF)
+Yay! we are opening the registration page and kicking of with our
+traditional day 0 challenge made by @David3141593. The CTF officially
+starts on December 7th. Find more info below...
+Likes
+179
+[]
+[]Twitter11/30/2021, 7:00:00 PM
+ 1
+[e99.tuxuser]
+e99.tuxuser 12/02/2021 9:17 AM
+very beginner level btw
+[e99.tuxuser]
+e99.tuxuser 12/02/2021 9:05 AM
+https://tryhackme.com/room/adventofcyber3
+TryHackMe | Advent of Cyber 3 (2021)
+Get started with Cyber Security in 25 Days - Learn the basics by doing a
+new, beginner friendly security challenge every day leading up to
+Christmas.
+[]
+December 1, 2021
+[infowski]
+infowski 12/01/2021 8:24 AM
+Yeah, that makes perfect sense - i wouldnt be surprised if your other
+devices were just trusting these intermediate certificates anyway
+[bixsu]
+bixsu 12/01/2021 6:22 AM
+WebOS Plex wasn't downloading the missing intermediate cert like
+everything else was (edited)
+12/01/2021 6:20 AM
+Oh man, I realize what I did now, haha. I forgot to merge the cert and
+intermediate cert. Works perfectly now  (edited)
+November 30, 2021
+[infowski]
+infowski 11/30/2021 10:14 PM
+Maybe the issue is a different one?
+11/30/2021 10:14 PM
+It's weird it doesn't work. Hmmm...
+ww8543 11/30/2021 9:56 PM
+yea
+[bixsu]
+bixsu 11/30/2021 9:55 PM
+Nope haha. This was an alternative method to try out, saw it here
+https://i.imgur.com/mOy4Yyu.png
+[]
+[] bixsu Replace certs on the TV? I wish I could. Unfortunately I can't
+find firmware to downgrade my TV to b...
+ww8543 11/30/2021 9:55 PM
+ah you are not rooted yet
+ww8543 11/30/2021 9:54 PM
+well, a sighup could work, but a proper kill will definitely work 
+[bixsu]
+bixsu 11/30/2021 9:54 PM
+Replace certs on the TV? I wish I could. Unfortunately I can't find
+firmware to downgrade my TV to be able to root it.
+[maryjohanna42069]
+maryjohanna42069 11/30/2021 9:51 PM
+or is that a bad idea to assume the LG devs implemented such a thing?
+11/30/2021 9:50 PM
+wouldn't a simple SIGHUP help?
+ww8543 11/30/2021 9:50 PM
+(this is assuming you replaced the certs using bind mounts)
+11/30/2021 9:50 PM
+could try to verify by killing all remnants of everything that looks
+like a browser or webappmgr, and then trying to start plex again
+11/30/2021 9:49 PM
+maybe it gets spun up before the bind mounts are in place or something
+like that
+11/30/2021 9:48 PM
+i guess somehow webappmgr still uses the old certs (edited)
+11/30/2021 9:48 PM
+browser would even accept new lets encrypt certs, but not the app
+11/30/2021 9:48 PM
+same issue
+11/30/2021 9:47 PM
+there was recwntly someone else trying to get plex running again too...
+[bixsu]
+bixsu 11/30/2021 9:46 PM
+So basically, I have Plex behind a reverse proxy with a subdomain
+"plex.example.com". Every device I own except my LG TV can connect to it
+through the Plex app. I assumed this was from the expired Let's Encrypt
+root CA cert. I saw someone suggest using ZeroSSL to get around that.
+The cert is applied to that subdomain, and it says verified by ZeroSSL
+when I check the cert on my browser. What's odd is I'm able to login and
+play content with the WebOS browser.
+[infowski]
+infowski 11/30/2021 8:29 AM
+Hmmmm, what do you mean? Are you sure you are using proper certs? You
+can test if https://rootmytv.inf.re/ works or fails with certificate
+errors (it uses zerossl)
+[bixsu]
+bixsu 11/30/2021 2:50 AM
+Saw somewhere that someone recommended getting an SSL cert from ZeroSSL
+to get around the Let's Encrypt expired cert. I got the SSL cert and
+Plex is using it but still no luck with my TV.
+November 28, 2021
+[friya]
+friya 11/28/2021 2:51 PM
+I liked this one (from
+https://marketplace.visualstudio.com/items?itemName=webOSTVSDK.webostv)
+[unknown.png]
+ unknown.png
+2.62 KB External
+November 26, 2021
+[dustyangel47]
+dustyangel47 11/26/2021 2:23 AM
+craptops are a mood
+[retr0id]
+retr0id 11/26/2021 1:56 AM
+wow I haven't seen something with only 2 cores for a very long time
+ 1
+[dustyangel47]
+dustyangel47 11/26/2021 12:53 AM
+actually handling things pretty well for horrible dualcore
+[unknown.png]
+ unknown.png
+12.79 KB External
+11/26/2021 12:52 AM
+at least my laptop has an hdmi port lol
+[retr0id]
+retr0id 11/26/2021 12:51 AM
+mine is still working, but at half capacity, heh
+[dustyangel47]
+dustyangel47 11/26/2021 12:51 AM
+my desktop is out of action atm tho
+11/26/2021 12:51 AM
+rip ram stick, you will be missed
+[retr0id]
+retr0id 11/26/2021 12:50 AM
+when a ram stick died 
+11/26/2021 12:50 AM
+my desktop had pretty insane uptime until yesterday
+[dustyangel47]
+dustyangel47 11/26/2021 12:50 AM
+idk if i have any other devices to run uptime on though lmao
+11/26/2021 12:47 AM
+(no content)
+[unknown.png]
+ unknown.png
+5.84 KB External
+11/26/2021 12:47 AM
+i thought it died but it apparently stayed alive to count the runtime up
+to 21h
+11/26/2021 12:47 AM
+same, actually
+[retr0id]
+retr0id 11/26/2021 12:46 AM
+lol I have more uptime on my laptop 
+[dustyangel47]
+dustyangel47 11/26/2021 12:45 AM
+sadly, my tv hasn't been alive for quite that long
+[unknown.png]
+ unknown.png
+6.61 KB External
+11/26/2021 12:44 AM
+uptime pron on my router
+[unknown.png]
+ unknown.png
+5.5 KB External
+November 23, 2021
+[dustyangel47]
+dustyangel47 11/23/2021 12:00 AM
+Can they host an NFT blockchain though?
+ 1
+November 22, 2021
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 11/22/2021 6:59 PM
+Bitcoins, no. Monero, maybe if you ran it on "many" TVs it could even be
+worthwhile if you know what I am saying
+ 1  1
+Deleted User 11/22/2021 6:58 PM
+Can it mine Bitcoins?
+[e99.tuxuser]
+e99.tuxuser 11/22/2021 6:58 PM
+can it run crysis?
+ 1
+Deleted User 11/22/2021 6:58 PM
+Or maybe some fancy wifi repeater?
+11/22/2021 6:57 PM
+Can I install docker on lgtv? 
+[mariotaku]
+mariotaku 11/22/2021 5:44 PM
+The official one is coming
+11/22/2021 5:44 PM
+https://www.lgnewsroom.com/2021/11/lg-to-bring-nvidia-geforce-now-cloud-gaming-to-webos-smart-tvs/
+LG-One Corp
+LG to Bring NVIDIA GeForce NOW Cloud Gaming to WebOS Smart TVs | LG...
+GeForce NOW allows gamers to start playing on their LG TVs and continue
+on nearly any device they own.
+[]
+November 18, 2021
+[] penalte this lg is nice but webos just sucks
+Deleted User 11/18/2021 6:27 AM
+You can always buy a cheap android tv stick from xiaomi or other brands
+but ok
+[dustyangel47]
+dustyangel47 11/18/2021 3:54 AM
+(/s)
+11/18/2021 3:54 AM
+also there are 0 exploits so no hackers can access your information
+11/18/2021 3:54 AM
+what do you mean webos is the best thing ever created by humans with
+absoultely no flaws, especially after webos 6.x
+November 17, 2021
+[penalte]
+penalte 11/17/2021 11:50 PM
+this lg is nice but webos just sucks
+11/17/2021 11:50 PM
+probably
+11/17/2021 11:50 PM
+sony with android tv
+11/17/2021 11:49 PM
+my next tv will no be an lg
+November 16, 2021
+khiu 11/16/2021 12:05 PM
+Alright, thanks
+Deleted User 11/16/2021 11:49 AM
+Not beeing able to connect when it s not turned on
+11/16/2021 11:49 AM
+Also apple homekit integration and google home may suffer
+11/16/2021 11:48 AM
+Also other features may not be working It kinda disables wake on wifi or
+lan
+khiu Is there any advantage to turning off quickstart+?
+Deleted User 11/16/2021 11:47 AM
+Maybe lower power consumption on idle (standby) (edited)
+khiu 11/16/2021 10:59 AM
+Is there any advantage to turning off quickstart+?
+November 15, 2021
+[mariotaku]
+mariotaku 11/15/2021 7:54 AM
+No TV was hurt
+11/15/2021 7:54 AM
+I went to a few radio stores where there are LG TVs
+November 14, 2021
+[infowski]
+infowski 11/14/2021 10:48 PM
+that was me yesterday as well.
+ 1
+[retr0id]
+retr0id 11/14/2021 9:35 PM
+resisting the urge
+11/14/2021 9:35 PM
+I'm sitting next to an LG tv in a pub
+ 1
+[smx2460]
+smx2460 11/14/2021 5:25 PM
+very shady
+11/14/2021 5:24 PM
+so they gave me something != the thing
+11/14/2021 5:24 PM
+but it was trimmed of all ADB changes...
+11/14/2021 5:24 PM
+and they obtained a GPL package for the thing
+11/14/2021 5:24 PM
+i contacted the Free Software Foundation over it
+11/14/2021 5:24 PM
+in fact, there was NO gpl package at all
+11/14/2021 5:24 PM
+which is illegal, btw
+11/14/2021 5:23 PM
+and not sharing the changes
+11/14/2021 5:23 PM
+of picking busybox, modifying it
+11/14/2021 5:23 PM
+they also have a very bad policy
+11/14/2021 5:22 PM
+yes, busybox's limited ash
+11/14/2021 5:22 PM
+and who thought it was a good idea to do it all in ash
+11/14/2021 5:22 PM
+i honestly don't know how many people in ADB know how to maintain this
+shit
+11/14/2021 5:22 PM
+    help_mask2cidr() {
+        set -- $1 0^^^128^192^224^240^248^252^254^ ${#2} ${2##*255.}
+        set -- $1 $((($3 - ${#4}) * 2)) ${2%%${4%%.*}*}
+        eval $1='$(($2 + (${#3}/4)))'
+    }
+11/14/2021 5:21 PM
+it's from the new one
+11/14/2021 5:21 PM
+actually no
+11/14/2021 5:20 PM
+it's from the old firmware tho
+11/14/2021 5:20 PM
+here i uploaded all their reformatted scripts
+11/14/2021 5:20 PM
+https://github.com/smx-smx/dva5592-etc/tree/master
+GitHub - smx-smx/dva5592-etc
+Contribute to smx-smx/dva5592-etc development by creating an account on
+GitHub.
+[]
+11/14/2021 5:20 PM
+that's not even the most insane thing you'll see
+11/14/2021 5:20 PM
+the decimal dot
+11/14/2021 5:20 PM
+xD
+11/14/2021 5:20 PM
+they are just shifting the dot
+[infowski]
+infowski 11/14/2021 5:19 PM
+...oh
+[smx2460]
+smx2460 11/14/2021 5:19 PM
+@infowski "how to divide by 10" (edited)
+11/14/2021 5:19 PM
+    help_div10() {
+        local ret="$1"
+        local var="$2"
+        case "$var" in
+        0.[0-9])
+            var="${2%.*}${2#*.}"
+            var="${var#0}"
+            ;;
+        [0-9].[0-9] | [0-9][0-9].[0-9])
+            var="${2%.*}${2#*.}"
+            ;;
+        -0.[0-9])
+            var="${2%.*}${2#*.}"
+            var="-${var#-0}"
+            ;;
+        -[0-9].[0-9] | -[0-9][0-9].[0-9])
+            var="${2%.*}${2#*.}"
+            ;;
+        *)
+            var="$2"
+            ;;
+        esac
+        eval $ret='"$var"'
+    }
+[smx2460]
+[] _._._._._._._._._._._. Show them the "floating point"
+smx2460 11/14/2021 5:19 PM
+on it
+[smx2460]
+smx2460 11/14/2021 5:19 PM
+no more unrestricted busybox (edited)
+11/14/2021 5:19 PM
+in the new firmware it'd drop you back to the locked shell
+11/14/2021 5:19 PM
+now, i'm replicating this in the old firmware
+11/14/2021 5:19 PM
+    > ls /
+    ls: path (/) not permitted.
+    > ls /var/www
+    ls: path (/var/www) not permitted.
+    > ls
+    shell.sh
+    > ping
+    BusyBox v1.17.3 (2018-04-11 12:29:54 CEST) multi-call binary.
+    Usage: ping [OPTIONS] HOST
+    Send ICMP ECHO_REQUEST packets to network hosts
+    Options:
+            -4, -6          Force IP or IPv6 name resolution
+            -c CNT          Send only CNT pings
+            -s SIZE         Send SIZE data bytes in packets (default:56)
+            -I IFACE/IP     Use interface or IP address as source
+            -W SEC          Seconds to wait for the first response (default:10)
+                            (after all -c CNT packets are sent)
+            -w SEC          Seconds until ping exits (default:infinite)
+                            (can exit earlier with -c CNT)
+            -q              Quiet, only displays output at start
+                            and when finished
+            -t TOS          Type-of-service in ping packets (default:0)
+    > ping \"
+    ./shell.sh: eval: line 1: syntax error: unterminated quoted string
+    @dlinkrouter:/mnt/sda1/yaps-shell$
+[infowski]
+infowski 11/14/2021 5:18 PM
+lol
+[smx2460]
+smx2460 11/14/2021 5:18 PM
+and i'm trying to break it
+11/14/2021 5:18 PM
+with a very convoluted shell script that escapes commands
+11/14/2021 5:18 PM
+but before i did that, i noticed they had patched the shell access
+11/14/2021 5:18 PM
+i managed to downgrade it
+[infowski]
+infowski 11/14/2021 5:18 PM
+nice
+[smx2460]
+smx2460 11/14/2021 5:18 PM
+locking me out of root (edited)
+11/14/2021 5:18 PM
+and it performed a firmware update
+11/14/2021 5:18 PM
+yesterday it pissed me off because i temporarily enabled tr069 for a
+verification
+11/14/2021 5:17 PM
+@infowski i have a DVA-5592
+11/14/2021 5:17 PM
+the division by 10
+11/14/2021 5:17 PM
+oh right
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 11/14/2021 5:17 PM
+Show them the "floating point"
+[smx2460]
+smx2460 11/14/2021 5:17 PM
+ADB Broadband, the polish company
+[infowski]
+infowski 11/14/2021 5:17 PM
+what
+[smx2460]
+smx2460 11/14/2021 5:17 PM
+xD
+11/14/2021 5:17 PM
+pick an ADB modem
+11/14/2021 5:17 PM
+and doing all sort of insane things
+11/14/2021 5:17 PM
+if you like esotheric shell, like building ICMP packets with it
+11/14/2021 5:16 PM
+    quote_for_eval() {
+        local c="${2%"${2#?}"}" str=${2#?} ret=
+        while [ ${#c} -ne 0 ]; do
+            case "$c" in
+            [\"\'\ ]) ret="$ret$c" ;;
+            *) ret="$ret\\$c" ;;
+            esac
+            c="${str%"${str#?}"}"
+            str="${str#?}"
+        done
+        eval $1='$ret'
+    }
+November 8, 2021
+[dustyangel47]
+dustyangel47 11/08/2021 10:40 PM
+so close to 10 stars of my fork of a fork that should really have gone
+to upstream
+[unknown.png]
+ unknown.png
+13.15 KB External
+October 31, 2021
+[smx2460]
+smx2460 10/31/2021 2:21 PM
+as we then lose history and so forth
+10/31/2021 2:21 PM
+but if there isn't a clear benefit in switching, i'd rather not
+[smx2460]
+[] retr0id I think the simplest answer is, start with a single room on
+matrix.org, and then if enough people ac...
+smx2460 10/31/2021 2:21 PM
+if enough people were to use it, it could be made official
+[smx2460]
+smx2460 10/31/2021 2:20 PM
+but maintaining that will likely require a self hosted bridge
+10/31/2021 2:20 PM
+CC @retr0id @ww @infowski
+10/31/2021 2:19 PM
+unless we can guarantee that we can bridge both environments
+[smx2460]
+[] retr0id I set up a matrix account yesterday, happy to join a room if
+one exists
+smx2460 10/31/2021 2:19 PM
+if you want my own opinion, i'm against fragmenting the community
+October 30, 2021
+[ghostui78]
+[] mariotaku IMO For daily users: persistent homebrew apps For
+developers: be able to tinker system to build more...
+ghostui78 10/30/2021 6:07 PM
+That makes a lot of sense well it's awesome nonetheless thank you and
+the community this awesome work
+[mariotaku]
+[] ghostui78 You know this is all amazing the fact that LG's Web OS can
+be modded wow may I ask what was the moti...
+mariotaku 10/30/2021 5:15 PM
+IMO For daily users: persistent homebrew apps For developers: be able to
+tinker system to build more awesome homebrew apps
+[ghostui78]
+ghostui78 10/30/2021 9:31 AM
+You know this is all amazing the fact that LG's Web OS can be modded wow
+may I ask what was the motivation to achieve such a feat.?
+[il6shat]
+il6shat 10/30/2021 6:08 AM
+Are you a master or a programmer or both?
+10/30/2021 6:07 AM
+OK, thanks.
+October 28, 2021
+ww8543 10/28/2021 6:31 PM
+i am not entirely sure, but i only know it has to do with the panel/lvds
+[il6shat]
+il6shat 10/28/2021 6:20 PM
+Yes, that's exactly what it is. What is a stogger processor or scalar?
+ww8543 10/28/2021 5:21 PM
+(no content)
+[unknown.png]
+ unknown.png
+234.24 KB External
+10/28/2021 5:21 PM
+are you talking about this?
+[il6shat]
+il6shat 10/28/2021 5:18 PM
+Wanted to ask what kind of ursa is on TV?
+[] il6shat Хотел спросить что такое ursa в тв?
+ww8543 10/28/2021 5:18 PM
+english please! and why do you want to know about ursa specifically?
+[il6shat]
+il6shat 10/28/2021 5:07 PM
+Хотел спросить что такое ursa в тв?
+October 14, 2021
+[retr0id]
+retr0id 10/14/2021 3:01 PM
+haha
+[infowski]
+infowski 10/14/2021 10:32 AM
+(someone asked for a reference on how to modify files on ro filesystems)
+10/14/2021 10:31 AM
+ah, tfw a part of webos-homebrew-channel startup.sh just got pulled into
+one of my $DAYJOB products...
+October 10, 2021
+[dustyangel47]
+dustyangel47 10/10/2021 11:50 PM
+rip why are my nvim keybinds not working
+[dustyangel47]
+dustyangel47 10/10/2021 8:24 PM
+uh oh
+[unknown.png]
+ unknown.png
+18.15 KB External
+ww8543 10/10/2021 3:01 PM
+awesome 
+[infowski]
+infowski 10/10/2021 3:01 PM
+...and #openlgtv:matrix.org
+[infowski]
+ww8543 https://matrix.to/#/#openlgtv:netserve.live
+infowski 10/10/2021 3:00 PM
+so effecitvely it's also #openlgtv:hackerspace.pl now, because why not.
+ww8543 10/10/2021 3:00 PM
+thats cool
+10/10/2021 3:00 PM
+yay 
+[infowski]
+infowski 10/10/2021 2:58 PM
+matrix ftw
+10/10/2021 2:58 PM
+https://matrix.org/docs/spec/#room-structure
+[infowski]
+[] infowski the point is that the room ID is just an ID - as long as you
+are able to communicate with *some* hom...
+infowski 10/10/2021 2:57 PM
+> There is exactly one room ID for each room. Whilst the room ID does
+contain a domain, it is simply for globally namespacing room IDs. The
+room does NOT reside on the domain specified.
+ww8543 10/10/2021 2:38 PM
+https://matrix.to/#/#openlgtv:netserve.live
+You're invited to talk on Matrix
+You're invited to talk on Matrix
+10/10/2021 2:37 PM
+done
+ww8543 10/10/2021 2:27 PM
+i can do it
+ 1
+[infowski]
+infowski 10/10/2021 2:26 PM
+soooo... who sets up a room/space today?
+ww8543 10/10/2021 2:26 PM
+yea matrix is kinda awesome with the whole federation aspect
+[infowski]
+infowski 10/10/2021 2:25 PM
+funnily enough, we had a situation where we fucked up federation to some
+of remote homeservers (including matrix.org), but not all, so the
+messages were still going through, when a mutual "peer" was sending a
+message.
+ww8543 10/10/2021 2:25 PM
+...
+10/10/2021 2:25 PM
+you are typing a lot
+10/10/2021 2:23 PM
+indeed
+[infowski]
+infowski 10/10/2021 2:23 PM
+the point is that the room ID is just an ID - as long as you are able to
+communicate with some homeserver that participates in said room you are
+good to go.
+ww8543 10/10/2021 2:23 PM
+i am not 100% sure on that actually... i believe it does not need to be.
+but it needs to be created somewhere
+[infowski]
+infowski 10/10/2021 2:22 PM
+Yeah, but the homeserver internal room ID points at doesn't really even
+need to be up, does it?
+ww8543 10/10/2021 2:21 PM
+they have a unique address which includes the homeserver
+[infowski]
+infowski 10/10/2021 2:21 PM
+eg. these are the same room: #telegram_hspomorze:0x3c.pl ;
+#global:hsp.sh
+ww8543 10/10/2021 2:20 PM
+they are, theyneed to be hosted somewhere
+[infowski]
+infowski 10/10/2021 2:20 PM
+channel names are just... names. rooms/spaces are fully distributed
+anyway (and eg. you can have the same room with multiple aliases on
+different "servers")
+[infowski]
+ww8543 and whether or not we use the already way overcrowded matrix.org
+server or one of our own
+infowski 10/10/2021 2:19 PM
+reminder that rooms/spaces are not a part of a server.
+[retr0id]
+ww8543 the question is, do we just make a room, or a "space" with
+several rooms?
+retr0id 10/10/2021 2:00 PM
+I think the simplest answer is, start with a single room on matrix.org,
+and then if enough people actually use it, consider a space and/or
+custom server (edited)
+skyboii19865436 10/10/2021 12:26 PM
+Does anyone want to help me try and get this fingerprint reader to work
+with Linux? Haha I’ve never typed reboot so many times
+ww8543 10/10/2021 10:56 AM
+and whether or not we use the already way overcrowded matrix.org server
+or one of our own
+10/10/2021 10:52 AM
+the question is, do we just make a room, or a "space" with several
+rooms?
+October 9, 2021
+[retr0id]
+retr0id 10/09/2021 10:18 PM
+I set up a matrix account yesterday, happy to join a room if one exists
+[infowski]
+infowski 10/09/2021 6:30 PM
+https://github.com/RootMyTV/RootMyTV.github.io/issues/10#issue-1021739977
+speaking of :^)
+Matrix Chat · Issue #10 · RootMyTV/RootMyTV.github.io
+It would be great if there was a Matrix chat for this project. Matrix is
+an open chat protocol, with the most famous and featureful client being
+Element. Its like IRC for the 21st century. Many peo...
+[]
+[] _._._._._._._._._._._. People are using Matrix
+ww8543 10/09/2021 5:36 AM
+yes
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 10/09/2021 4:32 AM
+People are using Matrix
+October 8, 2021
+Deleted User 10/08/2021 8:56 AM
+ 4
+October 5, 2021
+[infowski]
+infowski 10/05/2021 9:43 PM
+meh
+[dustyangel47]
+dustyangel47 10/05/2021 9:37 PM
+i could just unwatch the repo but 99% of the time when i get an email
+from it, its important
+10/05/2021 9:37 PM
+and its very annoying
+10/05/2021 9:36 PM
+but i swear they come when you least expect it
+10/05/2021 9:36 PM
+going to explode into tiny pieces /s
+[] dustyangel47 I swear if i get another email from a github issue about
+let's encrypt's old root cert expiring imma...
+ww8543 10/05/2021 9:35 PM
+you gonna burst what?
+[dustyangel47]
+dustyangel47 10/05/2021 9:35 PM
+Like damn it fills my whole email client
+[Screenshot_20211005-153447_Tutanota.jpg]
+ Screenshot_20211005-153447_Tutanota.jpg
+264.5 KB External
+10/05/2021 9:34 PM
+10/05/2021 9:34 PM
+There goes another one
+10/05/2021 9:32 PM
+I swear if i get another email from a github issue about let's encrypt's
+old root cert expiring imma burst
+[retr0id]
+retr0id 10/05/2021 2:23 AM
+they both support the same protocols, but wled supports even more
+10/05/2021 2:23 AM
+I'm actually using this
+https://github.com/SciLor/Hyperion_LED-Controller - but that's only
+because I hadn't found wled yet heh
+10/05/2021 2:23 AM
+wled is probably the best
+royka87 10/05/2021 1:51 AM
+I'm also interested in the hyperion setup with esp32. Already have my
+LEDs connected to an esp32. The esp32 with wled firmware?
+October 2, 2021
+Deleted User 10/02/2021 8:42 AM
+Any update on hyperion please? I was n t around the community for a
+while It is integrated with an app on tv? Deployed as a service on tv?
+Runs from tv usb?
+October 1, 2021
+[retr0id]
+retr0id 10/01/2021 1:46 AM
+still works pretty well
+10/01/2021 1:45 AM
+the leds aren't actually behind my tv, but on the opposite wall
+10/01/2021 1:45 AM
+driven by esp32
+10/01/2021 1:45 AM
+finally got around to setting up hyperion with an LED strip
+ 1
+September 25, 2021
+[retr0id]
+retr0id 09/25/2021 3:13 PM
+V and B are right next to each other on the keyboard, too
+09/25/2021 3:12 PM
+lol
+Deleted User 09/25/2021 1:39 PM
+(no content)
+[image0.jpg]
+ image0.jpg
+35.38 KB External
+ 3
+September 19, 2021
+[nightbreeze0]
+nightbreeze0 09/19/2021 8:28 AM
+Didn't use the previous pointer-remote, but not liking the 2021
+scroll/clicky wheel, otherwise the remote is fine. And webOS 6 is just
+meh and surprisingly unresponsive at times (not on latest fw tho). I
+liked 4 better . I guess this is the long way of saying 
+Deleted User 09/19/2021 7:02 AM
+I think it’s worse
+09/19/2021 7:02 AM
+Lg new webos design and remote Vote with emoji
+ 3  1
+September 15, 2021
+[smx2460]
+smx2460 09/15/2021 9:17 AM
+and it's now unneded
+09/15/2021 9:17 AM
+it's killing my SSD space
+09/15/2021 9:17 AM
+i have to yank the pagefile tho
+09/15/2021 9:17 AM
+ram upgrade completed  (edited)
+09/15/2021 9:17 AM
+    $ free -h
+                   total        used        free      shared  buff/cache   available
+    Mem:            63Gi        10Gi        53Gi          0B          0B        53Gi
+    Swap:           59Gi          0B        59Gi
+September 13, 2021
+[dustyangel47]
+dustyangel47 09/13/2021 10:07 PM
+the webos free app market has returned
+[unknown.png]
+ unknown.png
+5.76 KB External
+[smx2460]
+smx2460 09/13/2021 6:37 AM
+So you can use it as a disassembler in your own projects (edited)
+09/13/2021 6:37 AM
+It's also now available as a library
+09/13/2021 6:34 AM
+At the current state it's more useful on small binaries
+09/13/2021 6:34 AM
+It keeps on improving
+09/13/2021 6:34 AM
+It's under development so it doesn't get worse
+09/13/2021 6:33 AM
+@retr0id
+09/13/2021 6:33 AM
+It's mixed, depends on the binary
+September 12, 2021
+[retr0id]
+retr0id 09/12/2021 11:58 PM
+is it any good?
+[retr0id]
+[] smx2460 Try running that through Reko
+retr0id 09/12/2021 11:58 PM
+forgot that existed
+[smx2460]
+[] _._._._._._._._._._._. well, what can you really do about an `shl`
+smx2460 09/12/2021 8:39 AM
+Try running that through Reko (edited)
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 4:40 AM
+or the other way around, tomato tomato
+09/12/2021 4:39 AM
+it helps to think of it as ecx[edi] = al with byte *ecx, because that's
+exactly what it is
+ 1
+09/12/2021 4:39 AM
+you're not assigning to a statement, the lhs is computing an address
+09/12/2021 4:38 AM
+uh, to access an array?
+[dustyangel47]
+dustyangel47 09/12/2021 4:38 AM
+like why would you assign to a statement where you're adding something?
+09/12/2021 4:38 AM
+but just the general concept doesnt make sense to me
+09/12/2021 4:36 AM
+ah shoot true
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 4:36 AM
+also that would be a byte \*
+[dustyangel47]
+dustyangel47 09/12/2021 4:36 AM
+no
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 4:36 AM
+are you sure edx and edi are both 1 there?
+[dustyangel47]
+dustyangel47 09/12/2021 4:36 AM
+i'm confused because doing what the disassembly does just segfaults
+[unknown.png]
+ unknown.png
+26.53 KB External
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 4:31 AM
+oh movsb, sorry I was thinking of a regular mov
+[retr0id]
+retr0id 09/12/2021 4:30 AM
+https://c9x.me/x86/html/file_module_x86_id_203.html
+09/12/2021 4:30 AM
+yeah it mov's a byte at a time
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 4:29 AM
+I don't recall if I've ever seen it
+[retr0id]
+retr0id 09/12/2021 4:29 AM
+ah
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 4:29 AM
+also is repnz movsb even sensical?
+09/12/2021 4:29 AM
+rep<condition code>
+[retr0id]
+retr0id 09/12/2021 4:29 AM
+what's repcc?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 4:29 AM
+of course everyone's favorite is repcc
+[retr0id]
+retr0id 09/12/2021 4:28 AM
+lmao we're thinking along the same lines
+09/12/2021 4:28 AM
+my fave is repnz movsb
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 4:28 AM
+yeah how about fuckin, repne scasb
+[retr0id]
+retr0id 09/12/2021 4:28 AM
+x86 is surprisingly high-level (edited)
+[_._._._._._._._._._._.]
+[] dustyangel47 how is it mov-ing a value to an expression
+_._._._._._._._._._._. 09/12/2021 4:27 AM
+that's just *(ecx + edi) = al, x86 assembly has nice addressing modes
+like that
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 4:26 AM
+nice
+[retr0id]
+retr0id 09/12/2021 4:15 AM
+</brag>
+09/12/2021 4:15 AM
+<brag>
+[unknown.png]
+ unknown.png
+52.38 KB External
+[retr0id]
+[] _._._._._._._._._._._. how can you know this?
+retr0id 09/12/2021 4:15 AM
+because I solved the same CTF challenge 
+[dustyangel47]
+dustyangel47 09/12/2021 3:29 AM
+how is it mov-ing a value to an expression
+[unknown.png]
+ unknown.png
+2.17 KB External
+[dustyangel47]
+dustyangel47 09/12/2021 3:03 AM
+honestly i dont even know why i thought that in the first place, no
+language that i know of allows commas to separate multiple conditions
+like that
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 3:00 AM
+Ghidra always secretly wanted to enter the IOCCC
+[dustyangel47]
+dustyangel47 09/12/2021 3:00 AM
+tfw you think these are two conditions but then you notice that its only
+one equals sign
+[unknown.png]
+ unknown.png
+2.9 KB External
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 2:00 AM
+yes?
+[dustyangel47]
+dustyangel47 09/12/2021 1:59 AM
+on-line
+[unknown.png]
+ unknown.png
+2.07 KB External
+09/12/2021 1:59 AM
+no idea
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 1:59 AM
+say doesn't Ghidra have some kind of emulator integration?
+[dustyangel47]
+dustyangel47 09/12/2021 1:58 AM
+i have google
+09/12/2021 1:58 AM
+could've started with something more simple but ¯\_(ツ)_/¯
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 1:58 AM
+ohhh
+[dustyangel47]
+[] retr0id on an unrelated note, is anyone here doing flareon?
+dustyangel47 09/12/2021 1:58 AM
+this
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 1:58 AM
+what are you working on by the way?
+09/12/2021 1:57 AM
+not certain about all the rest of it
+09/12/2021 1:57 AM
+well, the rol is
+[dustyangel47]
+dustyangel47 09/12/2021 1:57 AM
+probably more lol
+09/12/2021 1:57 AM
+not sure if this is more or less readable
+[unknown.png]
+ unknown.png
+38.3 KB External
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 1:32 AM
+how can you know this?
+[retr0id]
+retr0id 09/12/2021 1:31 AM
+people rarely take advantage of the wrapping "&7" part of rol in their
+code, it's kinda a mess to include it when its not necessary (in this
+case, bVar2 is bounded between 0 and 7 anyway)
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 1:31 AM
+CONCATmn for example
+09/12/2021 1:30 AM
+hm, Ghidra also has macros for a bunch of things but I guess they
+thought it was better to use standard C for a rotation
+[retr0id]
+retr0id 09/12/2021 1:29 AM
+ye
+09/12/2021 1:29 AM
+its a rotl, and IDA expresses it as a ROTL macro
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 1:29 AM
+erm, rol (edited)
+09/12/2021 1:29 AM
+well, what can you really do about an shl
+[retr0id]
+retr0id 09/12/2021 1:29 AM
+this is an instance of ghidra turning simple assembly into
+overcomplicated C
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 1:22 AM
+uh, I meant "contains" a bitwise left rotation, not "is", naturally
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/12/2021 1:05 AM
+and I'm around 99% sure the second line is a bitwise left rotation,
+check the disassembly because it will probably be easy to spot there
+09/12/2021 1:04 AM
+just needs some types is all
+09/12/2021 1:04 AM
+bro it's not bad
+[dustyangel47]
+dustyangel47 09/12/2021 1:04 AM
+perfectly intelligible
+[unknown.png]
+ unknown.png
+5.57 KB External
+September 11, 2021
+[dustyangel47]
+dustyangel47 09/11/2021 11:18 PM
+i'll check it out
+09/11/2021 11:18 PM
+interesting
+[retr0id]
+retr0id 09/11/2021 10:08 PM
+the ctf, not the pokemon, heh
+09/11/2021 10:08 PM
+https://2021.flare-on.com/
+[dustyangel47]
+[] retr0id on an unrelated note, is anyone here doing flareon?
+dustyangel47 09/11/2021 9:58 PM
+havent heard of it
+[dustyangel47]
+dustyangel47 09/11/2021 9:57 PM
+and a few other things
+[retr0id]
+retr0id 09/11/2021 9:57 PM
+on an unrelated note, is anyone here doing flareon?
+ 1
+[dustyangel47]
+dustyangel47 09/11/2021 9:56 PM
+i know they're the ones who distributed youtube webos
+09/11/2021 9:56 PM
+i believe so
+[retr0id]
+retr0id 09/11/2021 9:56 PM
+that's the russian one, right?
+[dustyangel47]
+dustyangel47 09/11/2021 9:55 PM
+rip
+[unknown.png]
+ unknown.png
+11.98 KB External
+Deleted User 09/11/2021 9:33 AM
+I have some trouble configuring network connections
+09/11/2021 9:32 AM
+Anyone experienced with Docker here?
+September 10, 2021
+[smx2460]
+smx2460 09/10/2021 9:43 AM
+Thxbye
+09/10/2021 9:43 AM
+Thanks for choosing the product
+09/10/2021 9:43 AM
+4. Use product
+09/10/2021 9:43 AM
+3. Turn on product
+09/10/2021 9:43 AM
+2. Connect product
+09/10/2021 9:43 AM
+1. Remove product from box
+September 9, 2021
+[retr0id]
+retr0id 09/09/2021 8:04 PM
+and troubleshooting if it doesn't work
+09/09/2021 8:04 PM
+its literally just instructions for plugging it in, bluetooth pairing
+etc.
+[smx2460]
+smx2460 09/09/2021 8:03 PM
+I thought Edifier was a decent brand
+[smx2460]
+[] retr0id the manual is pretty shit
+smx2460 09/09/2021 8:03 PM
+Uh, that's unexpected
+[retr0id]
+[] _._._._._._._._._._._. Shouldn't some kind of attenuation chart for
+that port be in the manual?
+retr0id 09/09/2021 8:03 PM
+the manual is pretty shit
+ 1
+[retr0id]
+retr0id 09/09/2021 8:03 PM
+I'll double-check the amplifier's circuit too, there might be some
+design decisions that accidentally cut off very low freqs
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/09/2021 8:02 PM
+Shouldn't some kind of attenuation chart for that port be in the manual?
+[retr0id]
+retr0id 09/09/2021 8:02 PM
+it doesn't specify anywhere, but I'm pretty sure that's what it does
+09/09/2021 8:02 PM
+yeah
+[smx2460]
+smx2460 09/09/2021 8:02 PM
+Afaik it should fade
+09/09/2021 8:02 PM
+So technically yes
+[retr0id]
+[] smx2460 Is the cutoff straight?
+retr0id 09/09/2021 8:01 PM
+uhhhh good question, but I'm guessing not
+[smx2460]
+smx2460 09/09/2021 8:01 PM
+The signal is analogue
+09/09/2021 8:01 PM
+Rather than on/off
+09/09/2021 8:01 PM
+Not sure if you can make it half
+09/09/2021 8:01 PM
+I.e. after X Hz it switches abruptly
+09/09/2021 8:01 PM
+Is the cutoff straight?
+[retr0id]
+retr0id 09/09/2021 8:01 PM
+but given that there's no treble being fed into the old speakers, I
+figure that cutting out the now-redundant crossover can only improve
+things
+09/09/2021 8:00 PM
+tbh it sounds good currently
+09/09/2021 8:00 PM
+at some reasonable frequency (not sure where exactly)
+09/09/2021 8:00 PM
+which is LPF'ed
+09/09/2021 8:00 PM
+so the edifiers have a subwoofer output port
+[smx2460]
+smx2460 09/09/2021 7:58 PM
+@retr0id the LPF is too low?
+09/09/2021 7:58 PM
+Hm
+[retr0id]
+retr0id 09/09/2021 7:20 PM
+I should probably bypass the crossover in them though, I think it might
+be attenuating the sub-bass
+09/09/2021 7:19 PM
+since they have 8in drivers, they can put out slightly more bass than
+the edifiers
+09/09/2021 7:19 PM
+just had the galaxy brain idea of hooking up my old speakers as subs
+[retr0id]
+retr0id 09/09/2021 5:57 PM
+I'd probably pay for premium if it offered better
+09/09/2021 5:56 PM
+youtube bitrates are so trash smh
+[smx2460]
+smx2460 09/09/2021 5:29 PM
+Vorbis ftw
+[retr0id]
+retr0id 09/09/2021 5:29 PM
+so not ideal conditions
+[retr0id]
+[] smx2460 Flac?
+retr0id 09/09/2021 5:28 PM
+this comment was just from spotify 320kbs vorbis, over bluetooth
+[smx2460]
+smx2460 09/09/2021 5:27 PM
+YouTube stuff?
+09/09/2021 5:27 PM
+Mp3 320?
+[smx2460]
+[] retr0id at risk of sounding like an audiophile, the biggest
+difference is being able to clearly distinguish ...
+smx2460 09/09/2021 5:27 PM
+Flac?
+[smx2460]
+smx2460 09/09/2021 5:25 PM
+@retr0id cool! (edited)
+[nightbreeze0]
+nightbreeze0 09/09/2021 5:25 PM
+Can't blame you, you don't have that much table to hide cables behind
+. Looks nice with those speakers though 
+[retr0id]
+retr0id 09/09/2021 5:15 PM
+(don't @ my cable management)
+09/09/2021 5:15 PM
+using my old speakers as stands for my new speakers, lol
+09/09/2021 5:14 PM
+(no content)
+[PXL_20210909_1511556132.jpg]
+ PXL_20210909_1511556132.jpg
+2.53 MB External
+[nightbreeze0]
+nightbreeze0 09/09/2021 3:07 PM
+I’ve got woofer and bass set to negative on my soundbar, and night mode
+after 22. Had neighbors knocking a couple of times before, not fun 
+[retr0id]
+retr0id 09/09/2021 1:44 PM
+I think I'll hold off on getting a subwoofer, for the sake of my
+neighbours
+09/09/2021 1:37 PM
+a bit disappointing that they only support the "SBC" bluetooth codec
+09/09/2021 1:36 PM
+which I suppose is due to harmonic distortion

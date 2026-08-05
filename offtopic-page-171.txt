@@ -1,0 +1,1762 @@
+January 4, 2022
+[dustyangel47]
+dustyangel47 01/04/2022 12:07 AM
+lmao now i'm getting an error the manpage doesnt even talk about
+01/04/2022 12:06 AM
+at least i can debug because EINVAL only has one possible outcome this
+time as opposed to like 6
+01/04/2022 12:05 AM
+(no content)
+ message.txt
+2.26 KB External
+[smx2460]
+smx2460 01/04/2022 12:05 AM
+well this is a thing
+01/04/2022 12:05 AM
+https://man7.org/linux/man-pages/man3/fmemopen.3.html
+01/04/2022 12:03 AM
+actually nah
+[dustyangel47]
+dustyangel47 01/04/2022 12:02 AM
+and then write an optimized way to copy a file to stdout
+[smx2460]
+smx2460 01/04/2022 12:02 AM
+let me do it
+01/04/2022 12:02 AM
+and dup2
+[dustyangel47]
+dustyangel47 01/04/2022 12:02 AM
+make /dev/yes
+[smx2460]
+smx2460 01/04/2022 12:02 AM
+all we need to do is basically fork
+[dustyangel47]
+dustyangel47 01/04/2022 12:02 AM
+maybe the solution is
+01/04/2022 12:02 AM
+well, i have my own cat (or more specifically concatFileToStdout)
+function but calling it good would be an incredible overstatement
+[retr0id]
+retr0id 01/04/2022 12:01 AM
+no difference using page alignment
+[smx2460]
+smx2460 01/04/2022 12:01 AM
+or fork and read your own pipe as STDIN (edited)
+01/04/2022 12:01 AM
+to workaround the limitations imposed by vmsplice
+01/04/2022 12:01 AM
+the fix here would be to write your own efficient cat
+01/04/2022 12:01 AM
+i ran on that same page too 
+01/04/2022 12:01 AM
+because it's not a pipe
+01/04/2022 12:01 AM
+you need to | pv or | cat
+01/04/2022 12:00 AM
+yes @DustyAngel47 it doesn't work alone
+[dustyangel47]
+dustyangel47 01/04/2022 12:00 AM
+oh, fuck off
+[unknown.png]
+ unknown.png
+19.8 KB External
+[smx2460]
+smx2460 01/04/2022 12:00 AM
+by adding more pages
+January 3, 2022
+01/03/2022 11:59 PM
+reaching new heights
+01/03/2022 11:59 PM
+    sm@HELIUM:~$ ./yes | pv > /dev/null
+    74,1GiB 0:00:04 [19,5GiB/s] [
+01/03/2022 11:58 PM
+            size_t patlen = getpagesize() * 2;
+            char *buf = (char *)mmap(0, patlen, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+            madvise(buf, patlen, MADV_SEQUENTIAL);
+            int howmany = patlen / chunksz;
+            int leftover = patlen % chunksz;
+            char *p = buf;
+            for(unsigned i=0; i<howmany; i++){
+                    memcpy(p, chunk, chunksz);
+                    p+=chunksz;
+            }
+            memcpy(p, chunk, leftover);
+            struct iovec iov = {
+                    .iov_base = buf,
+                    .iov_len = patlen
+            };
+            for(;;){
+                    int x = vmsplice(STDOUT_FILENO, &iov, 1, SPLICE_F_MORE | SPLICE_F_GIFT);
+            }
+[dustyangel47]
+dustyangel47 01/03/2022 11:58 PM
+i may have had to use quite a few tabs
+[unknown.png]
+ unknown.png
+7.68 KB External
+[retr0id]
+retr0id 01/03/2022 11:58 PM
+hm I didn't even make my buf aligned yet
+[dustyangel47]
+dustyangel47 01/03/2022 11:57 PM
+ how is my code worse than a 15 line python script
+[smx2460]
+smx2460 01/03/2022 11:57 PM
+some more boost
+01/03/2022 11:57 PM
+    sm@HELIUM:~$ ./yes | pv > /dev/null
+     106GiB 0:00:07 [16,4GiB/s] [ 
+[retr0id]
+retr0id 01/03/2022 11:57 PM
+    import sys
+    argc = len(sys.argv)
+    if argc == 1:
+        token = b"y\n"
+    elif argc == 2:
+        token = (sys.argv[1] + "\n").encode()
+    else:
+        raise Exception("bad args")
+    buf = token * 0x1000
+    while True:
+        sys.stdout.buffer.write(buf)
+01/03/2022 11:57 PM
+I didn't even do anything fancy yet
+[dustyangel47]
+dustyangel47 01/03/2022 11:56 PM
+>python oh i htioahoiuIOfjidoaIJOFIJOSDJOIFSDj
+[smx2460]
+smx2460 01/03/2022 11:56 PM
+[retr0id]
+retr0id 01/03/2022 11:56 PM
+my python yes beats gnu yes, on my system, lol
+01/03/2022 11:56 PM
+    david@inspiron530:~/programming/python/fastyes$ yes hello | pv > /dev/null
+    ^C.8GiB 0:00:08 [8.44GiB/s] [                     <=>         
+[smx2460]
+smx2460 01/03/2022 11:56 PM
+01/03/2022 11:56 PM
+    sm@HELIUM:~$ ./yes | pv > /dev/null
+    84,1GiB 0:00:06 [13,7GiB/s] [
+[retr0id]
+retr0id 01/03/2022 11:56 PM
+    david@inspiron530:~/programming/python/fastyes$ python3 fastyes.py hello | pv > /dev/null
+    ^C.7GiB 0:00:10 [9.13GiB/s] [                          <=>                          
+[dustyangel47]
+dustyangel47 01/03/2022 11:51 PM
+well we're writing c, who needs memory safety
+[infowski]
+infowski 01/03/2022 11:51 PM
+memory safety bruh
+[dustyangel47]
+dustyangel47 01/03/2022 11:49 PM
+however i am getting even more dire issues than before in the output
+[unknown.png]
+ unknown.png
+3.03 KB External
+01/03/2022 11:49 PM
+okay, i have a functional yes using memfd (but not any of the splices,
+only write)
+[smx2460]
+smx2460 01/03/2022 11:48 PM
+so now you pass an iovec
+01/03/2022 11:48 PM
+it does the same but with pages
+01/03/2022 11:48 PM
+this seems more proper
+01/03/2022 11:48 PM
+https://man7.org/linux/man-pages/man2/vmsplice.2.html
+[retr0id]
+retr0id 01/03/2022 11:48 PM
+time to make a yes
+01/03/2022 11:47 PM
+well now I've been nerd sniped
+[smx2460]
+smx2460 01/03/2022 11:46 PM
+unless you could call splice over and over without adjusting fp
+01/03/2022 11:46 PM
+and write + splice are also 2 syscalls
+01/03/2022 11:46 PM
+it will be slow
+01/03/2022 11:46 PM
+seeking requires another syscall
+[dustyangel47]
+dustyangel47 01/03/2022 11:45 PM
+ye
+[smx2460]
+smx2460 01/03/2022 11:45 PM
+^ splice
+01/03/2022 11:44 PM
+    where one of the file descriptors
+           must refer to a pipe.
+[retr0id]
+retr0id 01/03/2022 11:43 PM
+and then cat /dev/yes
+01/03/2022 11:43 PM
+so you can do echo hello > /dev/yes (edited)
+[retr0id]
+[] _._._._._._._._._._._. let's `/dev/yes`
+retr0id 01/03/2022 11:43 PM
+it should repeat whatever you last wrote to it
+[retr0id]
+retr0id 01/03/2022 11:42 PM
+I started implementing /dev/fizzbuzz a while back
+[friya]
+friya 01/03/2022 11:42 PM
+didn't Snow Patrol do that already
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:41 PM
+let's /dev/yes
+[retr0id]
+retr0id 01/03/2022 11:39 PM
+although with zero-copy io, you could at least move the copying into
+userspace, where you could potentially squeeze more perf out of it
+01/03/2022 11:38 PM
+you can rewind a memfd
+[dustyangel47]
+dustyangel47 01/03/2022 11:38 PM
+the name sounded cooler
+[smx2460]
+smx2460 01/03/2022 11:37 PM
+why use memfd instead of pipe + dup (edited)
+[retr0id]
+retr0id 01/03/2022 11:37 PM
+so maybe trying to use zero-copy io won't actually be a win
+01/03/2022 11:37 PM
+although, thinking about it, given that you need to write the same page
+over and over, that requires copying, somewhere along the line
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 11:36 PM
+odd (edited)
+[dustyangel47]
+[] retr0id well your memfd isn't a pipe
+dustyangel47 01/03/2022 11:36 PM
+well that is true
+[dustyangel47]
+dustyangel47 01/03/2022 11:36 PM
+nop, those are installed
+[maryjohanna42069]
+[] dustyangel47 only valgrind/asan (if i can ever figure out how to
+install libasan on arch)
+maryjohanna42069 01/03/2022 11:36 PM
+maybe?
+[unknown.png]
+ unknown.png
+24 KB External
+[retr0id]
+retr0id 01/03/2022 11:36 PM
+well your memfd isn't a pipe
+[dustyangel47]
+dustyangel47 01/03/2022 11:36 PM
+           EINVAL The target filesystem doesn't support splicing.
+           EINVAL The target file is opened in append mode.
+           EINVAL Neither of the file descriptors refers to a pipe.
+           EINVAL An offset was given for nonseekable device (e.g., a pipe).
+           EINVAL fd_in and fd_out refer to the same pipe.
+01/03/2022 11:35 PM
+and that means a variety of possibilities
+01/03/2022 11:35 PM
+splice(3, NULL, 1, NULL, 2048, 0) = -1 EINVAL (Invalid argument)
+[retr0id]
+retr0id 01/03/2022 11:35 PM
+literally just strace ./yourprogram
+[dustyangel47]
+dustyangel47 01/03/2022 11:35 PM
+only valgrind/asan (if i can ever figure out how to install libasan on
+arch)
+01/03/2022 11:34 PM
+idk how to use strace though
+[retr0id]
+retr0id 01/03/2022 11:33 PM
+might not even support it (edited)
+01/03/2022 11:33 PM
+in general yes, although I have no idea how it interacts with memfd
+[smx2460]
+smx2460 01/03/2022 11:33 PM
+is splice supposed to be faster than a buffered fwrite?
+[retr0id]
+retr0id 01/03/2022 11:33 PM
+hopefully strace is aware of splice
+01/03/2022 11:32 PM
+strace to the rescue
+[dustyangel47]
+dustyangel47 01/03/2022 11:32 PM
+bad news: it doesnt actually output anything (edited)
+01/03/2022 11:32 PM
+good news: it doesnt die
+[smx2460]
+smx2460 01/03/2022 11:32 PM
+yes i'm lazy
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:32 PM
+\\_
+[smx2460]
+smx2460 01/03/2022 11:31 PM
+always used __NR (edited)
+01/03/2022 11:31 PM
+never used SYS_
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:31 PM
+it includes asm/unistd but is the more correct header to use
+01/03/2022 11:31 PM
+oh don't do what I said do what @retr0id said
+[dustyangel47]
+dustyangel47 01/03/2022 11:31 PM
+i'm an idiot
+[dustyangel47]
+[] retr0id actually `<sys/syscall.h>` should have SYS_splice
+dustyangel47 01/03/2022 11:31 PM
+oooooooooooooooooooooooooooooooooooh
+[smx2460]
+smx2460 01/03/2022 11:31 PM
+that's memfd in use
+[retr0id]
+retr0id 01/03/2022 11:31 PM
+actually <sys/syscall.h> should have SYS_splice (edited)
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:30 PM
+it's a Linux header
+01/03/2022 11:30 PM
+#include <asm/unistd.h>
+[smx2460]
+smx2460 01/03/2022 11:30 PM
+@DustyAngel47
+https://github.com/smx-smx/ezinject/blob/next/samples/memloader/memloader.c
+ezinject/memloader.c at next · smx-smx/ezinject
+Modular binary injection framework, successor of libhooker -
+ezinject/memloader.c at next · smx-smx/ezinject
+[]
+[dustyangel47]
+dustyangel47 01/03/2022 11:30 PM
+but i'll Do That Later
+01/03/2022 11:30 PM
+i was originally trying to ifdef \\linux\\ everything
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:30 PM
+wat
+[dustyangel47]
+dustyangel47 01/03/2022 11:30 PM
+i am
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:30 PM
+just include it, Linux is the only kernel that exists anyway #yolo
+[dustyangel47]
+dustyangel47 01/03/2022 11:30 PM
+currently looking for splice
+[dustyangel47]
+[] _._._._._._._._._._._. ```c $ grep memfd /usr/include/asm/unistd_64.h
+#define __NR_memfd_create 319```
+dustyangel47 01/03/2022 11:30 PM
+yeah i found memfd
+[smx2460]
+smx2460 01/03/2022 11:30 PM
+and then keeps on slowing down
+01/03/2022 11:29 PM
+* 4 inconsistent
+01/03/2022 11:29 PM
+*3 gets slower
+01/03/2022 11:29 PM
+doing * 2 pages is quicker
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:29 PM
+    $ grep memfd /usr/include/asm/unistd_64.h
+    #define __NR_memfd_create 319
+[smx2460]
+smx2460 01/03/2022 11:29 PM
+    int main(int argc, char *argv[]){
+            char *pat = NULL;
+            if(argc < 2) pat = "y";
+            else {
+                    pat = argv[1];
+            }
+            size_t chunksz = strlen(pat)+1;
+            char chunk[chunksz];
+            strncpy(chunk, pat, chunksz-1);
+            chunk[chunksz-1] = '\n';
+            size_t patlen = getpagesize() * 2;
+            char *buf = (char *)mmap(0, patlen, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+            madvise(buf, patlen, MADV_SEQUENTIAL);
+            int howmany = patlen / chunksz;
+            int leftover = patlen % chunksz;
+            char *p = buf;
+            for(unsigned i=0; i<howmany; i++){
+                    memcpy(p, chunk, chunksz);
+                    p+=chunksz;
+            }
+            memcpy(p, chunk, leftover);
+            setvbuf(stdout, calloc(patlen, 1), _IOFBF, patlen);
+            for(;;){
+                    fwrite(buf, patlen, 1, stdout);
+            }
+            free(buf);
+            return 0;
+    }
+01/03/2022 11:29 PM
+yolo strat
+[dustyangel47]
+dustyangel47 01/03/2022 11:29 PM
+well until today anyways
+01/03/2022 11:29 PM
+thankfully i never have really had to use one
+01/03/2022 11:29 PM
+~~also much activity in that pipe to pv~~
+[retr0id]
+retr0id 01/03/2022 11:29 PM
+"linux syscall table" is probably up there as one of my most-used google
+queries
+[smx2460]
+smx2460 01/03/2022 11:28 PM
+    sm@HELIUM:~$ ./yes | pv > /dev/null
+     140GiB 0:00:33 [5,36GiB/s] [
+01/03/2022 11:28 PM
+wow so much activity here
+[retr0id]
+retr0id 01/03/2022 11:28 PM
+or if you're really keen, find the kernel sources
+01/03/2022 11:28 PM
+google for a table
+[dustyangel47]
+dustyangel47 01/03/2022 11:28 PM
+wait how do i actually figure out what the name of a syscall is
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:28 PM
+nice
+[retr0id]
+retr0id 01/03/2022 11:28 PM
+it is if you popen it from python 
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:28 PM
+that's not very inline though is it
+[retr0id]
+retr0id 01/03/2022 11:27 PM
+my favourite inline assembler is nasm 
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:27 PM
+you can just refer to C locals from asm code, no problem
+01/03/2022 11:27 PM
+while we are on the topic of inline assembly, name one compiler that
+makes it more ergonomic to use than MSVC
+[infowski]
+[] _._._._._._._._._._._. `asm volatile("syscall":"things":"etc");` 
+infowski 01/03/2022 11:26 PM
+that's a weird json
+[dustyangel47]
+dustyangel47 01/03/2022 11:26 PM
+disgusting
+[unknown.png]
+ unknown.png
+7.79 KB External
+[dustyangel47]
+[] _._._._._._._._._._._. `asm volatile("syscall":"things":"etc");` 
+dustyangel47 01/03/2022 11:25 PM
+pain
+[retr0id]
+retr0id 01/03/2022 11:25 PM
+ew
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:25 PM
+asm volatile("syscall":"things":"etc"); 
+[dustyangel47]
+dustyangel47 01/03/2022 11:24 PM
+i mean i at least kinda want this to work with musl
+01/03/2022 11:24 PM
+well, forgot unistd.h for the syscall call lol
+[retr0id]
+retr0id 01/03/2022 11:24 PM
+#define _GNU_SOURCE ?
+[dustyangel47]
+[] retr0id are you #including the right stuff
+dustyangel47 01/03/2022 11:23 PM
+yep already checked that
+[dustyangel47]
+dustyangel47 01/03/2022 11:23 PM
+???
+[unknown.png]
+ unknown.png
+3.57 KB External
+[retr0id]
+retr0id 01/03/2022 11:23 PM
+(the manpages will tell you)
+01/03/2022 11:22 PM
+are you #including the right stuff
+[dustyangel47]
+dustyangel47 01/03/2022 11:21 PM
+hmm, may have to just use the raw syscall lol
+01/03/2022 11:20 PM
+ah yes very cool
+[unknown.png]
+ unknown.png
+8.93 KB External
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 11:12 PM
+was just curious
+[retr0id]
+[] maryjohanna42069 just out of curiosity, does it get any faster if you
+strip it?
+retr0id 01/03/2022 11:12 PM
+why would stripping affect perf?
+[smx2460]
+smx2460 01/03/2022 11:11 PM
+nop
+[maryjohanna42069]
+[] smx2460 ```sm@HELIUM:~$ ./yes | pv > /dev/null 17,7GiB 0:00:04
+[4,48GiB/s] [```
+maryjohanna42069 01/03/2022 11:11 PM
+just out of curiosity, does it get any faster if you strip it?
+[dustyangel47]
+dustyangel47 01/03/2022 11:08 PM
+oh no
+[smx2460]
+smx2460 01/03/2022 11:07 PM
+    sm@HELIUM:~$ ./yes | pv > /dev/null
+    17,7GiB 0:00:04 [4,48GiB/s] [
+[dustyangel47]
+[] retr0id memfd to the rescue
+dustyangel47 01/03/2022 11:06 PM
+ngl gonna try and use this and splice just to say i used memfd and
+splice for something
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:01 PM
+yes
+[retr0id]
+retr0id 01/03/2022 11:01 PM
+you mean those Ctrl+Alt+Fn ones?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:01 PM
+sorry
+[retr0id]
+retr0id 01/03/2022 11:01 PM
+sorry I thought you meant like /dev/tty
+01/03/2022 11:01 PM
+oh right
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:01 PM
+huh what's setfont then
+[retr0id]
+retr0id 01/03/2022 11:01 PM
+that's up to the terminal emulator
+01/03/2022 11:00 PM
+the linux tty is entirely unaware of the existence of fonts
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 11:00 PM
+I wonder if the Linux tty supports proportional fonts
+[dustyangel47]
+dustyangel47 01/03/2022 10:59 PM
+it's comic mono
+01/03/2022 10:59 PM
+because it's technically not comic sans
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:59 PM
+this is gross
+01/03/2022 10:59 PM
+oh god
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:59 PM
+why is it still on a grid
+[dustyangel47]
+dustyangel47 01/03/2022 10:59 PM
+Done.
+01/03/2022 10:59 PM
+(no content)
+[unknown.png]
+ unknown.png
+69.54 KB External
+[retr0id]
+retr0id 01/03/2022 10:58 PM
+merry xmas
+01/03/2022 10:57 PM
+    SPLICE_F_GIFT
+                  The user pages are a gift to the kernel.
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:57 PM
+wait till you see sendfile
+[retr0id]
+retr0id 01/03/2022 10:57 PM
+chuck memory pages directly into a pipe
+01/03/2022 10:57 PM
+ vmsplice - splice user pages to/from a pipe
+01/03/2022 10:56 PM
+I was thinking of vmsplice
+https://man7.org/linux/man-pages/man2/vmsplice.2.html
+01/03/2022 10:56 PM
+but actually no
+[retr0id]
+[] dustyangel47 seems to require reading from a file descriptor though
+(?)
+retr0id 01/03/2022 10:56 PM
+memfd to the rescue
+[maryjohanna42069]
+[] dustyangel47 comic sans?
+maryjohanna42069 01/03/2022 10:55 PM
+pls
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:55 PM
+no I mean \yes\
+[dustyangel47]
+dustyangel47 01/03/2022 10:55 PM
+actually..
+01/03/2022 10:55 PM
+comic sans? (edited)
+01/03/2022 10:55 PM
+what else am i gonna use in my terminal
+[_._._._._._._._._._._.]
+[] dustyangel47 i am very good commit message writer
+_._._._._._._._._._._. 01/03/2022 10:55 PM
+using monospace text is very fancy
+[dustyangel47]
+[] retr0id https://man7.org/linux/man-pages/man2/splice.2.html
+dustyangel47 01/03/2022 10:55 PM
+seems to require reading from a file descriptor though (?)
+[dustyangel47]
+dustyangel47 01/03/2022 10:54 PM
+Even final-er cleanup (edited)
+[retr0id]
+retr0id 01/03/2022 10:54 PM
+(no content)
+[unknown.png]
+ unknown.png
+129.78 KB External
+01/03/2022 10:53 PM
+https://man7.org/linux/man-pages/man2/splice.2.html
+[dustyangel47]
+dustyangel47 01/03/2022 10:53 PM
+i am very good commit message writer
+[unknown.png]
+ unknown.png
+4.75 KB External
+[retr0id]
+retr0id 01/03/2022 10:53 PM
+or was it files that it doesn't work with, I forget
+01/03/2022 10:52 PM
+although I don't think that works with pipes
+01/03/2022 10:52 PM
+you can use splice() to do copy-less IO
+[smx2460]
+smx2460 01/03/2022 10:52 PM
+mmap yay
+01/03/2022 10:52 PM
+those possibly unaligned memcpy will be slow
+[retr0id]
+retr0id 01/03/2022 10:52 PM
+I think you can get an even bigger win by using aligned hugepages
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:51 PM
+also multiply the string only once
+[smx2460]
+smx2460 01/03/2022 10:51 PM
+yeah let's try that
+[retr0id]
+retr0id 01/03/2022 10:51 PM
+quick wins: page-align your buffers, make sure you're writing a multiple
+of the page size
+[smx2460]
+smx2460 01/03/2022 10:50 PM
+    int main(int argc, char *argv[]){
+            char *pat = NULL;
+            if(argc < 2) pat = "y";
+            else {
+                    pat = argv[1];
+            }
+            size_t patlen = strlen(pat) + 1;
+            char patst[patlen];
+            strncpy(patst, pat, patlen - 1);
+            patst[patlen-1] = '\n';
+    #define N 8192
+            size_t bufsz = (patlen * N) + 1;
+            char *buf = calloc(1, bufsz);
+            //setvbuf(stdout, buf, _IOFBF, bufsz);
+            for(;;){
+                    for(unsigned i=0; i<N; i+=patlen){
+                            memcpy(&buf[i], &patst[0], patlen);
+                    }
+                    fwrite(buf, bufsz, 1, stdout);
+            }
+            free(buf);
+            return 0;
+    }
+01/03/2022 10:50 PM
+trying my own too, it's slowish tho
+01/03/2022 10:50 PM
+    sm@HELIUM:~$ ./yes | pv > /dev/null
+    6,12GiB 0:00:08 [ 775MiB/s] [   
+01/03/2022 10:50 PM
+i had that problem in ezinject when doing gettid() after loading a
+library
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:50 PM
+speaking of which, do you like LLVM?
+[smx2460]
+smx2460 01/03/2022 10:50 PM
+well not glibc, C libraries in general can cache pid and tid
+01/03/2022 10:50 PM
+be advised that glibc does pid caching
+01/03/2022 10:50 PM
+since you're talking about getpid
+01/03/2022 10:50 PM
+wait
+[dustyangel47]
+dustyangel47 01/03/2022 10:49 PM
+btw, fixed it by doing this on lines 73-74 thanks everyone! (edited)
+[unknown.png]
+ unknown.png
+3.74 KB External
+[retr0id]
+retr0id 01/03/2022 10:49 PM
+the question would be, how to make it actually execute
+01/03/2022 10:49 PM
+that makes me think, it'd be fun to make a zombie task that even the
+scheduler doesn' t know about
+[dustyangel47]
+dustyangel47 01/03/2022 10:48 PM
+cause your device to explode or something
+[retr0id]
+retr0id 01/03/2022 10:48 PM
+I'm not even totally sure how to change it, the pid is stored in
+multiple places, including hash tables
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:48 PM
+I wonder what changing it would do xD
+[retr0id]
+retr0id 01/03/2022 10:48 PM
+and never expected the value to change
+01/03/2022 10:48 PM
+but I only called it once
+01/03/2022 10:48 PM
+but I did also use getpid in my kernel exploit, because I needed to
+check whether the task_struct I was looking at was my own
+[dustyangel47]
+dustyangel47 01/03/2022 10:47 PM
+you could use getpid to check whether you are PID 0, and whether to do
+init system things or just be a service manager
+[retr0id]
+[] dustyangel47 like what did i even do
+retr0id 01/03/2022 10:47 PM
+baby shark du du...
+ 1
+[dustyangel47]
+dustyangel47 01/03/2022 10:46 PM
+how did i mess up this hard
+[retr0id]
+retr0id 01/03/2022 10:46 PM
+yeah I'm being stupid
+[dustyangel47]
+dustyangel47 01/03/2022 10:46 PM
+like what did i even do
+[unknown.png]
+ unknown.png
+76.35 KB External
+[retr0id]
+retr0id 01/03/2022 10:46 PM
+oops
+01/03/2022 10:46 PM
+oh
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:46 PM
+wouldn't that be getuid?
+[retr0id]
+[] _._._._._._._._._._._. wait but what would you check with getpid?
+retr0id 01/03/2022 10:46 PM
+    do_kernel_privesc_exploit()
+    if (getpid() == 0):
+        print("it worked")
+[dustyangel47]
+dustyangel47 01/03/2022 10:46 PM
+dont even get me started on running ls with anything that remotely
+checks the memory
+[dustyangel47]
+[] retr0id consider compiling/running with ubsan
+dustyangel47 01/03/2022 10:45 PM
+~~then everything crashes even harder~~
+[_._._._._._._._._._._.]
+[] retr0id because I never ran into any issues using it to check that my
+kernel exploits worked
+_._._._._._._._._._._. 01/03/2022 10:45 PM
+wait but what would you check with getpid?
+[retr0id]
+retr0id 01/03/2022 10:45 PM
+and/or valgrind
+01/03/2022 10:45 PM
+consider compiling/running with ubsan
+[dustyangel47]
+dustyangel47 01/03/2022 10:45 PM
+i think i fixed it?
+[retr0id]
+[] retr0id because I never ran into any issues using it to check that my
+kernel exploits worked
+retr0id 01/03/2022 10:43 PM
+if it was cached anywhere then the old value would get stuck
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:43 PM
+    $ cc -x c -
+    main(){for(;;)getpid();}
+    <stdin>:1:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
+    <stdin>: In function ‘main’:
+    <stdin>:1:15: warning: implicit declaration of function ‘getpid’ [-Wimplicit-function-declaration]
+    $ strace ./a.out
+    execve("./a.out", ["./a.out"], 0x7ffd350c5720 /* 85 vars */) = 0
+    [garbage]
+    getpid()                                = 242783
+    getpid()                                = 242783
+    getpid()                                = 242783
+    getpid()                                = 242783
+    getpid()                                = 242783
+    getpid()                                = 242783
+(edited)
+[retr0id]
+retr0id 01/03/2022 10:43 PM
+because I never ran into any issues using it to check that my kernel
+exploits worked
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:43 PM
+strace it
+[retr0id]
+retr0id 01/03/2022 10:43 PM
+actually I know it does a real syscall
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:42 PM
+confirmed for syscall
+[retr0id]
+[] _._._._._._._._._._._. I know SYS_getpid exists but what actually
+happens on `getpid();` in glibc
+retr0id 01/03/2022 10:42 PM
+that's a good question
+[dustyangel47]
+dustyangel47 01/03/2022 10:42 PM
+okay back to good ol segfault
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:42 PM
+I know SYS_getpid exists but what actually happens on getpid(); in glibc
+01/03/2022 10:41 PM
+is that a syscall or a funky vdso or whatever constant?
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:41 PM
+the only issue is that someone here will for sure outrun my attempts
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:41 PM
+you might try with getpid or something
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:41 PM
+now I am tempted to write one in rust
+[dustyangel47]
+dustyangel47 01/03/2022 10:41 PM
+wake up honey new error dropped
+01/03/2022 10:40 PM
+les go
+[unknown.png]
+ unknown.png
+10.42 KB External
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:40 PM
+could be
+[retr0id]
+[] maryjohanna42069 strange tho, I have a really garbage mobile Ryzen
+(AMD Ryzen 7 5700U) in my laptop and it does 10 Gi...
+retr0id 01/03/2022 10:40 PM
+I think this is mainly measuring syscall latency, than anything else
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:39 PM
+with a AMD Ryzen 9 5950X
+[dustyangel47]
+dustyangel47 01/03/2022 10:39 PM
+i heavily question my intentions at this point
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:39 PM
+whilst on my server its not that different
+[unknown.png]
+ unknown.png
+5.59 KB External
+01/03/2022 10:39 PM
+strange tho, I have a really garbage mobile Ryzen (AMD Ryzen 7 5700U) in
+my laptop and it does 10 GiB/s just fine (edited)
+[dustyangel47]
+dustyangel47 01/03/2022 10:39 PM
+https://git.ruthenic.com/ruthenic/drakecoreutils/src/commit/38705fa09bd769ea0416f69889d32f6d36ae5940/src/yes.c#L47
+01/03/2022 10:39 PM
+from when i just used printf in a while loop
+01/03/2022 10:39 PM
+the alloc thing was a design decision dating back
+01/03/2022 10:38 PM
+wait what
+[retr0id]
+retr0id 01/03/2022 10:38 PM
+inconsequential in the grand scheme of things since everything gets
+freed when the program exits
+01/03/2022 10:38 PM
+so you can never free it again
+01/03/2022 10:37 PM
+by overwriting the malloc'ed pointer
+01/03/2022 10:37 PM
+in the if (argc == 1) { codepath, you leak memory
+[dustyangel47]
+dustyangel47 01/03/2022 10:37 PM
+i couldnt tell you my intentions from whenever i did this
+01/03/2022 10:37 PM
+?
+01/03/2022 10:37 PM
+safety?
+01/03/2022 10:37 PM
+not sure
+[retr0id]
+retr0id 01/03/2022 10:37 PM
+I'm not sure why you alloc it at all
+[dustyangel47]
+dustyangel47 01/03/2022 10:37 PM
+wait now i am more confused
+01/03/2022 10:36 PM
+shouldnt i multiply it by 8?
+01/03/2022 10:36 PM
+wait why am i timesing sizeof char by 16?
+01/03/2022 10:35 PM
+uutils probably beats both though
+[smx2460]
+smx2460 01/03/2022 10:35 PM
+gnu sux (jk) (edited)
+[dustyangel47]
+dustyangel47 01/03/2022 10:35 PM
+let me fix le bug by rewriting the whole thing for the second time
+01/03/2022 10:35 PM
+working on it
+[smx2460]
+smx2460 01/03/2022 10:35 PM
+dethrone GNU!
+01/03/2022 10:35 PM
+we're close to proving @meep wrong
+[dustyangel47]
+dustyangel47 01/03/2022 10:34 PM
+also gnu yes
+[unknown.png]
+ unknown.png
+8.67 KB External
+01/03/2022 10:34 PM
+you vs the guy she tells you not to worry about
+[unknown.png]
+ unknown.png
+9.51 KB External
+[unknown.png]
+ unknown.png
+9.11 KB External
+[retr0id]
+retr0id 01/03/2022 10:33 PM
+@DustyAngel47 you could use asprintf instead of realloc+sprintf
+[smx2460]
+smx2460 01/03/2022 10:33 PM
+which is not as fast as my desktop
+01/03/2022 10:33 PM
+my laptop
+01/03/2022 10:33 PM
+    sm@HELIUM:~$ yes | pv > /dev/null
+    26,0GiB 0:00:05 [5,26GiB/s] [
+[dustyangel47]
+[] smx2460 strlen(arg) + 2 for realloc
+dustyangel47 01/03/2022 10:33 PM
+no workie
+[dustyangel47]
+dustyangel47 01/03/2022 10:32 PM
+i cant cherrypick evidence
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:32 PM
+I get 10 GiB/s with it (edited)
+[dustyangel47]
+dustyangel47 01/03/2022 10:32 PM
+dammit why is my thing going slower now
+[smx2460]
+smx2460 01/03/2022 10:32 PM
+otherwise the bottleneck is going to be the system calls anyways
+[retr0id]
+retr0id 01/03/2022 10:31 PM
+bad
+01/03/2022 10:31 PM
+I benchmark yes at about 8GB/s
+[dustyangel47]
+dustyangel47 01/03/2022 10:31 PM
+give or take a couple hundred megs
+[smx2460]
+smx2460 01/03/2022 10:31 PM
+how often you flush it
+01/03/2022 10:31 PM
+it also depends on the buffer size
+[dustyangel47]
+dustyangel47 01/03/2022 10:31 PM
+darn i'm like right on par with gnu yes
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:31 PM
+    #!/usr/bin/env python3
+    import os
+    import sys
+    buff = b'y\n' * 8192
+    fp = os.fdopen(sys.stdout.fileno(), 'wb')
+    while True:
+        fp.write(buff)
+this is the usual reddit answer lmao
+[smx2460]
+smx2460 01/03/2022 10:31 PM
+well
+[retr0id]
+retr0id 01/03/2022 10:31 PM
+lemme test
+01/03/2022 10:31 PM
+GNU yes is nowhere near memory bandwith limits tho, iiuc
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:31 PM
+GNU yes is fast
+[smx2460]
+[] _._._._._._._._._._._. I kind of doubt yours is faster than GNU now
+but maybe? Have you measured?
+smx2460 01/03/2022 10:30 PM
+pessimistic
+[dustyangel47]
+dustyangel47 01/03/2022 10:30 PM
+brain is dying rn apparently
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:30 PM
+nice
+[dustyangel47]
+dustyangel47 01/03/2022 10:30 PM
+months
+01/03/2022 10:30 PM
+not years
+01/03/2022 10:30 PM
+fuck
+[dustyangel47]
+[] _._._._._._._._._._._. I kind of doubt yours is faster than GNU now
+but maybe? Have you measured?
+dustyangel47 01/03/2022 10:30 PM
+~~like a couple years ago~~
+[smx2460]
+smx2460 01/03/2022 10:30 PM
+they link as native
+01/03/2022 10:30 PM
+if you tune your dependencies
+01/03/2022 10:30 PM
+it generates raw object files that can run in Windows 3.11 and DOS
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:30 PM
+I kind of doubt yours is faster than GNU now but maybe? Have you
+measured?
+[smx2460]
+smx2460 01/03/2022 10:30 PM
+https://www.hanselman.com/blog/net-everywhere-apparently-also-means-windows-311-and-dos
+.NET everywhere apparently also means Windows 3.11 and DOS
+I often talk about how .NET Core is open source and runs 'everywhere.'
+...
+[]
+01/03/2022 10:29 PM
+@DustyAngel47 more than that
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:29 PM
+interesting
+[dustyangel47]
+[] _._._._._._._._._._._. <@!714583473804935238> `pv` is good to measure
+it
+dustyangel47 01/03/2022 10:29 PM
+yeah i used that before
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:29 PM
+cpython?
+[retr0id]
+retr0id 01/03/2022 10:29 PM
+I bet I could beat gnu yes in pure python
+[dustyangel47]
+dustyangel47 01/03/2022 10:29 PM
+ah, it's dotnet core -> native app
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:29 PM
+@DustyAngel47 pv is good to measure it
+[retr0id]
+[] maryjohanna42069 I think its basically impossible rn in python
+retr0id 01/03/2022 10:29 PM
+you can do it fast on a single thread
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:29 PM
+I was joking
+[smx2460]
+smx2460 01/03/2022 10:29 PM
+and see how well it fares
+[dustyangel47]
+dustyangel47 01/03/2022 10:29 PM
+~~do i wanna know what that is~~
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:29 PM
+due to the gil lock
+01/03/2022 10:29 PM
+I think its basically impossible rn in python
+[smx2460]
+smx2460 01/03/2022 10:29 PM
+just for fun
+01/03/2022 10:29 PM
+i was pondering the other day about doing the same as @DustyAngel47 is
+doing in CoreRT
+[retr0id]
+retr0id 01/03/2022 10:29 PM
+you should use splice too for even more perf
+[dustyangel47]
+dustyangel47 01/03/2022 10:29 PM
+i think this is actually faster then gnu yes (edited)
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:29 PM
+I know
+[retr0id]
+retr0id 01/03/2022 10:29 PM
+yes needs to go at GB/s
+[dustyangel47]
+dustyangel47 01/03/2022 10:29 PM
+^
+[retr0id]
+[] maryjohanna42069 ```py while True: print(sys.argv[1]) ```
+retr0id 01/03/2022 10:29 PM
+not fast enough
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:28 PM
+why even realloc for starters
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:28 PM
+    while True:
+        print(sys.argv[1])
+[smx2460]
+smx2460 01/03/2022 10:28 PM
+strlen(arg) + 2 for realloc (edited)
+01/03/2022 10:28 PM
+but shouldn't you do N +2 for the \0 too?
+[dustyangel47]
+[] maryjohanna42069 is it just for fun?
+dustyangel47 01/03/2022 10:28 PM
+more or less yeah
+[smx2460]
+smx2460 01/03/2022 10:28 PM
+            spammy = realloc(spammy, strlen(arg) + 1);
+            sprintf(spammy, "%s\n", arg);
+if arg is N, you do N + 1 for the newline
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:28 PM
+or why do you implement this again?
+[retr0id]
+retr0id 01/03/2022 10:28 PM
+~~python~~
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:28 PM
+node js
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:28 PM
+is it just for fun?
+[dustyangel47]
+dustyangel47 01/03/2022 10:28 PM
+vlang https://cdn.discordapp.com/emojis/811706174264049725.png?size=48
+[]
+[retr0id]
+retr0id 01/03/2022 10:27 PM
+rust
+[dustyangel47]
+dustyangel47 01/03/2022 10:27 PM
+or something
+01/03/2022 10:27 PM
+zig
+01/03/2022 10:27 PM
+i should just rewrite it in like
+01/03/2022 10:27 PM
+the entirety of this codebase is cursed
+01/03/2022 10:27 PM
+^^^
+[retr0id]
+retr0id 01/03/2022 10:27 PM
+code's cursed
+[dustyangel47]
+dustyangel47 01/03/2022 10:27 PM
+nop didnt work either
+01/03/2022 10:26 PM
+> or https://cdn.discordapp.com/emojis/859795873915207721.gif?size=48
+[]
+[retr0id]
+retr0id 01/03/2022 10:26 PM
+you need an (n+strlen) in the loop condition (edited)
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:26 PM
+I just hate the 0.2 sec delay lol
+01/03/2022 10:26 PM
+this shit is so insanely great
+[retr0id]
+retr0id 01/03/2022 10:26 PM
+you need to fix the loop condition too
+[dustyangel47]
+[] _._._._._._._._._._._. or n += strlen
+dustyangel47 01/03/2022 10:26 PM
+didnt work
+[smx2460]
+smx2460 01/03/2022 10:26 PM
+i personally use that
+[retr0id]
+retr0id 01/03/2022 10:26 PM
+but now I bought better speakers that don't need software eq to sound
+good
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:26 PM
+I switched to pulseeffects legacy then lul
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:26 PM
+yeah I used to use v4l
+[retr0id]
+retr0id 01/03/2022 10:26 PM
+I was using it to eq my shitty speakers
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:26 PM
+haha
+[smx2460]
+smx2460 01/03/2022 10:26 PM
+@MaryJohanna420 https://github.com/Audio4Linux/Viper4Linux-GUI
+GitHub - Audio4Linux/Viper4Linux-GUI: Official UI for Viper4Linux2
+Official UI for Viper4Linux2. Contribute to Audio4Linux/Viper4Linux-GUI
+development by creating an account on GitHub.
+[]
+[retr0id]
+[] maryjohanna42069 random mumbling: I just got heard of
+easyeffects/pulseeffects and its fucking insane
+retr0id 01/03/2022 10:25 PM
+oh yeah I was using this a while back, it's the reason I switched to
+pipewire because at some point they dropped pulse support lol
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:25 PM
+but I never had issues
+[maryjohanna42069]
+[] _._._._._._._._._._._. how's pipewire
+maryjohanna42069 01/03/2022 10:25 PM
+all the other people shit about it and say its lagging a lot
+[dustyangel47]
+dustyangel47 01/03/2022 10:25 PM
+10/10 would recommend
+[dustyangel47]
+[] _._._._._._._._._._._. how's pipewire
+dustyangel47 01/03/2022 10:25 PM
+very good
+[dustyangel47]
+dustyangel47 01/03/2022 10:25 PM
+now i just have no idea how i didnt catch it earlier lmao
+[dustyangel47]
+[] retr0id yeah the n++ assumes the length is always 1
+dustyangel47 01/03/2022 10:25 PM
+yep, that would probably be it
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:25 PM
+how's pipewire
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:25 PM
+never knew dolby atmos is basically possible on linux
+[retr0id]
+retr0id 01/03/2022 10:24 PM
+yeah the n++ assumes the length is always 1
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:24 PM
+random mumbling: I just got heard of easyeffects/pulseeffects and its
+fucking insane
+[unknown.png]
+ unknown.png
+50.6 KB External
+[retr0id]
+retr0id 01/03/2022 10:24 PM
+that too
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:24 PM
+or n += strlen
+[retr0id]
+retr0id 01/03/2022 10:24 PM
+oh wait
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:24 PM
+not n*?
+[retr0id]
+retr0id 01/03/2022 10:24 PM
+iiuc
+01/03/2022 10:24 PM
+it should be n+strlen(spammy) < len (edited)
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 10:24 PM
+n++
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:24 PM
+that was fast
+[retr0id]
+retr0id 01/03/2022 10:23 PM
+there's your bug (edited)
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:23 PM
+xd
+[retr0id]
+retr0id 01/03/2022 10:23 PM
+> } while (n < len);
+[smx2460]
+smx2460 01/03/2022 10:23 PM
+otoh, he might want wide ~~Putin~~ chars (edited)
+[retr0id]
+retr0id 01/03/2022 10:23 PM
+consider strncat instead of sprintf %s%s
+[retr0id]
+[] smx2460 who guarantees it
+retr0id 01/03/2022 10:23 PM
+the C spec
+[dustyangel47]
+dustyangel47 01/03/2022 10:23 PM
+i could just not construct a buffer but then my performance !!!
+[smx2460]
+smx2460 01/03/2022 10:23 PM
+who guarantees it
+[dustyangel47]
+dustyangel47 01/03/2022 10:22 PM
+hm
+01/03/2022 10:22 PM
+is it?
+[retr0id]
+retr0id 01/03/2022 10:22 PM
+style note: you can omit sizeof(char) because it's 1 by definition
+[dustyangel47]
+dustyangel47 01/03/2022 10:22 PM
+ignore the generally horrible code
+[smx2460]
+smx2460 01/03/2022 10:22 PM
+@retr0id he's making his own coreutils
+[dustyangel47]
+dustyangel47 01/03/2022 10:22 PM
+    int yes(int argc, char **argv) {
+      char *spammy = malloc((sizeof(char) * 16) * 2);
+      int len = 2048; // max length of buffer
+      char buf[len+1];
+      FILE *stdoutFP = stdout;
+      if (argc == 1) {
+        spammy = "y\n";
+      } else {
+        for (int i = 1; i < argc; i++) {
+          char *arg = argv[i];
+          /*printf(arg);
+          printf(" ");*/
+          if (!strcmp(arg, "--help")) {
+            char *help =
+                "Drake's Epic Coreutils (working title) " DRAKECU_VERSION "\n"
+                "yes - spams a message (by default `y`) to stdout.\n"
+                "Available arguments:\n"
+                "    --help: show this help message.\n"
+                "    --version: show version of the program.\n"
+                "Usage:\n"
+                "    yes [--help] [--version] [message]";
+            printf("%s\n", help);
+            return 0;
+          } else if (!strcmp(arg, "--version")) {
+            printf("%s\n", DRAKECU_VERSION);
+            return 0;
+          } else {
+            spammy = realloc(spammy, strlen(arg) + 1);
+            sprintf(spammy, "%s\n", arg);
+          }
+        }
+      }
+      int n = 0;
+      int splen = strlen(spammy);
+      do {
+        sprintf(buf, "%s%s", buf, spammy);
+        n++;
+      } while (n < len);
+      do {
+        fwrite(buf, sizeof(char), len, stdoutFP);
+      } while (1);
+    }
+[retr0id]
+retr0id 01/03/2022 10:22 PM
+what's the context? it could be a uart bitflip/desync
+[dustyangel47]
+dustyangel47 01/03/2022 10:22 PM
+i'm using Weird Stuff in the name of performance like fwriteing to
+stdout and creating a buffer before starting (which is where i assume
+the bug is)
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 10:21 PM
+lmao
+[dustyangel47]
+dustyangel47 01/03/2022 10:21 PM
+no clue
+[retr0id]
+retr0id 01/03/2022 10:21 PM
+I'm genuinely curious what the bug is
+01/03/2022 10:20 PM
+memory safety 
+[dustyangel47]
+dustyangel47 01/03/2022 10:20 PM
+how the hell do you screw up yes??????
+01/03/2022 10:20 PM
+i hate my life
+[unknown.png]
+ unknown.png
+1.94 KB External
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 9:39 PM
+thx
+[smx2460]
+smx2460 01/03/2022 9:39 PM
+@MaryJohanna420 done
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 9:36 PM
+mstar xd
+[smx2460]
+smx2460 01/03/2022 9:36 PM
+i'll add m3
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 9:36 PM
+I am still unsure which role to take so I guess I will just not take any
+to avoid confusion lol
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:46 PM
+ahh, my bad then 
+[friya]
+friya 01/03/2022 8:45 PM
+stupid one, I know, but I grinned!
+01/03/2022 8:45 PM
+oh, i was joking :)
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:45 PM
+or at least engineered for sure
+01/03/2022 8:45 PM
+I think this TV was produced before the chip shortage
+[friya]
+friya 01/03/2022 8:42 PM
+chip shortage, they couldn't afford to make two
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:41 PM
+probably its cheaper?
+01/03/2022 8:41 PM
+very interesting
+01/03/2022 8:41 PM
+fair
+[smx2460]
+smx2460 01/03/2022 8:41 PM
+They are under the same package
+01/03/2022 8:41 PM
+Nope
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:41 PM
+thats what I assumed
+01/03/2022 8:41 PM
+yeah
+[smx2460]
+smx2460 01/03/2022 8:41 PM
+Actually they are in the same chip
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:40 PM
+thought its maybe some separate board's cpu
+[smx2460]
+smx2460 01/03/2022 8:40 PM
+It's ready happening on TVs
+01/03/2022 8:40 PM
+Wait until you have N Linux devices in a single box talking to each
+other
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:40 PM
+oooh I see
+[smx2460]
+smx2460 01/03/2022 8:40 PM
+Linux ception
+01/03/2022 8:40 PM
+Realtek also uses MIPS coprocessors, some running Linux
+01/03/2022 8:40 PM
+Coprocessors
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:37 PM
+on an arm platform?
+01/03/2022 8:37 PM
+mips?
+01/03/2022 8:37 PM
+MBX_FIQ_PM2MIPS the heck is this tho
+01/03/2022 8:36 PM
+https://pastebin.com/raw/Br1hfp4G
+[smx2460]
+smx2460 01/03/2022 8:36 PM
+:insert toy story meme here:
+01/03/2022 8:36 PM
+mstar everywhere
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:36 PM
+    / # cat /proc/interrupts 
+               CPU0       CPU1       CPU2       CPU3       
+     30:      40687      48526      41571      39911       GIC  30 Edge      twd
+    128:          0          0          0          0     MSTAR 128 Edge      timer
+    165:        582          0          0          0     MSTAR 165 Edge      MBX_FIQ_PM2MIPS
+    169:         83          0          0          0     MSTAR 169 Edge      MBX_FIQ_R2toMIPS
+    197:      62017          0          0          0     MSTAR 197 Edge      mstar_mci
+    201:          0          0          0          0     MSTAR 201 Edge      eth0
+    202:       3993          0          0          0     MSTAR 202 Edge      scaler, disp_int
+    208:          0          0          0          0     MSTAR 208 Edge      tsp2hk_int
+    210:        389          0          0          0     MSTAR 210 Edge      Mali_GP_MMU, Mali_GP, Mali_PP0_MMU, Mali_PP0, Mali_PP1_MMU, Mali_PP1, Mali_PP2_MMU, Mali_PP2, Mali_PP_Broadcast
+    212:         90          0          0          0     MSTAR 212 Edge      gop
+    213:          0          0          0          0     MSTAR 213 Edge      RootInit
+    222:       9763          0          0          0     MSTAR 222 Edge      ehci_hcd:usb2
+    224:          0          0          0          0     MSTAR 224 Edge      ehci_hcd:usb1
+    226:          0          0          0          0     MSTAR 226 Edge      ehci_hcd:usb3
+    230:          1          0          0          0     MSTAR 230 Edge      serial
+    244:          0          0          0          0     MSTAR 244 Edge      dvi_hdmi_hdcp_int
+    246:          0          0          0          0     MSTAR 246 Edge      RootInit
+    IPI0:          0          0          0          0  CPU wakeup interrupts
+    IPI1:          0          2          2          2  Timer broadcast interrupts
+    IPI2:      11752      30570      34987      41680  Rescheduling interrupts
+    IPI3:         20         22         18         24  Function call interrupts
+    IPI4:         12         10          6         11  Single function call interrupts
+    IPI5:          0          0          0          0  CPU stop interrupts
+    IPI6:          0          0          0          0  IRQ work interrupts
+    IPI7:          0          0          0          0  completion interrupts
+    Err:          0
+01/03/2022 8:35 PM
+    / # cat /proc/iomem 
+    1f001600-1f0016ff : mstar-iic.6
+      1f001600-1f0016ff : mstar-iic.6
+    1f205600-1f2056ff : mstar-iic.0
+      1f205600-1f2056ff : mstar-iic.0
+    1f205700-1f2057ff : mstar-iic.1
+      1f205700-1f2057ff : mstar-iic.1
+    1f205800-1f2058ff : mstar-iic.2
+      1f205800-1f2058ff : mstar-iic.2
+    1f205900-1f2059ff : mstar-iic.3
+      1f205900-1f2059ff : mstar-iic.3
+    1f220a00-1f220aff : mstar-iic.4
+      1f220a00-1f220aff : mstar-iic.4
+    1f220b00-1f220bff : mstar-iic.5
+      1f220b00-1f220bff : mstar-iic.5
+    20200000-384fffff : System RAM
+      20208000-20c47fcb : Kernel code
+      20cc8000-212acd4b : Kernel data
+    4e800000-5fffffff : System RAM
+    fd340000-fd340100 : Mali_GP
+    fd341000-fd341200 : Mali_L2
+    fd343000-fd343100 : Mali_GP_MMU
+    fd344000-fd344100 : Mali_PP0_MMU
+    fd345000-fd345100 : Mali_PP1_MMU
+    fd346000-fd346100 : Mali_PP2_MMU
+    fd348000-fd349100 : Mali_PP0
+    fd34a000-fd34b100 : Mali_PP1
+    fd34c000-fd34d100 : Mali_PP2
+    fd353000-fd353100 : Mali_Broadcast
+    fd354000-fd354100 : Mali_DLBU
+    fd355000-fd355100 : Mali_PP_MMU_Broadcast
+    fd356000-fd357100 : Mali_PP_Broadcast
+01/03/2022 8:35 PM
+mstar indeed
+[smx2460]
+smx2460 01/03/2022 8:35 PM
+I'm semi wrecked but I'll try to extract one of the EPKs to see myself
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:34 PM
+brb then
+[smx2460]
+smx2460 01/03/2022 8:34 PM
+Iirc these 3 should give it out
+01/03/2022 8:34 PM
+cat /proc/iomem
+01/03/2022 8:33 PM
+cat /proc/interrupts
+01/03/2022 8:33 PM
+cat /proc/devices
+01/03/2022 8:33 PM
+Hmm
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:32 PM
+I havent found ANY info about the soc lmao
+01/03/2022 8:32 PM
+is it?
+[smx2460]
+[] maryjohanna42069 cpuinfo says the following ``` Hardware : m5621
+Revision : 0020 Serial : 0000...
+smx2460 01/03/2022 8:32 PM
+Hmm is that actually mstar?
+[smx2460]
+smx2460 01/03/2022 8:31 PM
+The only reliable thing so far is the OTA ID
+01/03/2022 8:31 PM
+So this makes yesterday's command even less reliable
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:31 PM
+[:lg:]
+[smx2460]
+[] maryjohanna42069 ``` { "board_type": "M3_DVB", "device_name": "m3",
+"hardware_id": "HE_DTV_W18R_AFAAABAA"...
+smx2460 01/03/2022 8:30 PM
+See here
+[smx2460]
+smx2460 01/03/2022 8:30 PM
+As he has nothing else
+01/03/2022 8:30 PM
+But here M3 "violates" this rule
+01/03/2022 8:30 PM
+You retr0id
+[maryjohanna42069]
+[] retr0id I suppose the real question is, what are we actually trying
+to identify?
+maryjohanna42069 01/03/2022 8:30 PM
+no clue, I just saw you created a buncha roles for different "SoC
+types?" and I thought I will try to identify what do I have so I can
+assign one
+[smx2460]
+smx2460 01/03/2022 8:30 PM
+You have m16p3 or m19
+01/03/2022 8:29 PM
+We have M2 as a SoC, lm14 and lm18 as platforms
+01/03/2022 8:29 PM
+The problem is that he's M3, which is a SoC and not a platform
+01/03/2022 8:29 PM
+But I don't know
+01/03/2022 8:29 PM
+In a less ugly way than "W18R"
+01/03/2022 8:29 PM
+Chipset and year
+[retr0id]
+retr0id 01/03/2022 8:26 PM
+I suppose the real question is, what are we actually trying to identify?
+[smx2460]
+smx2460 01/03/2022 8:26 PM
+@Unknown Users what about the kernel_version as identifier?
+01/03/2022 8:25 PM
+Supposedly glacier
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 8:07 PM
+cpuinfo says the following
+    Hardware        : m5621
+    Revision        : 0020
+    Serial          : 0000000000000000
+01/03/2022 8:06 PM
+    {
+        "core_os_kernel_version": "4.4.84-404.glacier.10",
+        "core_os_name": "Rockhopper",
+        "core_os_release": "4.3.0-1000301",
+        "core_os_release_codename": "goldilocks-goobang",
+        "encryption_key_type": "prodkey",
+        "webos_api_version": "4.1.0",
+        "webos_build_datetime": "20210115054406",
+        "webos_build_id": "1000301",
+        "webos_imagename": "starfish-dvb-secured",
+        "webos_manufacturing_version": "05.30.11",
+        "webos_name": "webOS TV Lite",
+        "webos_prerelease": "",
+        "webos_release": "4.3.0",
+        "webos_release_codename": "goldilocks-goobang"
+    }
+01/03/2022 8:05 PM
+okay, let me see
+[] maryjohanna42069 which json you mean?
+ww8543 01/03/2022 8:03 PM
+the other one in that directory
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 7:52 PM
+which json you mean?
+[maryjohanna42069]
+[] smx2460 What about the other json
+maryjohanna42069 01/03/2022 7:52 PM
+sorry, been dragged away with my laptop's issue lol
+[smx2460]
+smx2460 01/03/2022 7:48 PM
+It's not say lm18
+01/03/2022 7:48 PM
+That's the otaid tho
+[] smx2460 It can't be just m3
+ww8543 01/03/2022 7:47 PM
+w18r
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 7:46 PM
+but thats what it is
+[smx2460]
+smx2460 01/03/2022 7:46 PM
+What about the other json
+01/03/2022 7:46 PM
+That's the cpu name
+01/03/2022 7:46 PM
+It can't be just m3
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 7:46 PM
+next step is lscpu, right?
+01/03/2022 7:45 PM
+[smx2460]
+[] maryjohanna42069 ``` { "board_type": "M3_DVB", "device_name": "m3",
+"hardware_id": "HE_DTV_W18R_AFAAABAA"...
+smx2460 01/03/2022 7:45 PM
+Wtf...
+[dustyangel47]
+dustyangel47 01/03/2022 6:37 PM
+now we have the moral high ground for rooting tizen! (edited)
+[retr0id]
+[] _._._._._._._._._._._. remote root to steal ntf's lets fucking
+gooooooooo
+retr0id 01/03/2022 4:19 PM
+I didn't even think of that lmfao
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 3:45 PM
+    {
+        "board_type": "M3_DVB",
+        "device_name": "m3",
+        "hardware_id": "HE_DTV_W18R_AFAAABAA",
+        "hardware_revision": "BOARD_DV_1ST",
+        "keyboard_type": "virtual",
+        "modem_present": "N",
+        "nduid": "not sure what this is, but I redacted it",
+        "product_id": "32LK6200PLA",
+        "ram_size": "1 GB",
+        "serial_number": "9redacted",
+        "storage_size": "4 GB",
+        "wifi_addr": "redacted",
+        "wired_addr": "redacted"
+    }
+(edited)
+01/03/2022 3:42 PM
+lool
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/03/2022 3:42 PM
+remote root to steal ntf's lets fucking gooooooooo
+[retr0id]
+retr0id 01/03/2022 3:41 PM
+https://twitter.com/vxunderground/status/1478008903153729540
+[]vx-underground (@vxunderground)
+https://t.co/pu3mi01yjN
+[]
+[]Twitter1/3/2022, 3:22:37 PM
+[smx2460]
+smx2460 01/03/2022 3:34 PM
+Please
+[smx2460]
+[] maryjohanna42069 Regarding <#927346252172099634> and roles
+smx2460 01/03/2022 3:34 PM
+Check the Json too
+[smx2460]
+smx2460 01/03/2022 3:34 PM
+lm18? 
+01/03/2022 3:34 PM
+But which
+01/03/2022 3:34 PM
+Therefore lm* (edited)
+01/03/2022 3:34 PM
+Ok wait so it's means it's an mstar
+01/03/2022 3:33 PM
+M3?!
+01/03/2022 3:33 PM
+Wtf
+[maryjohanna42069]
+maryjohanna42069 01/03/2022 3:15 PM
+Which one applies to me? 
+01/03/2022 3:15 PM
+    / # awk '/ha/&&/id/{split($0,a,":");split(a[2],a,"_");print a[3]}' /var/run/nyx/device_info.json
+    W18R
+    / # luna-send -f -n 1 'luna://com.webos.service.tv.systemproperty/getSystemInfo' '{"keys":["boardType","firmwareVersion","modelName","sdkVersion"]}'
+    {
+        "modelName": "32LK6200PLA",
+        "firmwareVersion": "05.30.11",
+        "boardType": "M3_DVB_EU",
+        "returnValue": true,
+        "sdkVersion": "4.3.0"
+    }
+01/03/2022 3:15 PM
+Regarding # unknown-channel and roles
+[smx2460]
+smx2460 01/03/2022 2:00 AM
+I should also sleep 2 tho
+[friya]
+friya 01/03/2022 2:00 AM
+gn!
+01/03/2022 2:00 AM
+Hitting sack and leaving you with the silence :D
+[smx2460]
+smx2460 01/03/2022 2:00 AM
+XD
+01/03/2022 2:00 AM
+I'm joking guys
+[friya]
+friya 01/03/2022 2:00 AM
+That killed the conversation!
+[smx2460]
+smx2460 01/03/2022 1:58 AM

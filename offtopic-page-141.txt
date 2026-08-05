@@ -1,0 +1,1899 @@
+June 27, 2023
+[smx2460]
+smx2460 06/27/2023 1:07 AM
+if you flip that, you will pull in too much stuff
+06/27/2023 1:07 AM
+that enables a lot of stuff
+06/27/2023 1:07 AM
+vanilla uClibc has a huge switch
+06/27/2023 1:07 AM
+the problem is that they ifdeffed a lot of symbols (edited)
+[] smx2460 https://github.com/smx-smx/bcm63138-uclibc
+hellobox. 06/27/2023 1:07 AM
+looks like a lot of changes
+[smx2460]
+smx2460 06/27/2023 1:07 AM
+https://github.com/smx-smx/bcm63138-buildroot
+GitHub - smx-smx/bcm63138-buildroot
+Contribute to smx-smx/bcm63138-buildroot development by creating an
+account on GitHub.
+[]
+06/27/2023 1:07 AM
+like br-nc4, but before
+06/27/2023 1:07 AM
+with this, i managed to create a working buildroot
+06/27/2023 1:06 AM
+https://github.com/smx-smx/bcm63138-uclibc
+GitHub - smx-smx/bcm63138-uclibc
+Contribute to smx-smx/bcm63138-uclibc development by creating an account
+on GitHub.
+[]
+06/27/2023 1:06 AM
+so i had to reverse engineer their uClibc patches
+06/27/2023 1:06 AM
+they just shipped stock uClibc pretty much
+hellobox. 06/27/2023 1:06 AM
+at least lg makes some sort of effort though
+[smx2460]
+smx2460 06/27/2023 1:06 AM
+and busybox too (edited)
+06/27/2023 1:06 AM
+because the libc is different
+06/27/2023 1:06 AM
+you cannot product working binaries with their GPL
+[] smx2460 but it's useless, it's not the source of the product i'm
+using
+hellobox. 06/27/2023 1:06 AM
+yeah, lg does that shit all the time
+[smx2460]
+smx2460 06/27/2023 1:06 AM
+but it's useless, it's not the source of the product i'm using
+06/27/2023 1:05 AM
+i didn't even bother trying because it's barebone
+06/27/2023 1:05 AM
+DLink released a GPL image you could flash on your device
+06/27/2023 1:05 AM
+but ADB removed most of their customizations before doing so
+hellobox. 06/27/2023 1:05 AM
+although i don't have any of their devices so i can't be sure there
+isn't a link in a manual or licenses screen
+[smx2460]
+smx2460 06/27/2023 1:05 AM
+they forced ADB to release the sources
+06/27/2023 1:05 AM
+which contacted them
+hellobox. 06/27/2023 1:05 AM
+i think WEE vendors are violating the GPL as well
+[smx2460]
+smx2460 06/27/2023 1:05 AM
+i contacted the GPL Violations mailing list
+06/27/2023 1:04 AM
+they ignored me
+06/27/2023 1:04 AM
+i sent them a letter asking for it
+[] smx2460 which violates GPL for busybox, uClibc and the Linux kernel
+hellobox. 06/27/2023 1:04 AM
+dlink doesn't offer the source?
+[smx2460]
+smx2460 06/27/2023 1:04 AM
+right now i assume they come in sequence
+06/27/2023 1:04 AM
+it should be cleaned up a little so that the second and third state also
+check for the interface name
+06/27/2023 1:04 AM
+LINK_UP -- "route add" --> NEW_ROUTE
+06/27/2023 1:03 AM
+INITIAL -- "link up ppp3" --> LINK_UP (edited)
+06/27/2023 1:03 AM
+            switch(state){
+                case INITIAL:
+                    if(STR_EQ(parts[0], "link") &&
+                       STR_EQ(parts[1], "up") &&
+                       STR_EQ(parts[2], INTERFACE_NAME)
+                    ){
+                        puts("got link up");
+                        state = LINK_UP;
+                    }
+                    break;
+                case LINK_UP:
+                    if(STR_EQ(parts[0], "route") &&
+                       STR_EQ(parts[1], "add")
+                    ){
+                        puts("got route");
+                        state = NEW_ROUTE;
+                    }
+                    break;
+                case NEW_ROUTE:
+                    if(STR_EQ(parts[0], "ip") &&
+                       STR_EQ(parts[1], "add")
+                    ){
+                        puts("got new ip");
+                        printf("New IP: %s, invoking " COMMAND "\n", parts[3]);
+06/27/2023 1:03 AM
+so it waits for this to happen, in sequence
+06/27/2023 1:03 AM
+    enum state {
+        INITIAL = 0,
+        LINK_UP,
+        NEW_ROUTE
+    };
+06/27/2023 1:03 AM
+the next commit will move them to argv[1] and argv[2]
+06/27/2023 1:02 AM
+it's very crude right now, the interface to watch and the command to run
+are hardcoded at build time
+06/27/2023 1:02 AM
+and i called it monitor
+06/27/2023 1:02 AM
+so i decided to write a C state machine
+06/27/2023 1:02 AM
+but I got pissed off with busybox ASH
+06/27/2023 1:02 AM
+i initially thought about using a shell script
+06/27/2023 1:02 AM
+and then i needed to write something that could parse them
+06/27/2023 1:01 AM
+i convert those messages into CSV records (edited)
+06/27/2023 1:01 AM
+via this specific socket
+06/27/2023 1:01 AM
+        if ((sock = socket(PF_NETLINK, SOCK_RAW, NETLINK_ROUTE)) == -1) {
+            perror("couldn't open NETLINK_ROUTE socket");
+            return 1;
+        }
+06/27/2023 1:01 AM
+these messages are broadcast by the linux kernel whenever something
+changes
+06/27/2023 1:01 AM
+        for(len = 0;
+            (len = recv(sock, buffer, sizeof(buffer), 0)) > 0;
+        ){
+            for(
+                struct nlmsghdr *nlh = (struct nlmsghdr *)&buffer;
+                NLMSG_OK(nlh, len) && nlh->nlmsg_type != NLMSG_DONE;
+                nlh = NLMSG_NEXT(nlh, len)
+            ){
+                switch(nlh->nlmsg_type){
+                    case RTM_NEWADDR:
+                    case RTM_DELADDR:
+                        on_rtm_addr(nlh->nlmsg_type, nlh);
+                        break;
+                    case RTM_NEWROUTE:
+                    case RTM_DELROUTE:
+                        on_rtm_route(nlh->nlmsg_type, nlh);
+                        break;
+                    case RTM_NEWLINK:
+                    case RTM_DELLINK:
+                        on_rtm_link(nlh->nlmsg_type, nlh);
+                        break;
+                }
+            }
+        }
+06/27/2023 1:00 AM
+so i wrote my own C tool that watches for NETLINK messages
+06/27/2023 1:00 AM
+but i wanted to keep it small and simple for this device (edited)
+06/27/2023 1:00 AM
+sure there are more powerful tools that do that
+06/27/2023 12:59 AM
+which violates GPL for busybox, uClibc and the Linux kernel
+06/27/2023 12:59 AM
+    BusyBox v1.17.3 (2018-04-11 12:29:54 CEST) built-in shell (ash)
+    Enter 'help' for a list of built-in commands.
+          ___           ___           ___           ___
+         |\__\         /\  \         /\  \         /\  \
+         |:|  |       /::\  \       /::\  \       /::\  \
+         |:|  |      /:/\:\  \     /:/\:\  \     /:/\:\  \
+         |:|__|__   /::\~\:\  \   /::\~\:\  \   _\:\~\:\  \
+         /::::\__\ /:/\:\ \:\__\ /:/\:\ \:\__\ /\ \:\ \:\__\
+        /:/~~/~    \/__\:\/:/  / \/__\:\/:/  / \:\ \:\ \/__/
+       /:/  /           \::/  /       \::/  /   \:\ \:\__\
+       \/__/            /:/  /         \/__/     \:\/:/  /
+                       /:/  /                     \::/  /
+                       \/__/                       \/__/    r41358.07b1b3a7
+    ..................................................................
+     yet another purposeful solution by  Advanced Digital Broadcast SA
+    ..................................................................
+    root@dlinkrouter:~#
+06/27/2023 12:59 AM
+@zfa find me one that works for this device (edited)
+[] smx2460 it would be even better if i added a logic to track the last
+ip
+zfa.discrd 06/27/2023 12:46 AM
+Github is awash with scripts that do just that
+[smx2460]
+smx2460 06/27/2023 12:37 AM
+so i don't send if it it's == last
+06/27/2023 12:37 AM
+it would be even better if i added a logic to track the last ip
+06/27/2023 12:36 AM
+    got route
+    tok[0] = "ip"
+    tok[1] = "add"
+    tok[2] = "ppp3"
+    tok[3] = "151.20.189.240"
+    got new ip
+    New IP: 151.20.189.240, invoking ./newip.sh
+    tok[0] = "route"
+    tok[1] = "add"
+    tok[2] = "151.20.189.240"
+    Error occurred: CONNECTION FAILED
+    Failed, retrying...
+    tok[0] = "route"
+    tok[1] = "add"
+    tok[2] = "151.6.151.115"
+    tok[0] = "route"
+    tok[1] = "add"
+    tok[2] = "151.6.151.115"
+    tok[0] = "route"
+    tok[1] = "add"
+    tok[2] = "151.6.151.115"
+    good 151.20.189.240tok[0] = "link"
+06/27/2023 12:35 AM
+yep works but needs a sleep
+06/27/2023 12:30 AM
+let's try
+06/27/2023 12:30 AM
+this should work
+06/27/2023 12:30 AM
+    #!/bin/sh
+    IPADDR="$1"
+    . ./conf.sh
+    yaft -L "${USER}:${PASS}" -d "http://update.dyndns.it/?hostname=${DOMAIN}&myip=${IPADDR}"
+(edited)
+06/27/2023 12:27 AM
+10 i think
+[] smx2460 if it reaches a threshold, they ban you
+hellobox. 06/27/2023 12:25 AM
+how high is the threshold? i guess you can always check what it
+currently resolves to
+[smx2460]
+smx2460 06/27/2023 12:23 AM
+lol
+06/27/2023 12:23 AM
+if it reaches a threshold, they ban you
+06/27/2023 12:23 AM
+i.e. sending a new IP when it didn't change
+06/27/2023 12:23 AM
+that dyndns records how many redundant updates you did
+06/27/2023 12:23 AM
+the funny thing is (edited)
+06/27/2023 12:22 AM
+let me try it
+06/27/2023 12:22 AM
+it might work via
+yaft -L user:password -d 'http://dynupdate.no-ip.com/nic/update?hostname=domain
+hellobox. 06/27/2023 12:21 AM
+so ADB (always makes me think of adb) is the ODM
+[smx2460]
+smx2460 06/27/2023 12:20 AM
+and customizations
+hellobox. 06/27/2023 12:20 AM
+oh
+[smx2460]
+smx2460 06/27/2023 12:20 AM
+which put their logo on it
+06/27/2023 12:20 AM
+they sell them to OEMs
+06/27/2023 12:20 AM
+but they don't sell routers directly
+06/27/2023 12:20 AM
+ADB is the manufacturer
+hellobox. 06/27/2023 12:20 AM
+you probably already explained this, but why is its hostname
+dlinkrouter? (edited)
+[smx2460]
+smx2460 06/27/2023 12:18 AM
+or see if i can use yaft lol
+06/27/2023 12:18 AM
+so within that script, i need to either use my cross compiled curl
+(edited)
+06/27/2023 12:17 AM
+which invokes a script in response (edited)
+06/27/2023 12:17 AM
+which are parsed by monitor
+06/27/2023 12:17 AM
+prints live IP updates
+06/27/2023 12:17 AM
+    root@dlinkrouter:~# ./ifwatch
+    link:down:ppp3
+    ip:del:ppp3:151.20.174.230
+    ip:del:ppp3:151.20.174.230
+    route:del:151.20.174.230:
+    link:down:151.20.174.2
+    link:down:ppp3
+    ip:add:ppp3:151.20.147.85
+    route:add:151.20.147.85:
+    ip:del:ppp3:151.20.147.85
+    route:del:151.20.147.85:
+    ip:add:ppp3:151.20.147.85
+    route:add:151.20.147.85:
+    link:up:ppp3
+    route:add:151.6.151.115:
+    ip:add:ppp3:151.20.147.85
+    route:add:151.20.147.85:
+    route:add::151.6.151.115
+    route:add::151.6.151.115
+    route:add:151.6.151.115:
+    link:down:wl0
+    link:down:wl0
+    link:down:wl0
+    link:up:wl0
+    link:up:wl0
+    link:up:wl0
+    link:up:wl0
+    link:down:wl1
+    link:down:wl1
+    link:down:wl1
+    link:up:wl1
+    link:up:wl1
+    link:up:wl1
+    link:up:wl1
+06/27/2023 12:16 AM
+i created this tool for DDNS purposes
+06/27/2023 12:16 AM
+https://github.com/smx-smx/mini-ddns/
+GitHub - smx-smx/mini-ddns: Minimal DDNS updater
+Minimal DDNS updater. Contribute to smx-smx/mini-ddns development by
+creating an account on GitHub.
+[]
+06/27/2023 12:16 AM
+yes lol
+[] smx2460 ``` root@dlinkrouter:~# yaft Usage: yaft
+-ALdoufncitTpvDIrOWEPQCaxUR ```
+hellobox. 06/27/2023 12:16 AM
+"yet another file transfer"...?
+[smx2460]
+smx2460 06/27/2023 12:15 AM
+oh and -o: output
+06/27/2023 12:14 AM
+the others, dunno
+06/27/2023 12:14 AM
+-a: certificate -i: interface
+06/27/2023 12:14 AM
+Login
+06/27/2023 12:14 AM
+hm
+06/27/2023 12:14 AM
+            _ret=$(yaft -L "$_username:$_password" -d "$_url" -o "$tmpfile")
+06/27/2023 12:14 AM
+-t might be timeout
+06/27/2023 12:14 AM
+does plain GET
+06/27/2023 12:13 AM
+so -d is for "download"
+06/27/2023 12:13 AM
+    root@dlinkrouter:~# yaft -d http://www.google.com
+06/27/2023 12:12 AM
+but i don't have any clue what the flags do lmao
+06/27/2023 12:12 AM
+it's a curl clone by ADB
+06/27/2023 12:12 AM
+lol
+06/27/2023 12:12 AM
+    root@dlinkrouter:~# yaft
+    Usage: yaft -ALdoufncitTpvDIrOWEPQCaxUR
+June 26, 2023
+[mr.meorzipan]
+mr.meorzipan 06/26/2023 8:42 PM
+You're welcome. Enjoy seeing Pacman in LG's logo's, forever :).
+06/26/2023 8:42 PM
+Anyone notice the LG logo looks like Pacman with it's mouth wide open
+towards the upper right?
+[SPOILER_animation1.gif]
+ SPOILER_animation1.gif
+486.8 KB External
+[kitsuned]
+[] sushi2627 i dont support lgbt but i support lgtv
+kitsuned 06/26/2023 8:24 PM
+(no content)
+[HoqgUapsM9G3OlfMZLfhOD8utudfHvYaTJ-2drPWebI.png]
+ HoqgUapsM9G3OlfMZLfhOD8utudfHvYaTJ-2drPWebI.png
+452.83 KB External
+[sushi2627]
+sushi2627 06/26/2023 4:51 PM
+i dont support lgbt but i support lgtv
+ 1
+June 25, 2023
+[mr.meorzipan]
+mr.meorzipan 06/25/2023 7:23 PM
+Reminding you all to hydrate.
+[image0.gif]
+ image0.gif
+324.06 KB External
+[image2.gif]
+ image2.gif
+114.78 KB External
+[image3.gif]
+ image3.gif
+86.12 KB External
+ 1
+[maryjohanna42069]
+maryjohanna42069 06/25/2023 4:17 PM
++ support movies and stuff without hacking
+06/25/2023 4:16 PM
+Would be nice if we could use degoogled phones and be able to design
+basically any UI we want
+06/25/2023 4:16 PM
+I am dreaming of the other way being open source
+[infowski]
+infowski 06/25/2023 11:32 AM
+https://github.com/harry1453/android-auto-headunit there's something
+open source, plus there's HUR in play store for like $5
+GitHub - harry1453/android-auto-headunit: Android Auto Headunit Emu...
+Android Auto Headunit Emulator. Contribute to
+harry1453/android-auto-headunit development by creating an account on
+GitHub.
+[]
+[smx2460]
+smx2460 06/25/2023 10:42 AM
+Not sure about Android auto
+[smx2460]
+[] infowski <@310158180728700929> am i recalling correctly you were a
+fan of these Chinese Android car radio rep...
+smx2460 06/25/2023 10:41 AM
+Well i have one with a rk3368 (edited)
+[infowski]
+infowski 06/25/2023 10:35 AM
+@Smx am i recalling correctly you were a fan of these Chinese Android
+car radio replacements? Has anyone implemented proper Android Auto
+receiver for these yet?
+hellobox. 06/25/2023 4:37 AM
+save $100 by getting this one and hacking it up a bit to think it's a
+UH6350 https://www.ebay.com/itm/385525285379 there are some differences,
+but schematics are available for both
+06/25/2023 4:30 AM
+this is the same as the $270 one https://www.ebay.com/itm/334507214479
+[image.png]
+ image.png
+13.05 KB External
+06/25/2023 4:29 AM
+the extra $225 is because it comes with cables and a bracket i guess
+https://www.ebay.com/itm/125264035702
+https://www.ebay.com/itm/362817110949
+[image.png]
+ image.png
+11.87 KB External
+[image.png]
+ image.png
+14.86 KB External
+06/25/2023 4:26 AM
+although i'm sure there are cheaper boards with it
+06/25/2023 4:26 AM
+i would really like one of those
+06/25/2023 4:26 AM
+ooh, it seems to have a K2L SoC
+06/25/2023 4:25 AM
+it's for 70UH6350-UB
+06/25/2023 4:25 AM
+insane https://www.ebay.com/itm/164654797847
+[image.png]
+ image.png
+10.7 KB External
+hellobox. 06/25/2023 4:15 AM
+maybe clean the bugs off of stuff before you take pictures of it for
+ebay...
+[s-l1600.png]
+ s-l1600.png
+3.66 MB External
+June 24, 2023
+[infowski]
+hellobox. for <@501722020434673674> ``` Nix with Digital java code text.
+Nix and Computer software coding vect...
+infowski 06/24/2023 11:23 AM
+what the fuck am i looking at
+Deleted User 06/24/2023 7:17 AM
+(no content)
+[image.png]
+ image.png
+36.91 KB External
+Deleted User 06/24/2023 7:06 AM
+(no content)
+[image.png]
+ image.png
+34.17 KB External
+06/24/2023 7:01 AM
+(no content)
+[image.png]
+ image.png
+46.86 KB External
+06/24/2023 6:57 AM
+(no content)
+[image.png]
+ image.png
+192.55 KB External
+06/24/2023 6:57 AM
+so discord basically now has chatgpt built in
+hellobox. 06/24/2023 2:51 AM
+they're all tagged "3d rendering"
+06/24/2023 2:50 AM
+(no content)
+[image.png]
+ image.png
+1.79 KB External
+06/24/2023 2:49 AM
+what are these supposed to refer to?
+[bbj-concept-with-random-parts-of-program-code-bbj-with-programming-code-abstract-technology-background-of-software-developer-and-computer-script-bbj-2H2T40T.png]
+bbj-concept-with-random-parts-of-program-code-bbj-with-programming-code-abstract-technology-background-of-software-developer-and-computer-script-bbj-2H2T40T.png
+1.51 MB External
+[dra-with-electronic-computer-hardware-technology-background-abstract-background-with-electronic-integrated-circuit-and-dra-electronic-circuit-board-2H2YJFJ.png]
+dra-with-electronic-computer-hardware-technology-background-abstract-background-with-electronic-integrated-circuit-and-dra-electronic-circuit-board-2H2YJFJ.png
+1.64 MB External
+06/24/2023 2:48 AM
+i suspect the full image is actually cut off like this
+[potentially-shippable-product-increment-text-written-on-programming-code-abstract-technology-background-of-software-developer-and-computer-script-pot-2H2TX1H.png]
+potentially-shippable-product-increment-text-written-on-programming-code-abstract-technology-background-of-software-developer-and-computer-script-pot-2H2TX1H.png
+1.87 MB External
+06/24/2023 2:47 AM
+for @infowski
+    Nix with Digital java code text. Nix and Computer software coding vector concept. Programming coding script java, digital program code with Nix on screen illustration
+(edited)
+[nix-with-digital-java-code-text-nix-and-computer-software-coding-vector-concept-programming-coding-script-java-digital-program-code-with-nix-on-scr-2H2T9J7.png]
+nix-with-digital-java-code-text-nix-and-computer-software-coding-vector-concept-programming-coding-script-java-digital-program-code-with-nix-on-scr-2H2T9J7.png
+1.28 MB External
+June 23, 2023
+[smx2460]
+smx2460 06/23/2023 8:39 PM
+https://twitter.com/jmmv/status/1672073678102872065
+[]Julio Merino (@jmmv)
+For those thinking that the comparison was unfair, here is Windows 2000
+on the same 600MHz machine. Both are from the same year, 1999. Note how
+the immediacy is still exactly the same and hadn’t been ruined yet.
+Likes
+701
+[] Watch video
+[]Twitter6/23/2023, 4:46:45 AM
+06/23/2023 8:38 PM
+https://twitter.com/jmmv/status/1671671000730316800
+[]Julio Merino (@jmmv)
+Now look at opening the same apps on Windows 11 on a Surface Go 2
+(quad-core i5 processor at 2.4GHz, 8GB RAM, SSD). Everything is super
+sluggish.
+Likes
+1015
+[] Watch video
+[]Twitter6/22/2023, 2:06:39 AM
+06/23/2023 8:37 PM
+NT 3.51 absolutely rocks
+06/23/2023 8:37 PM
+https://twitter.com/jmmv/status/1671670996921896960
+[]Julio Merino (@jmmv)
+Please remind me how we are moving forward. In this video, a machine
+from the year ~2000 (600MHz, 128MB RAM, spinning-rust hard disk) running
+Windows NT 3.51. Note how incredibly snappy opening apps is. 
+Likes
+5056
+Retweets
+829
+[] Watch video
+[]Twitter6/22/2023, 2:06:38 AM
+[astur3l]
+[] sushi2627 i was on python and i see python arm version.i wonder can
+it install on webos or not
+astur3l 06/23/2023 4:02 PM
+use buildroot's python (3.17 iirc)
+https://github.com/openlgtv/buildroot-nc4 (webos flavor) ->
+https://discord.com/channels/407937994037919756/408006551656333312/1047578885052694568
+(edited)
+GitHub - openlgtv/buildroot-nc4
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+ 1  1
+[sushi2627]
+sushi2627 06/23/2023 3:52 PM
+i was on python and i see python arm version.i wonder can it install on
+webos or not
+hellobox. 06/23/2023 12:48 AM
+(no content)
+[image.png]
+ image.png
+14.55 KB External
+[image.png]
+ image.png
+26.27 KB External
+June 22, 2023
+hellobox. 06/22/2023 8:43 PM
+c++ (well, g++ i guess) loves to copy shit around for no reason
+hellobox. 06/22/2023 7:07 PM
+it has so many false positives
+06/22/2023 7:06 PM
+i should just fucking disable the windows antivirus shit
+[sushi2627]
+sushi2627 06/22/2023 4:43 PM
+And client can use while offline(maybe)
+[sushi2627]
+hellobox. any downsides to using the discord windows client over
+browser?
+sushi2627 06/22/2023 4:42 PM
+Desktop apps can push to talk at any moment
+hellobox. 06/22/2023 3:40 PM
+any downsides to using the discord windows client over browser?
+[sushi2627]
+sushi2627 06/22/2023 2:12 PM
+that pretty sad but thank you
+hellobox. 06/22/2023 2:11 PM
+probably wouldn't work
+06/22/2023 2:11 PM
+so you would need emulation and something like wine
+[sushi2627]
+sushi2627 06/22/2023 2:09 PM
+i dont know
+hellobox. 06/22/2023 1:57 PM
+is there even an ARM version?
+[sushi2627]
+sushi2627 06/22/2023 1:56 PM
+no source
+06/22/2023 1:56 PM
+the apps is the luncher
+06/22/2023 1:56 PM
+among us game.i just want to port it with an idea of an luncher and play
+by plug usb to get the asset of it
+[] sushi2627 hey.this may be silly but how can i run .exe file on lg
+tv?or there is some way to convert the .exe ...
+hellobox. 06/22/2023 1:51 PM
+do you have the source?
+[sushi2627]
+sushi2627 06/22/2023 1:50 PM
+hey.this may be silly but how can i run .exe file on lg tv?or there is
+some way to convert the .exe file to lg tv app?
+ 1
+[smx2460]
+smx2460 06/22/2023 2:16 AM
+I'm late for sleeping
+06/22/2023 2:16 AM
+Sure, but later
+hellobox. 06/22/2023 1:52 AM
+@Smx i may need your help to see if there's a whitelist in the firmware
+hellobox. 06/22/2023 1:39 AM
+and it seems it's only pcie x1
+06/22/2023 1:38 AM
+which apparently is uncommon. fuck
+06/22/2023 1:35 AM
+assuming they actually routed the SATA signals to that connector...
+hellobox. 06/22/2023 1:05 AM
+it'll have to be SATA and not NVMe though
+06/22/2023 1:02 AM
+so i guess a 2242 SSD will work, as long as the thickness isn't an issue
+06/22/2023 1:02 AM
+one of the cards that's supposed to go there is 3042-S3
+06/22/2023 1:00 AM
+so i should have a relatively easy time putting an ssd there, right?
+06/22/2023 12:59 AM
+i just discovered that my laptop's unused wwan M.2 slot is apparently B
+keyed
+hellobox. 06/22/2023 12:30 AM
+at least they let you avoid the windows tax (with freedos for some
+reason)
+06/22/2023 12:29 AM
+$150 for crucial 2x32gb on amazon
+https://www.amazon.com/Crucial-4800MHz-Laptop-Memory-CT32G48C40S5/dp/B09RVNMGFH
+06/22/2023 12:27 AM
+jesus christ (from hp elitebook cusomization)
+[image.png]
+ image.png
+6.61 KB External
+06/22/2023 12:25 AM
+anyone have experience with framework laptops? https://frame.work/ how
+do they compare value-wise with e.g. hp elitebooks?
+June 21, 2023
+[maryjohanna42069]
+maryjohanna42069 06/21/2023 8:19 PM
+nvm, figured (edited)
+06/21/2023 8:16 PM
+hmm now I am using a debian armel chroot and I am getting No such file
+or directory on the lib
+[maryjohanna42069]
+maryjohanna42069 06/21/2023 8:03 PM
+all I need from it is gcc, crt1 and stdio.h (edited)
+06/21/2023 8:03 PM
+the new one uses glibc
+06/21/2023 8:02 PM
+was handy, because its was using uclibc
+06/21/2023 8:02 PM
+Any idea if there is a prebuilt sdk for armeabi and glibc? I have been
+using the ones from here for my old router:
+https://archive.openwrt.org/chaos_calmer/15.05.1/
+hellobox. 06/21/2023 4:38 AM
+way overpriced (you can get the same board for $8), but interesting
+picture https://www.ebay.com/itm/294365775383
+[s-l1600.png]
+ s-l1600.png
+4.48 MB External
+hellobox. 06/21/2023 4:29 AM
+leaving aside the content of this "documentary"... this is priced at $50
+including shipping, as opposed to the official site's pricing of $20
+with (apparently?) free shipping. and 3 people have bought it. i don't
+understand ebay. https://www.ebay.com/itm/295094506203
+https://shop.salemnow.com/product/2000-mules/ (i only came across this
+because that seller also has a decently-priced lg power cable for sale)
+(edited)
+2000 Mules Documentary Movie DVD by Dinesh D'Souza BRAND NEW | eBay
+Find many great new & used options and get the best deals for 2000 Mules
+Documentary Movie DVD by Dinesh D'Souza BRAND NEW at the best online
+prices at eBay! Free shipping for many products!
+[]
+hellobox. 06/21/2023 3:15 AM
+business plan: grab free condiment packets from restaurants; sell on
+ebay https://www.ebay.com/itm/314648160516 (edited)
+***RARE*** Heinz Ketchup Packet: Saucemerica Georgia by Heinz | eBay
+Find many great new & used options and get the best deals for ***RARE***
+Heinz Ketchup Packet: Saucemerica Georgia by Heinz at the best online
+prices at eBay! Free shipping for many products!
+[]
+June 20, 2023
+Deleted User 06/20/2023 9:23 PM
+But I don’t know what is that or what to do with it
+[astur3l]
+astur3l 06/20/2023 9:18 PM
+he was working on reversing the protocol, but idk how far he get
+06/20/2023 9:17 PM
+check @parkerlreed's gist above.. 
+https://discord.com/channels/407937994037919756/413498235307425802/1106921382689910895
+(edited)
+Deleted User 06/20/2023 9:04 PM
+Direct with pc
+06/20/2023 9:04 PM
+I hoped on some bluetooth conn
+06/20/2023 9:04 PM
+This needs lg tv
+06/20/2023 9:04 PM
+But
+Deleted User 06/20/2023 8:48 PM
+Thank you
+[astur3l]
+astur3l 06/20/2023 8:47 PM
+https://discord.com/channels/407937994037919756/413498235307425802/1106921382689910895
+[astur3l]
+Deleted User Or does something simillar exist?
+astur3l 06/20/2023 8:44 PM
+https://github.com/Wouterdek/magic4pc
+GitHub - Wouterdek/magic4pc: Allows you to use the magic remote on ...
+Allows you to use the magic remote on your LG tv as a mouse for your
+PC. - GitHub - Wouterdek/magic4pc: Allows you to use the magic remote on
+your LG tv as a mouse for your PC.
+[]
+ 1
+Deleted User 06/20/2023 8:32 PM
+@here
+06/20/2023 8:32 PM
+Or does something simillar exist?
+06/20/2023 8:31 PM
+Wihtout lg tv of course
+06/20/2023 8:31 PM
+Have someone managed to use LG MAGIC REMOTE as wireless mouse for PC?
+June 18, 2023
+Deleted User 06/18/2023 7:50 PM
+It will not work 
+06/18/2023 7:49 PM
+That is powered by chatgpt
+06/18/2023 7:49 PM
+if u try with bing Ai
+Deleted User it took the guy a few tries to get a valid key
+Deleted User 06/18/2023 7:49 PM
+BUT
+hellobox. 06/18/2023 7:25 AM
+oh: "They are the default keys that are inserted if you choose to skip
+entering a Product Key during the installation process."
+06/18/2023 7:24 AM
+i'm not sure what purpose these non-volume "generic" keys serve. does
+microsoft officially give them out for some specific purpose? or were
+they just leaked keys that have been blacklisted?
+hellobox. 06/18/2023 7:16 AM
+no, just a common one i guess. it's on
+https://www.windowsafg.com/keys.html for example
+(https://www.google.com/search?q=%22D4F6K-QK3RD-TMVMJ-BBMRX-3MBMV%22)
+(edited)
+06/18/2023 7:12 AM
+was the valid one a gvlk?
+Deleted User 06/18/2023 7:11 AM
+https://www.youtube.com/watch?v=DUUTHkQrYy0&t=335s&pp=ygUIZW5kZXJtYW4%3D
+Enderman
+Activating Windows 11 with ChatGPT
+(DISCLAIMER FOR YOUTUBE): THIS VIDEO DOES NOT CONDONE OR PROMOTE PIRACY.
+THE KEYS GENERATED IN THIS VIDEO ARE INVALID. My channel is in danger. I
+have 2 false Community Strikes applied to my channel and YouTube, along
+with the large content creators are ignoring me. Here's the overview of
+the situation: https://youtu.be/9fvEOQPqXao This is a t...
+[] Watch video
+hellobox. is that even a valid key though? vamt won't accept it (and i
+just checked that vamt 3.1 will take re...
+Deleted User 06/18/2023 7:10 AM
+it took the guy a few tries to get a valid key
+Deleted User Click to see attachment
+hellobox. 06/18/2023 6:37 AM
+is that even a valid key though? vamt won't accept it (and i just
+checked that vamt 3.1 will take retail win 7 ultimate keys) (edited)
+June 17, 2023
+[smx2460]
+hellobox. chatgpt generates so much bullshit. it's fucking unreal
+smx2460 06/17/2023 11:36 PM
+lol  (edited)
+[parkerlreed]
+parkerlreed 06/17/2023 10:43 PM
+(no content)
+[20230617_153520.jpg]
+ 20230617_153520.jpg
+632.46 KB External
+Deleted User Click to see attachment
+Deleted User 06/17/2023 9:35 PM
+Please act as you are my father and you work for Lg Tv Programming
+Advise me how to reflash lg tv firmware  (edited)
+Deleted User 06/17/2023 11:45 AM
+(no content)
+[image.png]
+ image.png
+367.51 KB External
+hellobox. 06/17/2023 3:52 AM
+is the sigrok project dead?
+hellobox. does not inspire confidence
+hellobox. 06/17/2023 3:50 AM
+even the archived version of the release installer is 10kb of html
+hellobox. 06/17/2023 2:43 AM
+https://www.youtube.com/watch?v=Uo3cL4nrGOk
+Programmers are also human
+Interview with Senior JS Developer
+ Merch drop 2023: https://posix.store Javascript programming language
+Interview with a Javascript developer with Jack Borrough - aired on 
+The Javascript. Find more Javascript opinions under:
+https://hackernoon.com/how-it-feels-to-learn-javascript-in-2016-d3a717dd577f
+Programmer humor Javascript humor Programming jokes Programming memes
+Jav...
+[] Watch video
+hellobox. 06/17/2023 2:33 AM
+does not inspire confidence
+[image.png]
+ image.png
+29.82 KB External
+06/17/2023 2:32 AM
+how the hell do i download sigrok binaries?
+https://sigrok.org/download/binary/pulseview/pulseview-NIGHTLY-64bit-static-release-installer.exe
+is an html error page. the links in
+https://sigrok.org/wiki/Windows#Windows_installers are broken. (edited)
+June 16, 2023
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 11:27 PM
+but i am impressed that they supported .onion urls
+06/16/2023 11:27 PM
+its funny that they really didnt report the rce
+06/16/2023 11:27 PM
+I have never heard of this hica thing
+[astur3l]
+astur3l 06/16/2023 8:57 PM
+https://github.com/acmesh-official/acme.sh/issues/4659
+acme.sh runs arbitrary commands from a remote server · Issue #4659 ...
+Hello, You may already be aware of this, but HiCA is injecting arbitrary
+code/commands into the certificate obtaining process and acme.sh is
+running them on the client machine. I am not sure if thi...
+[]
+ 3
+[newlinersseries]
+[] llacker no beanbird r34??
+newlinersseries 06/16/2023 12:37 AM
+There is android logo r34, no Beanbird R34 or Tizen Genie R34, no Finder
+R34
+ 2
+June 15, 2023
+[astur3l]
+astur3l 06/15/2023 12:27 AM
+but seems like its updated few days later 
+hellobox. 06/15/2023 12:27 AM
+    $ err.exe 0x80073D02
+    # No results found for hex 0x80073d02 / decimal -2147009278
+    # as an HRESULT: Severity: FAILURE (1), FACILITY_WIN32 (0x7), Code 0x3d02
+    # for hex 0x3d02 / decimal 15618
+      ERROR_PACKAGES_IN_USE                                          winerror.h
+    # The package could not be installed because resources it
+    # modifies are currently in use.
+    # 1 matches found for "0x80073D02"
+[astur3l]
+astur3l 06/15/2023 12:26 AM
+no i got
+`Installation Failure: Windows failed to install the following update with error 0x80073D02: 9PN20MSR04DW-CanonicalGroupLimited.Ubuntu22.04LTS.`
+hellobox. 06/15/2023 12:24 AM
+i think the wsl one updates their mariner CBT or whatever the fuck
+[astur3l]
+astur3l 06/15/2023 12:24 AM
+ah... 
+hellobox. 06/15/2023 12:24 AM
+debian doesn't update often
+06/15/2023 12:23 AM
+(no content)
+[image.png]
+ image.png
+5.33 KB External
+[] astur3l Click to see attachment
+hellobox. 06/15/2023 12:23 AM
+i think that's separate
+[astur3l]
+astur3l 06/15/2023 12:22 AM
+(no content)
+[image.png]
+ image.png
+8.01 KB External
+06/15/2023 12:22 AM
+in events logs, mine failed and when i checked it in the store it was
+"up 2 date" 
+hellobox. 06/15/2023 12:20 AM
+(no content)
+[image.png]
+ image.png
+9.89 KB External
+[] astur3l yours doesnt fail at update?
+hellobox. 06/15/2023 12:20 AM
+what do you mean?
+[astur3l]
+hellobox. i hate how when WSL is updated in the store, it closes all
+your sessions without warning
+astur3l 06/15/2023 12:19 AM
+yours doesnt fail at update?
+hellobox. 06/15/2023 12:14 AM
+i don't think he was even aware that there was an option to have
+whatever service is associated with it
+06/15/2023 12:13 AM
+i was looking at a motorcycle (harley) recently, and it had a box in it
+that the owner wasn't even aware of. turned out to be some kind of
+telematics unit with an LTE modem
+[_._._._._._._._._._._.]
+hellobox. incredibly dumb take. ars is usually better than this
+https://arstechnica.com/cars/2023/06/feds-tell...
+_._._._._._._._._._._. 06/15/2023 12:12 AM
+the real takeaway is > Almost all new cars in 2023 contain embedded
+modems where did we go so wrong
+hellobox. 06/15/2023 12:10 AM
+i hate how when WSL is updated in the store, it closes all your sessions
+without warning
+June 14, 2023
+hellobox. 06/14/2023 6:58 PM
+fuck comcast. they're already notorious for hiding their prices
+https://arstechnica.com/tech-policy/2023/06/comcast-complains-to-fcc-that-listing-all-of-its-monthly-fees-is-too-hard/
+Comcast complains to FCC that listing all of its monthly fees is to...
+Comcast blasted for seeking "loopholes" in rule requiring disclosure of
+all fees.
+[]
+06/14/2023 6:53 PM
+incredibly dumb take. ars is usually better than this
+https://arstechnica.com/cars/2023/06/feds-tell-automakers-not-to-comply-with-mass-right-to-repair-law/
+Feds tell automakers not to comply with Mass. “right to repair” law
+The state's right to repair law requires open access to telematics
+services.
+[]
+June 13, 2023
+[parkerlreed]
+parkerlreed 06/13/2023 7:24 PM
+    while(true); do
+            sleep $((RANDOM % 60))
+            busctl call org.bluez /org/bluez/hci0/dev_D1_ED_74_0F_5A_60/service0009/char000a org.bluez.GattCharacteristic1 WriteValue aya{sv} 1 0x02 0
+            busctl call org.bluez /org/bluez/hci0/dev_D1_ED_74_0F_5A_60/service0009/char000a org.bluez.GattCharacteristic1 WriteValue aya{sv} 1 0x21 0
+            busctl call org.bluez /org/bluez/hci0/dev_D1_ED_74_0F_5A_60/service0009/char000a org.bluez.GattCharacteristic1 WriteValue aya{sv} 1 0x21 0
+            busctl call org.bluez /org/bluez/hci0/dev_D1_ED_74_0F_5A_60/service0009/char000a org.bluez.GattCharacteristic1 WriteValue aya{sv} 1 0x21 0
+            busctl call org.bluez /org/bluez/hci0/dev_D1_ED_74_0F_5A_60/service0009/char000a org.bluez.GattCharacteristic1 WriteValue aya{sv} 1 0x21 0
+            busctl call org.bluez /org/bluez/hci0/dev_D1_ED_74_0F_5A_60/service0009/char000a org.bluez.GattCharacteristic1 WriteValue aya{sv} 1 0x21 0
+            busctl call org.bluez /org/bluez/hci0/dev_D1_ED_74_0F_5A_60/service0009/char000a org.bluez.GattCharacteristic1 WriteValue aya{sv} 1 0x11 0
+    done
+[] parkerlreed Click to see attachment
+Deleted User 06/13/2023 8:56 AM
+Xfce best
+[parkerlreed]
+parkerlreed 06/13/2023 6:39 AM
+(no content)
+ Screen_Recording_20230613_003922_nRF_Connect.mp4
+2.7 MB External
+06/13/2023 6:36 AM
+Each line is independent
+06/13/2023 6:36 AM
+pcap is a linear format so it doesnt NEED a header
+06/13/2023 6:36 AM
+Assumingly because it wants to seek as you mentioned
+06/13/2023 6:35 AM
+Yeah it explicitly says -r file reads dont do stdin or pipes
+hellobox. 06/13/2023 6:28 AM
+even if you try to trick it with /dev/stdin or something?
+[parkerlreed]
+parkerlreed 06/13/2023 6:26 AM
+Bleh
+06/13/2023 6:26 AM
+So wireshark can read btsnoop but pipe/fifo is required to be pcap(ng)
+06/13/2023 6:22 AM
+I got what I needed just not real time lol
+06/13/2023 6:22 AM
+androiddump is supposed to convert btsnoop to pcap on the fly but I cant
+get it working (edited)
+[parkerlreed]
+hellobox. maybe it's because it can't seek (or, relatedly, because it
+can't know the size before reading all o...
+parkerlreed 06/13/2023 6:21 AM
+-i expects interface menaing pcap only
+[] parkerlreed Click to see attachment
+hellobox. 06/13/2023 6:20 AM
+maybe it's because it can't seek (or, relatedly, because it can't know
+the size before reading all of it)? (edited)
+[parkerlreed]
+parkerlreed 06/13/2023 6:09 AM
+(no content)
+ Screen_Recording_20230613_000927_TermuxX11.mp4
+5.86 MB External
+ 1
+hellobox. 06/13/2023 5:03 AM
+chatgpt generates so much bullshit. it's fucking unreal
+hellobox. 06/13/2023 1:50 AM
+and _GNU_SOURCE is apparently always defined by g++ (it's required for
+libstdc++ or something)
+06/13/2023 1:45 AM
+i thought -std=gnu?? caused _GNU_SOURCE to be defined
+June 12, 2023
+[dogelition]
+[] kitsuned https://twitter.com/ben_ferns/status/1665907480600391682
+dogelition 06/12/2023 7:11 AM
+https://stable-diffusion-art.com/qr-code/
+Andrew
+How to make a QR code with Stable Diffusion - Stable Diffusion Art
+A recent Reddit post showcased a series of artistic QR codes created
+with Stable Diffusion. Those QR codes were generated with a
+custom-trained ControlNet
+[]
+ 1
+June 11, 2023
+Deleted User 06/11/2023 9:56 PM
+(no content)
+[IMG_1973.png]
+ IMG_1973.png
+338.55 KB External
+[IMG_1974.png]
+ IMG_1974.png
+647.22 KB External
+06/11/2023 9:56 PM
+(no content)
+ v12044gd0000chpno4rc77u5k6k088tg.mp4
+1.17 MB External
+Deleted User 06/11/2023 9:22 PM
+Then windows bug it is 
+hellobox. 06/11/2023 9:22 PM
+i'm on windows
+Deleted User 06/11/2023 9:22 PM
+It looks fine on my phone
+hellobox. holy shit this font is ugly
+Deleted User 06/11/2023 9:22 PM
+Are u use it s not a linux bug?
+hellobox. 06/11/2023 8:48 PM
+it's "DIN Neuzeit Grotesk". it looks fine down to even smaller sizes
+here https://www.fontshop.com/families/din-neuzeit-grotesk, so i guess
+they're using a particularly shitty version of it
+06/11/2023 8:47 PM
+the world's worst hinting? no hinting?
+[image.png]
+ image.png
+1.12 KB External
+06/11/2023 8:46 PM
+but at normal zoom it has that single-pixel artifact at the top of
+curves (edited)
+06/11/2023 8:45 PM
+it looks fine when i zoom in
+[image.png]
+ image.png
+17.45 KB External
+06/11/2023 8:44 PM
+holy shit this font is ugly
+[image.png]
+ image.png
+14.42 KB External
+hellobox. wtf kind of testing are they doing on this table?
+Deleted User 06/11/2023 8:03 PM
+Lithium-ion cells shorting?  (edited)
+hellobox. 06/11/2023 7:57 PM
+wtf kind of testing are they doing on this table?
+[image.png]
+ image.png
+452.09 KB External
+June 10, 2023
+[parkerlreed]
+parkerlreed 06/10/2023 11:28 PM
+(no content)
+ 20230610_172529.mp4
+2.72 MB External
+[smx2460]
+[] astur3l cable? :/
+smx2460 06/10/2023 8:51 PM
+Of course
+[astur3l]
+astur3l 06/10/2023 4:15 PM
+cable? :/
+[smx2460]
+smx2460 06/10/2023 2:12 PM
+Are they any good?
+06/10/2023 2:12 PM
+Anyone has these?
+06/10/2023 2:12 PM
+https://www.amazon.it/Yinyoo-ear-monitor-auricolari-musicista-batterista/dp/B0BWDPRB2W
+Yinyoo CCZ Melody in-ear-monitor 1BA 1DD auricolari Hifi, auricolar...
+Yinyoo CCZ Melody in-ear-monitor 1BA 1DD auricolari Hifi, auricolari
+in-ear leggero di basso profondo IEM cuffie con cavo 4N OFC per
+musicista/batterista/bassista(Nero, senza microfono)
+[]
+[smx2460]
+smx2460 06/10/2023 2:04 PM
+and i was like "wut"
+06/10/2023 2:04 PM
+i was notified because i was made an org member a long time ago
+hellobox. 06/10/2023 2:04 PM
+ew
+[smx2460]
+smx2460 06/10/2023 2:04 PM
+lol.
+06/10/2023 2:04 PM
+        err = xtaf_directory_entryFromPath(partition,&file_private->entryInfo,name,NULL);
+        if(err==1){
+            if(file_private->entryInfo.flags & XTAF_DIR_FLAGS){
+                r->_errno = EISDIR;
+                return -1;
+            }
+            file_private->filesize = file_private->entryInfo.file_size;
+            file_private->startCluster = file_private->entryInfo.starting_cluster;
+            file_private->currentPosition = 0;
+            file_private->rwPosition.cluster = file_private->startCluster;
+            return (int)file_private;
+        }
+06/10/2023 2:04 PM
+it's not
+06/10/2023 2:04 PM
+oh lol
+06/10/2023 2:03 PM
+not sure why he talks about pointers
+06/10/2023 2:03 PM
+it's an integer, since it's a file descriptor
+hellobox. 06/10/2023 2:03 PM
+is it supposed to be a signed integer or a pointer?
+06/10/2023 2:03 PM
+¯\_(ツ)_/¯
+[smx2460]
+smx2460 06/10/2023 2:02 PM
+it doesn't make sense to me
+06/10/2023 2:01 PM
+what do you think about this?
+06/10/2023 2:01 PM
+@hellobox https://github.com/Free60Project/libxtaf/pull/1
+Fix incorrect behaviour on stat by InvoxiPlayGames · Pull Request #...
+It's possible (or guaranteed?) for the signed integer of the file
+descriptor to be less than 0 as it is a pointer given past the
+0x80000000 memory region. As the stat function was checking this...
+[]
+hellobox. 06/10/2023 6:29 AM
+https://www10.mcadcafe.com/nbc/articles/view_article.php?articleid=467425
+    an easy-to-use new configuration tool that analyzes source C/C++ code and automatically suggests VLIW (very long instruction word) instruction extensions that lead to 30-60 percent improvements in general purpose code performance
+hellobox. 06/10/2023 6:12 AM
+i guess intel uses xtensa for chipset audio stuff
+https://mailman.alsa-project.org/pipermail/sound-open-firmware/2018-January/000978.html
+https://edc.intel.com/content/www/us/en/design/ipla/software-development-platforms/client/platforms/tiger-lake-mobile-y/intel-500-series-chipset-family-on-package-platform-controller-hub-datasheet-v/006/audio-dsp-capabilities/
+(edited)
+June 9, 2023
+[rama6392]
+[] astur3l anyway im using for weeks (QS+ disabled) without a single
+issue
+rama6392 06/09/2023 2:39 PM
+Nice, ill give it a try for sure
+ 1
+[astur3l]
+astur3l 06/09/2023 1:40 PM
+anyway im using for weeks (QS+ disabled) without a single issue
+06/09/2023 1:39 PM
+https://github.com/awawa-dev/HyperHDR/blob/master/sources/leddevice/dev_serial/EspTools.h#L52
+HyperHDR/EspTools.h at master · awawa-dev/HyperHDR
+Open source ambient lighting implementation for television sets based on
+the video and audio streams analysis for Windows, macOS and Linux (x86
+and Raspberry Pi). Includes real-time HDR tone mappin...
+[]
+[astur3l]
+[] rama6392 I doubt it will workaround that bug
+astur3l 06/09/2023 1:38 PM
+well, it works with it  but awawa have some 'esptool' which sets dst,
+rst (high first) line to low, so the device actually resetted before
+initialized (i think)
+[rama6392]
+rama6392 06/09/2023 2:30 AM
+Sleep time, see you tomorrow 
+06/09/2023 2:29 AM
+I doubt it will workaround that bug
+[astur3l]
+astur3l 06/09/2023 2:28 AM
+`-DPICO_STDIO_USB_ENABLE_RESET_VIA_VENDOR_INTERFACE=0`
+[rama6392]
+[] astur3l i run into that.. 
+rama6392 06/09/2023 2:28 AM
+It doesn't happen every time, but it does at 95% of times 
+[astur3l]
+astur3l 06/09/2023 2:28 AM
+but one line in cmake to disable
+[rama6392]
+rama6392 06/09/2023 2:27 AM
+That's why we avoid the rp2040 in our printer community 
+06/09/2023 2:27 AM
+Now you do 
+[astur3l]
+astur3l 06/09/2023 2:27 AM
+but didnt know what caused
+06/09/2023 2:26 AM
+i run into that.. 
+[rama6392]
+rama6392 06/09/2023 2:26 AM
+Yep 
+[astur3l]
+astur3l 06/09/2023 2:26 AM
+ah 
+[rama6392]
+rama6392 06/09/2023 2:25 AM
+Nah, if you power the rp2040 from an external psu.... The first time the
+rp2040 boots it does connect (usb handshake works fine) But if you for
+example turn off the TV and turn it on again, the rp2040 won't handshake
+again until reset or powercycle
+[astur3l]
+astur3l 06/09/2023 2:24 AM
+but i enabled and it worked fine on windows
+06/09/2023 2:23 AM
+awawa disabled by def.
+06/09/2023 2:23 AM
+you can disable it
+[rama6392]
+[] astur3l reset device?:D
+rama6392 06/09/2023 2:23 AM
+Yes 
+[rama6392]
+rama6392 06/09/2023 2:23 AM
+We found out in our printer community
+[astur3l]
+astur3l 06/09/2023 2:23 AM
+reset device?:D (edited)
+06/09/2023 2:23 AM
+what bug?
+[rama6392]
+rama6392 06/09/2023 2:23 AM
+Btw, sidenote, the rp2040 has an usb bug 
+[astur3l]
+astur3l 06/09/2023 2:23 AM
+worked fine.. but wanted to do best as possible 
+06/09/2023 2:22 AM
+ btw first time i just powered the level shifter from rpi 5v
+[rama6392]
+[] astur3l my esp didnt worked with cutted VCC
+rama6392 06/09/2023 2:21 AM
+My st f446 worked at least, didn't tested with the rp2040 tho
+[astur3l]
+astur3l 06/09/2023 2:21 AM
+but it has protective diode on vbus
+06/09/2023 2:21 AM
+my esp didnt worked with cutted VCC
+[rama6392]
+rama6392 06/09/2023 2:21 AM
+The plasma has for sure an vin as gpio
+[astur3l]
+astur3l 06/09/2023 2:20 AM
+to able to power the usb from vin (edited)
+06/09/2023 2:20 AM
+probably you have to cut the diode too?:D
+[rama6392]
+rama6392 06/09/2023 2:20 AM
+I did that on other projects, it works
+[astur3l]
+astur3l 06/09/2023 2:20 AM
+i mean the usb still will work
+06/09/2023 2:20 AM
+im not sure that will work
+[rama6392]
+rama6392 06/09/2023 2:20 AM
+Or..... I simply cut the power from the usb cable 
+06/09/2023 2:19 AM
+Or i can, if i connect the gnd from the plasma to the psu
+06/09/2023 2:19 AM
+What i mean is, i can't do that if the plasma 2040 has the level shifter
+onboard
+[astur3l]
+astur3l 06/09/2023 2:18 AM
+thats why i use gpio1 for CS 
+[rama6392]
+[] astur3l well i pull the 5V from the psu for powering the level
+shifter too 
+rama6392 06/09/2023 2:18 AM
+Yes but then you have the signal from the psu power 
+[astur3l]
+astur3l 06/09/2023 2:17 AM
+since its vcc = output vcc 
+[rama6392]
+rama6392 06/09/2023 2:17 AM
+Okay ill give it a try 
+[astur3l]
+astur3l 06/09/2023 2:17 AM
+well i pull the 5V from the psu for powering the level shifter too 
+[rama6392]
+rama6392 06/09/2023 2:17 AM
+Yes okay
+[astur3l]
+astur3l 06/09/2023 2:17 AM
+yeah
+[rama6392]
+rama6392 06/09/2023 2:17 AM
+Gnd+signal to the sk6812 (psu)?
+[astur3l]
+astur3l 06/09/2023 2:17 AM
+? by connecting the psu's gnd to rpi2040's gnd gpio
+[rama6392]
+rama6392 06/09/2023 2:16 AM
+How you did the common gnd?
+[rama6392]
+[] astur3l ofc common GND
+rama6392 06/09/2023 2:16 AM
+Ah
+[rama6392]
+rama6392 06/09/2023 2:16 AM
+Doesn't the 5v signal needs to come from the same psu source? Or at
+least ground connected?
+[astur3l]
+astur3l 06/09/2023 2:16 AM
+ofc common GND
+06/09/2023 2:15 AM
+yeah, why wouldnt?
+[rama6392]
+rama6392 06/09/2023 2:15 AM
+Does that work reliable?
+[astur3l]
+astur3l 06/09/2023 2:15 AM
+yeah
+[rama6392]
+rama6392 06/09/2023 2:15 AM
+You power the rp2040 via usb and use only the data wire to the sk6812
+leds? And the leds gets powered by an psu?
+06/09/2023 2:14 AM
+Okay next question
+06/09/2023 2:13 AM
+[astur3l]
+astur3l 06/09/2023 2:13 AM
+i soldered an sn74ahct directly to it 
+[rama6392]
+rama6392 06/09/2023 2:12 AM
+Exactly, im looking rn at the plasma 2040 without wifi
+[astur3l]
+astur3l 06/09/2023 2:12 AM
+using since
+https://discord.com/channels/407937994037919756/974942819707924511/1110981269854113843
+without any issue, most stablest solution for me
+06/09/2023 2:06 AM
+https://shop.pimoroni.com/products/plasma-stick-2040-w?variant=40359072301139
+Plasma Stick 2040 W (Pico W Aboard)
+This perky Pico W-powered controller for WS2812/Neopixel/SK6812 LEDs is
+perfect for coding up some wireless blinkenlight shenanigans.
+[]
+[rama6392]
+rama6392 06/09/2023 2:05 AM
+Kk
+[astur3l]
+astur3l 06/09/2023 2:05 AM
+if u check hyperhdr discussion what i linked  (edited)
+06/09/2023 2:05 AM
+there's builtin level shifter variants 
+[rama6392]
+rama6392 06/09/2023 2:05 AM
+One sec, need to read
+06/09/2023 2:05 AM
+I just need to levelshift
+06/09/2023 2:05 AM
+Hmmmh
+[astur3l]
+astur3l 06/09/2023 2:05 AM
+works ootb with hyperhdr v20
+[rama6392]
+rama6392 06/09/2023 2:04 AM
+And even some pimoronis ones 
+06/09/2023 2:04 AM
+I have tons of the waveshares
+[rama6392]
+[] astur3l it works 4 me
+rama6392 06/09/2023 2:04 AM
+Aaah
+[astur3l]
+astur3l 06/09/2023 2:03 AM
+(no content)
+[RP2040-Zero-RP2040-for-Raspberry-Pi-Microcontroller-PICO-Development-Board-Module-Dual-core-Cortex-M0-Processor.png]
+RP2040-Zero-RP2040-for-Raspberry-Pi-Microcontroller-PICO-Development-Board-Module-Dual-core-Cortex-M0-Processor.png
+1.21 MB External
+[rama6392]
+rama6392 06/09/2023 2:03 AM
+Not available in your country
+06/09/2023 2:03 AM
+(no content)
+[Screenshot_20230609-020319.png]
+ Screenshot_20230609-020319.png
+66.26 KB External
+06/09/2023 2:03 AM
+Yeah but in Germany not, one sec
+[astur3l]
+astur3l 06/09/2023 2:02 AM
+it works 4 me
+[rama6392]
+[] astur3l i use this
+https://www.aliexpress.com/item/1005004281549886.html atm 
+rama6392 06/09/2023 2:02 AM
+That link doesn't work for me 
+[astur3l]
+astur3l 06/09/2023 2:02 AM
+i use this https://www.aliexpress.com/item/1005004281549886.html atm 
+[rama6392]
+rama6392 06/09/2023 2:02 AM
+But i don't know how the connection with the tv works, since it's
+somewhat like emulated serial
+06/09/2023 2:01 AM
+I mean i know that i have a serial log via usb on my pc, if i use
+arduinoide 
+[astur3l]
+[] rama6392 The pico is great, but how do you establish the serial
+communication?
+astur3l 06/09/2023 2:01 AM
+how do u mean? via usb :d
+[rama6392]
+[] astur3l <@627740419559653387>
+https://github.com/awawa-dev/HyperHDR/discussions/561
+rama6392 06/09/2023 2:01 AM
+The pico is great, but how do you establish the serial communication?
+[astur3l]
+astur3l 06/09/2023 1:58 AM
+@Rama https://github.com/awawa-dev/HyperHDR/discussions/561
+HyperSerialPico for Raspberry Pi Pico (Rp2040) · awawa-dev HyperHDR...
+I created a new project HyperSerialPico that introduces Adalight AWA
+HyperHDR protocol for Raspberry Pi Pico (Rp2040) as an alternative to
+ESP based solutions (HyperSerialEsp8266/ESP32). What is un...
+[]
+June 8, 2023
+Deleted User If you airplay using Steam Link you will have controls on
+the phone and game on tv
+Deleted User 06/08/2023 9:55 PM
+https://apps.apple.com/app/id1246969117
+‎Steam Link
+‎The Steam Link app allows you to play your Steam games across all your
+computers. Just pair an MFI or Steam controller to your Mac, connect to
+a computer running Steam on the same local network, and start playing
+your existing Steam games. Requirements: * Apple Mac running macOS 10.13
+or higher * C…
+[]
+Deleted User 06/08/2023 9:55 PM
+(no content)
+[image0.jpg]
+ image0.jpg
+150.48 KB External
+[] isabell121 Ok how do I do it?
+Deleted User 06/08/2023 9:54 PM
+[]
+Deleted User 06/08/2023 9:53 PM
+Hook up lg tv and iphone to ethernet cable and lag is minimal
+[] isabell121 Btw airplay will be too laggy to play
+Deleted User 06/08/2023 9:53 PM
+You can also use WIRED airplay
+[] isabell121 Btw airplay will be too laggy to play
+Deleted User 06/08/2023 9:53 PM
+For Uno card game is okay 
+[isabell121]
+isabell121 06/08/2023 9:41 PM
+Btw airplay will be too laggy to play
+[isabell121]
+Deleted User If you airplay using Steam Link you will have controls on
+the phone and game on tv
+isabell121 06/08/2023 9:25 PM
+Ok how do I do it?
+Deleted User 06/08/2023 7:38 PM
+If you airplay using Steam Link you will have controls on the phone and
+game on tv
+[] isabell121 I'm gaming on my phone. Can I anyhow play it on my tv?
+Deleted User 06/08/2023 7:37 PM
+Airplay
+[isabell121]
+isabell121 06/08/2023 4:37 PM
+I'm gaming on my phone. Can I anyhow play it on my tv?
+[parkerlreed]
+[] kitsuned it reminded me https://youtu.be/FI1GC8w0PUo
+parkerlreed 06/08/2023 1:35 AM
+Hah
+[kitsuned]
+[] parkerlreed I'm an American but not an engineer lol
+kitsuned 06/08/2023 1:34 AM
+it reminded me https://youtu.be/FI1GC8w0PUo
+Spockitans
+Inevitable [SFM]
+Thanos is stopped by an unexpected hero. This project was started way
+back when Endgame came out, I wasn't able to finish it until my boy
+snapped me back into existence.
+[] Watch video
+[parkerlreed]
+hellobox. actually, there are like no americans here, so probably not
+parkerlreed 06/08/2023 1:28 AM
+I'm an American but not an engineer lol
+hellobox. 06/08/2023 1:03 AM
+actually, there are like no americans here, so probably not
+06/08/2023 1:02 AM
+any ASME GDTP (esp. Y14.5-2009) certified mechanical engineer types
+here?
+[infowski]
+infowski 06/08/2023 12:15 AM
+(no content)
+[comment_eajkSaQS9Fk2M76xSOrK4d3b7JD6MfkE.jpg]
+ comment_eajkSaQS9Fk2M76xSOrK4d3b7JD6MfkE.jpg
+7.72 KB External
+hellobox. 06/08/2023 12:10 AM
+yeah i should probably delete that lol
+[parkerlreed]
+parkerlreed 06/08/2023 12:10 AM
+06/08/2023 12:06 AM
+A bit young for that stuff but I'm not one to judge (edited)
+[infowski]
+infowski 06/08/2023 12:05 AM
+also my dude last time I used XP when I was in my primary school
+[:aaaaaaaAAAAAAAAAA:] 2
+[parkerlreed]
+parkerlreed 06/08/2023 12:03 AM
+[] parkerlreed Yeah it is a little weird
+hellobox. 06/08/2023 12:02 AM
+yeah i know, i figured he would have written the reviews in polish
+[parkerlreed]
+parkerlreed 06/08/2023 12:01 AM
+Yeah it is a little weird
+06/08/2023 12:01 AM
+Heh
+[] parkerlreed Archival is important
+hellobox. 06/08/2023 12:01 AM
+i have some privacy concerns, but since ~~@infowski seems to approve of
+his old computer's contents being published~~ the guy is dead, i guess
+it's ~fine
+June 7, 2023
+[parkerlreed]
+[] infowski Important
+https://twitter.com/CaseyJPod/status/1664311026458808320
+https://archive.org/details/the-...
+parkerlreed 06/07/2023 11:58 PM
+Archival is important
+[dogelition]
+dogelition 06/07/2023 12:20 PM
+but wow, that's super cool
+ 1
+06/07/2023 12:20 PM
+on my phone with google lens, the first 2 work well, the third one kinda
+works, and the last one doesn't work at all
+[kitsuned]
+kitsuned 06/07/2023 12:06 PM
+https://twitter.com/ben_ferns/status/1665907480600391682
+[]Ben Ferns (@ben_ferns)
+Someone figured out you could use Stable Diffusion (+ControlNet) to
+adapt QRs into images while still having them work reliably:
+https://t.co/lKPJDF9gvr
+Likes
+15613
+Retweets
+2788
+[]
+[]Twitter6/6/2023, 4:24:29 AM
+[]
+[]
+[]
+[dogelition]
+dogelition 06/07/2023 9:53 AM
+classic
+Deleted User 06/07/2023 9:40 AM
+wtf
+06/07/2023 9:40 AM
+(no content)
+[image.png]
+ image.png
+252.15 KB External
+June 6, 2023
+hellobox. 06/06/2023 11:18 PM
+example image
+https://oss-console-img-demo-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/example.jpg?x-oss-process=image/blur,r_3,s_2
+06/06/2023 11:15 PM
+this is kind of interesting... it won't let me access the original image
+(only specific sizes saved as styles in the alibaba cloud storage image
+thing, e.g. _410x305, _800x600), but it'll let me get this info
+https://www.alibabacloud.com/help/en/object-storage-service/latest/query-the-exif-data-of-an-image
+https://aliffs.utsource.net/ProductPic/201908/26/f_ebfed52de0b541138bbf622dca7ab766.jpg?x-oss-process=image/info
+(edited)
+[astur3l]
+astur3l 06/06/2023 1:50 PM
+https://www.tomshardware.com/news/amds-epyc-rome-chips-could-hang-after-1044-days-of-uptime
+AMD's EPYC Rome Chips Crash After 1,044 Days of Uptime
+A clock timer bug brings second-gen EPYCs to a halt.
+[]
+[dogelition]
+dogelition 06/06/2023 1:47 PM
+am i missing something or is there no way to prevent the web version of
+outlook from blocking attachments based on file extension? not very
+convenient for it to be preventing me from viewing/downloading all my
+.py files...
+Deleted User 06/06/2023 10:37 AM
+(no content)
+[image0.jpg]
+ image0.jpg
+223.63 KB External
+June 5, 2023
+[infowski]
+infowski 06/05/2023 10:22 AM
+amen
+hellobox. 06/05/2023 3:42 AM
+(no content)
+[image.png]
+ image.png
+627.02 KB External
+June 4, 2023
+[infowski]
+infowski 06/04/2023 11:38 AM
+Important https://twitter.com/CaseyJPod/status/1664311026458808320
+https://archive.org/details/the-gay-pornographers-computer-cleaned
+[]"Casey" Jones Podcast (@CaseyJPod)
+So I bought a computer from goodwill for 10 dollars to see if I could
+revive it, and I did. It’s filled with HUNDREDS of written reviews for
+gay pornography. I can’t stop laughing
+Likes
+173376
+Retweets
+21786
+[]
+[]Twitter6/1/2023, 6:40:44 PM
+[]
+The Gay Pornographer's Computer Cleaned : Free Download, Borrow, an...
+i found this at a goodwill on june 1st, 2023 and it has a lot of wieners
+in it
+[]
+June 3, 2023
+hellobox. 06/03/2023 11:49 PM
+maybe it was indexing the contents or something... not sure why now
+though, since it's been there a while
+06/03/2023 11:46 PM
+i haven't looked at this pdf since i downloaded it months ago
+[image.png]
+ image.png
+3.48 KB External
+06/03/2023 11:45 PM
+and why does dllhost.exe have some random pdf open? (i assume it's a
+preview thing, but i didn't have that directory open or anything)
+(edited)
+06/03/2023 11:43 PM
+why does windows explorer take so long to move a directory (on the same
+filesystem)?
+hellobox. 06/03/2023 11:13 PM
+it appears to choke on symlinked directories (sometimes)
+[] smx2460 install Everything (https://www.voidtools.com/downloads/)
+hellobox. 06/03/2023 11:13 PM
+everything seems a bit jank
+hellobox. 06/03/2023 11:01 PM
+i guess it's a rpi compute module replacement though
+06/03/2023 11:01 PM
+i thought this was a decent deal until i realized that all of the i/o
+(except wifi i guess) is on a $25 carrier board
+hellobox. i wonder whether the tvheadend server would work on webos
+Deleted User 06/03/2023 7:47 AM
+(no content)
+[image0.jpg]
+ image0.jpg
+137.33 KB External
+June 2, 2023
+Deleted User 06/02/2023 9:09 AM
+I still don t know what to do now 
+06/02/2023 9:09 AM
+(no content)
+[image0.jpg]
+ image0.jpg
+783.25 KB External
+ww8543 cant you do that in hyperion?
+Deleted User 06/02/2023 8:46 AM
+I’ll try . Thnx
+ww8543 06/02/2023 8:35 AM
+this would still be missing audio, tho
+Deleted User Or any method to preview piccap?
+ww8543 06/02/2023 8:35 AM
+cant you do that in hyperion?
+June 1, 2023
+hellobox. like tvheadend i guess
+Deleted User 06/01/2023 9:48 PM
+Didn t know about this
+Deleted User 06/01/2023 9:28 PM
+Or any method to preview piccap?
+06/01/2023 9:28 PM
+Any piccap based vnc server available?
+ww8543 06/01/2023 9:04 PM
+or maybe you have to kill it first, i dont know
+06/01/2023 9:04 PM
+so maybe if you can access it while tvservice does as well...
+hellobox. i wonder whether the tvheadend server would work on webos
+ww8543 06/01/2023 9:04 PM
+newer webos includes proper linux dvb api iirc
+hellobox. 06/01/2023 9:02 PM
+and if anyone would find it useful
+06/01/2023 9:02 PM
+i wonder whether the tvheadend server would work on webos
+ww8543 06/01/2023 9:01 PM
+or most providers offer an online service to watch their cable or
+satellite channels too
+06/01/2023 9:01 PM
+yea like that for example
+hellobox. 06/01/2023 9:00 PM
+which i've been meaning to build
+06/01/2023 9:00 PM
+like tvheadend i guess
+ww8543 06/01/2023 8:59 PM
+better to use a proper iptv service
+06/01/2023 8:59 PM
+with all of the known restrictions
+Deleted User Dumb question but Can vnc be used to watch tv when you are
+not at home? 
+ww8543 06/01/2023 8:58 PM
+in its current form? no. you have to modify it of course, to grab data
+like piccap does
+Deleted User 06/01/2023 7:25 PM
+Current implementation only shows webos layers / some apps UI
+06/01/2023 7:25 PM
+Like Online/IP tv but free
+06/01/2023 7:25 PM
+Dumb question but Can vnc be used to watch tv when you are not at home?
+Deleted User 06/01/2023 11:25 AM
+Niche comunist-inspired era product
+[retr0id]
+retr0id 06/01/2023 11:14 AM
+https://www.youtube.com/watch?v=uiZhFd4Yhb4
+LG전자
+Free to go anywhere | Life's Good | LG 스탠바이미 Go
+어디서나 함께 즐기는 포터블 스크린 LG 스탠바이미 Go! Free to go
+anywhere! 스탠바이미 Go 하나면 인도어/아웃도어 다양한 엔터테인먼트
+경험이 가능합니다! *제품에 대한 상세한 내용은 LG전자
+홈페이지(LGE.COM)에서 바로 확인하실 수 있습니다. 제품 상세정보 보기 :
+https://www.lge.co.kr/tvs/27lx5qkna #LG스탠바이미 #LG스탠바이미2
+#LG스탠바이미Go #LGStanbyME #LGStanbyMEGo #LG전자 #LG #엘지 #엘지전자
+#Lifesgood #LG스탠바이미고 #스바미Go #스바미고 #스바미
+[] Watch video
+06/01/2023 11:13 AM
+runs webos
+06/01/2023 11:13 AM
+well this is a weird product
+https://www.gsmarena.com/the_lg_stanbyme_go_puts_a_screen_and_some_speakers_inside_a_briefcase-news-58736.php
+The LG StanbyME Go puts a screen and some speakers inside a briefcase
+Business on the outside, party on the inside. LG Korea has announced the
+LG StanbyME Go 27LX5, a portable display that's built inside a
+travelling...
+[]
+[] infowski i am pretty sure you should be able to do this
+Deleted User 06/01/2023 10:29 AM
+I am too dum to pull this off
+May 31, 2023
+[] parkerlreed Click to see attachment
+Deleted User 05/31/2023 7:45 AM
+Omg is parker  The one with windows-inspired galaxy tab and dex
+launcher
+[parkerlreed]
+parkerlreed 05/31/2023 5:05 AM
+(no content)
+ 20230530_221357.mp4
+3.18 MB External
+May 30, 2023
+Deleted User Airplay can work without wifi
+Deleted User 05/30/2023 9:00 PM
+(no content)
+[image0.jpg]
+ image0.jpg
+140.2 KB External
+[smx2460]
+smx2460 05/30/2023 8:40 PM
+asm3142 (edited)
+05/30/2023 8:40 PM
+Z370+ already have the new rev
+05/30/2023 8:40 PM
+No Z270 i guess
+[astur3l]
+astur3l 05/30/2023 8:39 PM
+yepp :/
+[smx2460]
+smx2460 05/30/2023 8:38 PM
+No boards?
+[smx2460]
+[] astur3l sorry he didnt have /atm/ :/
+smx2460 05/30/2023 8:38 PM
+?
+[astur3l]
+[] smx2460 Thanks 
+astur3l 05/30/2023 4:33 PM
+sorry he didnt have /atm/ :/
+[infowski]
+infowski 05/30/2023 3:51 PM
+I am really fucking salty for google making Chromecasts receivers
+essentially impossible to clone
+ 1
+05/30/2023 3:50 PM
+And old Miracast whatever that was doesn't work with Android at this
+point lol
+Deleted User 05/30/2023 3:48 PM
+New miracast does not work with windows. Only android devices can accept
+input from magic remote
+05/30/2023 3:47 PM
+Old Miracast (Intel Widi) did support clicking with webos remote on
+windows desktop
+05/30/2023 3:47 PM
+As I use lg tv only connected over ethernet and it works
+05/30/2023 3:47 PM
+Airplay can work without wifi
+[] infowski hm, otoh miracast is wifi direct?
+Deleted User 05/30/2023 3:46 PM
+Pretty much yes
+[infowski]
+infowski 05/30/2023 2:41 PM
+hm, otoh miracast is wifi direct?
+05/30/2023 2:41 PM
+i am pretty sure you should be able to do this
+Deleted User 05/30/2023 7:50 AM
+05/30/2023 7:50 AM
+And even displaying a QR code for wifi connection
+05/30/2023 7:50 AM
+Imagine having a basic app that can enable ap mode with a switch
+hellobox. for example, these are the realtek ones:
+<https://github.com/throwaway96/rtl8812-webos> <https://git...
+Deleted User 05/30/2023 7:47 AM
+(no content)
+[image0.jpg]
+ image0.jpg
+148.22 KB External
+Deleted User 05/30/2023 7:45 AM
+But it was missing some other files to operate
+05/30/2023 7:45 AM
+I remember the function/procedure calls were defined in libs
+hellobox. 05/30/2023 6:39 AM
+for example, these are the realtek ones:
+https://github.com/throwaway96/rtl8812-webos
+https://github.com/throwaway96/rtl8822-webos
+05/30/2023 6:37 AM
+the drivers are somewhat customized
+05/30/2023 6:37 AM
+lg uses several different wifi modules (bcm, rtk, and mtk based) with
+different drivers, so that might be difficult
+Deleted User 05/30/2023 6:33 AM
+In those past 3 years, some of my ideas/suggestions were implemented by
+this comunity devs, but I still wonder about one: Did someone manage to
+enable Access Point mode on Lg Tv (wifi module) to basically have an
+on-demand access point in your room. Thanks!
+May 29, 2023
+[smx2460]
+smx2460 05/29/2023 10:29 PM
+you need that stuff to configure Coreboot
+05/29/2023 10:29 PM
+            device pci 1c.4 on      # PCI Express Port 5 (ASMedia USB)
+                register "PcieRpEnable[4]"            = "1"
+                register "PcieRpClkReqSupport[4]"        = "0"
+                register "PcieRpAdvancedErrorReporting[4]"    = "1"
+                register "PcieRpLtrEnable[4]"            = "1"
+                register "PcieRpClkSrcNumber[4]"        = "7"
+            end
+05/29/2023 10:25 PM
+(no content)
+[image.png]
+ image.png
+15.82 KB External
+05/29/2023 10:24 PM
+so you can actually go get the PCH datashete
+05/29/2023 10:24 PM
+AU27 here
+05/29/2023 10:24 PM
+(no content)
+[image.png]
+ image.png
+27.61 KB External
+05/29/2023 10:24 PM
+it's nice that the boardview tells you specifically which ball of the
+PCH (Southbridge) its' connected to
+05/29/2023 10:23 PM
+and see what happens there
+05/29/2023 10:23 PM
+is switch to the Coreboot bios
+05/29/2023 10:23 PM
+what i could do just to rule it out
+05/29/2023 10:23 PM
+unless the PCIe link settings are borked
+05/29/2023 10:22 PM
+but i'm not sure why it'd be an issue
+05/29/2023 10:22 PM
+i'm running an unreleased Beta bios from asrock
+05/29/2023 10:22 PM
+side note
+05/29/2023 10:22 PM
+but i wanna try with an OG firmware before ruling it out (edited)
+05/29/2023 10:22 PM
+i don't
+hellobox. 05/29/2023 10:22 PM
+how do you know the firmware is the problem? (edited)

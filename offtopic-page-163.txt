@@ -1,0 +1,1704 @@
+January 29, 2022
+[infowski]
+infowski 01/29/2022 12:37 PM
+Ah, so it'sa different thing?
+[smx2460]
+smx2460 01/29/2022 12:37 PM
+zend_write is a global function pointer (edited)
+01/29/2022 12:37 PM
+it is
+01/29/2022 12:37 PM
+oh
+01/29/2022 12:37 PM
+unless the export is a function pointer
+01/29/2022 12:37 PM
+not replacing the original one
+01/29/2022 12:37 PM
+i think they are doing this
+01/29/2022 12:36 PM
+    void *myputs = &puts;
+    myputs = &otherPuts;
+    myputs = &puts;
+01/29/2022 12:36 PM
+like
+01/29/2022 12:36 PM
+and replacing their own pointer
+01/29/2022 12:36 PM
+what i think is happening there is that they are storing a pointer to
+the original function
+01/29/2022 12:35 PM
+hmm
+01/29/2022 12:35 PM
+is obtaining a reference to the original zend_write
+[infowski]
+infowski 01/29/2022 12:35 PM
+since in that example zend_write = "original binary"
+[smx2460]
+smx2460 01/29/2022 12:35 PM
+what they do in that example
+01/29/2022 12:35 PM
+ok so
+[infowski]
+infowski 01/29/2022 12:35 PM
+I am confused
+[smx2460]
+smx2460 01/29/2022 12:35 PM
+if you want to replace the behavior in the original binary, yes
+01/29/2022 12:34 PM
+hmm
+[infowski]
+infowski 01/29/2022 12:34 PM
+wait, so do you even need inj_backup_function/inj_replace_function?
+[smx2460]
+smx2460 01/29/2022 12:34 PM
+i'm not sure if there's a better way to do this tho
+01/29/2022 12:34 PM
+    function makePfn(string $type, $closure){
+        $fnT = FFI::type($type);
+        $arrT = FFI::arrayType($fnT, [1]);
+        $arr = FFI::new($arrT);
+        $arr[0] = $closure;
+        return $arr[0];
+    }
+01/29/2022 12:33 PM
+they actually hook it properly, by saving the original
+01/29/2022 12:33 PM
+they are as crazy as me 
+01/29/2022 12:33 PM
+replacing an internal (but exported) PHP function! (edited)
+01/29/2022 12:33 PM
+they provide THIS as documentation example
+01/29/2022 12:33 PM
+    <?php
+    $zend = FFI::cdef("
+        typedef int (*zend_write_func_t)(const char *str, size_t str_length);
+        extern zend_write_func_t zend_write;
+    ");
+    echo "Hello World 1!\n";
+    $orig_zend_write = clone $zend->zend_write;
+    $zend->zend_write = function($str, $len) {
+        global $orig_zend_write;
+        $orig_zend_write("{\n\t", 3);
+        $ret = $orig_zend_write($str, $len);
+        $orig_zend_write("}\n", 2);
+        return $ret;
+    };
+    echo "Hello World 2!\n";
+    $zend->zend_write = $orig_zend_write;
+    echo "Hello World 3!\n";
+    ?>
+01/29/2022 12:32 PM
+https://www.php.net/manual/en/ffi.examples-callback.php
+[infowski]
+infowski 01/29/2022 12:32 PM
+well then, we php now.
+[infowski]
+[] smx2460 it does since it supports FFI, it's even documented
+infowski 01/29/2022 12:32 PM
+ah, sounds useful.
+[infowski]
+infowski 01/29/2022 12:32 PM
+does it do some jit shit under the hood that it just works like that?
+[smx2460]
+[] infowski honestly didn't expect it to just work by passing a closure
+reference/pointer
+smx2460 01/29/2022 12:32 PM
+it does since it supports FFI, it's even documented
+[smx2460]
+smx2460 01/29/2022 12:32 PM
+whichever comes first
+[infowski]
+[] smx2460 ```php <?php print("Hello World\n"); $ffi = FFI::cdef(" void
+*inj_backup_function(void *original...
+infowski 01/29/2022 12:32 PM
+honestly didn't expect it to just work by passing a closure
+reference/pointer
+[smx2460]
+smx2460 01/29/2022 12:32 PM
+still waiting for the LUA alternative, or PLasagna
+01/29/2022 12:29 PM
+if i cast it with FFI::cast  (edited)
+01/29/2022 12:29 PM
+i could even call the original in there
+01/29/2022 12:27 PM
+pinging @DustyAngel47 so he can have  nightmares
+01/29/2022 12:27 PM
+in case you don't believe me
+01/29/2022 12:27 PM
+(no content)
+[unknown.png]
+ unknown.png
+65.24 KB External
+01/29/2022 12:26 PM
+    <?php
+    print("Hello World\n");
+    $ffi = FFI::cdef("
+        void *inj_backup_function(void *original_code, size_t *num_saved_bytes, int opcode_bytes_to_restore);
+        int inj_replace_function(void *original_fn, void *replacement_fn);
+        int func1(int arg1, int arg2);
+    ");
+    function makePfn(string $type, $closure){
+        $fnT = FFI::type($type);
+        $arrT = FFI::arrayType($fnT, [1]);
+        $arr = FFI::new($arrT);
+        $arr[0] = $closure;
+        return $arr[0];
+    }
+    $replace = function(int $arg1, int $arg2){
+        return 1234;
+    };
+    $pfnReplace = makePfn("int (*)(int, int)", $replace);
+    $pfnOrig = $ffi->inj_backup_function($ffi->func1, NULL, -1);
+    $ffi->inj_replace_function($ffi->func1, $pfnReplace);
+    while(true){
+        sleep(1);
+    }
+01/29/2022 12:26 PM
+@infowski done 
+[maryjohanna42069]
+maryjohanna42069 01/29/2022 12:18 PM
+even Austria has more debt than Hungary wtf
+[maryjohanna42069]
+[] smx2460 Click to see attachment
+maryjohanna42069 01/29/2022 12:17 PM
+huh, that's new. I heard the situation was bad, but not that bad
+[smx2460]
+smx2460 01/29/2022 12:02 PM
+xD
+01/29/2022 12:02 PM
+i could even fork php and call it microphp
+01/29/2022 12:02 PM
+:insert serious face here:
+01/29/2022 12:02 PM
+challenge accepted
+01/29/2022 12:02 PM
+you know i'll be doing it (edited)
+[smx2460]
+[] infowski sounds reasonable honestly. now only if you could make some
+very simple example on how to use `inj_r...
+smx2460 01/29/2022 12:02 PM
+don't 
+[smx2460]
+smx2460 01/29/2022 12:01 PM
+yeah, it can be done
+01/29/2022 12:00 PM
+    You'll also want to keep enable-maintainer-zts turned on both for the familiar reason that it will help you notice coding mistakes, but also for another reason. Imagine for a moment that you have more than one application that will be using the PHP Embed library to perform scripting tasks; one of these is a simple, short-lived application with no use for threading and so would want ZTS turned off for efficiency.
+    Now imagine that the second application does use threading and that, like a web server, each thread needs to track its own request context. If ZTS is turned off, only the first application will be able to use the library; however, with ZTS enabled, both applications can take advantage of the same shared object in their own process space.
+01/29/2022 12:00 PM
+but you need a C wrapper around the call site iirc
+01/29/2022 11:59 AM
+PHP has thread safety as default, it should be safe
+[infowski]
+infowski 01/29/2022 11:59 AM
+yeah - you definitely can implement something like that in Lua, iirc.
+let me check.
+[smx2460]
+smx2460 01/29/2022 11:59 AM
+i mean, thread safety
+01/29/2022 11:59 AM
+because this has implications with the interpreter
+[infowski]
+infowski 01/29/2022 11:59 AM
+No, replacing a function in target with a PHP logic
+[smx2460]
+smx2460 01/29/2022 11:59 AM
+can you do that in LUA?
+01/29/2022 11:58 AM
+wait you mean replacing the function in PHP?
+[infowski]
+infowski 01/29/2022 11:58 AM
+sounds reasonable honestly. now only if you could make some very simple
+example on how to use inj_replace_function into a PHP callback, that'd
+be amazing 
+[smx2460]
+smx2460 01/29/2022 11:57 AM
+so it means the ezinject binary would be + that
+01/29/2022 11:56 AM
+xD
+01/29/2022 11:56 AM
+@infowski i hacked PCRE and HASH out of php, 3.4mb
+01/29/2022 11:51 AM
+and surely not even Greece
+01/29/2022 11:51 AM
+not even close
+01/29/2022 11:51 AM
+we're not Japan
+01/29/2022 11:51 AM
+but....
+01/29/2022 11:51 AM
+although they say that's not necessarily true given Japan's state with
+high debt
+[infowski]
+infowski 01/29/2022 11:51 AM
+mamma mia
+[smx2460]
+smx2460 01/29/2022 11:50 AM
+a good indication of "how much in dipshit we are"
+[smx2460]
+[] infowski is Poland cheap compared to [your country]?
+smx2460 01/29/2022 11:50 AM
+(no content)
+[unknown.png]
+ unknown.png
+52.52 KB External
+[infowski]
+infowski 01/29/2022 11:41 AM
+so... openlgtv hacker exchange program when? :^)
+ 1  1
+[maryjohanna42069]
+maryjohanna42069 01/29/2022 11:38 AM
+we have cheaper prices afaik, but also 27% VAT
+01/29/2022 11:38 AM
+i think its around the same
+01/29/2022 11:37 AM
+uhh good question
+[infowski]
+infowski 01/29/2022 11:37 AM
+not sure how the hotel industry is right now though.
+01/29/2022 11:37 AM
+I'd expect it to be fairly similar.
+01/29/2022 11:35 AM
+is Poland cheap compared to [your country]?
+[maryjohanna42069]
+maryjohanna42069 01/29/2022 11:34 AM
+combine both xD
+[infowski]
+infowski 01/29/2022 11:31 AM
+or just... poland?
+01/29/2022 11:31 AM
+trains?
+[maryjohanna42069]
+maryjohanna42069 01/29/2022 11:31 AM
+they are really cheap for some reason now
+[infowski]
+infowski 01/29/2022 11:30 AM
+oh god
+[maryjohanna42069]
+maryjohanna42069 01/29/2022 11:30 AM
+xd
+[smx2460]
+smx2460 01/29/2022 11:30 AM
+all aboard the Polish train
+[smx2460]
+[] maryjohanna42069 now I have a reason to travel there
+smx2460 01/29/2022 11:30 AM
+yeah!
+[maryjohanna42069]
+maryjohanna42069 01/29/2022 11:30 AM
+i would think dominos makes their living just fine on their own
+[infowski]
+[] maryjohanna42069 now I have a reason to travel there
+infowski 01/29/2022 11:30 AM
+to each their own or something. x-D
+[maryjohanna42069]
+maryjohanna42069 01/29/2022 11:30 AM
+wtf, makes no sense
+[infowski]
+infowski 01/29/2022 11:28 AM
+too bad, at least in warsaw, they have merged with one other pizza
+delivery company (i think it was called dominium?), and it's kinda hit
+or miss now - half of the orders come from dominos which was decent from
+get go, and the other half come from the ex-dominium which was... not
+great.
+[maryjohanna42069]
+maryjohanna42069 01/29/2022 11:27 AM
+now I have a reason to travel there
+[infowski]
+infowski 01/29/2022 11:27 AM
+yeah, we had for a while now
+[maryjohanna42069]
+maryjohanna42069 01/29/2022 11:27 AM
+you have dominos in poland?
+01/29/2022 11:27 AM
+also wtf
+[maryjohanna42069]
+[] infowski repost
+maryjohanna42069 01/29/2022 11:26 AM
+that meme hurt, i hate it
+ 1
+[infowski]
+infowski 01/29/2022 11:26 AM
+love the filename !!!!!!!!!!!hotdog.png
+[infowski]
+[] smx2460 hotdog crust? xD
+infowski 01/29/2022 11:26 AM
+(no content)
+[hotdog.png]
+ hotdog.png
+1.63 MB External
+[infowski]
+infowski 01/29/2022 11:26 AM
+repost
+[5ea5939c3f6794d36604b3b67476033f99c6a8d7.png]
+ 5ea5939c3f6794d36604b3b67476033f99c6a8d7.png
+506.92 KB External
+[smx2460]
+smx2460 01/29/2022 11:26 AM
+hotdog crust? xD
+[infowski]
+infowski 01/29/2022 11:24 AM
+> tfw you lived on 6th level of a 10-story building that had dominos on
+ground floor > tfw you ordered a pizza, put on shoes, and the order was
+ready for pickup when you got to the ground floor
+01/29/2022 11:23 AM
+though, totally honestly, one of my best "pizza" experiences/memories
+was polish dominos 4 cheese pizza with hotdog crust xDDDDDDDDDDD
+01/29/2022 11:22 AM
+pure gold.
+[smx2460]
+smx2460 01/29/2022 11:22 AM
+[infowski]
+[] smx2460
+https://www.reddit.com/r/PizzaCrimes/comments/pmtvgh/what_the_hell/
+infowski 01/29/2022 11:22 AM
+i think this one may be some "built to order" kind of deal xD
+[smx2460]
+smx2460 01/29/2022 11:21 AM
+someone must have opened the box and dropped the fridge on it
+01/29/2022 11:21 AM
+i refuse to believe this is not staged ^
+01/29/2022 11:21 AM
+https://www.reddit.com/r/PizzaCrimes/comments/pmtvgh/what_the_hell/
+r/PizzaCrimes - What the hell?
+1,865 votes and 100 comments so far on Reddit
+[]
+01/29/2022 11:21 AM
+https://www.reddit.com/r/PizzaCrimes is a thing btw
+r/PizzaCrimes
+[infowski]
+infowski 01/29/2022 11:19 AM
+that is indeed пицца
+[smx2460]
+smx2460 01/29/2022 11:19 AM
+[infowski]
+infowski 01/29/2022 11:19 AM
+oh shit
+[smx2460]
+smx2460 01/29/2022 11:19 AM
+"pizza"
+01/29/2022 11:19 AM
+look what a dude once sent me
+01/29/2022 11:19 AM
+https://www.reddit.com/r/ANormalDayInRussia/comments/s2glaz/mackerel_pizza/?utm_medium=android_app&utm_source=share
+r/ANormalDayInRussia - Mackerel pizza
+161 votes and 12 comments so far on Reddit
+[]
+[infowski]
+infowski 01/29/2022 11:18 AM
+that one was honest to god accident
+[smx2460]
+smx2460 01/29/2022 11:18 AM
+ban 
+[smx2460]
+[] infowski (unless i fuck up and order "hawaii" aka ham + pineapple
+pizza x-------------D)
+smx2460 01/29/2022 11:18 AM
+man...
+[smx2460]
+smx2460 01/29/2022 11:18 AM
+which should save space
+01/29/2022 11:18 AM
+i could alternatively opt to not use PCRE JIT
+01/29/2022 11:18 AM
+(i can pivot it to use the system provided one tho)
+01/29/2022 11:18 AM
+it's a shame i cannot officially disable it
+01/29/2022 11:17 AM
+heh
+01/29/2022 11:17 AM
+PCRE is the biggest part in php
+[infowski]
+infowski 01/29/2022 11:15 AM
+(unless i fuck up and order "hawaii" aka ham + pineapple pizza
+x-------------D)
+01/29/2022 11:15 AM
+no meat beyond this point
+01/29/2022 11:14 AM
+more like vlasang
+[smx2460]
+smx2460 01/29/2022 11:14 AM
+ asagna
+01/29/2022 11:14 AM
+PLasagna
+01/29/2022 11:14 AM
+[infowski]
+infowski 01/29/2022 11:14 AM
+tssh
+[smx2460]
+smx2460 01/29/2022 11:14 AM
+xD
+01/29/2022 11:14 AM
+lentils? never heard in lasagne
+[infowski]
+infowski 01/29/2022 11:12 AM
+@Smx is tomato+lentils (+ onion, carrot, garlic, etc...) filling
+allowed?
+[smx2460]
+smx2460 01/29/2022 11:00 AM
+and then it's only namespaces.
+01/29/2022 11:00 AM
+include is only used to include the class autoloader
+01/29/2022 10:59 AM
+i refuse to use the include keyword to do webapps
+01/29/2022 10:59 AM
+^ this is the cleanest, but you need 2 projects (edited)
+01/29/2022 10:58 AM
+- php backend (API only) + react frontend (AJAX only)
+01/29/2022 10:58 AM
+- php laravel/symphony apps (mvc)
+01/29/2022 10:58 AM
+- php cgi apps
+01/29/2022 10:58 AM
+- php cli tools
+01/29/2022 10:58 AM
+at work i used probably all types of PHP integrations
+[dustyangel47]
+dustyangel47 01/29/2022 10:56 AM
+tfw 13 different indexes
+[unknown.png]
+ unknown.png
+12.53 KB External
+[smx2460]
+smx2460 01/29/2022 10:55 AM
+maybe only the error was changed
+01/29/2022 10:54 AM
+or maybe not
+01/29/2022 10:54 AM
+    %token T_PAAMAYIM_NEKUDOTAYIM "'::'"
+01/29/2022 10:54 AM
+it was renamed iirc
+[dustyangel47]
+dustyangel47 01/29/2022 10:54 AM
+"Not actually a bug; closed"
+[smx2460]
+smx2460 01/29/2022 10:53 AM
+the bug being that it was not intelligible to 99% of users
+01/29/2022 10:53 AM
+iirc that was reported as a bug
+[infowski]
+infowski 01/29/2022 10:53 AM
+(have they fixed this already or it's still the official name?)
+01/29/2022 10:53 AM
+haha T_PAAMAYIM_NEKUDOTAYIM
+ 1
+[smx2460]
+smx2460 01/29/2022 10:53 AM
+        private function LoadLibraryA($libPath){
+            return $this->ctx->LoadLibraryA($libPath);
+        }
+        private function GetProcAddress($handle, $funcName){
+            return $this->ctx->GetProcAddress($handle, $funcName);
+        }
+[dustyangel47]
+dustyangel47 01/29/2022 10:52 AM
+never expected php to have a this keyword but here we are
+[smx2460]
+smx2460 01/29/2022 10:52 AM
+https://github.com/smx-smx/Winternals/blob/master/WinSxS/Wcp.php
+Winternals/Wcp.php at master · smx-smx/Winternals
+Contribute to smx-smx/Winternals development by creating an account on
+GitHub.
+[]
+01/29/2022 10:52 AM
+and i'm the 1% that actually calls C code from PHP
+01/29/2022 10:51 AM
+it uses a mix of strict types and type hinting
+01/29/2022 10:51 AM
+since that project was born in OOP and Namespaces (edited)
+01/29/2022 10:51 AM
+i wonder what you think about the code style
+[dustyangel47]
+dustyangel47 01/29/2022 10:51 AM
+~~still makes more sense than this code formatting~~
+[unknown.png]
+ unknown.png
+71.83 KB External
+[smx2460]
+smx2460 01/29/2022 10:50 AM
+that's a reverse engineering of WinSxS that i've done a while back, not
+complete yet
+01/29/2022 10:50 AM
+i bet you will have many questions about this
+01/29/2022 10:50 AM
+https://github.com/smx-smx/Winternals/blob/master/WinSxS/Package.php
+Winternals/Package.php at master · smx-smx/Winternals
+Contribute to smx-smx/Winternals development by creating an account on
+GitHub.
+[]
+[dustyangel47]
+dustyangel47 01/29/2022 10:50 AM
+on one hand, why is this in php on the other hand, this is making me
+want to use php
+[smx2460]
+smx2460 01/29/2022 10:50 AM
+    // Declare the interface 'Template'
+    interface Template
+    {
+        public function setVariable($name, $var);
+        public function getHtml($template);
+    }
+    // Implement the interface
+    // This will work
+    class WorkingTemplate implements Template
+    {
+        private $vars = [];
+        public function setVariable($name, $var)
+        {
+            $this->vars[$name] = $var;
+        }
+        public function getHtml($template)
+        {
+            foreach($this->vars as $name => $value) {
+                $template = str_replace('{' . $name . '}', $value, $template);
+            }
+            return $template;
+        }
+    }
+01/29/2022 10:49 AM
+i try to actually use the interface keyword in PHP (yes it has it)
+01/29/2022 10:49 AM
+01/29/2022 10:49 AM
+so that it can be replaced with something else later on
+01/29/2022 10:49 AM
+but i moved all the parameters fetching to a class i called AppVariables
+01/29/2022 10:48 AM
+i've also sinned a few times, when crushed by things to do and asked for
+an automated tool
+[dustyangel47]
+dustyangel47 01/29/2022 10:48 AM
+the line numbers went further down
+01/29/2022 10:48 AM
+and then i noticed
+01/29/2022 10:48 AM
+"where has the code gone?"
+01/29/2022 10:48 AM
+i was wondering
+01/29/2022 10:48 AM
+~~and you havent even gotten to the code yet~~
+[smx2460]
+smx2460 01/29/2022 10:47 AM
+yeah that code is bad
+[dustyangel47]
+dustyangel47 01/29/2022 10:47 AM
+that is 110 lines of literal blank space
+01/29/2022 10:47 AM
+(no content)
+ 2022-01-29_04-46-53.mp4
+2.06 MB External
+[dustyangel47]
+dustyangel47 01/29/2022 9:57 AM
+aaand crashed the panel
+01/29/2022 9:54 AM
+how can i even set a root passwd?
+01/29/2022 9:54 AM
+literally everything requires premium lmao (edited)
+01/29/2022 9:51 AM
+i wonder what this panel is
+01/29/2022 9:51 AM
+we're in
+[IMG_20220129_035046306_HDR.jpg]
+ IMG_20220129_035046306_HDR.jpg
+4.53 MB External
+01/29/2022 9:47 AM
+why does it want me to install a browser on the server version
+[IMG_20220129_034445029_HDR.jpg]
+ IMG_20220129_034445029_HDR.jpg
+3.46 MB External
+01/29/2022 9:43 AM
+bruh it shows the same network twice
+01/29/2022 9:42 AM
+oh no
+[IMG_20220129_034222691_HDR.jpg]
+ IMG_20220129_034222691_HDR.jpg
+5.31 MB External
+01/29/2022 9:37 AM
+well rip, ghostbsd requires more ram than i have
+01/29/2022 9:35 AM
+this doesnt even look that bad if you use it for a specific purpose
+01/29/2022 9:35 AM
+actually
+01/29/2022 9:33 AM
+fucking sysv
+01/29/2022 9:33 AM
+not even busybox init (edited)
+01/29/2022 9:33 AM
+IT USES SYSVINIT
+01/29/2022 9:33 AM
+OH MY GOD
+01/29/2022 9:33 AM
+it has conky????
+01/29/2022 9:33 AM
+https://porteus-kiosk.org/packages.html
+Packages
+Package list used for latest point release
+01/29/2022 9:31 AM
+actually doesnt really narrow it down because we already knew it wouldnt
+be systemd
+01/29/2022 9:31 AM
+so that
+01/29/2022 9:31 AM
+okay, it tells you to put scripts on /etc/rc.d
+01/29/2022 9:30 AM
+thats fair
+[infowski]
+infowski 01/29/2022 9:30 AM
+Everyone uses openbox
+[dustyangel47]
+dustyangel47 01/29/2022 9:30 AM
+~~not systemd~~
+[infowski]
+infowski 01/29/2022 9:30 AM
+Everyone uses cron
+[dustyangel47]
+dustyangel47 01/29/2022 9:30 AM
+and openbox
+01/29/2022 9:30 AM
+it uses cron
+01/29/2022 9:30 AM
+oh god
+[infowski]
+infowski 01/29/2022 9:29 AM
+Lol
+[dustyangel47]
+dustyangel47 01/29/2022 9:29 AM
+>you can't stop the service, just make it fail all the time!
+01/29/2022 9:29 AM
+lmao
+[unknown.png]
+ unknown.png
+19.67 KB External
+01/29/2022 9:29 AM
+honestly good for them to have (seemingly?) made a semi-new thing
+instead of the nth debian/ubuntu fork
+[infowski]
+infowski 01/29/2022 9:28 AM
+Yeah. Maybe some yocto shit?
+[dustyangel47]
+dustyangel47 01/29/2022 9:28 AM
+well maybe custom?
+[infowski]
+infowski 01/29/2022 9:28 AM
+Oooooof
+[dustyangel47]
+dustyangel47 01/29/2022 9:28 AM
+so there is actually custom stuff here?
+01/29/2022 9:28 AM
+> edit the /opt/scripts/gui-app file from 003-settings.xzm
+01/29/2022 9:28 AM
+does systemd respect that?
+01/29/2022 9:28 AM
+> your custom /etc/inittab
+01/29/2022 9:27 AM
+or ubuntu
+01/29/2022 9:27 AM
+yeah probably
+01/29/2022 9:27 AM
+okay i actually have to try this now
+[infowski]
+infowski 01/29/2022 9:27 AM
+Probably debian xD
+01/29/2022 9:27 AM
+I have never heard of that thing tbh
+[dustyangel47]
+dustyangel47 01/29/2022 9:27 AM
+lmao ig
+[infowski]
+infowski 01/29/2022 9:27 AM
+Tells you a lot about poland, doesnt it?
+[dustyangel47]
+dustyangel47 01/29/2022 9:27 AM
+what is this based on?
+01/29/2022 9:27 AM
+actually, hmm (edited)
+01/29/2022 9:26 AM
+lol
+[infowski]
+infowski 01/29/2022 9:26 AM
+Yeah thats my joke, thats basically rhe address
+[dustyangel47]
+dustyangel47 01/29/2022 9:26 AM
+is it just not going to tell me the difference? (i can figure out what
+they are, but still) (edited)
+[unknown.png]
+ unknown.png
+20.63 KB External
+01/29/2022 9:25 AM
+~~sounds more like britain~~
+[infowski]
+infowski 01/29/2022 9:25 AM
+"Field Rd. 22; New Bishopshire"
+01/29/2022 9:24 AM
+oh no
+[dustyangel47]
+[] dustyangel47 https://porteus-kiosk.org/index.html
+dustyangel47 01/29/2022 9:24 AM
+i did not see poland coming (edited)
+[unknown.png]
+ unknown.png
+16.57 KB External
+[dustyangel47]
+[] infowski The only limitstion i have is having ~1gb of free ram when
+rebuilding th system since it needs to ev...
+dustyangel47 01/29/2022 9:23 AM
+tfw thats half of my available ram
+[dustyangel47]
+dustyangel47 01/29/2022 9:22 AM
+https://porteus-kiosk.org/index.html (edited)
+Porteus Kiosk - free and open source kiosk software for web terminals.
+Porteus Kiosk is a locked down linux operating system for public access
+computers. It is fast small and secure.
+01/29/2022 9:22 AM
+although, i think i found a memier option to install before i actually
+become serious
+01/29/2022 9:22 AM
+interesting
+[infowski]
+infowski 01/29/2022 9:21 AM
+Then the update is basically overengineered scp (nix push iirc, but its
+all wrapped by morph do you dont even see that)
+01/29/2022 9:20 AM
+Though a workaround for that are things like morph - where you badically
+build full system on a separate machine and just push out full image and
+its dependent packages (works pretty much the same way as plain
+nixos-rebuild, except you push out from build machine, and use a
+different command)
+01/29/2022 9:19 AM
+The only limitstion i have is having ~1gb of free ram when rebuilding th
+system since it needs to evaluate everything, even if it will be fetched
+from the cache.
+[dustyangel47]
+dustyangel47 01/29/2022 9:18 AM
+~~yeah but those might have decent thermals~~
+[infowski]
+infowski 01/29/2022 9:17 AM
+Liike z8350 and shit
+01/29/2022 9:17 AM
+I have NixOS running in production on tablet-grade atoms
+[dustyangel47]
+dustyangel47 01/29/2022 9:17 AM
+because no way in hell i'm compiling anything on a dualcore at 1.6ghz
+01/29/2022 9:17 AM
+well that would probably work then
+[infowski]
+infowski 01/29/2022 9:17 AM
+I mean, like adding patches, or changing configure flags.
+01/29/2022 9:16 AM
+Tldr you fetch 99% of the system off binary cache, but if you actually
+insist on changing some build definition of some package, its very
+simple and itll just build locally.
+01/29/2022 9:15 AM
+Yes, but actually no.
+[dustyangel47]
+dustyangel47 01/29/2022 9:14 AM
+(also nix is generally binary-based, right?) (edited)
+01/29/2022 9:14 AM
+~~nsa~~selinux isnt very much of a concern considering i use this laptop
+approximately once per month
+[infowski]
+infowski 01/29/2022 9:14 AM
+Too bad it doesnt have sensible support for selinux/apparmor 
+01/29/2022 9:12 AM
+@DustyAngel47 Just install nixos ffs
+[dustyangel47]
+dustyangel47 01/29/2022 8:53 AM
+i guess i can try something like ghostbsd to see if its a freebsd
+problem or a my-inability-to-configure-things problem
+[dustyangel47]
+dustyangel47 01/29/2022 8:14 AM
+nope, not that i could find in dmesg or x11 logs
+[smx2460]
+[] dustyangel47 the synaptics driver is kicking my ass and won't work no
+matter what combination of moused, libinput...
+smx2460 01/29/2022 7:55 AM
+Any indication as to what the fault might be?
+[smx2460]
+smx2460 01/29/2022 7:54 AM
+Approve 
+[smx2460]
+[] dustyangel47 memery
+smx2460 01/29/2022 7:54 AM
+Epic
+[dustyangel47]
+dustyangel47 01/29/2022 6:47 AM
+one of the preconfigured desktop distros might work better, but whats
+the fun in that?
+01/29/2022 6:46 AM
+the synaptics driver is kicking my ass and won't work no matter what
+combination of moused, libinput, and xf86-driver-synaptics or whatever
+the port name is
+01/29/2022 6:46 AM
+i think i may have to just take the L on this one
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/29/2022 5:10 AM
+3 BSDs in a day challenge
+[dustyangel47]
+dustyangel47 01/29/2022 5:08 AM
+memery
+[unknown.png]
+ unknown.png
+17.87 KB External
+[] retr0id imagine owning a car 
+ww8543 01/29/2022 12:57 AM
+i felt that
+[retr0id]
+retr0id 01/29/2022 12:56 AM
+I'm currently standing in the corner of my living room, because that's
+where the bass response is strongest
+ 1
+01/29/2022 12:56 AM
+imagine owning a car 
+ww8543 01/29/2022 12:56 AM
+(if you have one)
+[] retr0id my primary objectives in life are now: obtain more subwoofer,
+find somewhere to live where I won't b...
+ww8543 01/29/2022 12:55 AM
+dont forget to put some in your car 
+[retr0id]
+retr0id 01/29/2022 12:53 AM
+my primary objectives in life are now: obtain more subwoofer, find
+somewhere to live where I won't bother neighbours
+01/29/2022 12:52 AM
+damn, I'm addicted to subwoofers now
+ 1
+January 28, 2022
+[infowski]
+infowski 01/28/2022 11:56 PM
+actually turns out most of the acquire is spent in libgm 
+01/28/2022 11:53 PM
+"acquire" = everything directly touching the capture backend, "convert"
+= actual memory readout + conversion to argb, "process" = argb
+blending + argtorgb24
+01/28/2022 11:52 PM
+also basically same as before:
+    4.234s [INFO unicapture_run      ] Framerate: 28.681950 FPS; timings - wait: 11257us, acquire: 4644us, convert: 7342us, process; 347us, send: 1us
+01/28/2022 11:49 PM
+inb4 i need to start watching more test patterns on netflix
+01/28/2022 11:49 PM
+first frame dumped from hyperion-webos "unicapture" refactored frame
+handling thing.
+01/28/2022 11:48 PM
+tfw first try
+[hyperion-webos-dump.001.png]
+ hyperion-webos-dump.001.png
+54.12 KB External
+[infowski]
+infowski 01/28/2022 11:23 PM
+yes.
+[parkerlreed]
+parkerlreed 01/28/2022 11:23 PM
+Lol
+[parkerlreed]
+[] infowski oh dammit, I need to get my own crimper
+parkerlreed 01/28/2022 11:23 PM
+So you too can have your own very short cable?
+[infowski]
+infowski 01/28/2022 11:21 PM
+oh dammit, I need to get my own crimper
+[parkerlreed]
+parkerlreed 01/28/2022 11:18 PM
+(no content)
+[20220128_171641.jpg]
+ 20220128_171641.jpg
+5.18 MB External
+01/28/2022 11:13 PM
+(no content)
+[20220128_171259.jpg]
+ 20220128_171259.jpg
+2.93 MB External
+[20220128_165430.jpg]
+ 20220128_165430.jpg
+6.52 MB External
+ 1
+[dustyangel47]
+dustyangel47 01/28/2022 9:37 PM
+i can't even think of a way to do it that looks good
+01/28/2022 9:37 PM
+i honestly dont even know why you'd ever customize the ps2
+01/28/2022 9:35 PM
+oh wait ps1 not ps2
+[dustyangel47]
+[] maryjohanna42069 best shell: `export PS1=">"`
+dustyangel47 01/28/2022 9:35 PM
+thats the default!
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/28/2022 9:35 PM
+PROMPT $p$g
+[maryjohanna42069]
+maryjohanna42069 01/28/2022 9:34 PM
+best shell: export PS1=">"
+ 1
+[dustyangel47]
+dustyangel47 01/28/2022 9:18 PM
+so you could just use it in bash mode or whatever
+01/28/2022 9:18 PM
+granted it is mostly bash compatible with oil:all disabled (neofetch
+runs properly) (edited)
+01/28/2022 9:18 PM
+probably not though
+01/28/2022 9:18 PM
+maybe?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/28/2022 9:17 PM
+Does shellcheck do oil?
+[dustyangel47]
+dustyangel47 01/28/2022 9:16 PM
+it is not too late
+[dustyangel47]
+[] _._._._._._._._._._._. Seems much nicer but (ba|z|)sh has already
+damaged my brain beyond repair so I might as well keep us...
+dustyangel47 01/28/2022 9:16 PM
+rip
+[dustyangel47]
+dustyangel47 01/28/2022 9:15 PM
+funnily enough i can enable the advanced features, write my functions,
+and then move it back to near-bash-compatibility mode and have them
+still work
+01/28/2022 9:15 PM
+(no content)
+[unknown.png]
+ unknown.png
+59.42 KB External
+01/28/2022 9:14 PM
+although its not exactly going to solve the horror that is that git
+integration
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/28/2022 9:14 PM
+Seems much nicer but (ba|z|)sh has already damaged my brain beyond
+repair so I might as well keep using it
+[dustyangel47]
+dustyangel47 01/28/2022 9:13 PM
+much nicer to use than bash for writing functions like this imo
+01/28/2022 9:13 PM
+(no content)
+[unknown.png]
+ unknown.png
+8.83 KB External
+01/28/2022 9:12 PM
+https://www.oilshell.org
+01/28/2022 9:12 PM
+imagine not using oil shell
+01/28/2022 9:12 PM
+then i'd have to look back and forth between the window title and my
+prompt lol
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/28/2022 9:11 PM
+It's fine
+01/28/2022 9:11 PM
+Switched to one of the zsh built in ones recently
+01/28/2022 9:11 PM
+I used to use just $ and put the directory in the window title
+[dustyangel47]
+dustyangel47 01/28/2022 9:10 PM
+idk i like having more information while still having the majority of
+the terminal width to type in
+01/28/2022 9:10 PM
+~~its actually 3 because i have a newline at the beginning~~
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/28/2022 9:09 PM
+Two lines is one too many, but I like the version control integration
+[dustyangel47]
+dustyangel47 01/28/2022 9:05 PM
+thoughts on new shell prompt?
+[unknown.png]
+ unknown.png
+9.86 KB External
+[maryjohanna42069]
+maryjohanna42069 01/28/2022 8:50 PM
+cool
+[infowski]
+infowski 01/28/2022 8:50 PM
+Yeah.
+[maryjohanna42069]
+maryjohanna42069 01/28/2022 8:49 PM
+so the repo.webosapp.club thing is live?
+01/28/2022 8:49 PM
+cool nevertheless
+01/28/2022 8:49 PM
+i only understand add address from that vid
+[retr0id]
+retr0id 01/28/2022 8:49 PM
+[infowski]
+infowski 01/28/2022 8:38 PM
+@retr0id ↑
+01/28/2022 8:38 PM
+https://www.youtube.com/watch?v=fved432Czb0 
+Pro100tehnika
+Root права и сторонние приложения в одну кнопку для тв LG
+Все действия на ваш страх и риск! Телеграмм: https://t.me/pro100th
+Поддержать канал Яндекс: 4100115884794139 Сбербанк: 2202202576985596
+#rootlg #lg #телевизорыlg #настройкателевизораlg #pro100tehnika
+#про100техника #тв #настройкателевизора #настройкатв
+#установкаприложений #установкаприложениянатвlg
+#установкаприложенийнателевизорлдж #лдж ...
+[] Watch video
+[maryjohanna42069]
+maryjohanna42069 01/28/2022 8:38 PM
+just because it has less latency than spotify set
+01/28/2022 8:37 PM
+and then I receive a discord notification sound and a sharp crack with
+it
+01/28/2022 8:37 PM
+if I am listening to music on spotify, its great
+01/28/2022 8:37 PM
+but it doesn't quite work well with easyeffects
+01/28/2022 8:37 PM
+the main reason why I started to use it was that you can set the delay
+or the app can and so it won't put so much pressure on the CPU
+[maryjohanna42069]
+[] dustyangel47 everything pipewire has usually Just Worked for me
+maryjohanna42069 01/28/2022 8:36 PM
+I daily drive pipewire, but I guess not for long anymore
+[dustyangel47]
+dustyangel47 01/28/2022 8:31 PM
+admittedly the jankiest part of my setup is starting it
+01/28/2022 8:30 PM
+rip
+[retr0id]
+retr0id 01/28/2022 8:21 PM
+at which point I went back to pulse
+01/28/2022 8:20 PM
+pipewire Just Worked for me, until one time when I rebooted and had no
+audio
+[dustyangel47]
+dustyangel47 01/28/2022 8:18 PM
+everything pipewire has usually Just Worked for me (edited)
+[infowski]
+infowski 01/28/2022 8:15 PM
+I mean, I honestly didn't expect it to just work 
+[dustyangel47]
+[] infowski mfw pipewire works
+dustyangel47 01/28/2022 8:14 PM
+pipewire always works (edited)
+[infowski]
+infowski 01/28/2022 8:02 PM
+just because I reset my in-app credentials during some debugging the
+other day
+01/28/2022 8:02 PM
+now just got >Sign in for the best YouTube experience!
+01/28/2022 8:01 PM
+jesus, youtube is such a piece of shit. we need to extend ytadfree
+to >disabling of random pauses when you are not signed in
+[retr0id]
+retr0id 01/28/2022 4:59 PM
+too busy to set it up tho
+01/28/2022 4:59 PM
+my webos6 board arrived today
+ww8543 01/28/2022 3:39 PM
+[]
+[infowski]
+infowski 01/28/2022 3:29 PM
+ww8543 01/28/2022 3:26 PM
+. (edited)
+[IMG-20220128-WA0006.jpg]
+ IMG-20220128-WA0006.jpg
+38.66 KB External
+[infowski]
+infowski 01/28/2022 11:29 AM
+mfw pipewire works
+January 27, 2022
+[dustyangel47]
+dustyangel47 01/27/2022 11:11 PM
+there we go
+[unknown.png]
+ unknown.png
+37.38 KB External
+01/27/2022 11:08 PM
+get pwned!!!
+01/27/2022 11:08 PM
+it doesnt
+01/27/2022 11:08 PM
+AHA
+[unknown.png]
+ unknown.png
+970 Bytes External
+01/27/2022 11:08 PM
+at all
+01/27/2022 11:08 PM
+does not help
+01/27/2022 11:08 PM
+which
+01/27/2022 11:08 PM
+and presumably returns normal
+01/27/2022 11:08 PM
+for example the one on rocky linux (and presumably rhel and other
+downstreams) runs the help message
+[unknown.png]
+ unknown.png
+28.83 KB External
+01/27/2022 11:07 PM
+some patches behave differently
+01/27/2022 11:07 PM
+even more annoyingly
+01/27/2022 11:01 PM
+but its 127????????
+01/27/2022 11:01 PM
+the code says the error should be 126 iirc (edited)
+01/27/2022 11:01 PM
+oh for fucks sake
+[parkerlreed]
+parkerlreed 01/27/2022 10:51 PM
+(For patched polkit)
+01/27/2022 10:50 PM
+@DustyAngel47 Not sure if this helps but here's the strace line for
+yours on the unknown failure
+    write(1, "[Pwnkit] Pwning pkexec..\0\n", 26[Pwnkit] Pwning pkexec..
+    ) = 26
+    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f2f6da87890) = 21196
+    wait4(21196, [{WIFEXITED(s) && WEXITSTATUS(s) == 127}], 0, NULL) = 21196
+    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=21196, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+    write(1, "[Pwnkit] Cleaning up..\0\n", 24[Pwnkit] Cleaning up..
+    ) = 24
+(edited)
+[parkerlreed]
+[] dustyangel47 i think its in comment at the top of this one
+parkerlreed 01/27/2022 10:48 PM
+As usual Im blind lol
+[parkerlreed]
+parkerlreed 01/27/2022 10:47 PM
+I missed the comment
+01/27/2022 10:47 PM
+Oh nvm
+[dustyangel47]
+dustyangel47 01/27/2022 10:47 PM
+i think its in comment at the top of this one
+ 1
+01/27/2022 10:46 PM
+you have to build it with the special gcc call (edited)
+[parkerlreed]
+parkerlreed 01/27/2022 10:46 PM
+    [parker@t495 build]$ gcc -o blasty blasty-vs-pkexec2.c 
+    /usr/bin/ld: /usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../lib/Scrt1.o: in function `_start':
+    (.text+0x24): undefined reference to `main'
+    collect2: error: ld returned 1 exit status
+01/27/2022 10:46 PM
+@DustyAngel47 Wat
+[dustyangel47]
+dustyangel47 01/27/2022 10:40 PM
+smh stealing my ideas because i was totally the one who came up with
+this first
+01/27/2022 10:40 PM
+yeah i saw that
+[parkerlreed]
+parkerlreed 01/27/2022 10:39 PM
+@DustyAngel47
+https://twitter.com/bl4sty/status/1486300413506867201?t=D0SOIHwHDk962dhzmBz_Mw&s=19
+[]BLASTY (@bl4sty)
+Slightly revised copy of blasty-vs-pkexec.c available here:
+https://t.co/4VpOaYjPQ3 -- Might work better against your annoying
+ArchLinux coworkers and is more self contained as a bonus. (No more
+system("gcc") lol, thanks @_darrenmartyn and others for this suggestion)
+Likes
+163
+[]Twitter1/26/2022, 12:30:07 PM
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/27/2022 6:32 PM
+ah yes, wireless TV
+[infowski]
+infowski 01/27/2022 6:32 PM
+bruh
+Deleted User 01/27/2022 6:31 PM
+@retr0id is this your story?
+01/27/2022 6:30 PM
+(no content)
+ v09044g40000c7osr6rc77uf2to77tdg.MP4
+2.55 MB External
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/27/2022 2:37 PM
+External speaker but connected to the TVs built in amplifier. Put that
+in your pipe and smoke it!
+ww8543 01/27/2022 10:15 AM
+you could go all out and get a surround receiver and a speaker set, or
+at least get a decent soundbar
+[retr0id]
+retr0id 01/27/2022 10:13 AM
+because sometimes the RRP is a lie
+01/27/2022 10:13 AM
+but still with decent reviews etc.
+01/27/2022 10:13 AM
+through stock clearance or whatever
+01/27/2022 10:12 AM
+my winning strat has been to find stuff on a heavy discount
+ww8543 01/27/2022 10:07 AM
+anything else
+[infowski]
+infowski 01/27/2022 10:07 AM
+what should i get
+[] infowski and i am here with just built-in lg speakers
+ww8543 01/27/2022 10:06 AM
+[]
+[infowski]
+infowski 01/27/2022 10:05 AM
+,_,
+01/27/2022 10:05 AM
+and i am here with just built-in lg speakers
+[retr0id]
+retr0id 01/27/2022 10:05 AM
+Having a proper subwoofer is pretty lifechanging. So many songs have
+parts I've never properly heard before, even with relatively high-end
+headphones
+[mariotaku]
+mariotaku 01/27/2022 7:24 AM
+alias lolol=lol -v
+[parkerlreed]
+parkerlreed 01/27/2022 7:03 AM
+[:blobthinksmart:]
+[dustyangel47]
+dustyangel47 01/27/2022 7:02 AM
+>has a CC variable >manually specifies gcc
+01/27/2022 7:01 AM
+also included the version define from the makefile i copied it from lol
+[parkerlreed]
+parkerlreed 01/27/2022 7:01 AM
+I saw that before you mentioned it
+[dustyangel47]
+dustyangel47 01/27/2022 7:01 AM
+just a little force push
+[unknown.png]
+ unknown.png
+30.56 KB External
+[parkerlreed]
+parkerlreed 01/27/2022 7:00 AM
+You sneaky bastard
+01/27/2022 6:59 AM
+Hah
+[dustyangel47]
+dustyangel47 01/27/2022 6:59 AM
+i didnt on this one because putting a .so in a directory named bin
+sounds weird
+01/27/2022 6:59 AM
+every other project of mine uses bin
+01/27/2022 6:59 AM
+[]
+[parkerlreed]
+parkerlreed 01/27/2022 6:59 AM
+:P
+01/27/2022 6:59 AM
+@DustyAngel47 Am I reading that wrong or are you checking if bin exists
+but writing to out
+[dustyangel47]
+dustyangel47 01/27/2022 6:54 AM
+i've tried multiple ways of catching the error but it just won't do it
+lol
+[parkerlreed]
+parkerlreed 01/27/2022 6:54 AM
+Also nice
+01/27/2022 6:54 AM
+    resolving dependencies...
+    looking for conflicting packages...
+    Packages (1) polkit-0.120-4
+    Total Download Size:   0.39 MiB
+    Total Installed Size:  1.86 MiB
+    Net Upgrade Size:      0.00 MiB
+    :: Proceed with installation? [Y/n] 
+    :: Retrieving packages...
+     polkit-0.120-4-x86_64                                                                              400.2 KiB  3.01 MiB/s 00:00 [##############################################################################] 100%
+    (1/1) checking keys in keyring                                                                                                  [##############################################################################] 100%
+    (1/1) checking package integrity                                                                                                [##############################################################################] 100%
+    (1/1) loading package files                                                                                                     [##############################################################################] 100%
+    (1/1) checking for file conflicts                                                                                               [##############################################################################] 100%
+    (1/1) checking available disk space                                                                                             [##############################################################################] 100%
+    :: Processing package changes...
+    (1/1) upgrading polkit                                                                                                          [##############################################################################] 100%
+    :: Running post-transaction hooks...
+    (1/5) Creating system user accounts...
+    (2/5) Reloading system manager configuration...
+    (3/5) Arming ConditionNeedsUpdate...
+    (4/5) Refreshing PackageKit...
+    (5/5) Reloading system bus configuration...
+    [parker@wolfcola out]$ ./pwnkit.so 
+    [Pwnkit] Setting up directory structure..
+    [Pwnkit] Setting up environment variables..
+    [Pwnkit] Pwning pkexec..
+    [Pwnkit] Cleaning up..
+    [parker@wolfcola out]$ 
+[dustyangel47]
+dustyangel47 01/27/2022 6:53 AM
+nice
+[parkerlreed]
+parkerlreed 01/27/2022 6:53 AM
+    [parker@wolfcola pwnkit]$ ls out/
+    pwnkit.so
+    [parker@wolfcola pwnkit]$ cd out/
+    [parker@wolfcola out]$ ./pwnkit.so 
+    [Pwnkit] Setting up directory structure..
+    [Pwnkit] Setting up environment variables..
+    [Pwnkit] Pwning pkexec..
+    pwned lol !
+    sh-5.1# NICE
+    sh: NICE: command not found
+    sh-5.1# id
+    uid=0(root) gid=0(root) groups=0(root),5(tty),108(vboxusers),150(wireshark),963(docker),984(users),985(video),988(render),990(lp),992(input),993(disk),994(audio),997(wheel),998(adm)
+[dustyangel47]
+dustyangel47 01/27/2022 6:52 AM
+pain
+[parkerlreed]
+[] dustyangel47 and if you want to compile it yourself
+https://git.ruthenic.com/ruthenic/pwnkit
+parkerlreed 01/27/2022 6:52 AM
+Your makefile forgets to create out :P
+[dustyangel47]
+dustyangel47 01/27/2022 6:51 AM
+(i know its a so but fuckery still lets you execute it)
+01/27/2022 6:50 AM
+and if you want to compile it yourself
+https://git.ruthenic.com/ruthenic/pwnkit
+pwnkit
+My tool to exploit pwnkit, utilizing executable shared libraries (lol)
+[]
+01/27/2022 6:50 AM
+precompiled version
+ pwnkit.so
+16.41 KB External
+[parkerlreed]
+parkerlreed 01/27/2022 6:50 AM
+I just wanted to see this work at least once
+01/27/2022 6:50 AM
+If you've got one I can try I'll be happy to run it
+01/27/2022 6:49 AM
+Ahh
+[dustyangel47]
+[] parkerlreed https://haxx.in/files/blasty-vs-pkexec.c
+dustyangel47 01/27/2022 6:49 AM
+this one
+[parkerlreed]
+parkerlreed 01/27/2022 6:49 AM
+https://github.com/arthepsy/CVE-2021-4034/blob/main/cve-2021-4034-poc.c
+CVE-2021-4034/cve-2021-4034-poc.c at main · arthepsy/CVE-2021-4034
+PoC for PwnKit: Local Privilege Escalation Vulnerability in polkit’s
+pkexec (CVE-2021-4034) - CVE-2021-4034/cve-2021-4034-poc.c at main ·
+arthepsy/CVE-2021-4034
+[]
+[parkerlreed]
+[] dustyangel47 go to line 60, and below it add `GIO_USE_VFS=`
+parkerlreed 01/27/2022 6:49 AM
+Which version are you referring to editing? The CVE POC only has 31
+lines
+[dustyangel47]
+dustyangel47 01/27/2022 6:49 AM
+~~alternatively you can try my fancier one~~
+[parkerlreed]
+parkerlreed 01/27/2022 6:48 AM
+Lol
+01/27/2022 6:48 AM
+Oh I guess it was trying to create a folder then why did it try to
+execute ./lol
+[retr0id]
+retr0id 01/27/2022 6:47 AM
+and it worked perfectly
+01/27/2022 6:47 AM
+I tested it on an aarch64 vm
+01/27/2022 6:47 AM
+My favourite aspect of this exploit is that it works cross-architecture
+[parkerlreed]
+parkerlreed 01/27/2022 6:46 AM
+https://haxx.in/files/blasty-vs-pkexec.c
+[parkerlreed]
+[] dustyangel47 go to line 60, and below it add `GIO_USE_VFS=`
+parkerlreed 01/27/2022 6:46 AM
+Sweet, I haven't updated the desktop yet so I can try it
+[dustyangel47]
+dustyangel47 01/27/2022 6:45 AM
+what is the file structure in the directory you ran it in? (edited)
+[parkerlreed]
+parkerlreed 01/27/2022 6:45 AM
+Either way it ended up creating a folder
+[dustyangel47]
+dustyangel47 01/27/2022 6:45 AM
+it touches a file and sets it as executable
+01/27/2022 6:45 AM
+it doesnt build an executable
+[dustyangel47]
+[] parkerlreed That particular proof of concept tries to build a binary
+called lol but failed spectacularly somewhe...
+dustyangel47 01/27/2022 6:45 AM
+~~thats how the exploit works~~
+[retr0id]
+retr0id 01/27/2022 6:45 AM
+because it's always handy to call as a test
+01/27/2022 6:45 AM
+or something like that
+01/27/2022 6:45 AM
+funnily enough, I have a bin called lol on my system, which simply
+echoes "it worked"
+[parkerlreed]
+parkerlreed 01/27/2022 6:44 AM
+That particular proof of concept tries to build a binary called lol but
+failed spectacularly somewhere
+[retr0id]
+retr0id 01/27/2022 6:44 AM
+if there was a bin called lol in $PATH I think it would work (edited)
+[parkerlreed]
+parkerlreed 01/27/2022 6:44 AM
+It created an lol folder instead of an executable
+[retr0id]
+[] parkerlreed Oddly enough I tried it on a supposedly exploitable
+version (-3 instead of the up-to-date -4) but di...
+retr0id 01/27/2022 6:44 AM
+the latter error implies that it almost worked
+[dustyangel47]
+[] parkerlreed Oddly enough I tried it on a supposedly exploitable
+version (-3 instead of the up-to-date -4) but di...
+dustyangel47 01/27/2022 6:43 AM
+go to line 60, and below it add GIO_USE_VFS=
+[retr0id]
+retr0id 01/27/2022 6:43 AM
+I constructed argv properly
+01/27/2022 6:43 AM
+actually no
+[retr0id]
+[] retr0id https://twitter.com/David3141593/status/1486547832924422152
+retr0id 01/27/2022 6:43 AM
+In fact, I think my "WAMpage" exploit would break with this lol
+[parkerlreed]
+parkerlreed 01/27/2022 6:43 AM
+WHO HAVE I BEEN REPORTED TO?
+[dustyangel47]
+dustyangel47 01/27/2022 6:43 AM
+you may need to add an env variable to the code, that fixed it for me
+[parkerlreed]
+parkerlreed 01/27/2022 6:42 AM
+Oddly enough I tried it on a supposedly exploitable version (-3 instead
+of the up-to-date -4) but didn't seem to get anywhere.
+[Screenshot_20220127-004248_Sync_Pro.png]
+ Screenshot_20220127-004248_Sync_Pro.png
+538.59 KB External
+[retr0id]
+retr0id 01/27/2022 6:40 AM
+https://twitter.com/David3141593/status/1486547832924422152
+[]David Buchanan (@David3141593)
+If this gets upstreamed, get ready to pour one out for all your favorite
+size-optimised shellcodes... https://t.co/tXlAWOeM5D
+[]Twitter1/27/2022, 4:53:16 AM
+[:kekw:] 1
+[parkerlreed]
+parkerlreed 01/27/2022 6:38 AM
+https://news.ycombinator.com/item?id=30077271
+todsacerdoti
+Pwnkit: Local Privilege Escalation in polkit's pkexec (CVE-2021-4034)
+[]Hacker News1/25/2022, 9:05:09 PM
+01/27/2022 6:37 AM
+pkexec: you are about to get root
+[retr0id]
+[] parkerlreed ISO users be like
+retr0id 01/27/2022 6:37 AM
+pov: you're about to get root
+[retr0id]
+retr0id 01/27/2022 6:36 AM
+lol
+[parkerlreed]
+parkerlreed 01/27/2022 6:36 AM
+ISO users be like
+[Anti-Stress-Giant-ENTER-Button-Pillow-1.webp]
+ Anti-Stress-Giant-ENTER-Button-Pillow-1.webp
+23.5 KB External
+[retr0id]
+retr0id 01/27/2022 6:36 AM
+it's the key that fires your exploits
+01/27/2022 6:36 AM
+but it's the most important key
+[parkerlreed]
+parkerlreed 01/27/2022 6:35 AM
+You can keep your ginormous enter key
+[retr0id]
+retr0id 01/27/2022 6:35 AM
+iso > ansi tho 
+01/27/2022 6:34 AM
+It's pretty close to the perfect layout as far as I'm concerned
+[parkerlreed]
+parkerlreed 01/27/2022 6:33 AM
+I always get them mixed up
+01/27/2022 6:33 AM
+K6 or K2
+01/27/2022 6:33 AM
+Keychron
+01/27/2022 6:33 AM
+https://streamable.com/6v5wa6
+Streamable Video
+[]
+[retr0id]
+retr0id 01/27/2022 6:32 AM
+I have a Vortex Race 3, which is a very similar layout
+01/27/2022 6:32 AM
+What keyboard is that
+[parkerlreed]
+parkerlreed 01/27/2022 6:32 AM
+Funnily enough that entire screen arrangement is just about 16x9
+[retr0id]
+retr0id 01/27/2022 6:32 AM
+ah
+[parkerlreed]
+parkerlreed 01/27/2022 6:31 AM
+@retr0id they're all the exact same model
+[retr0id]
+retr0id 01/27/2022 6:31 AM
+is that a 1:1 monitor in the middle?
+[parkerlreed]
+parkerlreed 01/27/2022 6:27 AM
+Speaking of multi monitor
+01/27/2022 6:27 AM
+(no content)
+[20211215_142639.jpg]
+ 20211215_142639.jpg
+3.7 MB External
+Deleted User 01/27/2022 4:55 AM
+Keep up the awesome work!
+01/27/2022 4:55 AM
+Urgh. Need to get some work done. Was nice chatting with you all. I am
+not on Discord much, but I definitely will check back in with you folks.
+I'd very much like a custom screen saver with the logo of my choice, but
+I simply don't have the time to implement it myself. Maybe we can work
+something out... DM me if interested. I will see the message eventually.
+Might be weeks, but I will see it.
+01/27/2022 4:51 AM
+But that kind of product does not yet seem to exist.
+01/27/2022 4:50 AM
+I am happy with the center monitor other than I want it to e twice as
+tall.
+01/27/2022 4:49 AM
+Correction: my center monitor is 34". I am not yet fully sold on the
+curved monitors. My center monitor is flat. LG 34WK95U-W. I am pretty
+sure that model also comes in curved. I have a few 4k monitors around
+the center monitor that are set at an angle mounted to a 5x Ergotron
+rig. Which works well for me. But everybody's workspace ergonomic
+requirements are different and highly personal
+[retr0id]
+[] retr0id mine was the only curved 21:9 at decent resolution I could
+find at the time
+retr0id 01/27/2022 3:55 AM
+even looking now, I can't see any 5k2k curved monitors
+[retr0id]
+retr0id 01/27/2022 3:54 AM
+the nice thing about 1600p is that it perfectly matches the resolution
+of 4k 21:9 movies (edited)
+01/27/2022 3:54 AM
+it's getting a bit old now though
+01/27/2022 3:53 AM
+mine was the only curved 21:9 at decent resolution I could find at the
+time
+01/27/2022 3:53 AM
+I'm a big fan of the 21:9 aspect ratio
+[retr0id]
+Deleted User Yeah, I think Quindor over at QuinLED/intermit.tech does
+that. Wouldn't cut it for me for actual com...
+retr0id 01/27/2022 3:53 AM
+heh my monitor is similar - 38" 3840x1600
+[] retr0id I was the opposite of this, heh. A friend of mine asked if I
+knew how to root his, which got me thin...
+Deleted User 01/27/2022 3:48 AM
+Sweet. And thank you! That one-click root via website was freaking
+impressive. Hats off!
+Deleted User 01/27/2022 3:47 AM
+Yeah, I think Quindor over at QuinLED/intermit.tech does that. Wouldn't
+cut it for me for actual computer work. My primary monitor is a 35" 5120
+x 2160. I'd like twice as tall, but only at twice the pixels. 65" 4k is
+fine at distance, but not at computer desk range, IMHO.
+[retr0id]
+Deleted User I am a little surprised at myself that I've owned an 65" LG
+OLED for years and it wasn't until a few...
+retr0id 01/27/2022 3:44 AM
+I was the opposite of this, heh. A friend of mine asked if I knew how to
+root his, which got me thinking, and eventually I bought one with the
+specific intention of hacking it
+[retr0id]
+retr0id 01/27/2022 3:40 AM
+There are people using them as actual desktop monitors, although of
+course there are burnin issues
+Deleted User 01/27/2022 3:38 AM
+I am a little surprised at myself that I've owned an 65" LG OLED for
+years and it wasn't until a few days ago that it even occurred to me to
+look if anyone out there made improvements to the software that thing is
+running. Perhaps because I large just use it as a monitor for my living
+room.
+01/27/2022 3:35 AM
+It is a good domain for the privacy-minded. They don't even run a WHOIS
+server.
+[retr0id]
+retr0id 01/27/2022 3:34 AM
+probably explains why .to stands for "torrent" in my head, lol
+01/27/2022 3:34 AM
+oh that's pretty cool
+Deleted User 01/27/2022 3:34 AM
+@retr0id and that reminds me that meant to register another domain with
+TONIC. What I like about .to is that TONIC only requires a working email
+address and will accept cash in the mail to pay the registration fees.
+[retr0id]
+retr0id 01/27/2022 3:33 AM
+Yes we're surprisingly euro-centric here, I'm in the UK personally
+Deleted User 01/27/2022 3:32 AM
+@retr0id I don't know where you folks are based our of, but given that
+one of the apps plays CCC videos, Europe sounds like a pretty good bet.
+While I am from San Francisco, I am currently based out of Berlin. And
+there is always the good old cash in an envelope path to donations.
+[retr0id]
+retr0id 01/27/2022 3:30 AM
+hm maybe I should go to MCH...
+01/27/2022 3:28 AM
+Namecheap (the domain registrar I registered rootmy.tv with) accepts
+cryptocurrency payments - so if you wanted to contribute towards domain
+costs then cryptocurrency could be an option (although transaction fees
+might end up being ridiculous...)
+Deleted User 01/27/2022 3:27 AM
+@infowski thanks much for reminding me: I need to get tickets for
+MCH2022. Will work on that next. If you were at SHA2017 and made it down
+to the marina, you saw my (rented) boat. It was the biggest and tallest
+sailing ship in the marina at the very end of the pier. If Brenno is
+doing the marina again, I plan to rent another boat and do that again.
+Deleted User 01/27/2022 3:19 AM
+I'd be willing to kick a bit more your crew's way once I figure out a
+better way of paying. Since my billing address is in San Francisco, I
+can only pay in USD. Which I suspect GitHub and/or PayPal pay out to you
+in EUR. I have an EUR credit card with a way better conversion rate than
+what those thieves are taking, but I don't know yet how to pay GitHub in
+EUR with a U.S. billing address.
+01/27/2022 3:17 AM
+I /think/ that I just sponsored @infowski at $10/month via GitHub.
+ 1
+01/27/2022 3:16 AM
+@MaryJohanna420 appreciate the tip. Apologies for the slow response. I
+passed out with Discord running in the background and only now made it
+back to this window.
+[dustyangel47]
+dustyangel47 01/27/2022 3:15 AM
+lol
+[retr0id]
+retr0id 01/27/2022 3:14 AM
+darude - sandstorm
+[dustyangel47]
+dustyangel47 01/27/2022 3:12 AM
+what it used to do, for context:
+[unknown.png]
+ unknown.png
+76.35 KB External
+01/27/2022 3:12 AM
+when the ls works again: (edited)
+[unknown.png]
+ unknown.png
+207.09 KB External
+01/27/2022 3:12 AM
+ig
+[retr0id]
+[] dustyangel47 i mean i'm perfectly within my rights to do *anything*
+in c lol
+retr0id 01/27/2022 3:07 AM
+well I mean it's not UB or anything, it's a valid thing to do in many
+contexts
+[dustyangel47]
+dustyangel47 01/27/2022 3:05 AM
+~~which is why this code works only on the days it snows at the
+equator~~
+01/27/2022 3:05 AM
+i mean i'm perfectly within my rights to do anything in c lol
+01/27/2022 3:01 AM
+yeah
+[retr0id]
+[] dustyangel47 aren't i like, not supposed to `sizeof` a pointer
+(because it returns the size of the pointer not th...
+retr0id 01/27/2022 3:01 AM
+well, you're perfectly within your rights to, but it might not give you
+the information you were expecting
+[dustyangel47]
+dustyangel47 01/27/2022 3:01 AM
+jk
+[unknown.png]
+ unknown.png
+10.44 KB External

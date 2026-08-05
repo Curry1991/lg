@@ -1,0 +1,1633 @@
+August 11, 2024
+[smx2460]
+smx2460 08/11/2024 1:44 PM
+dafuck 
+08/11/2024 1:43 PM
+    [root@freebsd /usr]# df -h .
+    Filesystem    Size    Used   Avail Capacity  Mounted on
+    /dev/da0p2     18G     18G   -1.4G   109%    /
+August 10, 2024
+[kitsuned]
+kitsuned 08/10/2024 11:01 PM
+(no content)
+[image.png]
+ image.png
+21.1 KB External
+[smx2460]
+smx2460 08/10/2024 4:07 PM
+and size_t could be whatever (UB baby!) (edited)
+08/10/2024 4:07 PM
+intmax_t is the biggest integer from what i'm understanding, which could
+be 64bit on 32?
+08/10/2024 4:06 PM
+intptr_t and uintptr_t are register-sized
+08/10/2024 4:06 PM
+- size_t - intmax_t - intptr_t
+08/10/2024 4:06 PM
+so we have
+08/10/2024 4:02 PM
+i forgot it existed
+08/10/2024 4:02 PM
+but thanks for intmax_t
+08/10/2024 4:02 PM
+so i guess i'll use PRI...
+08/10/2024 4:02 PM
+i might have gcc 3 here
+hellobox. 08/10/2024 4:02 PM
+%jd
+[smx2460]
+smx2460 08/10/2024 4:01 PM
+the PRI* macros are also stupid ugly
+hellobox. 08/10/2024 4:01 PM
+for ultimate portability it needs to be intmax_t
+[smx2460]
+smx2460 08/10/2024 4:01 PM
+so you know it's gonna be that format
+08/10/2024 4:01 PM
+you basically need to cast everything to register sized
+hellobox. 08/10/2024 4:01 PM
+yeah i know
+[smx2460]
+smx2460 08/10/2024 4:01 PM
+yeah but it's ugly.
+08/10/2024 4:01 PM
+or "let's up-cast everything to a native-sized integer like uintptr_t"
+hellobox. 08/10/2024 4:01 PM
+(intmax_t)
+[smx2460]
+smx2460 08/10/2024 4:00 PM
+unless one says either "i don't care, let's disable the warning"
+08/10/2024 4:00 PM
+or produce a ton of warnings
+08/10/2024 4:00 PM
+because due to the typedef of pid_t, this might either work
+08/10/2024 4:00 PM
+    C:/msys64/home/sm/ezinject/test/basic_injection.cpp: In function 'int run(test_state*)':
+    C:/msys64/home/sm/ezinject/test/basic_injection.cpp:139:24: warning: format '%lld' expects argument of type 'long long int', but argument 2 has type 'pid_t' {
+    aka 'int'} [-Wformat=]
+      139 |                 printf("[+] pid: %" PRIdMAX "\n", ctx->pid);
+          |                        ^~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~
+          |                                                        |
+          |                                                        pid_t {aka int}
+08/10/2024 4:00 PM
+what's the portable way to print shit in C
+hellobox. 08/10/2024 3:10 AM
+but the decompilers are older
+08/10/2024 3:10 AM
+oh yeah it's 7.7sp1
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 08/10/2024 3:08 AM
+there was also 7.7 but IIRC it had sketchy extra sections in the main
+exes and the decompilers were mismatched and hacked to work
+hellobox. 08/10/2024 3:08 AM
+> The legacy Enums and Structures views are removed entirely and
+replaced by Local Types interesting! those had some useful features
+though...
+08/10/2024 3:02 AM
+i am still on 7.6sp1 because 8.0 was broken
+[dogelition]
+dogelition 08/10/2024 2:14 AM
+not gonna post the link here for obvious reasons
+08/10/2024 2:14 AM
+seems like there was a huge leak (?) of the ida pro 9.0 beta, the
+installers with all decompilers and no password protection can be
+downloaded straight froms hex-rays with a link that's floating around
+(and the link doesn't appear to be watermarked/unique either)
+ 1
+[smx2460]
+smx2460 08/10/2024 12:48 AM
+but it's annoying
+08/10/2024 12:48 AM
+so it could be ifdeffed out
+08/10/2024 12:48 AM
+not like that code would ever be hit on Win64
+08/10/2024 12:48 AM
+which expects sizeof(void *) to be sizeof(DWORD)
+08/10/2024 12:48 AM
+some are due to the library i pulled in to support Win9X
+08/10/2024 12:47 AM
+but it builds and runs
+08/10/2024 12:47 AM
+there are only 2132342141 build warnings to fix
+08/10/2024 12:46 AM
+finally found the motivation to rebase the legacy-windows branch on top
+of master
+08/10/2024 12:46 AM
+(no content)
+[image.png]
+ image.png
+247.96 KB External
+August 9, 2024
+[lightfire]
+lightfire 08/09/2024 11:10 PM
+make em do something weird and leave em outside for someone else to find
+ 1
+hellobox. 08/09/2024 9:22 PM
+They cost only slightly more than 1 (edited)
+hellobox. Shit, I just bought 3 Intel Galileo boards, and I have no idea
+what to do with them. Far less suppor...
+ww8543 08/09/2024 9:22 PM
+i mean i understand 1, but why 3?!
+hellobox. 08/09/2024 8:51 PM
+I need to come up with stuff to do with them
+hellobox. 08/09/2024 8:43 PM
+I guess I just like collecting obscure SoC dev boards
+08/09/2024 8:43 PM
+I also bought 2 tinyTILEs, which have the same weird Intel SoC as the
+Arduino/Genuino (lol) 101 (which I also have)
+[] dschndr Reeee, scalperrrrr, you only need 1 reeeee xD
+hellobox. 08/09/2024 8:42 PM
+Shit, I just bought 3 Intel Galileo boards, and I have no idea what to
+do with them. Far less supported than any RPi stuff
+[smx2460]
+[] itsyogsothoth Click to see attachment
+smx2460 08/09/2024 7:10 PM
+(no content)
+[image0.gif]
+ image0.gif
+282.88 KB External
+[itsyogsothoth]
+itsyogsothoth 08/09/2024 2:56 PM
+(no content)
+[IMG_20240809_130046_821.jpg]
+ IMG_20240809_130046_821.jpg
+41.08 KB External
+[dschndr]
+hellobox. pre-ordered 3 pi pico 2s
+dschndr 08/09/2024 12:41 PM
+Reeee, scalperrrrr, you only need 1 reeeee xD
+hellobox. 08/09/2024 4:31 AM
+pre-ordered 3 pi pico 2s
+August 8, 2024
+hellobox. 08/08/2024 2:04 AM
+huh, i wasn't familiar with this (apparently common: e.g.,
+https://comfortinngander.com/about-us/,
+https://ylaofsc.com/blog/why-do-we-use-it) lorem ipsum variant before: >
+Her old collecting she considered discovered. So at parties he warrant
+oh staying. Square new horses and put better end. Sincerity collected
+happiness do is contented. Sigh ever way now many. Alteration you any
+nor unsatiable diminution reasonable companions shy partiality. Leaf by
+left deal mile oh if easy. Added woman first get led joy not early
+jokes.
+August 7, 2024
+zfa.discrd 08/07/2024 3:44 AM
+what happens if works on last attempt? ah, you just don't get the
+non-zero rc. I understand. (edited)
+zfa.discrd And not sure why you'd check for 0 retries to exit when
+you're using `seq` as the for loop just time...
+hellobox. 08/07/2024 3:42 AM
+couldn't think of a nice way to determine whether the install had
+succeeded after the loop (edited)
+zfa.discrd 08/07/2024 3:40 AM
+Maybe just to tidy the output and skip the last echo on final loop? in
+which case you could
+[[ ${retry} -gt 0 ]] && exit "failed, $retry retried remaining" or
+something I guess. all ends up doing the same stuff so barely worth much
+effort I suppose. Looks fine as-is. (edited)
+08/07/2024 3:38 AM
+And not sure why you'd check for 0 retries to exit when you're using seq
+as the for loop just times itself out??
+08/07/2024 3:36 AM
+Not necessarilly as readable but I tend to always condense if-fi when
+there's only one cmd in it... eg install && break etc. (edited)
+August 6, 2024
+[dschndr]
+dschndr 08/06/2024 10:18 PM
+task failed successfully
+hellobox. 08/06/2024 3:34 AM
+but it still failed
+08/06/2024 3:34 AM
+well, the retries worked
+hellobox. 08/06/2024 3:26 AM
+i guess this isn't bad
+    #!/bin/sh
+    install() {
+            echo try
+            return 1
+    }
+    for retry in $(seq 3 -1 0); do
+            if install; then
+                    # success
+                    break
+            fi
+            if [ "${retry}" -eq 0 ]; then
+                    echo failure
+                    exit 1
+            fi
+            echo "install failed; ${retry} tries remaining..."
+    done
+    echo success
+08/06/2024 3:24 AM
+well, maybe
+08/06/2024 3:23 AM
+i could do somehting with seq but eh...
+08/06/2024 3:20 AM
+i guess this
+    #!/bin/sh
+    install() {
+            echo try
+            return 1
+    }
+    retries=3
+    while :; do
+            if install; then
+                    # success
+                    break
+            fi
+            if [ "${retries}" -eq 0 ]; then
+                    echo failure
+                    exit 1
+            fi
+            echo "install failed; ${retries} tries remaining..."
+            retries="$((retries - 1))"
+    done
+    echo success
+(edited)
+08/06/2024 3:19 AM
+what's a more efficient (or otherwise better) way to do this in busybox
+ash?
+    #!/bin/sh
+    install() {
+            echo try
+            return 1
+    }
+    retries=3
+    while [ "${retries}" -ge 0 ] ; do
+            if install; then
+                    # success
+                    break
+            fi
+            echo "install failed; ${retries} tries remaining..."
+            retries="$((retries - 1))"
+    done
+    if [ "${retries}" -lt 0 ]; then
+            echo failure
+            exit 1
+    fi
+    echo success
+(edited)
+hellobox. 08/06/2024 12:55 AM
+Just needs to run adb and do serial stuff
+08/06/2024 12:53 AM
+It's for hacking android TVs... I could use the orange/banana zero
+08/06/2024 12:51 AM
+Hmm. Yeah, either that or ST. But I'm using my pi 3... I could swap it
+out for something else I guess
+[friya]
+friya 08/06/2024 12:13 AM
+Pretty sure support for Raspi 3 would be the best, definitely compared
+to the other fruit boards. I'd go with a Raspi 3 at least.
+August 5, 2024
+hellobox. 08/05/2024 8:51 PM
+See, good support for STM32MP:
+https://optee.readthedocs.io/en/latest/building/devices/stm32mp1.html
+Pretty sure ST is heavily involved in OPTEE development
+08/05/2024 8:50 PM
+RPi3: https://optee.readthedocs.io/en/latest/building/devices/rpi3.html
+08/05/2024 8:49 PM
+I want to set up OPTEE for testing on one of my dev boards. Anyone have
+a recommendation for which one I should use? RPi[345] BPI-W2, BPI-M4
+(RTK SoCs kinda similar to what LG uses) Orange Pi Zero 2 (likely very
+little support) STM32MP board (probably great support) * Some other BPI
+board (Zero W or something)
+August 4, 2024
+Deleted User 08/04/2024 7:17 PM
+the real one isnt like that :teef:
+hellobox. ah, i think we got spammed with some "solara" links. i was
+wondering what it was (but not enough to ...
+Deleted User 08/04/2024 7:17 PM
+those people joined the server which shared malware and was fake
+hellobox. 08/04/2024 7:13 PM
+ah, i think we got spammed with some "solara" links. i was wondering
+what it was (but not enough to join the server)
+https://www.youtube.com/watch?v=ykS9ooPccq4
+No Text To Speech
+This is why you should Stop Downloading Roblox Cheats!
+Discord has a bit of a scamming problem when it comes to Roblox
+cheats... Recently I've been getting spammed by viewers about this
+Roblox solara message that people are getting in Discord. Now, is this
+some massive scam that people are falling for? Or is this something a
+bit less intimidating? And even if this is or isn't a scam, should you
+ev...
+[] Watch video
+hellobox. 08/04/2024 5:43 PM
+https://www.amazon.com/dp/B0CMSN64HK/
+JTAG FREESTYLE [Explicit] by Cha$E on Amazon Music - Amazon.com
+Check out JTAG FREESTYLE [Explicit] by Cha$E on Amazon Music. Stream
+ad-free or purchase CD's and MP3s now on Amazon.com.
+[smx2460]
+smx2460 08/04/2024 12:41 PM
+puts("Hello World");
+08/04/2024 12:40 PM
+https://youtu.be/tvuCsOTQUeE
+Olympics
+Gwen Stefani x Anderson .Paak – Hello World (Song of The Olympics)...
+The Olympics and The Coca-Cola Company teamed up with Ryan Tedder, Gwen
+Stefani and Anderson .Paak to create a song that celebrates the magic
+that happens when the world comes together at the Olympic Games! Listen
+to “Hello World” (Song of The Olympics TM):
+http://Interscope.lnk.to/HelloWorld *PRODUCTION CREDITS* Director:
+Hannah Lux Davis Pr...
+[] Watch video
+hellobox. 08/04/2024 4:26 AM
+i also got my PCBite kit. i'll set it up tomorrow, but i'm hoping to get
+a better first impression
+08/04/2024 4:19 AM
+most (but not all!) had a "FOR TRAVEL USE" adapter thrown in
+08/04/2024 4:19 AM
+oh yeah, and most of the ones with AC adapters have ones with european
+plugs
+08/04/2024 4:17 AM
+oh also they refer to D14 on that wifi shield (on the silkscreen and in
+the docs) without ever explaining that it's actually the pin labeled SDA
+[] _._._._._._._._._._._. that name conjures images of early-'10s
+arduino projects with ethernet
+hellobox. 08/04/2024 4:06 AM
+oh wow https://docs.wiznet.io/VAR-Products-using-WIZnet/ethernet_shield
+(edited)
+hellobox. 08/04/2024 4:05 AM
+it's very IoT
+08/04/2024 4:05 AM
+... but i'd be here for hours listing all of them
+08/04/2024 4:04 AM
+also the evb for this
+https://docs.wiznet.io/Product/Wi-Fi-Module/WizFi630S
+08/04/2024 4:04 AM
+and two of these
+https://wiznet.io/products/evaluation-boards/wizwiki-w7500
+WIZwiki-W7500: Advanced IoT Platform with Integrated TCP/IP | WIZnet
+Leverage the power of the WIZwiki-W7500 board for rapid IoT development.
+Integrates ARM Cortex-M0, TCP/IP core, and multiple interfaces for
+versatile applications.
+[]
+[]
+08/04/2024 4:03 AM
+i got one of these wifi shield things
+https://docs.wiznet.io/Product/Wi-Fi-Module/WizFi360/wizfi360_evb_shield
+(edited)
+08/04/2024 4:02 AM
+now they're onto RP2040 lmao
+08/04/2024 4:02 AM
+https://docs.wiznet.io/Product/Open-Source-Hardware/w5500_ethernet_shield
+[] _._._._._._._._._._._. that name conjures images of early-'10s
+arduino projects with ethernet
+hellobox. 08/04/2024 4:02 AM
+these evb kits are mostly dated 2010-2012
+hellobox. 08/04/2024 4:01 AM
+they seem pretty decent
+08/04/2024 4:00 AM
+but the knockoff phoenix terminals are actually chinese!
+https://www.degson.com/content/details_552_884400.html?lang=en/1000
+08/04/2024 4:00 AM
+korean relays, ofc http://www.hankukrelay.co.kr/
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 08/04/2024 3:58 AM
+that name conjures images of early-'10s arduino projects with ethernet
+hellobox. 08/04/2024 3:58 AM
+they did use proper ones where they needed 18 pins
+08/04/2024 3:58 AM
+they have 2 19-pin ones next to each other. i guess it was cheaper to
+get a 40-pin one and cut it?
+08/04/2024 3:56 AM
+they didn't bother getting the right length female "dupont" header on
+this one board; they just cut one in half
+08/04/2024 3:55 AM
+idk i guess their real products are the chips
+hellobox. 08/04/2024 3:47 AM
+ugh what is that smell?! it's (almost) every single board
+08/04/2024 3:46 AM
+the soldering was not great. one board has a weird wire thing stuck in a
+joint. i can't figure out what it is
+08/04/2024 3:45 AM
+i wasn't even aware that could happen
+08/04/2024 3:44 AM
+the tip of the barrel jack had somehow broken off of every single one
+inside the box
+08/04/2024 3:44 AM
+of the kits that came with power supplies, the korean ones were somehow
+worse than the chinese ones
+08/04/2024 3:44 AM
+like LG, they seem to try to use korean parts whenever possible
+08/04/2024 3:43 AM
+and i have a headache now
+08/04/2024 3:43 AM
+plus the boards smelled weird
+08/04/2024 3:42 AM
+they have some of the weirdest quality control issues i've ever seen
+08/04/2024 3:42 AM
+and after opening them, i'd like to warn anyone to think twice before
+using their shit (edited)
+08/04/2024 3:41 AM
+i bought a whole bunch of eval boards for this company's products:
+https://wiznet.io/
+WIZnet Official - Leading Internet Connectivity Solutions
+Discover WIZnet's leading role in providing innovative internet
+connectivity solutions, enhancing networks globally.
+[]
+August 3, 2024
+hellobox. 08/03/2024 10:40 PM
+finally, somebody made blu-tack that's not just for women or children!
+https://www.amazon.com/Original-Bergeon-6033-Cleaner-Cleaning/dp/B077B41Z1C
+Original Swiss Bergeon unisex-adult Rodico 6033 Dry Cleaner for Cle...
+Excellent item For cleaning balance pivots, train wheel pivots .....
+Great for removing finger prints and stains, Will not mark or smear
+plates, bridges, dials or hands ..... Removes excess oil from watch
+jewels ..... Ideal for taking out broken pivots from the jewels .....
+Can be used for pickin...
+[]
+hellobox. 08/03/2024 7:54 PM
+[3aTWC7e.png]
+ 3aTWC7e.png
+53.99 KB External
+08/03/2024 7:48 PM
+i think it may be per bag of 50
+08/03/2024 7:46 PM
+these aren't $1.27 *per wire*, right? ...right?!
+https://www.digikey.com/en/products/detail/molex/2149211114/12181247
+[] dschndr wasn't there a rumour floating around that some release group
+broke a tee to get drm (widevine iirc)...
+hellobox. 08/03/2024 5:10 PM
+not sure what you're referring to specifically, but many TEEs are stupid
+easy to break (or so poorly designed you don't even need to)
+hellobox. 08/03/2024 5:09 PM
+i guess ebay is trying to reach aliexpress levels of jank
+[FX1MKWM.png]
+ FX1MKWM.png
+8.24 KB External
+[dschndr]
+hellobox. but that obviously could never happen because nobody has ever
+broken a TEE
+dschndr 08/03/2024 8:02 AM
+wasn't there a rumour floating around that some release group broke a
+tee to get drm (widevine iirc) keys? i remember that i read it somewhere
+but i can't recall where
+hellobox. 08/03/2024 4:02 AM
+> Fixed an issue which was causing sporadic explorer.exe for some
+Insiders while using your PC in the latest flights.
+hellobox. 08/03/2024 2:57 AM
+what https://friendsofjustin.knowbots.org/
+08/03/2024 2:57 AM
+https://www.simplymeats.us/
+08/03/2024 2:57 AM
+there are a ton of weird orgs in there
+08/03/2024 2:57 AM
+humane society of the US? wtf
+08/03/2024 2:52 AM
+https://contentauthenticity.org/our-members ARM, qualcomm, MS, nvidia...
+(edited)
+08/03/2024 2:49 AM
+but that obviously could never happen because nobody has ever broken a
+TEE
+ 1
+08/03/2024 2:48 AM
+if you're able to attest that fake images are real photos, you'll make
+them more believable
+08/03/2024 2:47 AM
+this whole thing is stupid
+08/03/2024 2:47 AM
+i was wondering how that would work with like photoshop, but... SGX lol
+08/03/2024 2:46 AM
+it involves devices (e.g. cameras) like signing media to prove that it's
+"real"
+08/03/2024 2:45 AM
+this C2PA shit is like some kind of reverse DRM
+https://c2pa.org/specifications/specifications/1.4/attestations/attestation.html#_trust_roots_for_attestation
+hellobox. 08/03/2024 1:56 AM
+i can't wait to get my hands on the self-wee
+08/03/2024 1:55 AM
+is this the same thing rebranded? (yes)
+https://www.amazon.com/elecsung-Waterproof-Integrated-Bluetooth-SS215U22-A016/dp/B0D2D4D664/
+(edited)
+08/03/2024 1:53 AM
+43" 4K https://www.amazon.com/dp/B0C5MCL6QJ
+[] infowski https://aliexpress.com/item/1005004357756169.html no fucking
+way, wee smart mirror
+hellobox. 08/03/2024 1:52 AM
+https://www.amazon.com/Soulaca-Bathroom-Mirror-Waterproof-Bluetooth/dp/B0B17KS3BT/
+[infowski]
+infowski 08/03/2024 1:50 AM
+https://aliexpress.com/item/1005004357756169.html no fucking way, wee
+smart mirror
+ 1
+hellobox. 08/03/2024 1:00 AM
+lel
+[4Oepn3G.png]
+ 4Oepn3G.png
+34.2 KB External
+08/03/2024 12:59 AM
+(no content)
+[BnF00VF.png]
+ BnF00VF.png
+65.69 KB External
+August 2, 2024
+[lightfire]
+lightfire 08/02/2024 11:06 AM
+could be a nice revenue if you fixed broken gpus tho
+hellobox. 08/02/2024 2:41 AM
+like, i don't want to replace blown FETs on laptop motherboards or
+reball GPUs (edited)
+08/02/2024 2:41 AM
+tbh it's also not that interesting to me
+08/02/2024 2:40 AM
+it's too bad i don't have the skills to do serious electronics repair
+professionally
+08/02/2024 2:40 AM
+man, i have/am getting some pretty fancy equipment
+hellobox. 08/02/2024 1:48 AM
+that would be added to a list of projects that'll already take more than
+the rest of my life to complete
+08/02/2024 1:47 AM
+i guess i could try to do the porting work myself, but...
+[itsyogsothoth]
+itsyogsothoth 08/02/2024 1:47 AM
+Another note: I was able to build it on Debian under WSL
+hellobox. 08/02/2024 1:47 AM
+doesn't look like there are many dell desktops...
+[itsyogsothoth]
+itsyogsothoth 08/02/2024 1:46 AM
+More or less. The table itself doesn't list everything, but if it shows
+up with CTRL+F you (should) be good to go
+hellobox. 08/02/2024 1:46 AM
+wait, does it run on ARM? wow
+08/02/2024 1:45 AM
+is this accurate? https://coreboot.org/status/board-status.html
+[itsyogsothoth]
+itsyogsothoth 08/02/2024 1:45 AM
+(including mine EliteBook Folio 9740m)
+08/02/2024 1:45 AM
+It also has bunch of HP laptops there
+[itsyogsothoth]
+hellobox. i wonder if it would support the PCs i'm talking about
+itsyogsothoth 08/02/2024 1:44 AM
+I mean if you open make menuconfig it lists bunch of desktop boards
+hellobox. 08/02/2024 1:42 AM
+mobos -> (de)soldering practice? (not the elitebooks) (edited)
+08/02/2024 1:40 AM
+i also have some old HP elitebooks (2009) that i really like. would love
+to do something cool with them
+08/02/2024 1:39 AM
+is there an up-to-date list of supported hardware?
+08/02/2024 1:39 AM
+they're like dell/lenovo, so idk what chipset
+[] itsyogsothoth I've put a bunny on my old laptop
+hellobox. 08/02/2024 1:39 AM
+i wonder if it would support the PCs i'm talking about
+hellobox. 08/02/2024 1:39 AM
+anyone have ideas for what to do with several old (2010, 2013) PCs?
+August 1, 2024
+[itsyogsothoth]
+itsyogsothoth 08/01/2024 11:23 PM
+I've put a bunny on my old laptop
+[PXL_20240801_194416406.jpg]
+ PXL_20240801_194416406.jpg
+112.58 KB External
+hellobox. 08/01/2024 2:23 PM
+meat floss? 
+[cfqHMGN.png]
+ cfqHMGN.png
+104.46 KB External
+08/01/2024 2:22 PM
+(no content)
+[HpTF1PI.png]
+ HpTF1PI.png
+116.65 KB External
+hellobox. 08/01/2024 1:23 AM
+should i buy one of these? lol
+[QoYJ0UV.png]
+ QoYJ0UV.png
+193.3 KB External
+08/01/2024 1:17 AM
+btw i bought a bunch of intel galileo boards for some(/no) reason
+July 31, 2024
+[friya]
+hellobox. What kinds of jobs are there that involve like firmware
+reverse engineering?
+friya 07/31/2024 8:54 PM
+Well, Google Project Zero :) But I think most jobs (whether government
+or corporate) turn out to be like most other jobs. It's more writing and
+getting funding (time) than actual reverse engineering.
+[madalinost]
+madalinost 07/31/2024 8:14 PM
+And yeah those are internet cables around
+07/31/2024 8:14 PM
+Quick snack
+07/31/2024 8:14 PM
+(no content)
+[image0.jpg]
+ image0.jpg
+1.65 MB External
+ww8543 07/31/2024 5:36 PM
+who is lg hiring? 
+07/31/2024 5:36 PM
+oh it's the other way around? oof
+hellobox. 07/31/2024 5:14 PM
+OEMs hire the contractors
+hellobox. Unfortunately I don't think they do that themselves. Otherwise
+that sounds pretty cool
+ww8543 07/31/2024 5:13 PM
+well then one of their contractors? whoever that is
+ww8543 maybe you could be an fcc inspector taking apart devices?
+hellobox. 07/31/2024 4:49 PM
+Unfortunately I don't think they do that themselves. Otherwise that
+sounds pretty cool
+hellobox. I'd rather not have to move to China...
+ww8543 07/31/2024 4:48 PM
+maybe you could be an fcc inspector taking apart devices?
+hellobox. 07/31/2024 4:31 PM
+I'd rather not have to move to China...
+hellobox. What kinds of jobs are there that involve like firmware
+reverse engineering?
+ww8543 07/31/2024 4:29 PM
+shady chinese "manufacturers" that copy "western" designs?
+hellobox. 07/31/2024 4:27 PM
+Or does anyone know of an unmet need among businesses regarding signage
+or something?
+07/31/2024 4:26 PM
+I'm trying to broaden my search
+07/31/2024 4:25 PM
+What kinds of jobs are there that involve like firmware reverse
+engineering?
+July 30, 2024
+hellobox. 07/30/2024 3:27 AM
+https://www.ebay.com/itm/256527545139
+LG 1WZZ81N001A Customized Washer
+Part Number: 1WZZ81N001A. If you're repairing your TV, after diagnosing
+its symptoms, the first step is finding the correct TV part.We highly
+suggest searching by the part number located on your TV part.
+[]
+[kitsuned]
+hellobox. Uh, how much of a difference is there between edge and chrome?
+kitsuned 07/30/2024 1:52 AM
+iirc Edge has another PDF renderer
+[] kitsuned Click to see attachment
+hellobox. 07/30/2024 1:51 AM
+Uh, how much of a difference is there between edge and chrome?
+[kitsuned]
+kitsuned 07/30/2024 1:50 AM
+thanks, QA, i guess?
+07/30/2024 1:50 AM
+(no content)
+[image.png]
+ image.png
+100.46 KB External
+ 1
+July 29, 2024
+[yaafsama]
+zfa.discrd That's not really hackable, well you can put OpenWRT on it I
+guess but by design.
+yaafsama 07/29/2024 12:22 PM
+Well I wasn't clear on the "hackable" part I thought of having OpenWRT
+as hackable What's considered hackable?
+zfa.discrd 07/29/2024 3:56 AM
+But that aside(!) its a solid device even unhacked as it's just skinned
+OpenWRT.
+07/29/2024 3:55 AM
+Last saw they were flip-flopping between proprietary and OS drivers
+because of 2.4GHz wifi issues.
+07/29/2024 3:55 AM
+That's not really hackable, well you can put OpenWRT on it I guess but
+by design.
+[yaafsama]
+hellobox. what's a good hackable wifi router?
+yaafsama 07/29/2024 12:19 AM
+How about this? https://www.gl-inet.com/products/gl-mt6000/
+https://openwrt.org/toh/gl.inet/gl-mt6000
+Flint 2 (GL-MT6000) | High-Performance VPN Router
+Experience blazing-fast VPN speeds and full OpenWrt customization with
+Flint 2, our best Wi-Fi 6 router yet. A new realm of power, freedom, and
+security.
+[]
+July 28, 2024
+hellobox. 07/28/2024 8:40 PM
+> NOTE: Builds 50906 and newer support ed25519 (and RSA); builds 56326
+and newer only support ed25519.
+07/28/2024 8:40 PM
+ugh, dd-wrt sucks
+hellobox. 07/28/2024 5:01 PM
+i know to avoid broadcom
+07/28/2024 5:01 PM
+what's a good hackable wifi router?
+layzard3663 07/28/2024 4:00 PM
+Question. Are there regions where LG Channels is not available? Or
+certain Tv versions that does not support It?
+[kitsuned]
+kitsuned 07/28/2024 1:23 AM
+webOS on Hisense wen
+[:cloi:] 1
+[kitsuned]
+hellobox. that may only work on super old (in VIDAA terms) models
+kitsuned 07/28/2024 1:23 AM
+MT5658 is ~2017 epoch
+[] kitsuned rofl
+hellobox. 07/28/2024 12:44 AM
+that may only work on super old (in VIDAA terms) models (edited)
+July 27, 2024
+[] kitsuned rofl
+Deleted User 07/27/2024 11:04 PM
+i smell root
+[kitsuned]
+kitsuned 07/27/2024 10:59 PM
+rofl
+[image.png]
+ image.png
+147.67 KB External
+07/27/2024 10:58 PM
+https://www.vidaa.com/wp-content/uploads/2020/12/WebApp_Development_Guide_for_VIDAA.pdf
+hellobox. 07/27/2024 2:40 AM
+https://james-iry.blogspot.com/2009/05/brief-incomplete-and-mostly-wrong.html
+is this the origin of "a monad is a monoid in the category of
+endofunctors"?
+July 26, 2024
+[itsyogsothoth]
+itsyogsothoth 07/26/2024 5:12 PM
+(no content)
+[IMG_20240726_155907_243.jpg]
+ IMG_20240726_155907_243.jpg
+56.86 KB External
+[smx2460]
+smx2460 07/26/2024 2:56 PM
+next to @meep's house?
+ 1
+07/26/2024 2:55 PM
+where do we open our new company?
+07/26/2024 2:55 PM
+we can always fix that 
+hellobox. 07/26/2024 2:55 PM
+07/26/2024 2:55 PM
+too bad you're not my boss then
+[smx2460]
+smx2460 07/26/2024 2:55 PM
+i wouldn't bother about anything else until you've removed that first
+variable out of the system
+hellobox. 07/26/2024 2:55 PM
+those only account for some of the lag
+[] smx2460 that's the reason lol
+hellobox. 07/26/2024 2:54 PM
+i think there's more to it
+hellobox. 07/26/2024 2:54 PM
+(e.g. XML serialization/deserialization for every tiny bit of data)
+[smx2460]
+smx2460 07/26/2024 2:54 PM
+that's the reason lol
+07/26/2024 2:54 PM
+then it's pointless to debug it
+hellobox. 07/26/2024 2:54 PM
+but i don't have the time to fix that
+[smx2460]
+smx2460 07/26/2024 2:54 PM
+then that's why lol
+[] smx2460 make sure they aren't blocking the UI thread
+hellobox. 07/26/2024 2:54 PM
+they are lol
+[smx2460]
+smx2460 07/26/2024 2:54 PM
+make sure they aren't blocking the UI thread
+hellobox. 07/26/2024 2:54 PM
+i know of several things that are ridiculously slow, but i can't really
+change them
+07/26/2024 2:52 PM
+no
+[smx2460]
+smx2460 07/26/2024 2:52 PM
+does it use QML?
+hellobox. 07/26/2024 2:51 PM
+i'm having trouble catching the semi-random lag spikes
+[smx2460]
+smx2460 07/26/2024 2:51 PM
+and?
+[] smx2460 also at that point you could probably also use the Visual
+Studio profiler
+hellobox. 07/26/2024 2:51 PM
+i have
+[smx2460]
+smx2460 07/26/2024 2:51 PM
+    Valgrind is a Linux program which does not support Windows. Valgrind heavily relies on Linux internals, that’s why Valgrind does not support Windows. There are some Windows tools (like Deleaker) having the same purpose
+07/26/2024 2:51 PM
+also at that point you could probably also use the Visual Studio
+profiler
+07/26/2024 2:50 PM
+supports anything that has PDBs, it says
+07/26/2024 2:50 PM
+http://www.codersnotes.com/sleepy/
+[] smx2460 not sure, but what if it isn't... could you recompile with
+Mingw?
+hellobox. 07/26/2024 2:50 PM
+almost certainly not
+[smx2460]
+smx2460 07/26/2024 2:49 PM
+(i actually don't know, maybe it works)
+[smx2460]
+hellobox. Does it work with MSVC?
+smx2460 07/26/2024 2:49 PM
+not sure, but what if it isn't... could you recompile with Mingw?
+(edited)
+July 25, 2024
+[] smx2460 kcachegrind?
+hellobox. 07/25/2024 10:21 PM
+Does it work with MSVC?
+[smx2460]
+hellobox. Maybe later, but I have to finish this shit by Friday
+smx2460 07/25/2024 10:20 PM
+any news?
+[smx2460]
+smx2460 07/25/2024 10:20 PM
+together with callgrind? (edited)
+07/25/2024 10:20 PM
+https://doc.qt.io/qtcreator/creator-cache-profiler.html
+[smx2460]
+hellobox. Anyone have ideas on how to pinpoint the cause of lag spikes
+in a Qt application?
+smx2460 07/25/2024 10:20 PM
+kcachegrind?
+hellobox. 07/25/2024 3:22 PM
+Afaict there's no way to Instrument native applications
+07/25/2024 3:22 PM
+Although visual studio profiling kinda sucks
+07/25/2024 3:18 PM
+Profiling isn't giving me anything useful
+07/25/2024 3:18 PM
+Anyone have ideas on how to pinpoint the cause of lag spikes in a Qt
+application?
+July 24, 2024
+[smx2460]
+smx2460 07/24/2024 11:44 PM
+or you could use any linux box with qemu-nbd (to mount the vhd) and dd
+on the vhd partition (or even gparted probably, to copy the partition)
+(edited)
+07/24/2024 11:44 PM
+can use qemu-img to convert vhd to raw
+07/24/2024 11:43 PM
+even a USB drive should work (edited)
+07/24/2024 11:43 PM
+preinstalled
+07/24/2024 11:43 PM
+so you could grab that and literally image it to a drive
+07/24/2024 11:43 PM
+there's even the VHD download
+07/24/2024 11:43 PM
+https://www.microsoft.com/en-us/evalcenter/download-windows-server-2022
+Windows Server 2022 | Microsoft Evaluation Center
+Windows Server 2022 introduces advanced multi-layer security, hybrid
+capabilities with Azure, and a flexible application platform.
+[smx2460]
+hellobox. Maybe later, but I have to finish this shit by Friday
+smx2460 07/24/2024 11:41 PM
+what is that you have to finish
+[smx2460]
+smx2460 07/24/2024 11:40 PM
+it's much better than anything ZFS has to offer
+07/24/2024 11:39 PM
+NTFS dedup is a killer feature for EPK files
+07/24/2024 11:39 PM
+i cannot deduplicate new files i add
+07/24/2024 11:38 PM
+so while i can now mount the volume
+07/24/2024 11:38 PM
+also this hacky approach didn't copy the powershell files
+07/24/2024 11:38 PM
+one day 
+07/24/2024 11:38 PM
+by basically pointing to the .manifest of the driver
+07/24/2024 11:38 PM
+but i would have preferred to just copy the feature set instead
+07/24/2024 11:38 PM
+so i copied the files manually and registered the driver manually in
+regedit
+07/24/2024 11:37 PM
+and no way to intall the deduplication driver
+07/24/2024 11:37 PM
+and then i couldn't read anything anymore from this installation
+07/24/2024 11:37 PM
+i enabled it for a few volumes when i last booted Windows Server
+07/24/2024 11:37 PM
+NTFS deduplication
+07/24/2024 11:37 PM
+oh i forgot
+07/24/2024 11:37 PM
+and have them registered in the CBS instead of manually copying shit
+(edited)
+07/24/2024 11:37 PM
+to port Server features to Client individually
+07/24/2024 11:37 PM
+and that's why i wanted to try and make Winter
+07/24/2024 11:36 PM
+as in, needing to put in the time to make it work
+07/24/2024 11:36 PM
+i'd like to use it as well but last time i was ""worried"" about
+software compatibility
+07/24/2024 11:35 PM
+etc.
+07/24/2024 11:35 PM
+and you have the ability to use some extra features like DDA in HyperV,
+WDS
+07/24/2024 11:35 PM
+no cortana, less telemetry
+07/24/2024 11:35 PM
+it's much lighter overall
+07/24/2024 11:34 PM
+which might be a pro or con depending on how you look at it
+07/24/2024 11:34 PM
+also the Store doesn't work oob
+07/24/2024 11:34 PM
+becuase normally people don't run Server as Workstation
+07/24/2024 11:34 PM
+and might refuse to run or demand for an enterprise license
+07/24/2024 11:34 PM
+there are some softwares that will complain when they see they are
+running on Server
+hellobox. 07/24/2024 11:34 PM
+Maybe later, but I have to finish this shit by Friday
+[smx2460]
+smx2460 07/24/2024 11:33 PM
+and then make it bootable or add the installation to your existing BCD
+07/24/2024 11:33 PM
+or use gimagex on a partition of your choice
+07/24/2024 11:33 PM
+so it runs OOBE/First Setup on the real hardware
+07/24/2024 11:33 PM
+then shut it down after it's done imaging the .wim
+07/24/2024 11:33 PM
+either pass through a disk to a VM and run the Server installer
+07/24/2024 11:32 PM
+you can do it in 10 minutes
+07/24/2024 11:32 PM
+it's much easier to just image Windows Server to an empty partition
+07/24/2024 11:32 PM
+but server edition
+07/24/2024 11:32 PM
+unless you find the same kernel build
+07/24/2024 11:32 PM
+it doesn't work
+07/24/2024 11:32 PM
+don't bother
+hellobox. 07/24/2024 11:32 PM
+Well, I could, but I don't want to
+[smx2460]
+smx2460 07/24/2024 11:32 PM
+so it's basically adding Server features on top of Client
+hellobox. 07/24/2024 11:32 PM
+Yeah I can't do that on my work PC
+[smx2460]
+smx2460 07/24/2024 11:32 PM
+see?
+07/24/2024 11:32 PM
+    I can't recall if I actually got updates, but the updates I actually received, if I remember it correctly, was the server version So yeah, don't update via windows update, redo this every time after major updates should be fine
+07/24/2024 11:31 PM
+and applications are now confused (edited)
+07/24/2024 11:31 PM
+or a Windows Server on top of Windows Client
+07/24/2024 11:31 PM
+basically at this point it's a bstard hybrid
+07/24/2024 11:31 PM
+will also fuck up the edition of windows
+07/24/2024 11:31 PM
+and, as he posted
+07/24/2024 11:31 PM
+(no content)
+[e3l9ESO.png]
+ e3l9ESO.png
+63.93 KB External
+07/24/2024 11:31 PM
+installing the SKUs will change the edition of windows
+07/24/2024 11:30 PM
+for the running edition of windows
+07/24/2024 11:30 PM
+i think it's more of a check in the code
+07/24/2024 11:30 PM
+actually
+07/24/2024 11:30 PM
+i actually don't know
+07/24/2024 11:30 PM
+to have an option to import packages/features from different versions of
+Windows
+hellobox. 07/24/2024 11:30 PM
+So is it a policy thing, or are there files missing?
+[smx2460]
+smx2460 07/24/2024 11:30 PM
+is what i want to actually do in Winter
+07/24/2024 11:30 PM
+the process he explains here
+07/24/2024 11:30 PM
+basically at that point you're making it into Windows Server
+07/24/2024 11:30 PM
+     Another thing is, I have tried to use DDA on the client version of Windows, and it did work, but you need some tedious work.
+    First, you need both client & server version with the same build ID.
+    Install that client version (e.g. 22509 Insider Preview & 22509 Datacenter)
+    Setup all your drivers and stuffs
+    Extract Windows\Branding & Windows\System32\spp\tokens\skus from server ISO
+    Copy skus to the same directory
+    Run slmgr.vbs /rilc in cmd
+    Run slmgr.vbs /ipk KEY where key is the server one you want
+    Copy branding to the same directory
+    Activate, there you go
+    Now you can have the client features as well as the DDA feature.
+    Although, ServerManager cannot be opened because consumer versions do not have that apparently. 
+07/24/2024 11:29 PM
+but you need EXACT matching builds for it to work
+hellobox. 07/24/2024 11:29 PM
+Why would they install pcip.sys if it's not supposed to be available on
+client? (edited)
+[smx2460]
+smx2460 07/24/2024 11:29 PM
+is a guy that managed to install the Windows Server package/SKU on top
+of Windows Enterprise
+07/24/2024 11:29 PM
+the first comment in that reddit (edited)
+07/24/2024 11:29 PM
+you need Windows Server
+07/24/2024 11:29 PM
+basically it doesn't work
+07/24/2024 11:29 PM
+i didn't know that you had the commands though
+07/24/2024 11:28 PM
+so that's what i remembered (edited)
+07/24/2024 11:28 PM
+     Apparently in 2016-2018 there were some indications that DDA in some form added into Win10Pro but it would return a "a hypervisor feature is not available to the user" error. This prompted other users to search for a work around but from the threads I found, one was never discovered/publicly known. 
+07/24/2024 11:28 PM
+https://www.reddit.com/r/HyperV/comments/rd1pf5/some_ponderings_on_dda_on_windows_1011_pro/
+From the HyperV community on Reddit: Some ponderings on DDA on Wind...
+Explore this post and more from the HyperV community
+[]
+hellobox. 07/24/2024 11:28 PM
+22631.3880
+[smx2460]
+smx2460 07/24/2024 11:28 PM
+wow
+hellobox. 07/24/2024 11:28 PM
+Yes
+[smx2460]
+hellobox. But then I disabled Credential Guard or something, and now
+it's the "not available to user" error
+smx2460 07/24/2024 11:28 PM
+and you're on Windows Enterprise?
+[smx2460]
+smx2460 07/24/2024 11:27 PM
+but if you're getting the device dismounted correctly, you don't need it
+(edited)
+07/24/2024 11:27 PM
+and also made a patch to pcip itself to skip some sanity checks and
+support more devices
+hellobox. 07/24/2024 11:27 PM
+Msinfo32 still says virtualization-based security is "Running"
+[smx2460]
+smx2460 07/24/2024 11:27 PM
+07/24/2024 11:27 PM
+so i could read verbose debug logs of all the process
+07/24/2024 11:27 PM
+i also had reverse engineered the pcip debug channel
+07/24/2024 11:27 PM
+or something like that
+07/24/2024 11:27 PM
+it will tell you about failure to transition to D0 iirc
+07/24/2024 11:26 PM
+but if it doesn't
+07/24/2024 11:26 PM
+which might or might not work in some cases
+07/24/2024 11:26 PM
+when you power up the VM, it will go and power cycle the PCI device
+hellobox. 07/24/2024 11:26 PM
+Pcip.sys is present
+07/24/2024 11:25 PM
+But then I disabled Credential Guard or something, and now it's the "not
+available to user" error
+[smx2460]
+smx2460 07/24/2024 11:25 PM
+or "PCI Proxy"
+07/24/2024 11:25 PM
+what Windows is actually doing is replacing the device driver with
+something called pcip.sys
+07/24/2024 11:25 PM
+when you "dismount " the device
+07/24/2024 11:25 PM
+so
+07/24/2024 11:25 PM
+exact one?
+hellobox. 07/24/2024 11:25 PM
+At first I was getting a different error when I tried to start the VM
+[smx2460]
+smx2460 07/24/2024 11:24 PM
+and i would be very interested about that if it's the case
+07/24/2024 11:24 PM
+unless they changed it
+hellobox. 07/24/2024 11:24 PM
+Enterprise? Idk
+[smx2460]
+smx2460 07/24/2024 11:24 PM
+you shouldn't even get the powershell commands (edited)
+07/24/2024 11:24 PM
+that shouldn't be possible in Client SKUs iirc
+07/24/2024 11:24 PM
+strange
+hellobox. 07/24/2024 11:24 PM
+I was able to disable the device, dismount it, and add it to the
+assignable devices
+[smx2460]
+smx2460 07/24/2024 11:24 PM
+but devmgmt.msc will prompt you if that's the case
+07/24/2024 11:23 PM
+you'll have to reboot at this point
+07/24/2024 11:23 PM
+i.e. it doesn't support unloading
+07/24/2024 11:23 PM
+if the driver is also not hotpluggable
+07/24/2024 11:23 PM
+otherwise the device won't be disableable
+hellobox. 07/24/2024 11:23 PM
+They really just disable it in client SKUs?
+[smx2460]
+smx2460 07/24/2024 11:23 PM
+this will only work when ASPM is on
+07/24/2024 11:23 PM
+> Use Device Manager or PowerShell to ensure the device is Disabled.
+hellobox. 07/24/2024 11:23 PM
+I have done all that
+[smx2460]
+smx2460 07/24/2024 11:23 PM
+first, you disable the device in devmgmt.msc
+07/24/2024 11:23 PM
+(there's no GUI)
+07/24/2024 11:22 PM
+it's a bunch of Powerhsell commands
+07/24/2024 11:22 PM
+it has the guide on how to do it
+07/24/2024 11:22 PM
+refer to this
+07/24/2024 11:22 PM
+https://github.com/MicrosoftDocs/windowsserverdocs/blob/main/WindowsServerDocs/virtualization/hyper-v/deploy/Deploying-graphics-devices-using-dda.md
+windowsserverdocs/WindowsServerDocs/virtualization/hyper-v/deploy/D...
+Public content repository for Windows Server content. -
+MicrosoftDocs/windowsserverdocs
+[]
+07/24/2024 11:21 PM
+https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/plan/plan-for-deploying-devices-using-discrete-device-assignment
+Plan for deploying devices by using Discrete Device Assignment
+Learn how Discrete Device Assignment allows physical PCIe hardware to be
+directly accessible from within a virtual machine.
+[]
+07/24/2024 11:21 PM
+Discrete Device Assignment
+07/24/2024 11:21 PM
+the feature you want is called DDA
+hellobox. 07/24/2024 11:21 PM
+I'll just use another PC
+[smx2460]
+smx2460 07/24/2024 11:21 PM
+it's not different than installing regular Windows
+07/24/2024 11:21 PM
+it really doesn't
+07/24/2024 11:21 PM
+it doesn't take much time
+hellobox. 07/24/2024 11:21 PM
+Fml
+07/24/2024 11:21 PM
+I don't have time to install a server OS 
+[smx2460]
+smx2460 07/24/2024 11:21 PM
+now
+[smx2460]
+hellobox. So "Native ASPM" is enabled in BIOS
+smx2460 07/24/2024 11:20 PM
+perfect
+[smx2460]
+smx2460 07/24/2024 11:20 PM
+at this point you can test if it will work
+hellobox. 07/24/2024 11:20 PM
+So "Native ASPM" is enabled in BIOS
+[smx2460]
+smx2460 07/24/2024 11:20 PM
+3) get in the BIOS and enable all power management settings for PCIe
+07/24/2024 11:19 PM
+2) [optional] apply this to get it to be more desktop-y:
+https://www.windowsworkstation.com/
+07/24/2024 11:19 PM
+1) prepare a Windows Server installation (mandatory)
+07/24/2024 11:19 PM
+so here's the checklist
+07/24/2024 11:19 PM
+basically my X16 port is fine
+07/24/2024 11:18 PM
+on PCIex16
+07/24/2024 11:18 PM
+SAS card
+hellobox. 07/24/2024 11:18 PM
+With what device?
+[smx2460]
+smx2460 07/24/2024 11:18 PM
+(and without patching anything in Windows, well actually i have but
+that's optional) (edited)
+07/24/2024 11:18 PM
+since i have done this (successfully)
+07/24/2024 11:18 PM
+let's make a checklist
+07/24/2024 11:17 PM
+which is grouped with other stuff
+07/24/2024 11:17 PM
+like the integrated soundcard iirc
+07/24/2024 11:17 PM
+my motherboard doesn't need that unless i want to pass through a
+motherboard device
+07/24/2024 11:17 PM
+mind you
+07/24/2024 11:17 PM
+but
+07/24/2024 11:17 PM
+and passes through the individual device, in an unsafe manner
+07/24/2024 11:17 PM
+that simply ignores this
+07/24/2024 11:17 PM
+but Linux will, with a patch called "ACS patch"
+07/24/2024 11:17 PM
+Windows will not let you do that
+hellobox. 07/24/2024 11:17 PM
+I don't have time to fuck with this all day
+[smx2460]
+smx2460 07/24/2024 11:17 PM
+since a device could DMA to another
+07/24/2024 11:16 PM
+and separation is not guaranteed at that point
+hellobox. 07/24/2024 11:16 PM
+Ughhh
+[smx2460]
+smx2460 07/24/2024 11:16 PM
+it has to pass in the whole group
+07/24/2024 11:16 PM
+if they are, the OS can't "pass through" a single device
+07/24/2024 11:16 PM
+devices might be grouped together
+07/24/2024 11:16 PM
+basically
+07/24/2024 11:16 PM
+    PCI Express supports Peer-to-Peer transfers where one PCI Device can directly talk to another one. This is undesirable because it bypasses the IOMMU, and thus isolation between these Devices can't be guaranteed. This is what happens in Intel LGA 1150/1155/1151 platforms where the Processor integrated PCIe Controller doesn't support ACS, and thus all the PCI Devices attached to it gets in the same IOMMU Group. ACS allows to force PCIe Devices to always go through the IOMMU, providing isolation and thus better IOMMU Groups granularity.
+hellobox. 07/24/2024 11:16 PM
+Oh god
+[smx2460]
+smx2460 07/24/2024 11:16 PM
+also called ACS
+07/24/2024 11:15 PM
+https://www.reddit.com/r/VFIO/comments/11fw2uo/pcie_iommu_group_challenges_possible_without_acs/
+From the VFIO community on Reddit
+Explore this post and more from the VFIO community
+[]
+07/24/2024 11:15 PM
+you also need to check the IOMMU groups
+hellobox. 07/24/2024 11:15 PM
+It's 13th gen Intel. VT-d enabled in BIOS
+[smx2460]
+smx2460 07/24/2024 11:14 PM
+and by motherboard it mostly means BIOS
+hellobox. 07/24/2024 11:14 PM
+Gigabyte mb
+[smx2460]
+smx2460 07/24/2024 11:14 PM
+this too
+07/24/2024 11:14 PM
+> Your hardware needs to support IOMMU (I/O Memory Management Unit)
+interrupt remapping, this includes the CPU and the motherboard. (edited)
+hellobox. 07/24/2024 11:14 PM
+Hmm
+[smx2460]
+smx2460 07/24/2024 11:14 PM
+which i can do in APTIO V
+07/24/2024 11:13 PM
+you need to make sure the OS is given full control of PCIe power
+management
+07/24/2024 11:13 PM
+    L1 Substates
+    Allows you to select the PCI Express L1 Substates settings. Configuration options: [Disabled] [L1.1] [L1.1 & L1.2
+07/24/2024 11:13 PM
+    Native ASPM
+    Set this item to [Enabled] for OS Controlled ASPM, or set this item to [Disabled] for BIOS controlled ASPM. Configuration options: [Auto] [Enabled] [Disabled]
+07/24/2024 11:13 PM
+    PCI Express Native Power Management
+    Allows you to enhance the power saving feature of PCI Express and perform ASPM operations in the operating system. Configuration options: [Disabled] [Enabled]
+hellobox. 07/24/2024 11:12 PM
+How
+[smx2460]
+smx2460 07/24/2024 11:12 PM
+ASPM iirc
+[smx2460]
+hellobox. I've done everything I could find to disable Credential Guard,
+Core Isolation, etc. and enable SR-IO...
+smx2460 07/24/2024 11:12 PM
+you also need to make sure that PCIe PM is delegated to the OS
+hellobox. 07/24/2024 11:12 PM
+Or are they talking about PV?
+07/24/2024 11:11 PM
+But I see people talking about passthrough for GPUs on win11
+[] smx2460 or you help me develop Winter far enough that you can install
+the HyperV PCIP component in client Wi...
+hellobox. 07/24/2024 11:11 PM
+It seems like that's what the linked reddit post is talking about
+[smx2460]
+smx2460 07/24/2024 11:10 PM
+or you help me develop Winter far enough that you can install the HyperV
+PCIP component in client Windows
+07/24/2024 11:10 PM
+forget about it unless you're running Windows Server as the Desktop OS
+[smx2460]
+hellobox. Latest windows 11 enterprise. Anyone have experience with PCIe
+passthrough?
+smx2460 07/24/2024 11:10 PM
+yes, me
+hellobox. 07/24/2024 11:09 PM
+All I need is time 
+07/24/2024 11:09 PM
+I'm set up for serious RTK hax
+07/24/2024 11:09 PM
+I haven't even tried the BPI-M4, which has some related rtk SoC
+[smx2460]
+smx2460 07/24/2024 11:08 PM
+right
+[smx2460]
+hellobox. Lex(t)ra
+smx2460 07/24/2024 11:08 PM
+ah!
+[smx2460]
+hellobox. what the hell is `lk/MP`? ``` INFO: bl31 jumps to EL2: LK
+entry welcome to lk/MP(BPI) ```
+smx2460 07/24/2024 11:08 PM
+LK reference code
+[] smx2460 hm?
+hellobox. 07/24/2024 11:08 PM
+Lex(t)ra
+[smx2460]
+smx2460 07/24/2024 11:08 PM
+ej-tag lol
+[smx2460]
+hellobox. lextra (<@310158180728700929>) ej-tag  ``` #define
+SYS_muxpad2 (SB2_BA...
+smx2460 07/24/2024 11:07 PM
+hm?
+[smx2460]
+smx2460 07/24/2024 11:07 PM
+it sounds like Realtek Cyclic Integrity Check (edited)
+[smx2460]
+hellobox. what's RCIC?```c typedef enum { MCP_MD_AES_H,
+MCP_MD_MARS_AES_H, MCP_MD_SHA1_H, MCP_...
+smx2460 07/24/2024 11:06 PM
+https://github.com/Staars/u-boot-rtd/blob/7b33b907fc54a2d07101ff879ae4c612dcc6b5c3/examples/flash_writer/tools/RtSSL/mcp/src/rcic.c#L200
+u-boot-rtd/examples/flash_writer/tools/RtSSL/mcp/src/rcic.c at 7b33...
+fork from https://github.com/BPI-SINOVOIP/BPI-W2-bsp - Staars/u-boot-rtd
+[]
+hellobox. 07/24/2024 11:06 PM
+The error I am getting is "A hypervisor feature is not available to the
+user." (0xC035001E)
+07/24/2024 11:05 PM
+@Smx https://www.reddit.com/r/HyperV/comments/rd1pf5/comment/hp07iw0/
+pppig236's comment on "Some ponderings on DDA on Windows 10/11 Pro"
+Explore this conversation and more from the HyperV community
+[]
+[smx2460]
+hellobox. wow, 2015.07 ``` BPI-W2> version U-Boot 2015.07 (Apr 01 2019 -
+08:48:21 +0800) aarch64-linux-gnu-gc...
+smx2460 07/24/2024 11:05 PM
+newer than MStar (edited)
+[smx2460]
+hellobox. lol
+<https://github.com/friendlyarm/h3_lichee/blob/master/linux-3.4/arch/arm/mach-sunxi/sunxi-debug....
+smx2460 07/24/2024 11:05 PM
+lol
+[smx2460]
+smx2460 07/24/2024 11:04 PM
+i mean it wouldn't be too strange
+[smx2460]
+hellobox. huh, wtf... is uboot on the SD card?``` U-Boot 2015.07 (Apr 01
+2019 - 08:48:21 +0800) CPU : Cortex...
+smx2460 07/24/2024 11:04 PM
+yeah that can be
+hellobox. 07/24/2024 11:04 PM
+I've done everything I could find to disable Credential Guard, Core
+Isolation, etc. and enable SR-IOV with hypervisormmupolicy in BCD (at
+least I think that's what it does...)
+07/24/2024 11:03 PM
+Latest windows 11 enterprise. Anyone have experience with PCIe
+passthrough?
+07/24/2024 11:03 PM
+I am trying to get a NI PCIe DAQ to work in a Hyper-V VM, and... 
+hellobox. 07/24/2024 3:28 PM
+also they hardcoded the root password in plaintext in some binary
+07/24/2024 3:27 PM
+that's the PCBite kit that i want  https://youtu.be/lbSalKp_ldA?t=294
+Matt Brown
+Discovering a Hardcoded Root Password - Hacking the VStarcam CB73 S...
+In this video, we discover a hardcoded root password in the VStarcam
+CB73 security camera. Need IoT pentesting or reverse engineering
+services? Please consider Brown Fine Security:
+https://brownfinesecurity.com/ IoT Hackers Hangout Community Discord
+Invite: https://discord.com/invite/vgAcxYdJ7A  Stuff I Use  
+Tools: Raspberry PI Pico: ...
+[] Watch video
+July 22, 2024
+hellobox. 07/22/2024 11:50 PM
+Contrived example: %1%%2=%3
+07/22/2024 11:45 PM
+God, C++ makes it real easy to create traps like this
+07/22/2024 11:44 PM
+Also base 0. That gets you division by zero. Base 1 is an access
+violation/segfault
+07/22/2024 11:42 PM
+Lmao it actually crashes if you ask it for base 1
+07/22/2024 11:40 PM
+And there's no proper way to escape %
+07/22/2024 11:39 PM
+But the replacement algorithm is very simplistic. It seems to just find
+the lowest number
+07/22/2024 11:39 PM
+I mean, I can come up with contrived examples...
+07/22/2024 11:38 PM
+QString::arg()'s substitution algorithm is a bit weird. I wonder if the
+use of chained arg()s with user-controlled data has any security
+implications...
+[kitsuned]
+hellobox. anyone looking to hire someone to hack TVs (or other devices)
+full-time?
+kitsuned 07/22/2024 10:32 AM
+https://blog.r0rt1z2.com/hacking-a-2014-tablet-in-2024.html
+Hacking a 2014 tablet... in 2024!
+Yes, you heard that right, 10 years after its release, I managed to hack
+and unlock the first MediaTek based Amazon tablet that went on sale, the
+Amazon Fire HD6 / HD7 2014 (codenamed ariel). In this article, I'll
+explain my journey in detail without making it too long. If you …
+[]
+hellobox. 07/22/2024 5:21 AM
+anyone looking to hire someone to hack TVs (or other devices) full-time?
+ 2 [:lg:] 2 [:mstar:] 2 [:mtk:] 2 [:rtk:] 1
+hellobox. 07/22/2024 4:16 AM
+the documentation is shit though
+07/22/2024 4:16 AM
+should be possible to set that up
+[kitsuned]
+kitsuned 07/22/2024 4:16 AM
+like rpiboot
+07/22/2024 4:15 AM
+what if lk used to chainload next stage from usb / pxe / pci-e? (edited)
+hellobox. 07/22/2024 4:14 AM
+i think rtk may have created something called "rtkboot" based on lk
+[kitsuned]
+kitsuned 07/22/2024 4:14 AM
+hmm
+hellobox. 07/22/2024 4:14 AM
+i think when BOOTSEL is 1, it goes straight from ROM to SD
+[kitsuned]
+kitsuned 07/22/2024 4:13 AM
+so brom -> lk (from spi?) -> u-boot (from sd card?) -> kernel?
+[kitsuned]
+hellobox. although i guess the device actually *shipped* with lk (either
+on SPI or eMMC)
+kitsuned 07/22/2024 4:13 AM
+weird
+hellobox. 07/22/2024 4:12 AM
+while uboot is in their downloadable images
+07/22/2024 4:12 AM
+although i guess the device actually shipped with lk (either on SPI or
+eMMC) (edited)
+07/22/2024 4:11 AM
+like they care about complying with licenses
+[kitsuned]
+kitsuned 07/22/2024 4:11 AM
+u-boot is GPL 2.0 lk is MIT
+[kitsuned]
+hellobox. i wonder why
+kitsuned 07/22/2024 4:10 AM
+permissive license!
+hellobox. 07/22/2024 4:10 AM
+i wonder why
+[] kitsuned littlekernel?
+hellobox. 07/22/2024 4:09 AM
+yep
+https://github.com/littlekernel/lk/blob/master/docs/getting_started.md
+hellobox. 07/22/2024 4:08 AM
+huh. could be i guess
+[kitsuned]
+hellobox. what the hell is `lk/MP`? ``` INFO: bl31 jumps to EL2: LK
+entry welcome to lk/MP(BPI) ```
+kitsuned 07/22/2024 4:07 AM
+littlekernel?
+ 3
+hellobox. 07/22/2024 3:59 AM
+what the hell is lk/MP?
+    INFO:    bl31 jumps to EL2: LK entry
+    welcome to lk/MP(BPI)
+07/22/2024 3:56 AM
+lextra (@Smx) ej-tag 
+    #define SYS_muxpad2                             (SB2_BASE_ADDR+ 0xa908) //mux for arm,lextra ej-tag
+    #define SYS_muxpad3                             (SB2_BASE_ADDR+ 0xa90c) //mux for arm,lextra ej-tag
+    #define SYS_muxpad4                             (SB2_BASE_ADDR+ 0xa910) //mux for ej-tag
+    #define SYS_muxpad5                             (SB2_BASE_ADDR+ 0xa914) //sf_en = 1, force gpio0-3 mux to spi pins
+hellobox. 07/22/2024 3:37 AM
+what's RCIC?
+    typedef enum {
+        MCP_MD_AES_H,
+        MCP_MD_MARS_AES_H,
+        MCP_MD_SHA1_H,
+        MCP_MD_MARS_SHA1_H,
+        MCP_MD_SHA256,
+        MCP_MD_CRC32,
+        MCP_MD_RCIC,
+    }MCP_MD_TYPES;
+07/22/2024 3:34 AM
+wow, cool. they're still violating the GPL
+    keyset  - keyset - write keyset file into factory area
+https://github.com/BPI-SINOVOIP/BPI-W2-bsp/blob/6e6aefc35dc50b1b8231cdb03a995d088f29eb21/u-boot-rtk/Makefile#L828
+hellobox. 07/22/2024 3:15 AM
+wow, 2015.07
+    BPI-W2> version
+    U-Boot 2015.07 (Apr 01 2019 - 08:48:21 +0800)
+    aarch64-linux-gnu-gcc (Linaro GCC 7.3-2018.05) 7.3.1 20180425 [linaro-7.3-2018.05 revision d29120a424ecfbc167ef90065c0eeb7f91977701]
+    GNU ld (Linaro_Binutils-2018.05) 2.28.2.20170706
+hellobox. 07/22/2024 2:53 AM
+ https://rootmydevice.com/
+07/22/2024 2:53 AM
+lol
+https://github.com/friendlyarm/h3_lichee/blob/master/linux-3.4/arch/arm/mach-sunxi/sunxi-debug.c#L41C15-L41C27
+hellobox. 07/22/2024 2:43 AM
+but there's a bunch missing
+07/22/2024 2:42 AM
+it has android stuff (ashmem, ion, sw_sync) and some of the rtk stuff i
+expected from LG devices (edited)
+07/22/2024 2:42 AM
+this isn't a normal device, right?
+    crw------- 1 root root 10, 59 Aug  2 06:50 /dev/chip
+07/22/2024 2:36 AM
+interesting. they used armbian (even though armbian wants nothing to do
+with them)
+    bpi-iot-ros-ai login: pi
+    Password:
+    Last login: Fri Aug  2 06:49:20 UTC 2019 on ttyS0
+     ____                                  ____  _
+    | __ )  __ _ _ __   __ _ _ __   __ _  |  _ \(_)
+    |  _ \ / _` | '_ \ / _` | '_ \ / _` | | |_) | |
+    | |_) | (_| | | | | (_| | | | | (_| | |  __/| |
+    |____/ \__,_|_| |_|\__,_|_| |_|\__,_| |_|   |_|
+    Welcome to Debian Buster with Armbian Linux 4.9.119-BPI-W2-Kernel
+    System load:   0.28 0.41 0.19   Up time:       3 min
+    Memory usage:  5 % of 1625MB    IP:
+    CPU temp:      50°C
+    Usage of /:    32% of 6.7G
+07/22/2024 2:32 AM
+huh, wtf... is uboot on the SD card?
+    U-Boot 2015.07 (Apr 01 2019 - 08:48:21 +0800)
+    CPU  : Cortex-A53 Quad Core - AARCH64
+    Board: Banana Pi BPI-W2 (RTD1296)
+    DRAM:  2 GiB
+    Watchdog: Disabled
+    mapping memory 0x20000000-0x40000000 non-cached
+    flushing dcache successfully.
+    MMC:   Initialize eMMC in traditional mmc flow.
+    RTD1295 eMMC: 0
+    rsp[0]=0x15010038,
+                           rsp[1]=0x47544634,
+07/22/2024 2:31 AM
+oh wow, it's actually booting linux from an SD card
+hellobox. 07/22/2024 2:19 AM
+it seems to be confused...
+    Realtek> version
+    version:
+            arch:     ARM64
+            platform: RTD1295
+            target:   RTD1295
+            project:  RTD1295
+            buildid:
+    Realtek> chip
+    Chip Version: Unknown
+    Chip      ID: RTD1296
+hellobox. 07/22/2024 2:12 AM
+    Banana Pi BPI-W2(SPI ROM:20180907)
+    C1:80000000
+    C2
+    ?
+    C3h
+    SD card is not detected !!
+    BPI: try get_builtin_hwsetting !!
+    hwsetting size: 00000000
+    C4
+    BPI: try bootcode_from_emmc !!
+            BPI: support boot from emmc
+    switch frequency to 0x00000046
+    frequency divider is 0x00000080
+    switch frequency to 0x00000046
+    frequency divider is 0x00000004
+    switch to SDR 8 bit
+    switch bus width to 0x00000008 bits success
+    64b
+[itsyogsothoth]
+[] smx2460
+https://gist.github.com/whichbuffer/7830c73711589dcf9e7a5217797ca617/
+itsyogsothoth 07/22/2024 1:38 AM
+My god some comments there
+[smx2460]
+smx2460 07/22/2024 12:56 AM
+https://gist.github.com/whichbuffer/7830c73711589dcf9e7a5217797ca617/
+(edited)
+Automated CrowdStrike BSOD Workaround in Safe Mode using Group Policy
+Automated CrowdStrike BSOD Workaround in Safe Mode using Group Policy -
+CRWD-GPO.md
+[]
+07/22/2024 12:55 AM
+and even boot in safe mode with a GPO? how (edited)
+07/22/2024 12:54 AM
+wow you can run GPOs in safe mode
+[smx2460]
+[] retr0id "hack the planet"
+smx2460 07/22/2024 12:51 AM
+that's more adequate for CrowdStrike 

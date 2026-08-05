@@ -1,0 +1,1519 @@
+December 28, 2021
+[] smx2460 ```php <?php $ffi = FFI::cdef(" struct visca_header_t {
+uint16_t payload_type; uint16_t payl...
+dontpanicaim 12/28/2021 2:21 AM
+nicee  want some payload too? 
+[smx2460]
+smx2460 12/28/2021 2:19 AM
+without having to carry around one handle per lib
+12/28/2021 2:19 AM
+then you can resolve anything
+12/28/2021 2:19 AM
+a trick to use multiple libraries is to map dlopen/dlsym or
+LoadLibraryA/GetProcAddress
+12/28/2021 2:18 AM
+the description says it all
+12/28/2021 2:18 AM
+(no content)
+[unknown.png]
+ unknown.png
+48.51 KB External
+12/28/2021 2:18 AM
+if you don't like doing it as strings
+12/28/2021 2:18 AM
+you can load a .h file externally
+[friya]
+friya 12/28/2021 2:18 AM
+that's disgusting and awesome
+[smx2460]
+smx2460 12/28/2021 2:17 AM
+it's as simple as that
+12/28/2021 2:17 AM
+you can copy paste header code
+[friya]
+friya 12/28/2021 2:17 AM
+huh nifty
+[smx2460]
+smx2460 12/28/2021 2:17 AM
+yep, really
+[friya]
+friya 12/28/2021 2:17 AM
+oh really
+[smx2460]
+smx2460 12/28/2021 2:16 AM
+(no content)
+[unknown.png]
+ unknown.png
+30.53 KB External
+12/28/2021 2:14 AM
+oh also it can parse function pointers and imports (edited)
+12/28/2021 2:14 AM
+other INFERIOR languages cannot parse C headers
+12/28/2021 2:14 AM
+sadly it only works for PHP
+12/28/2021 2:13 AM
+i'm not gonna power up my Debian VM rn but the ezinject bindings are
+done like that
+12/28/2021 2:12 AM
+@Aim 
+12/28/2021 2:12 AM
+(no content)
+[unknown.png]
+ unknown.png
+5.08 KB External
+12/28/2021 2:12 AM
+    <?php
+    $ffi = FFI::cdef("
+    struct visca_header_t
+    {
+        uint16_t payload_type;
+        uint16_t payload_length;
+        uint32_t seq_number;
+    } __attribute__ ((packed));
+    ");
+    $hdr = $ffi->new('struct visca_header_t');
+    $hdr->payload_type = 1;
+    $hdr->payload_length = 2;
+    $hdr->seq_number = 3;
+    $hdrP = FFI::addr($hdr);
+    $data = FFI::string($hdrP, FFI::sizeof($hdr));
+    file_put_contents('aim.bin', $data);
+12/28/2021 2:10 AM
+lemme show you
+12/28/2021 2:09 AM
+sec
+12/28/2021 2:09 AM
+i bet PHP can parse it
+dontpanicaim 12/28/2021 2:09 AM
+stuff like this
+12/28/2021 2:09 AM
+    struct visca_header_t
+    {
+        uint16_t payload_type;
+        uint16_t payload_length;
+        uint32_t seq_number;
+    } __attribute__ ((packed));
+[smx2460]
+smx2460 12/28/2021 2:09 AM
+and all i had to do then, was
+12/28/2021 2:09 AM
+i made this cmake custom command to generate a trimmed down ezinject
+header
+12/28/2021 2:09 AM
+    add_custom_command(
+        VERBATIM
+        OUTPUT ezapi.h
+        MAIN_DEPENDENCY
+            ezinject.h
+        DEPENDS
+            ezinject_injcode.h
+            ezinject_common.h
+        COMMAND ${CMAKE_COMMAND}
+            -E echo "#define FFI_LIB \"./build/libezinject.so\"" > ezapi.h
+        COMMAND ${CMAKE_C_COMPILER}
+            -I${CMAKE_SOURCE_DIR} -I${CMAKE_BINARY_DIR}
+            -D"__mode__(x)="
+            -D"__access__(...)="
+            -D__signed__=
+            -D__weak__=
+            -D"section(x)="
+            -DEZAPI_GEN
+            -E ${CMAKE_SOURCE_DIR}/ezinject.h >> ezapi.h
+    )
+    add_custom_target(generate_ezapi ALL
+        DEPENDS ezapi.h
+    )
+12/28/2021 2:08 AM
+that's mindblowing
+12/28/2021 2:08 AM
+making it then possible to create PHP objects from them
+12/28/2021 2:08 AM
+and it parses them
+12/28/2021 2:08 AM
+you just give it a .h file with the structs written in C
+dontpanicaim 12/28/2021 2:08 AM
+altho C now a days is annoying too with packing 
+[smx2460]
+smx2460 12/28/2021 2:08 AM
+PHP 7, otoh, makes it possible to parse .h files!
+12/28/2021 2:08 AM
+with PHP i made 2 different classes to deal with the problem but it's
+ultimately just a workaround
+dontpanicaim 12/28/2021 2:08 AM
+yeah I agree
+[smx2460]
+smx2460 12/28/2021 2:07 AM
+Python makes it less painful with constructs and such
+12/28/2021 2:07 AM
+when dealing with structs
+[smx2460]
+dontpanicaim (as a compliment)
+smx2460 12/28/2021 2:07 AM
+both Python and PHP have annoying to deal with pack
+[smx2460]
+smx2460 12/28/2021 2:06 AM
+            $src = imagecreatefrompng($filePath);
+            $black = imagecolorallocate($src, 0, 0, 0);
+            //$rot = imagerotate($src, -90, $black);
+            $rot = imagerotate($src, $rot, $black);
+            $im = imagecreatetruecolor(480, 272);
+            //$im = $src;
+            imagecopyresampled($im, $rot, 0, 0, 0, 0, 480, 272, imagesx($rot), imagesy($rot));
+            //imagecopyresized($im, $src, 0, 0, 0, 0, 480, 272, imagesx($src), imagesy($src));
+            imagedestroy($rot);
+            imagedestroy($src);
+12/28/2021 2:06 AM
+also using PHP's GD i can rotate and scale stuff pretty easily
+12/28/2021 2:06 AM
+i had to adapt it tho, because it had width/height swapped
+12/28/2021 2:06 AM
+i actually adapted that from someone else's code
+dontpanicaim 12/28/2021 2:06 AM
+(as a compliment)
+[smx2460]
+smx2460 12/28/2021 2:05 AM
+yea
+dontpanicaim 12/28/2021 2:05 AM
+could have been C 
+[smx2460]
+smx2460 12/28/2021 2:05 AM
+    function make_rgb565($im, $fh){
+        $width = imagesx($im);
+        $height = imagesy($im);
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                $color = imagecolorat($im, $x, $y);
+                $color_tran = imagecolorsforindex($im, $color);
+                $red = $color_tran['red'];
+                $green = $color_tran['green'];
+                $blue = $color_tran['blue'];
+                /*bit Shifting*/
+                $b = ( ($blue >> 3) & 0x1f ) & 0xFFFF;
+                $g = ( (($green >> 2) & 0x3f) << 5 ) & 0xFFFF;
+                $r = ( (($red >> 3) & 0x1f) << 11 ) & 0xFFFF;
+                // pack in RGB, little endian
+                $us = pack('v', $r|$g|$b);
+                fwrite($fh, $us);
+            }
+        }
+    }
+12/28/2021 2:05 AM
+and then sent over the socket
+12/28/2021 2:05 AM
+converted to RGB565 for the TomTom
+dontpanicaim 12/28/2021 2:05 AM
+but there are no noob tutorials for it
+[smx2460]
+smx2460 12/28/2021 2:04 AM
+also the image is prepared with PHP's GD in this case
+dontpanicaim 12/28/2021 2:04 AM
+I think its pretty good documented (sapi)
+[smx2460]
+dontpanicaim jss christ, why you doing this in php?
+smx2460 12/28/2021 2:04 AM
+it's my go-to prototyping language
+[smx2460]
+smx2460 12/28/2021 2:04 AM
+if you combine it with PHP 7's FFI extension, you can do some pretty
+cool stuff
+12/28/2021 2:03 AM
+it uses the not very documented php's embed sapi
+dontpanicaim 12/28/2021 2:03 AM
+yup and I have 
+[smx2460]
+smx2460 12/28/2021 2:03 AM
+but i delivered!
+12/28/2021 2:03 AM
+well nobody asked
+12/28/2021 2:03 AM
+and inject PHP in processes?  (edited)
+12/28/2021 2:03 AM
+did you know you could embed PHP in C apps?
+12/28/2021 2:03 AM
+https://github.com/smx-smx/ezinject/blob/next/samples/php/php_embed.c
+ezinject/php_embed.c at next · smx-smx/ezinject
+Modular binary injection framework, successor of libhooker -
+ezinject/php_embed.c at next · smx-smx/ezinject
+[]
+12/28/2021 2:03 AM
+yep
+dontpanicaim 12/28/2021 2:03 AM
+but php its a very much unappreciated language, while still being very
+powerful
+[smx2460]
+smx2460 12/28/2021 2:02 AM
+        $rproc = new RemoteProcess("tcp://192.168.0.251:8080", true);
+        $libc = $rproc->loadLibrary('libc.so.6');
+        $write = $libc->getSymbol('write');
+        $msg = "\n\nHello from ezinject host!\n\n\0";
+        $lpcText = $rproc->alloc($msg);
+        $data = $rproc->readMemory($lpcText->getPointer(), strlen($msg));
+        print(bin2hex($data) . "\n");
+        $write->invoke(1, $lpcText->getPointer(), strlen($msg));
+12/28/2021 2:02 AM
+this is the hello world
+dontpanicaim 12/28/2021 2:02 AM
+I dont have a dislike for php, been my favo language for years (got
+replaced by python tho)
+[smx2460]
+smx2460 12/28/2021 2:01 AM
+but yes, it's PHP
+12/28/2021 2:01 AM
+exposes dlopen/dlsym/arbitrary read/arbitrary write/arbitrary call
+12/28/2021 2:01 AM
+the server is written in minimal C
+12/28/2021 2:01 AM
+PHP is the client for the server
+12/28/2021 2:01 AM
+well
+dontpanicaim 12/28/2021 2:01 AM
+jss christ, why you doing this in php?
+[smx2460]
+smx2460 12/28/2021 2:01 AM
+using PHP's deterministic destructors
+12/28/2021 2:00 AM
+all the allocations are auto freed on return
+dontpanicaim 12/28/2021 2:00 AM
+I have a huge affinity with platform porting, and getting stuff to work
+on targets
+[smx2460]
+smx2460 12/28/2021 2:00 AM
+this is the part that shows the picture
+12/28/2021 2:00 AM
+        $tmp = fopen("php://memory", "wb+");
+        make_rgb565($im, $tmp);
+        imagedestroy($im);
+        rewind($tmp);
+        $bmp = stream_get_contents($tmp);
+        fclose($tmp);
+        $r_mem = $rproc->alloc($bmp, true);
+        $r_path = $rproc->alloc("/dev/fb\0");
+        $libc = $rproc->loadLibrary('libc.so.6');
+        $open = $libc->getSymbol('open');
+        $write = $libc->getSymbol('write');
+        $close = $libc->getSymbol('close');
+        $r_fd = $open->invoke($r_path, 01 | 0100, 0666); //O_WRONLY | O_CREAT
+        print("r_fd: {$r_fd}\n");
+        $written = $write->invoke(
+            $r_fd, $r_mem->getPointer(),
+            strlen($bmp)
+        );
+        print("written: {$written}\n");
+        print("expected: " . strlen($bmp) . "\n");
+        $close->invoke($r_fd);
+        $r_mem->free();
+dontpanicaim 12/28/2021 2:00 AM
+but still very awesome
+[smx2460]
+smx2460 12/28/2021 1:59 AM
+16kb sec at best
+dontpanicaim 12/28/2021 1:59 AM
+I figured 
+[smx2460]
+smx2460 12/28/2021 1:59 AM
+but bluetooth is very slow
+12/28/2021 1:59 AM
+only tried stills
+12/28/2021 1:59 AM
+i didn't try animations
+dontpanicaim 12/28/2021 1:59 AM
+how much fps? 
+[smx2460]
+smx2460 12/28/2021 1:59 AM
+and send it to the framebuffer
+12/28/2021 1:59 AM
+that does RPC calls to allocate a picture
+12/28/2021 1:59 AM
+the other end has a PHP script
+12/28/2021 1:58 AM
+the TCP server talks to my PC over pppd, over Bluetooth (RFCOMM)
+(edited)
+12/28/2021 1:58 AM
+and spawning a TCP server
+12/28/2021 1:58 AM
+with ezinject hooking it
+12/28/2021 1:58 AM
+running a dummy app in a while loop
+dontpanicaim 12/28/2021 1:58 AM
+fuck you nvidia!
+[smx2460]
+smx2460 12/28/2021 1:58 AM
+this is my TomTom GO 910
+12/28/2021 1:58 AM
+[]
+dontpanicaim 12/28/2021 1:58 AM
+hehe 
+[smx2460]
+dontpanicaim I do think you should stop using drugs
+smx2460 12/28/2021 1:57 AM
+lmao
+[smx2460]
+smx2460 12/28/2021 1:57 AM
+(no content)
+[unknown.png]
+ unknown.png
+19.73 KB External
+12/28/2021 1:56 AM
+but i got a bug with broken Win32 APIs
+12/28/2021 1:56 AM
+i wanted to port it to Windows 95 just to flex
+12/28/2021 1:56 AM
+and Windows NT 3.51
+12/28/2021 1:56 AM
+so i ported it also to Windows XP
+dontpanicaim 12/28/2021 1:56 AM
+I do think you should stop using drugs
+[smx2460]
+smx2460 12/28/2021 1:56 AM
+Windows
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:56 AM
+Yeah thats a dope project
+[smx2460]
+smx2460 12/28/2021 1:56 AM
+it kept getting generic until i got it running on Modems, TomTom GOs
+12/28/2021 1:55 AM
+that started off for LG
+12/28/2021 1:55 AM
+i maintain this library injector
+12/28/2021 1:55 AM
+https://github.com/smx-smx/ezinject
+GitHub - smx-smx/ezinject: Modular binary injection framework, succ...
+Modular binary injection framework, successor of libhooker - GitHub -
+smx-smx/ezinject: Modular binary injection framework, successor of
+libhooker
+[]
+12/28/2021 1:55 AM
+dontpanicaim 12/28/2021 1:55 AM
+@Smx I like you 
+[smx2460]
+smx2460 12/28/2021 1:55 AM
+(no content)
+[unknown.png]
+ unknown.png
+163.4 KB External
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:54 AM
+What is the equivalent of a segfault on win?
+dontpanicaim 12/28/2021 1:54 AM
+@Smx I had some fun with this card
+http://www.strobedata.com/home/ospreydxp.html
+[smx2460]
+smx2460 12/28/2021 1:54 AM
+i also have an NT 3.51 VM
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:54 AM
+Haha
+[smx2460]
+smx2460 12/28/2021 1:53 AM
+i'm recently playing with porting a software of mine to old windows for
+fun
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:53 AM
+Then it makes sense
+[smx2460]
+smx2460 12/28/2021 1:53 AM
+and since i have them around
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:53 AM
+Ahh I see
+[smx2460]
+smx2460 12/28/2021 1:53 AM
+https://github.com/smx-smx/cmake-w9x
+GitHub - smx-smx/cmake-w9x: CMake glue for MSVC 1.x and 2.x
+CMake glue for MSVC 1.x and 2.x. Contribute to smx-smx/cmake-w9x
+development by creating an account on GitHub.
+[]
+dontpanicaim 12/28/2021 1:53 AM
+ooooh PDP11 
+[smx2460]
+smx2460 12/28/2021 1:53 AM
+(no content)
+[unknown.png]
+ unknown.png
+40.04 KB External
+12/28/2021 1:52 AM
+and sometimes we need samples
+12/28/2021 1:52 AM
+we want to support everything from PDP-11 to DOS and Windows
+12/28/2021 1:52 AM
+https://github.com/uxmal/reko
+GitHub - uxmal/reko: Reko is a binary decompiler.
+Reko is a binary decompiler. Contribute to uxmal/reko development by
+creating an account on GitHub.
+[]
+12/28/2021 1:52 AM
+i'm not addicted to windows, but i partecipate in the Reko decompiler
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:52 AM
+It must be a pain to get these to work on vms
+12/28/2021 1:51 AM
+When you are addicted to win xD
+[smx2460]
+smx2460 12/28/2021 1:51 AM
+you can also switch theme to 9x
+12/28/2021 1:51 AM
+it has some custom options tho
+dontpanicaim 12/28/2021 1:51 AM
+thats what they usually do when overriding the shell
+[smx2460]
+smx2460 12/28/2021 1:51 AM
+it's mostly functional
+dontpanicaim 12/28/2021 1:51 AM
+like restricting access or stuff
+[smx2460]
+smx2460 12/28/2021 1:50 AM
+     Volume in drive C is MS-DOS_6
+     Volume Serial Number is 504F-1588
+     Directory of C:\MRSHD
+    .            <DIR>         15/02/20   18.50
+    ..           <DIR>         15/02/20   18.50
+    MRSHD    EXE        23.840 20/01/97    7.36
+    MRSHD    HLP        19.080 19/01/97   22.47
+    MRSHD    INI           103 15/02/20   18.57
+    MRSHD    VXD         9.700 20/01/97    7.38
+    README   TXT         1.230 03/02/97   16.45
+    MRSHD    LOG         2.615 23/10/21   22.07
+            8 file(s)         56.568 bytes
+                       1.713.143.808 bytes free
+    C:\MRSHD>
+12/28/2021 1:50 AM
+i can basically copy paste stuff to it xD
+dontpanicaim 12/28/2021 1:50 AM
+@Smx I was wondering if it did more than just look
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:50 AM
+Right
+[smx2460]
+smx2460 12/28/2021 1:50 AM
+rsh
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:50 AM
+Ohh
+[smx2460]
+smx2460 12/28/2021 1:50 AM
+rlogin
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:50 AM
+Is that telnet or serial?
+[smx2460]
+smx2460 12/28/2021 1:50 AM
+well it gives 3.11 a more modern look
+[smx2460]
+dontpanicaim what makes Calmira so special to use as shell?
+smx2460 12/28/2021 1:50 AM
+what do you mean
+[smx2460]
+smx2460 12/28/2021 1:50 AM
+ofc nothing graphics works
+12/28/2021 1:49 AM
+and sends keystrokes back to it
+12/28/2021 1:49 AM
+it seems to copy characters back from the video memory
+12/28/2021 1:49 AM
+it's sluggish, but it works
+12/28/2021 1:49 AM
+have you ever seen this?
+12/28/2021 1:49 AM
+(no content)
+[unknown.png]
+ unknown.png
+55.75 KB External
+dontpanicaim 12/28/2021 1:48 AM
+what makes Calmira so special to use as shell?
+[smx2460]
+smx2460 12/28/2021 1:47 AM
+which implements a freaking rlogin server on top of Windows 3
+12/28/2021 1:47 AM
+called MRSHD
+12/28/2021 1:47 AM
+i also found a pretty unique program (edited)
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:47 AM
+My first ever windows I tried was win 95 lol
+12/28/2021 1:47 AM
+I didnt even know that was a thing
+[smx2460]
+smx2460 12/28/2021 1:47 AM
+so it's a cursed Windows 3.11
+12/28/2021 1:46 AM
+(no content)
+[unknown.png]
+ unknown.png
+17.3 KB External
+12/28/2021 1:46 AM
+that runs 32bit apps
+12/28/2021 1:46 AM
+the official Microsoft-developed "Wine" for Windows 3.x (edited)
+12/28/2021 1:46 AM
+as well as Win32s
+12/28/2021 1:46 AM
+i also have this on it
+12/28/2021 1:46 AM
+(no content)
+[unknown.png]
+ unknown.png
+89.86 KB External
+12/28/2021 1:45 AM
+more like 256, yeah
+12/28/2021 1:45 AM
+or 256
+12/28/2021 1:45 AM
+sadly my VM doesn't have a proper driver so it's limited to i think 16
+colors
+12/28/2021 1:45 AM
+and adds the XP theme
+12/28/2021 1:44 AM
+which implements the start menu
+12/28/2021 1:44 AM
+it's running a custom shell called "Calmira XP"
+12/28/2021 1:44 AM
+with the TCP/IP addon
+12/28/2021 1:44 AM
+it's Windows 3.11 for Workgroups
+12/28/2021 1:44 AM
+so
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:44 AM
+I got no clue
+12/28/2021 1:44 AM
+Wtf is that
+[] smx2460 and guess what, Windows 10 can share files with it
+dontpanicaim 12/28/2021 1:44 AM
+oh wow
+[smx2460]
+smx2460 12/28/2021 1:44 AM
+even all this years later
+dontpanicaim 12/28/2021 1:44 AM
+aah 3.11 sorry I ment that earlier
+[smx2460]
+smx2460 12/28/2021 1:44 AM
+(no content)
+[unknown.png]
+ unknown.png
+8.39 KB External
+12/28/2021 1:44 AM
+and guess what, Windows 10 can share files with it
+12/28/2021 1:43 AM
+(no content)
+[unknown.png]
+ unknown.png
+24.48 KB External
+dontpanicaim 12/28/2021 1:43 AM
+95?
+12/28/2021 1:43 AM
+still has the big - in the menus
+[smx2460]
+smx2460 12/28/2021 1:42 AM
+(no content)
+[unknown.png]
+ unknown.png
+55.26 KB External
+dontpanicaim 12/28/2021 1:42 AM
+looks like 2.11 in steroids?
+[smx2460]
+smx2460 12/28/2021 1:42 AM
+so far none of you got it right
+12/28/2021 1:42 AM
+ahahah
+dontpanicaim 12/28/2021 1:42 AM
+its getting worse
+[smx2460]
+smx2460 12/28/2021 1:42 AM
+(no content)
+[unknown.png]
+ unknown.png
+23.07 KB External
+dontpanicaim 12/28/2021 1:41 AM
+I'm getting to feel a bit sick
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:41 AM
+That looks like xp
+[smx2460]
+smx2460 12/28/2021 1:41 AM
+(no content)
+[unknown.png]
+ unknown.png
+18.29 KB External
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:41 AM
+The theme has a win95 feeling
+[smx2460]
+smx2460 12/28/2021 1:41 AM
+(no content)
+[unknown.png]
+ unknown.png
+54.6 KB External
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:40 AM
+Xp xd
+dontpanicaim 12/28/2021 1:40 AM
+the start menu
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:40 AM
+That looks like netscape
+[smx2460]
+smx2460 12/28/2021 1:40 AM
+nop
+dontpanicaim 12/28/2021 1:40 AM
+looks like NT 4.5
+[smx2460]
+smx2460 12/28/2021 1:40 AM
+let's see if you figure it out 
+12/28/2021 1:40 AM
+which version of Windows is this?
+12/28/2021 1:39 AM
+(no content)
+[unknown.png]
+ unknown.png
+66.48 KB External
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:39 AM
+I am fine with arch and wayland
+dontpanicaim 12/28/2021 1:39 AM
+and yes its BSD, close enough 
+12/28/2021 1:39 AM
+for desktop I prefer OSX
+12/28/2021 1:39 AM
+better not use windows 
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:35 AM
+Back then I couldnt find anything
+12/28/2021 1:35 AM
+I dont use windows for 3 years now at all (edited)
+12/28/2021 1:35 AM
+Idk
+12/28/2021 1:34 AM
+Good question
+dontpanicaim 12/28/2021 1:34 AM
+@MaryJohanna420 also not possible by netsh?
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:34 AM
+Thats the cmd i used on linux
+[smx2460]
+smx2460 12/28/2021 1:34 AM
+Panasonic TVs running Firefox OS
+dontpanicaim 12/28/2021 1:34 AM
+well but ok, thats what you get with a BSD license tho
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:34 AM
+ip token set <lower part of /56> dev <if>
+[smx2460]
+smx2460 12/28/2021 1:34 AM
+iirc Panasonic even (edited)
+dontpanicaim 12/28/2021 1:34 AM
+juniper
+[smx2460]
+smx2460 12/28/2021 1:33 AM
+Nintendo
+dontpanicaim 12/28/2021 1:33 AM
+cough apple
+12/28/2021 1:33 AM
+its abused by many indeed
+[smx2460]
+smx2460 12/28/2021 1:33 AM
+and is abused by many (Sony)
+12/28/2021 1:33 AM
+sadly it lacks drivers
+[smx2460]
+dontpanicaim well bsd has a nice network stack, even windows uses it
+smx2460 12/28/2021 1:33 AM
+BSD is nice
+ 1
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:32 AM
+Or well the last bytes
+12/28/2021 1:32 AM
+That you fix the suffix
+12/28/2021 1:32 AM
+There is no such option
+dontpanicaim 12/28/2021 1:32 AM
+cidr is big enough for shenanigans
+12/28/2021 1:31 AM
+I would expect it to work
+12/28/2021 1:31 AM
+huh ok, any idea why?
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:31 AM
+On windows i couldnt do this
+12/28/2021 1:30 AM
+The first part is dynamic ofc
+dontpanicaim 12/28/2021 1:30 AM
+thats an odd cidr
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:30 AM
+I wanted my pc to have dead:beef as the suffix
+12/28/2021 1:30 AM
+My isp announces a /56 ipv6 block to me
+dontpanicaim 12/28/2021 1:30 AM
+@MaryJohanna420 yeah
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:29 AM
+I wanted a simple feature
+12/28/2021 1:29 AM
+Windows' networking stack is weird
+[smx2460]
+smx2460 12/28/2021 1:28 AM
+that's when i pulled it off
+12/28/2021 1:28 AM
+picture is dated 2013
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:28 AM
+Gold
+12/28/2021 1:28 AM
+Old amd
+[smx2460]
+smx2460 12/28/2021 1:28 AM
+(no content)
+[unknown.png]
+ unknown.png
+2.24 MB External
+dontpanicaim 12/28/2021 1:27 AM
+but you have a lucky magic tv 
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:27 AM
+So no proficient
+12/28/2021 1:27 AM
+A cheap student too
+dontpanicaim 12/28/2021 1:27 AM
+well bsd has a nice network stack, even windows uses it
+[smx2460]
+smx2460 12/28/2021 1:27 AM
+(no content)
+[unknown.png]
+ unknown.png
+1.36 MB External
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:27 AM
+Tho i am a basic home user
+12/28/2021 1:27 AM
+I love linux with all its quirks
+[friya]
+friya 12/28/2021 1:27 AM
+word.
+dontpanicaim 12/28/2021 1:27 AM
+hehe
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:27 AM
+Pff
+dontpanicaim 12/28/2021 1:26 AM
+you only need to know one thing, its better then linux 
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:26 AM
+I couldnt get basic routing to work lol
+12/28/2021 1:26 AM
+And oh god I know shit about bsd
+dontpanicaim 12/28/2021 1:26 AM
+I have in the past, but now mainly linux and freebsd
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:25 AM
+I just recently messed around with opnsense
+12/28/2021 1:25 AM
+Like actual unix?
+dontpanicaim 12/28/2021 1:25 AM
+but tbh, I feel ashamed talking about this, I'm more an unix guy 
+12/28/2021 1:24 AM
+and let autopilot + intune take care of the rest
+12/28/2021 1:24 AM
+now a days I only install default wim images
+[smx2460]
+smx2460 12/28/2021 1:24 AM
+or something like that
+12/28/2021 1:24 AM
+net USE x: \\mysambaserver\windows
+dontpanicaim 12/28/2021 1:24 AM
+well 10
+12/28/2021 1:24 AM
+100x faster windows installs 
+[smx2460]
+smx2460 12/28/2021 1:24 AM
+then i could complete installation
+dontpanicaim 12/28/2021 1:24 AM
+https://github.com/tabs-not-spaces/Intune.USB.Creator/blob/master/Invoke-Provision/Invoke-Provision.ps1#L481
+Intune.USB.Creator/Invoke-Provision.ps1 at master · tabs-not-spaces...
+A module containing tools to assist with the creation of a bootable
+WinPE USB used to provision devices for enrollment to Intune. -
+Intune.USB.Creator/Invoke-Provision.ps1 at master · tabs-not-spac...
+[]
+[smx2460]
+smx2460 12/28/2021 1:24 AM
+by trial and error
+12/28/2021 1:24 AM
+and i loaddrv the good one
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:23 AM
+But then i always had driver issues
+[smx2460]
+smx2460 12/28/2021 1:23 AM
+then i slapped all NIC drivers on boot.wim
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:23 AM
+I once made a live installation with wimtool so I could boot a usb stick
+win
+[smx2460]
+smx2460 12/28/2021 1:23 AM
+so i could have multiple Windows sets
+12/28/2021 1:23 AM
+which i then redirected with tftpd-hpd mapping rules
+dontpanicaim 12/28/2021 1:23 AM
+also with autopilot Im abusing it
+[smx2460]
+smx2460 12/28/2021 1:23 AM
+to look for specific non-existent files
+12/28/2021 1:23 AM
+by patching bootmgr and so on
+[smx2460]
+dontpanicaim nah, I've automated windows installs for OEM vendors
+smx2460 12/28/2021 1:23 AM
+i once made a WDS server on Linux
+[smx2460]
+smx2460 12/28/2021 1:22 AM
+@MaryJohanna420 
+dontpanicaim 12/28/2021 1:22 AM
+requires some magic and integration
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:22 AM
+Crazy
+dontpanicaim 12/28/2021 1:22 AM
+nah, I've automated windows installs for OEM vendors
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 1:22 AM
+Jesus christ
+[smx2460]
+smx2460 12/28/2021 1:22 AM
+you're a maintainer?
+12/28/2021 1:22 AM
+just curious
+12/28/2021 1:22 AM
+@Aim why do you know wimtool so well?
+[smx2460]
+smx2460 12/28/2021 1:03 AM
+12/28/2021 1:03 AM
+modems, TVs, windows, Linux (edited)
+12/28/2021 1:03 AM
+just too many ideas on my table  (edited)
+12/28/2021 1:03 AM
+dontpanicaim 12/28/2021 12:59 AM
+apply fixes
+12/28/2021 12:59 AM
+this could also be very nice to update .wim images per package
+12/28/2021 12:58 AM
+hmm
+[smx2460]
+smx2460 12/28/2021 12:54 AM
+it contains the database of all WinSxS files
+12/28/2021 12:54 AM
+this hive is loaded on demand, normally it's unloaded
+12/28/2021 12:54 AM
+    C:\WINDOWS\system32\config\COMPONENTS
+12/28/2021 12:54 AM
+if you're curious
+12/28/2021 12:54 AM
+btw
+12/28/2021 12:51 AM
+since i have in the past ran in the situation where dism reports
+something is unfixable
+12/28/2021 12:51 AM
+i wanted to see if i could implement my own sanity check against files
+12/28/2021 12:50 AM
+also
+12/28/2021 12:48 AM
+some of those keys are documented on MSDN, some have a schema/namespace
+12/28/2021 12:48 AM
+i tried to look for info but nobody has ever dealt with those
+12/28/2021 12:48 AM
+even individual file permissions, ACLs
+12/28/2021 12:47 AM
+that the package applies
+12/28/2021 12:47 AM
+that XML file describes every file, every registry key, every scheduled
+task, every firewall rule, everything
+12/28/2021 12:47 AM
+that describes EVERYTHING
+12/28/2021 12:47 AM
+but then you have a MASSIVE xml file
+12/28/2021 12:47 AM
+i got to the point where i can know exactly the package a file belongs
+to
+12/28/2021 12:47 AM
+and, spoilers alert, it's not as simple as it sounds
+12/28/2021 12:46 AM
+but i first wanted to figure out how to retrieve those changesets
+12/28/2021 12:46 AM
+now surely there are APIs to apply them too
+12/28/2021 12:46 AM
+that each package provides
+12/28/2021 12:46 AM
+in general, it'd be a nice thing to have "changesets"
+12/28/2021 12:46 AM
+it's a dirty install, you could say (edited)
+12/28/2021 12:46 AM
+but it lacks all the powershell modules and stuff to manage them
+12/28/2021 12:45 AM
+so i could access deduplicated volumes
+12/28/2021 12:45 AM
+i pulled it out and installed it on Windows 10
+12/28/2021 12:45 AM
+Windows Server supports NTFS deduplication with a driver (edited)
+dontpanicaim 12/28/2021 12:45 AM
+in practise
+12/28/2021 12:45 AM
+for what would you need such extractions?
+[smx2460]
+smx2460 12/28/2021 12:45 AM
+an example
+12/28/2021 12:45 AM
+so i can (somehow) extract the package and apply it elsewhere
+dontpanicaim 12/28/2021 12:45 AM
+thats really nifty
+[smx2460]
+smx2460 12/28/2021 12:45 AM
+and all the changes that package applies to the system
+dontpanicaim 12/28/2021 12:45 AM
+aah I see (edited)
+[smx2460]
+smx2460 12/28/2021 12:44 AM
+to figure out the package the file belongs to
+12/28/2021 12:44 AM
+i want to use the Component Based Store, CBS
+12/28/2021 12:44 AM
+rather than figuring out myself by hand
+12/28/2021 12:44 AM
+like registry keys, inf files, and whatnot
+12/28/2021 12:44 AM
+the .sys file will have some dependencies
+12/28/2021 12:44 AM
+say i want a .sys file from a Windows installation
+dontpanicaim 12/28/2021 12:44 AM
+but never tried that (with exception on locally mounted images)
+[smx2460]
+smx2460 12/28/2021 12:44 AM
+ok i'll be direct
+dontpanicaim 12/28/2021 12:43 AM
+hmm dism has an /online parameter you can use
+[smx2460]
+smx2460 12/28/2021 12:43 AM
+that i got by demangling the names and using C++ directly
+12/28/2021 12:43 AM
+using the exact windows headers
+12/28/2021 12:43 AM
+this is a revised version of the same tool (edited)
+12/28/2021 12:43 AM
+https://github.com/smx-smx/Winternals/blob/master/WinSxS/internals/undelta.cpp
+Winternals/undelta.cpp at master · smx-smx/Winternals
+Contribute to smx-smx/Winternals development by creating an account on
+GitHub.
+[]
+12/28/2021 12:42 AM
+by using MS undocumented APIs
+12/28/2021 12:42 AM
+so i wrote a tool that extracts them (edited)
+12/28/2021 12:42 AM
+https://github.com/smx-smx/wcpex/blob/master/wcpex.c
+wcpex/wcpex.c at master · smx-smx/wcpex
+A tool to extract Windows Manifest files that can be found in the WinSxS
+folder - wcpex/wcpex.c at master · smx-smx/wcpex
+[]
+12/28/2021 12:42 AM
+nobody had figured out how to work with them
+12/28/2021 12:42 AM
+there are .manifest files
+12/28/2021 12:42 AM
+so i went in C:\Windows\WinSxS\Manifests
+12/28/2021 12:42 AM
+and dism doesn't let you do it either
+12/28/2021 12:41 AM
+but it doesn't work on live windows installs
+12/28/2021 12:41 AM
+i know about it
+dontpanicaim 12/28/2021 12:41 AM
+wimtool is your friend 
+[smx2460]
+smx2460 12/28/2021 12:41 AM
+and print out the file sets
+12/28/2021 12:41 AM
+to dump and install individual features
+[smx2460]
+dontpanicaim whats next? doing windows install using php instead of
+dism?
+smx2460 12/28/2021 12:41 AM
+i was trying to dissect the Windows packages
+[smx2460]
+smx2460 12/28/2021 12:41 AM
+but i have one locally using Advapi32 natively (edited)
+12/28/2021 12:40 AM
+that one uses a COM server for that
+dontpanicaim 12/28/2021 12:40 AM
+whats next? doing windows install using php instead of dism?
+[smx2460]
+smx2460 12/28/2021 12:40 AM
+made classes to read the Windows Registry in PHP (edited)
+12/28/2021 12:40 AM
+https://github.com/smx-smx/Winternals
+GitHub - smx-smx/Winternals
+Contribute to smx-smx/Winternals development by creating an account on
+GitHub.
+[]
+12/28/2021 12:40 AM
+i was also trying to reverse engineer the WinSXS folder
+12/28/2021 12:39 AM
+https://github.com/smx-smx/yapldis/blob/master/src/Yapl/YaplFile.php
+yapldis/YaplFile.php at master · smx-smx/yapldis
+ADB YAPL Disassembler. Contribute to smx-smx/yapldis development by
+creating an account on GitHub.
+[]
+dontpanicaim 12/28/2021 12:39 AM
+you are sick @Smx, but I do appreciate the hacking 
+ 1
+[smx2460]
+smx2460 12/28/2021 12:39 AM
+the YAPL disassembler is written in PHP
+12/28/2021 12:39 AM
+for example
+dontpanicaim 12/28/2021 12:38 AM
+eek windows com
+[smx2460]
+smx2460 12/28/2021 12:38 AM
+and it's very effective
+12/28/2021 12:38 AM
+but i've used it for plenty of backend work, not just frontend
+12/28/2021 12:38 AM
+still has inconsistencies in the standard library
+12/28/2021 12:38 AM
+and with PHP 7 is very fast, 8 even has a JIT
+12/28/2021 12:37 AM
+you can make RAII PHP
+12/28/2021 12:37 AM
+PHP has deterministic destructors
+12/28/2021 12:37 AM
+but i became used to PHP namespaces and OOP patterns
+[smx2460]
+[] maryjohanna42069 I mostly go for python tbh
+smx2460 12/28/2021 12:37 AM
+i sometimes use Python too
+[smx2460]
+smx2460 12/28/2021 12:37 AM
+a friend challenged me to make one (edited)
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:36 AM
+Lmao
+[smx2460]
+smx2460 12/28/2021 12:36 AM
+a Windows COM object, an inproc server
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:36 AM
+The heck
+[smx2460]
+smx2460 12/28/2021 12:36 AM
+xD
+12/28/2021 12:36 AM
+this is a PoC COM object in PHP
+12/28/2021 12:36 AM
+https://github.com/smx-smx/php-com/blob/master/com.php
+php-com/com.php at master · smx-smx/php-com
+Proof of Concept Win32 COM Object written in PHP. Contribute to
+smx-smx/php-com development by creating an account on GitHub.
+[]
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:36 AM
+I mostly go for python tbh
+[smx2460]
+smx2460 12/28/2021 12:36 AM
+but i am not your typical PHP user
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:36 AM
+Yeah I didnt touch php in ages
+[smx2460]
+smx2460 12/28/2021 12:36 AM
+xD
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:36 AM
+Haha ok
+[smx2460]
+smx2460 12/28/2021 12:36 AM
+i'm "PHP or nothing" for scripting (edited)
+12/28/2021 12:35 AM
+and i have some coworkers using it too
+12/28/2021 12:35 AM
+i don't like perl either
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:35 AM
+Ngl, perl was a lot of times faster
+12/28/2021 12:35 AM
+Sk they rewrote it all in java
+12/28/2021 12:35 AM
+He got fired and no one understood his code
+[smx2460]
+smx2460 12/28/2021 12:35 AM
+as yet another side project, i'm working on a tool to work with their
+config daemon (edited)
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:35 AM
+There was a perl madman at some big bank
+[maryjohanna42069]
+[] smx2460 i don't even know how they would maintain this if the lead
+developer decides to change job
+maryjohanna42069 12/28/2021 12:34 AM
+I have seen similar stories
+[smx2460]
+smx2460 12/28/2021 12:34 AM
+https://github.com/smx-smx/yapt
+GitHub - smx-smx/yapt: Yet Another Purposeful Tool
+Yet Another Purposeful Tool. Contribute to smx-smx/yapt development by
+creating an account on GitHub.
+[]
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:34 AM
+Thats hilarious
+12/28/2021 12:34 AM
+Lmao
+[smx2460]
+smx2460 12/28/2021 12:34 AM
+i don't even know how they would maintain this if the lead developer
+decides to change job
+12/28/2021 12:33 AM
+i show them this
+12/28/2021 12:33 AM
+if someone tells me "i'm an expert in shell scripting"
+12/28/2021 12:33 AM
+this is the most convoluted shit i've ever seen
+12/28/2021 12:33 AM
+i could go on and on
+12/28/2021 12:32 AM
+    help_ipcmp() {
+        local ip1=$1
+        local ip2=$2
+        local bip1
+        local bip2
+        help_is_valid_ip "$ip1" || return 255
+        help_is_valid_ip "$ip2" || return 255
+        set -f
+        [ -n "${IFS+x}" ] && local oldifs=$IFS || unset oldifs
+        IFS="."
+        set -- $ip1
+        bip1=$(($1 * 16777216 | $2 * 65536 | $3 * 256 | $4))
+        set -- $ip2
+        bip2=$(($1 * 16777216 | $2 * 65536 | $3 * 256 | $4))
+        [ -n "${oldifs+x}" ] && IFS=$oldifs || unset IFS
+        set +f
+        [ $bip1 -gt $bip2 ] && return 1
+        [ $bip1 -lt $bip2 ] && return 2
+        return 0
+    }
+12/28/2021 12:32 AM
+    help_regex_escape() {
+        local str="$@"
+        local tail="$str" c
+        while [ -n "$tail" ]; do
+            tail="${str#?}"
+            c="${str%"$tail"}"
+            case $c in
+            [\]\[\\\(\)\|{}+*?$.^]) printf '%s' "\\$c" ;;
+            *) printf '%s' "$c" ;;
+            esac
+            str="$tail"
+        done
+    }
+12/28/2021 12:31 AM
+rather than writing say C
+12/28/2021 12:30 AM
+someone decided it made sense to maintain a huge clunky mess of shell
+scripts
+12/28/2021 12:30 AM
+i would have never thought someone would write shit like this in a
+commercial product
+12/28/2021 12:30 AM
+as a string
+12/28/2021 12:30 AM
+it shifts the decimal dot
+12/28/2021 12:29 AM
+    help_div10() {
+        local ret="$1"
+        local var="$2"
+        case "$var" in
+        0.[0-9])
+            var="${2%.*}${2#*.}"
+            var="${var#0}"
+            ;;
+        [0-9].[0-9] | [0-9][0-9].[0-9])
+            var="${2%.*}${2#*.}"
+            ;;
+        -0.[0-9])
+            var="${2%.*}${2#*.}"
+            var="-${var#-0}"
+            ;;
+        -[0-9].[0-9] | -[0-9][0-9].[0-9])
+            var="${2%.*}${2#*.}"
+            ;;
+        *)
+            var="$2"
+            ;;
+        esac
+        eval $ret='"$var"'
+    }
+    help_div10_imm() {
+        local var
+        for var; do
+            eval help_div10 \"\$var\" \"\$$var\"
+        done
+    }
+12/28/2021 12:29 AM
+look how they implemented division by 10
+12/28/2021 12:29 AM
+i passed them through a uglifier to have them readable
+12/28/2021 12:29 AM
+they were also minified
+12/28/2021 12:29 AM
+    help_ip2int() {
+        [ -n "${IFS+x}" ] && local oldifs=$IFS || unset oldifs
+        IFS=.
+        set -- $1 $2
+        [ -n "${oldifs+x}" ] && IFS=$oldifs || unset IFS
+        eval $1=0
+        [ $# -eq 5 ] && eval $1=$((($2 & 0xFF) << 24 | ($3 & 0xFF) << 16 | ($4 & 0xFF) << 8 | $5 & 0xFF))
+    }
+    help_int2ip() {
+        eval $1=$(($2 >> 24 & 0xFF)).$(($2 >> 16 & 0xFF)).$(($2 >> 8 & 0xFF)).$(($2 & 0xFF))
+    }
+12/28/2021 12:28 AM
+    help_mask2cidr() {
+        set -- $1 0^^^128^192^224^240^248^252^254^ ${#2} ${2##*255.}
+        set -- $1 $((($3 - ${#4}) * 2)) ${2%%${4%%.*}*}
+        eval $1='$(($2 + (${#3}/4)))'
+    }
+    help_cidr2mask() {
+        [ $1 != _ret ] && local _ret=$1 || _ret=$1
+        set -- $((5 - ($2 / 8))) 255 255 255 255 $(((255 << (8 - ($2 % 8))) & 255)) 0 0 0
+        [ $1 -gt 1 ] && shift $1 || shift
+        eval $_ret='${1-0}.${2-0}.${3-0}.${4-0}'
+    }
+12/28/2021 12:28 AM
+let me show you some parts
+12/28/2021 12:28 AM
+seriously, check it out
+12/28/2021 12:28 AM
+i've never seen someone so hooked up on shell before
+12/28/2021 12:28 AM
+everything in pure shell (edited)
+12/28/2021 12:27 AM
+escaping strings
+12/28/2021 12:27 AM
+it does divisions, multiplications, building ICMP packets
+12/28/2021 12:27 AM
+all the core functions are written in shell
+12/28/2021 12:27 AM
+it's ALL written in shell
+12/28/2021 12:27 AM
+https://github.com/smx-smx/dva5592-etc
+GitHub - smx-smx/dva5592-etc
+Contribute to smx-smx/dva5592-etc development by creating an account on
+GitHub.
+[]
+12/28/2021 12:27 AM
+and you haven't seen the best part
+12/28/2021 12:27 AM
+oh
+12/28/2021 12:27 AM
+i wonder too
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:26 AM
+Who has the time to hack all this shit together
+[smx2460]
+smx2460 12/28/2021 12:26 AM
+i can only assume that it must be some LUA based ripoff
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:26 AM
+That sounds so gross
+[smx2460]
+smx2460 12/28/2021 12:26 AM
+to build those files
+12/28/2021 12:26 AM
+but yeah i don't have whatever compiler they used
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:26 AM
+Lmao
+[smx2460]
+smx2460 12/28/2021 12:26 AM
+by reverse engineering their httpd binary, i found the opcode table
+12/28/2021 12:26 AM
+i only recently got around to write a disassembler for their proprietary
+VM
+12/28/2021 12:26 AM
+https://github.com/smx-smx/yapldis
+GitHub - smx-smx/yapldis: ADB YAPL Disassembler
+ADB YAPL Disassembler. Contribute to smx-smx/yapldis development by
+creating an account on GitHub.
+[]
+12/28/2021 12:25 AM
+they also made their own http server
+12/28/2021 12:25 AM
+and it compiles to binary
+12/28/2021 12:25 AM
+i'm not even joking
+12/28/2021 12:25 AM
+ADB implemented their own programming language for CGI pages
+12/28/2021 12:25 AM
+also
+12/28/2021 12:25 AM
+etc.
+12/28/2021 12:25 AM
+reversing cm
+12/28/2021 12:25 AM
+and once i did that, i finally could do some experiments like porting
+.NET Core
+12/28/2021 12:24 AM
+https://github.com/smx-smx/bcm63138-buildroot/
+GitHub - smx-smx/bcm63138-buildroot
+Contribute to smx-smx/bcm63138-buildroot development by creating an
+account on GitHub.
+[]
+12/28/2021 12:24 AM
+then i plugged that in my buildroot tree
+12/28/2021 12:24 AM
+by comparing their prebuilt against mine
+12/28/2021 12:24 AM
+i reverse engineered their changes
+12/28/2021 12:24 AM
+https://github.com/smx-smx/bcm63138-uclibc
+GitHub - smx-smx/bcm63138-uclibc
+Contribute to smx-smx/bcm63138-uclibc development by creating an account
+on GitHub.
+[]
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:24 AM
+Yeah but for what reason
+[smx2460]
+smx2460 12/28/2021 12:24 AM
+it has too many functions and won't run there, only chroot
+12/28/2021 12:24 AM
+if you build it with defaults
+12/28/2021 12:24 AM
+because they customized the symbol set
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:24 AM
+Whyyy
+12/28/2021 12:23 AM
+Wtf no
+[smx2460]
+smx2460 12/28/2021 12:23 AM
+in such a way that you can't compile a compatible one
+12/28/2021 12:23 AM
+they also customized uClibc
+12/28/2021 12:23 AM
+oh
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:23 AM
+Lmao
+[smx2460]
+smx2460 12/28/2021 12:23 AM
+so i ended up making my own toolchain
+12/28/2021 12:23 AM
+no kernel sources
+12/28/2021 12:23 AM
+no toolchain
+12/28/2021 12:23 AM
+they gave me an half assed package that had all the customizations
+stripped
+12/28/2021 12:23 AM
+after many months
+12/28/2021 12:23 AM
+but with ADB
+12/28/2021 12:23 AM
+and i'm sure it wasn't a problem with DLink
+12/28/2021 12:23 AM
+since DLink wasn't yet showing a GPL package
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:23 AM
+They also violate gpl
+12/28/2021 12:22 AM
+I got into ssh but couldnt root yet
+[smx2460]
+smx2460 12/28/2021 12:22 AM
+i contacted GPL Violations lawyers
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:22 AM
+If you got time once I would really appreciate some ideas
+[smx2460]
+smx2460 12/28/2021 12:22 AM
+they made customizations for it that never saw the light of day
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:22 AM
+Anyway I am nowadays unfortunately away from pc I have a similar story
+with my ISP
+[smx2460]
+smx2460 12/28/2021 12:22 AM
+they also did the same for the kernel
+12/28/2021 12:22 AM
+despite it being a GPL violation
+12/28/2021 12:22 AM
+they NEVER released code for it
+12/28/2021 12:22 AM
+as if it was a standalone tool
+12/28/2021 12:22 AM
+outside of everything busybox related
+12/28/2021 12:22 AM
+so whenever it reads that, it jumps to a completely custom handler
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:22 AM
+Oh god
+[smx2460]
+smx2460 12/28/2021 12:21 AM
+they modified busybox command line handler
+12/28/2021 12:21 AM
+well
+12/28/2021 12:21 AM
+nowhere to be found in the busybox applet list
+12/28/2021 12:21 AM
+(no content)
+[unknown.png]
+ unknown.png
+77.46 KB External
+12/28/2021 12:21 AM
+nope
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:21 AM
+Function?
+[smx2460]
+smx2460 12/28/2021 12:21 AM
+neither
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:21 AM
+Or alias?
+[smx2460]
+smx2460 12/28/2021 12:21 AM
+it's not a script (edited)
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:21 AM
+Bash baked?
+12/28/2021 12:21 AM
+Wtf
+[smx2460]
+smx2460 12/28/2021 12:21 AM
+where is cmclient ?
+12/28/2021 12:21 AM
+    root@dlinkrouter:~# which cmclient
+    root@dlinkrouter:~#
+12/28/2021 12:20 AM
+    root@dlinkrouter:~# cmclient GETV Device.DeviceInfo.SoftwareVersion
+    DVA-5592_A1_WI_20180405
+12/28/2021 12:20 AM
+and check this out
+12/28/2021 12:20 AM
+ADB is pretty crap with GPL releases tho
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:20 AM
+Ohh
+[smx2460]
+smx2460 12/28/2021 12:20 AM
+re-branded
+12/28/2021 12:20 AM
+and DLink bought these modems from them
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:19 AM
+I see
+[smx2460]
+smx2460 12/28/2021 12:19 AM
+so ADB outsourced development to Poland
+[maryjohanna42069]
+maryjohanna42069 12/28/2021 12:19 AM
+Dlinkrouter?

