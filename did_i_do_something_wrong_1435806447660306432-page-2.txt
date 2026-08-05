@@ -1,0 +1,668 @@
+November 6, 2025
+[theubusu]
+theubusu 11/06/2025 11:33 PM
+ugh i think the tv went to sleep
+[smx2460]
+smx2460 11/06/2025 11:33 PM
+it's in buildroot
+11/06/2025 11:33 PM
+you do
+[theubusu]
+theubusu 11/06/2025 11:33 PM
+i dont have gdbdserver
+[smx2460]
+smx2460 11/06/2025 11:33 PM
+    $ gdb-multiarch
+    set arch arm
+    set target extended-remote <ip>:13370
+    attach <pid>
+    bt full
+(edited)
+11/06/2025 11:32 PM
+    gdbserver --multi :13370
+(edited)
+[theubusu]
+[] smx2460 could you send me a coredump or a stack trace?
+theubusu 11/06/2025 11:31 PM
+how do i do that?
+[theubusu]
+theubusu 11/06/2025 11:30 PM
+i keep getting these unkillable ghost targets
+[image.png]
+ image.png
+2.59 KB External
+[smx2460]
+smx2460 11/06/2025 11:30 PM
+preferably the latter
+11/06/2025 11:29 PM
+could you send me a coredump or a stack trace? (edited)
+[theubusu]
+theubusu 11/06/2025 11:25 PM
+its hit and miss if it works or not
+11/06/2025 11:25 PM
+and now it just does this
+[image.png]
+ image.png
+17.71 KB External
+11/06/2025 11:22 PM
+now it worked but segfaulted for some reason
+[image.png]
+ image.png
+51.97 KB External
+11/06/2025 11:18 PM
+(no content)
+[image.png]
+ image.png
+31.07 KB External
+11/06/2025 11:17 PM
+the tv didnt like when i injected into RELEASE though..
+[smx2460]
+smx2460 11/06/2025 11:12 PM
+yay! 
+[theubusu]
+theubusu 11/06/2025 11:08 PM
+[image.png]
+ image.png
+45.99 KB External
+[theubusu]
+theubusu 11/06/2025 11:00 PM
+ill build it now just need to setup the paths for arm compiler again
+[smx2460]
+smx2460 11/06/2025 10:55 PM
+@theubusu
+https://github.com/smx-smx/ezinject/commit/524283698934fea5f52901ee134e5b05f54bae86
+(edited)
+pyloader: various fixes · smx-smx/ezinject@5242836
+- fix issue with PYTHONHOME on Python3 the previous implementation tries
+to be compatible with both Python2 and Python3, but `Py_SetPythonHome`
+is ABI incompatible between Python2 (`const char *`) ...
+[]
+11/06/2025 10:49 PM
+but this is even less compatible
+11/06/2025 10:49 PM
+    PyObject * moduleName = PyUnicode_FromString("test");
+    PyObject * pluginModule = PyImport_Import(moduleName);
+11/06/2025 10:49 PM
+or
+11/06/2025 10:48 PM
+so maybe I'll keep it like this, for now (edited)
+11/06/2025 10:48 PM
+    If you built your test with VC 2010, you will definitely have problems - VC9 (VS 2008) and VC10 (VS 2010) have mutually incompatible support DLLs that are usually required (implement printf, file i/o and that sort of thing). You cannot mix them if they include the standard libraries, which the python build does.
+11/06/2025 10:48 PM
+which is an opaque libc function
+11/06/2025 10:48 PM
+although hmmm it uses FILE *
+11/06/2025 10:47 PM
+so screw it
+11/06/2025 10:46 PM
+actually, it's in Python 2.7
+11/06/2025 10:46 PM
+but I don't even know if I want to retain Python2 compat anymore
+11/06/2025 10:46 PM
+I don't remember if that API is in Python2
+11/06/2025 10:46 PM
+with PyRun_SimpleFile
+11/06/2025 10:46 PM
+            lprintf("Script dir: %s, filename: %s\n", scriptDir, scriptName);
+            asprintf(&pyCode, "import %s\n", scriptName);
+            if(PyRun_SimpleString(pyCode) < 0){
+                lprintf("An error or exception occured\n");
+            }
+11/06/2025 10:46 PM
+I probably should change this code
+[theubusu]
+theubusu 11/06/2025 10:45 PM
+I did mess around with it but didn't replace it
+[smx2460]
+smx2460 11/06/2025 10:45 PM
+or flicking it
+11/06/2025 10:45 PM
+did you try changing the LVDS cable?
+[theubusu]
+theubusu 11/06/2025 10:45 PM
+yeah, I even bought a new motherboard at some point (in this model the
+tcon is integrated into the motherboard) but the issue still persisted
+[smx2460]
+smx2460 11/06/2025 10:44 PM
+because it looks like it could just be the cable (edited)
+11/06/2025 10:44 PM
+is that a panel issue?
+[theubusu]
+theubusu 11/06/2025 10:44 PM
+poor thing
+ PXL_20251106_214344293.mp4
+1.87 MB External
+[smx2460]
+smx2460 11/06/2025 10:42 PM
+because it used to work regardless
+11/06/2025 10:42 PM
+it's possible it wasn't a fatal error in previous versions of Python3
+11/06/2025 10:42 PM
+but Python2 uses an ANSI string and Python3 uses a Unicode string
+11/06/2025 10:42 PM
+I assumed Python2/3 had the same API for setting PythonHome (edited)
+11/06/2025 10:42 PM
+I am surprised we didn't see this earlier though
+[theubusu]
+theubusu 11/06/2025 10:42 PM
+yeah i can try now
+[smx2460]
+smx2460 11/06/2025 10:41 PM
+so @theubusu can also try them
+11/06/2025 10:41 PM
+let me clean up the last minute changes
+11/06/2025 10:39 PM
+back
+__dsquared__ 11/06/2025 7:40 PM
+I'm happy to give it a try, but it either will be tonight or next week
+:/
+[smx2460]
+smx2460 11/06/2025 7:03 PM
+If it happens in target, I try to intercept it and stop execution
+(edited)
+11/06/2025 7:03 PM
+Because RELEASE would crash if you forwarded a SIGSEGV to it
+11/06/2025 7:03 PM
+If it does in a "production" binary like RELEASE, ezinject will try to
+clean up
+[smx2460]
+__dsquared__ "target" segfaulted in the image, and it usually does, but
+I did have one run where it kept running
+smx2460 11/06/2025 7:02 PM
+I made some changes in the past to mitigate the crashing after ezinject
+is done
+[smx2460]
+smx2460 11/06/2025 6:54 PM
+Maybe we can also get that with ulimit and removing the SIGSEGV hook
+(edited)
+11/06/2025 6:54 PM
+If you could upload gdbserver and generate a stack trace or a core dump,
+that would be appreciated
+[smx2460]
+__dsquared__ wait, they actually stayed running ``` 1657 root 0:00
+./ezinject/bin/target 1689 root 0...
+smx2460 11/06/2025 6:54 PM
+So they aren't running, they are suspended (edited)
+[smx2460]
+smx2460 11/06/2025 6:53 PM
+As if you pressed Ctrl-Z
+[smx2460]
+[] smx2460 `target` implements a SIGSEGV hook that stops the process if
+it's about to crash
+smx2460 11/06/2025 6:53 PM
+The technical term is that it convert SIGSEGV into SIGSTOP
+[smx2460]
+smx2460 11/06/2025 6:51 PM
+I would be interested to see that stack trace
+11/06/2025 6:51 PM
+If you don't plan to do that, it's up to you to kill target
+11/06/2025 6:50 PM
+This makes it possible to attach a debugger and see the call stack
+leading up to the crash
+[smx2460]
+__dsquared__ wait, they actually stayed running ``` 1657 root 0:00
+./ezinject/bin/target 1689 root 0...
+smx2460 11/06/2025 6:50 PM
+target implements a SIGSEGV hook that stops the process if it's about to
+crash
+__dsquared__ 11/06/2025 4:36 PM
+but somehow stdout got disconnected from my shell?
+11/06/2025 4:36 PM
+wait, they actually stayed running
+     1657 root       0:00 ./ezinject/bin/target
+     1689 root       0:00 ./ezinject/bin/target
+     1707 root       0:00 ./ezinject/bin/target
+     1727 root       0:00 ./ezinject/bin/target
+     1740 root       0:00 ./ezinject/bin/target
+     1847 root       0:00 ./ezinject/bin/target
+     1861 root       0:00 grep tar
+__dsquared__ 11/06/2025 4:28 PM
+"target" segfaulted in the image, and it usually does, but I did have
+one run where it kept running
+11/06/2025 4:28 PM
+Ok, it's running Python
+[image.png]
+ image.png
+29.45 KB External
+[smx2460]
+smx2460 11/06/2025 4:04 AM
+So it probably worked by accident until now
+11/06/2025 4:01 AM
+so I changed it to use the env var rather than the method call
+11/06/2025 4:00 AM
+But they broke the ABI by requiring wchar_t for PYTHONHOME
+11/06/2025 4:00 AM
+The problem is that I never updated this code from Python2
+11/06/2025 3:55 AM
+now i run foreal (edited)
+11/06/2025 3:55 AM
+see if it works
+11/06/2025 3:55 AM
+(no content)
+ pyloader.c
+4.93 KB External
+11/06/2025 3:55 AM
+i fixed it probably
+__dsquared__ 11/06/2025 3:27 AM
+very cool stuff
+11/06/2025 3:27 AM
+otherwise it's neverending, I know exactly what it's like
+[smx2460]
+smx2460 11/06/2025 3:26 AM
+then this is broken somehow (edited)
+11/06/2025 3:26 AM
+        // prepend script directory
+        strncat(gEnvPythonPath, scriptDir, sizeof(gEnvPythonPath)-1);
+        {
+            char *end = strchr(gEnvPythonPath, '\0');
+            #ifdef EZ_TARGET_WINDOWS
+            *(end++) = ';';
+            #else
+            *(end++) = ':';
+            #endif
+            *end = '\0';
+        }
+        strncat(gEnvPythonPath, pythonPath, sizeof(gEnvPythonPath)-1);
+        putenv(gEnvPythonPath);
+__dsquared__ 11/06/2025 3:26 AM
+hah
+11/06/2025 3:26 AM
+ok, let's stop here
+[smx2460]
+smx2460 11/06/2025 3:26 AM
+so it is EZPY
+11/06/2025 3:26 AM
+ah
+__dsquared__ 11/06/2025 3:26 AM
+    Hello World from main
+    argv[0] = /mnt/usb/usb2/Drive1/ezinject/libpyloader.so
+    argv[1] = /mnt/usb/usb2/Drive1/target/usr/lib/libpython3.10.so.1.0
+    argv[2] = /foo/usb/usb2/Drive1/target/usr/lib/python3.10
+    argv[3] = /foo
+    argv[4] = /mnt/usb/usb2/Drive1/hello.py
+    Script: /mnt/usb/usb2/Drive1/hello.py
+    Script dir: /mnt/usb/usb2/Drive1, filename: hello
+[smx2460]
+smx2460 11/06/2025 3:25 AM
+and see if the error changes with 7a7a7a2f
+__dsquared__ 11/06/2025 3:25 AM
+U+6f6f662f
+[smx2460]
+smx2460 11/06/2025 3:25 AM
+set it to /zzz/usb/usb2/Drive1/target/usr/lib/python3.10
+11/06/2025 3:25 AM
+/mnt/usb/usb2/Drive1/target/usr/lib/python3.10 (edited)
+11/06/2025 3:24 AM
+the arg before it
+11/06/2025 3:24 AM
+what if you change the python dir?
+11/06/2025 3:24 AM
+so it's the same
+__dsquared__ 11/06/2025 3:24 AM
+U+746e6d2f with /foo for EZPY
+[smx2460]
+smx2460 11/06/2025 3:24 AM
+it can't be argv[1] (the lib path) since it's going far enough to load
+it
+11/06/2025 3:24 AM
+we just want to see which part it's unhappy about
+11/06/2025 3:23 AM
+even if it doesn't exist
+11/06/2025 3:23 AM
+to /bar/py.py (edited)
+11/06/2025 3:23 AM
+or change the script path
+__dsquared__ 11/06/2025 3:23 AM
+I'll try
+[smx2460]
+smx2460 11/06/2025 3:23 AM
+if it does, we know it's that
+11/06/2025 3:23 AM
+and see if it also reflects in the error
+11/06/2025 3:23 AM
+I would probably try to change the EZPY with /foo
+__dsquared__ 11/06/2025 3:23 AM
+it's not really a crucial issue to solve :)
+11/06/2025 3:23 AM
+Thanks, I don't want to keep you
+[smx2460]
+smx2460 11/06/2025 3:23 AM
+aka /mnt
+11/06/2025 3:22 AM
+is literally tnm/
+11/06/2025 3:22 AM
+because U+746e6d2f 
+11/06/2025 3:22 AM
+like which of the arguments
+11/06/2025 3:22 AM
+i'm wondering where that /mnt is coming from
+11/06/2025 3:21 AM
+but
+11/06/2025 3:21 AM
+will check it later
+11/06/2025 3:21 AM
+it's really late and have to go
+__dsquared__ 11/06/2025 3:20 AM
+(no content)
+[image.png]
+ image.png
+327.62 KB External
+11/06/2025 3:19 AM
+stacking made no difference, trying that instead of EZPU
+[smx2460]
+smx2460 11/06/2025 3:19 AM
+/mnt/usb/usb2/Drive1/target/usr/lib/python3.10
+11/06/2025 3:19 AM
+and what if you just pass
+__dsquared__ 11/06/2025 3:18 AM
+Looks about the same.. should I stack argv2 with multiple paths,
+perhaps?
+11/06/2025 3:17 AM
+(no content)
+[image.png]
+ image.png
+328.41 KB External
+[smx2460]
+smx2460 11/06/2025 3:15 AM
+    /mnt/usb/usb2/Drive1/target/usr/lib/python3.10:/mnt/usb/usb2/Drive1/target/usr/lib/python3.10/lib-dynload:/mnt/usb/usb2/Drive1/target/usr/lib/python3.10/site-packages
+11/06/2025 3:15 AM
+wha thappens if you pass this instead of $EZPY
+11/06/2025 3:10 AM
+it's ok
+__dsquared__ 11/06/2025 3:10 AM
+I don't have that env var set
+[smx2460]
+smx2460 11/06/2025 3:10 AM
+no that one is fine
+11/06/2025 3:10 AM
+i'm not sure if PYTHONIOENCODING=UTF-8 is upsetting it
+__dsquared__ 11/06/2025 3:10 AM
+should I drop LD_LIBRARY_PATH from EZPY?
+[smx2460]
+smx2460 11/06/2025 3:09 AM
+11/06/2025 3:09 AM
+U+746e6d2f = /mnt in reverse
+__dsquared__ 11/06/2025 3:09 AM
+    /mnt/usb/usb2/Drive1 # cat test 
+    export EZPY=`LD_LIBRARY_PATH=/mnt/usb/usb2/Drive1/target/usr/lib /mnt/usb/usb2/Drive1/target/usr/bin/python3.10 -c "import sys; import os; print(os.pathsep.join(sys.path))"`
+    ./ezinject/bin/ezinject 1971 ezinject/libpyloader.so /mnt/usb/usb2/Drive1/target/usr/lib/libpython3.10.so.1.0 /mnt/usb/usb2/Drive1/target/usr/lib/python3.10 "$EZPY" /mnt/usb/usb2/Drive1/hello.py
+last iteration, just in case
+[smx2460]
+smx2460 11/06/2025 3:09 AM
+nevermind
+11/06/2025 3:09 AM
+ah no it's not
+11/06/2025 3:08 AM
+can you paste it?
+11/06/2025 3:08 AM
+that's an issue in your script
+11/06/2025 3:08 AM
+I remember seeing that before, sec
+11/06/2025 3:08 AM
+hmmm
+__dsquared__ 11/06/2025 3:08 AM
+    return1() = 1
+    [INFO] library loaded!
+    [INFO] calling lib_loginit
+    [INFO] library loaded! (after lib_loginit)
+    [INFO] initializing
+    [DEBG] crt_thread_create
+    [DEBG] pthread_create
+    Hello World from main
+    argv[0] = /mnt/usb/usb2/Drive1/ezinject/libpyloader.so
+    argv[1] = /mnt/usb/usb2/Drive1/target/usr/lib/libpython3.10.so.1.0
+    argv[2] = /mnt/usb/usb2/Drive1/target/usr/lib/python3.10
+    argv[3] = :/mnt/usb/usb2/Drive1/target/usr/lib/python310.zip:/mnt/usb/usb2/Drive1/target/usr/lib/python3.10:/mnt/usb/usb2/Drive1/target/usr/lib/python3.10/lib-dynload:/mnt/usb/usb2/Drive1/target/usr/lib/python3.10/site-packages
+    argv[4] = /mnt/usb/usb2/Drive1/hello.py
+    Script: /mnt/usb/usb2/Drive1/hello.py
+    Script dir: /mnt/usb/usb2/Drive1, filename: hello
+    Initializing...
+    Calling Py_Initialize...
+    Fatal Python error: init_interp_main: failed to update the Python config
+    Python runtime state: core initialized
+    ValueError: character U+746e6d2f is not in range [U+0000; U+10ffff]
+    Current thread 0x40c1a470 (most recent call first):
+      <no Python frame>
+[smx2460]
+smx2460 11/06/2025 3:07 AM
+(Python2/3 are both supported and supposed to work) (edited)
+11/06/2025 3:07 AM
+this is what it looks like on x86_64
+11/06/2025 3:07 AM
+    sudo ./ezinject `pidof target`
+    samples/pyloader/libpyloader.so \
+    /usr/lib/x86_64-linux-gnu/libpython2.7.so.1 \
+    /usr/lib/python2.7 \
+    "$EZPY" hello.py
+(edited)
+__dsquared__ 11/06/2025 3:06 AM
+but busy life :)
+ 1
+11/06/2025 3:06 AM
+US Eastern
+[smx2460]
+smx2460 11/06/2025 3:06 AM
+Europe timezone? lol
+__dsquared__ 11/06/2025 3:05 AM
+it's late heh..
+[smx2460]
+smx2460 11/06/2025 3:05 AM
+<library_path> <python_prefix_dir> <python_path>
+__dsquared__ 11/06/2025 3:05 AM
+hold on another mistake
+[smx2460]
+smx2460 11/06/2025 3:05 AM
+you inverted argv[1] with argv[2]
+__dsquared__ 11/06/2025 3:05 AM
+target survived
+[image.png]
+ image.png
+259.74 KB External
+[smx2460]
+smx2460 11/06/2025 3:04 AM
+usr/lib/python3.10 (but absolute) (edited)
+__dsquared__ 11/06/2025 3:03 AM
+trying
+[smx2460]
+smx2460 11/06/2025 3:03 AM
+aka the directory
+11/06/2025 3:03 AM
+should be the prefix of the Python installation
+11/06/2025 3:03 AM
+hmm argv[2] is wrong
+__dsquared__ 11/06/2025 3:03 AM
+(no content)
+[image.png]
+ image.png
+331.42 KB External
+11/06/2025 3:01 AM
+yeah doing that
+[smx2460]
+smx2460 11/06/2025 3:00 AM
+you need to pass the full path of the Python library, no symlinks
+(edited)
+11/06/2025 3:00 AM
+so yeah, delete that free but it won't change the outcome (edited)
+11/06/2025 3:00 AM
+the bug (putenv + free) can corrupt the environment though
+11/06/2025 3:00 AM
+since it's useless
+11/06/2025 2:59 AM
+I can wrap up a commit to delete that code entirely
+11/06/2025 2:59 AM
+or rather, dlopen doesn't consider LD_LIBRARY_PATH
+11/06/2025 2:59 AM
+    The dynamic linker (ld.so) reads LD_LIBRARY_PATH only at program startup, before main() executes. Once libraries are loaded, changing the environment variable doesn't reload them.
+11/06/2025 2:58 AM
+it will 99% change nothing
+__dsquared__ 11/06/2025 2:58 AM
+let me try and recompile
+[smx2460]
+smx2460 11/06/2025 2:58 AM
+so I should just remove it
+11/06/2025 2:58 AM
+it probably won't change anything
+11/06/2025 2:58 AM
+in other words
+11/06/2025 2:58 AM
+for the running program
+11/06/2025 2:58 AM
+when I wrote that code back then, I wasn't aware that actually
+LD_LIBRARY_PATH cannot be changed at runtime
+11/06/2025 2:57 AM
+also I think that can't work
+11/06/2025 2:57 AM
+and the code that changes LD_LIBRARY_PATH is broken
+11/06/2025 2:57 AM
+the issue is that the symlink resolves to relative
+__dsquared__ 11/06/2025 2:57 AM
+hah, I already carried the USB over..
+[smx2460]
+smx2460 11/06/2025 2:56 AM
+or wrap the path in $(readlink -f)
+11/06/2025 2:56 AM
+alternatively, pass the full path, not the symlink
+11/06/2025 2:55 AM
+and copy over the new libpyloader?
+11/06/2025 2:55 AM
+can you remove this line?
+__dsquared__ 11/06/2025 2:55 AM
+    /mnt/usb/usb2/Drive1/target/usr/lib # ls -lsa libpython3.10.so.1.0 
+    2384 -rwxrwxrwx    1 root     root       2429384 May 21  2025 libpython3.10.so.1.0
+file exists.. must be looking in the wrong directory?
+[smx2460]
+smx2460 11/06/2025 2:55 AM
+https://github.com/smx-smx/ezinject/blob/master/samples/pyloader/pyloader.c#L73
+ezinject/samples/pyloader/pyloader.c at master · smx-smx/ezinject
+Modular binary injection framework, successor of libhooker -
+smx-smx/ezinject
+[]
+11/06/2025 2:54 AM
+hmm I see a crash 
+__dsquared__ 11/06/2025 2:54 AM
+    dlopen '/mnt/usb/usb2/Drive1/target/usr/lib/libpython3.so' failed: libpython3.10.so.1.0: cannot open shared object file: No such file or directory
+11/06/2025 2:54 AM
+we see the hello world
+11/06/2025 2:53 AM
+I'm using Python3.10 built in May, FWIW
+11/06/2025 2:53 AM
+(no content)
+[image.png]
+ image.png
+30.9 KB External
+[smx2460]
+smx2460 11/06/2025 2:53 AM
+if you have the same issue I suspect something changed in Python
+11/06/2025 2:52 AM
+this will also give you stdout visibility (edited)
+__dsquared__ 11/06/2025 2:52 AM
+trying
+[smx2460]
+smx2460 11/06/2025 2:52 AM
+using its pid
+11/06/2025 2:52 AM
+and try to run Python in there
+11/06/2025 2:52 AM
+then act as if that is your RELEASE
+11/06/2025 2:52 AM
+copy that over, run it in a terminal session
+11/06/2025 2:51 AM
+as part of the ezinject build process, you will have a dummy process
+called target
+11/06/2025 2:51 AM
+I wonder if you have the same issue as @theubusu
+11/06/2025 2:51 AM
+can you try target before you try RELEASE?
+11/06/2025 2:50 AM
+it's a temporary file
+[smx2460]
+__dsquared__ also, "[INFO] exporting payload to /tmp/ezpljjlxmO" - I'm
+not getting that file/directory
+smx2460 11/06/2025 2:50 AM
+that's intended
+__dsquared__ 11/06/2025 2:50 AM
+also, "[INFO] exporting payload to /tmp/ezpljjlxmO" - I'm not getting
+that file/directory
+11/06/2025 2:50 AM
+no, no file created
+[smx2460]
+smx2460 11/06/2025 2:46 AM
+I mean if you were on ATV/DTV, it wouldn't do that
+__dsquared__ 11/06/2025 2:46 AM
+I have nothing tuned in
+[smx2460]
+smx2460 11/06/2025 2:46 AM
+unless you probably have nothing tuned in
+11/06/2025 2:46 AM
+a TV doesn't go to sleep on its own
+11/06/2025 2:45 AM
+that's quite odd
+__dsquared__ 11/06/2025 2:45 AM
+I don't have any power options I can find in the regular menus :/
+11/06/2025 2:45 AM
+checking.. tv went to sleep
+[smx2460]
+smx2460 11/06/2025 2:43 AM
+that would confirm that Python ran
+__dsquared__ 11/06/2025 2:43 AM
+sec
+[smx2460]
+smx2460 11/06/2025 2:43 AM
+within hello.py
+11/06/2025 2:43 AM
+try to open a file in /tmp and write to it
+__dsquared__ 11/06/2025 2:42 AM
+ah
+[smx2460]
+smx2460 11/06/2025 2:42 AM
+RELEASE's stdout
+11/06/2025 2:42 AM
+"hello.py" writes to stdout
+__dsquared__ 11/06/2025 2:42 AM
+looks somewhat sound but no "hello"
+11/06/2025 2:42 AM
+continuation:
+    [INFO] target: allocating sc
+    [INFO] target: allocating 2101248 bytes
+    [WARN] mmap(3) failed, trying mmap(2)
+    [INFO] target: payload base: 0x705e6000
+    [INFO] target: copying payload (using files)
+    [INFO] exporting payload to /tmp/ezplBtBu2h
+    [INFO] target: relocating sc
+    [INFO] target: call chain
+    [INFO] - trampoline_entry: 0x705e6438
+    [INFO] - branch_target:    0x705e6518
+    [INFO] - injcode_bearing:  0x705e6000
+    [INFO] target: freeing payload memory
+    [INFO] detaching...
+11/06/2025 2:42 AM
+    /mnt/usb/usb2/Drive1 # export EZPY=`LD_LIBRARY_PATH=/mnt/usb/usb2/Drive1/target/usr/lib /mnt/usb/usb2/Drive1/target/usr/bin/python3.10 -c "import sys; impo
+    rt os; print(os.pathsep.join(sys.path))"`
+    /mnt/usb/usb2/Drive1 # cat hello.py 
+    print('hello ' * 3 + 'from python')
+    /mnt/usb/usb2/Drive1 # ./ezinject/bin/ezinject 595 ezinject/libpyloader.so /mnt/usb/usb2/Drive1/target/usr/lib/libpython3.so /mnt/usb/usb2/Drive1/target/us
+    r/lib/python3.10 "$EZPY" /mnt/usb/usb2/Drive1/hello.py 
+    [INFO] Attaching to 595
+    [INFO] Looking up libc.so.6
+    [INFO] waiting for target to stop...
+    00010000-00017000 r-xp 00000000 08:01 9059       /mnt/usb/usb2/Drive1/ezinject/bin/ezinject
+    00026000-00027000 r--p 00006000 08:01 9059       /mnt/usb/usb2/Drive1/ezinject/bin/ezinject
+    00027000-00028000 rw-p 00007000 08:01 9059       /mnt/usb/usb2/Drive1/ezinject/bin/ezinject
+    00028000-00049000 rw-p 00000000 00:00 0          [heap]
+    40004000-40005000 rw-p 00000000 00:00 0 
+    4000e000-4000f000 rw-p 00000000 00:00 0 
+    4003a000-40057000 r-xp 00000000 b3:10 399        /lib/ld-2.12.2.so
+    4005e000-4005f000 r--p 0001c000 b3:10 399        /lib/ld-2.12.2.so
+    4005f000-40060000 rw-p 0001d000 b3:10 399        /lib/ld-2.12.2.so
+    4008d000-4008e000 rw-p 00000000 00:00 0 
+    400db000-400df000 r-xp 00000000 b3:10 419        /lib/libdl-2.12.2.so
+    400df000-400e6000 ---p 00004000 b3:10 419        /lib/libdl-2.12.2.so
+    400e6000-400e7000 r--p 00003000 b3:10 419        /lib/libdl-2.12.2.so
+    400e7000-400e8000 rw-p 00004000 b3:10 419        /lib/libdl-2.12.2.so
+    400e8000-40208000 r-xp 00000000 b3:10 458        /lib/libc-2.12.2.so
+    40208000-4020a000 r--p 00120000 b3:10 458        /lib/libc-2.12.2.so
+    4020a000-4020b000 rw-p 00122000 b3:10 458        /lib/libc-2.12.2.so
+    4020b000-4020e000 rw-p 00000000 00:00 0 
+    be85f000-be881000 rw-p 00000000 00:00 0          [stack]
+    ffff0000-ffff1000 r-xp 00000000 00:00 0          [vectors]
+    ffff0000-ffff1000 r-xp 00000000 00:00 0          [vectors]
