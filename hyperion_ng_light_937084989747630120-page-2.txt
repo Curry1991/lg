@@ -1,0 +1,94 @@
+January 29, 2022
+[smx2460]
+smx2460 01/29/2022 10:52 PM
+you'll want to set this
+01/29/2022 10:52 PM
+    # BR2_PACKAGE_MBEDTLS is not set
+01/29/2022 10:52 PM
+https://github.com/openlgtv/buildroot-nc4/tree/webos-experiment/package/hyperion-webos
+buildroot-nc4/package/hyperion-webos at webos-experiment · openlgtv...
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+01/29/2022 10:46 PM
+maybe you should switch to the new toolchain
+01/29/2022 10:46 PM
+missing?
+[e99.tuxuser]
+e99.tuxuser 01/29/2022 10:45 PM
+mbedtls / mbedcrypto is the problem
+01/29/2022 10:45 PM
+Nah, that's just a warning which happens on other homebrew apps too
+[smx2460]
+smx2460 01/29/2022 10:42 PM
+missing qmake/qt5 host binaries? (edited)
+[e99.tuxuser]
+e99.tuxuser 01/29/2022 10:17 PM
+whot, it auto invites once mentioned? interesting
+01/29/2022 10:17 PM
+@infowski @Mariotaku @Smx
+01/29/2022 10:15 PM
+Current state of cmake configuration
+    ...
+    -- Using static mbedtls libraries (build version "3.1.0")
+    CMake Warning at /home/e99/webos-sdk-x86_64/1.0.g/sysroots/armv7a-neon-webos-linux-gnueabi/usr/lib/cmake/Qt5/Qt5Config.cmake:7 (message):
+      Skipping because OE_QMAKE_PATH_EXTERNAL_HOST_BINS is not defined
+    Call Stack (most recent call first):
+      libsrc/leddevice/CMakeLists.txt:7 (find_package)
+    CMake Warning at /home/e99/webos-sdk-x86_64/1.0.g/sysroots/armv7a-neon-webos-linux-gnueabi/usr/lib/cmake/Qt5/Qt5Config.cmake:7 (message):
+      Skipping because OE_QMAKE_PATH_EXTERNAL_HOST_BINS is not defined
+    Call Stack (most recent call first):
+      src/hyperiond/CMakeLists.txt:17 (find_package)
+    -- Performing Test COMPILER_SUPPORTS_CXX11
+    -- Performing Test COMPILER_SUPPORTS_CXX11 - Success
+    -- Performing Test COMPILER_SUPPORTS_CXX0X
+    -- Performing Test COMPILER_SUPPORTS_CXX0X - Success
+    -- CPACK: Found RPM builder
+    -- Configuring done
+    CMake Error: AUTOMOC for target mbedcrypto: Could not find moc executable target Qt5::moc
+[e99.tuxuser]
+e99.tuxuser 01/29/2022 9:42 PM
+From Lord-Grey of hyperion.ng team: > I added for you three build
+flags > (see my Hyperion Light 2 development branch -
+https://github.com/Lord-Grey/hyperion.ng/tree/light2) > > 1.
+ENABLE_EFFECTENGINE > If OFF, Hyperion will be build without python 3
+and effect-engine, > as well as the UI does not offer any effects,
+besides color or image ones. > > 2. ENABLE_JSONCHECKS > If OFF, there
+will be no checks on the JSON and schema definitions. Combined with 1.
+no python should be required overall. > If ON, minimum python 2 is
+needed. It is recommended that checks are done during the build. > > 3.
+ENABLE_DEV_SERIAL > If OFF, hyperion will be build without Serial
+devices to avoid the Qt:SerialProt dependency > > plus as a bonus, you
+can disable network LED devices via: > ENABLE_DEV_NETWORK > > @ALL Happy
+to get your feedback, if I missed to cover something or if things are
+not working any longer.... > Sorry, on 2. ENABLE_JSONCHECKS, you need to
+disable it. > I had to fix the schema checking and this works with
+python3. > So you should disable ENABLE_JSONCHECKS and
+ENABLE_EFFECTENGINE to not have a python dependency (edited)
+01/29/2022 9:41 PM
+I summon you, masters of cmake and webosbrew. The guys over @
+hyperion.ng were so nice to extend their build-flags even more to gain a
+truly light-version of hyperion.ng - which almost configures  If
+somebody could chime in and give it a try/tweak, that would be greatly
+appreciated. Rundown of commands
+    # Download patch
+    wget https://gist.githubusercontent.com/tuxuser/7a31b0ae7394578fcea8ceddf21833d2/raw/2048f450d0110e174c6ae6403d15a0521e456424/hyperion.ng-light2-patch.diff
+    # Clone repo
+    git clone --recursive https://github.com/Lord-Grey/hyperion.ng
+    pushd hyperion.ng
+    git checkout light2
+    patch -p1 < ../hyperion.ng-light2-patch.diff
+    mkdir build; pushd build
+    # Source build environment
+    . /opt/webos-sdk-x86_64/1.0.g/environment-setup-armv7a-neon-webos-linux-gnueabi
+    cmake \
+      -DCMAKE_TOOLCHAIN_FILE=/opt/webos-sdk-x86_64/1.0.g/sysroots/x86_64-webossdk-linux/usr/share/cmake/OEToolchainConfig.cmake \
+      -DHYPERION_LIGHT=ON \
+      -DENABLE_EFFECTENGINE=OFF \
+      -DENABLE_JSONCHECKS=OFF \
+      -DENABLE_DEV_SERIAL=OFF \
+      -DENABLE_DEV_USB_HID=OFF \
+      -DENABLE_DEV_WS281XPWM=OFF \
+      -DENABLE_DEV_TINKERFORGE=OFF \
+      ..
+(edited)

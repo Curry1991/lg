@@ -1,0 +1,300 @@
+November 23, 2021
+[zasx]
+zasx 11/23/2021 11:51 PM
+Cool
+[infowski]
+infowski 11/23/2021 10:37 PM
+OK. I figured out why you needed to reboot twice.
+November 22, 2021
+[infowski]
+infowski 11/22/2021 1:18 PM
+OK.
+[zasx]
+zasx 11/22/2021 1:17 PM
+it said I didn't have root, then I did the elevate-service, then I
+reloaded into the settings and it still said I didn't have root. that's
+when I rebooted my tv
+11/22/2021 1:16 PM
+yeah. but I already had the homebrew app open. maybe a restart of the
+app would have sufficed, but I didn't try that
+[infowski]
+infowski 11/22/2021 1:15 PM
+@zasx "that worked after a TV reboot" - could you describe step by step
+what you did? Did you need to reboot after running elevate-service for
+it to say "Root status: OK"? (edited)
+[zasx]
+zasx 11/22/2021 1:13 PM
+ok, that worked after a tv reboot. good thing that's something you can
+do with the ssh connection, because rebooting a webos tv is strangely
+difficult. lol
+[infowski]
+infowski 11/22/2021 1:11 PM
+in the meantime, we are holding 0.3.1 release until I figure out how to
+work around them killing our service...
+11/22/2021 1:10 PM
+ie. homebrew channel app should show "Root status: OK"
+11/22/2021 1:10 PM
+@zasx you should be able to launch
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service
+and it should work again.
+11/22/2021 1:08 PM
+shit.
+[zasx]
+zasx 11/22/2021 1:08 PM
+(no content)
+[unknown.png]
+ unknown.png
+22.29 KB External
+11/22/2021 1:05 PM
+Yeah, I'm logged in through ssh with my laptop (with the default pw,
+didn't change that or keys)
+[infowski]
+infowski 11/22/2021 12:40 PM
+again - as long as you have ssh/telnet enabled you should be able to
+recover
+11/22/2021 12:40 PM
+Yeah. You can try that.
+[zasx]
+[] infowski
+https://github.com/webosbrew/webos-homebrew-channel/releases/tag/v0.3.1
+Another one. Service should ...
+zasx 11/22/2021 12:23 PM
+hey, did you mean for me to run this command?
+November 21, 2021
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:48 PM
+sure, thx for now
+[infowski]
+infowski 11/21/2021 11:48 PM
+I need to go, let's go back to it later.
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:47 PM
+still denying /install
+11/21/2021 11:45 PM
+nope, I dont
+[infowski]
+infowski 11/21/2021 11:44 PM
+I don't think it should matter, unless you have some system stuff
+replaced in there.
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:44 PM
+well, lemme fill you in on a maybe stupid thing that could cause it..
+dunno if webosbrew needs something from those dirs I have overlays
+mounted for /usr/bin /usr/lib * /usr/share
+[infowski]
+infowski 11/21/2021 11:44 PM
+OK, I am still very curious what actually happened there, will need to
+rethink that... Now launch the service from CLI and try /install call
+again.
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:43 PM
+after reboot
+    {"org.webosbrew.hbchannel.service*":["all"]}
+[infowski]
+infowski 11/21/2021 11:41 PM
+unless elevate-service is broken somehow (but it works on my TV...)
+11/21/2021 11:41 PM
+maybe they don't sync the filesystem on reboot? that'd be very weird.
+11/21/2021 11:41 PM
+very weird.
+11/21/2021 11:41 PM
+can you reboot and check again?
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:41 PM
+interesting, it did not stick from the elevate-service
+11/21/2021 11:40 PM
+    {"org.webosbrew.hbchannel.service*":["public"]}
+[infowski]
+infowski 11/21/2021 11:40 PM
+I see the diffs above, but I am not sure...
+11/21/2021 11:40 PM
+I am at a loss now. I really have no idea. What are the contents of
+/var/luna-service2-dev/client-permissions.d/org.webosbrew.hbchannel.service.service.json?
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:39 PM
+after reboot, back to: "{"returnValue":false,"errorText":"Error: -1:
+Denied method call \"install\" for category \"/dev\""}"
+[infowski]
+infowski 11/21/2021 11:38 PM
+No, our start-devmode.sh launches elevate-service on startup (that's why
+reboot previously helped) - but this seems more like some bug in ls-hubd
+in that it's unable to see config changes.
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:38 PM
+ah its operating in /var/*, so it sticks, nvm then^^
+11/21/2021 11:37 PM
+after reboot need to elevate-service again?
+[infowski]
+infowski 11/21/2021 11:37 PM
+Maybe try a reboot?
+11/21/2021 11:37 PM
+Ohhh... That's... Weird.
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:36 PM
+yep
+[infowski]
+infowski 11/21/2021 11:36 PM
+Have you killed that service and launched it again?
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:36 PM
+still tho:
+{"returnValue":false,"errorText":"Error: -1: Denied method call \"install\" for category \"/dev\""}
+[infowski]
+infowski 11/21/2021 11:36 PM
+Yeah, that's correct. Now relaunch the service and try /install call
+again...
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:35 PM
+    root@LGwebOSTV:~# /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service
+    [ ] Unjailing 'org.webosbrew.hbchannel.service'...
+    --- /var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service
+    +++ /tmp/_safesed.4873
+    @@ -1,4 +1,4 @@
+     [D-BUS Service]
+     Name=org.webosbrew.hbchannel.service
+    -Exec=/usr/bin/run-js-service -n /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+    +Exec=/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service -n /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+     Type=dynamic
+    [+] File changed
+    [ ] Extending ls2 permissions for 'org.webosbrew.hbchannel.service'...
+    --- /var/luna-service2-dev/client-permissions.d/org.webosbrew.hbchannel.service.service.json
+    +++ /tmp/_safesed.4873
+    @@ -1 +1 @@
+    -{"org.webosbrew.hbchannel.service*":["public"]}
+    +{"org.webosbrew.hbchannel.service*":["all"]}
+    [+] File changed
+    [ ] Exposing public API for 'org.webosbrew.hbchannel.service'...
+    --- /var/luna-service2-dev/api-permissions.d/org.webosbrew.hbchannel.service.api.json
+    +++ /tmp/_safesed.4873
+    @@ -1 +1 @@
+    -{"org.webosbrew.hbchannel.service.group":["org.webosbrew.hbchannel.service/*"],"ares.webos.cli":["org.webosbrew.hbchannel.service/*"]}
+    +{"public":["org.webosbrew.hbchannel.service/*"],"ares.webos.cli":["org.webosbrew.hbchannel.service/*"]}
+    [+] File changed
+    [+] Refreshing services...
+    telling hub to scan manifests from volatile directories
+[infowski]
+[] e99.tuxuser service output
+infowski 11/21/2021 11:35 PM
+Oh. Yeah. You need to launch elevate-service again first
+(/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service)
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:34 PM
+luna send output
+    # luna-send -i 'luna://org.webosbrew.hbchannel.service/install' '{"ipkUrl": "https://github.com/webosbrew/webos-homebrew-channel/releases/download/v0.3.1/org.webosbrew.hbchannel_0.3.1_all.ipk", "ipkHash": "3da8c62e2dda1e295f5b05d2cdb193545d
+    3659a0f8a33408515cd2e9a44f5fba"}'
+    {"statusText":"Downloading…","returnValue":true}
+    {"statusText":"Downloading…","progress":14.727438463597103,"returnValue":true}
+    {"statusText":"Downloading…","progress":65.95273254368578,"returnValue":true}
+    {"statusText":"Downloading…","progress":100,"returnValue":true}
+    {"statusText":"Verifying…","returnValue":true}
+    {"statusText":"Installing…","returnValue":true}
+    {"returnValue":false,"errorText":"Error: -1: Denied method call \"install\" for category \"/dev\""}
+11/21/2021 11:34 PM
+service output
+ message.txt
+2.4 KB External
+11/21/2021 11:32 PM
+np, sec
+[infowski]
+infowski 11/21/2021 11:32 PM
+Hmmmm... That's weird. Can I ask you to launch the service manually in a
+separate session like so:
+    /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service -k -n /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+...and see if you get any error during install?
+[e99.tuxuser]
+[] e99.tuxuser Thats from upgrade from 0.2.1 ```
+root@LGwebOSTV:/var/lib# luna-send -i 'luna://org.webosbrew.hbcha...
+e99.tuxuser 11/21/2021 11:30 PM
+exactly the same behaviour again now
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:30 PM
+duh..
+[infowski]
+infowski 11/21/2021 11:29 PM
+Seems like you have some spurious newlines in there.
+11/21/2021 11:29 PM
+Isn't your URL screwed up?
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:28 PM
+    root@LGwebOSTV:/tmp# luna-send -i 'luna://org.webosbrew.hbchannel.service/install' '{"ipkUrl": "https://github.com/webosbrew/webos-homebrew-channel/releases/download/v0.3.1/org.webosbrew.hbchannel_0.3.1_all.ipk", "ipkHash": "3da8c62e2dda1e295f5b05d2cdb193
+    > 545d3659a0f8a33408515cd2e9a44f5fba"}'
+    {"statusText":"Downloading…","returnValue":true}
+    {"returnValue":false,"errorText":"TypeError: Only absolute URLs are supported"}
+    {"serviceName":"org.webosbrew.hbchannel.service","returnValue":false,"errorCode":-1,"errorText":"org.webosbrew.hbchannel.service is not running."}
+[infowski]
+infowski 11/21/2021 11:28 PM
+Cool. Then it should work fine. (iirc we confirmed self-updates worked
+somewhere between 4.5 and 5.5) Weird. (edited)
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:27 PM
+4.3.0
+11/21/2021 11:27 PM
+thx
+[infowski]
+infowski 11/21/2021 11:27 PM
+/var/run/nyx/*.json
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:27 PM
+iirc its webOs 4.. if I would have not forgotten the way how to check it
+exactly..
+11/21/2021 11:26 PM
+sure
+[infowski]
+infowski 11/21/2021 11:26 PM
+Can you try running that command once again to see if it crashes again?
+It'll just do a reinstall and should end with
+{"statusText": "Finished.", "finished": true} message... :/ (edited)
+11/21/2021 11:24 PM
+Which webOS version are you on?
+11/21/2021 11:24 PM
+That sounds concerning.
+[e99.tuxuser]
+e99.tuxuser 11/21/2021 11:22 PM
+Yet another reboot, elevated: ok...
+11/21/2021 11:19 PM
+After restart of TV (cause launching Homebrew Channel created a Panic
+about WebAppMgr Text bla - happens to me often) , Homebrew Channel
+reports v0.3.1 but status: "unelevated"
+11/21/2021 11:15 PM
+stalled (for now?)
+11/21/2021 11:15 PM
+Thats from upgrade from 0.2.1
+    root@LGwebOSTV:/var/lib# luna-send -i 'luna://org.webosbrew.hbchannel.service/install' '{"ipkUrl": "https://github.com/webosbrew/webos-homebrew-channel/releases/download/v0.3.1/org.webosbrew.hbchannel_0.3.1_all.ipk", "ipkHash": "3da8c62e2dda1e295f5b05d2cdb193
+    545d3659a0f8a33408515cd2e9a44f5fba"}'
+    {"statusText":"Downloading…","returnValue":true}
+    {"statusText":"Downloading…","progress":16.781210391395838,"returnValue":true}
+    {"statusText":"Downloading…","progress":65.74977347104844,"returnValue":true}
+    {"statusText":"Downloading…","progress":100,"returnValue":true}
+    {"statusText":"Verifying…","returnValue":true}
+    {"statusText":"Installing…","returnValue":true}
+    {"serviceName":"org.webosbrew.hbchannel.service","returnValue":false,"errorCode":-1,"errorText":"org.webosbrew.hbchannel.service is not running."}
+[infowski]
+infowski 11/21/2021 3:47 PM
+https://github.com/webosbrew/webos-homebrew-channel/releases/tag/v0.3.1
+Another one. Service should stay elevated after update...
+    luna-send -i 'luna://org.webosbrew.hbchannel.service/install' '{"ipkUrl": "https://github.com/webosbrew/webos-homebrew-channel/releases/download/v0.3.1/org.webosbrew.hbchannel_0.3.1_all.ipk", "ipkHash": "3da8c62e2dda1e295f5b05d2cdb193545d3659a0f8a33408515cd2e9a44f5fba"}'
+(edited)
+Release Release v0.3.1 · webosbrew/webos-homebrew-channel
+[0.3.1] - 2021-11-21 Fixed Fixed root persistence (reelevation) after
+self-update [0.3.0] - 2021-11-21 Added Embedded manifests are now
+supported HTML description rendering Added SFTP server to ...
+[]
+[infowski]
+infowski 11/21/2021 2:45 PM
+we pass in homebrew channel app ID into elevate-service while it
+expectes a service name...
+[mariotaku]
+mariotaku 11/21/2021 2:45 PM
+Nice
+[infowski]
+infowski 11/21/2021 2:45 PM
+thankfully I can make a workaround for that
+11/21/2021 2:45 PM
+Yeah, we screwed up re-elevation in 0.2.1 :/
+[mariotaku]
+mariotaku 11/21/2021 2:45 PM
+Yes indeed.
+[mariotaku]
+mariotaku 11/21/2021 2:45 PM
+Hmmm... OK, but homebrew channel service is in "unelevated" state right
+now, isn't it?

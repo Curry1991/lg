@@ -1,0 +1,138 @@
+February 3, 2022
+[dystopian1]
+dystopian1 02/03/2022 8:18 PM
+FYI script is being alive for about 2 seconds after power off
+January 31, 2022
+[dystopian1]
+dystopian1 01/31/2022 9:54 PM
+and it works 
+[dystopian1]
+dystopian1 01/31/2022 9:29 PM
+can't imagine how to make it work with shell script. Poll every 1 sec
+and rmmod on screen off? But will it work when I press power off button
+on RC? I thought all programs are in line in sleep mode
+[infowski]
+infowski 01/31/2022 9:01 PM
+https://www.webosbrew.org/pages/commands-cheatsheet.html → # Monitor
+suspend / resume state luna-send -i
+'luna://com.webos.service.tvpower/power/getPowerState'
+'{"subscribe":true}'
+[dystopian1]
+dystopian1 01/31/2022 8:54 PM
+are there power events I can run scripts on?
+01/31/2022 8:53 PM
+loaded g_mass_storage forces webos reboot on power off/on (instead of
+fast boot without reboot)  (edited)
+January 29, 2022
+[infowski]
+infowski 01/29/2022 3:24 PM
+Yeah definitely, I totally get it 
+01/29/2022 3:24 PM
+especially that we have somewhat more experiment-friendly tooling now.
+[dystopian1]
+[] infowski that's an interesting approach 
+dystopian1 01/29/2022 3:23 PM
+at least it's something I could do unlike that ^^
+[infowski]
+infowski 01/29/2022 3:23 PM
+I'll still look into hacking up asm/pdm processes to make it slightly
+more universal.
+01/29/2022 3:22 PM
+that's an interesting approach 
+[dystopian1]
+dystopian1 01/29/2022 3:22 PM
+it was a long journey
+[infowski]
+infowski 01/29/2022 3:22 PM
+lol
+[dystopian1]
+dystopian1 01/29/2022 3:22 PM
+I've built 6 modules, created virtual flash drive, mounted smb over it
+[infowski]
+infowski 01/29/2022 3:21 PM
+Wow! How did you get it? 
+[dystopian1]
+dystopian1 01/29/2022 3:21 PM
+FINALLY SUCCESS
+January 28, 2022
+[infowski]
+infowski 01/28/2022 1:19 AM
+yeah, what I planned.
+[dystopian1]
+dystopian1 01/28/2022 1:18 AM
+all I got is that we don't need to hack photovideo app but exactly asm
+[infowski]
+infowski 01/28/2022 1:16 AM
+thought you meant that the config is applied but the app does not
+reflect that.
+01/28/2022 1:16 AM
+ah, sorry, missed that.
+[dystopian1]
+dystopian1 01/28/2022 1:15 AM
+faster and more directly
+01/28/2022 1:14 AM
+I even didn't check it, I watch
+luna-send -n 1 luna://com.webos.service.attachedstoragemanager/listDevices '{}'
+[infowski]
+infowski 01/28/2022 1:14 AM
+Even if you restart photovideo app?
+[dystopian1]
+dystopian1 01/28/2022 1:12 AM
+tested many parameters and values... nothing
+01/28/2022 1:12 AM
+new config is applied because disabled devices disappeared from
+listDevices but my device is not shown 
+01/28/2022 1:10 AM
+there is a config /usr/share/asm/asm_profile.json. I added there my new
+"device", then disabled most current devices in list with
+"visible" : false,, bind config with new one, killall asm... and nothing
+useful.
+January 27, 2022
+[infowski]
+infowski 01/27/2022 10:38 PM
+yes - they detect them in /proc/bus/usb or something similar.
+[dystopian1]
+dystopian1 01/27/2022 10:35 PM
+mounted loop fat device doesn't appear in listDevices
+[dystopian1]
+dystopian1 01/27/2022 5:57 PM
+so even if you inject fake object it can be useless until it really
+thinks it has such device
+01/27/2022 5:56 PM
+maybe com.webos.service.attachedstoragemanager/listFolderContents method
+01/27/2022 5:55 PM
+looks like it reads it with luna not itself, and luna doesn't know such
+device
+01/27/2022 5:54 PM
+no luck yet. I got new bar with my share but when open it it shows empty
+directory and error popup:
+Your device is disconnected. Please check the connection status.
+[infowski]
+infowski 01/27/2022 5:00 PM
+yeah, I get it 
+[dystopian1]
+dystopian1 01/27/2022 5:00 PM
+at least I can try because ezinject-way is not for me 
+[infowski]
+infowski 01/27/2022 4:58 PM
+Yeah, you could do that, but I think it'd be much less universal that
+way.
+[dystopian1]
+dystopian1 01/27/2022 4:55 PM
+what if not to fake result but add some devices to result in app JS
+code?
+[infowski]
+infowski 01/27/2022 4:32 PM
+ezinject can just replace/extend existing function of a running process
+01/27/2022 4:31 PM
+Yes, pretty much. I'd do that by ezinject'ing into asm process, after
+finding which function it uses to figure out eligible devices.
+[dystopian1]
+dystopian1 01/27/2022 3:55 PM
+looks like I need to change
+luna://com.webos.service.attachedstoragemanager/listDevices results to
+add my own bar
+[dystopian1]
+dystopian1 01/27/2022 3:53 PM
+One simplesolution would be to plug a USB drive into your TV (any
+honestly) and then set it up to mount into a directory on a usb drive

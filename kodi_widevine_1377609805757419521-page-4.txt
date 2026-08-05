@@ -1,0 +1,1788 @@
+August 11, 2025
+[ccarnell98]
+ccarnell98 08/11/2025 11:04 AM
+Or can we do it with a script
+08/11/2025 11:02 AM
+What are the ssh command you used please
+08/11/2025 11:02 AM
+Can I do that in C? 
+[mariotaku]
+mariotaku 08/11/2025 11:01 AM
+So, not root
+ 1
+[mariotaku]
+[] ccarnell98 Do you have your jail fix addon installed? I assume you
+are running as root?
+mariotaku 08/11/2025 11:01 AM
+I created /dev/tee0 by hand & running as normal native_devmode user
+[ccarnell98]
+ccarnell98 08/11/2025 10:57 AM
+Do you have your jail fix addon installed? I assume you are running as
+root?
+08/11/2025 10:57 AM
+Was gonna say dont use bunny but you followed up with angel one 
+[mariotaku]
+mariotaku 08/11/2025 10:56 AM
+(no content)
+ Win_20250811_17_51_09_Pro.mp4
+3.52 MB External
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Are you getting video? 
+mariotaku 08/11/2025 10:55 AM
+Yes!
+ 1
+[ccarnell98]
+ccarnell98 08/11/2025 10:52 AM
+@Mariotaku Are you getting video? 
+[ccarnell98]
+[] yolofant there's still the problem that webOS 4 has the different cdm
+version so it might not work
+ccarnell98 08/11/2025 10:51 AM
+That support is in my branch:
+https://github.com/cscd98/inputstream.adaptive/tree/webos. Still need
+the Decrypt() code to be tested yet though
+[mariotaku]
+mariotaku 08/11/2025 10:26 AM
+(no content)
+ kodi_console_out.txt
+332.93 KB External
+[yolofant]
+yolofant 08/11/2025 10:25 AM
+that's true 
+[mariotaku]
+mariotaku 08/11/2025 10:24 AM
+This is a huge progress already!
+[yolofant]
+yolofant 08/11/2025 10:24 AM
+we only know that webOS 5+ should work if the license download is fixed
+08/11/2025 10:23 AM
+there's still the problem that webOS 4 has the different cdm version so
+it might not work
+[mariotaku]
+mariotaku 08/11/2025 10:23 AM
+Let me grab more logs
+08/11/2025 10:23 AM
+Yes I suppose
+[yolofant]
+yolofant 08/11/2025 10:23 AM
+so the license downloaded?
+[mariotaku]
+mariotaku 08/11/2025 10:22 AM
+It loads! (not rendered yet)
+[yolofant]
+yolofant 08/11/2025 10:18 AM
+build done
+08/11/2025 10:18 AM
+https://jenkins.kodi.tv/job/webos-docker/9615/
+[mariotaku]
+mariotaku 08/11/2025 10:13 AM
+Maybe removing both = no crash
+[yolofant]
+yolofant 08/11/2025 10:13 AM
+but I figured how to remove libcrypto too
+08/11/2025 10:12 AM
+ah
+[mariotaku]
+mariotaku 08/11/2025 10:12 AM
+Let me give you the backtrace
+08/11/2025 10:11 AM
+Hmm, it segfaults
+[yolofant]
+yolofant 08/11/2025 10:08 AM
+ah -D doesn't work on static libs
+[mariotaku]
+mariotaku 08/11/2025 10:08 AM
+I can confirm that libssl symbols has been stripped
+[yolofant]
+yolofant 08/11/2025 10:07 AM
+hmm or nm doesn't work on static libs?
+08/11/2025 10:07 AM
+seems like libcrpto has no exported symbols so should be ok
+08/11/2025 10:02 AM
+build should be up in ~3 minutes
+[mariotaku]
+mariotaku 08/11/2025 10:02 AM
+Let's see how possible it is to proceed to the next step 
+[yolofant]
+yolofant 08/11/2025 10:01 AM
+but then I'm not sure if or how to disable libcrypto too
+08/11/2025 10:00 AM
+https://jenkins.kodi.tv/job/webos-docker/9613/
+08/11/2025 9:54 AM
+that's why I switched and assumed it's fine to pass the full file path
+08/11/2025 9:53 AM
+mold: fatal: cannot open libcrypto.a: No such file or directory I get
+that with TARGET_FILE_NAME though
+08/11/2025 9:53 AM
+I guess TARGET_FILE doesn't work?
+08/11/2025 9:52 AM
+hmm, weird
+[mariotaku]
+[] ccarnell98 It would be good to narrow it down to whichever lib is
+causing the issue
+mariotaku 08/11/2025 9:52 AM
+I would bet on openssl
+[mariotaku]
+[] yolofant https://jenkins.kodi.tv/job/webos-docker/9611/
+mariotaku 08/11/2025 9:52 AM
+I think this build exports libssl (as well as libcrypto),
+nm -D --defined-only usr/palm/applications/org.xbmc.kodi/kodi-webos | grep SSL_
+(edited)
+[ccarnell98]
+ccarnell98 08/11/2025 9:51 AM
+It would be good to narrow it down to whichever lib is causing the issue
+[yolofant]
+yolofant 08/11/2025 9:22 AM
+https://jenkins.kodi.tv/job/webos-docker/9611/
+08/11/2025 9:18 AM
+I make a build
+08/11/2025 9:17 AM
+maybe we need to not export libcrypto too?
+[] yolofant I can kick off a build on the jenkins if needed I guess?
+wsnipex 08/11/2025 9:14 AM
+sure
+[ccarnell98]
+ccarnell98 08/11/2025 9:14 AM
+@Yolofant Worth a try
+[yolofant]
+yolofant 08/11/2025 9:11 AM
+I can kick off a build on the jenkins if needed I guess?
+08/11/2025 9:11 AM
+for me it at least didn't crash on non encrypted streams but on webOS 9
+we have openssl 3 also on the system
+[ccarnell98]
+ccarnell98 08/11/2025 9:10 AM
+one sec
+[mariotaku]
+mariotaku 08/11/2025 8:50 AM
+Are there any commit log to the changes?
+[mariotaku]
+wsnipex this build crashes when trying to play widevine and has broken
+audio in non drm stuff
+mariotaku 08/11/2025 8:50 AM
++1
+Original message was deleted
+wsnipex 08/11/2025 8:42 AM
+this build crashes when trying to play widevine and has broken audio in
+non drm stuff
+August 10, 2025
+[ccarnell98]
+ccarnell98 08/10/2025 11:25 PM
+still refusing to give me L1 
+08/10/2025 11:21 PM
+which is what I was trying to override
+08/10/2025 11:21 PM
+theres a variable wv_secure which sets the resolution to max 720
+[ccarnell98]
+ccarnell98 08/10/2025 11:11 PM
+fml I missed that thanks
+[a6oo]
+a6oo 08/10/2025 11:01 PM
+Quick hack:
+script.module.slyguy\resources\modules\slyguy\settings\init.py Line 242
+if ADDON_DEV: --> if 1: and now you can set it to L1. From what I see,
+the download of manifests don't use it at all and is only used to set
+ia_addon.setSetting('NOSECUREDECODER', value) (edited)
+[ccarnell98]
+ccarnell98 08/10/2025 10:13 PM
+I want to switch to L1 as required like you have with prime
+08/10/2025 10:11 PM
+I thnk I commented out as much as I could. All I wanted was a spinning
+wheel of death... 
+08/10/2025 10:09 PM
+I gave up trying to get disney+ addon to remove its L3 restriction to
+test 
+[a6oo]
+a6oo 08/10/2025 10:05 PM
+Secure. Otherwise, Amazon don't let play streams with HDR or bigger than
+1080p. (edited)
+ message.txt
+7.56 KB External
+[ccarnell98]
+ccarnell98 08/10/2025 10:04 PM
+not secure should be working ok
+08/10/2025 10:04 PM
+with secure or not secure ? 
+[a6oo]
+a6oo 08/10/2025 10:02 PM
+@Craig I compiled your latest IA and Kodi and no more black screens,
+just the spinning wheel of death  (edited)
+[ccarnell98]
+ccarnell98 08/10/2025 8:15 PM
+08/10/2025 8:15 PM
+to answer myself no it doesn't
+            if not wv_level:
+                wv_mode = 'fallback'
+                wv_level = WV_L3
+08/10/2025 8:11 PM
+does this even work if your not using android:
+        if not wv_level or not hdcp_level:
+            if KODI_VERSION > 17:
+                try:
+                    import xbmcdrm
+                    crypto = xbmcdrm.CryptoSession(WV_UUID, 'AES/CBC/NoPadding', 'HmacSHA256')
+                    if not wv_level:
+                        wv_level = crypto.GetPropertyString('securityLevel')
+                        if wv_level:
+                            wv_level = int(wv_level.lower().lstrip('l'))
+08/10/2025 8:09 PM
+Thats with @Yolofant patch
+[ccarnell98]
+ccarnell98 08/10/2025 7:46 PM
+            if not wv_secure:
+                payload['playback']['attributes']['resolution'] = {'max': ['1280x720']}
+08/10/2025 7:44 PM
+I must admit it is quite funny to have fully fledged Dolby Atmos sound
+but then only have 720p video
+[yolofant]
+[] ccarnell98 Does this go after ``` set_target_properties(OpenSSL::SSL
+PROPERTIES ...
+yolofant 08/10/2025 7:40 PM
+you can put it there
+[a6oo]
+a6oo 08/10/2025 7:37 PM
+Black screen with Kodi compiled with your changes. Without those, it
+fails with CryptoSessions unsupported.
+[ccarnell98]
+ccarnell98 08/10/2025 7:35 PM
+I get 720p
+[ccarnell98]
+[] a6oo Black screen.
+ccarnell98 08/10/2025 7:35 PM
+I don't even get that on disney+ but I don't know if the author has put
+any limits in place
+[ccarnell98]
+[] yolofant ```cmake if("webos" IN_LIST CORE_PLATFORM_NAME_LC)
+set_target_properties(OpenSSL::SSL PROP...
+ccarnell98 08/10/2025 7:34 PM
+Does this go after
+        set_target_properties(OpenSSL::SSL PROPERTIES
+                                           INTERFACE_LINK_LIBRARIES "OpenSSL::Crypto")
+[a6oo]
+a6oo 08/10/2025 7:33 PM
+Black screen.
+ 1
+[ccarnell98]
+ccarnell98 08/10/2025 7:32 PM
+@A600 When you tried 4k content in prime, did it just downgrade to SD or
+did it complain and die
+[yolofant]
+yolofant 08/10/2025 7:32 PM
+yes
+[ccarnell98]
+ccarnell98 08/10/2025 7:30 PM
+@Yolofant Are you on webOS 24 ?
+[mariotaku]
+[] ccarnell98 copilots answer is to patch the code, which we can't do..
+easily ```What’s Happening The HTTP reques...
+mariotaku 08/10/2025 7:29 PM
+My suggestion is to apply the patch by @Yolofant. It's too late for me,
+please try and let me know tomorrow!
+ 1
+[mariotaku]
+[] yolofant ```cmake add_custom_command( OUTPUT
+${CMAKE_BINARY_DIR}/${APP_BINARY}.stripped ${CMAKE_B...
+mariotaku 08/10/2025 7:27 PM
+This is amazing
+[yolofant]
+yolofant 08/10/2025 6:51 PM
+but that is because I changed some of the toolchain file options to get
+a proper debug build
+08/10/2025 6:51 PM
+I have this as cmake options
+    -G Ninja
+    -DCMAKE_TOOLCHAIN_FILE=/tmp/xbmc/cmake-build-debug-br-nc4-docker/Toolchain.cmake
+    -DCORE_PLATFORM_NAME=wayland
+    -DAPP_RENDER_SYSTEM=gles
+    -DENABLE_DEBUGFISSION=OFF
+08/10/2025 6:50 PM
+and then I think the important thing is to use the toolchain file from
+kodi-deps
+08/10/2025 6:49 PM
+    add_custom_command(
+        OUTPUT
+        ${CMAKE_BINARY_DIR}/${APP_BINARY}.stripped
+        ${CMAKE_BINARY_DIR}/${APP_BINARY}.debug
+        ${CMAKE_BINARY_DIR}/${APP_BINARY}.debuglink
+        DEPENDS ${APP_NAME_LC}
+        COMMAND ${CMAKE_STRIP} ${CMAKE_BINARY_DIR}/${APP_BINARY} -o ${CMAKE_BINARY_DIR}/${APP_BINARY}.stripped
+        COMMAND ${CMAKE_STRIP} --only-keep-debug ${CMAKE_BINARY_DIR}/${APP_BINARY} -o ${CMAKE_BINARY_DIR}/${APP_BINARY}.debug
+        COMMAND objcopy --add-gnu-debuglink=${CMAKE_BINARY_DIR}/${APP_BINARY}.debug
+        ${CMAKE_BINARY_DIR}/${APP_BINARY}.stripped
+        ${CMAKE_BINARY_DIR}/${APP_BINARY}.debuglink
+        VERBATIM
+    )
+    add_custom_target(debug-split
+        DEPENDS
+        ${CMAKE_BINARY_DIR}/${APP_BINARY}.stripped
+        ${CMAKE_BINARY_DIR}/${APP_BINARY}.debug
+        ${CMAKE_BINARY_DIR}/${APP_BINARY}.debuglink
+    )
+I have this for gdbserver
+[mariotaku]
+mariotaku 08/10/2025 6:49 PM
+Let me start again
+08/10/2025 6:48 PM
+Hmm, looks like the key commands are the same...
+[yolofant]
+yolofant 08/10/2025 6:48 PM
+it was before the ci releases were merged
+08/10/2025 6:48 PM
+it targetting the toolchain from my repo but you could change that
+08/10/2025 6:48 PM
+    FROM ubuntu:24.04
+    ENV TZ=Europe/Berlin
+    RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+    RUN apt update && apt install -y git build-essential binutils file wget cpio unzip rsync bc tzdata ccache
+    WORKDIR /build
+    RUN wget https://github.com/sundermann/buildroot-nc4/releases/download/2025.02-03/linux-arm-webos-sdk.tar.gz
+    RUN tar xzvf linux-arm-webos-sdk.tar.gz
+    RUN wget https://github.com/sundermann/buildroot-nc4/releases/download/2025.02-03/linux-arm-lgtv-sdk.tar.gz
+    RUN tar xzvf linux-arm-lgtv-sdk.tar.gz
+    RUN git clone --depth 1 https://github.com/xbmc/xbmc kodi
+    RUN mkdir kodi-deps
+    WORKDIR /build/kodi/tools/depends
+    RUN apt update && apt install -y curl libcurl4-openssl-dev gawk zlib1g-dev bison flex openjdk-17-jdk
+    RUN ./bootstrap
+    RUN ./configure --prefix=/build/kodi-deps --host=arm-webos-linux-gnueabi --enable-debug=no \
+        --with-toolchain=/build/arm-webos-linux-gnueabi_sdk-buildroot
+    RUN make -j$(getconf _NPROCESSORS_ONLN)
+    RUN apt update && apt install -y pkg-config pkg-config libssl-dev libglib2.0-dev
+    WORKDIR /build
+    RUN git clone --depth=1 https://github.com/webosbrew/ares-cli-rs
+    RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile minimal -y
+    ENV PATH=/root/.cargo/bin:$PATH
+    WORKDIR /build/ares-cli-rs
+    RUN cargo install cargo-deb
+    RUN cargo deb -p ares-package
+    RUN dpkg -i /build/ares-cli-rs/target/debian/ares-package_0.1.4-1_arm64.deb
+    RUN ln -s /build/kodi-deps/aarch64-linux-gnu-native/bin/ninja /usr/bin/ninja
+    WORKDIR /build/kodi
+    RUN make -C tools/depends/target/cmakebuildsys
+    WORKDIR /build/kodi/build
+    RUN git pull
+    RUN git pull
+    RUN git pull
+    RUN git pull
+    RUN make -j$(getconf _NPROCESSORS_ONLN)
+    RUN echo "set auto-load local-gdbinit" >> /root/.gdbinit
+    RUN echo "add-auto-load-safe-path /" >> /root/.gdbinit
+    ENV PATH="/build/kodi-deps/aarch64-linux-gnu-native/bin:$PATH"
+    RUN apt install -y mold
+08/10/2025 6:47 PM
+for me it works nicely now 
+08/10/2025 6:47 PM
+[mariotaku]
+mariotaku 08/10/2025 6:46 PM
+Everytime I reopen CLion, it refreshes the project and ruining
+everything
+08/10/2025 6:46 PM
+That's nice
+[yolofant]
+yolofant 08/10/2025 6:46 PM
+and then use that from CLion
+08/10/2025 6:45 PM
+or rather I have a container that has the dependencies and toolchain
+08/10/2025 6:45 PM
+(no content)
+ kodi-webos.stripped
+108.12 MB External
+08/10/2025 6:45 PM
+I do build using a dockerfile
+08/10/2025 6:45 PM
+the 2025-02 based one
+[mariotaku]
+mariotaku 08/10/2025 6:44 PM
+Which version of br-nc4 do you have?
+08/10/2025 6:44 PM
+Maybe I need to figure out how to get a reproducible build
+[yolofant]
+yolofant 08/10/2025 6:44 PM
+I can give you the stripped kodi-webos
+08/10/2025 6:44 PM
+and that makes the ipk extremely large
+08/10/2025 6:43 PM
+my current setup is with debug symbols
+[mariotaku]
+mariotaku 08/10/2025 6:43 PM
+Yeah
+[yolofant]
+yolofant 08/10/2025 6:43 PM
+you mean the ipk?
+[mariotaku]
+[] yolofant ```cmake if("webos" IN_LIST CORE_PLATFORM_NAME_LC)
+set_target_properties(OpenSSL::SSL PROP...
+mariotaku 08/10/2025 6:43 PM
+Can you share the snapshot? I failed to build kodi (again)
+[yolofant]
+yolofant 08/10/2025 6:40 PM
+at least non encrypted IA still works with that change
+08/10/2025 6:39 PM
+        if("webos" IN_LIST CORE_PLATFORM_NAME_LC)
+          set_target_properties(OpenSSL::SSL PROPERTIES
+                                             INTERFACE_LINK_OPTIONS "-Wl,--exclude-libs, DCPH0 lt;TARGET_FILE_NAME:OpenSSL::SSL>")
+        endif()
+[ccarnell98]
+ccarnell98 08/10/2025 6:37 PM
+copilots answer is to patch the code, which we can't do.. easily
+    What’s Happening
+    The HTTP request is sent successfully and the server replies in fragments:
+    Several read: calls with positive byte counts (1024, 355, 669, etc.)
+    A read: 0 indicating end­-of­-stream
+    The socket_http.cpp logic logs read is zero : 0 but does not break out of the loop on EOF
+    It continues calling read(), which now returns –1 with errno == 0, and increments an error counter until it gives up
+[yolofant]
+yolofant 08/10/2025 6:30 PM
+probaby
+INTERFACE_LINK_OPTIONS "-Wl,--exclude-libs, DCPH0 lt;TARGET_FILE_NAME:OpenSSL::SSL>"
+is better
+08/10/2025 6:26 PM
+but I haven't runtime tested it
+08/10/2025 6:26 PM
+INTERFACE_LINK_OPTIONS "-Wl,--exclude-libs,ALL" in FindOpenSSL.cmake
+removes the symbols
+[mariotaku]
+mariotaku 08/10/2025 6:23 PM
+Compiling!
+[mariotaku]
+mariotaku 08/10/2025 6:16 PM
+There is not supposed to have any further read once it has 0 returned
+but they did anyway
+08/10/2025 6:16 PM
+I think it's just an unfortunate combination with a slightest behavior
+change & crappy cdm implementation
+08/10/2025 6:14 PM
+Aha
+[image.png]
+ image.png
+59.3 KB External
+[yolofant]
+yolofant 08/10/2025 6:14 PM
+https://github.com/openssl/openssl/issues/17728
+OpenSSL 3.0 and OpenSSL 1.x coexistence compatility · Issue #1772...
+Hello, We have recently consumed OpenSSL 3.0.1 in our product. However,
+we have few Open Source modules that are still compiled with OpenSSL
+1.1.x and we can&#39;t upgrade them to use OpenSSL 3.0.x...
+[]
+08/10/2025 6:13 PM
+openssl says it should be ABI compatible with openssl 1 in most cases
+08/10/2025 6:13 PM
+even though it's weird
+08/10/2025 6:12 PM
+because we link statically
+08/10/2025 6:12 PM
+but it might be enough to set it in kodi only
+08/10/2025 6:11 PM
+https://github.com/xbmc/xbmc/blob/cdac0d33ffe59a215929cf3a07d2387bcf162766/tools/depends/configure.ac#L376
+08/10/2025 6:11 PM
+they should then be used for the whole depends package and kodi itself
+08/10/2025 6:10 PM
+I think we can put LDFLAGS into configure.ac
+[mariotaku]
+[] yolofant I guess in that case all the internal calls would still use
+openssl 3
+mariotaku 08/10/2025 6:10 PM
+Yep
+[yolofant]
+yolofant 08/10/2025 6:09 PM
+did you check using LD_DEBUG what symbol is actually resolved?
+08/10/2025 6:08 PM
+in practice kodi uses openssl through libcurl
+08/10/2025 6:08 PM
+I guess in that case all the internal calls would still use openssl 3
+08/10/2025 6:07 PM
+hmm, maybe?
+[mariotaku]
+mariotaku 08/10/2025 6:01 PM
+What if, I hide the symbols? --exclude-libs
+[yolofant]
+yolofant 08/10/2025 6:00 PM
+not sure if we can do anything about that
+[mariotaku]
+mariotaku 08/10/2025 6:00 PM
+I guess so
+[yolofant]
+yolofant 08/10/2025 5:59 PM
+oh so that is for the binary blob download?
+[mariotaku]
+mariotaku 08/10/2025 5:56 PM
+Basically, the wvcdm does this to fetch certificate:
+    var response;
+    while(true) {
+      var buf;
+      var read_len = Read(buf);
+      if (read_len < 1) break;
+      response.append(buf[0:read_len]);
+    }
+    if (read_len != 0) {
+      bail();
+    }
+While in Read, it calls SSL_read until it returns <=0. For chrome, it
+returns 0 no matter how many times called after the connection reaches
+end-of-stream. But in Kodi, SSL_read returns 0 once then -1 for more
+calls after reaching end of stream.
+[mariotaku]
+mariotaku 08/10/2025 5:45 PM
+It uses openssl to handcraft an HTTPS client
+[yolofant]
+yolofant 08/10/2025 5:44 PM
+and after copying the license it worked so it might not be openssl
+[mariotaku]
+mariotaku 08/10/2025 5:44 PM
+It simply links to the system one
+[yolofant]
+yolofant 08/10/2025 5:43 PM
+but on webOS 5 there is also openssl 1 I think
+[mariotaku]
+mariotaku 08/10/2025 5:43 PM
+Too much work
+08/10/2025 5:43 PM
+I don't think it's a good idea to have an OSSL3-free version then
+[yolofant]
+yolofant 08/10/2025 5:41 PM
+at least
+08/10/2025 5:41 PM
+libcurl python3 and mariadb-connector use it
+08/10/2025 5:41 PM
+maybe?
+08/10/2025 5:41 PM
+umm
+[mariotaku]
+mariotaku 08/10/2025 5:40 PM
+Maybe it's caused by incompatible OSSL versions. Can Kodi be built
+without OpenSSL?
+[yolofant]
+yolofant 08/10/2025 5:39 PM
+yes we link statically
+[mariotaku]
+mariotaku 08/10/2025 5:39 PM
+Kodi statially links to openssl3 right? While wvdrm on my TV dynamically
+links to openssl 1.0.2q. Maybe in such case, Linux loads the symbols in
+the binary first
+08/10/2025 5:36 PM
+openssl!
+08/10/2025 5:35 PM
+Oh shit, I have a guess
+[mariotaku]
+[] ccarnell98 Could you post the widevine log as well
+mariotaku 08/10/2025 5:35 PM
+My observation is, on Chrome, read function properly reaches end of
+stream, while on Kodi, it fails.
+[mariotaku]
+mariotaku 08/10/2025 5:26 PM
+The preload lib can be compiled from the source I provided above
+08/10/2025 5:26 PM
+You can run system browser to see how they work actually
+LD_PRELOAD=/tmp/preload.so WV_LOG_TO_STDOUT=1 WIDEVINE_DRM_LOG_LEVEL=0 WIDEVINE_DRM_LOG_ENABLE_ALL_FEATURE=1 jailer -t native_builtin -i com.webos.app.browser -p /media/system/apps/usr/palm/applications/com.webos.app.browser chrome
+(edited)
+08/10/2025 5:25 PM
+Basically, for wvcdm::ReqCert::GetResponse(std::string&), it fails in
+Kodi
+08/10/2025 5:24 PM
+1. Playing List DRM Widevine streams / Axiom 1080p [CBCS] 2. See error
+above
+ wv_log.txt
+40.24 KB External
+ kodi_log.txt
+4.56 KB External
+[ccarnell98]
+ccarnell98 08/10/2025 5:06 PM
+And kodi.log
+08/10/2025 5:05 PM
+Could you post the widevine log as well
+[mariotaku]
+[] ccarnell98 Click to see attachment
+mariotaku 08/10/2025 4:59 PM
+I got "Cannot initialize Widevine CDM library"
+[mariotaku]
+mariotaku 08/10/2025 4:50 PM
+    #include <stdarg.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <unistd.h>
+    static FILE* f = NULL;
+    extern const char *__progname;
+    static void ensureOutput() {
+      if (f != NULL) {
+        return;
+      }
+      if (getenv("WV_LOG_TO_STDOUT") != NULL) {
+        f = stderr;
+        return;
+      }
+      char path[255];
+      snprintf(path, sizeof(path), "/tmp/wv_%s_%u.log", __progname, getpid());
+      f = fopen(path, "w");
+    }
+    /* wvcdm::Log(char const*, char const*, int, wvcdm::LogPriority, char const*, ...) */
+    void _ZN5wvcdm3LogEPKcS1_iNS_11LogPriorityES1_z(char const* file, char const* func, int line, int priority, char* fmt, ...) {
+      ensureOutput();
+      fprintf(f, "wvcdm::Log[%s:%d][%s]", file, line, func);
+      va_list args;
+      va_start(args, fmt);
+      vfprintf(f, fmt, args);
+      va_end(args);
+      fputs("\n", f);
+    }
+    /* WvLog::print(char const*, ...) */
+    void _ZN5WvLog5printEPKcz(void* self, char const* fmt, ...) {
+      ensureOutput();
+      fprintf(f, "WvLog::print");
+      va_list args;
+      va_start(args, fmt);
+      vfprintf(f, fmt, args);
+      va_end(args);
+      fputs("\n", f);
+    }
+If you compile this as library & LD_PRELOAD it, you will get more logs
+08/10/2025 4:49 PM
+This is what chrome logs:
+ message.txt
+59.45 KB External
+[ccarnell98]
+ccarnell98 08/10/2025 4:46 PM
+doesn't fix the /dev/tee0 issue you will need
+roooooooooooooooooooooooooooot
+08/10/2025 4:43 PM
+please test fix 
+08/10/2025 4:43 PM
+(no content)
+ inputstream.adaptive241.zip
+1.92 MB External
+[ccarnell98]
+ccarnell98 08/10/2025 4:19 PM
+not giving enough time for the cert to download
+08/10/2025 4:19 PM
+          cdm10_->Initialize(cdm_config_.allow_distinctive_identifier,
+                             cdm_config_.allow_persistent_state, false);
+I think this returns immediately
+08/10/2025 4:18 PM
+in the android version, if it's not provisioned (I assume cert.bin) it
+retries
+08/10/2025 4:18 PM
+I think this is a IA issue
+[ccarnell98]
+ccarnell98 08/10/2025 3:38 PM
+although when I asked copilot to compare the files, it lied to me saying
+there was lots of difference to do with tee 
+[yolofant]
+yolofant 08/10/2025 3:37 PM
+well if you already have it, then you have it
+[ccarnell98]
+ccarnell98 08/10/2025 3:35 PM
+unless I'm doing something wrong
+08/10/2025 3:35 PM
+hmm I downloaded
+https://developer.lge.com/common/file/DownloadFile.dev?sdkVersion=9.2.4&&fileType=conf
+and its the same file as what I've already got (edited)
+[yolofant]
+yolofant 08/10/2025 3:34 PM
+it's not mounted in the downloaded jail config
+[mariotaku]
+mariotaku 08/10/2025 3:27 PM
+Not sure why it didn't fix tee for me
+[yolofant]
+yolofant 08/10/2025 3:22 PM
+but for sure it doesn't have /dev/tee0 for rtk
+08/10/2025 3:20 PM
+but maybe that fixes the widevine too
+08/10/2025 3:20 PM
+usb is one of them
+08/10/2025 3:20 PM
+I think they mount some additional stuff
+[ccarnell98]
+ccarnell98 08/10/2025 3:19 PM
+I mean, downloading a certificate that is
+[yolofant]
+yolofant 08/10/2025 3:19 PM
+https://github.com/mariotaku/kodi.addon.webos-jailer-fix/releases/download/v1.0.0/kodi.addon.webos-jailer-fix.zip
+[ccarnell98]
+ccarnell98 08/10/2025 3:19 PM
+I haven't because it works for me
+[yolofant]
+yolofant 08/10/2025 3:19 PM
+yes
+[ccarnell98]
+ccarnell98 08/10/2025 3:19 PM
+the fix that @Mariotaku did for external storage?
+[yolofant]
+yolofant 08/10/2025 3:19 PM
+not sure if you tried that already
+08/10/2025 3:18 PM
+or maybe it works with the jailer fix jail config?
+08/10/2025 3:18 PM
+only way is to get into app store I think without root
+[ccarnell98]
+ccarnell98 08/10/2025 3:18 PM
+didn't think so
+[yolofant]
+yolofant 08/10/2025 3:17 PM
+no
+[ccarnell98]
+ccarnell98 08/10/2025 3:17 PM
+is that something we can change without root
+[yolofant]
+yolofant 08/10/2025 3:14 PM
+maybe we can make a better jail config for rooted tvs
+08/10/2025 3:13 PM
+and in this regard the devmode jailer config is missing support for
+widevine
+[anthock]
+[] ccarnell98 we just need <@427525554628067328> to confirm if webOS 4
+works with same hack
+anthock 08/10/2025 3:13 PM
+Tomorrow I will try 
+[yolofant]
+yolofant 08/10/2025 3:12 PM
+it's just that for some reason LG ships different jailer configs for
+different use casesa
+08/10/2025 3:12 PM
+no it's the jailer config
+[ccarnell98]
+ccarnell98 08/10/2025 3:06 PM
+we just need @Anthock to confirm if webOS 4 works with same hack
+08/10/2025 3:02 PM
+well at least I found out why mine is crashing
+wsnipex 08/10/2025 3:01 PM
+anyway, still worth a try to just copy the cert.bin to that dir
+[ccarnell98]
+ccarnell98 08/10/2025 3:00 PM
+bugger
+wsnipex 08/10/2025 3:00 PM
+don't think so, since it does download for other apps
+[ccarnell98]
+ccarnell98 08/10/2025 3:00 PM
+as its not "our" code
+08/10/2025 2:59 PM
+But, seems like a LG bug not to download the certificate properly
+wsnipex 08/10/2025 2:59 PM
+[ccarnell98]
+ccarnell98 08/10/2025 2:56 PM
+Solution to everyone: buy a G4. It's awesome 
+wsnipex 08/10/2025 2:47 PM
+    $ openssl x509 -text -in cert.bin -inform der
+    Could not read certificate from cert.bin
+    4037838DE3730000:error:1E08010C:DECODER routines:OSSL_DECODER_from_bio:unsupported:../crypto/encode_decode/decoder_lib.c:101:No supported data to decode.  Input type: DER, Input structure: Certificate
+    4037838DE3730000:error:1608010C:STORE routines:ossl_store_handle_load_result:unsupported:../crypto/store/store_result.c:151:
+    4037838DE3730000:error:1608010C:STORE routines:ossl_store_handle_load_result:unsupported:../crypto/store/store_result.c:151:
+    4037838DE3730000:error:1E08010C:DECODER routines:OSSL_DECODER_from_bio:unsupported:../crypto/encode_decode/decoder_lib.c:101:No supported data to decode.  Input type: DER, Input structure: Certificate
+    4037838DE3730000:error:1608010C:STORE routines:ossl_store_handle_load_result:unsupported:../crypto/store/store_result.c:151:
+    4037838DE3730000:error:1E08010C:DECODER routines:OSSL_DECODER_from_bio:unsupported:../crypto/encode_decode/decoder_lib.c:101:No supported data to decode.  Input type: DER, Input structure: Certificate
+    4037838DE3730000:error:1608010C:STORE routines:ossl_store_handle_load_result:unsupported:../crypto/store/store_result.c:151:
+    4037838DE3730000:error:1E08010C:DECODER routines:OSSL_DECODER_from_bio:unsupported:../crypto/encode_decode/decoder_lib.c:101:No supported data to decode.  Input type: DER, Input structure: Certificate
+    Unable to load certificate
+08/10/2025 2:47 PM
+interestingly, that cert.bin is not a valid der x509 cert
+[ccarnell98]
+ccarnell98 08/10/2025 2:45 PM
+my promise code was working fine before. now it just crashes the tv
+08/10/2025 2:45 PM
+08/10/2025 2:45 PM
+my TV crashed
+08/10/2025 2:44 PM
+its lost on reboot
+08/10/2025 2:44 PM
+different
+08/10/2025 2:44 PM
+no you used '
+wsnipex 08/10/2025 2:44 PM
+isn't that what I did??
+[ccarnell98]
+ccarnell98 08/10/2025 2:44 PM
+how long is valid for? openssl x509 -in cert.bin -inform DER -noout
+-text
+08/10/2025 2:44 PM
+three `
+wsnipex 08/10/2025 2:43 PM
+meh, how do you format this properly here?
+08/10/2025 2:42 PM
+''' root@LGwebOSTV:/tmp# ll -d org.xbmc.kodi_ce_cdm drwxr-xr-x 2 5821
+5000 60 Aug 10 14:35 org.xbmc.kodi_ce_cdm root@LGwebOSTV:/tmp# ll
+org.xbmc.kodi_ce_cdm total 4 -rw-r--r-- 1 5821 root 2810 Aug 10 14:35
+cert.bin ''' (edited)
+08/10/2025 2:41 PM
+I won't unroot the tv, but running kodi normally works
+08/10/2025 2:39 PM
+I did
+[ccarnell98]
+ccarnell98 08/10/2025 2:39 PM
+try it without root and we will see 
+wsnipex 08/10/2025 2:36 PM
+no root needed
+08/10/2025 2:35 PM
+so in theory a workaround would be to copy a cert.bin there
+08/10/2025 2:35 PM
+nope, scatch that. /tmp/org.xbmc.kodi_ce_cdm is created as the kodi
+runtime user
+08/10/2025 2:31 PM
+ah well, that /tmp/ dir is root only 
+08/10/2025 2:31 PM
+you don't need root
+08/10/2025 2:30 PM
+yes
+[ccarnell98]
+ccarnell98 08/10/2025 2:29 PM
+720p?
+08/10/2025 2:29 PM
+whats your maximum resolution?
+wsnipex 08/10/2025 2:29 PM
+D+ works as well
+[ccarnell98]
+ccarnell98 08/10/2025 2:28 PM
+well, plus that you need root
+08/10/2025 2:28 PM
+woot 
+wsnipex 08/10/2025 2:27 PM
+@Craig :
+ message.txt
+4.97 KB External
+08/10/2025 2:24 PM
+so the problem is really just that cert download
+08/10/2025 2:24 PM
+orfon gave me a cert, copied that to org.xbmc.kodi and BAM, works
+08/10/2025 2:23 PM
+lol, found one by trying some of the native apps
+08/10/2025 2:17 PM
+nope, no cert.bin at all in /tmp
+[ccarnell98]
+ccarnell98 08/10/2025 2:15 PM
+If you have one at /tmp/com.webos.app.browser_ce_cdm/cert.bin already
+might be worth trying a symlink
+wsnipex 08/10/2025 2:15 PM
+no, that dir is empty
+[ccarnell98]
+ccarnell98 08/10/2025 2:03 PM
+Also, does it save anything here:
+    /tmp $ ls -la /tmp/org.xbmc.kodi_ce_cdm/cert.bin
+    -rw-r--r--    1 root     root          2804 Aug 10 12:22 /tmp/org.xbmc.kodi_ce_cdm/cert.bin
+08/10/2025 2:01 PM
+@wsnipex is there a version you can update to that isn't root blocked?
+[mariotaku]
+[] ccarnell98 I wonder why its not downloading:
+```kodi-webos[]widevine-modular{} [cdm_wrapper/src/socket_http.cpp...
+mariotaku 08/10/2025 2:00 PM
+I'm hooking the log for more, will let you know soon
+wsnipex 08/10/2025 2:00 PM
+given that it seems all know root exploits are fixed, I'm reluctant
+08/10/2025 1:59 PM
+still wondering if I should update to latest firmware though
+08/10/2025 1:58 PM
+also if it was my adblocker, then it shouldn't work for other apps, I'd
+assume
+08/10/2025 1:58 PM
+I've checked adguard logs in the past and didn't see related blocks
+[ccarnell98]
+ccarnell98 08/10/2025 1:57 PM
+Your at least at same point as @Mariotaku now
+08/10/2025 1:56 PM
+I wonder why its not downloading:
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/socket_http.cpp][332]total_read: 233 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/socket_http.cpp][321]read: 0 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/socket_http.cpp][334]read is zero : 0 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/socket_http.cpp][321]read: -1 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/socket_http.cpp][338]recieved data : -1 , errno: 0 , error_count: 1
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/socket_http.cpp][321]read: -1 
+08/10/2025 1:56 PM
+glad to see pmloglib hack worked 
+wsnipex 08/10/2025 1:55 PM
+(no content)
+ message.txt
+10.75 KB External
+[ccarnell98]
+ccarnell98 08/10/2025 1:55 PM
+should work, just compiled it
+08/10/2025 1:54 PM
+(no content)
+ strace
+858.06 KB External
+ 1
+wsnipex 08/10/2025 1:52 PM
+that devmode dir exists, but is empty
+08/10/2025 1:52 PM
+not mine
+[ccarnell98]
+ccarnell98 08/10/2025 1:50 PM
+mine has it already:
+    ~ $ whereis strace
+    strace: /media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/devmode/usr/bin/strace
+wsnipex 08/10/2025 1:46 PM
+running as root still fails the same way
+wsnipex 08/10/2025 1:39 PM
+where would I find a strace binary?
+[ccarnell98]
+[] yolofant ```bash WIDEVINE_DRM_LOG_LEVEL=0
+WIDEVINE_DRM_LOG_ENABLE_ALL_FEATURE=1 jailer -t native_devmode -i o...
+ccarnell98 08/10/2025 11:24 AM
+@wsnipex but also try this if you have root
+[yolofant]
+yolofant 08/10/2025 11:24 AM
+no
+[ccarnell98]
+[] yolofant on webOS 9 the cdm is opened by different process providing
+a luna service and that probably has the...
+ccarnell98 08/10/2025 11:23 AM
+Is there anyway we can do that in IA?
+[ccarnell98]
+ccarnell98 08/10/2025 11:22 AM
+    export HOME='/media/developer/apps/usr/palm/applications/org.xbmc.kodi'
+    export LD_LIBRARY_PATH='/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib:/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib:/usr/lib:/media/developer/lib'
+    export APPID='org.xbmc.kodi'
+08/10/2025 11:19 AM
+WIDEVINE_DRM_LOG_LEVEL=0 WIDEVINE_DRM_LOG_ENABLE_ALL_FEATURE=1
+./kodi-webos --debug
+08/10/2025 11:18 AM
+This one has pmloglib redirected to stdout so we can see some logs 
+[ccarnell98]
+ccarnell98 08/10/2025 11:08 AM
+I had wondered that
+[yolofant]
+yolofant 08/10/2025 11:08 AM
+    WIDEVINE_DRM_LOG_LEVEL=0 WIDEVINE_DRM_LOG_ENABLE_ALL_FEATURE=1 jailer -t native_devmode -i org.xbmc.kodi -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi /media/developer/bin/strace -f -e '%file' ./kodi-webos
+08/10/2025 11:07 AM
+on webOS 9 the cdm is opened by different process providing a luna
+service and that probably has the correct permissions
+08/10/2025 11:07 AM
+but yeah there might be something similar
+08/10/2025 11:07 AM
+/dev/tee0 I don't think this one is on LX SoCs
+[ccarnell98]
+ccarnell98 08/10/2025 10:59 AM
+If your rooted might be worth trying to run kodi as root just in case it
+is the /dev/tee0 permission issue
+08/10/2025 10:57 AM
+It has the same error
+    CDM reject: 2 sys=0
+as @Mariotaku so maybe its failing OemCrypto somewhere else
+08/10/2025 10:57 AM
+But saying that
+08/10/2025 10:57 AM
+might be worth trying with
+    export WIDEVINE_DRM_LOG_LEVEL=0
+    export WIDEVINE_DRM_LOG_ENABLE_ALL_FEATURE=1
+wsnipex 08/10/2025 10:49 AM
+5821 5018 1744 81 10:46 ? 00:02:12
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+{"event":"launch","reason":"launcher","appId":"org.xbmc.kodi","interfaceVersion":2,"parameters":{},"interfaceMethod":"registerApp","@system_native_app":true}
+08/10/2025 10:48 AM
+(no content)
+ kodi.log
+259.74 KB External
+[ccarnell98]
+ccarnell98 08/10/2025 10:42 AM
+with this
+ inputstream.adaptive223.zip
+1.92 MB External
+08/10/2025 10:42 AM
+try this IPK with privilegedJail set to true
+08/10/2025 10:40 AM
+ugh how can I simply share IPK with priviledgeJail as its 92mb
+[mariotaku]
+mariotaku 08/10/2025 10:29 AM
+It's probably in kadaptor
+[mariotaku]
+[] ccarnell98 <@225167450713358338> <@195583665265311744> So the
+libwvcdm_shared in webOS 5 provided by <@98503547...
+mariotaku 08/10/2025 10:29 AM
+The oemcrypto stuff is vendor-specific IMO
+[ccarnell98]
+ccarnell98 08/10/2025 10:28 AM
+@Mariotaku @Yolofant So the libwvcdm_shared in webOS 5 provided by
+@wsnipex doesn't seem (at first glance) to have the same OemCrypto_Init
+usage
+[mariotaku]
+mariotaku 08/10/2025 1:42 AM
+I can't test today but will check later
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Did you get a chance to try again, I
+wanted to see if the license would downlo...
+mariotaku 08/10/2025 1:42 AM
+It downloads but somehow doesn't properly fetch
+August 9, 2025
+[ccarnell98]
+ccarnell98 08/09/2025 8:56 PM
+apparently thats not a feature of widevine anyway
+08/09/2025 8:56 PM
+I had a look through decompiled code couldn't see a way to request L3
+[yolofant]
+yolofant 08/09/2025 7:51 PM
+no
+[ccarnell98]
+ccarnell98 08/09/2025 7:21 PM
+do they not accept native apps?
+[yolofant]
+yolofant 08/09/2025 6:57 PM
+you have to make a presentation where you tell them use cases and how to
+test them
+08/09/2025 6:57 PM
+but it requires making them testing documentation too
+08/09/2025 6:57 PM
+I can actually submit the application by hacking their client sided
+checks to pretend that kodi is a web app
+[yolofant]
+[] ccarnell98 Did they ever get back to us on that
+yolofant 08/09/2025 6:56 PM
+no
+[ccarnell98]
+ccarnell98 08/09/2025 6:30 PM
+@Mariotaku Did you get a chance to try again, I wanted to see if the
+license would download
+[ccarnell98]
+[] yolofant maybe we need `"privilegedJail": true`?
+ccarnell98 08/09/2025 6:29 PM
+What's the catch? Does it work? 
+[ccarnell98]
+[] yolofant I guess if kodi was on the app store it would have the
+correct jail
+ccarnell98 08/09/2025 6:11 PM
+Did they ever get back to us on that
+[yolofant]
+yolofant 08/09/2025 5:57 PM
+maybe we need "privilegedJail": true?
+[mariotaku]
+[] yolofant I guess if kodi was on the app store it would have the
+correct jail
+mariotaku 08/09/2025 5:50 PM
+Yes it would, Netflix has access
+[yolofant]
+yolofant 08/09/2025 5:36 PM
+I guess if kodi was on the app store it would have the correct jail
+ 1
+08/09/2025 5:36 PM
+but yeah it is missing in the jail_app.conf
+08/09/2025 5:31 PM
+        copynod /dev/teepriv0
+        chown /dev/teepriv0 0 5000
+        chmod 660 /dev/teepriv0
+08/09/2025 5:30 PM
+in my /etc/jail_native_devmode.conf it mounts /dev/tee0 for rtk
+[yolofant]
+[] mariotaku This is how I discovered the `/dev/tee0` issue:
+`WIDEVINE_DRM_LOG_LEVEL=0 WIDEVINE_DRM_LOG_ENABLE_A...
+yolofant 08/09/2025 5:28 PM
+but is /dev/tee0 only for rtk?
+[ccarnell98]
+[] yolofant there is priviledged jail
+ccarnell98 08/09/2025 4:54 PM
+How
+[ccarnell98]
+ccarnell98 08/09/2025 4:54 PM
+Nice
+[mariotaku]
+mariotaku 08/09/2025 4:47 PM
+With the WIDEVINE_DRM_LOG_LEVEL=0 WIDEVINE_DRM_LOG_ENABLE_ALL_FEATURE=1
+you can get more logs from stdout
+08/09/2025 4:46 PM
+This is how I discovered the /dev/tee0 issue:
+WIDEVINE_DRM_LOG_LEVEL=0 WIDEVINE_DRM_LOG_ENABLE_ALL_FEATURE=1 jailer -t native_devmode -i org.xbmc.kodi -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi /media/developer/bin/strace -f -e '%file' ./kodi-webos
+(edited)
+[yolofant]
+yolofant 08/09/2025 3:49 PM
+there is priviledged jail
+[ccarnell98]
+ccarnell98 08/09/2025 3:21 PM
+but it does seem that if we need L1 to start playback, its not gonna
+work unless your rooted? as we don't have access (edited)
+08/09/2025 3:21 PM
+could you try playback again just in case it was a network/provisioning
+issue at the time?
+08/09/2025 3:19 PM
+it seems that it forces L1 hence the need for /dev/tee
+08/09/2025 3:19 PM
+I think from what I've read, cert.bin is only needed in L1
+08/09/2025 3:18 PM
+although its not mentioned in any logs on mine, mine is successful:
+/tmp/org.xbmc.kodi_ce_cdm/cert.bin
+08/09/2025 3:18 PM
+hmm so its starts provisioning a device certificate, starts downloading
+then errors out
+[mariotaku]
+[] yolofant hmm, is that another jail config issue or a general issue?
+mariotaku 08/09/2025 3:01 PM
+I'll need to check more
+[yolofant]
+yolofant 08/09/2025 2:52 PM
+hmm, is that another jail config issue or a general issue?
+[mariotaku]
+mariotaku 08/09/2025 2:47 PM
+pmlog after having access to tee0
+ message.txt
+13.83 KB External
+08/09/2025 2:44 PM
+When I created the device and give it 0660 perm + group 5000, it
+initializes
+[mariotaku]
+[] ccarnell98 Thanks, what sticks out is: ```[14:40:55.186][DEBUG]
+widevine-modular DBGMSG [core/src/crypto_sessio...
+mariotaku 08/09/2025 2:43 PM
+Because it can't open /dev/tee0, which doesn't exist in devmode jailer
+ 1
+[yolofant]
+yolofant 08/09/2025 2:38 PM
+you could check what the OEM crypto call is doing
+[ccarnell98]
+ccarnell98 08/09/2025 2:12 PM
+in what way? I'm not sure what the fix is atm, as we appear to call
+widevine in the same way with same parameters as far as I can tell
+[yolofant]
+yolofant 08/09/2025 1:48 PM
+maybe jailer config?
+[ccarnell98]
+ccarnell98 08/09/2025 1:40 PM
+widevine-wrapper does this:
+    kodi-webos[]WIDEVINE-WRAPPER{} [createCdm:233] Request : {"isProvisioning":true,"pid":3855,"privacyMode":false,"localStoragePath":"/tmp/org.xbmc.kodi_ce_cdm/"}, Reply : {"returnValue":true,"status":0,"cdmId":"xxx"}, syncCall : true
+(edited)
+[ccarnell98]
+ccarnell98 08/09/2025 12:55 PM
+I don't see how at the moment, if at all, how widevine (in chromium)
+uses this (edited)
+[ccarnell98]
+ccarnell98 08/09/2025 12:30 PM
+or are they added on the fly
+08/09/2025 12:30 PM
+Do these exist permanently?
+    /tmp/com.webos.app.browser_ce_cdm/cert.bin
+08/09/2025 12:26 PM
+and Chrome is doing this:
+    2025-08-09T06:12:25.534148Z [61823.340306079] user.debug chrome [] widevine-modular DBGMSG {} [cdm_wrapper/src/ihistorage.cpp][87]check exists /tmp/usgtable.bin 
+    2025-08-09T06:12:25.554614Z [61823.360771745] user.debug chrome [] widevine-modular DBGMSG {} [cdm_wrapper/src/ihistorage.cpp][87]check exists /tmp/com.webos.app.browser_ce_cdm/cert.bin
+08/09/2025 12:23 PM
+Thanks, what sticks out is:
+    [14:40:55.186][DEBUG] widevine-modular DBGMSG [core/src/crypto_session.cpp][291]OEMCrypto_Initialize failed: status = 1 {}
+(edited)
+[mariotaku]
+mariotaku 08/09/2025 8:13 AM
+one when you play from system browser
+ wv_ok.log
+911.04 KB External
+[mariotaku]
+mariotaku 08/09/2025 7:41 AM
+(no content)
+ message.txt
+4.16 KB External
+08/09/2025 7:41 AM
+FYI this is what widevine-modular of PmLog outputs:
+[mariotaku]
+[] ccarnell98 Click to see attachment
+mariotaku 08/09/2025 7:39 AM
+(no content)
+ message.txt
+22.23 KB External
+August 8, 2025
+[ccarnell98]
+ccarnell98 08/08/2025 8:34 PM
+@Mariotaku or @Anthock please test
+08/08/2025 8:32 PM
+no more BS wait loop from the todo that was left, implements a promise
+callback when session is assigned
+08/08/2025 8:32 PM
+(no content)
+ inputstream.adaptive223.zip
+1.92 MB External
+[ccarnell98]
+ccarnell98 08/08/2025 4:14 PM
+i'll have to get someone to test
+08/08/2025 4:12 PM
+maybe
+08/08/2025 4:11 PM
+if it fails just try without the _10
+08/08/2025 4:11 PM
+      init_cdm_func = reinterpret_cast<InitializeCdmModuleFunc>(
+          base::GetFunctionPointerFromNativeLibrary(library_, MAKE_STRING(INITIALIZE_CDM_MODULE)));
+08/08/2025 4:11 PM
+I just thought about a cheeky fix tbh
+[yolofant]
+yolofant 08/08/2025 4:06 PM
+but for every other version it works so you can still check for version
+< 5 given you initialize the version to 4
+08/08/2025 4:06 PM
+it's failing the version for webOS 4
+08/08/2025 4:06 PM
+so far it's been ok
+[mariotaku]
+mariotaku 08/08/2025 4:06 PM
+I think it can be used to determine webOS version
+08/08/2025 4:05 PM
+Although starfish-release gives you the precise webOS release
+[yolofant]
+yolofant 08/08/2025 4:05 PM
+because kodi parses the content from os-release
+[mariotaku]
+mariotaku 08/08/2025 4:05 PM
+Yeah, it's totally different
+[yolofant]
+yolofant 08/08/2025 4:05 PM
+but unfortunately the format is different
+08/08/2025 4:05 PM
+hmm
+[mariotaku]
+mariotaku 08/08/2025 4:02 PM
+os-release is only on webOS 5+
+08/08/2025 4:01 PM
+Oh no, starfish-release I mean
+[yolofant]
+yolofant 08/08/2025 4:01 PM
+https://github.com/xbmc/xbmc/blob/2621e2cdc252026b22a525a549c8bdba68928355/xbmc/utils/SystemInfo.cpp#L87
+xbmc/xbmc/utils/SystemInfo.cpp at 2621e2cdc252026b22a525a549c8bdba6...
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&amp;#39;s ava...
+[]
+08/08/2025 4:01 PM
+or is /etc/os-release available on webOS 4?
+08/08/2025 4:01 PM
+but I think that's just a symlink
+08/08/2025 4:00 PM
+/usr/lib/os-release actually in kodi
+[ccarnell98]
+ccarnell98 08/08/2025 4:00 PM
+also means changing this
+    #ifdef CDM_MODULE_VERSION_NONE
+      #define INITIALIZE_CDM_MODULE InitializeCdmModule
+    #else
+      #define INITIALIZE_CDM_MODULE \
+        BUILD_ENTRYPOINT(InitializeCdmModule, CDM_MODULE_VERSION)
+      #define BUILD_ENTRYPOINT(name, version) \
+        BUILD_ENTRYPOINT_NO_EXPANSION(name, version)
+      #define BUILD_ENTRYPOINT_NO_EXPANSION(name, version) name##_##version
+    #endif
+[mariotaku]
+mariotaku 08/08/2025 4:00 PM
+/etc/os-release I guess
+[ccarnell98]
+ccarnell98 08/08/2025 4:00 PM
+ya
+[yolofant]
+yolofant 08/08/2025 4:00 PM
+it's something that is not available at compile time
+08/08/2025 4:00 PM
+you can't
+08/08/2025 3:59 PM
+ah yeah dev manager uses luna
+[ccarnell98]
+ccarnell98 08/08/2025 3:59 PM
+and typos
+08/08/2025 3:59 PM
+well without my random slash
+08/08/2025 3:59 PM
+if only it was so easy 
+08/08/2025 3:59 PM
+all I want is
+    #ifdef TARGET_WEBOS
+      #define CDM_MODULE_VERSION 10
+      #ifdef WEBOS_VERSION 4
+      / #define CDM_MODULE_VERSION_NONE
+      #endif
+    #else
+      #define CDM_MODULE_VERSION 4
+    #endif
+[yolofant]
+yolofant 08/08/2025 3:58 PM
+but right now as I said the version check is also a bit broken 
+[yolofant]
+[] mariotaku platform can be accessed by plugin right? Is webOS a
+distinct one instead of Linux?
+yolofant 08/08/2025 3:57 PM
+I'm not sure
+[mariotaku]
+[] ccarnell98 shame I cant just do WEBOS_5 or some crap
+mariotaku 08/08/2025 3:57 PM
+You'll have to do runtime check
+[ccarnell98]
+ccarnell98 08/08/2025 3:56 PM
+shame I cant just do WEBOS_5 or some crap
+[mariotaku]
+[] yolofant but no idea if it can be used from addons
+mariotaku 08/08/2025 3:56 PM
+platform can be accessed by plugin right? Is webOS a distinct one
+instead of Linux?
+[ccarnell98]
+ccarnell98 08/08/2025 3:56 PM
+ugh
+    #ifdef TARGET_WEBOS
+      #define CDM_MODULE_VERSION_NONE
+    #else
+      #define CDM_MODULE_VERSION 4
+    #endif
+[yolofant]
+yolofant 08/08/2025 3:56 PM
+you can also query from luna but that's not the best option as it comes
+with dependencies
+08/08/2025 3:55 PM
+probably in dev manager source there is code that works in general
+08/08/2025 3:55 PM
+the nyx one should be available always
+08/08/2025 3:55 PM
+/etc/os-release is only present >= 5 and it should tell the version
+08/08/2025 3:54 PM
+I think you can use /etc/os-release or the nyx stuff
+[ccarnell98]
+ccarnell98 08/08/2025 3:54 PM
+not without an interface
+[yolofant]
+yolofant 08/08/2025 3:54 PM
+probably not
+08/08/2025 3:54 PM
+but no idea if it can be used from addons
+08/08/2025 3:54 PM
+in kodi we have a class for that
+[ccarnell98]
+ccarnell98 08/08/2025 3:54 PM
+how can I detect webOS < 5 ?
+[yolofant]
+yolofant 08/08/2025 3:54 PM
+the only problem is that you need to get root
+08/08/2025 3:53 PM
+the lower end ones are usually very cheap ~20€
+08/08/2025 3:53 PM
+maybe you just need to get a cheap dev board
+[yolofant]
+[] mariotaku Does "Inputstream FFmpeg Direct" need to be configured?
+yolofant 08/08/2025 3:52 PM
+no it's an alternative inputstream but it does not do widevine
+[yolofant]
+[] mariotaku In my understanding, returning true means allowing the
+screensaver to kick in, while false means to ...
+yolofant 08/08/2025 3:45 PM
+that makes sense maybe I'll try removing this condition then
+https://github.com/xbmc/xbmc/blob/41d536fad9d98bbffde9fc979c6a9dfa1a513861/xbmc/windowing/wayland/OSScreenSaverWebOS.cpp#L77-L78
+xbmc/xbmc/windowing/wayland/OSScreenSaverWebOS.cpp at 41d536fad9d98...
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&amp;#39;s ava...
+[]
+[ccarnell98]
+ccarnell98 08/08/2025 3:15 PM
+Thanks. Working on a fix for their "todo"
+[mariotaku]
+mariotaku 08/08/2025 3:14 PM
+(no content)
+ message.txt
+32.36 KB External
+[ccarnell98]
+ccarnell98 08/08/2025 3:09 PM
+I don't even know what that addon does..
+08/08/2025 3:09 PM
+only option you gotta change is to turn on logging
+08/08/2025 3:08 PM
+I never have done
+[mariotaku]
+mariotaku 08/08/2025 3:08 PM
+Does "Inputstream FFmpeg Direct" need to be configured?
+[ccarnell98]
+ccarnell98 08/08/2025 3:05 PM
+think it might be the same issue @wsnipex has
+08/08/2025 3:04 PM
+wonder how long that has been a todo....
+08/08/2025 3:04 PM
+      //! @todo: loop with thread sleep should be removed, use callbacks
+08/08/2025 3:03 PM
+make sure debug logging turned on
+08/08/2025 3:03 PM
+select Widevine->Google Tears
+08/08/2025 3:03 PM
+its just a kodi addon but test streams
+08/08/2025 3:03 PM
+(no content)
+ plugin.video.isasamples.zip
+224.02 KB External
+[mariotaku]
+mariotaku 08/08/2025 3:02 PM
+What's that?
+[ccarnell98]
+ccarnell98 08/08/2025 3:00 PM
+using isasamples
+08/08/2025 3:00 PM
+yep
+ 1
+[mariotaku]
+[] ccarnell98 If you have the time I would appreciate it. But not the
+webOS4 zip file, just the standard IPK https...
+mariotaku 08/08/2025 3:00 PM
+With webOS 6 board?
+[ccarnell98]
+ccarnell98 08/08/2025 2:57 PM
+If you have the time I would appreciate it. But not the webOS4 zip file,
+just the standard IPK
+https://mirrors.kodi.tv/test-builds/webos/org.xbmc.kodi_20250731-e453465f-webos-videoplayer_arm.ipk
+[mariotaku]
+[] ccarnell98 Do you have a webOS 5 board at all?
+mariotaku 08/08/2025 2:55 PM
+No, I have webOS 6 instead
+[anthock]
+[] ccarnell98 Depends on how long Anthock is around for 
+anthock 08/08/2025 2:54 PM
+I'm here for other three hours
+[ccarnell98]
+ccarnell98 08/08/2025 2:53 PM
+Do you have a webOS 5 board at all?
+08/08/2025 2:52 PM
+Depends on how long Anthock is around for 
+[mariotaku]
+[] ccarnell98 Click to see attachment
+mariotaku 08/08/2025 2:51 PM
+Do you need me to test this? I have a board booted up
+[anthock]
+[] ccarnell98 Click to see attachment
+anthock 08/08/2025 2:21 PM
+good, new error
+    debug <inputstream.adaptive>: [WV-CDM-Library] CDM version: v2.2.0-2-905-LGE
+    debug <inputstream.adaptive>: [WV-CDM-Library] Trying to load CDM8
+    debug <inputstream.adaptive>: [WV-CDM-Library] Trying 12 to 8 CDM interface version
+    debug <inputstream.adaptive>: [WV-CDM-Library] Initializing CDM8
+    error <inputstream.adaptive>: CWVCencSingleSampleDecrypter: Cannot perform License update, no session available
+    error <inputstream.adaptive>: Failed to initialize the decrypter
+[ccarnell98]
+ccarnell98 08/08/2025 2:15 PM
+(no content)
+ inputstream.adaptive-webos4-1.4.zip
+1.92 MB External
+[anthock]
+anthock 08/08/2025 1:42 PM
+    debug <inputstream.adaptive>: [WV-CDM-Library] CDM version: v2.2.0-2-905-LGE
+    debug <inputstream.adaptive>: [WV-CDM-Library] Trying to load CDM8
+    debug <inputstream.adaptive>: [WV-CDM-Library] Trying to load CDM7
+    error <inputstream.adaptive>: [WV-CDM-Library] Cannot get the ContentDecryptionModule interface
+    error <inputstream.adaptive>: InitializeSession: Failed to open the DRM
+[anthock]
+[] ccarnell98 more logging 
+anthock 08/08/2025 1:34 PM
+same output as before
+[ccarnell98]
+ccarnell98 08/08/2025 1:25 PM
+more logging 
+08/08/2025 1:25 PM
+(no content)
+ inputstream.adaptive-webos4-1.3.zip
+1.92 MB External
+08/08/2025 1:21 PM
+so its definiitely cdm8
+08/08/2025 1:21 PM
+    if (param_1 == 8) {
+08/08/2025 1:16 PM
+seems to match ghidra well enough:
+    WvContentDecryptionModule_8* CreateCdmInstance(
+        int param_1,              // cdm_interface_version
+        undefined4 param_2,       // key_system (ignored here)
+        undefined4 param_3,       // key_system_size (ignored here)
+        undefined* param_4,       // GetCdmHostFunc
+        undefined4 param_5        // user_data
+    )
+[ccarnell98]
+ccarnell98 08/08/2025 1:05 PM
+but I can't see any differences in chromium
+08/08/2025 1:05 PM
+maybe its different
+08/08/2025 1:05 PM
+      using CreateCdmFunc = void* (*)(int cdm_interface_version,
+        const char* key_system,
+        uint32_t key_system_size,
+        GetCdmHostFunc get_cdm_host_func,
+        void* user_data);
+08/08/2025 1:05 PM
+          cdm8_ = static_cast<cdm::ContentDecryptionModule_8*>(create_cdm_func(
+              8, key_system_.data(), static_cast<uint32_t>(key_system_.size()), GetCdmHost, this));
+[yolofant]
+yolofant 08/08/2025 12:59 PM
+not sure if it still requires getting a pointer to the cdm
+08/08/2025 12:58 PM
+because the functions are directly exported
+08/08/2025 12:58 PM
+possibly the function takes different parameters
+[anthock]
+[] ccarnell98 i've added some more logging if you could show that, ta
+anthock 08/08/2025 12:57 PM
+not so much new information
+    debug <inputstream.adaptive>: Initialize: CWVCdmAdapter::Initialize
+    debug <inputstream.adaptive>: Initialize: CWVCdmAdapter::Initialize - loading CDM
+    debug <inputstream.adaptive>: Initialize: CWVCdmAdapter::Initialize - calling CDM initialize
+    debug <inputstream.adaptive>: [WV-CDM-Library] CDM version: v2.2.0-2-905-LGE
+    debug <inputstream.adaptive>: [WV-CDM-Library] Loading CDM8
+    debug <inputstream.adaptive>: [WV-CDM-Library] Loading CDM7
+    error <inputstream.adaptive>: [WV-CDM-Library] Cannot get the ContentDecryptionModule interface
+    error <inputstream.adaptive>: InitializeSession: Failed to open the DRM
+[ccarnell98]
+ccarnell98 08/08/2025 12:52 PM
+yep. but I will need to add runtime detection of webOS version < 5 don't
+add the _10
+[yolofant]
+yolofant 08/08/2025 12:50 PM
+BUILD_ smth
+08/08/2025 12:50 PM
+did you change it to not use that macro?
+[ccarnell98]
+ccarnell98 08/08/2025 12:50 PM
+i've added some more logging if you could show that, ta
+08/08/2025 12:50 PM
+(no content)
+ inputstream.adaptive-webos4-1.2.zip
+1.92 MB External
+[anthock]
+[] ccarnell98 try this
+anthock 08/08/2025 12:36 PM
+same error about ContentDecryptionModule interface
+[ccarnell98]
+ccarnell98 08/08/2025 12:32 PM
+try this
+08/08/2025 12:31 PM
+(no content)
+ inputstream.adaptive-webos4-only-1.1.zip
+1.92 MB External
+08/08/2025 12:30 PM
+oh I made a typo. one min
+[anthock]
+anthock 08/08/2025 12:29 PM
+yes
+[ccarnell98]
+ccarnell98 08/08/2025 12:29 PM
+Are you on webOS 4?
+[anthock]
+Original message was deleted
+anthock 08/08/2025 12:26 PM
+better
+    debug <inputstream.adaptive>: [WV-CDM-Library] CDM version: v2.2.0-2-905-LGE
+    error <inputstream.adaptive>: [WV-CDM-Library] Cannot get the ContentDecryptionModule interface
+    error <inputstream.adaptive>: InitializeSession: Failed to open the DRM
+[mariotaku]
+Original message was deleted
+mariotaku 08/08/2025 12:12 PM
+OK, like me find some time later today
+[ccarnell98]
+ccarnell98 08/08/2025 11:37 AM
+I'm having a quick look.
+[mariotaku]
+mariotaku 08/08/2025 11:35 AM
+Quite old, which means if you don't make a lot of changes, it only
+supports webOS 5+?
+[ccarnell98]
+ccarnell98 08/08/2025 11:33 AM
+It has ContentDecryptionModule_7 in the source as well.
+08/08/2025 11:32 AM
+I'm not saying its not impossible, but more work. like acb stuff
+08/08/2025 11:31 AM
+But looks like webOS 4 is InitializeCdmModule, no version number. I've
+downloaded chromium53, and it might be ContentDecryptionModule_8, which
+is not supported by inputstream.adaptive
+08/08/2025 11:31 AM
+@Mariotaku So in version 10 and above, they started adding version
+numbers to the functions, e.g. version 10 is is InitializeCdmModule_10
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Looks like unversioned symbols,
+using CDM interface 8. The lowest IA goes is v...
+mariotaku 08/08/2025 11:28 AM
+What does this mean?
+[ccarnell98]
+ccarnell98 08/08/2025 10:20 AM
+Did you risk updating the firmware?
+[] yolofant as I said I had the exact same error when I tried 2 years
+ago
+wsnipex 08/08/2025 10:19 AM
+I suspect that as well. It doesn't work with the new videoplayer either
+[ccarnell98]
+ccarnell98 08/08/2025 10:18 AM
+@Mariotaku Looks like unversioned symbols, using CDM interface 8. The
+lowest IA goes is version 10.
+[anthock]
+anthock 08/08/2025 9:18 AM
+@Craig i have tried it in webos 4. This is the situation:
+    2025-08-08 00:12:39.722 T:8654    error <inputstream.adaptive>: [WV-CDM-Library] Failed to binding CDM library functions
+    2025-08-08 00:12:39.722 T:8654    error <inputstream.adaptive>: Unable to load widevine shared library (/usr/lib/libwvcdm_shared.so)
+    2025-08-08 00:12:39.722 T:8654    error <inputstream.adaptive>: InitializeSession: Failed to open the DRM
+If it can be useful, here the lib
+ libwvcdm_shared.so
+1.08 MB External
+08/08/2025 9:15 AM
+@Yolofant screensaver issue happens only when user changes audio track
+during playback, otherwise it works without problems. I think there is a
+problem in acb side after change of tracks
+[mariotaku]
+mariotaku 08/08/2025 3:40 AM
+I have a webOS 4 board. Let me find a chance to test that
+[mariotaku]
+[] yolofant <@225167450713358338> do you have any idea why sometimes the
+screensaver might kick in on webOS 4? I...
+mariotaku 08/08/2025 3:39 AM
+In my understanding, returning true means allowing the screensaver to
+kick in, while false means to block it
+August 7, 2025
+[yolofant]
+yolofant 08/07/2025 10:15 PM
+I have seen your changes in sdl-webos so do we need to set true here?
+https://github.com/xbmc/xbmc/blob/41d536fad9d98bbffde9fc979c6a9dfa1a513861/xbmc/windowing/wayland/OSScreenSaverWebOS.cpp#L82
+08/07/2025 10:13 PM
+@Mariotaku do you have any idea why sometimes the screensaver might kick
+in on webOS 4? I guess it must be either something wrong with the way we
+handle screensaver requests or acb?
+[yolofant]
+[] ccarnell98 its not merged into master yet
+yolofant 08/07/2025 9:40 PM
+it is now
+ 2
+[yolofant]
+yolofant 08/07/2025 9:24 PM
+what I have in my gdbinit
+08/07/2025 9:24 PM
+    define target hookpost-remote
+    set sysroot /tmp/xbmc/cmake-build-debug-br-nc4-docker/sysroot
+    end
+08/07/2025 9:23 PM
+so gdb does not download it everytime again
+08/07/2025 9:23 PM
+and btw you can download all the libraries from the tv
+[ccarnell98]
+ccarnell98 08/07/2025 9:18 PM
+oh I agree, could also be another library somewhere
+[yolofant]
+yolofant 08/07/2025 9:12 PM
+as I said I had the exact same error when I tried 2 years ago
+08/07/2025 9:11 PM
+it could still be something else like the license on the device?
+[ccarnell98]
+ccarnell98 08/07/2025 8:40 PM
+because the new video player is so much better
+08/07/2025 8:40 PM
+I don't see why it wouldn't work with nightly, but I'm not using nightly
+and I don't think anyone else has tried it either
+wsnipex 08/07/2025 8:39 PM
+can't atm, will do tomorrow
+[ccarnell98]
+ccarnell98 08/07/2025 8:39 PM
+its not merged into master yet
+08/07/2025 8:39 PM
+try this:
+https://mirrors.kodi.tv/test-builds/webos/org.xbmc.kodi_20250731-e453465f-webos-videoplayer_arm.ipk
+wsnipex 08/07/2025 8:37 PM
+so unless the new video player is default, I don't think so
+08/07/2025 8:37 PM
+I literally just installed the kodi nightly
+[ccarnell98]
+ccarnell98 08/07/2025 8:36 PM
+Are you using @Yolofant new video player?
+wsnipex 08/07/2025 8:36 PM
+makes me wonder if it's something particular to my device / setup
+[ccarnell98]
+ccarnell98 08/07/2025 8:36 PM
+Yep
+wsnipex 08/07/2025 8:36 PM
+so it works for you with those libs?
+[ccarnell98]
+ccarnell98 08/07/2025 8:20 PM
+    Reading /media/developer/temp/lib/libwvcdm_shared.so from remote target...
+    Reading /media/developer/temp/lib/libwvcdm_shared.so.16.4.0.0 from remote target...
+    Reading /media/developer/temp/lib/libsvp_inband_serializer.so.1 from remote target...
+    Reading /media/developer/temp/lib/libPmLogLib.so.3 from remote target...
+    Reading /media/developer/temp/lib/libssl.so.1.0.2 from remote target...
+    Reading /media/developer/temp/lib/libcrypto.so.1.0.2 from remote target...
+    Reading /media/developer/temp/lib/libwidevine_ce_cdm_shared.so.16.4.0.0 from remote target...
+(edited)
+08/07/2025 8:19 PM
+funnily enough though I was literally just checking this as you wrote
+that on gdbserver
+[yolofant]
+yolofant 08/07/2025 8:17 PM
+ok that should work
+[ccarnell98]
+ccarnell98 08/07/2025 8:16 PM
+I did export LD_LIBRARY_PATH='/media/developer/temp/lib:' <snip>
+[yolofant]
+yolofant 08/07/2025 8:14 PM
+because system libs take precedence
+08/07/2025 8:14 PM
+if you drop that into lib it shouldn't be used
+08/07/2025 8:14 PM
+how did you override inband serializer
+[ccarnell98]
+ccarnell98 08/07/2025 7:41 PM
+does anyone else still have a webOS 5 device they could try, just in
+case its something odd about @wsnipex setup
+[ccarnell98]
+ccarnell98 08/07/2025 7:17 PM
+now I have to figure out why
+08/07/2025 7:17 PM
+bad news, it worked
+08/07/2025 7:17 PM
+    2025-08-07 18:15:45.961 T:25160   debug <inputstream.adaptive>: [WV-CDM-Library] CDM version: v2.2.0-2-905-LGE
+    2025-08-07 18:15:45.987 T:25160   debug <inputstream.adaptive>: [WV-CDM-Library] CDM is initialized: true
+08/07/2025 7:17 PM
+@wsnipex good news, it worked
+08/07/2025 7:10 PM
+CX was my first OLED
+08/07/2025 7:09 PM
+fml I was looking in source not firmware
+wsnipex 08/07/2025 7:08 PM
+(no content)
+ libwidevine_ce_cdm_shared.so
+1.13 MB External
+ libsvp_inband_serializer.so.1
+21.4 KB External
+ 1
+[a6oo]
+[] ccarnell98 where did you find libwvcd/widevine? I've got the BX
+sources but I dont see it
+a6oo 08/07/2025 6:59 PM
+The CX firmware that was updated today.
+[image.png]
+ image.png
+68.93 KB External
+ 1
+[ccarnell98]
+ccarnell98 08/07/2025 6:36 PM
+last 2 hopefully... can you send libwidevine_ce_cdm_shared.so and
+libsvp_inband_serializer.so.1
+wsnipex 08/07/2025 6:34 PM
+(no content)
+ libcrypto.so.1.0.2
+1.14 MB External
+[ccarnell98]
+ccarnell98 08/07/2025 6:33 PM
+where did you find libwvcd/widevine? I've got the BX sources but I dont
+see it
+[ccarnell98]
+ccarnell98 08/07/2025 6:17 PM
+Playback is working with those libs
+[a6oo]
+a6oo 08/07/2025 5:54 PM
+I extracted the CX firmware
+https://www.lg.com/us/support/product/lg-OLED65CXPUA.AUS and here they
+are.
+ CX_libs.zip
+1.76 MB External
+LG OLED65CXPUA.AUS<!-- -->: Support, Manuals, Warranty & More | LG ...
+Get product support, user manuals and software drivers for the LG
+OLED65CXPUA.AUS. View LG OLED65CXPUA.AUS warranty information & schedule
+repair service.
+ 1
+[mariotaku]
+[] ccarnell98 libcrypto not libcrypt 
+mariotaku 08/07/2025 5:50 PM
+Try epk2extract!
+[ccarnell98]
+ccarnell98 08/07/2025 5:41 PM
+libcrypto.so.1.0.2
+08/07/2025 5:41 PM
+libcrypto not libcrypt 
+wsnipex 08/07/2025 4:51 PM
+@Craig ^^^
+ 1
+08/07/2025 4:51 PM
+(no content)
+ libssl3.so
+193.88 KB External
+ libssl.so.1.0.2
+240.57 KB External
+ libcrypt.so.1.1.0
+113.44 KB External
+[ccarnell98]
+ccarnell98 08/07/2025 11:32 AM
+@wsnipex could you send me libcrypto.so.1.1 and libssl.so.1.1 from your
+/usr/lib on your TV please
+August 6, 2025
+wsnipex 08/06/2025 7:20 PM
+but as said above, even with debug, playing a vid doesn't log anything
+in there
+08/06/2025 7:20 PM
+no, I've disabled that again
+[ccarnell98]
+ccarnell98 08/06/2025 7:19 PM
+even after PmLogCtl set '*' debug ?
+wsnipex 08/06/2025 7:19 PM
+this /var/log/messages after a reboot

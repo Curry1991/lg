@@ -1,0 +1,1522 @@
+March 12, 2023
+[smx2460]
+smx2460 03/12/2023 11:32 PM
+. (keepalive)
+March 5, 2023
+[smx2460]
+smx2460 03/05/2023 6:40 PM
+@infowski 
+March 3, 2023
+[smx2460]
+smx2460 03/03/2023 9:39 PM
+And it should be the defacto check
+[smx2460]
+[] infowski (I did something stupid but confirms our thesis -
+`LD_PRELOAD=/tmp/libphp.so bash`)
+smx2460 03/03/2023 9:39 PM
+This isn't stupid btw, it's actually pretty smart
+[smx2460]
+smx2460 03/03/2023 9:29 PM
+So the previous way is preferred
+03/03/2023 9:29 PM
+As you then need to step a lot
+03/03/2023 9:29 PM
+But it might not be what you want
+03/03/2023 9:29 PM
+That automatically stops the payload early
+03/03/2023 9:29 PM
+-d
+03/03/2023 9:29 PM
+There is a hidden undocumented switch in ezinject
+03/03/2023 9:28 PM
+It's trivial
+03/03/2023 9:28 PM
+If you placed the bp right before the fault
+03/03/2023 9:28 PM
+Then you single step through asm
+03/03/2023 9:28 PM
+And manually edit $pc to skip it
+03/03/2023 9:28 PM
+Inspect $pc, you will see the endless jump
+03/03/2023 9:28 PM
+Then gdb attach $(pidof target)
+03/03/2023 9:27 PM
+To free up the ptrace() session
+03/03/2023 9:27 PM
+kill -9 ezinject
+03/03/2023 9:27 PM
+You ctrl-z ezinject (it will be frozen waiting for the payload to
+complete)
+03/03/2023 9:26 PM
+If/once it freezes
+03/03/2023 9:26 PM
+Or not (bad, move the breakpoint)
+03/03/2023 9:26 PM
+Once you run it, it will either freeze when you hit it
+03/03/2023 9:26 PM
+As you can't know in advance where the code will be
+03/03/2023 9:26 PM
+    asm volatile(JMP_INSN " .");
+03/03/2023 9:26 PM
+The way ezinject's payload is debugged is by copying this "breakpoint"
+around the code
+03/03/2023 9:25 PM
+And I'm inclined to say the output isn't getting through for some reason
+03/03/2023 9:24 PM
+I don't like the fact it just dies tho (edited)
+03/03/2023 9:24 PM
+I can't really assist you well with it tho
+03/03/2023 9:24 PM
+Or if it's something else
+03/03/2023 9:24 PM
+And by chance it just doesn't print
+03/03/2023 9:23 PM
+@infowski you would need to gdb it to see if it's triggering the entry
+point
+03/03/2023 9:21 PM
+Not right now
+03/03/2023 9:21 PM
+Meh I don't know
+03/03/2023 9:16 PM
+This shouldn't be buffered
+03/03/2023 9:16 PM
+    void PLAPI inj_puts(struct injcode_ctx *ctx, char *str){
+    #ifdef DEBUG
+        struct injcode_bearing *br = ctx->br;
+        if(str == NULL){
+            return;
+        }
+        int l;
+        for(l=0; str[l] != 0x00; l++);
+        br->libc_syscall(__NR_write, STDOUT_FILENO, str, l);
+        char nl = '\n';
+        br->libc_syscall(__NR_write, STDOUT_FILENO, &nl, 1);
+    #endif
+    }
+03/03/2023 9:15 PM
+    void PLAPI inj_dchar(struct injcode_ctx *ctx, char ch){
+    #ifdef DEBUG
+        //pl:x\n\0
+        volatile uint64_t str = str64(0x706C3A0000000000 | (((uint64_t)ch << 32) & 0xFF00000000));
+        PCALL(ctx, inj_puts, (char *)&str);
+    #endif
+    }
+03/03/2023 9:14 PM
+I use __NR_write
+03/03/2023 9:14 PM
+But it shouldn't be
+[smx2460]
+[] infowski FYI on plain invalid `.so` (`touch shit.so`) I don't get
+anything on target stdout/stderr either
+smx2460 03/03/2023 9:14 PM
+I wonder if it's just buffering
+[smx2460]
+smx2460 03/03/2023 9:12 PM
+(iirc it's 64k and it's used by the payload to store local variables)
+03/03/2023 9:11 PM
+As well as the stack itself
+03/03/2023 9:11 PM
+Path of the .so
+03/03/2023 9:11 PM
+All functin pointers
+03/03/2023 9:11 PM
+Which is a pointer to a bigass structure containing all injection
+arguments
+03/03/2023 9:10 PM
+This code then receives one single argument from the stack
+03/03/2023 9:10 PM
+This code is copied to a memory region of the target
+[infowski]
+infowski 03/03/2023 9:10 PM
+FYI on plain invalid .so (touch shit.so) I don't get anything on target
+stdout/stderr either (edited)
+[smx2460]
+smx2460 03/03/2023 9:10 PM
+Not the .so
+03/03/2023 9:10 PM
+It's included in ezinject itself
+03/03/2023 9:10 PM
+Called payload
+03/03/2023 9:10 PM
+ezinject contains a small completely position independent and bare metal
+snippet of code
+03/03/2023 9:09 PM
+I do a realpath of the file
+03/03/2023 9:09 PM
+Hmm
+[infowski]
+infowski 03/03/2023 9:09 PM
+(I have no idea, I only see it's throwing an error if I pass an invalid
+.so path)
+[smx2460]
+smx2460 03/03/2023 9:09 PM
+Hm no
+[infowski]
+infowski 03/03/2023 9:09 PM
+don't you dlopen the .so in ezinject too?
+[smx2460]
+smx2460 03/03/2023 9:08 PM
+But that's something for later
+03/03/2023 9:08 PM
+It doesn't explain why there's nothing Polish (pl) (or payload )
+printed
+03/03/2023 9:08 PM
+Because i was getting errors
+03/03/2023 9:07 PM
+It's one of the libraries i had to exclude from static linking
+[infowski]
+infowski 03/03/2023 9:07 PM
+(I did something stupid but confirms our thesis -
+LD_PRELOAD=/tmp/libphp.so bash) (edited)
+03/03/2023 9:07 PM
+motherfucking libcrypt
+[smx2460]
+smx2460 03/03/2023 9:07 PM
+Lol it is
+03/03/2023 9:07 PM
+It's probably something stupid
+[infowski]
+infowski 03/03/2023 9:07 PM
+FFS
+03/03/2023 9:07 PM
+bash: error while loading shared libraries: libcrypt.so.1: cannot open shared object file: No such file or directory
+[smx2460]
+smx2460 03/03/2023 9:06 PM
+I'm in my bed tho
+03/03/2023 9:06 PM
+Damn I'd need to diff the logs
+03/03/2023 9:06 PM
+Which is independent of the library
+03/03/2023 9:06 PM
+dlopen is done inside the payload
+03/03/2023 9:06 PM
+Hm this doesn't make any sense
+[infowski]
+infowski 03/03/2023 9:06 PM
+i mean - stdout/stderr of target
+[smx2460]
+smx2460 03/03/2023 9:06 PM
+Ohhh
+[infowski]
+infowski 03/03/2023 9:06 PM
+So... it fails somewhat early on
+03/03/2023 9:05 PM
+and I do a lot of logs when injecting libdummy.so
+[smx2460]
+smx2460 03/03/2023 9:05 PM
+Dafuck
+[infowski]
+infowski 03/03/2023 9:05 PM
+when injecting libphp
+03/03/2023 9:05 PM
+I don't get anything on stdout/stderr
+03/03/2023 9:05 PM
+Well, I don't.
+[smx2460]
+smx2460 03/03/2023 9:05 PM
+I attempt to call dlerror
+03/03/2023 9:05 PM
+Would/should
+03/03/2023 9:05 PM
+You would get the error on stdout
+[infowski]
+infowski 03/03/2023 9:05 PM
+libphp against target doesn't work either
+03/03/2023 9:04 PM
+probably
+03/03/2023 9:04 PM
+oh god
+[smx2460]
+smx2460 03/03/2023 9:04 PM
+I think there's a missing .so
+03/03/2023 9:04 PM
+@infowski and libphp in target?
+[infowski]
+infowski 03/03/2023 9:03 PM
+https://gist.github.com/972bb8ea5787004ce7c003897a8e39b1 injection log
+of libdummy vs libphp against micomservice
+libdummy.log
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+ 1
+[smx2460]
+smx2460 03/03/2023 9:03 PM
+Meh
+[infowski]
+infowski 03/03/2023 9:02 PM
+libdummy.so works, libphp.so doesn't O_o
+[smx2460]
+smx2460 03/03/2023 9:02 PM
+Restart it 
+[infowski]
+infowski 03/03/2023 9:02 PM
+oh wait
+03/03/2023 9:01 PM
+Hmmmm, it works on target, doesn't on micomservice.
+[smx2460]
+smx2460 03/03/2023 9:01 PM
+It's branch frida-php
+03/03/2023 9:00 PM
+I probably didn't push it
+03/03/2023 9:00 PM
+I don't remember
+03/03/2023 9:00 PM
+It might have the glibc 2.34 merged in too
+[infowski]
+infowski 03/03/2023 8:59 PM
+sure
+[smx2460]
+[] smx2460 Click to see attachment
+smx2460 03/03/2023 8:59 PM
+@infowski try this plis 
+February 27, 2023
+[] astur3l ppl will hate the delay 
+Deleted User 02/27/2023 1:21 AM
+wdym?
+February 26, 2023
+[smx2460]
+smx2460 02/26/2023 11:01 PM
+so to speak
+02/26/2023 11:01 PM
+like remap a key to "Shift"
+02/26/2023 11:01 PM
+unless it's an unused key used as modifier
+02/26/2023 11:01 PM
+yeah
+[astur3l]
+astur3l 02/26/2023 10:12 PM
+ppl will hate the delay 
+Deleted User 02/26/2023 9:50 PM
+like, press key 1, then key 2, then key 3 to trigger the action
+02/26/2023 9:50 PM
+im thinking about adding some kind of key sequence thing
+02/26/2023 9:49 PM
+hmm
+[smx2460]
+smx2460 02/26/2023 9:36 AM
+I might be wrong tho
+02/26/2023 9:35 AM
+And the caller being the hook itself
+02/26/2023 9:35 AM
+Iirc frida-gum does some checks about hooking twice
+[infowski]
+infowski 02/26/2023 9:35 AM
+but it'd definitely spam my logs to oblivion
+[smx2460]
+smx2460 02/26/2023 9:35 AM
+XD
+02/26/2023 9:35 AM
+libhooker doesn't
+[infowski]
+infowski 02/26/2023 9:35 AM
+it would not be strictly speaking infinite loop if php does internal
+buffering
+[smx2460]
+smx2460 02/26/2023 9:35 AM
+Not sure if frida-gum has explicit handling for that tho
+02/26/2023 9:35 AM
+True
+[infowski]
+infowski 02/26/2023 9:35 AM
+i mean...
+[smx2460]
+smx2460 02/26/2023 9:35 AM
+Hmm
+[infowski]
+infowski 02/26/2023 9:34 AM
+that would be an infinite loop
+02/26/2023 9:34 AM
+@Smx uhhh... are you sure? what if the hook effectively causes write()
+call?
+[smx2460]
+smx2460 02/26/2023 9:34 AM
+Unless the hook is applied twice
+[infowski]
+infowski 02/26/2023 9:34 AM
+it's still wise to not debug log on every call
+[smx2460]
+smx2460 02/26/2023 9:34 AM
+It should never infinite loop
+[infowski]
+infowski 02/26/2023 9:34 AM
+not sure, didn't care enough to investigtae
+02/26/2023 9:33 AM
+i mean - for warning printing? they print directly to /dev/pts or
+something
+[smx2460]
+smx2460 02/26/2023 9:33 AM
+[infowski]
+infowski 02/26/2023 9:33 AM
+thankfully no infinite loops there xD
+02/26/2023 9:33 AM
+for some error handling I think
+[smx2460]
+smx2460 02/26/2023 9:33 AM
+Ah yeah
+[infowski]
+infowski 02/26/2023 9:33 AM
+and libphp itself, incidentally xD
+02/26/2023 9:33 AM
+and in fact uinput is the only thing that uses write()
+[smx2460]
+smx2460 02/26/2023 9:32 AM
+I was planning to expose the frida-gum backtrace apis to try it
+[infowski]
+infowski 02/26/2023 9:32 AM
+oh, and btw - I think there were multiple different callers there
+[smx2460]
+smx2460 02/26/2023 9:32 AM
+Yeah
+[infowski]
+infowski 02/26/2023 9:32 AM
+and that one is just very clean
+02/26/2023 9:32 AM
+lots of place we could fuck it up
+02/26/2023 9:32 AM
+like, we'd need to hook write, backtrace, unhook write, hook caller
+again...
+02/26/2023 9:32 AM
+yeah, sounds finicky
+[smx2460]
+smx2460 02/26/2023 9:31 AM
+write() -> if(right_fd) backtrace -> hook caller
+[smx2460]
+[] infowski save matched fd in a variable to not readlink on every call?
+smx2460 02/26/2023 9:31 AM
+You think hooking the call site is too involved?
+[smx2460]
+[] infowski
+https://gist.github.com/Informatic/795dfa52f34c667d228e4639e7927ff2#file-lginput-hook-php-L14
+btw - ...
+smx2460 02/26/2023 9:30 AM
+It shouldn't change across LG boards
+[infowski]
+infowski 02/26/2023 9:28 AM
+(it's timeval, we don't use it - mostly asking about field size)
+02/26/2023 9:28 AM
+https://gist.github.com/Informatic/795dfa52f34c667d228e4639e7927ff2#file-lginput-hook-php-L14
+btw - that should be generally correct, right?
+lginput-hook.php
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+[smx2460]
+smx2460 02/26/2023 9:27 AM
+And not sure it applies to readlink
+02/26/2023 9:27 AM
+Although PHP might have a cache, it's cleared in the loop
+02/26/2023 9:27 AM
+That is one
+[infowski]
+infowski 02/26/2023 9:27 AM
+save matched fd in a variable to not readlink on every call?
+[smx2460]
+smx2460 02/26/2023 9:27 AM
+Not sure if worth it
+02/26/2023 9:26 AM
+We could maybe optimize it
+[infowski]
+infowski 02/26/2023 9:26 AM
+needs some codestyle/indentation cleanup
+[smx2460]
+smx2460 02/26/2023 9:24 AM
+Nice! 
+[infowski]
+infowski 02/26/2023 9:23 AM
+https://gist.github.com/795dfa52f34c667d228e4639e7927ff2 works
+lginput-hook.php
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+ 1
+Deleted User 02/26/2023 8:53 AM
+ill try tomorrow, i dont have access to the tv at the moment
+[] smx2460 The way described by <@501722020434673674> is universal
+Deleted User 02/26/2023 8:52 AM
+oh
+[infowski]
+infowski 02/26/2023 8:52 AM
+I can try doing some tests, whenever I finish Homebrew Channel update
+fallout fixing...
+ 1
+[smx2460]
+smx2460 02/26/2023 8:51 AM
+Right
+[infowski]
+infowski 02/26/2023 8:51 AM
+well, 6.x at the moment.
+[smx2460]
+smx2460 02/26/2023 8:51 AM
+Oh 
+[infowski]
+infowski 02/26/2023 8:51 AM
+I do have webOS 5.x
+[smx2460]
+smx2460 02/26/2023 8:50 AM
+Try it as an alternative to the existing method
+02/26/2023 8:50 AM
+The way described by @infowski is universal
+02/26/2023 8:50 AM
+@Deleted User
+02/26/2023 8:49 AM
+You can also test it
+02/26/2023 8:49 AM
+Actually
+02/26/2023 8:49 AM
+Could @hellobox help us?
+Deleted User 02/26/2023 6:22 AM
+dont have any webos 5 or up boards
+02/26/2023 6:22 AM
+its basically impossible for me to test this
+02/26/2023 6:22 AM
+slight problem
+[] smx2460 <@456226577798135808>
+Deleted User 02/26/2023 6:22 AM
+well
+[smx2460]
+smx2460 02/26/2023 3:22 AM
+@Deleted User
+02/26/2023 3:21 AM
+And the latter can be done via readlink
+[infowski]
+infowski 02/26/2023 2:11 AM
+check if target fd points at /dev/uinput, and parse/modify the buffer
+they are writing. Should be pretty easy. (edited)
+ 1
+02/26/2023 2:10 AM
+"Just" hook write symbol
+Deleted User 02/26/2023 12:15 AM
+but what about the micomservice stuff?
+[] smx2460 so i removed it
+Deleted User 02/26/2023 12:15 AM
+oh
+[] smx2460 you mean the previous messages?
+Deleted User 02/26/2023 12:15 AM
+yes
+February 25, 2023
+[smx2460]
+smx2460 02/25/2023 3:22 PM
+lel
+02/25/2023 3:22 PM
+so i removed it
+02/25/2023 3:22 PM
+and it exploded the library size to 47mb
+02/25/2023 3:21 PM
+aka handling of unicode
+02/25/2023 3:21 PM
+i tried to add statically linked in icu/mbstring
+02/25/2023 3:21 PM
+you mean the previous messages?
+02/25/2023 3:21 PM
+@Deleted User ??
+February 24, 2023
+Deleted User 02/24/2023 7:35 PM
+well, kinda
+02/24/2023 7:35 PM
+i still have no idea what this means
+February 18, 2023
+[smx2460]
+smx2460 02/18/2023 12:35 AM
+and locale conversion
+02/18/2023 12:35 AM
+it pulled in all of the unicode tables when i enabled mbstring handling
+lol
+02/18/2023 12:35 AM
+i think i know why
+02/18/2023 12:34 AM
+almost fully static except for libargon2, which fails linking (edited)
+02/18/2023 12:33 AM
+47MB libphp.so (edited)
+02/18/2023 12:33 AM
+holy smokes
+02/18/2023 12:31 AM
+maybe by using the shared version instead of static
+02/18/2023 12:30 AM
+let me see if they are fixable
+02/18/2023 12:30 AM
+    /mnt/ExtData/buildroot-nc4/output/host/arm-lgtv-linux-gnueabi/sysroot/usr/lib/libargon2.a(argon2.o): in function `.LANCHOR0':
+    argon2.c:(.rodata+0x0): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x4): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x8): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0xc): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x10): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x14): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x18): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x1c): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x20): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x24): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x28): dangerous relocation: unsupported relocation
+    argon2.c:(.rodata+0x2c): dangerous relocation: unsupported relocation
+02/18/2023 12:30 AM
+i remember why i disabled some PHP extensions now
+02/18/2023 12:30 AM
+ah damn
+hellobox. 02/18/2023 12:28 AM
+we could find out though
+02/18/2023 12:28 AM
+i don't know how much this differs across platforms/versions
+02/18/2023 12:28 AM
+but it's an option, at least
+02/18/2023 12:28 AM
+as long as there's another way, we shouldn't hardcode stuff
+02/18/2023 12:27 AM
+yeah
+[smx2460]
+smx2460 02/18/2023 12:27 AM
+not because it's a stupid idea, but because it's tedious
+hellobox. 02/18/2023 12:27 AM
+well, i think we have the resources to do it if we had to
+[smx2460]
+smx2460 02/18/2023 12:27 AM
+worse idea possible, imo
+02/18/2023 12:27 AM
+multiple platforms
+02/18/2023 12:27 AM
+etc
+02/18/2023 12:27 AM
+multiple webos versions
+02/18/2023 12:27 AM
+how would you maintain that on the multiple builds
+02/18/2023 12:27 AM
+and
+02/18/2023 12:27 AM
+ugly
+hellobox. 02/18/2023 12:26 AM
+you could just hardcode offsets
+[smx2460]
+smx2460 02/18/2023 12:17 AM
+but...why?
+[smx2460]
+hellobox. webos doesn't use aslr, right?
+smx2460 02/18/2023 12:17 AM
+afaik no
+[smx2460]
+smx2460 02/18/2023 12:11 AM
+volunteers welcome
+ 1
+02/18/2023 12:11 AM
+who wants to help with this? 
+02/18/2023 12:10 AM
+since we don't want to get the full backtrace really
+02/18/2023 12:10 AM
+or even gum_backtracer_generate_with_limit
+02/18/2023 12:09 AM
+gum_backtracer_make_fuzzy gum_backtracer_generate
+02/18/2023 12:09 AM
+so we need to expose:
+02/18/2023 12:08 AM
+    /**
+     * gum_backtracer_make_fuzzy:
+     *
+     * Creates a new fuzzy backtracer, optimized for debugger-unfriendly binaries
+     * that lack debug information. Performs forensics on the stack in order to
+     * guess the return addresses. Resulting backtraces will often contain bogus
+     * entries, but will never be cut short upon encountering code built without
+     * frame pointers *and* lack of debug information.
+     *
+     * Returns: (nullable) (transfer full): the newly created backtracer instance
+     */
+02/18/2023 12:07 AM
+    gum_backtracer_generate (fixture->backtracer, NULL, &ret_addrs);
+02/18/2023 12:06 AM
+https://github.com/frida/frida-gum/blob/9d2bd20e51d441fea67810ad9ea0fd0695391fb0/tests/core/backtracer.c
+frida-gum/backtracer.c at 9d2bd20e51d441fea67810ad9ea0fd0695391fb0 ...
+Cross-platform instrumentation and introspection library written in C -
+frida-gum/backtracer.c at 9d2bd20e51d441fea67810ad9ea0fd0695391fb0 ·
+frida/frida-gum
+[]
+hellobox. 02/18/2023 12:05 AM
+webos doesn't use aslr, right?
+Deleted User 02/18/2023 12:04 AM
+?
+02/18/2023 12:04 AM
+its not as simple as
+    } else if ($hf->hasSymbol("SYMBOL")) {
+        $hf->newHook("...
+02/18/2023 12:04 AM
+so....
+[smx2460]
+smx2460 02/18/2023 12:04 AM
+we probably need some Frida API to get the return address
+02/18/2023 12:03 AM
+it's the kind of clever danger i like 
+02/18/2023 12:03 AM
+actually it's not dangerous
+02/18/2023 12:03 AM
+now you're (almost) guaranteed to have hooked the uinput handler
+02/18/2023 12:03 AM
+lel
+02/18/2023 12:03 AM
+remove the hook on write, then hook the caller
+ 1
+02/18/2023 12:03 AM
+if it does, peek the return stack to check who is the caller
+02/18/2023 12:02 AM
+check when fd == uinput_fd
+02/18/2023 12:02 AM
+you can hook write
+02/18/2023 12:02 AM
+if you really want to play dangerous
+[infowski]
+infowski 02/18/2023 12:02 AM
+I wouldn't hook it if any of the other hooks match (well, just like we
+do already)
+[smx2460]
+smx2460 02/18/2023 12:02 AM
+there is a dirtier hack
+[infowski]
+infowski 02/18/2023 12:02 AM
+Yeah, I was a little concerned
+[smx2460]
+smx2460 02/18/2023 12:02 AM
+perf wise
+[smx2460]
+[] infowski at least the good part is that `write` is actually only used
+by uinput handling lol
+smx2460 02/18/2023 12:02 AM
+you think it might impact it too much otherwise?
+[smx2460]
+smx2460 02/18/2023 12:01 AM
+    $ php /tmp/fds.php
+    0 => /dev/pts/1
+    1 => /dev/pts/1
+    2 => /dev/pts/1
+    3 => anon_inode:[eventfd]
+    4 => /tmp/fds.php
+02/18/2023 12:01 AM
+    $ cat /tmp/fds.php
+    <?php
+    $fds = glob("/proc/self/fd/*");
+    foreach($fds as $fdPath){
+            $target = @readlink($fdPath);
+            if($target === false) continue;
+            $fd = basename($fdPath);
+            print("{$fd} => {$target}\n");
+    }
+[infowski]
+infowski 02/18/2023 12:00 AM
+fascinating
+February 17, 2023
+02/17/2023 11:59 PM
+at least the good part is that write is actually only used by uinput
+handling lol
+02/17/2023 11:59 PM
+lol
+[smx2460]
+smx2460 02/17/2023 11:58 PM
+to find which fd is tied to uinput
+02/17/2023 11:58 PM
+and read them out
+02/17/2023 11:58 PM
+/proc/<pid>/fd
+02/17/2023 11:58 PM
+it's ugly but not too hard to do in something like PHP
+02/17/2023 11:58 PM
+we will need to scan the fd table
+02/17/2023 11:58 PM
+since we don't intercept the initial open(2)
+02/17/2023 11:58 PM
+now
+[infowski]
+infowski 02/17/2023 11:58 PM
+definitely
+[smx2460]
+smx2460 02/17/2023 11:58 PM
+pattern matching is shittier
+[infowski]
+infowski 02/17/2023 11:57 PM
+it's kinda shit, yeah
+02/17/2023 11:57 PM
+onions
+[smx2460]
+smx2460 02/17/2023 11:57 PM
+@infowski o(pi)nions  ? (edited)
+02/17/2023 11:57 PM
+this way it might potentially work everywhere
+02/17/2023 11:57 PM
+and see if it goes to a fd related to uinput
+02/17/2023 11:56 PM
+what i would probably intercept is that write(2) call
+02/17/2023 11:56 PM
+straight to /dev/uinput
+02/17/2023 11:56 PM
+there is a write() there (edited)
+02/17/2023 11:55 PM
+ok uinput stuff at 0x11E58 (edited)
+02/17/2023 11:52 PM
+it might be doing multithreaded queues
+02/17/2023 11:52 PM
+i'm not sure where the actual code is posted
+[infowski]
+infowski 02/17/2023 11:51 PM
+oh yeah, interface_micom_SendKeycode is likely a luna service method
+handler. (edited)
+[smx2460]
+smx2460 02/17/2023 11:50 PM
+the actual thing is 0x12EC8
+02/17/2023 11:48 PM
+so it might work 50% of the times if we only do
+interface_micom_Send_Keycode
+02/17/2023 11:48 PM
+is also called by MicomHandler
+02/17/2023 11:48 PM
+the function it calls, in the body
+02/17/2023 11:48 PM
+but
+02/17/2023 11:47 PM
+aka _Z28interface_micom_Send_Keycodei
+02/17/2023 11:47 PM
+    interface_micom_Send_Keycode(int)
+[infowski]
+infowski 02/17/2023 11:47 PM
+and it works there (at least when I originally tested it)
+02/17/2023 11:47 PM
+because it's present/used on 3.x and 4.x...
+Deleted User 02/17/2023 11:47 PM
+then why is it in the script?
+[infowski]
+infowski 02/17/2023 11:46 PM
+Isn't used in practice.
+[smx2460]
+smx2460 02/17/2023 11:46 PM
+lel
+02/17/2023 11:46 PM
+which (lol) also populates /var/spool/rdxd/factorykey_history (edited)
+[infowski]
+Deleted User `MICOM_FuncWriteKeyEvent`
+infowski 02/17/2023 11:46 PM
+It's a dummy symbol.
+[smx2460]
+smx2460 02/17/2023 11:46 PM
+it's Controller::sendKeycode -> interface_micom_Send_Keycode
+Deleted User 02/17/2023 11:46 PM
+MICOM_FuncWriteKeyEvent
+[infowski]
+infowski 02/17/2023 11:45 PM
+no, all micom handling is done in micomservice on 5.x
+Deleted User 02/17/2023 11:45 PM
+would it help to give you "tvservice" as well?
+[smx2460]
+smx2460 02/17/2023 11:44 PM
+it's because it's some kind of C++ class
+02/17/2023 11:44 PM
+but it's a string
+02/17/2023 11:44 PM
+i do see _MicomHandler_Write_KeyEvent
+Deleted User 02/17/2023 11:42 PM
+(no content)
+ micomservice
+225.53 KB External
+02/17/2023 11:42 PM
+which confuses me as there isnt any hook into "MICOM_UINPUT_WriteEvent"
+02/17/2023 11:42 PM
+https://github.com/webosbrew/apps-repo/issues/28 webOS 3.x-4.x →
+RELEASE/tvservice → MICOM_UINPUT_WriteEvent webOS 5.x+ → micomservice →
+_MicomHandler_Write_KeyEvent
+02/17/2023 11:41 PM
+and i tried looking for the symbol name in "functions" but i couldnt
+find it
+02/17/2023 11:41 PM
+i did load it into ida but after that point i wasnt sure what to do
+[smx2460]
+smx2460 02/17/2023 11:41 PM
+ah so maybe @hellobox could help testing?
+Deleted User 02/17/2023 11:40 PM
+because i dont have anything webos 5.x or above to test with
+02/17/2023 11:40 PM
+hellobox gave me the binary
+02/17/2023 11:40 PM
+yeah, i have both
+[smx2460]
+smx2460 02/17/2023 11:40 PM
+i can help you
+02/17/2023 11:40 PM
+and the function name
+02/17/2023 11:40 PM
+if you give me the binary
+Deleted User 02/17/2023 11:40 PM
+but idk how it works
+02/17/2023 11:40 PM
+well i know what to hook into
+[smx2460]
+smx2460 02/17/2023 11:40 PM
+ah
+02/17/2023 11:40 PM
+what's there to figure out
+Deleted User 02/17/2023 11:40 PM
+or what to hook into, i meant
+[smx2460]
+smx2460 02/17/2023 11:40 PM
+what do you mean
+Deleted User 02/17/2023 11:39 PM
+i still need to figure out how to hook into micomservice
+[smx2460]
+smx2460 02/17/2023 11:39 PM
+that are always /mnt/ExtData/... as that's my drive path
+02/17/2023 11:39 PM
+i might need to remove the hardcoded paths
+Deleted User 02/17/2023 11:38 PM
+goes from 42 kb to 34 kb
+[smx2460]
+smx2460 02/17/2023 11:38 PM
+with XML handling and some othe stuff
+02/17/2023 11:38 PM
+let's see how much bigger the new libphp i'm building is
+02/17/2023 11:38 PM
+you can also strip ezinject if you want
+Deleted User 02/17/2023 11:38 PM
+so just arm-webos-linux-gnueabi-strip libphp.so , then drag the two
+files into the inputhook folder
+[smx2460]
+smx2460 02/17/2023 11:37 PM
+i would test them
+02/17/2023 11:37 PM
+probably not
+Deleted User 02/17/2023 11:37 PM
+@Smx and i dont need to modify the scripts, right?
+[smx2460]
+smx2460 02/17/2023 11:34 PM
+if this builds, we'll have PHP with more crap lol
+02/17/2023 11:34 PM
+https://github.com/openlgtv/buildroot-nc4/runs/11430064939
+Build software better, together
+GitHub is where people build software. More than 100 million people use
+GitHub to discover, fork, and contribute to over 330 million projects.
+[]
+02/17/2023 11:28 PM
+for XML handling
+02/17/2023 11:28 PM
+and others
+02/17/2023 11:28 PM
+it could have BR2_PACKAGE_PHP_EXT_DOM
+02/17/2023 11:28 PM
+hmm
+02/17/2023 11:27 PM
+    $ grep -Ei "(php|frida)" configs/lgtv_defconfig | grep -vE "^#"
+    BR2_PACKAGE_PHP_ARCH_SUPPORTS=y
+    BR2_PACKAGE_PHP=y
+    BR2_PACKAGE_PHP_SAPI_CLI=y
+    BR2_PACKAGE_PHP_SAPI_EMBED=y
+    BR2_PACKAGE_PHP_SAPI_EMBED_STATIC=y
+    BR2_PACKAGE_PHP_EXT_SESSION=y
+    BR2_PACKAGE_PHP_EXT_ZLIB=y
+    BR2_PACKAGE_PHP_EXT_CURL=y
+    BR2_PACKAGE_PHP_EXT_PCNTL=y
+    BR2_PACKAGE_PHP_EXT_POSIX=y
+    BR2_PACKAGE_PHP_EXT_FFI=y
+    BR2_PACKAGE_PHP_EXT_OPENSWOOLE=y
+    BR2_PACKAGE_PHP_OPENSWOOLE=y
+    BR2_PACKAGE_LIBFRIDA_GUM=y
+(edited)
+02/17/2023 11:27 PM
+yes
+Deleted User 02/17/2023 11:26 PM
+im guessing libdummy and target are just test things?
+[smx2460]
+smx2460 02/17/2023 11:25 PM
+-lgtv- includes the components for building the PHP module of ezinject
+02/17/2023 11:24 PM
+(no content)
+[image.png]
+ image.png
+35.97 KB External
+02/17/2023 11:24 PM
+which are shipped in the "lgtv" preset
+Deleted User 02/17/2023 11:24 PM
+oh
+[smx2460]
+smx2460 02/17/2023 11:24 PM
+now we're linking against libfrida and php-embed from br-nc4
+02/17/2023 11:24 PM
+or, well
+02/17/2023 11:24 PM
+curl added/fixed
+[] smx2460 new release
+Deleted User 02/17/2023 11:24 PM
+whats changed?
+[smx2460]
+smx2460 02/17/2023 11:20 PM
+doubt it tho
+02/17/2023 11:20 PM
+unless stripping is what made it broken?
+02/17/2023 11:19 PM
+stripped goes from 10megs to the more familiar 8.2 (edited)
+02/17/2023 11:19 PM
+ah yeah
+02/17/2023 11:19 PM
+to reduce the size
+02/17/2023 11:19 PM
+note that you could (and probably should) run strip on it
+02/17/2023 11:19 PM
+new release
+[smx2460]
+[] smx2460 Click to see attachment
+smx2460 02/17/2023 11:18 PM
+ping @Deleted User
+[astur3l]
+[] smx2460 sorry if it took so long...
+astur3l 02/17/2023 11:17 PM
+i couldnt do myself or it would took ages 
+[smx2460]
+smx2460 02/17/2023 11:17 PM
+considering this is all it took
+02/17/2023 11:17 PM
+https://github.com/smx-smx/ezinject/commit/0bff5d7112e22c409bbbced8e1aa3c29e9336577
+02/17/2023 11:17 PM
+sorry if it took so long...
+[astur3l]
+astur3l 02/17/2023 11:17 PM
+anyway you make me happy for months  with curl, toggling wled on|off
+is blazing fast already.. despite its blocking call  and wled isnt a
+fast responsible device either (edited)
+02/17/2023 11:15 PM
+or rather too much effort 
+[smx2460]
+smx2460 02/17/2023 11:15 PM
+but that will be oof
+02/17/2023 11:15 PM
+alternatively, i need to package it in ezinject x64
+[astur3l]
+astur3l 02/17/2023 11:15 PM
+yeah but im too noob for compile it 
+[smx2460]
+smx2460 02/17/2023 11:15 PM
+you just need to install the swoole ext
+02/17/2023 11:15 PM
+you can
+[astur3l]
+astur3l 02/17/2023 11:15 PM
+the problem is with swoole that i cant do develop on x86 pc 
+02/17/2023 11:14 PM
+no, it just garbage and just few luna / curl call 
+[smx2460]
+smx2460 02/17/2023 11:13 PM
+if it's pr1v4t3 code, don't worry (edited)
+[smx2460]
+[] astur3l not yet  mostly i do curl calls and that was a blocker 
+smx2460 02/17/2023 11:13 PM
+it's mostly because i'm curious how you're using it 
+[astur3l]
+astur3l 02/17/2023 11:12 PM
+it did
+[smx2460]
+smx2460 02/17/2023 11:12 PM
+unless the old did too, i forgot
+02/17/2023 11:11 PM
+the new 10meg includes (Open)Swoole (edited)
+[astur3l]
+astur3l 02/17/2023 11:11 PM
+well i used `file_get_contents` for months.. with 1s timeout
+[smx2460]
+smx2460 02/17/2023 11:11 PM
+because it uses synchronous calls 
+ 1
+02/17/2023 11:11 PM
+it's LITERALLY a blocker 
+[astur3l]
+[] smx2460 have you tried Swoole yet?
+astur3l 02/17/2023 11:11 PM
+not yet  mostly i do curl calls and that was a blocker 
+[smx2460]
+smx2460 02/17/2023 11:09 PM
+https://openswoole.com/docs/modules/swoole-coroutine-socket
+Coroutine Socket | Open Swoole PHP
+Coroutine Socket
+[]
+02/17/2023 11:09 PM
+and do you plan to share the code?
+02/17/2023 11:09 PM
+have you tried Swoole yet?
+02/17/2023 11:08 PM
+ ! (edited)
+[astur3l]
+astur3l 02/17/2023 11:08 PM
+works! 
+[smx2460]
+smx2460 02/17/2023 11:06 PM
+[astur3l]
+astur3l 02/17/2023 11:06 PM
+checkin now
+[smx2460]
+smx2460 02/17/2023 11:06 PM
+try it plis
+02/17/2023 11:06 PM
+libphp 10mb now lel
+02/17/2023 11:05 PM
+@asturel
+02/17/2023 11:05 PM
+(no content)
+ libphp.7z
+2.92 MB External
+02/17/2023 11:04 PM
+fixed
+ 1
+02/17/2023 11:00 PM
+which it shouldn't be doing
+02/17/2023 11:00 PM
+and libcrypto.a (static)
+02/17/2023 11:00 PM
+or it's pulling in libpthread.a (static)
+02/17/2023 11:00 PM
+hmm
+02/17/2023 10:56 PM
+apparently --with-pic isn't working
+02/17/2023 10:55 PM
+    ifeq ($(BR2_PACKAGE_PHP_SAPI_EMBED),y)
+    ifeq ($(BR2_PACKAGE_PHP_SAPI_EMBED_STATIC),y)
+    PHP_CFLAGS += -ffunction-sections -fdata-sections
+    PHP_CONF_OPTS += --enable-embed=static --with-pic
+    else
+    PHP_CONF_OPTS += --enable-embed=shared
+    endif
+    endif
+02/17/2023 10:54 PM
+hm
+02/17/2023 10:54 PM
+    /mnt/ExtData/arm-lgtv-linux-gnueabi_sdk-buildroot/bin/../lib/gcc/arm-lgtv-linux-gnueabi/12.2.0/../../../../arm-lgtv-linux-gnueabi/bin/ld: /mnt/ExtData/arm-lgtv-linux-gnueabi_sdk-buildroot/arm-lgtv-linux-gnueabi/sysroot/usr/lib/libpthread.a(pthread_atfork.o): relocation R_ARM_MOVW_ABS_NC against `__dso_handle' can not be used when making a shared object; recompile with -fPIC
+[astur3l]
+astur3l 02/17/2023 8:45 PM
+kinda always  if u ping me probably i can react within 1-2 hours 
+[smx2460]
+smx2460 02/17/2023 8:43 PM
+@asturel when are you going to be around?
+02/17/2023 8:42 PM
+Yes
+ 1
+[astur3l]
+astur3l 02/17/2023 8:39 PM
+can u look at ezinject's libphp curl support sometime when u're bored,
+@Smx ?:D
+February 4, 2023
+[infowski]
+infowski 02/04/2023 8:55 AM
+sure, ping me whenever you want to play with it.
+ 1
+[smx2460]
+smx2460 02/04/2023 1:19 AM
+Otherwise I could borrow @infowski 's machine with his holy benediction
+[astur3l]
+astur3l 02/04/2023 1:19 AM
+sometime sure, fuckin snowing :d
+02/04/2023 1:18 AM
+haven't checked the buildroot's php cli tho
+[smx2460]
+smx2460 02/04/2023 1:18 AM
+Will you be around tomorrow?
+02/04/2023 1:18 AM
+Then it's my fault
+[astur3l]
+astur3l 02/04/2023 1:17 AM
+i downloaded again to make sure :dd
+[smx2460]
+smx2460 02/04/2023 1:17 AM
+Unless you're somehow using the wrong libphp
+02/04/2023 1:17 AM
+It should be working, but maybe i fucked my build up
+[smx2460]
+[] astur3l np, i thought its my fault :d but didn't have time until now
+to check why it doesn't works
+smx2460 02/04/2023 1:16 AM
+It's odd
+[astur3l]
+astur3l 02/04/2023 12:49 AM
+np, i thought its my fault :d but didn't have time until now to check
+why it doesn't works
+[smx2460]
+smx2460 02/04/2023 12:31 AM
+Will look later
+02/04/2023 12:30 AM
+I'm too beaten up now (edited)
+02/04/2023 12:30 AM
+Uh
+February 3, 2023
+[astur3l]
+[] smx2460 Click to see attachment
+astur3l 02/03/2023 11:44 PM
+i dont know why but i still getting:
+`Fatal error: Uncaught Error: Call to undefined function curl_init() in /home/root/ezinject/t.php:43`
+meanwhile
+    root@LGwebOSTV:~/ezinject# strings libphp.so   | grep curl_ | head
+    curl_copy_handle
+    curl_error
+    curl_escape
+    curl_unescape
+    curl_file_create
+    curl_init
+    curl_multi_info_read
+    curl_multi_init
+    curl_multi_strerror
+    curl_share_init
+January 11, 2023
+[smx2460]
+smx2460 01/11/2023 11:26 PM
+not in the mood for hardcore debugging (edited)
+01/11/2023 11:26 PM
+otherwise i wouldn't have continued
+01/11/2023 11:26 PM
+then fired up my PC and VM and didn't have hassle building it
+[smx2460]
+[] astur3l ty, feel better? gonna try sometime, haven't got much free
+time anyway, that's why i said weekend :d
+smx2460 01/11/2023 11:26 PM
+relaxed a bit
+[astur3l]
+astur3l 01/11/2023 10:55 PM
+ty, feel better? gonna try sometime, haven't got much free time anyway,
+that's why i said weekend :d
+[smx2460]
+smx2460 01/11/2023 9:39 PM
+    $ strings build/out/bin/modules/libphp.so | grep curl_ | head
+    curl_copy_handle
+    curl_error
+    curl_escape
+    curl_unescape
+    curl_file_create
+    curl_init
+    curl_multi_info_read
+    curl_multi_init
+    curl_multi_strerror
+    curl_share_init
+01/11/2023 9:38 PM
+@asturel try
+01/11/2023 9:38 PM
+(no content)
+ ezinject
+41.28 KB External
+ libphp.so
+7.55 MB External
+01/11/2023 9:37 PM
+ah no
+01/11/2023 9:37 PM
+maybe i'm having problems with the switch to gcc12
+01/11/2023 9:37 PM
+hm
+[smx2460]
+smx2460 01/11/2023 8:25 PM
+Thanks
+[astur3l]
+[] smx2460 Will try the next weekend
+astur3l 01/11/2023 8:07 PM
+ feel better man, rough time here too, just focus on healing, no
+worries, its fine after u recovered
+ 1
+[smx2460]
+smx2460 01/11/2023 7:56 PM
+No promises
+01/11/2023 7:56 PM
+Will try the next weekend
+01/11/2023 7:55 PM
+There must be some unstaged change on my desktop
+01/11/2023 7:55 PM
+I tried a couple days ago to do a quick build on my laptop but it didn't
+work
+01/11/2023 7:55 PM
+I am passing a rough time and I'm not doing much lately
+[smx2460]
+[] astur3l yeah, maybe different name would be useful  (or
+libphp_(ezinject|plugin).so?:D) , could you build...
+smx2460 01/11/2023 7:55 PM
+Yeah... I know...sorry
+[astur3l]
+astur3l 01/11/2023 6:51 PM
+yeah, maybe different name would be useful  (or
+libphp_(ezinject|plugin).so?:D) , could you build a libphp.so sometime
+(at weekend?)?:D
+[smx2460]
+smx2460 01/11/2023 5:57 PM
+libphploader for example
+01/11/2023 5:57 PM
+Maybe it could be called differently to clear the confusion, dunno
+01/11/2023 5:57 PM
+libphp.so is the ezinject plugin
+01/11/2023 5:56 PM
+libphp.a is just PHP alone
+01/11/2023 5:56 PM
+libphp + frida-gum + ezinject crt == libphp.so
+01/11/2023 5:55 PM
+It is assembled by building ezinject (edited)
+[smx2460]
+[] astur3l btw isnt ``libphp.so`` from buildroot? i see only static lib
+``/opt/arm-lgtv-linux-gnueabi_sdk-build...
+smx2460 01/11/2023 5:55 PM
+No
+January 9, 2023
+[astur3l]
+astur3l 01/09/2023 2:38 PM
+btw isnt
+`libphp.so from buildroot? i see only static lib /opt/arm-lgtv-linux-gnueabi_sdk-buildroot/arm-lgtv-linux-gnueabi/sysroot/usr/lib/libphp.a`
+January 8, 2023
+[astur3l]
+astur3l 01/08/2023 5:50 PM
+its fine 
+[smx2460]
+smx2460 01/08/2023 5:50 PM
+And i doubt I'll do it anytime soon
+01/08/2023 5:50 PM
+CI setup isn't finished yet
+[astur3l]
+astur3l 01/08/2023 5:50 PM
+no, im using your build
+[smx2460]
+smx2460 01/08/2023 5:49 PM
+@asturel you can rebuild ezinject right?
+[astur3l]
+astur3l 01/08/2023 5:46 PM
+same call for hyperion api wanst an issue tho..
+[smx2460]
+smx2460 01/08/2023 5:45 PM
+Then you can pull the artifact
+01/08/2023 5:45 PM
+Just wait for the CI to finish building
+[astur3l]
+astur3l 01/08/2023 5:45 PM
+thanks  timeout workaround works so.. no rush 
+[smx2460]
+smx2460 01/08/2023 5:44 PM
+If it builds successfully, try it
+01/08/2023 5:44 PM
+No testing or anything
+01/08/2023 5:44 PM
+Did this from my phone
+01/08/2023 5:44 PM
+https://github.com/openlgtv/buildroot-nc4/commit/6f99fed337203851051d3791683b47e0069c1078
+lgtv_defconfig: Enable php-curl · openlgtv/buildroot-nc4@6f99fed
+[]
+[astur3l]
+astur3l 01/08/2023 5:42 PM
+same with protocol verison 1.0 
+01/08/2023 5:42 PM
+    function post_json($url, $data)
+    {
+        $content = json_encode($data);
+        $options = array(
+            'http' => array(
+                'method' => 'POST',
+                'content' => $content,
+                'protocol_version' => 1.1,
+                'header' =>
+                    "Content-Type: application/json\r\n" .
+                    "Content-Length: ". strlen($content) ."\r\n" .
+                    "Accept: application/json\r\n",
+                    "Connection: close\r\n",
+                'timeout' => 1
+            )
+        );
+        $context = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+        return json_decode($result);
+    }
+this is what hangs at file_get_contents, i mean with timeout=1 it just
+for one sec..  (edited)
+[smx2460]
+smx2460 01/08/2023 5:41 PM
+Ah (edited)
+01/08/2023 5:41 PM
+Custom HTTP request the only way?
+[astur3l]
+astur3l 01/08/2023 5:41 PM
+i mean the php, curl works fine
+[infowski]
+infowski 01/08/2023 5:41 PM
+weird!
+[astur3l]
+astur3l 01/08/2023 5:41 PM
+yeah..  atleast i didnt waited mins..  with timeout=N it exits after
+the timeout
+[infowski]
+infowski 01/08/2023 5:40 PM
+and... it never exits?
+[astur3l]
+astur3l 01/08/2023 5:40 PM
+    rcurl -vv -X POST "http://192.168.1.122/json/state" -d '{"on":"t"}' -H "Content-Type: application/json"pplication/json"
+    Note: Unnecessary use of -X or --request, POST is already inferred.
+    *   Trying 192.168.1.122:80...
+    * Connected to 192.168.1.122 (192.168.1.122) port 80 (#0)
+    > POST /json/state HTTP/1.1
+    > Host: 192.168.1.122
+    > User-Agent: curl/7.74.0
+    > Accept: */*
+    > Content-Type: application/json
+    > Content-Length: 10
+    >
+    * upload completely sent off: 10 out of 10 bytes
+    * Mark bundle as not supporting multiuse
+    < HTTP/1.1 200 OK
+    < Content-Length: 16
+    < Content-Type: application/json
+    < Access-Control-Allow-Origin: *
+    < Access-Control-Allow-Methods: *
+    < Access-Control-Allow-Headers: *
+    < Connection: close
+    < Accept-Ranges: none
+    <
+    * Closing connection 0
+    {"success":true}
+@infowski
+[smx2460]
+smx2460 01/08/2023 5:36 PM
+I can check why curl is not included later (it's not intended for it to
+be excluded)
+ 1
+01/08/2023 5:35 PM
+@asturel try setting http 1.0 as described in the tracker
+[infowski]
+infowski 01/08/2023 5:06 PM
+instead of 1.1
+01/08/2023 5:06 PM
+Have you tried http 1.0?
+[astur3l]
+astur3l 01/08/2023 5:05 PM
+i mean curl says connection closed 0, or something like that (not at my
+pc), not that connection left intact, and i didn't send connection
+header, meanwhile in php i do send that header also http 1.1 protocol,
+and still needs timeout..
+[infowski]
+infowski 01/08/2023 5:04 PM
+or an actual curl CLI? (edited)
+01/08/2023 5:04 PM
+by "it" you mean file_get_contents in php?
+01/08/2023 5:04 PM
+if you were to use curl as a library you could reuse that HTTP
+connection again for other request.
+[astur3l]
+astur3l 01/08/2023 5:04 PM
+but it doesn't do that now
+[infowski]
+infowski 01/08/2023 5:04 PM
+But the "curl-the-cli" will exit because it already got the only
+response
+[infowski]
+[] astur3l but then curl usually says something like "connection left
+intact"
+infowski 01/08/2023 5:03 PM
+Duh, yeah. That's because the server didn't close the connection 
+[astur3l]
+[] infowski so *they* close the connection, not the server.
+astur3l 01/08/2023 5:03 PM
+but then curl usually says something like "connection left intact"
+[astur3l]
+astur3l 01/08/2023 4:52 PM
+yeah i tried protocol version 1.1 or something like that
+[infowski]
+infowski 01/08/2023 4:39 PM
+so they close the connection, not the server.
+01/08/2023 4:39 PM
+curl returns properly because (as probably stated in that bug report ;))
+they properly handle HTTP response parsing and detect when response has
+actually finished.
+01/08/2023 4:37 PM
+Have you tried downgrading to http 1.0?
+[astur3l]
+astur3l 01/08/2023 4:31 PM
+also: hanging code in callback causes magic remote all buttons to 'hang'
+(obvisoly) but it doenst crash or something like that..  (if i crash
+it it become zombie and i have to restart the tv to get lginput2 work
+again..) (edited)
+01/08/2023 4:28 PM
+idk if that matters, but even if i add connection: close header, wled
+http json api just doesnt close the connection....  however according
+to curl it does.. so idk  (edited)
+[infowski]
+infowski 01/08/2023 4:26 PM
+quality
+[astur3l]
+astur3l 01/08/2023 2:34 PM
+just run into this issue.. https://bugs.php.net/bug.php?id=80931 
+[astur3l]
+astur3l 01/08/2023 2:05 PM
+@Smx didnt u said that curl support included in buildroot's php? finally
+had some time, and i tried to rewrite the old php get_contents.. and i
+get
+`Fatal error: Uncaught Error: Call to undefined function curl_init() in /home/root/ezinject/t.php:35 Stack trace: `
+December 23, 2022
+[smx2460]
+smx2460 12/23/2022 2:47 AM
+for swoole, i'll post it later
+12/23/2022 2:46 AM
+    #!/bin/sh
+    ./configure \
+      --prefix=/opt/php74 \
+      --enable-embed \
+      --enable-bcmath \
+      --enable-calendar \
+      --enable-dba \
+      --enable-exif \
+      --enable-ftp \
+      --enable-gd \
+      --enable-intl \
+      --enable-mbstring \
+      --enable-pcntl \
+      --enable-shmop \
+      --enable-soap \
+      --enable-sockets \
+      --enable-sysvmsg \
+      --enable-sysvsem \
+      --enable-sysvshm \
+      --with-ffi \
+      --with-zip \
+      --with-xsl \
+      --with-sodium \
+      --with-zlib \
+      --with-curl \
+    && make -j$(nproc) \
+    && make install
+ 1
+[smx2460]
+smx2460 12/23/2022 12:30 AM
+lemme give my script (edited)
+12/23/2022 12:30 AM
+and compile it with enable-embed
+12/23/2022 12:30 AM
+is download the php 8 source tar
+12/23/2022 12:30 AM
+all you really need to do
+12/23/2022 12:30 AM
+but doesn't have swoole yet
+12/23/2022 12:29 AM
+i have a PHP compiled for x64, it's easy
+12/23/2022 12:29 AM
+basically
+[smx2460]
+[] astur3l does buildroot have x86 php swoole compiled or i have to
+compile myself if i want to test it x86 (pr...
+smx2460 12/23/2022 12:29 AM
+yeah that's what i need to do next ^^
+December 22, 2022
+[astur3l]
+astur3l 12/22/2022 11:33 PM
+or whats the fastest way?:D using vi (or any editor) on the tv is
+cucumber
+12/22/2022 11:32 PM
+does buildroot have x86 php swoole compiled or i have to compile myself
+if i want to test it x86 (preferable win but linux fine too)?:D
+[smx2460]
+smx2460 12/22/2022 11:29 PM
+sped
+12/22/2022 11:29 PM
+[]
+12/22/2022 11:28 PM
+we want sanic
+[astur3l]
+astur3l 12/22/2022 11:28 PM
+i mean i just want do some basic json post  or invoke some app, its
+blazing fast and works good even with blocking calls  (edited)
+[smx2460]
+smx2460 12/22/2022 11:28 PM
+don't think i'll do it today because i'm toasted
+12/22/2022 11:28 PM
+i'll take a look tomorrow maybe even
+12/22/2022 11:28 PM
+i could take hookfactory and make a proper program based on it
+12/22/2022 11:27 PM
+and i have the next week off
+12/22/2022 11:27 PM
+i could try doing something if i'm in the mood
+12/22/2022 11:27 PM
+it's easy
+12/22/2022 11:27 PM
+split hookfactory.php from the main code
+[astur3l]
+astur3l 12/22/2022 11:27 PM
+yeah, but thats more effort than my goal is 
+[smx2460]
+smx2460 12/22/2022 11:26 PM
+and put the reload functionality THERE

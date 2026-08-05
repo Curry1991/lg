@@ -1,0 +1,1793 @@
+December 22, 2022
+[smx2460]
+smx2460 12/22/2022 11:26 PM
+write a script manager
+12/22/2022 11:26 PM
+to write this functionality in PHP
+[astur3l]
+astur3l 12/22/2022 11:26 PM
+nvm, it just tooks too long (few secs) to restart the lginput2 :d
+[smx2460]
+smx2460 12/22/2022 11:26 PM
+so in general, my recommendation would be
+12/22/2022 11:26 PM
+when initializing PHP twice
+12/22/2022 11:25 PM
+keep in mind that i don't know what happens
+[astur3l]
+astur3l 12/22/2022 11:25 PM
+i thought it just overwrites the existing hook
+[smx2460]
+smx2460 12/22/2022 11:25 PM
+and do a pre-remove pass
+12/22/2022 11:25 PM
+so we need to figure out if they can be retrieved from say frida
+12/22/2022 11:25 PM
+the new ezinject/script instance has no knowledge about the existing
+hooks
+12/22/2022 11:24 PM
+it probably will
+[astur3l]
+astur3l 12/22/2022 11:24 PM
+or running ezinject again wont cause issues?
+[smx2460]
+smx2460 12/22/2022 11:24 PM
+from ezinject?
+12/22/2022 11:24 PM
+what do you mean by outside tho
+12/22/2022 11:24 PM
+hmmm
+12/22/2022 11:24 PM
+takes 2 minutes
+[astur3l]
+astur3l 12/22/2022 11:24 PM
+ah  my main issue is was that i wanted to do outside of the code 
+within the code i could just "reload the script" 
+[smx2460]
+smx2460 12/22/2022 11:24 PM
+i can help you with that
+12/22/2022 11:23 PM
+it's missing from the FFI def
+12/22/2022 11:23 PM
+    GUM_API void gum_interceptor_revert (GumInterceptor * self,
+        gpointer function_address);
+12/22/2022 11:23 PM
+you need to add some glue for the function tho
+12/22/2022 11:22 PM
+hence revert
+12/22/2022 11:22 PM
+so you want to remove the hook, not really disable
+12/22/2022 11:22 PM
+you want it when reloading a new version
+12/22/2022 11:22 PM
+and well, yeah
+12/22/2022 11:22 PM
+but you probably don't want that
+12/22/2022 11:22 PM
+not sure about the perf implications of doing it often
+12/22/2022 11:22 PM
+the best way is to revert the hook
+12/22/2022 11:22 PM
+but if you want a truly disabled state
+12/22/2022 11:21 PM
+and "disable" it in code
+12/22/2022 11:21 PM
+so you could also say avoid reverting the hook
+12/22/2022 11:21 PM
+that you can also pass the original function
+12/22/2022 11:21 PM
+actually @asturel you're right
+12/22/2022 11:18 PM
+gum_interceptor_revert is what you want (edited)
+12/22/2022 11:18 PM
+@asturel this is the exposed API:
+https://github.com/smx-smx/ezinject/blob/frida-php/samples/php/php_embed.version
+ezinject/php_embed.version at frida-php · smx-smx/ezinject
+Modular binary injection framework, successor of libhooker -
+ezinject/php_embed.version at frida-php · smx-smx/ezinject
+[]
+ 1
+[smx2460]
+[] astur3l <@310158180728700929> is there an easy way to remove hooks?
+:d or restore the original functionality...
+smx2460 12/22/2022 11:09 PM
+yeah there is
+[smx2460]
+smx2460 12/22/2022 11:09 PM
+@asturel yo!
+[astur3l]
+astur3l 12/22/2022 1:19 AM
+@Smx is there an easy way to remove hooks? :d or restore the original
+functionality without restarting the app? i remember that ffi had some
+new arg for orig function :d (atleast)
+December 15, 2022
+ww8543 12/15/2022 9:02 AM
+b
+December 14, 2022
+[smx2460]
+smx2460 12/14/2022 10:45 PM
+a
+December 13, 2022
+[infowski]
+infowski 12/13/2022 12:37 AM
+yep. i'll have to think about it.
+[smx2460]
+smx2460 12/13/2022 12:36 AM
+this for a server, reverse for a client
+12/13/2022 12:36 AM
+    <?php
+    // Enable all coroutine hooks
+    Co::set(['hook_flags'=> SWOOLE_HOOK_ALL]);
+    Co\run(function()
+    {
+        $socket = stream_socket_server("tcp://0.0.0.0:8000", $errno, $errstr);
+        if(!$socket)
+        {
+            echo "$errstr ($errno)\n";
+        }
+        else
+        {
+            while($connection = stream_socket_accept($socket))
+            {
+                fwrite($connection, 'The local time is ' . date('n/j/Y g:i a') . "\n");
+                fclose($connection);
+            }
+            fclose($socket);
+        }
+    });
+(edited)
+12/13/2022 12:35 AM
+the alternative is spawning the server as service and communicating to
+it via a socket
+[infowski]
+infowski 12/13/2022 12:35 AM
+(there are always 2 different processes)
+12/13/2022 12:35 AM
+The issue is that ther'll actually be 2 servers, each running on
+different port
+[smx2460]
+smx2460 12/13/2022 12:35 AM
+(yes it's a bit large, it might be optimized a little bit)
+12/13/2022 12:34 AM
+it's part of the 7.55MB libphp.so (edited)
+[smx2460]
+[] smx2460 ```php <?php use Swoole\Coroutine\Http\Server; // Create main
+coroutine context Co\run(function() ...
+smx2460 12/13/2022 12:34 AM
+this doesn't need extra dependencies btw
+[smx2460]
+smx2460 12/13/2022 12:34 AM
+by just changing the bind address
+[infowski]
+infowski 12/13/2022 12:34 AM
+yeah, i guess.
+[smx2460]
+smx2460 12/13/2022 12:34 AM
+the idea is that once it's there, you can control it from PC too if so
+you want
+12/13/2022 12:33 AM
+well then use it to serve API
+[infowski]
+infowski 12/13/2022 12:33 AM
+Don't really see a point in serving anything besides an API for a "main"
+[web]app (one that's - as always - loaded off file:///...) for control
+[smx2460]
+smx2460 12/13/2022 12:32 AM
+    <?php
+    use Swoole\Coroutine\Http\Server;
+    // Create main coroutine context
+    Co\run(function()
+    {
+        // Create a new server on this host and port, turn off SSL
+        $server = new Server('127.0.0.1', 9502, false);
+        // Handle the root path
+        $server->handle('/', function(Swoole\Http\Request $request, Swoole\Http\Response $response)
+        {
+            $response->end("<h1>Index</h1>");
+        });
+        // Handle another URL path...
+        $server->handle('/test', function(Swoole\Http\Request $request, Swoole\Http\Response $response)
+        {
+            $response->end("<h1>Test</h1>");
+        });
+        $server->handle('/stop', function(Swoole\Http\Request $request, Swoole\Http\Response $response) use ($server)
+        {
+            $response->end("<h1>Stop</h1>");
+            $server->shutdown();
+        });
+        $server->start();
+    });
+12/13/2022 12:31 AM
+or you have a better idea?
+12/13/2022 12:31 AM
+and GUI
+[infowski]
+infowski 12/13/2022 12:31 AM
+just for an API?
+[smx2460]
+smx2460 12/13/2022 12:31 AM
+have lginput spawn an http server
+12/13/2022 12:31 AM
+as in
+12/13/2022 12:31 AM
+do you think we could build a webapp out of that?
+12/13/2022 12:31 AM
+the latest build has OpenSwoole built in
+[infowski]
+infowski 12/13/2022 12:29 AM
+that me
+[smx2460]
+smx2460 12/13/2022 12:29 AM
+praise the php idiot
+ 1
+[infowski]
+infowski 12/13/2022 12:29 AM
+praise the php king
+ 1
+[smx2460]
+smx2460 12/13/2022 12:28 AM
+@infowski a
+December 4, 2022
+[smx2460]
+[] astur3l ah, u mean reload runtime the "script" 
+smx2460 12/04/2022 3:40 PM
+yes
+[smx2460]
+smx2460 12/04/2022 3:39 PM
+since the issue would be experienced there too
+12/04/2022 3:39 PM
+the logic could also be tested on a PC
+12/04/2022 3:39 PM
+we can look into that once we get there
+12/04/2022 3:39 PM
+if you don't unload hooks before doing that, you will definitely crash
+12/04/2022 3:38 PM
+by disposing the global instance (important) and then loading it again
+using include
+[astur3l]
+astur3l 12/04/2022 3:38 PM
+ah, u mean reload runtime the "script" 
+[smx2460]
+smx2460 12/04/2022 3:38 PM
+then have an endpoint that loads or reloads say main.php
+12/04/2022 3:38 PM
+inject once to start the http server
+12/04/2022 3:37 PM
+not reinject
+[astur3l]
+astur3l 12/04/2022 3:37 PM
+ah, i thought reinject cause issue, so i always restarted the service 
+[smx2460]
+smx2460 12/04/2022 3:37 PM
+without restarting lginput2 (edited)
+12/04/2022 3:37 PM
+and allow reloading of the code
+12/04/2022 3:37 PM
+also since the main logic is a PHP script, you could split the program
+from the http server
+[astur3l]
+astur3l 12/04/2022 3:36 PM
++ i like this idea 
+[smx2460]
+smx2460 12/04/2022 3:36 PM
+see? 
+12/04/2022 3:36 PM
+or program in macros/hotkeys
+12/04/2022 3:36 PM
+you could also inject remote keys
+12/04/2022 3:36 PM
+and
+[astur3l]
+astur3l 12/04/2022 3:36 PM
+anyway i havent even touched swooles 
+[smx2460]
+smx2460 12/04/2022 3:36 PM
+just by changing the bind address
+12/04/2022 3:35 PM
+and could then be insta-opened for remote access (edited)
+[smx2460]
+[] astur3l with that.. we can even allow uploading scripts!
+smx2460 12/04/2022 3:35 PM
+yep
+[astur3l]
+astur3l 12/04/2022 3:35 PM
+with that.. we can even allow uploading scripts!
+[smx2460]
+smx2460 12/04/2022 3:35 PM
+"make it work, then make it nice"
+12/04/2022 3:35 PM
+or as a friend told me once
+12/04/2022 3:35 PM
+break down the problem
+12/04/2022 3:35 PM
+see? 
+[astur3l]
+astur3l 12/04/2022 3:35 PM
+oh, right  also putting into a service
+[smx2460]
+smx2460 12/04/2022 3:35 PM
+cli only -> basic webui -> webos integration
+12/04/2022 3:35 PM
+but again steps
+12/04/2022 3:34 PM
+wouldn't be as nicely integrated
+12/04/2022 3:34 PM
+you can then use Swoole's HTTP server to host some internal webpage
+12/04/2022 3:34 PM
+if you don't want to use the WebOS cabbage
+12/04/2022 3:34 PM
+well that would be a starter tho
+[astur3l]
+astur3l 12/04/2022 3:34 PM
+the main issue that we look from programmer aspect :d and i have no idea
+what would be more comfortable for avg user (edited)
+12/04/2022 3:32 PM
+but for that it doesnt really need ui  i mean we could just say 'put
+your buttonid.sh' here..
+[smx2460]
+smx2460 12/04/2022 3:32 PM
+path could be hardcoded to some location for starting
+12/04/2022 3:32 PM
+else don't
+12/04/2022 3:32 PM
+if true, look for the script and run it
+12/04/2022 3:31 PM
+$hookedButtons[$btnCode] = true|false; ? (edited)
+12/04/2022 3:31 PM
+running shell scripts for each button could be slow
+[astur3l]
+astur3l 12/04/2022 3:30 PM
+otherwise the other option is call ls via hbc exec?:D
+[smx2460]
+smx2460 12/04/2022 3:30 PM
+hm
+[astur3l]
+astur3l 12/04/2022 3:30 PM
+i mean typing the script path is cucumber.. 
+[smx2460]
+smx2460 12/04/2022 3:30 PM
+when pressing "OK" on one of the button, you get the option to map onto
+another button or attach a script to it
+[astur3l]
+astur3l 12/04/2022 3:30 PM
+but how do u assign the func to it?:D
+[smx2460]
+smx2460 12/04/2022 3:29 PM
+and arrow keys allowing you to move between buttons
+12/04/2022 3:29 PM
+have a page with the picture of the LG remote
+[astur3l]
+astur3l 12/04/2022 3:29 PM
+i could do some basic react app tho
+12/04/2022 3:29 PM
+i have no ui idea for that.. i thinked about that  implementing
+infoswiki script futher as he said, calling e.g. bash scripts for
+buttons
+[smx2460]
+smx2460 12/04/2022 3:29 PM
+i would look into it if i had a board
+12/04/2022 3:28 PM
+read the maps from a json file or similar
+12/04/2022 3:28 PM
+to remap any button
+12/04/2022 3:28 PM
+built around this
+12/04/2022 3:28 PM
+@asturel i challenge you to write a remap app
+[astur3l]
+astur3l 12/04/2022 3:28 PM
+ah  also some example like infoswiki lg inputhook would be nice (could
+be added too?), with some instructions (like you need to provide full
+path to php script etc..)
+[smx2460]
+smx2460 12/04/2022 3:24 PM
+the build i sent you should be generic for LG TVs tho (edited)
+12/04/2022 3:23 PM
+but ezinject needs to be built targeting the C library of the target
+system
+[smx2460]
+[] astur3l btw it would be nice to put these things into a
+package/wiki/gist, so other ppl could benefit from t...
+smx2460 12/04/2022 3:23 PM
+i will add the hookfactory.php to the ezinject repo
+ 1
+[astur3l]
+astur3l 12/04/2022 3:15 PM
+btw it would be nice to put these things into a package/wiki/gist, so
+other ppl could benefit from this/could start their mr hacks atleast,
+but i dont wanna steal your + infoswiki work (since basically i did
+nothing here)
+[astur3l]
+[] smx2460 will you try it? 
+astur3l 12/04/2022 3:36 AM
+sure, but later :d atleast i can do remote http calls now (long running
+:d)
+ 1
+[smx2460]
+[] smx2460 now you can finally try Swoole
+smx2460 12/04/2022 3:25 AM
+will you try it? 
+[smx2460]
+smx2460 12/04/2022 3:11 AM
+gdb-multiarch 
+[astur3l]
+astur3l 12/04/2022 3:11 AM
+np, atleast i learn something new 
+[smx2460]
+smx2460 12/04/2022 3:11 AM
+which is built-in in there
+12/04/2022 3:11 AM
+now you can finally try Swoole
+12/04/2022 3:11 AM
+sorry for not spotting it sooner 
+12/04/2022 3:11 AM
+thanks for testing
+12/04/2022 3:10 AM
+thanks/sorry! (edited)
+12/04/2022 3:10 AM
+EPIC!
+[astur3l]
+astur3l 12/04/2022 3:10 AM
+jaj it works, thanks 
+[smx2460]
+smx2460 12/04/2022 3:06 AM
+12/04/2022 3:06 AM
+try it 
+12/04/2022 3:06 AM
+(no content)
+ hookfactory.php
+4.14 KB External
+12/04/2022 3:06 AM
+this should do
+12/04/2022 3:05 AM
+you need to add a , NULL
+12/04/2022 3:05 AM
+and here
+12/04/2022 3:05 AM
+            $this->ffi->gum_interceptor_replace($this->gum,
+                $pvCode, $pvHook, NULL);
+12/04/2022 3:05 AM
+after replacement_data
+12/04/2022 3:05 AM
+you need to add a void **original_function argument
+12/04/2022 3:05 AM
+here
+12/04/2022 3:05 AM
+    $this->ffi = FFI::cdef("
+                void gum_init ();
+                void *gum_interceptor_obtain();
+                void gum_interceptor_begin_transaction(void *handle);
+                int gum_interceptor_replace (void *handle,
+                    void *function_address,
+                    void *replacement_function,
+                    void *replacement_data);
+                void gum_interceptor_end_transaction(void *handle);
+                void *dlopen(const char *filename, int flag);
+                void *dlsym(void *handle, const char *symbol);
+            " . $structs);
+12/04/2022 3:04 AM
+ok you need to change it like this then
+12/04/2022 3:04 AM
+it's new
+12/04/2022 3:04 AM
+nope
+12/04/2022 3:04 AM
+https://github.com/frida/frida-gum/commit/ef1c2f621d75b5756b94696bc4fe67470cb39828
+interceptor: Improve `replace()` to support returning original (#66...
+To be able to call it directly, unconditionally bypassing replacement.
+[]
+12/04/2022 3:04 AM
+and it has been wrong all along
+12/04/2022 3:04 AM
+or hws it been there forever
+12/04/2022 3:03 AM
+since when
+12/04/2022 3:03 AM
+there is a new argument!
+ 1
+12/04/2022 3:03 AM
+no wait
+12/04/2022 3:03 AM
+it's ok
+12/04/2022 3:03 AM
+this is ours
+12/04/2022 3:03 AM
+    int gum_interceptor_replace (void *handle,
+                    void *function_address,
+                    void *replacement_function,
+                    void *replacement_data);
+12/04/2022 3:03 AM
+this is the native prototype
+12/04/2022 3:03 AM
+    GUM_API GumReplaceReturn gum_interceptor_replace (GumInterceptor * self,
+        gpointer function_address, gpointer replacement_function,
+        gpointer replacement_data, gpointer * original_function);
+[astur3l]
+astur3l 12/04/2022 3:03 AM
+all vars wasnt null tho
+[smx2460]
+smx2460 12/04/2022 3:02 AM
+ok that's strange
+[astur3l]
+astur3l 12/04/2022 3:02 AM
+yeah
+[smx2460]
+smx2460 12/04/2022 3:02 AM
+so you see "pvHook" and it dies?
+12/04/2022 3:01 AM
+            $pvHook = $handle->getNativeHandle();
+            logmsg2("pvHook");
+            //var_dump($this->gum);
+            //var_dump($pvCode);
+            //var_dump($pvHook);
+            $this->ffi->gum_interceptor_replace($this->gum,
+                $pvCode, $pvHook, NULL);
+            logmsg2("handle");
+12/04/2022 3:01 AM
+thanks
+12/04/2022 3:01 AM
+ack
+[astur3l]
+[] smx2460 paste it somewhere
+astur3l 12/04/2022 3:01 AM
+(no content)
+ ezinj_mr.tgz
+2.73 MB External
+[smx2460]
+[] astur3l few mins please, pooping atm 
+smx2460 12/04/2022 2:45 AM
+[smx2460]
+smx2460 12/04/2022 2:45 AM
+i'm not sure if i saved the right ver
+[astur3l]
+astur3l 12/04/2022 2:45 AM
+few mins please, pooping atm 
+[smx2460]
+smx2460 12/04/2022 2:45 AM
+paste it somewhere
+12/04/2022 2:45 AM
+@asturel can you show me the PHP code you're currently running?
+12/04/2022 2:42 AM
+but frida should take care of that
+12/04/2022 2:42 AM
+is lginput2 a thumb binary i wonder?
+12/04/2022 2:42 AM
+uhmm
+12/04/2022 2:42 AM
+i can't be crashing on the mov
+12/04/2022 2:41 AM
+    .text:00381B24                 BL              g_rec_mutex_unlock
+    .text:00381B28                 MOV             R0, R4
+12/04/2022 2:41 AM
+is the instruction after the bl
+12/04/2022 2:41 AM
+    #1  0x6c841b28 in gum_interceptor_replace () from target:/home/root/ezinject/2/libphp.so
+12/04/2022 2:41 AM
+wait tho
+12/04/2022 2:41 AM
+nvm it's 0x6c8a72cc
+12/04/2022 2:40 AM
+p g_rec_mutex_unlock
+12/04/2022 2:40 AM
+can you do
+12/04/2022 2:40 AM
+so it's crashing on g_rec_mutex_unlock ?
+12/04/2022 2:40 AM
+hm wait
+12/04/2022 2:39 AM
+hmm
+[astur3l]
+astur3l 12/04/2022 2:38 AM
+    (gdb) x/20i $pc-80
+       0x6c841ad8 <gum_interceptor_replace+132>:    str     r0, [sp]
+       0x6c841adc <gum_interceptor_replace+136>:    ldr     r0, [pc, #96]   ; 0x6c841b44 <gum_interceptor_replace+240>
+       0x6c841ae0 <gum_interceptor_replace+140>:    add     r3, pc, r3
+       0x6c841ae4 <gum_interceptor_replace+144>:    add     r1, pc, r1
+       0x6c841ae8 <gum_interceptor_replace+148>:    add     r0, pc, r0
+       0x6c841aec <gum_interceptor_replace+152>:    bl      0x6c8a0c54 <g_assertion_message_expr>
+       0x6c841af0 <gum_interceptor_replace+156>:    ldr     r3, [r0, #88]   ; 0x58
+       0x6c841af4 <gum_interceptor_replace+160>:    cmp     r3, #0
+       0x6c841af8 <gum_interceptor_replace+164>:    mvnne   r4, #1
+       0x6c841afc <gum_interceptor_replace+168>:    bne     0x6c841b18 <gum_interceptor_replace+196>
+       0x6c841b00 <gum_interceptor_replace+172>:    cmp     r9, #0
+       0x6c841b04 <gum_interceptor_replace+176>:    mov     r4, #0
+       0x6c841b08 <gum_interceptor_replace+180>:    ldrne   r3, [r0, #76]   ; 0x4c
+       0x6c841b0c <gum_interceptor_replace+184>:    str     r6, [r0, #92]   ; 0x5c
+       0x6c841b10 <gum_interceptor_replace+188>:    str     r5, [r0, #88]   ; 0x58
+       0x6c841b14 <gum_interceptor_replace+192>:    strne   r3, [r9]
+       0x6c841b18 <gum_interceptor_replace+196>:    mov     r0, r8
+       0x6c841b1c <gum_interceptor_replace+200>:    bl      0x6c8414b0 <gum_interceptor_transaction_end>
+       0x6c841b20 <gum_interceptor_replace+204>:    mov     r0, r7
+       0x6c841b24 <gum_interceptor_replace+208>:    bl      0x6c8a72cc <g_rec_mutex_unlock>
+    (gdb)
+[smx2460]
+smx2460 12/04/2022 2:37 AM
+    frame 1
+    x/20i $pc-80
+12/04/2022 2:37 AM
+yeah it's garbage
+[astur3l]
+astur3l 12/04/2022 2:37 AM
+    (gdb) x/20i 0x6c4bc754
+    => 0x6c4bc754:  strtvc  r12, [r4], #2820        ; 0xb04
+       0x6c4bc758:  andeq   r0, r0, r0
+       0x6c4bc75c:  andeq   r0, r0, r0
+       0x6c4bc760:  andeq   r0, r0, r0
+       0x6c4bc764:  ldrbtvc r8, [r5], #919  ; 0x397
+       0x6c4bc768:  blvs    0x6ae38970
+       0x6c4bc76c:  mrrcvs  3, 13, r5, r4, cr4
+       0x6c4bc770:  blvs    0x6ae38978
+       0x6c4bc774:  vfmsvs.f16      s21, s24, s1    ; <UNPREDICTABLE>
+       0x6c4bc778:  vstmiavs        r4, {s2-s85}
+       0x6c4bc77c:  mcrrvs  7, 14, r12, r11, cr8
+       0x6c4bc780:  andeq   r0, r0, r4
+       0x6c4bc784:  stcvs   0, cr9, [sp]
+       0x6c4bc788:  blvs    0x6ae65590
+       0x6c4bc78c:  andeq   r0, r0, r4
+       0x6c4bc790:  andeq   r0, r0, r1
+       0x6c4bc794:  andeq   r0, r0, r4
+       0x6c4bc798:  mcrrvs  7, 3, r12, r11, cr0
+       0x6c4bc79c:  cfstr32vs       mvfx1, [r4], #480       ; 0x1e0
+       0x6c4bc7a0:  andeq   r0, r0, r0, lsl r0
+    (gdb)
+[smx2460]
+smx2460 12/04/2022 2:36 AM
+as in ffi_type_float -> gum_interceptor_replace
+12/04/2022 2:36 AM
+but the stack trace is weird
+[astur3l]
+astur3l 12/04/2022 2:35 AM
+i need few mins :d
+[smx2460]
+smx2460 12/04/2022 2:34 AM
+can you x/20i 0x6c4bc754 ? (edited)
+12/04/2022 2:34 AM
+ok that's interesting
+12/04/2022 2:34 AM
+sorry
+[smx2460]
+[] astur3l im stuck here, can you help ?:D ```Thread 12 "lginput2"
+received signal SIGSEGV, Segmentation fault....
+smx2460 12/04/2022 2:34 AM
+i didn't see the message
+[astur3l]
+astur3l 12/04/2022 2:12 AM
+im stuck here, can you help ?:D
+    Thread 12 "lginput2" received signal SIGSEGV, Segmentation fault.
+    [Switching to Thread 10533.10615]
+    0x6c4bc754 in ?? ()
+    (gdb) bt
+    #0  0x6c4bc754 in ?? ()
+    #1  0x6c841b28 in gum_interceptor_replace () from target:/home/root/ezinject/2/libphp.so
+    #2  0x6ca41554 in ffi_type_float () from target:/home/root/ezinject/2/libphp.so
+    Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+12/04/2022 2:10 AM
+ah yeah, i tried to attach before ezinject :/ 
+[smx2460]
+smx2460 12/04/2022 2:09 AM
+but it's after the crash, no?
+[astur3l]
+astur3l 12/04/2022 2:09 AM
+but there's a
+    while (true) {
+        sleep(1);
+    }
+[smx2460]
+smx2460 12/04/2022 2:09 AM
+so if you add a sleep there, you have a chance to attach
+12/04/2022 2:09 AM
+ezinject will detach after the PHP code starts tho
+12/04/2022 2:09 AM
+you cannot attach to target and also have ezinject do that
+12/04/2022 2:09 AM
+the issue is
+12/04/2022 2:09 AM
+in the PHP code
+12/04/2022 2:08 AM
+@asturel you need to add a sleep
+[astur3l]
+astur3l 12/04/2022 2:03 AM
+eh
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:884] [INFO] Attaching to 9379
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:887] [ERR ] remote_attach failed: Operation not permitted
+[smx2460]
+smx2460 12/04/2022 2:02 AM
+i just installed this with Debian's package manager
+12/04/2022 2:01 AM
+    (gdb) show configuration
+    This GDB was configured as follows:
+       configure --host=x86_64-linux-gnu --target=x86_64-linux-gnu
+                 --with-auto-load-dir=$debugdir:$datadir/auto-load
+                 --with-auto-load-safe-path=$debugdir:$datadir/auto-load
+                 --with-expat
+                 --with-gdb-datadir=/usr/share/gdb (relocatable)
+                 --with-jit-reader-dir=/usr/lib/gdb (relocatable)
+                 --without-libunwind-ia64
+                 --with-lzma
+                 --with-babeltrace
+                 --with-intel-pt
+                 --with-mpfr
+                 --with-xxhash
+                 --with-python=/usr (relocatable)
+                 --with-python-libdir=/usr/lib (relocatable)
+                 --with-debuginfod
+                 --without-guile
+                 --enable-source-highlight
+                 --with-separate-debug-dir=/usr/lib/debug (relocatable)
+                 --with-system-gdbinit=/etc/gdb/gdbinit
+                 --with-system-gdbinit-dir=/etc/gdb/gdbinit.d
+12/04/2022 2:01 AM
+    (gdb) set arch arm
+    The target architecture is set to "arm".
+[astur3l]
+astur3l 12/04/2022 2:01 AM
+ah 
+[smx2460]
+smx2460 12/04/2022 2:01 AM
+you must have gdb-multiarch
+[astur3l]
+astur3l 12/04/2022 2:01 AM
+pc,
+[smx2460]
+smx2460 12/04/2022 2:01 AM
+it should be on PC
+12/04/2022 2:01 AM
+is this on TV or PC?
+[astur3l]
+astur3l 12/04/2022 2:00 AM
+`(gdb) set arch arm Undefined item: "arm"` what do i miss?:D
+[smx2460]
+smx2460 12/04/2022 1:49 AM
+and make sure you
+    export LD_LIBRARY_PATH=$PWD
+[smx2460]
+[] astur3l ``./gdbserver: /usr/lib/libstdc++.so.6: version
+`GLIBCXX_3.4.29' not found (required by ./gdbserver)...
+smx2460 12/04/2022 1:49 AM
+copy libstdc++ too
+ 1
+[astur3l]
+[] smx2460 Click to see attachment
+astur3l 12/04/2022 1:46 AM
+`./gdbserver: /usr/lib/libstdc++.so.6: version GLIBCXX_3.4.29' not found
+(required by ./gdbserver)`` :/
+December 2, 2022
+[smx2460]
+smx2460 12/02/2022 11:10 PM
+that would help me tremendously
+[smx2460]
+smx2460 12/02/2022 11:03 PM
+and you can get the juicy details
+12/02/2022 11:02 PM
+you should then see the segfault
+12/02/2022 11:02 PM
+continue # you must be in the PHP sleep at this point
+12/02/2022 11:02 PM
+attach <pid>
+12/02/2022 11:02 PM
+gdb -x lgtv.gdbinit
+12/02/2022 11:01 PM
+replace "mips" with "arm" and "big" with "little"
+12/02/2022 11:01 PM
+here's an example for my old router
+12/02/2022 11:01 PM
+    $ cat asus.gdbinit
+    set arch mips
+    set endian big
+    target extended-remote 192.168.0.2:1234
+ 1
+12/02/2022 11:01 PM
+which is what i normally do
+12/02/2022 11:01 PM
+or run gdbserver --multi
+[astur3l]
+astur3l 12/02/2022 11:01 PM
+nope, just gdb
+[smx2460]
+smx2460 12/02/2022 11:01 PM
+then you can either attach to the process directly by pid
+12/02/2022 11:00 PM
+youj need gdb-multiarch on the host
+12/02/2022 11:00 PM
+have you ever used gdbserver before?
+[astur3l]
+astur3l 12/02/2022 11:00 PM
+ty, I'll debug a bit later :d nature calls
+[smx2460]
+smx2460 12/02/2022 11:00 PM
+(no content)
+ gdbserver
+448.65 KB External
+12/02/2022 10:59 PM
+    arm-lgtv-linux-gnueabi_sdk-buildroot/arm-lgtv-linux-gnueabi/debug-root/usr/bin/gdbserver: ELF 32-bit LSB executable, ARM, EABI5 version 1 (GNU/Linux), dynamically linked, interpreter /lib/ld-linux.so.3, for GNU/Linux 3.0.0, not stripped
+12/02/2022 10:58 PM
+directly streamed the .tar release into grep in fact 
+12/02/2022 10:58 PM
+     curl -sLo - https://github.com/openlgtv/buildroot-nc4/releases/download/webos-2974f83/arm-lgtv-linux-gnueabi_sdk-buildroot.tar.gz | tar -tvzf - | grep gdb
+12/02/2022 10:58 PM
+i did a grep lol (edited)
+[astur3l]
+astur3l 12/02/2022 10:57 PM
+u said in sysroot 
+[smx2460]
+smx2460 12/02/2022 10:57 PM
+    arm-lgtv-linux-gnueabi_sdk-buildroot/arm-lgtv-linux-gnueabi/debug-root/usr/bin/gdbserver
+12/02/2022 10:56 PM
+you really don't have anything in the prebuilt?
+12/02/2022 10:55 PM
+lemme check
+12/02/2022 10:55 PM
+before blindly downgrading things
+[astur3l]
+astur3l 12/02/2022 10:55 PM
+neither in webos or lg flavo
+[smx2460]
+smx2460 12/02/2022 10:55 PM
+but i'd really like to see what the stacktrace is
+[astur3l]
+astur3l 12/02/2022 10:55 PM
+but i cannot find gdb|gdbserver in buildroot
+[smx2460]
+smx2460 12/02/2022 10:55 PM
+i think 2 things have changed, php version and frida version
+12/02/2022 10:55 PM
+well that is strange
+[astur3l]
+astur3l 12/02/2022 10:53 PM
+yeah
+[smx2460]
+smx2460 12/02/2022 10:53 PM
+your script has a while(1){ sleep(1); } at the end right?
+12/02/2022 10:53 PM
+wait tho
+12/02/2022 10:52 PM
+that or gdbserver
+[astur3l]
+astur3l 12/02/2022 10:52 PM
+oh okay
+[smx2460]
+smx2460 12/02/2022 10:52 PM
+it should be in sysroot
+[smx2460]
+[] astur3l i mean i dont have gdb on the tv or whatever tool
+smx2460 12/02/2022 10:52 PM
+you could get it from buildroot-nc4
+[astur3l]
+astur3l 12/02/2022 10:50 PM
+i mean i dont have gdb on the tv or whatever tool
+[astur3l]
+[] smx2460 what if i asked you to debug it?
+astur3l 12/02/2022 10:50 PM
+how can i do that?:D
+[smx2460]
+smx2460 12/02/2022 10:49 PM
+you need to put a sleep long enough for gdb to attach
+12/02/2022 10:49 PM
+it's not straightforward tho
+[astur3l]
+astur3l 12/02/2022 10:49 PM
+wtf i retried now i get `Illegal instruction`
+[smx2460]
+smx2460 12/02/2022 10:49 PM
+what if i asked you to debug it?
+12/02/2022 10:48 PM
+uh that's interesting
+[astur3l]
+[] smx2460 can you try running lginput2 on the terminal?
+astur3l 12/02/2022 10:47 PM
+    root@LGwebOSTV:~/ezinject/2# lginput2 --help
+    [/mnt/ExtData/ezpatch/clean/crt/crt.c:72] [INFO] library loaded!
+    [/mnt/ExtData/ezpatch/clean/crt/crt.c:74] [INFO] initializing
+    [/mnt/ExtData/ezpatch/clean/crt/crt.c:82] [DEBG] crt_thread_create
+    [/mnt/ExtData/ezpatch/clean/crt/crt_posix.c:16] [DEBG] pthread_create
+    [/mnt/ExtData/ezpatch/clean/crt/crt.c:87] [DEBG] crt_thread_notify
+    [/mnt/ExtData/ezpatch/clean/crt/crt_posix.c:27] [DEBG] sending pthread signal
+    Hello World from main
+    argv[0] = /home/root/ezinject/2/libphp.so
+    argv[1] = /home/root/ezinject/2/lginput-hook.php
+    [/mnt/ExtData/ezpatch/clean/crt/crt_user.c:24] [DEBG] lib_main returned: -1
+    [/mnt/ExtData/ezpatch/clean/crt/crt.c:118] [DEBG] ret
+    [/mnt/ExtData/ezpatch/clean/samples/php/php_embed.c:62] [INFO] Running /home/root/ezinject/2/lginput-hook.php
+    Hello World
+    before new HookFactory2
+    after new HookFactory2
+    lginput_uinput_send_button symbol found
+    Segmentation fault
+:/
+[smx2460]
+[] astur3l ```$this->ffi->gum_interceptor_replace($this->gum, $pvCode,
+$pvHook, NULL);``` seems lik...
+smx2460 12/02/2022 10:46 PM
+can you try running lginput2 on the terminal? (edited)
+[smx2460]
+smx2460 12/02/2022 10:44 PM
+so the payload alignment worked (edited)
+12/02/2022 10:44 PM
+@asturel cool
+[astur3l]
+astur3l 12/02/2022 10:29 PM
+    $this->ffi->gum_interceptor_replace($this->gum,
+                $pvCode, $pvHook, NULL);
+seems like it stuck on this.. in hookfactory (edited)
+ message.txt
+6.92 KB External
+[astur3l]
+[] smx2460 ``` libdl.so.2 libc.so.6 libpthread.so.0 ```
+astur3l 12/02/2022 10:09 PM
+    root@LGwebOSTV:~# find /lib/ -iname "libpthread.so*"
+    /lib/libpthread.so.0
+    root@LGwebOSTV:~# find /lib/ -iname "libdl.so*"
+    /lib/libdl.so.2
+    root@LGwebOSTV:~# find /lib/ -iname "libc.so*"
+    /lib/libc.so.6
+    now the lginput_uinput_send_button symbol found.. but the hooked function didnt called :/ 
+    if ($hf->hasSymbol("lginput_uinput_send_button")) {
+        logmsg("lginput_uinput_send_button symbol found"); // **this printed**
+        print("lginput_uinput_send_button symbol found\r\n");
+        $hf->newHook(
+            "int (*)(uinput_info_t*, int, int)",
+            "lginput_uinput_send_button",
+            function ($orig, $uinput_info, $keyid, $state) {
+    // **but this not called**
+                $result = handleKey($uinput_info->keybinds[$keyid]->uinput_code, $state);
+                if ($result['action'] == 'ignore') {
+                    return 0;
+                } else if ($result['action'] == 'replace') {
+                    $origKeycode = $uinput_info->keybinds[$keyid]->uinput_code;
+                    $uinput_info->keybinds[$keyid]->uinput_code = $result['keycode'];
+                    $callres = $orig($uinput_info, $keyid, $state);
+                    $uinput_info->keybinds[$keyid]->uinput_code = $origKeycode;
+                    return $callres;
+                } else {
+                    return $orig($uinput_info, $keyid, $state);
+                }
+            }
+        );
+[smx2460]
+[] astur3l sry, I'll try to check today just lot of shit again :d job
+interview, therapy shits  after work so...
+smx2460 12/02/2022 6:39 PM
+no worries, whenever you can and feel like
+[astur3l]
+astur3l 12/02/2022 11:05 AM
+sry, I'll try to check today just lot of shit again :d job interview,
+therapy shits  after work so i don't know when i come home :d (edited)
+[smx2460]
+smx2460 12/02/2022 12:13 AM
+merged in
+12/02/2022 12:13 AM
+and here's a new build with the latest changes from next
+12/02/2022 12:13 AM
+(no content)
+ libphp.so
+7.55 MB External
+ ezinject
+41.28 KB External
+12/02/2022 12:13 AM
+confirm you have these libs on the TV
+12/02/2022 12:13 AM
+    libdl.so.2
+    libc.so.6
+    libpthread.so.0
+12/02/2022 12:13 AM
+for starters
+12/02/2022 12:12 AM
+@asturel do you happen to be around?
+December 1, 2022
+[astur3l]
+[] smx2460 Sorry <@433352458694033428>, i was too tired and literally
+collapsed on the sofa
+astur3l 12/01/2022 12:43 PM
+np, take your time :d
+[smx2460]
+smx2460 12/01/2022 11:34 AM
+I will retry this evening if I'm not too wrecked
+12/01/2022 11:34 AM
+Sorry @asturel, i was too tired and literally collapsed on the sofa
+(edited)
+November 30, 2022
+[astur3l]
+astur3l 11/30/2022 8:06 PM
+https://discord.com/channels/407937994037919756/936975863017267210/937450190783254569
+this was
+11/30/2022 8:05 PM
+the few months old -- working one :d
+[smx2460]
+smx2460 11/30/2022 8:05 PM
+And build date
+11/30/2022 8:05 PM
+This means i need to add the commit hash to it
+11/30/2022 8:04 PM
+What is "old" ezinject in tho
+[astur3l]
+astur3l 11/30/2022 8:04 PM
+`root@LGwebOSTV:~/ezinject/2# ../ezinject $(pidof target) libphp.so /home/root/ezinject/2/lginput-hook.php the 9294
+is the pid
+11/30/2022 8:04 PM
+this is odd: running old/new ezinject + new libphp againts target:
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:510] [ERR ] realpath: /home/root/ezinject/2/9294
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:511] [ERR ] realpath: No such file or directory
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:904] [INFO] detaching...
+[smx2460]
+smx2460 11/30/2022 8:01 PM
+Will take a look in 10' because i got interested now
+11/30/2022 8:01 PM
+Or merge frida-php in next
+11/30/2022 8:01 PM
+We might need this in frida-php branch 
+11/30/2022 8:01 PM
+https://github.com/smx-smx/ezinject/commit/1febcbe40bf3ae01ada4a111b9ad238c577c52fe
+align payload memory size to page size · smx-smx/ezinject@1febcbe
+[]
+[astur3l]
+astur3l 11/30/2022 8:01 PM
+hmm sec
+11/30/2022 8:00 PM
+yeah
+[smx2460]
+smx2460 11/30/2022 8:00 PM
+Which is odd!
+11/30/2022 8:00 PM
+But you say target works
+[astur3l]
+[] smx2460 Which just opens a file, writes something to it, and closes
+it
+astur3l 11/30/2022 8:00 PM
+same :/ (nothing)
+[smx2460]
+smx2460 11/30/2022 8:00 PM
+I wonder if the new gcc might be generating bad code
+11/30/2022 7:59 PM
+It's pretty much the same
+11/30/2022 7:59 PM
+    mapping_size=2099316
+11/30/2022 7:59 PM
+    mapping_size=2099124
+[astur3l]
+[] smx2460 Is it consistent?
+astur3l 11/30/2022 7:58 PM
+yeah
+[smx2460]
+[] astur3l ``[/mnt/ExtData/ezpatch/clean/ezinject.c:739] [ERR ] Remote
+alloc failed: (nil)`` i didnt remember f...
+smx2460 11/30/2022 7:58 PM
+Is it consistent?
+[smx2460]
+smx2460 11/30/2022 7:57 PM
+It still got there tho
+[astur3l]
+astur3l 11/30/2022 7:56 PM
+oh.. i tried agains target (old ezinject + new libphp):
+https://bpa.st/EOEA
+[smx2460]
+smx2460 11/30/2022 7:55 PM
+And using that (edited)
+11/30/2022 7:55 PM
+Which just opens a file, writes something to it, and closes it
+[astur3l]
+astur3l 11/30/2022 7:55 PM
+`systemctl restart lginput2 && sleep 3 && ../ezinject $(pidof lginput2) libphp.so /home/root/ezinject/2/lginput-hook.php`
+[smx2460]
+smx2460 11/30/2022 7:55 PM
+Have you tried putting a dummy script in say /tmp/foo.php
+[astur3l]
+astur3l 11/30/2022 7:55 PM
+yeah
+[smx2460]
+smx2460 11/30/2022 7:55 PM
+You're passing absolute script path right?
+[astur3l]
+[] smx2460 No log created?
+astur3l 11/30/2022 7:55 PM
+nope :/
+[smx2460]
+smx2460 11/30/2022 7:54 PM
+No log created?
+[smx2460]
+[] astur3l yeah i just wanted to paste the logs.. but it also didnt
+worked: https://bpa.st/5H2A
+smx2460 11/30/2022 7:54 PM
+This surely went to running the payload
+[astur3l]
+astur3l 11/30/2022 7:54 PM
+should i check agains target?
+[smx2460]
+smx2460 11/30/2022 7:54 PM
+But it went further?
+[astur3l]
+astur3l 11/30/2022 7:53 PM
+yeah i just wanted to paste the logs.. but it also didnt worked:
+https://bpa.st/5H2A
+[smx2460]
+smx2460 11/30/2022 7:53 PM
+And it helps to let me know if it's a build flag change
+11/30/2022 7:53 PM
+ezinject didn't change at all so you can do it
+11/30/2022 7:53 PM
+Did you try old ezinject + new libphp?
+11/30/2022 7:53 PM
+Actually no, it makes no sense
+[astur3l]
+astur3l 11/30/2022 7:52 PM
+`-rwxr-xr-x 1 root root 5366256 Nov 19 17:37 ../libphp.so -- working one (old) -rwxr-xr-x 1 root root 7920932 Nov 30 14:29 libphp.so `
+[smx2460]
+smx2460 11/30/2022 7:52 PM
+Tho strange if true
+11/30/2022 7:52 PM
+And the kernel being unable to allocate a contiguous size
+11/30/2022 7:51 PM
+It's almost surely related to the libphp size
+[astur3l]
+astur3l 11/30/2022 7:51 PM
+with old ezinject it doesnt give me that error
+[smx2460]
+smx2460 11/30/2022 7:51 PM
+Vs the new one?
+11/30/2022 7:51 PM
+Can you tell me how big the old libphp is
+11/30/2022 7:51 PM
+Ok so mmap is failing
+11/30/2022 7:50 PM
+So it has to be related to the module
+[astur3l]
+astur3l 11/30/2022 7:50 PM
+yeah.. this is with old libphp + ezinject https://bpa.st/NPYQ
+[smx2460]
+smx2460 11/30/2022 7:49 PM
+With lginput2?
+11/30/2022 7:49 PM
+Uh
+[astur3l]
+astur3l 11/30/2022 7:49 PM
+`[/mnt/ExtData/ezpatch/clean/ezinject.c:739] [ERR ] Remote alloc failed: (nil)`
+i didnt remember for this 
+[astur3l]
+[] smx2460 Give me ezinject log
+astur3l 11/30/2022 7:48 PM
+https://bpa.st/4AOA
+[smx2460]
+smx2460 11/30/2022 7:47 PM
+As to what might be wrong
+11/30/2022 7:47 PM
+I have an half idea
+11/30/2022 7:46 PM
+For lginput2
+11/30/2022 7:46 PM
+Give me ezinject log
+11/30/2022 7:45 PM
+So you can see stdout
+11/30/2022 7:45 PM
+What if you kill and quickly start lginput2 in a terminal? like killall
+-9 lginput2; lginput2
+[astur3l]
+astur3l 11/30/2022 7:45 PM
+this is really odd... i put some log at the beginning in lginput-hook,,
+but nothing logged, but with target the log works.... 
+    require_once __DIR__ . '/hookfactory.php';
+    $pid = getmypid();
+    $fd = fopen("/tmp/lginput-hook-$pid.log", "a");
+    function logmsg($str)
+    {
+        global $fd;
+        fwrite($fd, $str . "\n");
+        // fflush($fd);
+        fsync($fd);
+    }
+    logmsg("starting...");
+not even the file created
+[smx2460]
+smx2460 11/30/2022 7:40 PM
+The difference is that now you should be able to use swoole for
+concurrency and asynchronous I/O
+11/30/2022 7:39 PM
+I.e. if it used to work, so should now
+11/30/2022 7:39 PM
+It should work as it did before on lginput
+[smx2460]
+[] astur3l or its supposed to _not_work with target?
+smx2460 11/30/2022 7:39 PM
+Yep
+[smx2460]
+smx2460 11/30/2022 7:38 PM
+target has a few dummy functions only
+[astur3l]
+astur3l 11/30/2022 7:38 PM
+ah, i try lginput.. but otherwise no errors
+[smx2460]
+smx2460 11/30/2022 7:38 PM
+It's a different program
+11/30/2022 7:38 PM
+It doesn't have them
+[astur3l]
+astur3l 11/30/2022 7:38 PM
+or its supposed to _not_work with target?
+[smx2460]
+smx2460 11/30/2022 7:38 PM
+[astur3l]
+astur3l 11/30/2022 7:37 PM
+ah,,, i found the "issue" hasSymbol returns false for both
+lginput_uinput_send_button and MICOM_FuncWriteKeyEvent
+[smx2460]
+smx2460 11/30/2022 7:32 PM
+What is the current output when running against lginput2
+[astur3l]
+astur3l 11/30/2022 7:32 PM
+sure, into hooks?
+[smx2460]
+smx2460 11/30/2022 7:31 PM
+Can you put some extra logging?
+[astur3l]
+[] smx2460 But it gets to hello world?
+astur3l 11/30/2022 7:31 PM
+yeah, but thats on the hookfactory.php bottom
+[smx2460]
+smx2460 11/30/2022 7:31 PM
+Just letting you know i appreciate the tests you did 
+[smx2460]
+[] astur3l u dont have idea whats wrong?:D
+smx2460 11/30/2022 7:30 PM
+I just had dinner, currently on the sofa kinda tired, so haven't checked
+in depth yet
+[smx2460]
+smx2460 11/30/2022 7:30 PM
+But it gets to hello world?
+[astur3l]
+astur3l 11/30/2022 7:30 PM
+u dont have idea whats wrong?:D
+[smx2460]
+smx2460 11/30/2022 7:29 PM
+Uhh
+[astur3l]
+[] smx2460 target != lginput
+astur3l 11/30/2022 7:29 PM
+i know, but it didnt worked, so i tried to 'debug'
+[smx2460]
+smx2460 11/30/2022 7:29 PM
+It doesn't have the same functions
+[smx2460]
+[] astur3l now the error is gone, but "it just doesnt work" target:
+<https://bpa.st/N52Q> ezinject <https://bpa...
+smx2460 11/30/2022 7:29 PM
+target != lginput
+[astur3l]
+[] smx2460 Click to see attachment
+astur3l 11/30/2022 2:38 PM
+now the error is gone, but "it just doesnt work" target:
+https://bpa.st/N52Q ezinject https://bpa.st/4WFA (i tried to press
+buttons on my MR)
+`[/mnt/ExtData/ezpatch/clean/crt/crt_user.c:24] [DEBG] lib_main returned: -1`
+?:D (edited)
+[astur3l]
+astur3l 11/30/2022 11:24 AM
+yeah me too, i haven't played any games since like 1.5 years 
+ 1
+[smx2460]
+smx2460 11/30/2022 11:23 AM
+Hope for a good recovery 
+11/30/2022 11:23 AM
+My silly tests can wait
+11/30/2022 11:23 AM
+Take your time
+[astur3l]
+astur3l 11/30/2022 11:23 AM
+mostly ok , ty :d just going to physiotherapy after work so don't have
+much time :d
+[smx2460]
+smx2460 11/30/2022 11:18 AM
+And how are you today?
+[smx2460]
+[] astur3l ty, I'll try to check today :d
+smx2460 11/30/2022 11:17 AM
+[astur3l]
+[] smx2460 anyways, try this one 
+astur3l 11/30/2022 10:54 AM
+ty, I'll try to check today :d
+[smx2460]
+smx2460 11/30/2022 2:08 AM
+11/30/2022 2:08 AM
+(no content)
+[image.png]
+ image.png
+9.98 KB External
+11/30/2022 2:03 AM
+done:
+https://github.com/openlgtv/buildroot-nc4/releases/tag/webos-2974f83
+Release 2022.08.1 - gcc 12 · openlgtv/buildroot-nc4
+updated to buildroot 2022.08.1 gcc 12.1
+[]
+[smx2460]
+smx2460 11/30/2022 1:54 AM
+updating the prerelease
+11/30/2022 1:51 AM
+also new buildroot-nc4 ready
+[smx2460]
+[] smx2460 new build (supposed to be smaller but i think it's about the
+same lol)
+smx2460 11/30/2022 1:50 AM
+(static link optimization not working, that's why... but let's fix that
+later - if this works) (edited)
+[smx2460]
+smx2460 11/30/2022 1:27 AM
+plis
+11/30/2022 1:27 AM
+anyways, try this one 
+11/30/2022 1:26 AM
+new build (supposed to be smaller but i think it's about the same lol)
+11/30/2022 1:26 AM
+(no content)
+ libphp.so
+7.55 MB External
+[smx2460]
+smx2460 11/30/2022 1:19 AM
+very dirty hack
+11/30/2022 1:19 AM
+    if(USE_FRIDA_GUM)
+        # build the list of library names we don't want
+        set(_frida_excluded_libs "")
+        foreach(_lib_name ${_static_excluded})
+            static_library_name(_static_name "${_lib_name}")
+            list(APPEND _frida_excluded_libs "${_static_name}")
+        endforeach()
+        # get library names
+        get_property(_frida_libs TARGET PkgConfig::FRIDA_GUM_STATIC PROPERTY INTERFACE_LINK_LIBRARIES)
+        set(_frida_libraries "")
+        # construct new list
+        foreach(lib ${_frida_libs})
+            set(_orig_lib "${lib}")
+            get_filename_component(lib_name "${lib}" NAME)
+            string(REGEX REPLACE "^${CMAKE_SHARED_LIBRARY_PREFIX}" "" lib_name "${lib_name}")
+            string(REGEX REPLACE "${CMAKE_SHARED_LIBRARY_SUFFIX} DCPH0 quot; "" lib_name "${lib_name}")
+            string(REGEX REPLACE "^${CMAKE_STATIC_LIBRARY_PREFIX}" "" lib_name "${lib_name}")
+            string(REGEX REPLACE "${CMAKE_STATIC_LIBRARY_SUFFIX} DCPH0 quot; "" lib_name "${lib_name}")
+            set(var_name "${lib_name}_LIBRARY")
+            if(lib_name IN_LIST _frida_excluded_libs)
+                find_library(${var_name} ${lib_name})
+            else()
+                find_static_library(${var_name} ${lib_name})
+            endif()
+            set(lib "${${var_name}}")
+            message(STATUS "frida ${lib_name} => ${lib}")
+            list(APPEND _frida_libraries "${lib}")
+        endforeach()
+        # set new list
+        set_target_properties(PkgConfig::FRIDA_GUM_STATIC
+            PROPERTIES INTERFACE_LINK_LIBRARIES "${_frida_libraries}"
+        )
+        target_link_libraries(php PkgConfig::FRIDA_GUM_STATIC)
+    endif()
+11/30/2022 1:19 AM
+11/30/2022 1:19 AM
+i feel dirty in the soul after this, but it builds properly now
+11/30/2022 1:18 AM
+(no content)
+ ezinject
+41.43 KB External
+11/30/2022 1:18 AM
+(no content)
+ libphp.so
+7.55 MB External
+11/30/2022 1:18 AM
+@asturel still alive by chance?
+[smx2460]
+smx2460 11/30/2022 12:34 AM
+but it's not used apparently
+11/30/2022 12:34 AM
+    output/host/arm-lgtv-linux-gnueabi/sysroot/usr/lib/libfrida-gum-1.0.a
+11/30/2022 12:30 AM
+strange, lemme check
+11/30/2022 12:29 AM
+ok the issue is the lack of a static build of frida
+[smx2460]
+smx2460 11/30/2022 12:19 AM
+nope
+11/30/2022 12:18 AM
+maybe the ifdef got lost for some reason
+11/30/2022 12:18 AM
+    #ifdef USE_FRIDA_GUM
+    #define FRIDA_API(x) \
+            extern void x(); \
+            void __attribute__ ((visibility ("hidden"))) \
+                    (*__imported_ ## x) = &x
+    FRIDA_API(glib_init);
+    FRIDA_API(gum_init);
+    FRIDA_API(gum_interceptor_begin_transaction);
+    FRIDA_API(gum_make_call_listener);
+    FRIDA_API(gum_interceptor_attach);
+    FRIDA_API(gum_interceptor_replace);
+    #endif
+11/30/2022 12:18 AM
+ah
+11/30/2022 12:17 AM
+yeah this is an issue
+11/30/2022 12:17 AM
+    $ nm -D libphp.so | grep gum
+    $
+11/30/2022 12:16 AM
+let it bake
+11/30/2022 12:16 AM
+pushed
+11/30/2022 12:15 AM
+needs this
+11/30/2022 12:15 AM
+https://github.com/openlgtv/buildroot-nc4/commit/12e284566bbdff0c574331d3c09b9cece2f39150
+Added environment setup script · openlgtv/buildroot-nc4@12e2845
+[]
+[astur3l]
+[] smx2460 > buildroot lgtv flavor didnt have env setup script hmm
+that's a bug
+astur3l 11/30/2022 12:14 AM
+    asturel@asturel-pc:~/ezinject$ ls -al /opt/arm-lgtv-linux-gnueabi_sdk-buildroot/
+    total 60
+    drwxr-xr-x 12 root root  4096 Nov 27 00:03 .
+    drwxr-xr-x  5 root root  4096 Nov 29 16:18 ..
+    drwxr-xr-x  7 root root  4096 Nov 26 23:49 arm-lgtv-linux-gnueabi
+    drwxr-xr-x  2 root root 12288 Nov 29 16:19 bin
+    drwxr-xr-x  3 root root  4096 Nov 26 23:48 doc
+    drwxr-xr-x  5 root root  4096 Nov 27 00:02 etc
+    drwxr-xr-x 17 root root  4096 Nov 29 16:19 include
+    drwxr-xr-x 11 root root  4096 Nov 29 16:19 lib
+    lrwxrwxrwx  1 root root     3 Nov 26 23:26 lib64 -> lib
+    drwxr-xr-x  4 root root  4096 Nov 26 23:32 libexec
+    drwxr-xr-x  3 root root  4096 Nov 26 23:42 man
+    -rwxr-xr-x  1 root root  1546 Nov 27 00:03 relocate-sdk.sh
+    drwxr-xr-x  2 root root  4096 Nov 26 23:37 sbin
+    drwxr-xr-x 27 root root  4096 Nov 27 00:02 share
+    lrwxrwxrwx  1 root root     1 Nov 26 23:26 usr -> .
+was from
+https://github.com/openlgtv/buildroot-nc4/releases/tag/webos-2974f83
+[smx2460]
+[] astur3l i tried only this
+https://discord.com/channels/407937994037919756/936975863017267210/104586249471710...
+smx2460 11/30/2022 12:13 AM
+> buildroot lgtv flavor didnt have env setup script hmm that's a bug
+[smx2460]
+smx2460 11/30/2022 12:13 AM
+now i need to see why gum_init was stripped away
+11/30/2022 12:13 AM
+good
+[astur3l]
+[] smx2460 did you try my build too?
+astur3l 11/30/2022 12:12 AM
+i tried only this
+https://discord.com/channels/407937994037919756/936975863017267210/1045862494717100062
+buildroot lgtv flavor didnt have env setup script so i couldnt compile
+[smx2460]
+[] astur3l after u told u what is it, its pretty self explaining, but if
+i had to find myself probably i just ...
+smx2460 11/30/2022 12:08 AM
+did you try my build too?
+November 29, 2022
+[smx2460]
+smx2460 11/29/2022 11:49 PM
+https://github.com/smx-smx/libhooker/blob/master/src/testapp/testapp.c
+libhooker/testapp.c at master · smx-smx/libhooker
+Modular binary injection framework. Contribute to smx-smx/libhooker
+development by creating an account on GitHub.
+[]
+11/29/2022 11:49 PM
+I'm pretty sure that was the libhooker name
+[smx2460]
+[] astur3l after u told u what is it, its pretty self explaining, but if
+i had to find myself probably i just ...
+smx2460 11/29/2022 11:49 PM
+On a second thought
+[astur3l]
+[] smx2460 Maybe i should rename it
+astur3l 11/29/2022 10:16 PM
+after u told u what is it, its pretty self explaining, but if i had to
+find myself probably i just ignore 'target' if i dont look closely 
+[smx2460]
+[] astur3l ```[/mnt/ExtData/ezpatch/clean/samples/php/php_embed.c:62]
+[INFO] Running /home/root/ezinject/lginpu...
+smx2460 11/29/2022 8:47 PM
+Ah
+[astur3l]
+[] smx2460 for your specific issue, nothing changes and i need your
+feedback on it
+astur3l 11/29/2022 6:25 PM
+    [/mnt/ExtData/ezpatch/clean/samples/php/php_embed.c:62] [INFO] Running /home/root/ezinject/lginput-hook.php
+    Hello World
+    Fatal error: Uncaught FFI\Exception: Failed resolving C function 'gum_init' in /home/root/ezinject/hookfactory.php:31
+    Stack trace:
+    #0 /home/root/ezinject/hookfactory.php(31): FFI::cdef('\n\t\t\tvoid gum_in...')
+    #1 /home/root/ezinject/lginput-hook.php(4): HookFactory2->__construct('\r\ntypedef struc...')
+    #2 {main}
+      thrown in /home/root/ezinject/hookfactory.php on line 31
+    arg1: 0, arg2: 1
+    return1() = 1
+    ^C
+(edited)
+[infowski]
+infowski 11/29/2022 5:08 PM
+aaanyways.
+11/29/2022 5:08 PM
+I would call it test/demo target honestly
+[smx2460]
+smx2460 11/29/2022 5:08 PM
+Maybe i should rename it
+11/29/2022 5:07 PM
+Apparently I'm the only one?
+11/29/2022 5:07 PM
+...or at least i do
+[infowski]
+infowski 11/29/2022 5:07 PM
+lol
+[smx2460]
+smx2460 11/29/2022 5:07 PM
+But we call it testapp
+[smx2460]
+[] astur3l ```asturel@asturel-pc:~/ezinject$ grep -FHri 'testapp' *
+asturel@asturel-pc:~/ezinject$``` nothing �...
+smx2460 11/29/2022 5:07 PM
+The binary name is "target"
+ 1
+[smx2460]
+smx2460 11/29/2022 5:07 PM
+Oh wait.
+[smx2460]
+[] infowski what *is* a testapp?
+smx2460 11/29/2022 5:07 PM
+"target" in ezinject
+[infowski]
+infowski 11/29/2022 5:06 PM
+inb4 what is a woman
+[smx2460]
+[] astur3l ah no worries, just by accident my half body didnt moves 
+and when nerves starting to get working ...
+smx2460 11/29/2022 5:06 PM
+That sucks
+[infowski]
+infowski 11/29/2022 5:06 PM
+what is a testapp?
+[smx2460]
+smx2460 11/29/2022 5:06 PM
+I'm currently jailed
+11/29/2022 5:06 PM
+@infowski do you have a handy testapp?
+[astur3l]
+astur3l 11/29/2022 4:30 PM
+    asturel@asturel-pc:~/ezinject$ grep -FHri 'testapp' *
+    asturel@asturel-pc:~/ezinject$
+nothing 
+11/29/2022 4:28 PM
+anyway i compiled ezinject#php-frida with webos buildroot, but still
+doesnt have testapp :/
+    asturel@asturel-pc:~/ezinject$ TOOLCHAINFILE=/opt/arm-webos-linux-gnueabi_sdk-buildroot/share/buildroot/toolchainfile.cmake ./build.sh
+    ....
+    asturel@asturel-pc:~/ezinject$ find . -iname "*testapp*"
+    asturel@asturel-pc:~/ezinject$
+[astur3l]
+[] smx2460
+https://github.com/openlgtv/buildroot-nc4/commit/7952704c652142a65cf886f1e8fd3f8e1f6eb1a5
+astur3l 11/29/2022 4:23 PM
+lgtv flavor doesnt have env setup file?  
+[astur3l]
+astur3l 11/29/2022 11:03 AM
+ah no worries, just by accident my half body didnt moves  and when
+nerves starting to get working its a bit hard time 
+[smx2460]
+smx2460 11/29/2022 12:54 AM
+hope it's nothing serious
+11/29/2022 12:54 AM
+damn i'm sorry
+[astur3l]
+[] smx2460 <@433352458694033428> ? 
+astur3l 11/29/2022 12:54 AM
+? sorry, haven't got time (health issues :d )
+November 28, 2022
+[smx2460]
+smx2460 11/28/2022 11:53 PM
+@asturel ? 
+[smx2460]
+smx2460 11/28/2022 11:37 PM
+oasturel (edited)
+[infowski]
+infowski 11/28/2022 11:36 PM
+n
+ 2
+[smx2460]
+smx2460 11/28/2022 10:41 PM
+m
+ww8543 11/28/2022 10:41 PM
+lmnopqrstuvwxyz
+[smx2460]
+smx2460 11/28/2022 10:37 PM
+k
+ww8543 11/28/2022 10:37 PM
+j
+[smx2460]
+smx2460 11/28/2022 10:34 PM
+i
+ww8543 11/28/2022 10:34 PM
+h
+[smx2460]
+smx2460 11/28/2022 12:12 PM
+g
+ww8543 11/28/2022 2:29 AM
+f
+November 27, 2022
+[smx2460]
+[] smx2460 d
+smx2460 11/27/2022 8:56 PM
+e
+[smx2460]
+smx2460 11/27/2022 12:39 PM
+    <?php
+    // Multiple Coroutine Context Containers at once
+    $run = new Swoole\Coroutine\Scheduler;
+    // Context 1
+    $run->add(function()
+    {
+        Co::sleep(1);
+        echo "Context 1 is done.\n";
+    });
+    // Context 2
+    $run->add(function()
+    {
+        Co::sleep(1);
+        echo "Context 2 is done.\n";
+    });
+    // Context 3
+    $run->add(function()
+    {
+        echo "Context 3 is done.\n";
+    });
+    // Required or context containers won't run
+    $run->start();
+    // Or one context at a time
+    Co\run(function()
+    {
+        Co::sleep(1);
+        echo "Co\run context is done.\n";
+    });
+11/27/2022 12:39 PM
+https://openswoole.com/docs/modules/swoole-coroutine-run
+Co\run, Coroutine Context and Scheduler | Open Swoole PHP
+Swoole Coroutine Context and Scheduler
+[]
+11/27/2022 12:38 PM
+was missing the use
+11/27/2022 12:38 PM
+    <?php
+    use Swoole\Coroutine as Co;
+    Co\run(function()
+    {
+        go(function()
+        {
+            Co::sleep(1);
+            echo "Coroutine 1 is done.\n";
+        });
+        go(function()
+        {
+            Co::sleep(1);
+            echo "Coroutine 2 is done.\n";
+        });
+    });
+    echo "Outside any Coroutine Context.\n";
+11/27/2022 12:37 PM
+will give you the suspense 
+11/27/2022 12:36 PM
+so i don't know if it's gonna work
+11/27/2022 12:36 PM
+i didn't try it even on x64
+11/27/2022 12:35 PM
+kind of
+11/27/2022 12:35 PM
+goroutines in PHP 
+[infowski]
+infowski 11/27/2022 12:31 PM
+swell
+[smx2460]
+smx2460 11/27/2022 12:15 PM
+    <?php
+    Co\run(function()
+    {
+        go(function()
+        {
+            Co::sleep(1);
+            echo "Done 1\n";
+        });
+        go(function()
+        {
+            Co::sleep(1);
+            echo "Done 2\n";
+        });
+    });
+11/27/2022 12:15 PM
+so you should be able to do things like
+11/27/2022 12:14 PM
+it's a build of PHP including OpenSwoole
+11/27/2022 12:14 PM
+if someone wants to try that new build, it'd be cool tho
+11/27/2022 12:13 PM
+and had to install it myself (edited)
+11/27/2022 12:13 PM
+but well websocat isn't as popular either
+[infowski]
+infowski 11/27/2022 12:13 PM
+definitely jq
+[smx2460]
+[] infowski also ` | jq -r '.data'` instead of php xD
+smx2460 11/27/2022 12:13 PM
+what's more popular tho, jq or php
+[smx2460]
+smx2460 11/27/2022 12:11 PM
+on jest wśród nas *
+11/27/2022 12:10 PM
+hi
+11/27/2022 12:10 PM
+i meant you 
+[infowski]
+infowski 11/27/2022 12:10 PM
+the what
+[smx2460]
+smx2460 11/27/2022 12:10 PM
+jest wśród nas! (edited)
+[smx2460]
+[] infowski also ` | jq -r '.data'` instead of php xD
+smx2460 11/27/2022 12:10 PM
+[infowski]
+[] smx2460 ```bash #!/bin/bash taskId="$1" echo
+"{\"type\":\"logs\",\"taskId\":${taskId},\"command\":\"build\"}...
+infowski 11/27/2022 9:36 AM
+also  | jq -r '.data' instead of php xD
+[smx2460]
+smx2460 11/27/2022 2:55 AM
+d
+ww8543 11/27/2022 2:38 AM
+c
+[smx2460]
+smx2460 11/27/2022 12:23 AM
+b
+November 26, 2022
+[smx2460]
+smx2460 11/26/2022 3:08 PM
+a
+[smx2460]
+smx2460 11/26/2022 2:13 PM
+to follow the build
+11/26/2022 2:13 PM
+then run it with 5684047431598080 as argument
+11/26/2022 2:12 PM
+    #!/bin/bash
+    taskId="$1"
+    echo "{\"type\":\"logs\",\"taskId\":${taskId},\"command\":\"build\"}" \
+    | websocat -n "wss://api.cirrus-ci.com/ws" \
+    | php -R 'echo json_decode($argn)->data;'
+[smx2460]
+smx2460 11/26/2022 2:00 PM
+for your specific issue, nothing changes and i need your feedback on it
+(edited)
+11/26/2022 1:59 PM
+this should at least restore the CI build break
+11/26/2022 1:59 PM
+https://github.com/openlgtv/buildroot-nc4/commit/7952704c652142a65cf886f1e8fd3f8e1f6eb1a5
+lgtv: added php-openswoole · openlgtv/buildroot-nc4@7952704
+[]
+11/26/2022 1:56 PM
+@asturel back (edited)
+[smx2460]
+smx2460 11/26/2022 1:03 PM
+K
+[astur3l]
+astur3l 11/26/2022 1:02 PM
+anyway ill debug later just a bit busy now, dont bother with it 
+11/26/2022 1:01 PM
+but it was only when i started to mix ezinject+libphp.so
+[smx2460]
+smx2460 11/26/2022 1:01 PM
+Try on a cleanly started process
+11/26/2022 1:01 PM
+Wut
+[astur3l]
+astur3l 11/26/2022 1:00 PM
+ehm, last time i got
+    [/mnt/ExtData/ezpatch/clean/os/posix/remote.c:41] [DEBG] got signal: 5 (Trace/breakpoint trap)
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:255] [DEBG] signal: 5
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:289] [DEBG] [RET] = -1
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:302] [DEBG] restoring stack data
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:739] [ERR ] Remote alloc failed: (nil)
+    [/mnt/ExtData/ezpatch/clean/ezinject.c:904] [INFO] detaching...
+[smx2460]
+smx2460 11/26/2022 1:00 PM
+You could check the payload return code too

@@ -1,0 +1,223 @@
+December 13, 2021
+[diesel2323]
+diesel2323 12/13/2021 6:27 PM
+in hyperion, it looked right but im sitting a bit too far from the tv
+12/13/2021 6:26 PM
+it looks like the yuv conversion is needed. it looked right but its in
+black and white lol
+[infowski]
+infowski 12/13/2021 6:16 PM
+There's also a case that maybe the green artifacts are maybe caused by
+invalid uv plane (assuming these happen on some grey / green-ish colors)
+12/13/2021 6:15 PM
+@diesel if you want to debug it yourself you could backport your changes
+over that PR - bring back local vfbprop variable (likely a different
+name to prevent clashes), pass it into second argument of
+GetCurrentVideoFrameBufferProperty, and compare returned values with the
+one we fetch on startup.
+[diesel2323]
+diesel2323 12/13/2021 6:12 PM
+yes, except it always shows the correct output. With the above library,
+it would only sometimes work when i ran it (it looked like the
+colorspace was wrong, even when we used the yuv conversion)
+[infowski]
+infowski 12/13/2021 6:05 PM
+But the behaviour is basically the same as on latest commit of
+https://github.com/webosbrew/hyperion-webos/pull/12 (but without
+conversion), is it?
+libdile_vt: fetch all VFBs at startup by Informatic · Pull Request ...
+This fixes crashes on LG C9. Also scale down limit check is added now -
+if selected resolution is lower than a limit, we&#39;ll just set the
+lowest possible one. Pulled in libyuv for colorspace...
+[]
+12/13/2021 6:04 PM
+Hmmmm... I am not entirely sure if that code change actually changed
+anything  (edited)
+[diesel2323]
+diesel2323 12/13/2021 5:54 PM
+only works right when i set the resolution to 960x540. the flickering
+seems to be caused when vfbprop data is invalid (when debugging, the
+resolution prints as 320x240 or 0x0
+12/13/2021 5:52 PM
+a valid output, that doesn't go through a yuv420sp conversion
+12/13/2021 5:52 PM
+the original gave me a warning during compile with pointers and such.
+The library no longer crashes, and i usually get an output through
+hyperion with flickerin
+12/13/2021 5:51 PM
+uint32_t** p1 = &ptrs;
+12/13/2021 5:51 PM
+this was original
+12/13/2021 5:50 PM
+uint32t ptrs[32] = {0}; // FIXME: this is obviously wrong?? uint32t* p1
+= ptrs; vfbprop.ptr = &p1;
+12/13/2021 5:50 PM
+so i went back to the latest libdile_vt, and changed to this in the
+first couple lines of capture_frame
+December 12, 2021
+[tbsniller]
+tbsniller 12/12/2021 7:25 PM
+okaaay send it to you
+[infowski]
+infowski 12/12/2021 7:21 PM
+Technically I already have one dump from @diesel so that's enough for
+now, but the more dumps the better in case I have some issues.
+12/12/2021 7:21 PM
+Yeah, I am in process of figuring out how to convert these properly 
+[tbsniller]
+tbsniller 12/12/2021 7:20 PM
+this is what I get
+2021-12-12T18:19:18.478233Z [882.259414547] user.err hyperion-webos [] hyperion-webos_service DILECPTFRM {} [DILE_VT] Unsupported pixel format: 1 2021-12-12T18:19:18.480358Z [882.261541991] user.err hyperion-webos [] hyperion-webos_service DILECPTFRM {} [DILE_VT] Dumped buffer to: /tmp/hyperion-webos-dump.002.000.raw 2021-12-12T18:19:18.482477Z [882.263662176] user.err hyperion-webos [] hyperion-webos_service DILECPTFRM {} [DILE_VT] Dumped buffer to: /tmp/hyperion-webos-dump.002.001.raw 
+do you need the dump?
+12/12/2021 7:19 PM
+sorry my bad 
+12/12/2021 7:18 PM
+running as root and there it goes
+12/12/2021 7:18 PM
+wow, this other legend.. 
+[infowski]
+infowski 12/12/2021 7:17 PM
+that's definitely not going to work as non-root.
+12/12/2021 7:17 PM
+        mem_fd = open("/dev/mem", O_RDWR|O_SYNC);
+        if (mem_fd == -1) {
+            return -6;
+        }
+[tbsniller]
+tbsniller 12/12/2021 7:17 PM
+ehm nope, one sec
+[infowski]
+infowski 12/12/2021 7:17 PM
+12/12/2021 7:17 PM
+Oh! Are you running as root?
+[tbsniller]
+tbsniller 12/12/2021 7:17 PM
+FNCCPTMAIN {} Error! capture_start. Code: -6 I can add some more
+debugging loggin if it will help
+[infowski]
+infowski 12/12/2021 7:15 PM
+falling back to fetching framebuffer info on every call should be
+doable.
+[tbsniller]
+tbsniller 12/12/2021 7:14 PM
+Yeah of course
+[infowski]
+infowski 12/12/2021 7:14 PM
+too bad we don't report error codes. can you add that in
+Error! capture_start message?
+12/12/2021 7:14 PM
+Hm, it either fails on open("/dev/mem") or
+DILE_VT_GetAllVideoFrameBufferProperty 
+12/12/2021 7:13 PM
+Let's check...
+[tbsniller]
+tbsniller 12/12/2021 7:11 PM
+btw your latest dile version doesnt seem to work on my tv anymore havnt
+investigated any further for now (edited)
+ message.txt
+4.83 KB External
+[infowski]
+infowski 12/12/2021 4:30 PM
+Sweet!
+[diesel2323]
+diesel2323 12/12/2021 3:27 PM
+no patch yet
+12/12/2021 3:26 PM
+that stopped the crashing!
+[infowski]
+infowski 12/12/2021 12:51 AM
+also just to make sure - colors are broken for you, right? or do you
+have your own patch to convert yuv420 to rgb?
+December 11, 2021
+[infowski]
+infowski 12/11/2021 11:51 PM
+done, fixed it up.
+12/11/2021 11:50 PM
+ah crap. forgot to commit submodule change...
+12/11/2021 11:48 PM
+Framerate limiting is not yet fixed.
+12/11/2021 11:47 PM
+https://github.com/webosbrew/hyperion-webos/tree/dile_vt_getallvfb check
+this one out.
+GitHub - webosbrew/hyperion-webos at dile_vt_getallvfb
+Contribute to webosbrew/hyperion-webos development by creating an
+account on GitHub.
+[]
+[infowski]
+infowski 12/11/2021 10:46 PM
+heh, same 
+[diesel2323]
+diesel2323 12/11/2021 10:46 PM
+i'll have to play around with it.. im not a programmer but know enough
+to break stuff
+[infowski]
+infowski 12/11/2021 10:45 PM
+I can try reversing that function tomorrow morning and we can test if it
+works better that way. Another thing you could try doing, is to rework
+capture_frame to only pass 0/NULL as a second argument here:
+https://github.com/webosbrew/hyperion-webos/blob/f3742302cc4a36081d1df6a6cc22f134a88b64ff/src/backends/libdile_vt.c#L150
+and then do a second call with a vfbprop pointer there if we don't have
+a specific vfb idx mmapped yet (in line 163)
+hyperion-webos/libdile_vt.c at f3742302cc4a36081d1df6a6cc22f134a88b...
+Contribute to webosbrew/hyperion-webos development by creating an
+account on GitHub.
+[]
+12/11/2021 10:41 PM
+and pull in offsets from data returned by
+DILE_VT_GetAllVideoFrameBufferProperty (I think, based on a quick look)
+12/11/2021 10:41 PM
+So libvt uses DILE_VT_GetCurrentVideoFrameBufferProperty with second
+argument set to 0
+12/11/2021 10:40 PM
+huh!
+12/11/2021 10:38 PM
+looking through the library...
+[diesel2323]
+diesel2323 12/11/2021 10:38 PM
+yea
+[infowski]
+infowski 12/11/2021 10:37 PM
+probably in get frame info thing...
+12/11/2021 10:37 PM
+memcpy? that's... weird. maybe they use that in libdile_vt 
+[diesel2323]
+diesel2323 12/11/2021 10:36 PM
+ile "RDXD_hyperion-webosLinux Crash: hyperion-webos crashes at location
+^Blib^Blibc-2.24.so (memcpy+0x194)
+[0xf73f5b14]__hyperion-webos.3224.zJszAI.gz" on WD #1
+12/11/2021 10:36 PM
+i found this in /var/log
+[infowski]
+infowski 12/11/2021 10:36 PM
+you can try adding some simple debug messages between calls in
+capture_frame
+12/11/2021 10:35 PM
+Mhm... I guess you haven't tried looking into where does it actually
+crash?
+[diesel2323]
+diesel2323 12/11/2021 10:35 PM
+yes, and -f switch doesnt change the reported framerate
+[infowski]
+infowski 12/11/2021 10:34 PM
+Mhmmm... Does it still crash?
+[diesel2323]
+diesel2323 12/11/2021 10:33 PM
+now it shows ~60fps
+[infowski]
+infowski 12/11/2021 10:25 PM
+and to verify if you get something like 60fps in previous example.
+12/11/2021 10:25 PM
+If you can quickly rebuild the code I'd try starting with duplicating
+this line:
+https://github.com/webosbrew/hyperion-webos/blob/f3742302cc4a36081d1df6a6cc22f134a88b64ff/src/backends/libdile_vt.c#L181
+hyperion-webos/libdile_vt.c at f3742302cc4a36081d1df6a6cc22f134a88b...
+Contribute to webosbrew/hyperion-webos development by creating an
+account on GitHub.
+[]
+[infowski]
+infowski 12/11/2021 10:24 PM
+root@LGwebOSTV:~# LD_LIBRARY_PATH=/home/root ./hyperion-webos -a
+10.25.30.183 -f 10 [DILE_VT] framerate divider: 6 Start connection loop
+[DILE_VT] pixel format: 1; width: 960; height: 540; stride: 960
+[DILE_VT] framerate: 0.018376 FPS [DILE_VT] pixel format: 1; width: 960;
+height: 540; stride: 960 [DILE_VT] framerate: 3.973197 FPS

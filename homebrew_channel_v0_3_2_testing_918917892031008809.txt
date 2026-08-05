@@ -1,0 +1,118 @@
+December 10, 2021
+[tbsniller]
+tbsniller 12/10/2021 8:51 PM
+really nice!"
+ 1
+12/10/2021 8:50 PM
+First exec without crash -> unelevated -> rebooted using ssh -> secound
+run ok
+root@LGwebOSTV:~# luna-send -i 'luna://org.webosbrew.hbchannel.service/install' '{"ipkUrl": "https://github.com/webosbrew/webos-homebrew-channel/releases/download/v0.3.2/org.webosbrew.hbchannel_0.3.2_all.ipk", " ipkHash": "452fc9aa0a283b79cfeab508be69a8b40d5891c290e789cbbcdf90b958ec202f"}' {"statusText":"Downloading…","returnValue":true} {"statusText":"Downloading…","progress":14.61996948635362,"returnValue":true} {"statusText":"Downloading…","progress":100,"returnValue":true} {"statusText":"Verifying…","returnValue":true} {"statusText":"Self-update…","returnValue":true} {"returnValue":true,"statusText":"Self-update"} 
+notification popped "Self updated" and hbchannel quitted checked root
+status without a reboot -> ok
+[dustyangel47]
+dustyangel47 12/10/2021 7:02 PM
+(except line-wrapped because terminal)
+[infowski]
+infowski 12/10/2021 7:02 PM
+Mhmmmm... Let me see.
+[dustyangel47]
+dustyangel47 12/10/2021 7:02 PM
+same command as before
+12/10/2021 7:02 PM
+    | ~ | root
+    \_$ luna-send -i 'luna://org.webosbrew.hbchannel.service/install' '{"ipkUrl": "https://github.com/webosbrew/webos-homebrew-channel/releases/download/v0.3.2/org.webosbrew.hbchannel_0.3.2_all.ipk", "ipkHash": "452fc9aa0a283b79cfeab508be69a8b40d5891c290e789cbbcdf90b958ec202f"}'
+    {"statusText":"Downloading…","returnValue":true}
+[infowski]
+infowski 12/10/2021 7:02 PM
+It definitely should get to Verifying, since we didn't change anything
+before that... 
+[dustyangel47]
+dustyangel47 12/10/2021 7:02 PM
+not progressing
+[infowski]
+infowski 12/10/2021 7:02 PM
+Or is it stuck on some progress percentage?
+12/10/2021 7:02 PM
+And it's not progressing?
+[dustyangel47]
+[] infowski And it should work fine after a reboot. Also please test
+self-updates - launch above command *again*...
+dustyangel47 12/10/2021 7:01 PM
+i'm trying this and its just stuck on Downloading...
+[infowski]
+infowski 12/10/2021 7:00 PM
+That's not a line I am proud of, but... appInfo === null when we get an
+error
+12/10/2021 7:00 PM
+      installDisabled: function () {
+        var disabled = this.appInfo === undefined || !this.packageInfo.isReady() || this.packageInfo.isError() || (this.appInfo !== null && this.appInfo.version === this.packageInfo.get('version'))
+        console.info('installDisabled:', this.appInfo ? this.appInfo.version : undefined, this.packageInfo ? this.packageInfo.get('version') : undefined, disabled);
+        return disabled;
+      },
+[dustyangel47]
+dustyangel47 12/10/2021 6:59 PM
+anyways, after reboot everything seems to work
+[infowski]
+infowski 12/10/2021 6:58 PM
+Hm hm, I think all install buttons should be available if you are
+unelevated. (since we get an error when asking for app info - similar to
+the one we get when it's not installed) That's a weird logic bug that
+may have happened. (edited)
+[dustyangel47]
+dustyangel47 12/10/2021 6:57 PM
+the install/launch buttons are just blanked out
+12/10/2021 6:55 PM
+it didn't crash and yeah its unelevated
+ 1
+[infowski]
+infowski 12/10/2021 6:55 PM
+you can check if installing/upgrading any homebrew shows you some
+sensible message
+12/10/2021 6:55 PM
+Did Your TV crash? If not, you can check homebrew channel app →
+settings - it should say "unelevated"
+12/10/2021 6:55 PM
+Yes.
+[dustyangel47]
+dustyangel47 12/10/2021 6:55 PM
+is that normal?
+12/10/2021 6:54 PM
+(no content)
+[unknown.png]
+ unknown.png
+40.89 KB External
+[infowski]
+infowski 12/10/2021 6:45 PM
+Changelog and upgrade notice:
+https://github.com/webosbrew/webos-homebrew-channel/releases/tag/v0.3.2
+Release Release v0.3.2 · webosbrew/webos-homebrew-channel
+Upgrade notice When upgrading from versions before v0.3.x a system crash
+may occur, or the Homebrew Channel app will not be able to
+install/upgrade any homebrew - in these cases a full reboot is ne...
+[]
+[infowski]
+infowski 12/10/2021 6:34 PM
+And it should work fine after a reboot. Also please test self-updates -
+launch above command again after verifying homebrew channel works fine
+after update - then it should work perfectly fine, without a reboot
+needed. (edited)
+12/10/2021 6:34 PM
+On webOS 4.x it should reinstall, but say the app is unelevated after
+relaunch. When trying to install any homebrew it will ask you to do a
+reboot. There's a slight chance a TV will reboot/hang up on some webOS
+version, which we can't really work around, and in such cases "forced
+reboot" may be needed. (edited)
+12/10/2021 6:33 PM
+luna-send -i 'luna://org.webosbrew.hbchannel.service/install' '{"ipkUrl": "https://github.com/webosbrew/webos-homebrew-channel/releases/download/v0.3.2/org.webosbrew.hbchannel_0.3.2_all.ipk", "ipkHash": "452fc9aa0a283b79cfeab508be69a8b40d5891c290e789cbbcdf90b958ec202f"}'
+[dustyangel47]
+dustyangel47 12/10/2021 6:32 PM
+still on 0.2.x
+12/10/2021 6:32 PM
+yep, i should be able to
+[infowski]
+infowski 12/10/2021 6:32 PM
+This time it should be much smoother - ls-hubd crash has been worked
+around, and we finally fixed self-updates...
+[infowski]
+infowski 12/10/2021 6:31 PM
+Anyone willing to test Homebrew Channel v0.3.2 before making it public?

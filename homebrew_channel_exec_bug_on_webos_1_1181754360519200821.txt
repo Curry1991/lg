@@ -1,0 +1,161 @@
+March 1, 2024
+hellobox. 03/01/2024 1:15 AM
+so piccap/hyperhdr are still not elevating themselves?
+03/01/2024 1:11 AM
+although now that we're detecting the node version, i guess we can apply
+other compat fixes more easily
+03/01/2024 1:11 AM
+this is what i had to do to fix it
+https://github.com/webosbrew/webos-homebrew-channel/commit/520309ce0cd75982c392d52de212c5609efea1af
+03/01/2024 1:10 AM
+in general it is a huge pain to support older webOS versions, especially
+webOS 1
+03/01/2024 1:10 AM
+there may be other problems, but at least this one seems to be fixed
+03/01/2024 1:10 AM
+so piccap and hyperhdr would have gotten the same error when they tried
+to elevate
+03/01/2024 1:09 AM
+see
+https://discord.com/channels/407937994037919756/835489130967859251/1168795769533374464
+03/01/2024 1:08 AM
+that didn't work before
+03/01/2024 1:08 AM
+good
+03/01/2024 1:07 AM
+try this
+    luna-send -n 1 'luna://org.webosbrew.hbchannel.service/exec' '{"command":"id"}'
+03/01/2024 1:05 AM
+but at least the elevation part should now work
+Original message was deleted
+hellobox. 03/01/2024 1:05 AM
+uhh they may not support webOS 1
+Original message was deleted
+hellobox. 03/01/2024 1:02 AM
+shouldn't really matter
+hellobox. 03/01/2024 12:57 AM
+is there any output?
+Original message was deleted
+hellobox. 03/01/2024 12:57 AM
+huh?
+hellobox. 03/01/2024 12:55 AM
+but it should also quit after 10 seconds
+Original message was deleted
+hellobox. 03/01/2024 12:55 AM
+you can hit ctrl+c after it says installed
+hellobox. 03/01/2024 12:52 AM
+(whatever didn't work before)
+03/01/2024 12:51 AM
+does it work?
+03/01/2024 12:48 AM
+and reboot
+03/01/2024 12:48 AM
+then run
+    /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service
+03/01/2024 12:47 AM
+    curl -k -L -o '/home/root/hb.ipk' -- 'https://github.com/throwaway96/webos-homebrew-channel/releases/download/v0.6.4-test18/org.webosbrew.hbchannel_0.6.3_all.ipk'
+    luna-send -w 10000 -i 'luna://com.webos.appInstallService/dev/install' '{"id":"com.ares.defaultName","ipkUrl":"/home/root/hb.ipk","subscribe":true}'
+03/01/2024 12:46 AM
+sftp or just download it on the TV
+03/01/2024 12:42 AM
+although since you have webOS 1, you probably have RootMyTV startup
+scripts that would take care of that
+03/01/2024 12:42 AM
+make sure to re-elevate it before rebooting
+03/01/2024 12:42 AM
+yeah, something is screwed up with the repo
+03/01/2024 12:41 AM
+hmm, actually it's not showing up there
+03/01/2024 12:40 AM
+https://github.com/throwaway96/apps-repo
+03/01/2024 12:40 AM
+unless you add my test repo to hbchannel
+03/01/2024 12:40 AM
+you have to do it manually
+03/01/2024 12:39 AM
+https://github.com/throwaway96/webos-homebrew-channel/releases/download/v0.6.4-test18/org.webosbrew.hbchannel_0.6.3_all.ipk
+hellobox. 03/01/2024 12:16 AM
+although the first several wouldn't have worked anyway, because you
+can't run apps like that
+03/01/2024 12:16 AM
+see, /exec was failing
+https://discord.com/channels/407937994037919756/835489130967859251/1168795769533374464
+Original message was deleted
+hellobox. 03/01/2024 12:15 AM
+do you want to test the latest build?
+hellobox. 03/01/2024 12:15 AM
+although i've added an /elevateService method, so in the future that
+won't be necessary
+03/01/2024 12:15 AM
+those apps were trying to use that to run elevate-service as root
+03/01/2024 12:15 AM
+but i think the root cause was that /exec didn't work
+February 29, 2024
+hellobox. 02/29/2024 11:41 PM
+    root@lg-m14_2[m14tv 1.4.0]:~# luna-send -n 1 'luna://org.webosbrew.hbchannel.service/exec' '{"command":"id"}'
+    {"returnValue":true,"error":null,"stdoutString":"uid=6457(prisoner) gid=5000 groups=44(video),777(crashd)\n","stdoutBytes":"uid=6457(prisoner) gid=5000 groups=44(video),777(crashd)\n","stderrString":"","stderrBytes":""}
+02/29/2024 11:40 PM
+@Cas what was the problem exactly? i think i may have fixed it
+[] hellobox changed the channel name: Homebrew Channel /exec bug on
+webOS 1. 2/29/24, 11:40 PM
+[] hellobox changed the channel name: Homebrew Channel /exec bug on
+webOS 1. 2/29/24, 11:40 PM
+January 19, 2024
+hellobox. 01/19/2024 8:23 AM
+this may fix it
+https://github.com/throwaway96/webos-homebrew-channel/commit/6524d92dc1ae5d34ff2430a0b7446c66ab10f111
+hellobox. 01/19/2024 7:51 AM
+god, the node docs (esp. v0.10.x) are just bad (edited)
+hellobox. 01/19/2024 7:14 AM
+and of course there's no easy way to just get the node.js version
+01/19/2024 7:09 AM
+hmm!
+https://github.com/nodejs/node/blob/v0.10.15/lib/string_decoder.js#L22-L30
+https://github.com/nodejs/node/blob/v0.10.15/lib/buffer.js#L245-L258
+that does look like it would be a problem (edited)
+01/19/2024 7:08 AM
+it may be this
+https://github.com/nodejs/node/blob/v0.10.15/lib/_stream_readable.js#L193
+01/19/2024 7:07 AM
+it seems like stdout/stderr are pipe_wraps by default, but i can't
+figure out where setEncoding() is
+01/19/2024 7:06 AM
+i'll have to change that code (either removing encoding or changing it
+to something else) and try it on webOS 1
+01/19/2024 7:00 AM
+i'm not sure though, because the code is the same in v0.10.25, and i
+don't think the same bug exists in webOS 2
+01/19/2024 6:57 AM
+in node v0.12.2, which is used in webOS 3.x, it only calls setEncoding()
+if there's a valid encoding
+https://github.com/nodejs/node/blob/v0.12.2/lib/child_process.js#L700
+https://github.com/nodejs/node/blob/v0.12.2/lib/child_process.js#L816-L819
+(edited)
+01/19/2024 6:54 AM
+i wonder if encoding:'buffer' is the problem
+https://github.com/throwaway96/webos-homebrew-channel/blob/cb176019435a146d33fd15829f2c36ba6a6a4120/services/service.ts#L595
+https://github.com/nodejs/node/blob/v0.10.15/lib/child_process.js#L672-L673
+(edited)
+01/19/2024 6:51 AM
+here's the node v0.10.15 child_process.exec()
+https://github.com/nodejs/node/blob/v0.10.15/lib/child_process.js#L556
+01/19/2024 6:49 AM
+actually i just came up with some new ideas about the specific bug
+affecting /exec on webOS 1 based on some stuff i learned recently
+01/19/2024 6:48 AM
+also all the documentation has bit rotted
+01/19/2024 6:45 AM
+and nobody cares about old webOS anymore, including LG
+01/19/2024 6:45 AM
+unfortunately all this old node stuff was just abandoned
+01/19/2024 6:44 AM
+i'm able to establish a connection either manually or with ares-inspect,
+but nothing actually responds
+01/19/2024 6:44 AM
+well, i got parts of it to work
+01/19/2024 6:43 AM
+i've been trying to inspect services recently, but i still haven't been
+able to get it to work
+[casuallynoted]
+casuallynoted 01/19/2024 6:42 AM
+now i just have to figure out how to build node-inspector...

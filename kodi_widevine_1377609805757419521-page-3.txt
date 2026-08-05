@@ -1,0 +1,1753 @@
+August 19, 2025
+[yolofant]
+yolofant 08/19/2025 4:31 PM
+until the next stream that is not crypto
+[ccarnell98]
+ccarnell98 08/19/2025 4:31 PM
+are you sure about that?
+    if (config["configs"]["tv.model.edidType"].asString().find("dts") !=
+                             std::string::npos)
+                           ms_codecMap.emplace(AV_CODEC_ID_DTS, "DTS");
+08/19/2025 4:30 PM
+works though 
+[yolofant]
+yolofant 08/19/2025 4:29 PM
+it's a static map
+[yolofant]
+[] ccarnell98 <@195583665265311744> how about this? ```
+if(audioHint.cryptoSession) { ms_codecMap.insert({ ...
+yolofant 08/19/2025 4:29 PM
+no
+[ccarnell98]
+ccarnell98 08/19/2025 4:21 PM
+@Yolofant Hmm any idea how to fix the loss of 30 - 40 seconds when it
+drops the packets during switching streams from 720p to 4k? There are
+workarounds for the end user, e.g setting initial bandwidth higher than
+4000, or selecting the mode that lets the user pick the stream at the
+start, but its not ideal
+[ccarnell98]
+ccarnell98 08/19/2025 4:02 PM
+at least until I can get someone to try some AAC/AAC LC/HE AAC/HE v2
+AAC) in chromium or something so I can see what the actual params are
+08/19/2025 3:59 PM
+in SetupAudio
+08/19/2025 3:59 PM
+@Yolofant how about this?
+      if(audioHint.cryptoSession) {
+        ms_codecMap.insert({
+            {AV_CODEC_ID_AAC, "AAC"},
+            {AV_CODEC_ID_AAC_LATM, "AAC"}
+        });
+      }
+[ccarnell98]
+ccarnell98 08/19/2025 2:55 PM
+Im planning to add the dv fix for prime when I get back home hopefully
+[a6oo]
+a6oo 08/19/2025 12:49 PM
+@Yolofant I tested the same Reacher episode with a webOS nightly that
+had the old VideoPlayer and it triggered DV without problems.
+[a6oo]
+a6oo 08/19/2025 12:09 PM
+Also confirmed that the problem with DV and Amazon is an IA or Kodi
+problem. I got the mpd and keys (so I'm using clearkey) for one Reacher
+episode and DV isn't detected. From the manifest: codecs="dvhe.05.01" My
+Nvidia Shield TV is an old model that doesn't support DV so I can't test
+it there but I'm pretty sure that I would have read posts about that at
+the kodinerds site if DV didn't work with the Amazon addon and the
+Shield. (edited)
+[a6oo]
+a6oo 08/19/2025 11:00 AM
+Yes, confirmed broken here.
+ 1
+[ccarnell98]
+ccarnell98 08/19/2025 9:55 AM
+@Yolofant Does this break the magic remote for you?
+https://github.com/xbmc/xbmc/pull/27088
+[tools/depends][target] Update libxkbcommon to v1.11.0 by garbear ...
+Description As title says, the version is bumped, and we use the new
+Makefile format with a separate -VERSION file. Motivation and context
+Needed for: [input] fallback to direct libinput mapping #...
+[]
+August 18, 2025
+[ccarnell98]
+ccarnell98 08/18/2025 11:54 PM
+well, working code I should say
+08/18/2025 11:54 PM
+tidier code is pushed up
+https://github.com/cscd98/inputstream.adaptive/tree/webos
+GitHub - cscd98/inputstream.adaptive at webos
+kodi inputstream addon for several manifest types. Contribute to
+cscd98/inputstream.adaptive development by creating an account on
+GitHub.
+[]
+08/18/2025 11:53 PM
+i'll have a look tomorrow bed is calling
+08/18/2025 11:52 PM
+yep
+[yolofant]
+yolofant 08/18/2025 11:52 PM
+bento or something
+08/18/2025 11:52 PM
+I think these are from a library
+[ccarnell98]
+ccarnell98 08/18/2025 11:51 PM
+AP4_HevcDoviSampleDescription has no getters/setters for dv_profile but
+has member variables with those names. weird
+[yolofant]
+yolofant 08/18/2025 11:51 PM
+but if you have a stream then you need to get it from somewhere else
+08/18/2025 11:51 PM
+attached to stream in mkv for instance
+08/18/2025 11:50 PM
+well it's usually parsed from sidedata
+[ccarnell98]
+ccarnell98 08/18/2025 11:46 PM
+maybe, if I could work it out 
+08/18/2025 11:41 PM
+should be able to read the profileId and set it somewhere
+08/18/2025 11:41 PM
+yeh so in src/codechandler/HEVCCodecHandler.cpp
+08/18/2025 11:40 PM
+AP4_HevcDoviSampleDescription
+08/18/2025 11:33 PM
+I would know if I didn't delete all my logging already
+08/18/2025 11:33 PM
+I wonder if the dovi profile is in the extra data
+[yolofant]
+yolofant 08/18/2025 11:32 PM
+because you can see it in the chromium sources
+08/18/2025 11:32 PM
+but I would assume it is zero based
+08/18/2025 11:32 PM
+then we can figure out if it is zero based or not
+08/18/2025 11:32 PM
+so if you can check what netflix aac gives
+08/18/2025 11:27 PM
+so in webos profile 2
+08/18/2025 11:27 PM
+btw it was netflix that is always aac profile 2
+[ccarnell98]
+ccarnell98 08/18/2025 11:24 PM
+oh but for that I would need to work out what the profileId is in the
+first place in IA
+08/18/2025 11:24 PM
+it was unused
+08/18/2025 11:24 PM
+like I did for svp
+08/18/2025 11:24 PM
+hmm I could add a flag maybe as a workaround
+[yolofant]
+yolofant 08/18/2025 11:18 PM
+and av1
+08/18/2025 11:18 PM
+it could be in h264
+[ccarnell98]
+ccarnell98 08/18/2025 11:16 PM
+hmm do you only get dovi with hevc?
+[yolofant]
+yolofant 08/18/2025 11:14 PM
+codecprofile is different I think
+08/18/2025 11:14 PM
+it's not implemented
+08/18/2025 11:14 PM
+no there is no function to fill the dovi metadata
+[ccarnell98]
+ccarnell98 08/18/2025 11:12 PM
+m_codecProfile ?
+[yolofant]
+yolofant 08/18/2025 11:08 PM
+but it's a breaking api change I guess
+08/18/2025 11:08 PM
+there you need to add it
+08/18/2025 11:08 PM
+it's missing in InputStream.h
+[ccarnell98]
+ccarnell98 08/18/2025 11:07 PM
+I can't even find "profileId" in the IA code..
+08/18/2025 11:05 PM
+(no content)
+[rn_image_picker_lib_temp_cf8ba6f3-223a-470d-bede-a1ffc3266d95.jpg]
+ rn_image_picker_lib_temp_cf8ba6f3-223a-470d-bede-a1ffc3266d95.jpg
+2.66 MB External
+[yolofant]
+yolofant 08/18/2025 11:05 PM
+but then the dovi fields are probably still empty
+08/18/2025 11:05 PM
+then also enables dovi
+08/18/2025 11:05 PM
+where it checks the fourcc
+08/18/2025 11:05 PM
+probably you hit that
+08/18/2025 11:05 PM
+there is a check
+[ccarnell98]
+ccarnell98 08/18/2025 11:04 PM
+playing in DV? though
+08/18/2025 11:03 PM
+    {"DolbyHdrInfo":{"encryptionType":"all","profileId":0,"trackType":"single"}
+08/18/2025 11:03 PM
+this is captain america (D+)
+08/18/2025 11:01 PM
+don't know why but hey ho
+08/18/2025 11:01 PM
+you can downgrade to L3 if you want
+08/18/2025 11:01 PM
+i've made L1 the default
+[yolofant]
+yolofant 08/18/2025 10:53 PM
+dvhe for instance is a fourcc
+[ccarnell98]
+ccarnell98 08/18/2025 10:53 PM
+saying that.. i've only tried a few videos theres bound to be a bug or
+10
+[yolofant]
+yolofant 08/18/2025 10:53 PM
+or you can use it to get codec
+08/18/2025 10:53 PM
+fourcc is codec
+08/18/2025 10:53 PM
+hmm
+[ccarnell98]
+ccarnell98 08/18/2025 10:50 PM
+it sets fourcc whatever that is 
+08/18/2025 10:49 PM
+HEVCCodecHandler ?
+08/18/2025 10:48 PM
+always start in highest res
+08/18/2025 10:47 PM
+you can turn this feature off though so its not a big deal in IA
+settings
+08/18/2025 10:47 PM
+only found 1 other bug so far, when using adaptive mode it starts in
+720p then after 20 seconds it will go to 4k, but it skips like 30 - 40
+seconds of video
+08/18/2025 10:47 PM
+besides the pink screen issue
+[yolofant]
+yolofant 08/18/2025 10:44 PM
+but it's also possible that it's happening in kodi
+08/18/2025 10:44 PM
+should happen in the similar place
+08/18/2025 10:44 PM
+I mean somewhere also things like format are set I guess?
+08/18/2025 10:44 PM
+but cryptoinfo is not the dovi, no? (edited)
+[ccarnell98]
+ccarnell98 08/18/2025 10:41 PM
+theres readers all over the shop
+08/18/2025 10:40 PM
+HLSTree, DashTree? feck knows
+08/18/2025 10:38 PM
+m_codecHandler->Transform ? not really sure
+08/18/2025 10:37 PM
+CFragmentedSampleReader::ReadSample(), which calls
+CWVCencSingleSampleDecrypter::DecryptSampleData, then in main  it
+populates cryptoInfo
+[yolofant]
+yolofant 08/18/2025 10:36 PM
+have you seen streams where the dovi field is set?
+08/18/2025 10:36 PM
+but where is the parsing
+[ccarnell98]
+ccarnell98 08/18/2025 10:35 PM
+        /// @brief @ref numSubSamples uint16_t's which define the size of clear size
+        /// of a subsample.
+        uint16_t* clearBytes;
+        /// @brief @ref numSubSamples uint32_t's which define the size of cipher size
+        /// of a subsample.
+        uint32_t* cipherBytes;
+[yolofant]
+yolofant 08/18/2025 10:31 PM
+hmm
+[ccarnell98]
+ccarnell98 08/18/2025 10:29 PM
+some packets are encrypted 100%, where some others have clearbytes which
+can be read
+08/18/2025 10:26 PM
+but I couldn't find the dovi stuff in IA
+08/18/2025 10:26 PM
+the extradata is parsed for it I think
+[yolofant]
+yolofant 08/18/2025 10:26 PM
+you can get it from fourcc mayybe
+08/18/2025 10:25 PM
+problem is that I dont know if this is possible in encrypted stream
+08/18/2025 10:25 PM
+but it has to be somewhere
+08/18/2025 10:25 PM
+well I dont know where the dovi field is populated
+[ccarnell98]
+ccarnell98 08/18/2025 10:22 PM
+I haven't used prime though so it could be a addon bug
+08/18/2025 10:21 PM
+prime is less.. reliable.. now not playing. d+ works though
+[yolofant]
+yolofant 08/18/2025 10:16 PM
+the dovi field
+08/18/2025 10:16 PM
+but it needs to come from inputstream
+08/18/2025 10:16 PM
+I dont know why it is not set
+08/18/2025 10:14 PM
+that is normal
+08/18/2025 10:14 PM
+yes because it is missing
+[ccarnell98]
+ccarnell98 08/18/2025 10:14 PM
+but purple
+08/18/2025 10:14 PM
+yup
+[yolofant]
+yolofant 08/18/2025 10:14 PM
+dovi not triggered
+[ccarnell98]
+ccarnell98 08/18/2025 10:13 PM
+hmm rings of power:
+    {"args":[{"mediaTransportType":"BUFFERSTREAM","option":{"adaptiveStreaming":{"adaptiveResolution":true,"maxFrameRate":120,"maxHeight":2304,"maxWidth":4096},"appId":"org.xbmc.kodi","drm":{"type":"WIDEVINE_MODULAR"},"externalStreamingInfo":{"bufferingCtrInfo":{"bufferMaxLevel":0,"bufferMinLevel":0,"preBufferByte":0,"qBufferLevelAudio":0,"qBufferLevelVideo":0,"srcBufferLevelAudio":{"maximum":2097152,"minimum":1048576},"srcBufferLevelVideo":{"maximum":8388608,"minimum":1048576}},"contents":{"ac3PlusInfo":{"channels":18,"frequency":48.0},"codec":{"audio":"AC3 PLUS","video":"H265"},"esInfo":{"pauseAtDecodeTime":true,"ptsToDecode":0,"seperatedPTS":true,"videoFpsScale":1,"videoFpsValue":24,"videoHeight":720,"videoWidth":1280},"format":"RAW","immersive":"ATMOS","provider":"org.xbmc.kodi"},"streamQualityInfo":true,"streamQualityInfoCorruptedFrame":true,"streamQualityInfoNonFlushable":true,"svpVersion":40},"seekMode":"keep-rate","transmission":{"contentsType":"LIVE","trickType":"client-side"},"useDroppedFrameEvent":true,"windowId":"_Window_Id_29"}}]}
+08/18/2025 10:09 PM
+if we could the extradata crash fix that would help with the static map
+though
+08/18/2025 10:09 PM
+i'll try with and without
+[yolofant]
+yolofant 08/18/2025 10:06 PM
+i think amazon for isntance always puts 2
+08/18/2025 10:06 PM
+yes but if you look in ghidra
+[ccarnell98]
+ccarnell98 08/18/2025 10:05 PM
+in ffmpeg, AV_PROFILE_AAC_LOW is 1, but in MPEG-4 AOT it is 2 (see
+https://wiki.multimedia.cx/index.php/MPEG-4_Audio)
+[yolofant]
+yolofant 08/18/2025 10:03 PM
+which docs
+[ccarnell98]
+ccarnell98 08/18/2025 10:02 PM
+but, maybe LG don't follow the docs
+[yolofant]
+yolofant 08/18/2025 10:02 PM
+because it takes it from the stream
+08/18/2025 10:02 PM
+but I guess in adts it does not matter
+[ccarnell98]
+ccarnell98 08/18/2025 10:02 PM
+I got it from the docs
+[yolofant]
+yolofant 08/18/2025 10:02 PM
+and it would also make sense because chromium also not has an offset I
+think
+[ccarnell98]
+ccarnell98 08/18/2025 10:02 PM
+i'll do some more testing tomorrow
+[yolofant]
+yolofant 08/18/2025 10:02 PM
+I have seen the opposite
+08/18/2025 10:02 PM
+are you sure with the aac formats?
+[ccarnell98]
+ccarnell98 08/18/2025 9:56 PM
+will have a look in a min
+08/18/2025 9:56 PM
+and fixing my commit
+08/18/2025 9:56 PM
+not yet I'm just cleaning up my vast amount of logs
+[yolofant]
+yolofant 08/18/2025 9:56 PM
+purple tint is if dovi profile 5 not played in dovi
+08/18/2025 9:55 PM
+have you checked
+08/18/2025 9:55 PM
+but is profile correct in the rings of power show
+[ccarnell98]
+ccarnell98 08/18/2025 9:51 PM
+that.. was.. it...
+08/18/2025 9:50 PM
+it was overwriting 1 byte....
+08/18/2025 9:50 PM
+the offending blank screen code in IA....
+    -        AP4_UI16* clrb_out = reinterpret_cast<AP4_UI16*>(dataOut.UseData() + clrDataBytePos);
+    -        *clrb_out += static_cast<AP4_UI16>(fragInfo.m_annexbSpsPps.size());
+08/18/2025 9:47 PM
+now to undo all my logs in IA (edited)
+08/18/2025 9:45 PM
+(pink video not withstanding on rings of power)
+08/18/2025 9:45 PM
+changes are minimal for kodi itself:
+https://github.com/xbmc/xbmc/compare/master...cscd98:xbmc:webos-video-player-widevine
+Comparing xbmc:master...cscd98:webos-video-player-widevine · xbmc/...
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&amp;#39;s ava...
+[]
+08/18/2025 9:44 PM
+yeh that was what I was thinking
+[yolofant]
+yolofant 08/18/2025 9:42 PM
+to include if secure only
+08/18/2025 9:42 PM
+maybe can alter the map
+[ccarnell98]
+ccarnell98 08/18/2025 9:39 PM
+@Yolofant hmm maybe a solution will come to me now that video is working
+(for another day though). i'll leave it in there, wont make a PR today
+08/18/2025 9:37 PM
+@Anthock Its an account belonging to someone at kodi, just using it to
+test this so I don't know what plan he has, but it has DV apparently
+[anthock]
+[] ccarnell98 D+ working, Prime working as well. Prime has weird colours
+though for rings of power, need to look i...
+anthock 08/18/2025 9:36 PM
+FYI: if you are on standard plan with ads there is no DV on Prime
+[yolofant]
+yolofant 08/18/2025 9:33 PM
+so you cannot add there
+08/18/2025 9:33 PM
+codec map is static
+08/18/2025 9:32 PM
+dont add
+[ccarnell98]
+ccarnell98 08/18/2025 9:30 PM
+because some people will be annoyed if there local files stop working
+(edited)
+08/18/2025 9:30 PM
+I was also thinking about the aac issue. Can you add the codecMap
+dynamically? say if hints.cryptoSession add those?
+[yolofant]
+yolofant 08/18/2025 9:26 PM
+no idea
+[ccarnell98]
+ccarnell98 08/18/2025 9:26 PM
+actually i'll keep the menu option until you guys have tested other
+webOS versions
+08/18/2025 9:24 PM
+we could probably map it to webOS version when we know and the menu
+option would not be needed
+08/18/2025 9:24 PM
+(the menu option)
+08/18/2025 9:24 PM
+i'm using SVP_VERSION_40 which is what my chromium says. I'm not sure if
+webOS 4+ support this or not? I have a menu option to pick it at the
+moment for testing purposes. Should I keep that or just get rid
+08/18/2025 9:22 PM
+yep its purple 
+[yolofant]
+yolofant 08/18/2025 9:20 PM
+purple image = dovi profile 5
+08/18/2025 9:20 PM
+weird color maybe wrong dovi profile?
+08/18/2025 9:20 PM
+cool!
+[ccarnell98]
+ccarnell98 08/18/2025 9:13 PM
+D+ working, Prime working as well. Prime has weird colours though for
+rings of power, need to look into that
+ 1
+[ccarnell98]
+ccarnell98 08/18/2025 8:59 PM
+DV 4K 
+08/18/2025 8:58 PM
+(yeh another bug in IA fixed)
+08/18/2025 8:57 PM
+I have VIDEO
+ 1
+08/18/2025 8:57 PM
+FUCKIN HAV IT
+[ccarnell98]
+[] mariotaku Because it can't open `/dev/tee0`, which doesn't exist in
+devmode jailer
+ccarnell98 08/18/2025 7:58 PM
+Would that persist after a reboot? must be better than telling people to
+run kodi as root
+[ccarnell98]
+ccarnell98 08/18/2025 6:09 PM
+according to copilot.. which is 50/50 wrong usually:
+    The Dolby Vision profile extracted from your extradata is 193.
+    This value comes from the byte immediately following the PPS NAL header (44 01), which is often used to encode the dv_profile in certain Dolby Vision configurations. Profile 193 corresponds to:
+    dvhe.07.06 or dvhe.07.09 depending on level and compatibility
+    Single-layer with enhancement layer (EL)
+[yolofant]
+yolofant 08/18/2025 5:13 PM
+probably try profile 5
+08/18/2025 5:13 PM
+oof
+[ccarnell98]
+ccarnell98 08/18/2025 5:01 PM
+haven't tracked that down yet
+08/18/2025 5:01 PM
+on a seperate note, the DV stuff from IA doesn't get populated:
+    {"DolbyHdrInfo":{"encryptionType":"all","profileId":0,"trackType":"single"}
+[ccarnell98]
+ccarnell98 08/18/2025 4:50 PM
+Doesn't do anything for me, just kicks you out of DV FEL All layers test
+08/18/2025 4:50 PM
+DV compatibility mode?
+[yolofant]
+yolofant 08/18/2025 4:48 PM
+in kodxi setting
+08/18/2025 4:48 PM
+you can convert
+08/18/2025 4:48 PM
+yes
+[ccarnell98]
+ccarnell98 08/18/2025 4:48 PM
+the FEL bit is optional?
+08/18/2025 4:46 PM
+but I do think the others should if they work on the internal player (DV
+FEL All Layers Test (Woman at 80s).mkv and LG\ Demo\ DolbyVision\
+Comparison.mkv )
+08/18/2025 4:45 PM
+OK that works  thanks
+[yolofant]
+yolofant 08/18/2025 4:40 PM
+and profile 5 works and 10
+08/18/2025 4:40 PM
+profile 7 only if not fel
+08/18/2025 4:40 PM
+profile 8 should always work
+08/18/2025 4:40 PM
+try that
+08/18/2025 4:40 PM
+https://drive.google.com/file/d/1-8C0ZYnIhEqOVJQ532hIJobP5XR6A7gj/view
+DV8_TEST.mp4
+08/18/2025 4:38 PM
+oh no is also fel
+08/18/2025 4:37 PM
+try here
+08/18/2025 4:37 PM
+https://mega.nz/file/2ew0DApT#UOEt2mrKYOHDak2TlgZSk6nQmJPckHntZvWHdfjVARY
+483.21 MB file on MEGA
+[]
+[ccarnell98]
+ccarnell98 08/18/2025 4:37 PM
+https://kodi.wiki/view/Samples
+Samples
+08/18/2025 4:36 PM
+do you have a demo file I could try (one that works for you off kodi
+samples)
+[yolofant]
+yolofant 08/18/2025 4:35 PM
+all of mine 
+[ccarnell98]
+ccarnell98 08/18/2025 4:34 PM
+do you know a DV file that works for you?
+08/18/2025 4:34 PM
+well now we know L1 is just stuck on the first frame, like its waiting
+for something, while decrypting carries on regardless
+[yolofant]
+yolofant 08/18/2025 4:33 PM
+i think then the video metadata is bad
+[ccarnell98]
+ccarnell98 08/18/2025 4:33 PM
+This is on my G4 and C3 btw
+08/18/2025 4:33 PM
+Format : HEVC
+[yolofant]
+yolofant 08/18/2025 4:33 PM
+h264 dovi is deprecated
+08/18/2025 4:33 PM
+maybe not supported
+08/18/2025 4:32 PM
+profile 4
+[ccarnell98]
+ccarnell98 08/18/2025 4:32 PM
+but the LG comparison video -> HDR format : Dolby Vision, Version 1.0,
+Profile 4, dvhe.04.06, BL+EL+RPU, no metadata compression
+08/18/2025 4:32 PM
+I wish that was the case, but in L1 I get a blank screen no matter what
+[yolofant]
+yolofant 08/18/2025 4:31 PM
+because the video was a dv too?
+08/18/2025 4:31 PM
+but then you get blank screen with the l1 too
+08/18/2025 4:31 PM
+no idea but works for me
+[ccarnell98]
+ccarnell98 08/18/2025 4:30 PM
+Plays OK on internal player
+08/18/2025 4:29 PM
+I did a fresh install of the nightly on my bedroom C3, played LG
+comparison DV demo -> blank screen.
+08/18/2025 4:28 PM
+LG comparison video is not FEL I think (edited)
+[yolofant]
+yolofant 08/18/2025 4:27 PM
+just not fel
+08/18/2025 4:27 PM
+no it works with the normal files
+[ccarnell98]
+ccarnell98 08/18/2025 4:26 PM
+at least for me
+08/18/2025 4:26 PM
+I think DV is broken for some reason
+08/18/2025 4:25 PM
+as per internal player
+08/18/2025 4:25 PM
+the video should still play though without a blank screen 
+[yolofant]
+yolofant 08/18/2025 4:25 PM
+then it is not taking FEL
+[ccarnell98]
+ccarnell98 08/18/2025 4:25 PM
+The woman at 80 seconds (the FEL bit?) doesn't appear
+08/18/2025 4:24 PM
+Yeh I'm not sure but on the internal video player both videos play (and
+not a blank screen)
+[yolofant]
+yolofant 08/18/2025 4:18 PM
+I don't think FEL can be decoded
+[ccarnell98]
+ccarnell98 08/18/2025 12:36 PM
+    0:00:06.989748860  3179 0xcc831588 WARN       codecparsers_h265 gsth265parser.c:2552:gst_h265_parser_parse_slice_hdr: failed to read UE for 'tmp'
+    0:00:06.989768080  3179 0xcc831588 WARN       codecparsers_h265 gsth265parser.c:2775:gst_h265_parser_parse_slice_hdr: error parsing "Slice header"
+    0:00:06.989782460  3179 0xcc831588 WARN       codecparsers_h265 gsth265parser.c:2512:gst_h265_parser_parse_slice_hdr: value for 'pps_id' greater than max. value: 64, max 63
+    0:00:06.989788900  3179 0xcc831588 WARN       codecparsers_h265 gsth265parser.c:2775:gst_h265_parser_parse_slice_hdr: error parsing "Slice header"
+    0:00:06.989850840  3179 0xcc831588 WARN       codecparsers_h265 gsth265parser.c:2515:gst_h265_parser_parse_slice_hdr: couldn't find associated picture parameter set with id: 15
+[ccarnell98]
+ccarnell98 08/18/2025 11:46 AM
+Did a clean install on my C3 just in case, yep its broken DV atm
+[ccarnell98]
+ccarnell98 08/18/2025 9:57 AM
+Tried nightly from master
+08/18/2025 9:55 AM
+hmm another DV is blank for me (edited)
+LG Demo DolbyVision Comparison.mkv
+[ccarnell98]
+ccarnell98 08/18/2025 9:36 AM
+https://paste.kodi.tv/wocakenuvo.kodi
+[ccarnell98]
+ccarnell98 08/18/2025 9:25 AM
+Using "DV Fell All layers test (woman at 80s)
+08/18/2025 9:24 AM
+I used kodi test sample:
+https://mega.nz/folder/aagzVbbT#WuxcI61oaTv8X3VA_T9_cg
+File folder on MEGA
+[]
+08/18/2025 9:21 AM
+@Yolofant On a seperate note, does DV profile 7 (FEL) work from a mkv
+file? just get a blank screen on my G4
+[yolofant]
+yolofant 08/18/2025 12:14 AM
+which is also possible
+08/18/2025 12:14 AM
+or it's just not an error
+08/18/2025 12:13 AM
+hmm
+August 17, 2025
+[ccarnell98]
+ccarnell98 08/17/2025 10:56 PM
+no it doesn't
+08/17/2025 10:56 PM
+are you sure?
+08/17/2025 10:56 PM
+question: does this have a a IDR? <packet> answer: yes it has 00 00 1
+etc. etc..
+08/17/2025 10:55 PM
+fml copilot is the biggest piece of crap
+[ccarnell98]
+ccarnell98 08/17/2025 10:39 PM
+there aren't any decryption errors
+[yolofant]
+yolofant 08/17/2025 10:39 PM
+probably no frames are arriving at the sink because the decryption fails
+08/17/2025 10:38 PM
+possibly because the pipeline isn't prerolling
+[ccarnell98]
+ccarnell98 08/17/2025 10:37 PM
+for like 20 seconds
+08/17/2025 10:36 PM
+this is repeating over and over
+    0:00:01.194348820  8055 0xdb80f690 INFO              GST_STATES gstbin.c:2150:gst_bin_get_state_func:<custom-player> getting state
+    0:00:01.194435120  8055 0xdb80f690 INFO              GST_STATES gstelement.c:2485:gst_element_get_state_func:<custom-player> waiting for element to commit state
+[yolofant]
+yolofant 08/17/2025 10:33 PM
+yeah linking is before you send data
+08/17/2025 10:33 PM
+those may not necessarily be errors
+[ccarnell98]
+ccarnell98 08/17/2025 10:33 PM
+seems to link
+08/17/2025 10:33 PM
+    0:00:00.165848680 [34m 8055[00m 0xdb807100 [36mINFO   [00m [00;01;31;44m            GST_PADS gstutils.c:1632:prepare_link_maybe_ghosting:[00m decrypt-pt and dvbin0 in same bin, no need for ghost pads
+    0:00:00.165950580 [34m 8055[00m 0xdb807100 [36mINFO   [00m [00;01;31;44m            GST_PADS gstpad.c:2382:gst_pad_link_prepare:[00m trying to link decrypt-pt:src and dvbin0:sink
+    0:00:00.165979920 [34m 8055[00m 0xdb807100 [36mINFO   [00m [00;36m               dvbin gstdvbin.c:253:gst_dvbin_sink_query:<dvbin0>[00m caps query
+    0:00:00.165998540 [34m 8055[00m 0xdb807100 [36mINFO   [00m [00;01;31;44m            GST_PADS gstpad.c:4314:gst_pad_peer_query:<sink:proxypad0>[00m pad has no peer
+    0:00:00.166059520 [34m 8055[00m 0xdb807100 [36mINFO   [00m [00;01;31;44m            GST_PADS gstpad.c:2590:gst_pad_link_full:[00m linked decrypt-pt:src and dvbin0:sink, successful
+    0:00:00.166072220 [34m 8055[00m 0xdb807100 [36mINFO   [00m [00;01;34m           GST_EVENT gstevent.c:1757:gst_event_new_reconfigure:[00m creating reconfigure event
+    0:00:00.166082160 [34m 8055
+08/17/2025 10:28 PM
+    0:00:00.183372500 [34m 8055[00m 0xdb80f368 [36mINFO   [00m [00;36m               dvbin gstdvbin.c:1045:gst_dvbin_svp_handle:[00m emit svp-handle signal. 0xd3c65e30
+    0:00:00.183504240 [34m 8055[00m 0xdb80f368 [36mINFO   [00m [00mpassthroughdecryptor gstpassthroughdecryptor.cpp:154:void gst_passthrough_decryptor_set_property(GObject*, guint, const GValue*, GParamSpec*):<decrypt-pt>[00m vdec-handle: 0xd3c65e30
+    0:00:00.183556140 [34m 8055[00m 0xdb80f368 [36mINFO   [00m [00m   adaptivedecryptor gstadaptivedecryptor.cpp:260:void gst_adaptive_decryptor_set_property(GObject*, guint, const GValue*, GParamSpec*):<decrypt-pt>[00m drm-type: widevine-modular
+08/17/2025 10:28 PM
+    0:00:01.093735280 [34m 8055[00m 0xd7e15060 [36mINFO   [00m [00m             basesrc gstbasesrc.c:1789:gst_base_src_perform_seek:<video-app-es>[00m EOS flags was detected
+    0:00:01.094023980 [34m 8055[00m 0xd7e15060 [33;01mWARN   [00m [00m   adaptivedecryptor gstadaptivedecryptor.cpp:372:gboolean gst_adaptive_decryptor_sink_event(GstPad*, GstObject*, GstEvent*):<decrypt-pt>[00m failed to cancel_decrypt
+08/17/2025 10:23 PM
+    0:00:01.114154800  8055 0xdb80f368 INFO              lxvideodec gstlxvideodec.c:3439:gst_lx_videodec_pad_chain:<lxvideodec0> received buffer, 0:00:00.000000000
+    0:00:01.194348820  8055 0xdb80f690 INFO              GST_STATES gstbin.c:2150:gst_bin_get_state_func:<custom-player> getting state
+    0:00:01.194435120  8055 0xdb80f690 INFO              GST_STATES gstelement.c:2485:gst_element_get_state_func:<custom-player> waiting for element to commit state
+    0:00:01.194448960  8055 0xdb80f690 INFO              GST_STATES gstelement.c:2500:gst_element_get_state_func:<custom-player> timed out
+    0:00:01.394646200  8055 0xdb80f690 INFO              GST_STATES gstbin.c:2150:gst_bin_get_state_func:<custom-player> getting state
+    0:00:01.394708900  8055 0xdb80f690 INFO              GST_STATES gstelement.c:2485:gst_element_get_state_func:<custom-player> waiting for element to commit state
+    0:00:01.394722920  8055 0xdb80f690 INFO              GST_STATES gstelement.c:2500:gst_element_get_state_func:<custom-player> timed out
+    0:00:01.595099660  8055 0xdb80f690 INFO              GST_STATES gstbin.c:2150:gst_bin_get_state_func:<custom-player> getting state
+    0:00:01.595161820  8055 0xdb80f690 INFO              GST_STATES gstelement.c:2485:gst_element_get_state_func:<custom-player> waiting for element to commit state
+08/17/2025 10:23 PM
+but..
+08/17/2025 10:21 PM
+timestamp is always increasing kodi-webos[]playerfactory.feed{}
+{"CODE_POINT":"[8055:8283]<custompipeline.cpp:pushDataIntoGstPipeline(3401)>"}
+[dataType:video][dataSize:34446][timestamp:138958333000][curPosition:0]
+[yolofant]
+yolofant 08/17/2025 10:19 PM
+or it cannot be consumed
+08/17/2025 10:19 PM
+then it means the buffer is either full
+08/17/2025 10:18 PM
+or if you see the same packet with pts and size being added
+08/17/2025 10:18 PM
+logging
+[ccarnell98]
+ccarnell98 08/17/2025 10:14 PM
+how can I tell? just increase GST_DEBUG ?
+[yolofant]
+yolofant 08/17/2025 10:14 PM
+if the pipeline returns an error they are added back
+08/17/2025 10:13 PM
+did you check?
+[ccarnell98]
+ccarnell98 08/17/2025 10:13 PM
+they are being pushed into the pipeline, what it does with them
+afterwards. I'll increase the logging
+[yolofant]
+yolofant 08/17/2025 10:13 PM
+the gstreamer warnings might be normal
+08/17/2025 10:12 PM
+are the packets being consumed?
+[ccarnell98]
+ccarnell98 08/17/2025 10:08 PM
+    kodi-webos[]playerfactory.default{} {"CODE_POINT":"[6031:6274]<custompipeline.cpp:checkAppSrcBuffer(4881)>
+    ** (kodi-webos:6031): CRITICAL **: 21:03:36.196: gboolean gst_passthrough_decryptor_cancel_decrypt(GstAdaptiveDecryptor*): assertion 'drm_decryptor' failed
+    "} not Play State kodi-webos[]playerfactory.default{} {"CODE_POINT":"[6031:6274]<custompipeline.cpp:updatePeriodicalInfo(4777)>"} not PlayingState
+    ko
+    ** (kodi-webos:6031): CRITICAL **: 21:03:37.700: gst_app_src_set_caps: assertion 'GST_IS_APP_SRC (appsrc)' failed
+    (kodi-webos:6031): GStreamer-CRITICAL **: 21:03:37.700: gst_element_get_static_pad: assertion 'GST_IS_ELEMENT (element)' failed
+    (kodi-webos:6031): GStreamer-CRITICAL **: 21:03:37.700: gst_pad_add_probe: assertion 'GST_IS_PAD (pad)' failed
+    (kodi-webos:6031): GStreamer-CRITICAL **: 21:03:37.700: gst_object_unref: assertion 'object != NULL' failed
+[ccarnell98]
+ccarnell98 08/17/2025 9:53 PM
+which I dont need anyway
+08/17/2025 9:52 PM
+ah it works without GST_DEBUG_DUMP_DOT_DIR
+08/17/2025 9:49 PM
+that used to work
+08/17/2025 9:48 PM
+I'll tell it where it can shove its bus
+08/17/2025 9:48 PM
+    GST_DEBUG=4 ./kodi-webos --portable --debug
+    Could not open module param file '/sys/module/mali_kbase/parameters/large_page_conf'
+    XDG_RUNTIME_DIR (/tmp/xdg) is not owned by us (uid 6675), but by uid 0! (This could e.g. happen if you try to connect to a non-root PulseAudio as a root user, over the native protocol. Don't do that.)
+    XDG_RUNTIME_DIR (/tmp/xdg) is not owned by us (uid 6675), but by uid 0! (This could e.g. happen if you try to connect to a non-root PulseAudio as a root user, over the native protocol. Don't do that.)
+    ~/apps/usr/palm/applications/org.xbmc.kodi $ Bus error
+08/17/2025 9:45 PM
+FML crashes on startup when I run GST_DEBUG=4
+08/17/2025 9:41 PM
+or fix the audio, but thats disable anyway
+08/17/2025 9:38 PM
+need to see if a frame is being decoded or not
+08/17/2025 9:33 PM
+but blank screen (still) (edited)
+08/17/2025 9:32 PM
+same behaviour
+    kodi-webos[]svb{} [ParseKeyInfo][267] oec_session_: 0, key_id_length_: 16, cipher_mode: 0
+    kodi-webos[]svb{} [ParseKeyInfo][270] encrypt_blocks: 0, skip_blocks:0
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][305] subsample_index:0, Clear:123
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][346] subsample_index:0, Clear:123, Cypher:44358, subsample_flags:1, block_offset:0
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][305] subsample_index:1, Clear:322
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][346] subsample_index:1, Clear:322, Cypher:0, subsample_flags:2, block_offset:0
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][412] DRM_Perf ENTER drm:widevine, media:video, pid:28294, tid:3466551488, data_size:44358
+    kodi-webos[]svb{} [WidevineDecryptor::ProcessDecrypt][215] DRM_Perf LEAVE drm:widevine, media:video, pid:28294, tid:3466551488
+    kodi-webos[]svb{} [DrmDecryptorPlugin::ProcessDecrypt][180] SVP_Perf LEAVE drm:widevine, media:video, pid:28294, tid:3466551488
+[yolofant]
+yolofant 08/17/2025 8:29 PM
+without doing the sps annexb things
+08/17/2025 8:29 PM
+have you tried passing it straight into decrypt
+[ccarnell98]
+ccarnell98 08/17/2025 8:17 PM
+https://github.com/cscd98/inputstream.adaptive/blob/webos/src/decrypters/widevine/WVCencSingleSampleDecrypter.cpp#L867
+inputstream.adaptive/src/decrypters/widevine/WVCencSingleSampleDecr...
+kodi inputstream addon for several manifest types. Contribute to
+cscd98/inputstream.adaptive development by creating an account on
+GitHub.
+[]
+[ccarnell98]
+ccarnell98 08/17/2025 8:08 PM
+I need to push up my xbmc changes
+08/17/2025 8:05 PM
+and now with cdm doing the svp wrapping for secure stuff
+08/17/2025 8:05 PM
+with the webOS 4 stuff taken out
+08/17/2025 8:05 PM
+https://github.com/cscd98/inputstream.adaptive/tree/webos
+GitHub - cscd98/inputstream.adaptive at webos
+kodi inputstream addon for several manifest types. Contribute to
+cscd98/inputstream.adaptive development by creating an account on
+GitHub.
+[]
+[yolofant]
+yolofant 08/17/2025 7:51 PM
+yes i think that is correct
+[ccarnell98]
+ccarnell98 08/17/2025 7:49 PM
+it doesn't do the svp wrapping in kodi anymore, its down to the CDM
+[yolofant]
+yolofant 08/17/2025 7:39 PM
+widevine is intended for streaming so it would be very weird if they did
+not do annex b by default
+08/17/2025 7:38 PM
+no inband serializer nor annex b conversion
+[ccarnell98]
+ccarnell98 08/17/2025 7:38 PM
+i'll push my code up in a few minutes if you wanna take a look
+[yolofant]
+yolofant 08/17/2025 7:38 PM
+I mean there's no additional processing in the youtube app
+08/17/2025 7:37 PM
+I would assume widevine already gives you the data in correct format
+08/17/2025 7:37 PM
+weird
+08/17/2025 7:37 PM
+hmm
+[ccarnell98]
+ccarnell98 08/17/2025 7:32 PM
+and PPS
+08/17/2025 7:31 PM
+I have a if statement that checks for the header and skips if not
+required. but it does more than that, injects sps as from the extradata
+[yolofant]
+yolofant 08/17/2025 7:30 PM
+but if already SSD_ANNEXB_REQUIRED then there is no need for conversion?
+[ccarnell98]
+ccarnell98 08/17/2025 7:30 PM
+its a lot easier to do the annex b in IA as thats before the SVP
+wrapping messes with the data
+08/17/2025 7:29 PM
+which I hate 
+08/17/2025 7:28 PM
+my next port of call is too look at the gstreamer logs
+08/17/2025 7:28 PM
+I am seeing if I can somehow get bitstream convert to work but I doubt
+it
+08/17/2025 7:27 PM
+I have SSD_ANNEXB_REQUIRED, so it does the annex b header in IA. If I
+disable this (which I do at the moment), you still get a blank screen
+[yolofant]
+yolofant 08/17/2025 7:24 PM
+you have SSD_ANNEXB_REQUIRED no?
+[yolofant]
+yolofant 08/17/2025 3:27 PM
+but streamed content should already be in annex b
+08/17/2025 3:26 PM
+well for local files yes you need it
+[ccarnell98]
+ccarnell98 08/17/2025 3:12 PM
+you have to rely on IA processing adding the annex b, and I'm not
+convinced that code works properly
+08/17/2025 3:09 PM
+problem is, you cannot run bistream convert on a svp wrapped packet
+08/17/2025 3:07 PM
+and widevine (unecrypted/l3)
+08/17/2025 3:07 PM
+without bitstream convert you get a blank screen even for local files
+[yolofant]
+yolofant 08/17/2025 12:56 PM
+I dont think you ever need annex b conversion
+[ccarnell98]
+ccarnell98 08/17/2025 12:51 PM
+my guess so far is one of these 1) annex b conversion isn't working as
+it should 2) idr is missing 3) secure output needs something extra for
+setup 4) packet never makes it into decoder
+08/17/2025 12:49 PM
+think I need to compare log output to L3 mode, but I broke that.. so
+I'll guess I have to fix that (edited)
+08/17/2025 12:45 PM
+their is no more errors being output
+08/17/2025 12:45 PM
+you get the spinning wheel, only by pressing back, then full screen, you
+get blank screen. but no image on seeking
+[yolofant]
+yolofant 08/17/2025 12:37 PM
+does seeking make an image appear?
+[ccarnell98]
+ccarnell98 08/17/2025 12:21 PM
+but still blank
+[ccarnell98]
+ccarnell98 08/17/2025 12:13 PM
+    kodi-webos[]svb{} [DrmDecryptorPlugin::update_available_capacity][222] video: available_capacity(9437184)
+    kodi-webos[]svb{} [DrmDecryptorPlugin::Initialize][43] video: available_capacity(9437184)
+    kodi-webos[]svb{} [CreateDrmDecryptor][163] DrmDecryptor is created
+    kodi-webos[]svb{} [DrmDecryptorPlugin::ProcessDecrypt][133] SVP_Perf ENTER drm:widevine, media:video, pid:2799, tid:3472859328, data_size:2598
+    kodi-webos[]svb{} [ParseKeyInfo][267] oec_session_: 0, key_id_length_: 16, cipher_mode: 0
+    kodi-webos[]svb{} [ParseKeyInfo][270] encrypt_blocks: 0, skip_blocks:0
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][305] subsample_index:0, Clear:207
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][346] subsample_index:0, Clear:207, Cypher:2150, subsample_flags:1, block_offset:0
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][305] subsample_index:1, Clear:241
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][346] subsample_index:1, Clear:241, Cypher:0, subsample_flags:2, block_offset:0
+    kodi-webos[]svb{} [WidevineDecryptor::SerializeSampleDescription][412] DRM_Perf ENTER drm:widevine, media:video, pid:2799, tid:3472859328, data_size:2150
+    kodi-webos[]svb{} [WidevineDecryptor::ProcessDecrypt][215] DRM_Perf LEAVE drm:widevine, media:video, pid:2799, tid:3472859328
+    kodi-webos[]svb{} [DrmDecryptorPlugin::ProcessDecrypt][180] SVP_Perf LEAVE drm:widevine, media:video, pid:2799, tid:3472859328
+    kodi-webos[]svb{} [DrmDecryptorPlugin::update_available_capacity][222] video: available_capacity(9437184)
+08/17/2025 12:13 PM
+its actually decrypting stuff now
+08/17/2025 12:11 PM
+doesn't help with my blank screen issue, but its something
+08/17/2025 12:10 PM
+well the good news is that setting "needAudio":false gets rid of the
+error
+[yolofant]
+yolofant 08/17/2025 11:39 AM
+there might be something in dmesg
+[ccarnell98]
+ccarnell98 08/17/2025 11:11 AM
+@Yolofant any idea how to diagnose this error. logStr is empty:
+    2025-08-17 09:44:14.015 T:10719   debug <general>: void CMediaPipelineWebOS::PlayerCallback(int32_t, int64_t, const char*): [PacketId: 1] type: 19, numValue: 0, strValue: 
+    2025-08-17 09:44:14.015 T:10719   error <general>: void CMediaPipelineWebOS::PlayerCallback(int32_t, int64_t, const char*): [PacketId: 1] STR_ERROR numValue: 0, strValue: 
+[ccarnell98]
+ccarnell98 08/17/2025 10:39 AM
+not sure if I should hide ignore screen resolution change option as
+well, not sure how that works for internal apps (and if should default
+to true) (edited)
+08/17/2025 10:38 AM
+it worked
+08/17/2025 10:31 AM
+if I can figure out how to do isnot 
+08/17/2025 10:26 AM
+hmm as its a binary addon anyway, think I'll just make it not visible
+and always true
+August 16, 2025
+[ccarnell98]
+ccarnell98 08/16/2025 9:49 PM
+I did something similar for a setting but that was visibility not for
+inital value:
+                <dependency type="visible">
+                  <condition on="property" name="InfoBool" operator="is">system.platform.webos</condition>
+                </dependency>
+              </dependencies>
+08/16/2025 9:48 PM
+hmm is it possible to set to default of true (instead of false) if
+platform is webOS (in IA addon) -> overrides.ignore.screen.res (edited)
+[yolofant]
+yolofant 08/16/2025 5:11 PM
+and I don't think it matters what you pass
+08/16/2025 5:11 PM
+it's encoded in each ac3 packet
+[yolofant]
+[] ccarnell98 ```2025-08-16 13:26:06.085 T:11454 debug <general>: bool
+CMediaPipelineWebOS::OpenAudioStream(CDVD...
+yolofant 08/16/2025 5:10 PM
+I don't think channels is important
+[yolofant]
+yolofant 08/16/2025 5:10 PM
+why not try without audio first?
+[ccarnell98]
+ccarnell98 08/16/2025 4:43 PM
+need to figure it out as I don't know if starfish decrypts secure audio
+or not
+08/16/2025 4:42 PM
+(the stream is not disabled)
+08/16/2025 4:42 PM
+@A600 secure audio never gets routed through to DecryptSampleData for
+some reason. Trying to figure out why
+08/16/2025 4:39 PM
+but I need to add a timeout or something so it don't crash when it
+doesn't hear anything back
+08/16/2025 4:38 PM
+the older versions never check properly which is why they dont crash
+ 1
+08/16/2025 4:38 PM
+When cdm fails to initialize, it's supposed to tell kodi it failed, but
+it doesn't, which it why it crashes
+[anthock]
+anthock 08/16/2025 4:37 PM
+@Mariotaku I've noticed the Kodi problems too, but only with the latest
+IA builds compiled by @Craig the one with 223 version doesn't crash Kodi
+on webOS 4. The last time I tried v223, it gave me this in the Kodi
+logs:
+[WV-CDM-Library] OnRejectPromise: 1, Exception: 11, System code: 0, Error message:
+but I don't know that exception what means
+[mariotaku]
+mariotaku 08/16/2025 4:33 PM
+webOS won't launch an app with native_mvpd unless it's installed in
+cryptofs (which means content store app)
+[mariotaku]
+[] ccarnell98 had any brainwaves about fixing needing native_mvpd for
+webos 5 - 8?
+mariotaku 08/16/2025 4:32 PM
+Yeah, root is needed
+[ccarnell98]
+[] a6oo btw, AFAIK Amazon is the only provider that uses secure decoder
+for audio.
+ccarnell98 08/16/2025 4:24 PM
+D+ is using secure audio for atmos at least from my testing so far
+ 1
+[ccarnell98]
+ccarnell98 08/16/2025 4:17 PM
+(or root)
+08/16/2025 4:17 PM
+had any brainwaves about fixing needing native_mvpd for webos 5 - 8?
+08/16/2025 4:17 PM
+hmm OK I'll leave it out of my PR for now then, unless a miracle happens
+[mariotaku]
+mariotaku 08/16/2025 4:16 PM
+For instance, sometimes it appears to be having some deadlock
+08/16/2025 4:16 PM
+I think on webOS 4 Kodi is unstable, I'm afraid it's not in a testable
+state of DRM yet
+08/16/2025 4:15 PM
+@Craig No, I ran it as native_mvpd (same privilege as Netflix)
+[ccarnell98]
+ccarnell98 08/16/2025 3:45 PM
+Did you run as root?
+08/16/2025 3:45 PM
+Thanks for testing. Any ideas why its failing?
+[mariotaku]
+mariotaku 08/16/2025 3:09 PM
+You can verify by nm -D kodi-webos | grep SSL_
+08/16/2025 3:09 PM
+The previoud build doesn't have SSL_ symbols
+[ccarnell98]
+ccarnell98 08/16/2025 2:58 PM
+hmm just in case I did a clean build to make sure no openssl symbols:
+https://limewire.com/d/uwhtF#adWUcPGI2e
+Download org.xbmc.kodi_21.90.700_arm.ipk | LimeWire
+Download org.xbmc.kodi_21.90.700_arm.ipk on LimeWire
+[]
+[mariotaku]
+mariotaku 08/16/2025 2:47 PM
+(no content)
+ message.txt
+86.5 KB External
+08/16/2025 2:43 PM
+Oh sure!
+[ccarnell98]
+ccarnell98 08/16/2025 2:42 PM
+Could you try the system browser and see what it outputs?
+08/16/2025 2:42 PM
+Wonder why the workaround for running as root doesn't work here
+[mariotaku]
+mariotaku 08/16/2025 2:36 PM
+    WvLog::print[cdm_wrapper/src/cdm_library_init.cpp][18]enter INITIALIZE_CDM_MODULE
+    WvLog::print[cdm_wrapper/src/cdm_library_init.cpp][38]enter CreateCdmInstance
+    WvLog::print[cdm_wrapper/src/cdm_library_init.cpp][45]Widevine Modular not support v.11
+    WvLog::print[cdm_wrapper/src/cdm_library_init.cpp][38]enter CreateCdmInstance
+    WvLog::print[cdm_wrapper/src/cdm_library_init.cpp][45]Widevine Modular not support v.10
+    WvLog::print[cdm_wrapper/src/cdm_library_init.cpp][38]enter CreateCdmInstance
+    WvLog::print[cdm_wrapper/src/cdm_library_init.cpp][42]CreateCdmInstance_host : 0x7ebc40f8
+    WvLog::print[cdm_wrapper/src/cdm_library_init.cpp][52]cdm_interface_version : 8
+    WvLog::print[cdm_wrapper/src/timer.cpp][41]elapseTime
+    WvLog::print[cdm_wrapper/src/wv_content_decryption_module_8.cpp][102]Initialize : false , false
+    WvLog::print[cdm_wrapper/src/device_info.cpp][45]info.model_name : 75UM7600PCA
+    WvLog::print[cdm_wrapper/src/device_info.cpp][38]country_group_str : 17
+    WvLog::print[cdm_wrapper/src/device_info.cpp][40]info.country_group : 17
+    wvcdm::Log[core/src/crypto_session.cpp:189][Init]CryptoSession::Init
+    wvcdm::Log[core/src/crypto_session.cpp:314][GetSecurityLevel]CryptoSession::GetSecurityLevel
+    wvcdm::Log[core/src/crypto_session.cpp:208][Terminate]CryptoSession::Terminate: initialized_=1, session_count_=1
+[ccarnell98]
+ccarnell98 08/16/2025 2:32 PM
+meh I get the same error with DD so ignore me
+08/16/2025 2:28 PM
+    2025-08-16 13:26:06.085 T:11454   debug <general>: bool CMediaPipelineWebOS::OpenAudioStream(CDVDStreamInfo&): changeAudioCodec: {"ac3PlusInfo":{"channels":18,"frequency":48.0}}
+    2025-08-16 13:26:06.086 T:11471   debug <general>: void CMediaPipelineWebOS::PlayerCallback(int32_t, int64_t, const char*): [PacketId: 1] type: 19, numValue: 0, strValue: 
+    2025-08-16 13:26:06.086 T:11471   error <general>: void CMediaPipelineWebOS::PlayerCallback(int32_t, int64_t, const char*): [PacketId: 1] STR_ERROR numValue: 0, strValue: 
+08/16/2025 2:28 PM
+@Yolofant Not sure if this is related to my code or not or a bug but
+channels is 18, but looking at the stream in the GUI it says 16 channels
+[ccarnell98]
+[] mariotaku Which video/plugin can be used to verify DRM? Google angel
+one [multi-period] plays
+ccarnell98 08/16/2025 2:15 PM
+I always use Google Tears, but any of the widevine ones are OK
+[mariotaku]
+[] ccarnell98 jenkins build has gone now as its too old. here is one
+from this morning: https://limewire.com/d/fJ...
+mariotaku 08/16/2025 2:14 PM
+Which video/plugin can be used to verify DRM? Google angel one
+[multi-period] plays
+[ccarnell98]
+ccarnell98 08/16/2025 1:33 PM
+jenkins build has gone now as its too old. here is one from this
+morning: https://limewire.com/d/fJ1Nz#USrW09d6sI
+Download org.xbmc.kodi_21.90.700_arm.ipk | LimeWire
+Download org.xbmc.kodi_21.90.700_arm.ipk on LimeWire
+[]
+[mariotaku]
+[] ccarnell98 Yep it get stuck I think at the same place as before,
+prior to fixed exported openssl symbols, but I...
+mariotaku 08/16/2025 1:27 PM
+Yes, does it from Jenkins or from your local build?
+[ccarnell98]
+ccarnell98 08/16/2025 1:19 PM
+lmk if you need a compiled IPK
+[ccarnell98]
+[] mariotaku What's needed? Check Kodi + IA on webOS 4?
+ccarnell98 08/16/2025 1:15 PM
+Yep it get stuck I think at the same place as before, prior to fixed
+exported openssl symbols, but I compiled with the fix
+https://github.com/xbmc/xbmc/pull/27078 and it was running as root
+[webOS] Do not export openssl symbols by sundermann · Pull Request...
+Description Don&amp;#39;t export openssl symbols in the main binary.
+Motivation and context On webOS &amp;lt; 9 the system libraries use
+OpenSSL 1.x. In theory OpenSSL 3.x is compatible with Op...
+[]
+[mariotaku]
+[] ccarnell98 <@225167450713358338> If you have any time to look into
+the webOS 4 issue *crypto* again, it would b...
+mariotaku 08/16/2025 1:12 PM
+What's needed? Check Kodi + IA on webOS 4?
+August 15, 2025
+[ccarnell98]
+ccarnell98 08/15/2025 6:30 PM
+It's not ready yet, its still broken.. but now I've got actual
+verifiable test results using 4k stream I know what needs to be done to
+get L1 to work (edited)
+ 1
+[ccarnell98]
+ccarnell98 08/15/2025 6:19 PM
+@Mariotaku If you have any time to look into the webOS 4 issue crypto
+again, it would be highly useful. Not sure I should make it part of a PR
+for IA if can't be proven its working
+[ccarnell98]
+ccarnell98 08/15/2025 1:22 PM
+thats D+
+ 1
+08/15/2025 1:22 PM
+playback is still broken, with blank screen, but making progress
+08/15/2025 1:21 PM
+(no content)
+[rn_image_picker_lib_temp_34548e73-fb05-4c6b-85cc-cd2bc2aa44c2.jpg]
+ rn_image_picker_lib_temp_34548e73-fb05-4c6b-85cc-cd2bc2aa44c2.jpg
+4 MB External
+August 14, 2025
+[a6oo]
+a6oo 08/14/2025 7:23 PM
+Rings of Power at 1080p here. For faster page loading set this: (edited)
+[image.png]
+ image.png
+77.48 KB External
+[ccarnell98]
+ccarnell98 08/14/2025 6:51 PM
+nope still 480p
+08/14/2025 6:50 PM
+or I never pressed ok
+08/14/2025 6:49 PM
+oh hang on it unset L1 certified
+08/14/2025 6:49 PM
+ring of power 480p
+[ccarnell98]
+ccarnell98 08/14/2025 6:35 PM
+cheers logged in. movies taking forever to load the pages though? is
+that normal?
+[a6oo]
+a6oo 08/14/2025 6:15 PM
+Don't forget to enable L1 in the settings.
+[image.png]
+ image.png
+83.1 KB External
+08/14/2025 6:11 PM
+(no content)
+ plugin.video.amazon-test.zip
+841.21 KB External
+ 1
+[a6oo]
+a6oo 08/14/2025 6:02 PM
+Sorry about that. I didn't zip the folder. Before installing the zip,
+you have to install Sandmann79 repo:
+https://github.com/Sandmann79/xbmc/releases/download/Repository/repository.sandmann79.plugins-1.0.4.zip,
+install the Amazon addon and then this zip with the webOS changes.
+(edited)
+[ccarnell98]
+[] a6oo <@1051573528522133655> Wrong zip. Use this:
+ccarnell98 08/14/2025 5:48 PM
+Fails to install with invalid struct
+August 13, 2025
+[ccarnell98]
+ccarnell98 08/13/2025 9:07 PM
+I re-compiled everything, including dependencies, and it went away
+[mariotaku]
+mariotaku 08/13/2025 11:48 AM
+Use the offset to locate the bug in that binary
+ 1
+[mariotaku]
+[] ccarnell98 ```Thread 4 received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 8479.8975] 0x009c67b0 ...
+mariotaku 08/13/2025 11:48 AM
+You can download the binary from your TV, then put it into Ghidra.
+[ccarnell98]
+ccarnell98 08/13/2025 11:37 AM
+    Thread 4 received signal SIGSEGV, Segmentation fault.
+    [Switching to Thread 8479.8975]
+    0x009c67b0 in CMediaPipelineWebOS::MakeSvpInBandHeader(DemuxPacket*, unsigned char*, unsigned int) ()
+    (gdb) bt
+    #0  0x009c67b0 in CMediaPipelineWebOS::MakeSvpInBandHeader(DemuxPacket*, unsigned char*, unsigned int) ()
+    #1  0xdbbaf2f4 in ?? ()
+08/13/2025 11:35 AM
+I'm trying 3 atm, but it just segfaults at that point
+08/13/2025 11:34 AM
+3. Use secure path, add the SVP header but use a
+svp::InbandSerializer<svp::InputBuffer_2> serializer; but doesn't work
+due to a segfault in configure:
+        if (!serializer.Configure(ibuf, data, size)) {
+08/13/2025 11:32 AM
+2. Use secure path, add the SVP header myself using
+svp::InbandSerializer<bool>, send it through to the media pipeline
+(doesn't work yet as complains about the keys in the HAL):
+        if (!serializer.Configure(isEncryptedPacket, data, size, wrappedCallback, &keyCtx)) {
+(edited)
+08/13/2025 11:31 AM
+1. Pass the packet into the CDM->which adds the SVP headers, then feed
+this into the media pipeline -> doesn't work (yet)
+08/13/2025 11:31 AM
+I've tried 3 different ways to get L1 to work so far.
+08/13/2025 11:29 AM
+anyway to debug a segfault which happens inside a LG library?
+August 12, 2025
+[yolofant]
+yolofant 08/12/2025 2:44 PM
+probably just an issue in the way you launch the app
+ 1
+[ccarnell98]
+ccarnell98 08/12/2025 2:41 PM
+it might be a red herring
+08/12/2025 2:41 PM
+@Yolofant have you ever encountered this error:
+    kodi-webos[]playerfactory.default{} {"CODE_POINT":"[11843:12146]<custompipeline.cpp:isReadyToPlaySpi(4898)Fontconfig error: No writable cache directories
+    ~/apps/usr/palm/applications/org.xbmc.kodi $ Segmentation fault
+[ccarnell98]
+ccarnell98 08/12/2025 1:07 PM
+Thanks, I'll give it a go later
+[a6oo]
+a6oo 08/12/2025 12:41 PM
+@Craig Wrong zip. Use this:
+ plugin.video.amazon-test.zip
+837.97 KB External
+[a6oo]
+a6oo 08/12/2025 12:33 PM
+btw, AFAIK Amazon is the only provider that uses secure decoder for
+audio.
+08/12/2025 12:32 PM
+Use this: (edited)
+ 1
+[ccarnell98]
+ccarnell98 08/12/2025 12:17 PM
+presumably website?
+08/12/2025 12:17 PM
+Did you use website or android login btw
+08/12/2025 12:17 PM
+to just this?
+    url += '&operatingSystemName=Windows'
+[ccarnell98]
+[] a6oo
+https://github.com/Sandmann79/xbmc/tree/master/plugin.video.amazon-test
+To get the 1080p manifest: ...
+ccarnell98 08/12/2025 12:16 PM
+So change this
+    url += '&operatingSystemName=Windows' if playback_req and (_g.platform & _g.OS_ANDROID) and devicetypeid == _g.dtid_web and _s.wvl1_device else ''  # cookie auth on android
+[ccarnell98]
+[] mariotaku You can run system browser to see how they work actually
+`LD_PRELOAD=/tmp/preload.so WV_LOG_TO_STDO...
+ccarnell98 08/12/2025 10:26 AM
+If only it worked if your not root 
+[anthock]
+anthock 08/12/2025 8:46 AM
+@Yolofant Kodi build without openssl symbols has also fixed JSONRPC
+server on webos 4 (it never worked until now) 
+ 1
+August 11, 2025
+[a6oo]
+[] ccarnell98 I assume it has to be set if the packet is svp wrapped
+a6oo 08/11/2025 10:07 PM
+From a Chrome log @Mariotaku posted:
+    2025-08-09T06:12:29.249199Z [61827.055359231] user.info chrome [] smp.api LOAD {"uid":"_kI00SAIyVG00ZE", "tid": "28797", "msg":"{\"args\":[{\"mediaTransportType\":\"BUFFERSTREAM\",\"option\":{\"adaptiveStreaming\":{\"maxFrameRate\":60,\"maxHeight\":2304,\"maxWidth\":4096},\"appId\":\"com.webos.app.browser\",\"avSink\":{\"audioSink\":{\"type\":\"main_sound\"},\"videoSink\":{\"type\":\"main_video\"}},\"drm\":{\"type\":\"WIDEVINE_MODULAR\"},\"externalStreamingInfo\":{\"contents\":{\"codec\":{\"audio\":\"AAC\",\"video\":\"H264\"},\"esInfo\":{\"ptsToDecode\":80000000,\"seperatedPTS\":true},\"format\":\"RAW\",\"provider\":\"Chrome\"},\"streamQualityInfo\":true,\"svpVersion\":30},\"queryPosition\":true,\"seekMode\":\"keep-rate\",\"transmission\":{\"trickType\":\"client-side\"},\"windowId\":\"_Window_Id_15\"}}]}\n"}
+[yolofant]
+yolofant 08/11/2025 10:05 PM
+you need to remove libacb from the lib folder
+ 1
+08/11/2025 10:05 PM
+yes because you changed LD_LIBRARIES
+[anthock]
+anthock 08/11/2025 10:02 PM
+with angel one, I receive this and Kodi freeze:
+    /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos: symbol lookup error: /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos: undefined symbol: AcbAPI_create
+[ccarnell98]
+ccarnell98 08/11/2025 9:52 PM
+Aww so close. Pretty colours and sound but corrupted frame:
+    kodi-webos[]svb{} [DrmDecryptorPlugin::ProcessDecrypt][180] SVP_Perf LEAVE drm:widevine, media:video, pid:18049, tid:3529441472
+    kodi-webos[]svb{} [DrmDecryptorPlugin::update_available_capacity][222] video: available_capacity(9437184)
+    kodi-webos[]playerfactory.feed{} {"CODE_POINT":"[18049:18197]<custompipeline.cpp:pushDataIntoGstPipeline(3401)>"} [dataType:video][dataSize:44][timestamp:1500000000][curPosition:0]
+[anthock]
+[] ccarnell98 <@427525554628067328> was that running as root btw?
+anthock 08/11/2025 9:50 PM
+yes
+[ccarnell98]
+ccarnell98 08/11/2025 9:48 PM
+@Anthock was that running as root btw?
+08/11/2025 9:48 PM
+@Mariotaku OEMCrypto again, I think, but this time webOS 4
+08/11/2025 9:47 PM
+I think it should be
+    wvcdm::Log[core/src/crypto_session.cpp:273][Init]Initializing crypto session
+[anthock]
+anthock 08/11/2025 9:46 PM
+nothing
+[ccarnell98]
+ccarnell98 08/11/2025 9:46 PM
+what comes after elapseTime 
+08/11/2025 9:46 PM
+hmm not really giving much to work on 
+[anthock]
+anthock 08/11/2025 9:38 PM
+we have something
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/cdm_library_init.cpp][18]enter INITIALIZE_CDM_MODULE
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/cdm_library_init.cpp][38]enter CreateCdmInstance
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/cdm_library_init.cpp][45]Widevine Modular not support v.11 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/cdm_library_init.cpp][38]enter CreateCdmInstance
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/cdm_library_init.cpp][45]Widevine Modular not support v.10 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/cdm_library_init.cpp][38]enter CreateCdmInstance
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/cdm_library_init.cpp][42]CreateCdmInstance_host : 0xd4dec0c8 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/cdm_library_init.cpp][52]cdm_interface_version : 8 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/wv_content_decryption_module_8.cpp][102]Initialize : false , false
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/device_info.cpp][38]country_group_str : 4 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/device_info.cpp][40]info.country_group : 4 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/device_info.cpp][45]info.model_name : OLED55C9PLA 
+    kodi-webos[]widevine-modular{} [cdm_wrapper/src/timer.cpp][41]elapseTime
+[ccarnell98]
+ccarnell98 08/11/2025 9:21 PM
+it doesn't even feel like telling you no 
+08/11/2025 9:20 PM
+waiting forever it would seem
+08/11/2025 9:20 PM
+yeh its supposed to return true or false for CDM initialization
+[anthock]
+anthock 08/11/2025 9:20 PM
+but now Kodi is again unresponsive
+08/11/2025 9:19 PM
+I don't know how but I have seen 1 second of angel one... (edited)
+[ccarnell98]
+ccarnell98 08/11/2025 9:19 PM
+not going to anything without that
+08/11/2025 9:18 PM
+    export LD_LIBRARY_PATH='/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib:/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib:/usr/lib:/media/developer/lib'
+(edited)
+08/11/2025 9:18 PM
+oh hang on 
+[ccarnell98]
+ccarnell98 08/11/2025 9:06 PM
+wierd. PmLogLib is in that IPK so everything should be output to console
+[anthock]
+anthock 08/11/2025 8:58 PM
+no output also with export. After that I try to play a Widevine stream,
+Kodi becomes unrensponsive
+[ccarnell98]
+ccarnell98 08/11/2025 8:45 PM
+PmLogCtl set '*' info -> after
+08/11/2025 8:44 PM
+export WIDEVINE_DRM_LOG_LEVEL=0 export
+WIDEVINE_DRM_LOG_ENABLE_ALL_FEATURE=1 export WV_LOG_TO_STDOUT=1
+[ccarnell98]
+[] anthock no, but maybe I need to change debug level for widevine?
+ccarnell98 08/11/2025 8:43 PM
+PmLogCtl set '*' debug
+[anthock]
+[] ccarnell98 any output in console?
+anthock 08/11/2025 8:42 PM
+no, but maybe I need to change debug level for widevine?
+[ccarnell98]
+ccarnell98 08/11/2025 8:41 PM
+any output in console?
+08/11/2025 8:41 PM
+thats fine I deleted some debug code that wasn't needed
+[anthock]
+anthock 08/11/2025 8:41 PM
+same behavior, now in log I don't see anymore [WV-CDM-Library] Waiting
+for CDM initialization...
+[ccarnell98]
+ccarnell98 08/11/2025 8:33 PM
+with that 
+[anthock]
+[] anthock I have only spinning wheel and it doesn't go ahead ```
+2025-08-11 19:18:04.510 T:12650 debug <inpu...
+anthock 08/11/2025 8:02 PM
+I can only see this
+[ccarnell98]
+ccarnell98 08/11/2025 7:57 PM
+can you see the widevine logs?
+[anthock]
+anthock 08/11/2025 7:56 PM
+no differences, I have launched with
+jailer -t native_devmode -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi -i org.xbmc.kodi kodi-webos
+[anthock]
+anthock 08/11/2025 7:27 PM
+I will try to run it with root
+08/11/2025 7:26 PM
+I'm using IPK without openssl/libcrypto
+[ccarnell98]
+ccarnell98 08/11/2025 7:24 PM
+needs to have this commit as well: (should be in the IPK @Yolofant
+made):
+https://github.com/xbmc/xbmc/compare/master...sundermann:xbmc:webos-exclude-openssl-export
+Comparing xbmc:master...sundermann:webos-exclude-openssl-export · ...
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&amp;#39;s ava...
+[]
+08/11/2025 7:24 PM
+is that running as root?
+[anthock]
+anthock 08/11/2025 7:21 PM
+I have only spinning wheel and it doesn't go ahead
+    2025-08-11 19:18:04.510 T:12650   debug <inputstream.adaptive>: Initialize crypto session
+    2025-08-11 19:18:04.533 T:12650   debug <inputstream.adaptive>: [WV-CDM-Library] Using 'version less' InitializeCdmModule
+    2025-08-11 19:18:04.534 T:12650   debug <inputstream.adaptive>: [WV-CDM-Library] CDM version: v2.2.0-2-905-LGE
+    2025-08-11 19:18:04.541 T:12650   debug <inputstream.adaptive>: [WV-CDM-Library] Waiting for CDM initialization...
+[ccarnell98]
+ccarnell98 08/11/2025 7:14 PM
+It might crash when it gets to Decrypt() (if you get that far)
+[ccarnell98]
+ccarnell98 08/11/2025 7:06 PM
+you'll need inputstream.adaptive as well, should be the last one
+attached in the chat
+ 1
+[anthock]
+anthock 08/11/2025 7:05 PM
+I'm downloading last Yolofant build from jenkins
+ 1
+[ccarnell98]
+ccarnell98 08/11/2025 7:05 PM
+unless he hosted it somewhere
+08/11/2025 7:05 PM
+I'll dig out an IPK with @Yolofant fix
+[anthock]
+anthock 08/11/2025 7:03 PM
+@Craig finally I have some time to test it on webos 4
+[ccarnell98]
+[] mariotaku When widevine lib is able to access tee, or it doesn't need
+to, there will be one more issue to solv...
+ccarnell98 08/11/2025 6:59 PM
+If you still have a webOS 4 board lying about, I could do with that
+being tested 
+[ccarnell98]
+ccarnell98 08/11/2025 6:52 PM
+I assume it has to be set if the packet is svp wrapped
+08/11/2025 6:52 PM
+is there any way we can figure out for sure what the value of
+p["option"]["externalStreamingInfo"]["svpVersion"] should be
+[mariotaku]
+[] yolofant I think tee0 is only in rtk
+mariotaku 08/11/2025 6:17 PM
+lm21a is mstar (mtk). I think this is LG's issue
+[mariotaku]
+[] yolofant For rooted tvs we just need to force a jailer refresh?
+mariotaku 08/11/2025 6:16 PM
+jailer -t native_mvpd... would do the trick
+[yolofant]
+yolofant 08/11/2025 6:16 PM
+For rooted tvs we just need to force a jailer refresh?
+08/11/2025 6:15 PM
+At least it is mounted for rtk devices
+08/11/2025 6:15 PM
+I think tee0 is only in rtk
+08/11/2025 6:14 PM
+I'll probably make a PR later
+ 1
+[mariotaku]
+mariotaku 08/11/2025 6:04 PM
+When widevine lib is able to access tee, or it doesn't need to, there
+will be one more issue to solve - symbol conflict of libssl could cause
+fetching certificate to fail. It has been addressed by @Yolofant 's
+change. Let me know if you have more to explore @Craig (edited)
+ 1
+08/11/2025 6:02 PM
+So my conclusion for /dev/tee0 issue: 1. It happens on some models (for
+me, lm21a - 2021 webOS 6 low end 4K model) 2. With ordinary dev mode
+permission, there is no way around. 3. If we ever have a chance to
+publish the app, there are ways - if privilegedJail is true, then the
+type jailer uses will be native_mvpd. Netflix/YouTube/Prime Video all
+uses this type.
+[mariotaku]
+[] mariotaku I think `previlegedJail` needs to be true
+mariotaku 08/11/2025 5:43 PM
+https://github.com/webosose/sam/blob/96161d3e50670fb21daccfb12a75c35fe406ce0e/src/bus/client/NativeContainer.cpp#L163
+Oh crap, so I guess for some models, it won't work without root. If an
+app is installed in /media/developer, then it can't use native_mvpd
+sam/src/bus/client/NativeContainer.cpp at 96161d3e50670fb21daccfb12...
+Systems and application manager. Contribute to webosose/sam development
+by creating an account on GitHub.
+[]
+[ccarnell98]
+ccarnell98 08/11/2025 5:43 PM
+But.. now i'll test secure mode
+08/11/2025 5:42 PM
+I assume the 2nd log though is the media pipeline part of decrypting,
+rather than the SVP wrapping that happens in IA (edited)
+08/11/2025 5:38 PM
+But, when it reaches kodi and then fed into the pipeline:
+      kodi-webos[]WIDEVINE-WRAPPER{} Decrypt
+    kodi-webos[]WIDEVINE-WRAPPER{} enter AppendInbandDataAndAllocate
+    kodi-webos[]WIDEVINE-WRAPPER{} enter SetSizesAndAllocate()
+    kodi-webos[]playerfactory.default{} {"CODE_POINT":"[14813:14993]<custompipeline.cpp:checkAppSrcBuffer(4881)>"} not Play State
+    kodi-webos[]playerfactory.default{} {"CODE_POINT":"[14813:14993]<custompipeline.cpp:updatePeriodi
+    ** (kodi-webos:14813): CRITICAL **: 16:03:02.317: gboolean gst_passthrough_decryptor_cancel_decrypt(GstAdaptiveDecryptor*): assertion 'drm_decryptor' failed
+    kodi-webos[]svb{} [DrmStreamParser::Parse][86] (remain_size_ == drm_stream->payload_length) is false
+    kodi-webos[]svb{} [DrmDecryptorPlugin::PrepareDecrypt][70] (stream_parser_->Parse(data, data_size, &drm_stream)) is false, goto error
+    kodi-webos[]svb{} [DrmDecryptorPlugin::PrepareDecrypt][94] video: failed to PrepareDecrypt
+    0:00:00.632471800 14813 0xdc6123a0 ERROR      adaptivedecryptor gstadaptivedecryptor.cpp:765:gboolean adaptive_decryptor_buffer_list_add(GstAdaptiveDecryptor*, GstBuffer**):<decrypt-pt> failed to prepare_decrypt
+(edited)
+08/11/2025 5:38 PM
+    2025-08-11 16:31:55.206 T:17437   debug <inputstream.adaptive>: DecryptSampleData: DecryptSampleData
+    2025-08-11 16:31:55.206 T:17437   debug <inputstream.adaptive>: [WV-CDM-Library] Decrypt 1
+    2025-08-11 16:31:55.210 T:17437   debug <inputstream.adaptive>: [WV-CDM-Library] Decrypt returned: Success (0)
+    2025-08-11 16:31:55.222 T:17430   debug <general>: bool CMediaPipelineWebOS::HasSVPHeaders(DemuxPacket*): [PacketId: 1] already has SVP headers
+    2025-08-11 16:31:55.223 T:17430   debug <general>: void CMediaPipelineWebOS::FeedVideoData(const std::shared_ptr<CDVDMsg>&): [PacketId: 1] [dts: 0] [Size: 632] [Encrypted: false] [Convert: false] [ pLen: 0/suffLen: 632] Data peek (128b): 69 62 70 69 02 00 00 00 00 00 00 00 56 01 00 80 10 00 00 00 d6 25 34 a5 44 78 81 1c 00 00 00 00 00 00 00 00 24 00 00 00 f8 14 f3 7e 19 17 47 d0 ae 77 5c 99 3c cc 94 49 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 cc cb be b9 11 58 43 d9 28 0d 22 0a c4 d7 74 a6 40 48 11 7d 9a f3 ac d7 fe 73 1a 67 95 39 95 ce 74 3d 0e 5d 8c 32 aa 41 66 f7 ad e0 a2 bf 87 5a 39 2f 37 96
+08/11/2025 5:38 PM
+So, I first tested L1 mode by letting it continue to run in
+SINGLE_DECRYPT mode. The CDM is adding SVP headers itself, and doesn't
+appear to decrypt the packet (but I should really dump the RAW packet
+and check this and not assume AI is right...) - which is actually what
+we WANT as the decryption must be handled by the tee (edited)
+[] yolofant https://jenkins.kodi.tv/job/webos-docker/9615/
+wsnipex 08/11/2025 5:20 PM
+confirmed working on webos5 
+[a6oo]
+[] ccarnell98 Do you get 4k as an option? I only get 1080p
+a6oo 08/11/2025 4:55 PM
+My account doesn't allow 4K.
+[mariotaku]
+mariotaku 08/11/2025 4:55 PM
+    if (m_appType == AppType::AppType_Native && privilegedJail)
+            m_appType = AppType::AppType_Native_Mvpd;
+08/11/2025 4:55 PM
+https://github.com/webosose/sam/blob/96161d3e50670fb21daccfb12a75c35fe406ce0e/src/base/AppDescription.cpp#L384
+sam/src/base/AppDescription.cpp at 96161d3e50670fb21daccfb12a75c35f...
+Systems and application manager. Contribute to webosose/sam development
+by creating an account on GitHub.
+08/11/2025 4:54 PM
+I think previlegedJail needs to be true
+[mariotaku]
+[] yolofant maybe we need `"privilegedJail": true`?
+mariotaku 08/11/2025 4:22 PM
+There are a jail type called native_mvpd, which seems to be for Netflix.
+If we can launch with this jail config, it should properly handle tee
+device
+[ccarnell98]
+ccarnell98 08/11/2025 3:30 PM
+Do you get 4k as an option? I only get 1080p
+[a6oo]
+[] ccarnell98 thats what I did yesterday. I'll try it again 
+a6oo 08/11/2025 2:50 PM
+When you modify the python code the addon must be relaunched, otherwise
+the changes won't be taken into account. I usually launch another addon
+and then the one I modified.
+[ccarnell98]
+ccarnell98 08/11/2025 2:19 PM
+summer of 69 was always 720p for some reason
+ 1
+08/11/2025 2:19 PM
+select Captain America brave new world and now it throws an error
+finally
+08/11/2025 2:19 PM
+fml
+[ccarnell98]
+ccarnell98 08/11/2025 2:01 PM
+thats what I did yesterday. I'll try it again 
+[a6oo]
+a6oo 08/11/2025 2:01 PM
+def is_wv_secure(): return True should work in any case.
+[ccarnell98]
+ccarnell98 08/11/2025 1:58 PM
+lol OK
+    2025-08-11 11:32:27.959 T:4965     info <general>: script.module.slyguy - Widevine Level (fallback): 3
+    2025-08-11 11:32:27.959 T:4965     info <general>: script.module.slyguy - HDCP Level (fallback): 0.0
+[a6oo]
+a6oo 08/11/2025 1:57 PM
+Check your log for "Detected fake L1 System ID {}. Downgrading to L3"
+Maybe yours is one of the WV_FAKE_L1 = ['7011','6077']
+[ccarnell98]
+ccarnell98 08/11/2025 1:57 PM
+    REINSTALL_WV = Action("RunPlugin(plugin://{}/?_=_ia_install)".format(COMMON_ADDON_ID), visible=get_system() not in ('Android', 'WebOS'), category=Categories.PLAYER_ADVANCED)
+08/11/2025 1:56 PM
+I don't have the reinstall widevine CDM option as he added webOS support
+(without testing it I think)
+[a6oo]
+a6oo 08/11/2025 1:56 PM
+The latest one from the slyguy repo.
+[ccarnell98]
+ccarnell98 08/11/2025 1:55 PM
+What version of the addon are you using? mine is 0.20.25
+[a6oo]
+a6oo 08/11/2025 1:54 PM
+Try to return True in def is_wv_secure():
+08/11/2025 1:52 PM
+It "works" for me because I have the same error as with Prime so it
+needs secure decoder and L3 works fine at 720p. (edited)
+[ccarnell98]
+ccarnell98 08/11/2025 1:50 PM
+I have
+[a6oo]
+a6oo 08/11/2025 1:50 PM
+You have to set L1 in the settings (Player/Advanced)
+[image.png]
+ image.png
+1.07 MB External
+[ccarnell98]
+[] a6oo Did you do what I said about Disney+ (modify the __init__.py and
+set L1)? Disney+ has the same error...
+ccarnell98 08/11/2025 1:49 PM
+    WV_LEVEL_OPTIONS = [[_.AUTO, WV_AUTO], [_.WV_LEVEL_L3, WV_L3]]
+    # if ADDON_DEV:
+    WV_LEVEL_OPTIONS.append([_.WV_LEVEL_L1, WV_L1])
+[a6oo]
+a6oo 08/11/2025 1:47 PM
+(no content)
+ message.txt
+1.25 MB External
+08/11/2025 1:47 PM
+Did you do what I said about Disney+ (modify the init.py and set L1)?
+Disney+ has the same error as Prime with L1: 2025-08-11 13:41:43.542
+T:6219 debug <inputstream.adaptive>: LogDecryptError: Decrypt failed
+with error code: 4 and KID: ead1f14567f04f509b4b503b5b68ff09 2025-08-11
+13:41:43.542 T:6219 error <inputstream.adaptive>: Decrypt Sample returns
+failure!
+[ccarnell98]
+ccarnell98 08/11/2025 1:43 PM
+As Disney+ is not giving me anything but 720p atm
+08/11/2025 1:42 PM
+Hopefully someone from kodi team will send me login details to prime
+later and I can give that a go
+[a6oo]
+a6oo 08/11/2025 1:26 PM
+(no content)
+ message.txt
+207.79 KB External
+08/11/2025 1:25 PM
+It's an addon setting. The license server returns the keys because is an
+L1 device but for res>1080p or HDR, secure decoder is needed The video
+stuck I get with 1080p seems related to your Kodi changes. Without them
+and with your latest IA, works fine.
+[ccarnell98]
+ccarnell98 08/11/2025 1:21 PM
+I can't see it in the widevine logs?
+08/11/2025 1:21 PM
+something like char level[OEMCRYPTO_MAX_LEVEL_LENGTH];
+OEMCrypto_GetSecurityLevel(level, sizeof(level));
+08/11/2025 1:20 PM
+It's done between CDM->Initialize and keys download, so it gets decided
+early on
+08/11/2025 1:20 PM
+I need to figure out what the security level gets decided on. If it gets
+decided to be L3 we will never have 4k
+08/11/2025 1:19 PM
+How does prime handle 1080p/4k? is it a stream you can select per video
+or is it done in the addon settings?
+08/11/2025 1:18 PM
+Your a bit ahead of me as this is the first time I'm testing the latest
+changes
+[a6oo]
+a6oo 08/11/2025 1:11 PM
+I checked 1080p with your latest IA and the video is stuck after a few
+seconds (after each period?)
+ message.txt
+6.44 MB External
+08/11/2025 1:04 PM
+Primevideo logs:
+ message.txt
+130.53 KB External
+ 1
+[ccarnell98]
+ccarnell98 08/11/2025 1:04 PM
+Actually I think it will always say Single decrypt possible (because
+software decrypt is allowed) (edited)
+08/11/2025 1:00 PM
+@Mariotaku some videos don't have widevine encryption (e.g. bunny on isa
+samples) (edited)
+08/11/2025 12:59 PM
+@A600 specifically if it says single decrypt not possible
+08/11/2025 12:59 PM
+@A600 your logs from prime would be useful
+[ccarnell98]
+[] mariotaku Also is the video I choose reflects whether WV work or not?
+ccarnell98 08/11/2025 12:58 PM
+Not exactly. Widevine decides if your L1 or L3 based on whether
+processing is done in the tee
+[a6oo]
+a6oo 08/11/2025 12:57 PM
+@Craig I got a Disney+ account and if I set it to L1 on Windows: it
+doesn't work because it can't get the license so I have to force L3.
+I'll try later on webOS.
+[image.png]
+ image.png
+1.06 MB External
+[ccarnell98]
+ccarnell98 08/11/2025 12:56 PM
+@Mariotaku Playback is working for me on Disney+ with @Yolofant
+ssl/crypto patch
+[mariotaku]
+[] ccarnell98 Haven't tried as <@195583665265311744> is on the same
+webOS version. But I'm just recompiling and wi...
+mariotaku 08/11/2025 12:55 PM
+Also is the video I choose reflects whether WV work or not?
+[yolofant]
+yolofant 08/11/2025 12:53 PM
+But secure mode is only in android and it has its own decryptor
+[ccarnell98]
+[] mariotaku Does the app with hidden libssl symbols work for you?
+ccarnell98 08/11/2025 12:42 PM
+Haven't tried as @Yolofant is on the same webOS version. But I'm just
+recompiling and will check
+[mariotaku]
+[] ccarnell98 <@325620853528068099> Confirmed that is_wv_secure is set
+now, but its still not hitting SSD_SECURE_P...
+mariotaku 08/11/2025 12:40 PM
+Does the app with hidden libssl symbols work for you?
+[ccarnell98]
+ccarnell98 08/11/2025 12:39 PM
+in your logs, does it say "Single decrypt possible" or "Single decrypt
+failed, secure path only" (edited)
+08/11/2025 12:39 PM
+@A600 Confirmed that is_wv_secure is set now, but its still not hitting
+SSD_SECURE_PATH and still going to SINGLE_DECRYPT:
+    "playback": {
+                                                           "attributes": {
+                                                             "codecs": {
+                                                               "video": [
+                                                                 "h264",
+                                                                 "h265"
+                                                               ]
+                                                             },
+                                                             "protocol": "HTTPS",
+                                                             "frameRates": [
+                                                               60
+                                                             ],
+                                                             "assetInsertionStrategy": "SGAI",
+                                                             "playbackInitializationContext": "ONLINE",
+                                                             "audioTypes": [
+                                                               "ATMOS",
+                                                               "DTS_X"
+                                                             ],
+                                                             "videoRanges": [
+                                                               "DOLBY_VISION",
+                                                               "HDR10"
+                                                             ]
+                                                           }
+                                                         }
+                                                       }`
+[mariotaku]
+mariotaku 08/11/2025 11:05 AM
+Anyway, I'll investigate why tee is missing and check other boards
+(edited)
+[mariotaku]
+[] ccarnell98 Can I do that in C? 
+mariotaku 08/11/2025 11:05 AM
+You can use mknod but of course with root
+[ccarnell98]
+ccarnell98 08/11/2025 11:04 AM
+or new jailer conf

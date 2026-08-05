@@ -1,0 +1,1905 @@
+July 17, 2025
+[yolofant]
+yolofant 07/17/2025 10:59 AM
+you defined purely virtual functions
+07/17/2025 10:59 AM
+there's multiple issues with it and reversing virtual c++ classes is not
+going to be very fun
+07/17/2025 10:59 AM
+but you header's just cannot work
+07/17/2025 10:56 AM
+yes
+[ccarnell98]
+ccarnell98 07/17/2025 10:54 AM
+this is all guess work for me as i've never stubbed stuff before
+[ccarnell98]
+[] yolofant and also you override those functions but there's no
+definition?
+ccarnell98 07/17/2025 10:54 AM
+I thought the implementations come from the real so?
+[ccarnell98]
+ccarnell98 07/17/2025 10:52 AM
+i mean the real libsvp_inband_serializer?
+[yolofant]
+yolofant 07/17/2025 10:52 AM
+only used for linking
+07/17/2025 10:51 AM
+no implementations
+07/17/2025 10:51 AM
+yes because it's only a dummy library
+[ccarnell98]
+ccarnell98 07/17/2025 10:48 AM
+the .so is quite small at 17kb, it doesn't have a lot of functions
+according to ghidra
+[yolofant]
+yolofant 07/17/2025 12:16 AM
+or it's = 0
+07/17/2025 12:16 AM
+and also you override those functions but there's no definition?
+07/17/2025 12:13 AM
+and it's virtual
+07/17/2025 12:12 AM
+it's actually important since it's a c++ class
+07/17/2025 12:12 AM
+and you are missing lots of other functions
+July 16, 2025
+[yolofant]
+yolofant 07/16/2025 11:53 PM
+like in the smp header
+07/16/2025 11:53 PM
+as member
+07/16/2025 11:53 PM
+just make a large array
+07/16/2025 11:52 PM
+I would add padding
+07/16/2025 11:52 PM
+possible
+[ccarnell98]
+ccarnell98 07/16/2025 11:20 PM
+is my userland stuff wrong?
+07/16/2025 11:17 PM
+    if (!serializer.Configure(data, size)) {
+07/16/2025 11:17 PM
+very first line of code to do with it 
+07/16/2025 11:17 PM
+Unsurprisingly.. it crashes.
+https://github.com/webosbrew/webos-userland/commit/2bb273fcd5e2dea2b42d5acb07dd703849e8ab80,
+https://github.com/xbmc/xbmc/commit/dc62cc031e76361ff4d7b26e3b307b545f6ccf94,
+https://github.com/xbmc/inputstream.adaptive/commit/425c536f7c052ad64e04f953d6b633e32daa18a7
+Add webOS detection and load appropiate library · xbmc/inputstream...
+[]
+[yolofant]
+yolofant 07/16/2025 6:44 PM
+meh, changeAudioCodec is only available from webOS 6
+[ccarnell98]
+ccarnell98 07/16/2025 6:37 PM
+probably gonna crash knowing my luck
+07/16/2025 6:37 PM
+well I'll be a monkey's uncle but it compiled with my lib svp stub
+[yolofant]
+yolofant 07/16/2025 11:30 AM
+another quick fix is taking some prebuild libraries from toolchain along
+with headers
+07/16/2025 11:23 AM
+yes
+[ccarnell98]
+ccarnell98 07/16/2025 11:23 AM
+something like
+https://github.com/webosbrew/webos-userland/commit/9c5b10f94dcf1c77af688674d666a7cee17b5650
+?
+Added libndl-directmedia2 · webosbrew/webos-userland@9c5b10f
+[yolofant]
+yolofant 07/16/2025 11:22 AM
+dlopen library, find functions and call them
+07/16/2025 11:22 AM
+or you do it dynamically
+07/16/2025 11:22 AM
+and then you will need to link kodi aginst the library
+07/16/2025 11:21 AM
+and then take headers
+07/16/2025 11:21 AM
+just make one shared library for the library using the linker script
+07/16/2025 11:21 AM
+but you can also add those files directly in kodi for a quick fix
+07/16/2025 11:21 AM
+you can look in webos userland how it's done
+07/16/2025 11:21 AM
+and a library to link against
+07/16/2025 11:20 AM
+well, you need the headers
+[ccarnell98]
+ccarnell98 07/16/2025 11:09 AM
+@Yolofant @Mariotaku any ideas on how I expose these to kodi?
+07/16/2025 11:09 AM
+It uses the functions CanDoSerialize(), Configure and GetSerialized
+07/16/2025 11:07 AM
+I need to make use of a class inside LG libs - InbandSerializer. I can
+see it is defined in libwidevine-wrapper but also in
+libsvp_inband_serializer.so.1.0.0 (which has the methods). It's
+mentioned in webosbrew:
+https://github.com/search?q=InbandSerializer&type=code. The include uses
+in chromium is #include <svp/inband/inband_serializer.h>. I'm not sure
+how to go about exposing these functions so that I can use them.
+(edited)
+July 15, 2025
+[yolofant]
+yolofant 07/15/2025 11:57 PM
+I do only know about bypassing certain svp restrictions
+07/15/2025 11:57 PM
+I haven't really looked into svp
+07/15/2025 11:57 PM
+no idea
+[ccarnell98]
+ccarnell98 07/15/2025 11:48 PM
+not the "tv" file
+07/15/2025 11:48 PM
+thats from bool MediaPlatformAPIWebOSSMP::Feed(const
+scoped_refptr<DecoderBuffer>& buffer, FeedType type) {
+07/15/2025 11:47 PM
+    #if defined(WIDEVINE_CDM_AVAILABLE) && defined(ENABLE_LG_SVP)
+      // Feed buffer for decoding through Secure Video Path.
+      // In this function, various types of buffer can be provided:
+      // 1. normal audio buffer
+      // 2. widevine key system - unencrypted audio buffer
+      // 3. widevine key system - decrypted audio buffer
+      // 4. normal video buffer
+      // 5. widevine key system - unencrypted video buffer - [A]
+      // 6. widevine key system - decrypted video buffer - [B]
+      // In above cases, we are interested in only [A] and [B].
+      // Also in case of [B], we assume that the buffer is already use svp,
+      // so we convert [A] to svp buffer at here.
+      // Note: 'unecrypted' means it was never encrypted. 'decrypted' means
+      // it is decrypted buffer that decrypted by DecryptingDemuxerStream.
+      if (key_system_ == kWidevineKeySystem && !buffer->use_svp_serialized_data() &&
+          type == FeedType::kVideo) {
+        scoped_refptr<DecoderBuffer> in_buffer = MakeSvpInBandHeader(buffer);
+        buffer_queue_->Push(in_buffer, type);
+      } else {
+        buffer_queue_->Push(buffer, type);
+      }
+    #else
+      buffer_queue_->Push(buffer, type);
+    #endif  // defined(WIDEVINE_CDM_AVAILABLE) && defined(ENABLE_LG_SVP)
+07/15/2025 11:45 PM
+thats from chromium
+07/15/2025 11:45 PM
+does the svp buffer stuff make sense to you?
+    amespace media {
+    scoped_refptr<DecoderBuffer> MakeSvpInBandHeader(
+        const scoped_refptr<DecoderBuffer>& buffer) {
+    #if defined(ENABLE_LG_SVP)
+      CHECK(!buffer->decrypt_config());
+      if (buffer->end_of_stream()) {
+        return buffer.get();
+      }
+      svp::InbandSerializer<bool> inband_serializer;
+      std::vector<uint8_t> serialized_data;
+      if (!inband_serializer.CanDoSerialize()) {
+        LOG(ERROR) << "inband_serializer for <bool> is not supported";
+        return nullptr;
+      }
+      // First argument 'false' means this buffer isn't encrypted
+      if (!inband_serializer.Configure(false, buffer->data(),
+                                       buffer->data_size())) {
+        LOG(ERROR) << "Failed to inband_serializer.Configure(false)";
+        return nullptr;
+      }
+      if (!inband_serializer.GetSerialized(&serialized_data)) {
+        LOG(ERROR) << "Failed to inband_serializer.GetSerialized()";
+        return nullptr;
+      }
+      scoped_refptr<DecoderBuffer> out_buffer =
+          DecoderBuffer::CopyFrom(serialized_data.data(), serialized_data.size());
+      out_buffer->set_timestamp(buffer->timestamp());
+      out_buffer->set_duration(buffer->duration());
+      out_buffer->set_use_svp_serialized_data(true);
+      return out_buffer.get();
+    #else
+      return buffer.get();
+    #endif  // defined(ENABLE_LG_SVP)
+    }
+    }  // namespace media
+07/15/2025 11:42 PM
+oh but I forgot need audio = false
+07/15/2025 11:42 PM
+widevine also still stuck on 1st frame
+07/15/2025 11:41 PM
+0/20 for me 
+[yolofant]
+yolofant 07/15/2025 11:36 PM
+it plays sometimes
+07/15/2025 11:36 PM
+play it multiple times
+[ccarnell98]
+ccarnell98 07/15/2025 11:35 PM
+maybe its some dodgy logging I've got on my build
+07/15/2025 11:34 PM
+https://www2.iis.fraunhofer.de/AAC/ChID-BLITS-EBU.mp4 -> segfaults,
+https://mega.nz/file/fLghyBCL#K6KSozVqwRL9d6zCojTiMHDqlmm0es69QgxKSdfS8XM
+-> doesn't play 
+2.88 MB file on MEGA
+[]
+[ccarnell98]
+ccarnell98 07/15/2025 11:27 PM
+sometimes 
+[yolofant]
+yolofant 07/15/2025 11:26 PM
+¯\_(ツ)_/¯
+07/15/2025 11:26 PM
+other file you posted plays sometimes
+07/15/2025 11:25 PM
+but the profile 4 file does not play
+07/15/2025 11:24 PM
+      else if (audioHint.codec == AV_CODEC_ID_AAC || audioHint.codec == AV_CODEC_ID_AAC_LATM)
+      {
+        CVariant& aacInfo = p["option"]["externalStreamingInfo"]["contents"]["aacInfo"];
+        aacInfo["channels"] = audioHint.channels;
+        aacInfo["profile"] = audioHint.profile;
+        aacInfo["format"] = "raw";
+        aacInfo["frequency"] = audioHint.samplerate / 1000.0;
+        if (audioHint.profile == AV_PROFILE_AAC_HE || audioHint.profile == AV_PROFILE_AAC_HE_V2 ||
+            audioHint.profile == AV_PROFILE_MPEG2_AAC_HE)
+          p["option"]["externalStreamingInfo"]["contents"]["codec"]["audio"] = "HE AAC";
+        if (audioHint.extradata)
+        {
+          auto extraData = std::span(audioHint.extradata.GetData(), audioHint.extradata.GetSize());
+          //aacInfo["codecSize"] = extraData.size()*2;
+          aacInfo["codecData"] = fmt::format("{:x}", fmt::join(extraData, ""));
+        }
+      }
+[ccarnell98]
+ccarnell98 07/15/2025 11:22 PM
+don't know if you can check for how many audio streams exist in
+OpenVideoStream and if = 0 ignore the m_audioHint requirement
+07/15/2025 11:20 PM
+did you even come up with a workaround for video with no audio? as that
+doesn't start playing
+07/15/2025 11:19 PM
+whatever I do kodi segfaults. if your happy can you push up ur code
+[yolofant]
+yolofant 07/15/2025 11:11 PM
+it plays with only the first two bytes from extradata
+07/15/2025 11:05 PM
+format can be raw, adts or adif
+07/15/2025 11:05 PM
+no idea
+[ccarnell98]
+ccarnell98 07/15/2025 11:02 PM
+that one isn't raw, probably why it crashes?
+07/15/2025 11:00 PM
+but it should work
+07/15/2025 10:58 PM
+AAC LC still crashes for me. AAC is doooooomed
+07/15/2025 10:58 PM
+https://mega.nz/file/fLghyBCL#K6KSozVqwRL9d6zCojTiMHDqlmm0es69QgxKSdfS8XM
+2.88 MB file on MEGA
+[]
+[yolofant]
+yolofant 07/15/2025 10:53 PM
+a couple of shows that worked
+07/15/2025 10:53 PM
+no test file
+[ccarnell98]
+ccarnell98 07/15/2025 10:49 PM
+do you have a test AAC file that works for you?
+[yolofant]
+yolofant 07/15/2025 10:48 PM
+@Mariotaku tried for a very long time getting pcm multichannel and it
+didn't work afaik
+[ccarnell98]
+ccarnell98 07/15/2025 10:44 PM
+"If the TV (configured in Bitstream, not PCM) can forward all the audio
+channels of an uncompressed LPCM signal over the eARC HDMI port."
+[yolofant]
+yolofant 07/15/2025 10:42 PM
+but not from internal apps
+ 1
+07/15/2025 10:42 PM
+I think you can pass multichannel from avr
+[ccarnell98]
+ccarnell98 07/15/2025 10:42 PM
+https://www.rtings.com/tv/reviews/lg/g4-oled
+LG G4 OLED Review (OLED55G4SUB, OLED65G4SUB, OLED77G4WUA, OLED83G4W...
+The LG G4 OLED is LG's flagship 4k TV for 2024. It replaces the LG G3
+OLED and sits above the LG C4 OLED. Like its predecessor, it uses Micro
+Lens Array (MLA) te...
+[]
+07/15/2025 10:42 PM
+oh OK
+[yolofant]
+yolofant 07/15/2025 10:42 PM
+that's why moonlight-tv uses opus
+[ccarnell98]
+ccarnell98 07/15/2025 10:42 PM
+rtings: eARC: LPCM Channels (Bitstream) 7.1
+[yolofant]
+yolofant 07/15/2025 10:42 PM
+you can send multi channel but it will only pass as stereo
+07/15/2025 10:41 PM
+but LG does not
+07/15/2025 10:41 PM
+yes
+[ccarnell98]
+ccarnell98 07/15/2025 10:41 PM
+I think ARC supports 2.0 PCM but eARC supports multi-channel?
+07/15/2025 10:37 PM
+google tears is AAC LC
+07/15/2025 10:37 PM
+yeh the PCM one is.. unfinished
+07/15/2025 10:37 PM
+I always picked DTS
+07/15/2025 10:36 PM
+apparently a lot of blu-rays have pcm.
+[yolofant]
+yolofant 07/15/2025 10:36 PM
+so I don't know if it's worth it
+07/15/2025 10:36 PM
+thing is that the tv can only do stereo pcm
+07/15/2025 10:33 PM
+and on format you have a lot more than those 3
+07/15/2025 10:33 PM
+I think layout is either "interleaved" or "non-interleaved"
+[ccarnell98]
+ccarnell98 07/15/2025 10:33 PM
+might not even be what's required for google tears
+07/15/2025 10:32 PM
+Its HE-AAC
+07/15/2025 10:32 PM
+https://www2.iis.fraunhofer.de/AAC/ChID-BLITS-EBU.mp4
+[yolofant]
+yolofant 07/15/2025 10:31 PM
+you have a link?
+[ccarnell98]
+ccarnell98 07/15/2025 10:31 PM
+AAC -> ChID-BLITS-EBU.mp4 -> it segfaults and dies
+[yolofant]
+yolofant 07/15/2025 10:31 PM
+I wouldn't do it
+07/15/2025 10:31 PM
+pcm is a mess
+[ccarnell98]
+ccarnell98 07/15/2025 10:28 PM
+I was trying this for PCM as well, but the audio is corrupted:
+    else if (audioHint.codec >= AV_CODEC_ID_PCM_S16LE && audioHint.codec <= AV_CODEC_ID_PCM_SGA)
+      {
+        CLog::Log(LOGDEBUG, "CMediaPipelineWebOS::Load() — PCM audio");
+        p["option"]["externalStreamingInfo"]["contents"]["codec"]["audio"] = "PCM";
+        CVariant& pcmInfo = p["option"]["externalStreamingInfo"]["contents"]["pcmInfo"];
+        pcmInfo["bitsPerSample"] = audioHint.bitspersample;
+        pcmInfo["sampleRate"] = audioHint.samplerate / 1000.f;
+        pcmInfo["layout"] = audioHint.channellayout;
+        pcmInfo["channelMode"] = audioHint.channels == 1 ? "mono" :
+                                 audioHint.channels == 2 ? "stereo" :
+                                 audioHint.channels == 6 ? "surround" : "multichannel";
+        pcmInfo["format"] = audioHint.bitspersample == 16 ? "S16_LE" :
+                            audioHint.bitspersample == 24 ? "S24_LE" :
+                            audioHint.bitspersample == 32 ? "S32_LE" : "unknown";
+      }
+07/15/2025 10:27 PM
+i'll try it now
+[yolofant]
+yolofant 07/15/2025 10:25 PM
+but yeah I only tried a few files
+07/15/2025 10:24 PM
+[ccarnell98]
+ccarnell98 07/15/2025 10:24 PM
+damn I tried hex this morning but couldn't get it to work. nice one
+[yolofant]
+yolofant 07/15/2025 10:24 PM
+      else if (audioHint.codec == AV_CODEC_ID_AAC || audioHint.codec == AV_CODEC_ID_AAC_LATM)
+      {
+        CVariant& aacInfo = p["option"]["externalStreamingInfo"]["contents"]["aacInfo"];
+        aacInfo["channels"] = audioHint.channels;
+        aacInfo["profile"] = audioHint.profile;
+        aacInfo["format"] = "raw";
+        aacInfo["frequency"] = audioHint.samplerate / 1000.0;
+        if (audioHint.profile == AV_PROFILE_AAC_HE || audioHint.profile == AV_PROFILE_AAC_HE_V2 ||
+            audioHint.profile == AV_PROFILE_MPEG2_AAC_HE)
+          p["option"]["externalStreamingInfo"]["contents"]["codec"]["audio"] = "HE AAC";
+        if (audioHint.extradata)
+        {
+          auto extraData = std::span(audioHint.extradata.GetData(), audioHint.extradata.GetSize());
+          aacInfo["codecSize"] = extraData.size();
+          aacInfo["codecData"] = fmt::format("{:x}", fmt::join(extraData, ""));
+        }
+      }
+a bit more cleaned up (edited)
+07/15/2025 10:23 PM
+needs to be hex but without 0x
+07/15/2025 10:23 PM
+yes
+[ccarnell98]
+ccarnell98 07/15/2025 10:23 PM
+is that hex its generating for codecData?
+[yolofant]
+yolofant 07/15/2025 10:09 PM
+it can always be transcoded
+07/15/2025 10:09 PM
+but I don't think opus is really important
+07/15/2025 10:09 PM
+at least not to what's send in moonlight-tv
+07/15/2025 10:09 PM
+if you start decoding it bit by bit it doesn't add up
+07/15/2025 10:08 PM
+but as I said I think the ffmpeg opus header is not what the APIs expect
+07/15/2025 10:08 PM
+it's used in moonlight-tv
+[yolofant]
+[] ccarnell98 well it passes Load() at least, but theres nothing output
+so its a bit pointless 
+yolofant 07/15/2025 10:08 PM
+yes, idk
+[yolofant]
+yolofant 07/15/2025 10:07 PM
+and no idea about aac he
+07/15/2025 10:07 PM
+no idea if we need adts somewhere
+07/15/2025 10:07 PM
+but all were profile 1
+07/15/2025 10:07 PM
+the ones I have played
+07/15/2025 10:07 PM
+I don't have that many aac files
+07/15/2025 10:07 PM
+      else if (audioHint.codec == AV_CODEC_ID_AAC ||
+               audioHint.codec == AV_CODEC_ID_AAC_LATM)
+      {
+        CVariant& aacInfo = p["option"]["externalStreamingInfo"]["contents"]["aacInfo"];
+        aacInfo["channels"] = audioHint.channels;
+        aacInfo["profile"] = audioHint.profile;
+        aacInfo["format"] = "raw";
+        aacInfo["frequency"] = audioHint.samplerate / 1000.0;
+        if (audioHint.profile == AV_PROFILE_AAC_HE)
+          p["option"]["externalStreamingInfo"]["contents"]["codec"]["audio"] = "HE AAC";
+        if (audioHint.extradata)
+        {
+          aacInfo["codecSize"] = audioHint.extradata.GetSize();
+          aacInfo["codecData"] = fmt::format("{:x}", fmt::join(std::span(audioHint.extradata.GetData(), audioHint.extradata.GetData() + audioHint.extradata.GetSize()), ""));
+        }
+      }
+[yolofant]
+yolofant 07/15/2025 9:54 PM
+at least in one file
+07/15/2025 9:54 PM
+funnily I just made aac play
+07/15/2025 9:53 PM
+hmm yes
+[ccarnell98]
+ccarnell98 07/15/2025 9:52 PM
+well it passes Load() at least, but theres nothing output so its a bit
+pointless 
+[ccarnell98]
+ccarnell98 07/15/2025 9:38 PM
+oh its the other way around. your feeding the pipeline their
+07/15/2025 9:33 PM
+whats it receiving back in feedvideo and feedaudio?
+[yolofant]
+yolofant 07/15/2025 9:27 PM
+the beginning is OpusHead but the rest seems wrong
+[ccarnell98]
+ccarnell98 07/15/2025 9:27 PM
+and in libpf:
+    uVar5 = g_base64_decode(local_440,(string *)&local_228);
+for streamHeader
+[yolofant]
+yolofant 07/15/2025 9:27 PM
+yes but it seems that the bits just don't add up
+[ccarnell98]
+ccarnell98 07/15/2025 9:26 PM
+this is how chromium does it which i've re-created in kodi code above:
+    if (audio_config_.extra_data().size() > 0) {
+              std::string encoded_header;
+              base::StringPiece raw_header(
+                  reinterpret_cast<const char*>(audio_config_.extra_data().data()),
+                  audio_config_.extra_data().size());
+              base::Base64Encode(raw_header, &encoded_header);
+              contents["opusInfo"]["streamHeader"] = encoded_header;
+            }
+[yolofant]
+yolofant 07/15/2025 9:24 PM
+I think it cannot just be passed by conversion to string and encoding
+07/15/2025 9:24 PM
+if you compare what is in extradata it does not make sense
+07/15/2025 9:24 PM
+https://github.com/mariotaku/moonlight-tv/blob/ddfc2445d412eeffdd30dc368f866da461326d31/src/app/stream/audio/session_audio.c#L89
+moonlight-tv/src/app/stream/audio/session_audio.c at ddfc2445d412ee...
+Lightweight NVIDIA GameStream Client, for LG webOS TV and embedded
+devices like Raspberry Pi - mariotaku/moonlight-tv
+[]
+[ccarnell98]
+ccarnell98 07/15/2025 9:11 PM
+maybe AV_CODEC_ID_PCM_S16LE
+07/15/2025 9:07 PM
+could add pcmInfo as well, but I don't know of the many AV_CODEC_IDPCM
+its supposed to match
+07/15/2025 9:04 PM
+can see pts increasing
+07/15/2025 9:04 PM
+is it receiving valid packets? aac/opus don't output anything
+[ccarnell98]
+ccarnell98 07/15/2025 8:51 PM
+did you add it to codecmap 
+07/15/2025 8:48 PM
+do you get this?
+    2025-07-15 19:33:41.450 T:9929     info <general>: ffmpeg[0x8434558]:   Stream #0:1(eng): Audio: opus, 48000 Hz, stereo, fltp (default)
+    2025-07-15 19:33:41.450 T:9929     info <general>: ffmpeg[0x8434558]:       Metadata:
+    2025-07-15 19:33:41.450 T:9929     info <general>: ffmpeg[0x8434558]:         title           : Audio
+[yolofant]
+yolofant 07/15/2025 8:48 PM
+no opus is on every tv
+[ccarnell98]
+ccarnell98 07/15/2025 8:47 PM
+I think opus is webOS 24 + though
+07/15/2025 8:46 PM
+{AV_CODEC_ID_OPUS, "OPUS"},
+07/15/2025 8:46 PM
+does for me? CMediaPipelineWebOS::Load() — OPUS audio
+[yolofant]
+yolofant 07/15/2025 8:46 PM
+yes but the value is not AV_CODEC_ID_OPUS
+[ccarnell98]
+ccarnell98 07/15/2025 8:46 PM
+(no content)
+[image.png]
+ image.png
+83.49 KB External
+[yolofant]
+yolofant 07/15/2025 8:45 PM
+maps to no value
+07/15/2025 8:45 PM
+codec is 76123684
+07/15/2025 8:44 PM
+but it is not opus?
+[ccarnell98]
+ccarnell98 07/15/2025 8:40 PM
+needed headers are:
+    #include "utils/Base64.h"
+    #include <string_view>
+07/15/2025 8:38 PM
+after a short while:
+    2025-07-15 19:33:41.777 T:9929     info <general>: CVideoPlayer::OnExit()
+    2025-07-15 19:33:41.777 T:9929     info <general>: VideoPlayer: eof, waiting for queues to empty
+    2025-07-15 19:33:41.777 T:9929     info <general>: Closing stream player 1
+    2025-07-15 19:33:41.777 T:9929     info <general>: Closing stream player 2
+    2025-07-15 19:33:41.777 T:9929    debug <general>: CMediaPipelineWebOS::Flush()
+    2025-07-15 19:33:41.777 T:9951    debug <general>: CMediaPipelineWebOS::FeedAudioData()
+    2025-07-15 19:33:41.777 T:9951    debug <general>: void CMediaPipelineWebOS::FeedAudioData(const std::shared_ptr<CDVDMsg>&): CMediaPipelineWebOS::FeedAudioData() pts 2240000000 packet->pts 2240000
+    2025-07-15 19:33:41.778 T:9948  warning <general>: void CMediaPipelineWebOS::FeedVideoData(const std::shared_ptr<CDVDMsg>&): Buffer submit returned error: {"returnValue":"Error"}
+    2025-07-15 19:33:41.778 T:9948    debug <general>: CMediaPipelineWebOS::FeedVideoData()
+07/15/2025 8:37 PM
+chromium doesn't specify profile, channels, frequency or even extra_data
+(for aac) (edited)
+07/15/2025 8:37 PM
+following the logic in chromium, aac does the same thing too
+07/15/2025 8:36 PM
+https://github.com/lmshao/multimedia-examples/raw/refs/heads/master/THAUJ-1M.webm
+[yolofant]
+yolofant 07/15/2025 8:36 PM
+you have sample file?
+[ccarnell98]
+ccarnell98 07/15/2025 8:35 PM
+doesn't do anything just drops back to menu
+07/15/2025 8:35 PM
+    2025-07-15 19:33:41.641 T:9948    debug <general>: CMediaPipelineWebOS::FeedVideoData()
+    2025-07-15 19:33:41.641 T:9948    debug <general>: void CMediaPipelineWebOS::FeedVideoData(const std::shared_ptr<CDVDMsg>&): CMediaPipelineWebOS::FeedVideoData() pts 681000000 ppts 681000
+    2025-07-15 19:33:41.643 T:9951     info <general>: void CMediaPipelineWebOS::ProcessAudio(): Received audio message: 1004
+    2025-07-15 19:33:41.643 T:9951    debug <general>: CMediaPipelineWebOS::FeedAudioData()
+    2025-07-15 19:33:41.643 T:9951    debug <general>: void CMediaPipelineWebOS::FeedAudioData(const std::shared_ptr<CDVDMsg>&): CMediaPipelineWebOS::FeedAudioData() pts 0 packet->pts 0
+    2025-07-15 19:33:41.643 T:9951    debug <general>: CMediaPipelineWebOS::FeedAudioData()
+    2025-07-15 19:33:41.643 T:9951    debug <general>: void CMediaPipelineWebOS::FeedAudioData(const std::shared_ptr<CDVDMsg>&): CMediaPipelineWebOS::FeedAudioData() pts 21000000 packet->pts 21000
+    2025-07-15 19:33:41.643 T:9951    debug <general>: CMediaPipelineWebOS::FeedAudioData()
+    2025-07-15 19:33:41.643 T:9951    debug <general>: void CMediaPipelineWebOS::FeedAudioData(const std::shared_ptr<CDVDMsg>&): CMediaPipelineWebOS::FeedAudioData() pts 40000000 packet->pts 40000
+    2025-07-15 19:33:41.643 T:9951    debug <general>: CMediaPipelineWebOS::FeedAudioData()
+    2025-07-15 19:33:41.643 T:9951    debug <general>: void CMediaPipelineWebOS::FeedAudioData(const std::shared_ptr<CDVDMsg>&): CMediaPipelineWebOS::FeedAudioData() pts 60000000 packet->pts 60000
+07/15/2025 8:34 PM
+really thought this was gonna work!
+    else if (audioHint.codec == AV_CODEC_ID_OPUS && ms_codecMap.contains(AV_CODEC_ID_OPUS))
+      {
+        CLog::Log(LOGDEBUG, "CMediaPipelineWebOS::Load() — OPUS audio");
+        CVariant& opusInfo = p["option"]["externalStreamingInfo"]["contents"]["opusInfo"];
+        opusInfo["channels"] = audioHint.channels;
+        opusInfo["sampleRate"] = audioHint.samplerate / 1000.f;
+        if (audioHint.extradata && audioHint.extradata.GetSize() > 0) {
+          std::string encoded_header;
+          std::string_view raw_header(
+            reinterpret_cast<const char*>(audioHint.extradata.GetData()),
+              audioHint.extradata.GetSize());
+          Base64::Encode(raw_header.data(), static_cast<unsigned int>(raw_header.size()), encoded_header);
+          opusInfo["streamHeader"] = encoded_header;
+        }
+      }
+[ccarnell98]
+ccarnell98 07/15/2025 7:37 PM
+but oddly chromium doesn't seem to list aac extra_data
+07/15/2025 7:37 PM
+its in chromium sources and confirmed in libpf as decoding base64
+[ccarnell98]
+[] yolofant that was a char*
+ccarnell98 07/15/2025 7:36 PM
+option.externalStreamingInfo.contents.opusInfo.streamHeader is base64
+encoded
+[ccarnell98]
+ccarnell98 07/15/2025 6:36 PM
+nope
+[yolofant]
+yolofant 07/15/2025 6:07 PM
+yes, that must work?
+[ccarnell98]
+ccarnell98 07/15/2025 5:41 PM
+export APPID='org.xbmc.kodi' before that 
+07/15/2025 5:41 PM
+neither does:
+    ./kodi-webos -p
+    InitStageOne APPID = org.xbmc.kodi
+[ccarnell98]
+ccarnell98 07/15/2025 5:31 PM
+changing this to 1 does not fix the issue with luna calls:
+setenv("APPID", CCompileInfo::GetPackage(), 1);
+07/15/2025 5:28 PM
+must have changed this in a update?
+07/15/2025 5:28 PM
+    ./kodi-webos -p
+    InitStageOne APPID = com.palm.devmode.openssh
+07/15/2025 5:23 PM
+ok I did a InitStageOne fprintf and that is definitely called
+[ccarnell98]
+ccarnell98 07/15/2025 3:51 PM
+meh still getting Luna request call failed from ssh
+[yolofant]
+yolofant 07/15/2025 3:43 PM
+not sure if logging is set up in stage one
+ 1
+[ccarnell98]
+ccarnell98 07/15/2025 3:38 PM
+as I was trying to debug while it wont play from ssh
+07/15/2025 3:38 PM
+I put some logs e.g. CLog::Log(LOGDEBUG, "CPlatformWebOS:InitStageOne
+home is: {}", HOME); and they don't appear
+[yolofant]
+yolofant 07/15/2025 2:56 PM
+it might just be optimized away?
+07/15/2025 2:56 PM
+are you sure though?
+[ccarnell98]
+ccarnell98 07/15/2025 2:42 PM
+it's so weird how my build is ignoring CPlatformWebOS::InitStageOne() as
+I compiled with --with-platform=webos and any changes I make to
+PlatformWebOS.cpp gets recompiled
+[yolofant]
+[] ccarnell98 <@195583665265311744> did you get opus to work? I assume
+not as the code is not present anymore
+yolofant 07/15/2025 2:23 PM
+I have not tried was just looking into it briefly
+[ccarnell98]
+ccarnell98 07/15/2025 1:52 PM
+not seen this before:
+    [100%] Linking CXX executable kodi-webos
+    /home/cscd98/Toolchains/arm-webos-linux-gnueabi_sdk-buildroot-nc4/bin/../lib/gcc/arm-webos-linux-gnueabi/14.2.0/../../../../arm-webos-linux-gnueabi/bin/ld.gold: warning: build/platform/posix/filesystem/platform_posix_filesystem.a(SMBWSDiscoveryListener.cpp.o): top level DIE is not DW_TAG_compile_unit or DW_TAG_type_unit
+    /home/cscd98/Toolchains/arm-webos-linux-gnueabi_sdk-buildroot-nc4/bin/../lib/gcc/arm-webos-linux-gnueabi/14.2.0/../../../../arm-webos-linux-gnueabi/bin/ld.gold: warning: build/messagingHelpers/messagingHelpers.a(DialogOKHelper.cpp.o): top level DIE is not DW_TAG_compile_unit or DW_TAG_type_unit
+    /home/cscd98/Toolchains/arm-webos-linux-gnueabi_sdk-buildroot-nc4/bin/../lib/gcc/arm-webos-linux-gnueabi/14.2.0/../../../../arm-webos-linux-gnueabi/bin/ld.gold: warning: build/pvr/channels/pvr_channels.a(PVRChannelGroup.cpp.o): top level DIE is not DW_TAG_compile_unit or DW_TAG_type_unit
+    /home/cscd98/Toolchains/arm-webos-linux-gnueabi_sdk-buildroot-nc4/bin/../lib/gcc/arm-webos-linux-gnueabi/14.2.0/../../../../arm-webos-linux-gnueabi/bin/ld.gold: warning: build/peripherals/devices/peripherals_devices.a(PeripheralTuner.cpp.o): top level DIE is not DW_TAG_compile_unit or DW_TAG_type_unit
+    [100%] Built target kodi
+[ccarnell98]
+ccarnell98 07/15/2025 12:46 PM
+hmm my code isn't hitting CPlatformWebOS::InitStageOne, maybe my compile
+is fubarred
+07/15/2025 12:45 PM
+I think my fix, fixed it, but also broke it 
+07/15/2025 12:44 PM
+2025-07-15 11:43:01.024 T:9781 debug <general>: Passing appId
+com.palm.devmode.openssh and displayAffinity 0 to wl_webos_shell
+07/15/2025 12:41 PM
+however if I unset it doesn't work anyway (in ssh) (edited)
+[ccarnell98]
+[] yolofant I am using gdbserver and that works
+ccarnell98 07/15/2025 12:40 PM
+Doesn't work for me with gdbserver either. The only thing I can think of
+is this line:
+https://github.com/xbmc/xbmc/blob/4c3a65d5266a49e2fb42cfdb5b748214330821c9/xbmc/windowing/wayland/ShellSurfaceWebOSShell.cpp#L85.
+By default APPID is set to APPID='com.palm.devmode.openssh' in ssh
+xbmc/xbmc/windowing/wayland/ShellSurfaceWebOSShell.cpp at 4c3a65d52...
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&amp;#39;s ava...
+[]
+[ccarnell98]
+ccarnell98 07/15/2025 9:51 AM
+but I don't know what format libplayer/pf is expecting
+07/15/2025 9:51 AM
+I've tried passing it as a string (crashes), passes it as base64 encoded
+(doesn't crash), but kodi crashes very shortly after
+[ccarnell98]
+ccarnell98 07/15/2025 9:35 AM
+@Yolofant did you get opus to work? I assume not as the code is not
+present anymore
+July 14, 2025
+[yolofant]
+yolofant 07/14/2025 10:57 PM
+but it could be different in aac
+07/14/2025 10:57 PM
+that was a char*
+07/14/2025 10:57 PM
+I have only checked for opus a while ago
+[yolofant]
+[] ccarnell98 can audioHint.extradata.GetData() be passed as a string?
+does it contain binary data?
+yolofant 07/14/2025 10:57 PM
+I think it depends
+[ccarnell98]
+ccarnell98 07/14/2025 8:31 PM
+not having any luck when I pass it, load() always crashes in
+!m_mediaAPIs->Load(payload.c_str(),
+&CMediaPipelineWebOS::PlayerCallback, this))
+07/14/2025 8:31 PM
+can audioHint.extradata.GetData() be passed as a string? does it contain
+binary data?
+[yolofant]
+yolofant 07/14/2025 8:28 PM
+maybe we could do a "late" loading in SetSpeed
+ 1
+07/14/2025 8:28 PM
+so the pipeline does not know if there will be an audio stream or not
+07/14/2025 8:27 PM
+because video and audio are separate
+[yolofant]
+[] a6oo Confirmed with the modified Amazon addon and the jellyfish
+samples that have no audio. Videos must h...
+yolofant 07/14/2025 8:27 PM
+yes, those could play but it's a limitation of the current design
+[yolofant]
+yolofant 07/14/2025 8:26 PM
+I am using gdbserver and that works
+[ccarnell98]
+ccarnell98 07/14/2025 6:46 PM
+    kodi-webos[]ums.connector{"SESSION_ID":"_fqBXrs1j2J320J","TIMESTAMP":6771.841254060,"CODE_POINT":"<UMSConnector_impl.cpp:UMSConnector_impl(142)>","SERVICE":"com.webos.rm.client._fqBXrs1j2J320J","ERROR":"Invalid permissions for com.webos.rm.client._fqBXrs1j2J320J"} LSRegisterPubPriv FAILED for name=com.webos.rm.client._fqBXrs1j2J320J !!
+    kodi-webos[]ums.resource_mgr_client{"SESSION_ID":"_fqBXrs1j2J320J","TIMESTAMP":6771.841424180,"CODE_POINT":"<ResourceManagerClient.cpp:ResourceManagerClientInit(141)>","ERROR":"LSRegisterPubPriv FAILED"} Failed to instantiate a UMSConnector object
+    kodi-webos[]smp.rm{"uid":"unknown", "tid": "11093", "msg":"ResourceManagerClient create failed[LSRegisterPubPriv FAILED]"} 
+07/14/2025 6:39 PM
+tried using gdb to debug but its failing to play from ssh again. Thought
+we fixed that 
+[ccarnell98]
+ccarnell98 07/14/2025 4:43 PM
+I dumped this from libpf:
+https://github.com/cscd98/starfish-media-debug/blob/main/libpf-audio
+starfish-media-debug/libpf-audio at main · cscd98/starfish-media-d...
+Contribute to cscd98/starfish-media-debug development by creating an
+account on GitHub.
+[]
+[ccarnell98]
+ccarnell98 07/14/2025 1:29 PM
+    2025-07-14 12:27:57.219 T:5464    error <general>: bool CMediaPipelineWebOS::Load(CDVDStreamInfo&, CDVDStreamInfo&): CMediaPipelineWebOS: Load failed
+07/14/2025 1:29 PM
+When Load() fails you cannot enter any input any more as kodi just seems
+to freeze. maybe return or send a popup to the front end?
+[a6oo]
+[] yolofant but if you have no audio you still need to comment out
+things I think
+a6oo 07/14/2025 1:04 PM
+Confirmed with the modified Amazon addon and the jellyfish samples that
+have no audio. Videos must have an audio track or otherwise they won't
+be played. https://repo.jellyfin.org/archive/jellyfish/
+DEPRECATED - Jellyfish Bitrate Test Files
+DEPRECATED - A collection of .mkv video clips encoded at various
+bitrates; useful for testing the network streaming and playback
+performance of media streamers & HTPCs.
+[ccarnell98]
+ccarnell98 07/14/2025 12:52 PM
+    else if (audioHint.codec == AV_CODEC_ID_AAC || audioHint.codec == AV_CODEC_ID_AAC_LATM)
+      {
+        CVariant& aacInfo = p["option"]["externalStreamingInfo"]["contents"]["aacInfo"];
+        aacInfo["format"] = "RAW";
+        aacInfo["profile"] = audioHint.profile;
+        aacInfo["channels"] = audioHint.channels;
+        aacInfo["frequency"] = audioHint.samplerate / 1000.0;
+        if (audioHint.extradata)
+        {
+          aacInfo["codecData"] = std::string(reinterpret_cast<const char*>(audioHint.extradata.GetData()), audioHint.extradata.GetSize());
+          aacInfo["codecSize"] = audioHint.extradata.GetSize();
+        }
+        if (audioHint.profile == AV_PROFILE_AAC_HE) {
+          CLog::LogF(LOGDEBUG, "CMediaPipelineWebOS::Load() — setting codec to HE AAC");
+          p["option"]["externalStreamingInfo"]["contents"]["codec"]["audio"] = "HE AAC";
+        }
+      }
+07/14/2025 12:52 PM
+still fails with either format RAW or format adts, clearly doing
+something wrong
+[ccarnell98]
+[] yolofant I think you have to pass `AAC HE`
+ccarnell98 07/14/2025 12:44 PM
+Close! It's HE AAC in libpf 
+[a6oo]
+[] yolofant I have pushed what I have and it mostly works I think
+a6oo 07/14/2025 12:01 PM
+Confirmed working with the stream that failed before. Many thanks!
+[ccarnell98]
+ccarnell98 07/14/2025 11:33 AM
+althought that only gives the user no audio, so its not really a long
+term fix
+07/14/2025 11:33 AM
+If that is the case, it should ignore m_audioHint.codec requirement
+07/14/2025 11:32 AM
+(on a seperate note) I wonder if we can check for no audio streams?
+(edited)
+07/14/2025 11:29 AM
+hmm now its populating audioHint.profile 4 just fine from the file
+above. Probably because I hacked OpenVideoStream as I didn't read your
+code thoroughly enough  (edited)
+[yolofant]
+yolofant 07/14/2025 11:23 AM
+but I don't know for sure
+07/14/2025 11:23 AM
+I think you have to pass AAC HE
+07/14/2025 11:22 AM
+I think aac he is also different
+[ccarnell98]
+ccarnell98 07/14/2025 11:18 AM
+oh AV_PROFILE_AAC_HE comes from FFMPEG includes not kodi
+07/14/2025 11:12 AM
+ok thanks 
+[yolofant]
+yolofant 07/14/2025 11:12 AM
+just hard code it for now I guess
+07/14/2025 11:11 AM
+so I would not be surprised if it was not tested at all
+07/14/2025 11:11 AM
+but aac is generally not supported in kodi
+07/14/2025 11:11 AM
+no idea
+07/14/2025 11:11 AM
+I have seen profile being 1
+[ccarnell98]
+ccarnell98 07/14/2025 11:10 AM
+for AV_CODEC_ID_AAC, any idea why it's not populating audioHint.profile?
+seems to be 0, according to ffmpeg it should be 4 (AV_PROFILE_AAC_HE).
+Is there a audioHint.format or something like that? as the file above is
+not adts (edited)
+[yolofant]
+yolofant 07/14/2025 11:07 AM
+but if you have no audio you still need to comment out things I think
+[a6oo]
+a6oo 07/14/2025 10:16 AM
+@Craig If you have Amazon Prime you can install the addon: Install this
+repository:
+https://github.com/Sandmann79/xbmc/releases/download/Repository/repository.sandmann79.plugins-1.0.4.zip
+and the Amazon addon from there. Modify line 379 of
+addons/plugin.video.amazon-test/resources/lib/proxy.py and replace if
+lang in chosen_langs or chosen_langs == 'all': for if 0:#lang in
+chosen_langs or chosen_langs == 'all': Go to the addon settings and
+enable Proxy MPD alteration: With this change the manifest will have no
+audio streams and you can test if video is properly decoded. (edited)
+[image.png]
+ image.png
+84.89 KB External
+ 1
+[yolofant]
+yolofant 07/14/2025 12:37 AM
+I have pushed what I have and it mostly works I think
+ 2
+July 13, 2025
+[yolofant]
+yolofant 07/13/2025 11:59 PM
+I am working on it
+07/13/2025 11:59 PM
+but yes it cannot reload video streams right now
+07/13/2025 11:57 PM
+it depends on the ordering of streams in the input
+07/13/2025 11:57 PM
+you cannot know if the video player opens video or audio first
+07/13/2025 11:55 PM
+it waits until both are set then it loads
+07/13/2025 11:55 PM
+no
+[ccarnell98]
+ccarnell98 07/13/2025 11:54 PM
+But wouldn't have already sent a incomplete payload by then?
+[ccarnell98]
+ccarnell98 07/13/2025 11:41 PM
+or is it because later on it calls Load() but this time with audio info?
+07/13/2025 11:40 PM
+    2025-07-13 22:36:56.535 T:2725    debug <general>: CMediaPipelineWebOS::OpenAudioStream()
+    2025-07-13 22:36:56.535 T:2725    debug <general>: bool CMediaPipelineWebOS::OpenAudioStream(CDVDStreamInfo&): changeAudioCodec: null
+07/13/2025 11:39 PM
+@Yolofant with teh file above, m_audioHint.codec seems to not populated:
+    2025-07-13 22:36:56.410 T:2725    debug <general>: bool CMediaPipelineWebOS::OpenVideoStream(const CDVDStreamInfo&): CMediaPipelineWebOS::OpenVideoStream() 27
+    2025-07-13 22:36:56.410 T:2725    debug <general>: CMediaPipelineWebOS::OpenVideoStream() no m_audioHint.codec
+    2025-07-13 22:36:56.410 T:2725    debug <general>: CMediaPipelineWebOS::Load()
+[ccarnell98]
+ccarnell98 07/13/2025 11:20 PM
+actually it wouldn't work as the codec is not adts and its profile 4,
+not 2
+[ccarnell98]
+ccarnell98 07/13/2025 10:57 PM
+    2025-07-13 21:55:04.923 T:15579   debug <general>: CMediaPipelineWebOS::Flush()
+    2025-07-13 21:55:04.923 T:15597   debug <general>: void CMediaPipelineWebOS::FeedAudioData(const std::shared_ptr<CDVDMsg>&): CMediaPipelineWebOS::FeedAudioData() pts 4922630385 packet->pts 4922630.385487528
+    2025-07-13 21:55:04.924 T:15597 warning <general>: void CMediaPipelineWebOS::FeedAudioData(const std::shared_ptr<CDVDMsg>&): Buffer submit returned error: {"returnValue":"Error"}
+    2025-07-13 21:55:04.924 T:15597   debug <general>: void CMediaPipelineWebOS::FeedAudioData(const std::shared_ptr<CDVDMsg>&): CMediaPipelineWebOS::FeedAudioData() pts 4969070294
+(edited)
+07/13/2025 10:56 PM
+    2025-07-13 21:55:04.879 T:15583   error <general>: void CMediaPipelineWebOS::PlayerCallback(int32_t, int64_t, const char*): Pipeline STR_ERROR numValue: 0, strValue:
+(edited)
+07/13/2025 10:53 PM
+    Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/home/cscd98/Downloads/ChID-BLITS-EBU.mp4':
+      Metadata:
+        major_brand     : avc1
+        minor_version   : 0
+        compatible_brands: isomavc1
+        creation_time   : 2012-05-17T00:54:33.000000Z
+      Duration: 00:00:46.63, start: 0.000000, bitrate: 188 kb/s
+      Stream #0:0[0x1](und): Video: h264 (Main) (avc1 / 0x31637661), yuv420p(progressive), 800x600, 26 kb/s, 8 fps, 8 tbr, 8 tbn (default)
+          Metadata:
+            creation_time   : 2012-05-17T00:54:33.000000Z
+            handler_name    : GPAC ISO Video Handler
+            vendor_id       : [0][0][0][0]
+      Stream #0:1[0x2](und): Audio: aac (HE-AAC) (mp4a / 0x6134706D), 44100 Hz, 5.1, fltp, 159 kb/s (default)
+          Metadata:
+            creation_time   : 2012-05-17T00:56:13.000000Z
+            handler_name    : GPAC ISO Audio Handler
+            vendor_id       : [0][0][0][0]
+07/13/2025 10:50 PM
+with frequency 48
+07/13/2025 10:50 PM
+doesn't play 
+07/13/2025 10:49 PM
+gonna give it a whirl
+07/13/2025 10:48 PM
+https://www2.iis.fraunhofer.de/AAC/ChID-BLITS-EBU.mp4
+07/13/2025 10:48 PM
+i'll see if I can dig out a audio test file with AAC
+07/13/2025 10:47 PM
+feedaudiodata, yeh right at the top
+[yolofant]
+yolofant 07/13/2025 10:43 PM
+did you add the return in feedaudio?
+[ccarnell98]
+ccarnell98 07/13/2025 10:38 PM
+I disabled audio (at least return false in OpenAudioStream,
+p["option"]["needAudio"] = false; and commented out audio stuff in
+Load(), no change
+[yolofant]
+yolofant 07/13/2025 10:38 PM
+not sure
+07/13/2025 10:38 PM
+maybe that was why
+07/13/2025 10:38 PM
+hmm yeah
+[ccarnell98]
+ccarnell98 07/13/2025 10:36 PM
+oh nice. frequency?
+[yolofant]
+yolofant 07/13/2025 10:33 PM
+but it did not work
+07/13/2025 10:33 PM
+I had this for aac btw
+07/13/2025 10:33 PM
+    else if (audioHint.codec == AV_CODEC_ID_AAC || audioHint.codec == AV_CODEC_ID_AAC_LATM)
+      {
+        CVariant& aacInfo = p["option"]["externalStreamingInfo"]["contents"]["aacInfo"];
+        aacInfo["format"] = "adts";
+        aacInfo["profile"] = 2;//audioHint.profile;
+        aacInfo["channels"] = audioHint.channels;
+        aacInfo["sampleRate"] = audioHint.samplerate / 1000.0;
+        if (audioHint.extradata)
+        {
+          aacInfo["codecData"] = std::string(reinterpret_cast<const char*>(audioHint.extradata.GetData()), audioHint.extradata.GetSize());
+          aacInfo["codecSize"] = audioHint.extradata.GetSize();
+        }
+      }
+07/13/2025 10:32 PM
+it's switching resolutions
+07/13/2025 10:32 PM
+@A600 nvm I found the issue
+ 1
+[yolofant]
+yolofant 07/13/2025 10:21 PM
+remember to remove audio codec
+07/13/2025 10:21 PM
+p["option"]["needAudio"] = false;
+ 1
+[ccarnell98]
+ccarnell98 07/13/2025 10:18 PM
+in payload?
+07/13/2025 10:18 PM
+where do you set needsAudio to false?
+[yolofant]
+[] anthock <@195583665265311744> another input: Starfish works in your
+experimental videoplayer, in master nigh...
+yolofant 07/13/2025 10:17 PM
+ok so it's just that it consumes more memory
+[yolofant]
+yolofant 07/13/2025 10:15 PM
+@A600 do you by chance have a debug log of nightly kodi for that
+particular stream?
+07/13/2025 10:14 PM
+so you rule out that it's just the aacinfo giving you trouble
+07/13/2025 10:14 PM
+because if you have audio issue then the video frame is stuck
+07/13/2025 10:14 PM
+I would recommend doing it
+07/13/2025 10:14 PM
+did you disable audio
+07/13/2025 10:12 PM
+I think 45 is in newest chromium
+[ccarnell98]
+ccarnell98 07/13/2025 9:59 PM
+i'll start logging pts
+07/13/2025 9:58 PM
+    2025-07-13 20:35:36.275 T:15159   debug <general>: CMediaPipelineWebOS::FeedVideoData()
+    2025-07-13 20:35:36.275 T:15134   debug <general>: AddOnLog: inputstream.adaptive: CInputStreamAdaptive::DemuxRead - we have a next sample
+    2025-07-13 20:35:36.275 T:15134   debug <general>: AddOnLog: inputstream.adaptive: CDM - CFragmentedSampleReader::GetInformation()
+    2025-07-13 20:35:36.275 T:15134   debug <general>: AddOnLog: inputstream.adaptive: CDM - DemuxRead() entry - Size 34
+    2025-07-13 20:35:36.275 T:15134   debug <general>: AddOnLog: inputstream.adaptive: CDM - DemuxRead() entry - we have srHaveData
+    2025-07-13 20:35:36.275 T:15160   debug <general>: AddOnLog: inputstream.adaptive: CDM - ReadSample()
+    2025-07-13 20:35:36.275 T:15160   debug <general>: AddOnLog: inputstream.adaptive: CDM - ReadSample() - returning AP4_SUCCESS
+    2025-07-13 20:35:36.275 T:15159   debug <general>: CMediaPipelineWebOS::FeedVideoData()
+    2025-07-13 20:35:36.275 T:15134   debug <general>: AddOnLog: inputstream.adaptive: CInputStreamAdaptive::DemuxRead - we have a next sample
+    2025-07-13 20:35:36.275 T:15134   debug <general>: AddOnLog: inputstream.adaptive: CDM - CFragmentedSampleReader::GetInformation()
+    2025-07-13 20:35:36.275 T:15134   debug <general>: AddOnLog: inputstream.adaptive: CDM - DemuxRead() entry - Size 41
+    2025-07-13 20:35:36.275 T:15134   debug <general>: AddOnLog: inputstream.adaptive: CDM - DemuxRead() entry - we have srHaveData
+    2025-07-13 20:35:36.275 T:15160   debug <general>: AddOnLog: inputstream.adaptive: CDM - ReadSample()
+    2025-07-13 20:35:36.275 T:15160   debug <general>: AddOnLog: inputstream.adaptive: CDM - ReadSample() - returning AP4_SUCCESS
+    2025-07-13 20:35:36.275 T:15159   debug <general>: CMediaPipelineWebOS::FeedVideoData()
+not sure why the frame is stuck
+07/13/2025 9:56 PM
+@Yolofant where did you see 45?
+[anthock]
+anthock 07/13/2025 9:47 PM
+@Yolofant another input: Starfish works in your experimental
+videoplayer, in master nightlies videoplayer just crashes
+[yolofant]
+yolofant 07/13/2025 9:38 PM
+and probably comment also adding of the audio codec
+07/13/2025 9:38 PM
+and just return in feedaudio
+07/13/2025 9:38 PM
+you can send "needsAudio" false as before
+07/13/2025 9:38 PM
+and I would also just disable audio first
+07/13/2025 9:37 PM
+I would use 40 or 45
+07/13/2025 9:37 PM
+I think it just depends on tv model
+[ccarnell98]
+ccarnell98 07/13/2025 9:14 PM
+10 - 20 - 25 - blank screen, 0, 30, 35, 40 one frame (edited)
+07/13/2025 9:14 PM
+I tested each one with secure path. I wasn't expecting anything but
+theirs was a difference.
+[ccarnell98]
+ccarnell98 07/13/2025 8:56 PM
+    :{\"codec\":{\"video\":\"H264\",\"audio\":\"AAC\"}
+07/13/2025 8:55 PM
+    "aacInfo\":{\"frequency\":48,\"profile\":2,\"format\":\"adts\",\"channels\":2}}
+07/13/2025 8:55 PM
+Hmm yeh svpVersion seems to fluctuate from 20,25,30
+[yolofant]
+yolofant 07/13/2025 8:49 PM
+You find some dumped from amazon and netflix
+07/13/2025 8:49 PM
+Search for aacinfo in discord
+07/13/2025 8:48 PM
+But it can go up to 45
+07/13/2025 8:48 PM
+I think that is all
+07/13/2025 8:48 PM
+Yes
+[ccarnell98]
+ccarnell98 07/13/2025 8:47 PM
+all I can see in pf_export.hpp from chromium is:
+    #define PF_EXT_SVP_VERSION "option.externalStreamingInfo.svpVersion"//type: boolean/**<security video path version number(0,10,20) */
+[yolofant]
+yolofant 07/13/2025 8:47 PM
+I think it all happens in load
+[ccarnell98]
+ccarnell98 07/13/2025 8:44 PM
+I mean I assume the render surface is secure anyway
+07/13/2025 8:44 PM
+@Yolofant Have you seen any libPlayer methods to do with SVP? I have a
+single frame displayed with secure path enabled now (by hacking codec to
+AVC/AAC) as its not passed for some reason)
+[ccarnell98]
+[] yolofant Yes but I don't know the arguments
+ccarnell98 07/13/2025 8:07 PM
+ah makes sense. We'll have to try and figure that one out as AAC is used
+by the google tears widevine test
+[anthock]
+anthock 07/13/2025 7:46 PM
+Finally I found the issue. There are some problems with skin that I was
+using and python 3.13. Other build is working because it is using python
+3.12. @Yolofant regarding new player on webos 4, it works but there are
+the same problems that others have already pointed out. I attach you
+debug log where Kodi crashes after some seconds of playing mkv and tv
+returns to main LG menu for memory reasons (also another user as pointed
+out this:
+https://forum.kodi.tv/showthread.php?tid=368381&pid=3237165#pid3237165)
+ kodi.log
+219.12 KB External
+[ccarnell98]
+ccarnell98 07/13/2025 7:24 PM
+no wonder it doesn't do anything with secure path:
+    2025-07-13 18:20:12.275 T:30176   debug <general>: CurlFile::Open - <https://storage.googleapis.com/wvmedia/cbcs/h264/tears/tears_h264_main_720p_8000_aes_cbcs.mp4>
+    2025-07-13 18:20:12.417 T:30176   debug <general>: AddOnLog: inputstream.adaptive: [AS-0] Download finished: https://storage.googleapis.com/wvmedia/cbcs/h264/tears/tears_h264_main_720p_8000_aes_cbcs.mp4 (downloaded 1165 byte, speed 8214.00 byte/s)
+    2025-07-13 18:20:12.418 T:30176   debug <general>: AddOnLog: inputstream.adaptive: UpdateSampleDescription: Codec fourcc: avc1 (1635148593)
+    2025-07-13 18:20:12.418 T:30176   debug <general>: AddOnLog: inputstream.adaptive: CDM - PrepareStream() - has a session
+    2025-07-13 18:20:12.418 T:30176   debug <general>: AddOnLog: inputstream.adaptive: CDM - PrepareStream() - setting secure session TRUE
+    2025-07-13 18:20:12.418 T:30176   debug <general>: AddOnLog: inputstream.adaptive: CDM - PrepareStream() - setting decrypter
+    2025-07-13 18:20:12.418 T:30176   debug <general>: AddOnLog: inputstream.adaptive: CDM - CFragmentedSampleReader::GetInformation()
+    2025-07-13 18:20:12.418 T:30176   debug <general>: AddOnLog: inputstream.adaptive: CDM - CInputStreamAdaptive - GetStream(1001)
+    2025-07-13 18:20:12.418 T:30176   debug <general>: CDVDDemuxClient::RequestStream(): added/updated stream 1001 with codec_id 27
+    2025-07-13 18:20:12.419 T:30176   debug <general>: CMediaPipelineWebOS::OpenVideoStream()
+    2025-07-13 18:20:12.419 T:30176   debug <general>: CMediaPipelineWebOS::OpenVideoStream() no audioHint.codec
+    2025-07-13 18:20:12.419 T:30176   debug <general>: CMediaPipelineWebOS::OpenVideoStream() no m_videoHint.codec
+[ccarnell98]
+ccarnell98 07/13/2025 7:13 PM
+if we get widevine working I think we are pretty much feature complete?
+[ccarnell98]
+ccarnell98 07/13/2025 7:05 PM
+Its a big improvement having a/v sync
+[yolofant]
+yolofant 07/13/2025 7:02 PM
+But it was not there before anyway
+07/13/2025 7:02 PM
+At least avr Shows DD
+07/13/2025 7:01 PM
+I think aac is not passed natively too
+[yolofant]
+[] ccarnell98 <@195583665265311744> Shouldn't aac be included in the
+list of codecs? ```2025-07-13 16:10:29.645 T:...
+yolofant 07/13/2025 7:01 PM
+Yes but I don't know the arguments
+[a6oo]
+a6oo 07/13/2025 6:04 PM
+Yes, since the TV has an L1 securityLevel it makes sense.
+[ccarnell98]
+ccarnell98 07/13/2025 6:00 PM
+because CMediaPipelineWebOS is never invoked when I use it
+07/13/2025 5:59 PM
+@A600 I think we need to use SSD_SECURE_PATH in inputstream.adaptive.
+I'm still figuring out it works unfortunately
+[a6oo]
+[] ccarnell98 sucks to have to keep making ipks to test a code change
+a6oo 07/13/2025 5:58 PM
+Pretty much, specially for Kodi. I missed the chance to root my C4 and
+now I have the Agreement disabled so I don't have to see the new update
+available message each time I turn on the TV hoping a new exploit
+appears. I can't use apps but I couldn't care less because Kodi and
+Retroarch works and that's all I care about. (edited)
+[ccarnell98]
+ccarnell98 07/13/2025 5:13 PM
+i.e.
+    const char* codecName = avcodec_get_name(audioHint.codec);
+        CLog::LogF(LOGDEBUG, "CMediaPipelineWebOS::Load() — codec ID: {}, name: {}",
+               audioHint.codec, codecName ? codecName : "unknown");
+07/13/2025 5:12 PM
+a debug line would be really useful as standard for the codec name, we
+have it for Video but not audio
+07/13/2025 5:12 PM
+@Yolofant Shouldn't aac be included in the list of codecs?
+    2025-07-13 16:10:29.645 T:9352    debug <general>: bool CMediaPipelineWebOS::Load(CDVDStreamInfo&, CDVDStreamInfo&): CMediaPipelineWebOS::Load() — codec ID: 86018, name: aac
+    2025-07-13 16:10:29.645 T:9352    error <general>: CDVDAudioCodecFFmpeg::Open() CryptoSessions unsupported!
+https://webostv.developer.lge.com/develop/specifications/video-audio-240
+(edited)
+Audio and Video Format on webOS TV 24
+[]
+[ccarnell98]
+ccarnell98 07/13/2025 4:31 PM
+sucks to have to keep making ipks to test a code change
+07/13/2025 4:28 PM
+any idea how to fix from ssh?
+07/13/2025 4:28 PM
+actually it progresses further than this when launched from menu, so I
+guess it doesn't mean anything
+07/13/2025 4:26 PM
+hmm interesting when I run kodi from ssh I get the following output in
+terminal:
+    LUNASERVICE ERROR -1027: Invalid permissions for com.webos.widevine-wrapper.5244 (_LSTransportRequestName @ transport.c:2174)
+. I don't know if it occurs from the launcher
+[a6oo]
+a6oo 07/13/2025 12:32 PM
+Still the same black screen 
+[a6oo]
+[] yolofant Ill check again later
+a6oo 07/13/2025 12:06 PM
+Hold on. A new PR for inpustream.adaptive appeared minutes ago that may
+fix the issue. It's for Disney+ streams on some Android devices that
+show a black screen because of missing extradata:
+https://github.com/xbmc/inputstream.adaptive/pull/1887 I have to compile
+the full Kodi so it'll take a while but as soon as I can try it I'll let
+you know. (edited)
+[FragmentedSampleReader] Update codechandler extradata when change ...
+Description when CFragmentedSampleReader::GetInformation is called the
+extradata that come from codechandler could be converted when annexb is
+needed, then the updated data will be set to Inputst...
+[]
+[yolofant]
+yolofant 07/13/2025 10:41 AM
+Ill check again later
+07/13/2025 10:41 AM
+Hmm ok
+[a6oo]
+a6oo 07/13/2025 10:40 AM
+Nope. With the old player it uses starfish as always.
+[yolofant]
+yolofant 07/13/2025 10:39 AM
+like normal software decoding
+07/13/2025 10:39 AM
+the non hardware decoding one
+[a6oo]
+[] yolofant because it doesn't seem to be timestamp related but rather
+just that the video in it doesn't play
+a6oo 07/13/2025 10:37 AM
+Internal player?
+[yolofant]
+yolofant 07/13/2025 10:34 AM
+because it doesn't seem to be timestamp related but rather just that the
+video in it doesn't play
+07/13/2025 10:34 AM
+@A600 do you know if that particular stream did fall back to internal
+player?
+07/13/2025 10:34 AM
+and ffmpeg does only the ac3 things
+07/13/2025 10:34 AM
+but eac3 is also ac3
+07/13/2025 10:34 AM
+yes theoretically
+[ccarnell98]
+ccarnell98 07/13/2025 10:01 AM
+"AC-3 supports up to 5 full-bandwidth channels at 640 kbit/s, while EAC3
+can handle up to 15 channels at a maximum bitrate of 6.144 Mbit/s"
+07/13/2025 10:00 AM
+eac3 has better quality audio does it not?
+[yolofant]
+yolofant 07/13/2025 10:00 AM
+there's no benefit
+[yolofant]
+[] ccarnell98 Would it be a quick win to reencode to eac3 instead?
+yolofant 07/13/2025 10:00 AM
+why?
+[ccarnell98]
+ccarnell98 07/13/2025 9:53 AM
+G4 has Cortex-A78, Mali G-510, Wi-Fi 6. Still only 2GB of RAM though 
+But it also has a broken screen saver as per other webOS 24 latest
+versions (edited)
+[ccarnell98]
+[] yolofant it can also do eac3 encoding but it's also limited to 5.1
+ccarnell98 07/13/2025 9:43 AM
+Would it be a quick win to reencode to eac3 instead?
+July 12, 2025
+[yolofant]
+yolofant 07/12/2025 11:53 PM
+it might work but sync seems impossible
+07/12/2025 11:53 PM
+but then still how do you get a sync if audio and video timestamps are
+different
+07/12/2025 11:53 PM
+yes, when audio and video was separate it could work
+[a6oo]
+[] yolofant audio starts at 0 but video has a timestamp
+a6oo 07/12/2025 11:16 PM
+It works fine on Windows and with the old video player. btw, I have
+noticed that memory usage is higher now. I rarely reached 80% of memory
+usage before and now some times goes to more than 85% and overall it
+seems higher. I'll try to find a way to reproduce it consistently.
+[yolofant]
+yolofant 07/12/2025 10:46 PM
+the atmos bits it cannot encode
+07/12/2025 10:45 PM
+it can also do eac3 encoding but it's also limited to 5.1
+07/12/2025 10:45 PM
+ffmpeg can do maximum ac3 5.1
+07/12/2025 10:45 PM
+ffmpeg cannot do that
+07/12/2025 10:45 PM
+but
+07/12/2025 10:45 PM
+theoretically yes
+07/12/2025 10:45 PM
+I mean
+07/12/2025 10:45 PM
+no
+[ccarnell98]
+ccarnell98 07/12/2025 10:44 PM
+Shouldnt they be transcoded to dd plus? Be better
+[yolofant]
+yolofant 07/12/2025 10:44 PM
+that cannot work
+07/12/2025 10:44 PM
+audio starts at 0 but video has a timestamp
+[yolofant]
+[] a6oo Can I DM you the m3u?
+yolofant 07/12/2025 10:38 PM
+at first glance it seems that audio and video pts in that file are off
+[yolofant]
+yolofant 07/12/2025 10:29 PM
+So transcoded to ac3
+07/12/2025 10:29 PM
+TrueHD is is not supported
+[ccarnell98]
+ccarnell98 07/12/2025 10:18 PM
+/dev/mmcblk0p59 5.7G 3.1G 2.5G 56% /media/developer -> not bad lol
+[ccarnell98]
+ccarnell98 07/12/2025 9:42 PM
+just realized they are all HDR10+ but that shouldn't matter
+07/12/2025 9:41 PM
+HDR10+ Profile A HEVC 10-bit 23.976 Sample (MKV with DTS:X audio) ->
+DTS:X MA on my amp !!  HDR10+ Profile B HEVC 10-bit 23.976 Sample (MKV
+with EAC-3 JOC ATMOS audio) - > DD+ on my amp  HDR10+ Profile B HEVC
+10-bit 23.976 Sample (MKV with TrueHD ATMOS audio) -> only DD?
+[ccarnell98]
+ccarnell98 07/12/2025 8:59 PM
+Got my G4 plugged in  Its a bit wonky on the stand though. Bit of a
+pain to fix that..
+[yolofant]
+yolofant 07/12/2025 8:42 PM
+sure
+[a6oo]
+[] yolofant How can I reproduce?
+a6oo 07/12/2025 8:13 PM
+Can I DM you the m3u?
+[yolofant]
+yolofant 07/12/2025 7:32 PM
+How can I reproduce?
+[a6oo]
+a6oo 07/12/2025 5:22 PM
+(no content)
+ webos-videoplayer.txt
+96.52 KB External
+[a6oo]
+a6oo 07/12/2025 5:11 PM
+@Yolofant with the new player if the stream has No MOOV atom AddOnLog:
+inputstream.adaptive: CreateStreamReader: No MOOV atom in stream there
+is no video and no audio. The old player played the stream without
+problems. (edited)
+[ccarnell98]
+ccarnell98 07/12/2025 4:53 PM
+ugh I just realized payloadArgs should have been p so none of my
+settings were ever used by media pipeline  (in the new player)
+(edited)
+July 11, 2025
+[ccarnell98]
+ccarnell98 07/11/2025 7:49 PM
+I'm outta ideas. Anyone wants to progress it further:
+https://github.com/xbmc/inputstream.adaptive/commit/a16b0c92cfe173216123f53e4a3a6454e9b211e3
+&&
+https://github.com/xbmc/xbmc/commit/e50cf303772182583ba697c20f5a4d9ca5a0eddc
+(edited)
+Add webOS detection and load appropiate library · xbmc/inputstream...
+[]
+Allow crypto sessions for webOS · xbmc/xbmc@e50cf30
+[]
+[a6oo]
+a6oo 07/11/2025 6:59 PM
+Probably and yes, inputstream.adaptive supports clearkey so nothing to
+see there 
+[ccarnell98]
+ccarnell98 07/11/2025 6:45 PM
+no i think its just unecrypted till it requires SVP
+[ccarnell98]
+ccarnell98 07/11/2025 6:30 PM
+Is that what you saw before @A600 or is this actual progress 
+07/11/2025 6:30 PM
+hmmm the first 12 seconds of Google Tears [CBCS] plays.
+07/11/2025 6:23 PM
+bunny is clearkey, so it's not widevine
+07/11/2025 6:23 PM
+along with WIDEVINE_MODULAR or PLAYREADY
+07/11/2025 6:23 PM
+if svp is enabled, SVP_VERSION_40 is set in the payloadArgs
+07/11/2025 6:23 PM
+looking at chromium these are the options for the media pipeline:
+    typedef enum {
+      SVP_NONE = 0,        // none svp
+      SVP_VERSION_10 = 10, // buffer based
+      SVP_VERSION_20 = 20, // address based
+      SVP_VERSION_25 = 25, // address/size based
+      SVP_VERSION_30 = 30, // gstreamer svp element based
+      SVP_VERSION_35 = 35, // gstreamer svp element, address/size based
+      SVP_VERSION_40 = 40, // gstreamer adaptivedecryptor element, address/size based
+    } SVP_VERSION;
+07/11/2025 6:19 PM
+Ezdrm bunny [clear key, keys on property] plays in full
+[a6oo]
+a6oo 07/11/2025 3:09 PM
+Yes, the chinese one. Claude for coding is also very good.
+[ccarnell98]
+ccarnell98 07/11/2025 3:08 PM
+deepseek?
+[a6oo]
+[] ccarnell98 copilot is the devil
+a6oo 07/11/2025 3:06 PM
+DeepSeek is much, much better. (edited)
+[a6oo]
+a6oo 07/11/2025 3:05 PM
+OpenWV will never load a .wvd at runtime, only at compile time. One
+problem with it is that it won't work with Netflix:
+https://github.com/tchebb/openwv/issues/5 I don't have a Netflix account
+anymore so I couldn't care less  (edited)
+Netflix not supported? · Issue #5 · tchebb/openwv
+It seems OpenWV and Netflix aren't compatible? i3roly/firefox-dynasty#56
+(comment)
+[]
+[ccarnell98]
+ccarnell98 07/11/2025 2:28 PM
+copilot is the devil
+[ccarnell98]
+ccarnell98 07/11/2025 1:45 PM
+If https://github.com/tchebb/openwv was able to dyamically load a .wvd
+file, it wouldn't do the average user much good if we couldn't load it
+from the TV itself, unless we generate one for kodi?
+GitHub - tchebb/openwv: Open reimplementation of Google's Widevine ...
+Open reimplementation of Google's Widevine Content Decryption Module for
+browsers - tchebb/openwv
+[a6oo]
+[] ccarnell98 <@325620853528068099> Do we have access to the .wvd/.prd
+file on webOS?
+a6oo 07/11/2025 1:34 PM
+What do you mean? Being able to dump it? AFAIK .prd dumps from LG TVs
+exist, .wvd don't (at least public)
+[yolofant]
+[] mariotaku I guess some stuff were not freed or double freed. I
+probably will compile wayland-client and debug
+yolofant 07/11/2025 10:09 AM
+Probably double freed but I am not seeing where the second free would
+come from
+[ccarnell98]
+ccarnell98 07/11/2025 9:35 AM
+@A600 Do we have access to the .wvd/.prd file on webOS? (edited)
+[mariotaku]
+[] yolofant <@225167450713358338> I think some time ago you wanted to
+look into the kodi crashes on exit: https:...
+mariotaku 07/11/2025 3:23 AM
+I guess some stuff were not freed or double freed. I probably will
+compile wayland-client and debug
+[ccarnell98]
+ccarnell98 07/11/2025 12:31 AM
+There's quite a lot of dependencies on inputstream.adaptive
+07/11/2025 12:30 AM
+Maybe. But its used in chromium and I presume that works
+July 10, 2025
+[yolofant]
+yolofant 07/10/2025 11:26 PM
+I don't think they use widevine
+07/10/2025 11:25 PM
+I would look into amazon/netflix how they are doing it
+[ccarnell98]
+ccarnell98 07/10/2025 11:24 PM
+2) we need to handle the three things above, which presumably is already
+done by some other code supplied on webOS
+07/10/2025 11:24 PM
+So either 1) the libwidevine on webOS has some extra setup requirements,
+or is hard coded (drm protection)?? to stop us doing what were trying to
+do
+07/10/2025 11:22 PM
+Just because its different however doesn't necessarily means it wrong.
+According to copilot (its the only source I can find), cdm10 has issues
+with:
+    CBCS subsample layout interpretation
+    IV/key padding and offset handling
+    Sample metadata handoff post-decryption
+07/10/2025 11:19 PM
+webOS does not: Subsample preview: [2F] [A6] [60] [D8] [00] [00] [00]
+[00] [00] [74] [00] [00]. They are both the same stream (CBCS Axiom -
+first buffer) (edited)
+07/10/2025 11:18 PM
+Ubuntu returns valid samples: Subsample preview: [00] [00] [00] [01]
+[09] [FF] [00] [00] [00] [01] [0A] [FF]
+07/10/2025 11:18 PM
+Ubuntu uses CDM interface version 11, while webOS uses version 10 (which
+is much older interface) (edited)
+07/10/2025 11:18 PM
+So here is what I've deduced. Even though the widevine CDM version is
+much higher on webOS (v17.1.1) compared to Ubuntu which is 4.10.2891.0,
+webOS has a much older interface version. I don't think those versions
+are comparable though: (edited)
+[yolofant]
+yolofant 07/10/2025 10:49 PM
+https://jenkins.kodi.tv/job/webos-docker/9141/
+[yolofant]
+yolofant 07/10/2025 10:42 PM
+and you should probably also delete python and python3.12
+[anthock]
+anthock 07/10/2025 10:39 PM
+Thanks. Tomorrow I will try it
+[yolofant]
+yolofant 07/10/2025 10:34 PM
+before you install the addonless version just delete all files from the
+addon folder
+07/10/2025 10:32 PM
+I make a build without addons
+[anthock]
+anthock 07/10/2025 10:32 PM
+so I don't know if there are some system addons can change between
+builds. Can it be possible? (edited)
+07/10/2025 10:30 PM
+when I install new builds I already don't enable addons
+[yolofant]
+yolofant 07/10/2025 10:29 PM
+you could just remove all of them and see what happens
+07/10/2025 10:29 PM
+but I would be surprised if it was addons
+07/10/2025 10:28 PM
+versions cannot be specified
+07/10/2025 10:28 PM
+peripheral.joystick inputstream.adaptive inputstream.ffmpegdirect pvr.*
+that's the default
+[anthock]
+anthock 07/10/2025 10:27 PM
+no, I mean to send you the list of addons that are in this build
+[yolofant]
+yolofant 07/10/2025 10:27 PM
+it'll merge them overwriting all existing ones
+07/10/2025 10:26 PM
+if you install a new version I don't think it deletes the addons
+07/10/2025 10:26 PM
+I don't think you lose addons though
+[anthock]
+anthock 07/10/2025 10:24 PM
+I need to extract the list of addons with version of this build. Which
+is the fastest way?
+[yolofant]
+yolofant 07/10/2025 10:14 PM
+I can do a build with different addons
+[anthock]
+anthock 07/10/2025 10:14 PM
+At this point the only difference are the addons of the build
+07/10/2025 10:08 PM
+You are right, sorry. I give up, I've run out of ideas
+[yolofant]
+yolofant 07/10/2025 10:05 PM
+because it was merged on june 5th and the build is from june 4th
+[anthock]
+anthock 07/10/2025 9:55 PM
+Debug build has the same problem. However I have seen that tree of
+working build has at least a missing commit
+(https://github.com/xbmc/xbmc/commit/6a50f1770562e563e9c1f8fe6e433597b60058d7)
+so it is not same of master tree
+[depends] Avoid leaking host arch libraries onto target cmake path ...
+[]
+[ccarnell98]
+ccarnell98 07/10/2025 8:12 PM
+makes my life easier when I'm comparing output to ubuntu having the same
+code
+[ccarnell98]
+ccarnell98 07/10/2025 8:01 PM
+@A600 seems to work thanks  (edited)
+[a6oo]
+[] ccarnell98 any idea how to pass TARGET_WEBOS when building an out of
+tree addon (inputstream.adaptive)
+a6oo 07/10/2025 7:55 PM
+Untested, but adding if(CMAKE_CXX_COMPILER MATCHES "arm-webos")
+add_compile_definitions(TARGET_WEBOS=1) endif() to the
+inputstream.adaptive CMakeLists.txt should work.
+[yolofant]
+yolofant 07/10/2025 7:45 PM
+I don't think this can ever work correctly
+07/10/2025 7:45 PM
+there's an audio track of 1s inside
+07/10/2025 7:44 PM
+but it's generally a bad example
+07/10/2025 7:40 PM
+not for me
+[ccarnell98]
+ccarnell98 07/10/2025 7:36 PM
+@Yolofant FPS_test_1080p23.976_L4.1.mkv only plays for a couple of
+frames then stops playing
+[yolofant]
+yolofant 07/10/2025 7:17 PM
+but else it does not make sense
+07/10/2025 7:17 PM
+I am building a debug one now
+[yolofant]
+[] anthock And here comes the most absurd thing: all the nightlies in
+master have the same problem
+yolofant 07/10/2025 7:17 PM
+no idea the only explanation I have right now is that the build might be
+a debug one
+[ccarnell98]
+ccarnell98 07/10/2025 7:08 PM
+I hate how you break it in 10 seconds
+07/10/2025 7:08 PM
+I love how you can install ubuntu in 5 minutes
+[anthock]
+[] yolofant you could check the nightlies to pinpoint when it started to
+happen else it's just too many commits
+anthock 07/10/2025 7:04 PM
+And here comes the most absurd thing: all the nightlies in master have
+the same problem
+[yolofant]
+yolofant 07/10/2025 6:49 PM
+https://mirrors.kodi.tv/test-builds/webos/org.xbmc.kodi_20250710-5d849424-webos-videoplayer_arm.ipk
+here's the lastest test build btw
+07/10/2025 6:49 PM
+you could check the nightlies to pinpoint when it started to happen else
+it's just too many commits
+07/10/2025 6:48 PM
+https://mirrors.kodi.tv/nightlies/webos/master/
+07/10/2025 6:48 PM
+so that's master from june 3
+[anthock]
+anthock 07/10/2025 6:35 PM
+Some updates. Unfortunately I haven't figured out the difference in the
+memory usage in the latest nightlies on webOS 4 and logs are useless.
+However, by chance, trying different ipk, I discovered that this
+test-build works fine (at least video player works fine):
+https://mirrors.kodi.tv/test-builds/webos/org.xbmc.kodi_20250603-6520bb8e-retroplayer-22alpha1_arm.ipk
+(https://github.com/garbear/xbmc/tree/6520bb8e7283ea9eeab07b9c6334206bd651c83b).
+@Yolofant maybe it can be helpful for finding the root cause of the
+issue
+[ccarnell98]
+[] yolofant or rather blocked the way I was doing it
+ccarnell98 07/10/2025 6:07 PM
+They know too much 
+[ccarnell98]
+[] yolofant rebuilt webos-userland
+ccarnell98 07/10/2025 6:07 PM
+Thanks worked 
+[a6oo]
+[] yolofant should work now
+a6oo 07/10/2025 6:05 PM
+Indeed. Many thanks!
+[yolofant]
+yolofant 07/10/2025 6:05 PM
+rebuilt webos-userland
+[ccarnell98]
+ccarnell98 07/10/2025 6:05 PM
+latest commits:
+    [ 84%] Building CXX object build/cores/VideoPlayer/CMakeFiles/VideoPlayer.dir/MediaPipelineWebOS.cpp.o
+    /home/developer/Developer/kodi-webos/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp: In member function ‘void CMediaPipelineWebOS::PlayerCallback(int32_t, int64_t, const char*)’:
+    /home/developer/Developer/kodi-webos/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp:1041:9: error: ‘AcbAPI_setMediaAudioData’ was not declared in this scope; did you mean ‘AcbAPI_setMediaVideoData’?
+     1041 |         AcbAPI_setMediaAudioData(buffer->m_acbId, logStr.c_str(), &buffer->m_taskId);
+          |         ^~~~~~~~~~~~~~~~~~~~~~~~
+          |         AcbAPI_setMediaVideoData
+    /home/developer/Developer/kodi-webos/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp:1045:33: error: too many arguments to function ‘int AcbAPI_setMediaVideoData(long int, const char*)’
+     1045 |         AcbAPI_setMediaVideoData(buffer->m_acbId, logStr.c_str(), &buffer->m_taskId);
+          |         ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    In file included from /home/developer/Developer/kodi-webos/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp:31:
+    /home/developer/Developer/kodi-build-webos/xbmc-deps/arm-webos-linux-gnueabi-release/include/appswitching-control-block/AcbAPI.h:54:5: note: declared here
+       54 | int AcbAPI_setMediaVideoData(long acbId, const char *payload);
+          |     ^~~~~~~~~~~~~~~~~~~~~~~~
+    make[2]: *** [build/cores/VideoPlayer/CMakeFiles/VideoPlayer.dir/build.make:331: build/cores/VideoPlayer/CMakeFiles/VideoPlayer.dir/MediaPipelineWebOS.cpp.o] Error 1
+    make[1]: *** [CMakeFiles/Makefile2:16000: build/cores/VideoPlayer/CMakeFiles/VideoPlayer.dir/all] Error 2
+    make: *** [Makefile:136: all] Error 2
+[yolofant]
+yolofant 07/10/2025 6:05 PM
+or rather blocked the way I was doing it
+07/10/2025 6:04 PM
+they removed the ability to unlock dts on 2022 models
+07/10/2025 6:04 PM
+I can only test ac3/eac3 and it works
+[ccarnell98]
+ccarnell98 07/10/2025 6:02 PM
+My G4 is coming on Saturday so Ill be able to test eac3/dts passthrough
+to my amp if you haven't done so already
+07/10/2025 6:02 PM
+@Yolofant
+https://github.com/cscd98/inputstream.adaptive/tree/Piers/plugin.video.isasamples
+has a number of non-widevine samples if it helps you test
+inputstream.adaptive/plugin.video.isasamples at Piers · cscd98/inp...
+kodi inputstream addon for several manifest types. Contribute to
+cscd98/inputstream.adaptive development by creating an account on
+GitHub.
+07/10/2025 5:57 PM
+@Yolofant haven't tested this as I don't use external storage but if its
+needed would it be worth bundling it with kodi?
+https://github.com/mariotaku/kodi.addon.webos-jailer-fix
+GitHub - mariotaku/kodi.addon.webos-jailer-fix
+Contribute to mariotaku/kodi.addon.webos-jailer-fix development by
+creating an account on GitHub.
+[]
+[yolofant]
+yolofant 07/10/2025 5:42 PM
+should work now
+[a6oo]
+[] yolofant Do I have to use pvr iptv for this or can I do it from file
+browser
+a6oo 07/10/2025 5:42 PM
+Same problem with both methods, the pvr and the .m3u directly.
+[yolofant]
+[] a6oo <@195583665265311744> The problem I have is with live TV
+channels. The test.m3u I posted before didn...
+yolofant 07/10/2025 4:35 PM
+Do I have to use pvr iptv for this or can I do it from file browser
+[a6oo]
+a6oo 07/10/2025 3:55 PM
+@Yolofant The problem I have is with live TV channels. The test.m3u I
+posted before didn't have any so here is a new one that works fine with
+the code before the New video player commit but not with it.
+ test.m3u
+579 Bytes External
+[ccarnell98]
+[] a6oo With libwidevine-wrapper.so? If you tried the Star Trek mpd keep
+in mind that the first seconds are ...
+ccarnell98 07/10/2025 11:30 AM
+Yep with libwidevine-wrapper. It's gonna need some deep debugging and
+knowledge that I lack (but I'm learning). That might be what I'm seeing
+[a6oo]
+[] ccarnell98 I actually had a couple of seconds of video and audio
+plays during widevine 
+a6oo 07/10/2025 11:27 AM
+With libwidevine-wrapper.so? If you tried the Star Trek mpd keep in mind
+that the first seconds are unencrypted. When I did some tests with
+libwidevine-wrapper months ago I got excited when I saw it but reality
+struck me when I realized that 
+[ccarnell98]
+ccarnell98 07/10/2025 11:04 AM
+Finally placed the order for a G4... sticking to LG in the end  I've
+was put off the Samsung by their customer service, unresolved issue
+trying to order for 12 days. And they couldn't even give me the correct
+e-mail for the Samsung UK partner so I could be authorized to load my
+own built .so in my C# app (which I would need to port Kodi for Tizen).
+Still waiting now. Glad I didn't purchase a S90D. But I also didn't
+wanna spend a extra £1000 for a G5. Maybe I'll upgrade next year when
+its cheap (edited)
+[ccarnell98]
+ccarnell98 07/10/2025 9:46 AM
+I actually had a couple of seconds of video and audio plays during
+widevine 
+[yolofant]
+yolofant 07/10/2025 12:20 AM
+@Mariotaku I think some time ago you wanted to look into the kodi
+crashes on exit:
+https://github.com/xbmc/xbmc/blob/6cca9050653f955de1ac34a3cca1dbb5b23e2e2c/xbmc/windowing/wayland/WinSystemWaylandWebOS.cpp#L86
+crashing here when freeing the exported window
+07/10/2025 12:15 AM
+it's not impossible but v21 is EOL soon anyway
+[anthock]
+anthock 07/10/2025 12:15 AM
+Ok, understood
+[yolofant]
+yolofant 07/10/2025 12:15 AM
+no, those changes cannot be easily applied on v21 (edited)
+[anthock]
+anthock 07/10/2025 12:14 AM
+@Yolofant thank you for work. Tomorrow I will check memory usage in v21.
+In the meantime, can you apply new video player changes to Omega branch
+and compile it? So I can try if it at least works on v21
+[yolofant]
+yolofant 07/10/2025 12:11 AM
+but it's also possible that some process is running in the background
+taking up memory
+[anthock]
+anthock 07/10/2025 12:11 AM
+I don't know, I have to check
+[yolofant]
+yolofant 07/10/2025 12:10 AM
+do you by chance know if the memory usage is vastly different between
+v21 and v22?
+07/10/2025 12:10 AM
+hmm weird
+[anthock]
+anthock 07/10/2025 12:09 AM
+Yes, I have not seen anything strange in memory usage
+[yolofant]
+yolofant 07/10/2025 12:06 AM
+so that you can see memory usage during playback
+07/10/2025 12:05 AM
+which should log the available memory
+07/10/2025 12:05 AM
+if you enable debug logging you should get an OSD
+07/10/2025 12:05 AM
+hmm same as mine
+[anthock]
+[] ccarnell98 I wonder what the default was in v21
+anthock 07/10/2025 12:05 AM
+20 MB. I have checked it
+[anthock]
+anthock 07/10/2025 12:04 AM
+System info
+[rn_image_picker_lib_temp_da6ff1a9-7358-4262-a3d6-b87d650bb144.jpg]
+ rn_image_picker_lib_temp_da6ff1a9-7358-4262-a3d6-b87d650bb144.jpg
+3.28 MB External
+July 9, 2025
+[yolofant]
+yolofant 07/09/2025 11:59 PM
+how much memory does your tv have?
+07/09/2025 11:59 PM
+I mean
+[ccarnell98]
+ccarnell98 07/09/2025 11:56 PM
+I wonder what the default was in v21
+[anthock]
+anthock 07/09/2025 11:53 PM
+nothing, same result
+07/09/2025 11:51 PM
+I will try with 20mb memory size
+[yolofant]
+yolofant 07/09/2025 11:50 PM
+it might just be that the new defaults use too much memory on your
+device
+07/09/2025 11:50 PM
+hmm
+[anthock]
+anthock 07/09/2025 11:50 PM
+I never touched these values
+[yolofant]
+yolofant 07/09/2025 11:50 PM
+and caching takes memory
+07/09/2025 11:50 PM
+but yeah there's been changes related to caching in v22
+[anthock]
+anthock 07/09/2025 11:50 PM
+If I reset the settings to default, it remains with that values
+[yolofant]
+yolofant 07/09/2025 11:48 PM
+    2025-07-09 23:20:56.173 T:3517     info <general>: New Cache GUI Settings (replacement of cache in advancedsettings.xml) are:
+                                                         Buffer Mode: 4
+                                                         Memory Size: 64 MB
+                                                         Read Factor: 0.00 x (adaptive)
+                                                         Chunk Size : 131072 bytes
+[anthock]
+anthock 07/09/2025 11:48 PM
+I haven't touched cache settings
+[yolofant]
+yolofant 07/09/2025 11:47 PM
+but I would suggest you remove your custom cache stuff
+07/09/2025 11:47 PM
+no idea if something changed regarding to caching in master
+07/09/2025 11:47 PM
+it's very unlikely any webOS specific changes
+07/09/2025 11:46 PM
+you have custom caching settings too
+07/09/2025 11:46 PM
+I mean
+[anthock]
+anthock 07/09/2025 11:46 PM
+not with local files
+[yolofant]
+yolofant 07/09/2025 11:45 PM
+so it's not crashing immediately?
+[anthock]
+anthock 07/09/2025 11:41 PM
+@Yolofant @Craig this is a log in webos 4 after playing a file from usb
+drive. After 30 seconds webos restarts Kodi to "free memory". It doesn't
+happen in Kodi Omega
+ kodi.log
+191.33 KB External
+[a6oo]
+[] yolofant
+https://github.com/sundermann/xbmc/commit/acdbf68fc4db8f0f85a33cc6dbc28745953fe6a0
+a6oo 07/09/2025 11:36 PM
+Yes, the crash after switching is fixed but the image is stuck. I'll see
+tomorrow which one of your commits introduced the regression for me.
+[ccarnell98]
+ccarnell98 07/09/2025 11:31 PM
+don't have to rely on /var/luna/preferences/enable_legacy_wv_lib
+existing or not
+07/09/2025 11:30 PM
+although I think this should be acceptable:
+    namespace fs = std::filesystem;
+    std::vector<std::string> candidatePaths = {
+        "/usr/lib/libwidevine-wrapper.so",
+        "/usr/lib/libwvcdm_shared.so"
+    };
+    std::string cdmPath;
+    for (const auto& path : candidatePaths) {
+      if (fs::exists(path)) {
+        cdmPath = path;
+        break;
+      }
+    }
+07/09/2025 11:25 PM
+and then ls -la /usr/lib/libw*
+07/09/2025 11:24 PM
+if anyone doesn't have webOS 24, could you tell me if ls -la
+/var/luna/preferences/enable_legacy_wv_lib outputs anything
+[yolofant]
+yolofant 07/09/2025 11:20 PM
+might just be fixed by rebasing
+07/09/2025 11:20 PM
+https://github.com/sundermann/xbmc/commit/acdbf68fc4db8f0f85a33cc6dbc28745953fe6a0
+[VideoPlayer] Fix CVideoPlayer::IsLiveStream() to use player proces...
+…info, not to interact with the inputstream directly
+[]
+[yolofant]
+[] anthock Yes, crashes. The problem is also in other nightlies. I don't
+remember when the problem started but ...
+yolofant 07/09/2025 11:15 PM
+there's not been any relevant changes since almost a year so it's weird
+[yolofant]
+yolofant 07/09/2025 11:09 PM
+I am using addons built from the buildserver with a locally compiled
+kodi
+07/09/2025 11:09 PM
+not sure if it's a ABI issue maybe
+07/09/2025 11:09 PM
+but if I just hardcode return true it works (edited)

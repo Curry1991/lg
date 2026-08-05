@@ -1,0 +1,53 @@
+July 26, 2025
+[ccarnell98]
+ccarnell98 07/26/2025 11:27 PM
+FML
+    [5533/41832] CXX clang_x86_v8_arm/obj/third_party/abseil-cpp/absl/base/base/thread_identity.o
+    FAILED: clang_x86_v8_arm/obj/third_party/abseil-cpp/absl/base/base/thread_identity.o 
+    ../../third_party/llvm-build/Release+Asserts/bin/clang++ -MMD -MF clang_x86_v8_arm/obj/third_party/abseil-cpp/absl/base/base/thread_identity.o.d <snip> -I../.. -Iclang_x86_v8_arm/gen -I../../webos_tv_impl -Iclang_x86_v8_arm/gen/webos_tv_impl <snip> Wconstant-conversion -Wenum-conversion -Wint-conversion -Wliteral-conversion -Wnon-literal-null-conversion -Wnull-conversion -Wobjc-literal-conversion -Wstring-conversion -Wbitfield-enum-conversion -c ../../third_party/abseil-cpp/absl/base/internal/thread_identity.cc -o clang_x86_v8_arm/obj/third_party/abseil-cpp/absl/base/base/thread_identity.o
+    In file included from ../../third_party/abseil-cpp/absl/base/internal/thread_identity.cc:15:
+    In file included from ../../third_party/abseil-cpp/absl/base/internal/thread_identity.h:24:
+    In file included from /usr/include/pthread.h:21:
+    In file included from /usr/include/features.h:392:
+    /usr/include/features-time64.h:20:10: fatal error: 'bits/wordsize.h' file not found
+       20 | #include <bits/wordsize.h>
+07/26/2025 11:22 PM
+oh no it didnit
+[ccarnell98]
+ccarnell98 07/26/2025 10:54 PM
+might have fixed with
+     cros_target_extra_cflags="-I/mnt/host-developer/chromium120/sysroots/ca9v1-starfishmllib32-linux-gnueabi/usr/include"
+      cros_target_extra_cppflags="-I/mnt/host-developer/chromium120/sysroots/ca9v1-starfishmllib32-linux-gnueabi/usr/include"
+[ccarnell98]
+ccarnell98 07/26/2025 9:57 PM
+build instructions
+    1) ./starfish-sdk-x86_64-ca9v1-toolchain-9.0.0.sh
+       (installed to same dir as chromium120)
+    2) ./chromium-sdk-x86_64-ca9v1-toolchain-9.0.0.sh
+    3) source environment-setup-ca9v1-starfishmllib32-linux-gnueabi
+    4) source environment-setup-chromium
+    5) cd src
+    6) ./build/install-build-deps.sh
+    7) gn gen out/Default --args="${GN_ARGS}"
+    8) ninja -C out/Default/ crow
+[ccarnell98]
+ccarnell98 07/26/2025 9:40 PM
+Should find its sources inside chromium120/sysroot and not /usr/include.
+It uses clang.. (edited)
+07/26/2025 9:39 PM
+Love cross-compiling... (edited)
+07/26/2025 9:39 PM
+    root@defiant:/mnt/host-developer/chromium120/src# find / -name wordsize.h
+    /mnt/host-developer/chromium120/sysroots/ca9v1-starfishmllib32-linux-gnueabi/usr/include/boost/predef/other/wordsize.h
+    /mnt/host-developer/chromium120/sysroots/ca9v1-starfishmllib32-linux-gnueabi/usr/include/bits/wordsize.h
+    /mnt/host-developer/chromium120/sysroots/x86_64-starfishsdk-linux/usr/include/bits/wordsize.h
+    /mnt/host-developer/chromium120/src/build/linux/debian_bullseye_i386-sysroot/usr/include/i386-linux-gnu/bits/wordsize.h
+    /mnt/host-developer/chromium120/src/build/linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/wordsize.h
+    /usr/include/x86_64-linux-gnu/bits/wordsize.
+07/26/2025 9:38 PM
+Can't find bits/wordsize.h (edited)
+ message.txt
+3.96 KB External
+07/26/2025 9:38 PM
+Anybody compiled chromium 120? (webos from LG C5 sources specifically as
+its webOS 25)

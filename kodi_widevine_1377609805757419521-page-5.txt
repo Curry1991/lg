@@ -1,0 +1,1995 @@
+August 6, 2025
+wsnipex 08/06/2025 7:19 PM
+2020-01-01T00:00:06.884981Z [8.285818327] user.info sam [] SAM
+NL_APP_LAUNCH_BEGIN
+{"app_id":"com.webos.app.inputcommon","caller_id":"com.webos.lunasend-1758","mode":"normal"}
+2020-01-01T00:00:06.967349Z [8.368184512] user.info sam [] SAM
+NL_APP_LAUNCH_BEGIN
+{"app_id":"com.webos.app.home","caller_id":"com.webos.lunasend-1766","mode":"normal"}
+2020-01-01T00:00:12.297067Z [13.697905065] user.info tvpowerd []
+tvpowerd NL_POWER_STATE
+{"old":"Init","new":"Active","PowerOnReason":"micomPower"}
+2020-01-01T00:00:15.977894Z [17.378731840] user.info sam [] SAM
+NL_APP_LAUNCH_BEGIN
+{"app_id":"com.webos.app.inputcommon","caller_id":"com.webos.bootManager","mode":"normal"}
+2020-01-01T00:00:17.149892Z [18.550730136] user.info surface-manager []
+LSM NL_VSC
+{"app_id":"com.webos.app.hdmi2","visible":true,"window_type":"_WEBOS_WINDOW_TYPE_CARD"}
+2020-01-01T00:00:19.455470Z [20.856305949] user.info eplmanager []
+com.webos.service.eplmanager NL_OLED_SCREEN_SAVER
+{"screenshift":"on","logoluminance":"light"} 2025-08-06T17:16:30.890857Z
+[31.276578609] user.info livepick [] livepick NL_DEACTIVATE_NUDGE {}
+2025-08-06T17:16:36.803013Z [37.188708569] user.info sam [] SAM
+NL_APP_LAUNCH_BEGIN
+{"app_id":"airplay","caller_id":"airplay.service","mode":"normal"}
+2025-08-06T17:17:07.642436Z [68.028138365] user.info sam [] SAM
+NL_APP_LAUNCH_BEGIN
+{"app_id":"com.webos.app.hdmi3","caller_id":"com.webos.service.preloadmanager","mode":"normal"}
+2025-08-06T17:17:17.232188Z [77.617895248] user.info pqcontroller []
+pqcontroller NL_PICTURE_SETTING_CHANGE {} {{key:'input',
+value:'hdmi2'},{key:'pictureMode',
+value:'filmMaker'},{key:'energySaving', value:'min'},{key:'ai_Picture',
+value:'off'},{key:'ai_Brightness', value:'off'},{key:'ai_Genre',
+value:'off'}}
+08/06/2025 7:19 PM
+but nothing is logged anyway as it seems
+[ccarnell98]
+ccarnell98 08/06/2025 7:18 PM
+I use it as I dont have root
+08/06/2025 7:18 PM
+it just redirects logs to console
+wsnipex 08/06/2025 7:18 PM
+why would I want this?
+[ccarnell98]
+ccarnell98 08/06/2025 7:17 PM
+(console)
+08/06/2025 7:17 PM
+If you stick this in your lib path it will write it to stdout/err
+ libPmLogLib.zip
+42.21 KB External
+wsnipex 08/06/2025 7:16 PM
+I dunno, there is something in there, but nothing happens when trying to
+play a vid
+[ccarnell98]
+ccarnell98 08/06/2025 7:12 PM
+I don't have root so idk
+08/06/2025 7:12 PM
+hmm is it definitely /var/log/messages it writes to?
+[yolofant]
+yolofant 08/06/2025 7:05 PM
+but in theory we shouldn't be using it in L3
+08/06/2025 7:05 PM
+but the widevine-modular logger might be interesting though
+08/06/2025 7:04 PM
+it might eat up all of your memory causing a wipe as a result
+08/06/2025 7:04 PM
+in any case I wouldn't leave your TV running for long with full debug
+enabled on all loggers
+wsnipex 08/06/2025 6:59 PM
+but I noticed this: PmLogCtl: Setting context level for
+'widevine-modular'.
+08/06/2025 6:58 PM
+even with full debug
+08/06/2025 6:58 PM
+there is nothing logged in messages
+[ccarnell98]
+ccarnell98 08/06/2025 6:33 PM
+might wanna undo that after
+08/06/2025 6:33 PM
+I've done this in the past to output PmLogCtl set '*' debug
+08/06/2025 6:32 PM
+@wsnipex if you go back to the previous IA and do it again. but this
+time check /var/log/messages for the log output from the pipeline
+[ccarnell98]
+ccarnell98 08/06/2025 6:19 PM
+or just doing it wrong
+[ccarnell98]
+ccarnell98 08/06/2025 5:58 PM
+If I can figure that out, that is
+08/06/2025 5:57 PM
+Which should resolve this:
+    [ParseKeyInfo][224] (!key_info.empty()) is false, return false
+    kodi-webos[]svb{} [WidevineDecryptor::ProcessDecrypt][101] failed to ParseKeyInfo
+    kodi-webos[]svb{} [DrmDecryptorPlugin::ProcessDecrypt][147] (ProcessDecrypt(drm_stream_chunk)) is false, goto error
+    kodi-webos[]svb{} [DrmDecryptorPlugin::ProcessDecrypt][189] video: failed to ProcessDecrypt
+08/06/2025 5:57 PM
+In terms of L1, IA is only sending the key
+          // Key ID    16 bytes (BE)    Key ID for decryption
+          dataOut.AppendData(fragInfo.m_key.data(), static_cast<AP4_Size>(fragInfo.m_key.size()));
+but apparently we need to supplying key_info.
+08/06/2025 5:54 PM
+I believe 
+08/06/2025 5:49 PM
+OK clearly missing something then as initialiaze is the same across
+chromium versions
+wsnipex 08/06/2025 5:47 PM
+log
+ message.txt
+2.83 KB External
+[ccarnell98]
+ccarnell98 08/06/2025 5:47 PM
+oh you'll only get that if there is an error
+wsnipex 08/06/2025 5:46 PM
+@Craig which pop up should I see, there is none.
+[ccarnell98]
+ccarnell98 08/06/2025 5:45 PM
+Thanks. Could you try that IA for me with the IA Google Tears sample and
+then give me the kodi log?
+wsnipex 08/06/2025 5:34 PM
+(no content)
+ libwvcdm_shared.so
+197.43 KB External
+[yolofant]
+[] ccarnell98 <@195583665265311744> Do you ever have random binary
+dumped in org.xbmc.kodi? -rwx--xr-x 1 1000 ...
+yolofant 08/06/2025 2:11 PM
+nope
+[ccarnell98]
+ccarnell98 08/06/2025 12:35 PM
+@wsnipex .. with lang files so the pop up isn't empty..
+ inputstream.adaptive-secure.zip
+1.92 MB External
+[ccarnell98]
+ccarnell98 08/06/2025 12:28 PM
+@Yolofant Do you ever have random binary dumped in org.xbmc.kodi?
+-rwx--xr-x 1 1000 1000 70104116 Aug 5 19:49 stl5fdSC
+[yolofant]
+yolofant 08/06/2025 10:32 AM
+you can always extract it using epk2extract
+August 5, 2025
+[ccarnell98]
+ccarnell98 08/05/2025 11:07 PM
+unless anyone has got one lying about
+[ccarnell98]
+ccarnell98 08/05/2025 10:59 PM
+@wsnipex could you send me your libwvcdm_shared.so
+08/05/2025 10:59 PM
+good idea
+[yolofant]
+yolofant 08/05/2025 10:58 PM
+it probably works
+08/05/2025 10:58 PM
+I guess you could use extract the widevine lib from the firmware and run
+it on your tv
+[ccarnell98]
+ccarnell98 08/05/2025 9:29 PM
+maybe
+08/05/2025 9:29 PM
+that might just be an internal chromium thing
+08/05/2025 9:28 PM
+chromium68 also passes const char kWidevineCdmGuid[] =
+"AD87877A-0213-49A8-8849-9E93B075E477"; to its cdm list, not sure what
+affect that has
+08/05/2025 9:25 PM
+actually one sec, i'll add a log to make its running
+08/05/2025 9:23 PM
+(it wont fix playback)
+08/05/2025 9:23 PM
+@wsnipex could you try that, just has the flag set to true, want to see
+if your widevine returns true for initialize or not
+[ccarnell98]
+ccarnell98 08/05/2025 9:07 PM
+it would be good to see if however if OnInitialize returns true if
+use_hw_secure_codecs is set to true
+08/05/2025 9:06 PM
+use_hw_secure_codecs by default is false on both versions
+08/05/2025 9:06 PM
+The code for cdm_adapter is pretty much the same in 68 as 120, some
+differences but not enough to matter I think
+08/05/2025 9:06 PM
+      if (!cdm_->Initialize(cdm_config_.allow_distinctive_identifier,
+                            cdm_config_.allow_persistent_state,
+                            cdm_config_.use_hw_secure_codecs)) {
+        // OnInitialized() will not be called by the CDM, which is the case for
+        // CDM interfaces prior to CDM_10.
+        OnInitialized(true);
+        return;
+      }
+[ccarnell98]
+ccarnell98 08/05/2025 7:38 PM
+@A600 first thing I got @wsnipex to check, its the same unfortunately
+ 1
+08/05/2025 7:37 PM
+why do they have to make this so hard. 3 times I've downloaded this:
+    chromium68/src/third_party/instrumented_libraries/binaries/msan-no-origins-trusty.tgz
+    gzip: stdin: invalid compressed data--format violated
+    tar: Unexpected EOF in archive
+    tar: Unexpected EOF in archive
+    tar: Error is not recoverable: exiting now
+[a6oo]
+a6oo 08/05/2025 7:37 PM
+Maybe CDM_MODULE_VERSION is different?
+[ccarnell98]
+ccarnell98 08/05/2025 7:18 PM
+Well if thats the case you might have to wait till I get L1 working.
+Downloading sources for 3rd time this time in firefox
+[a6oo]
+a6oo 08/05/2025 6:41 PM
+The library isn't initialized so yes, there is a problem with that.
+Compared with my log:
+    2025-08-05 18:38:19.546 T:13775   debug <inputstream.adaptive>: [WV-CDM-Library] CDM version: 17.1.1
+    2025-08-05 18:38:20.144 T:13775   debug <inputstream.adaptive>: [WV-CDM-Library] CDM is initialized: true
+(edited)
+wsnipex 08/05/2025 6:38 PM
+yes, makes sense
+[yolofant]
+yolofant 08/05/2025 6:38 PM
+it's possible that with the older widevine library it needs to be set up
+differently, or it does not support non secure decryption
+08/05/2025 6:37 PM
+eventually it calls into widevine but it sets up some additional stuff
+08/05/2025 6:37 PM
+since webOS 8 they made widevine-wrapper.so which is a ABI compatible
+wrapper around widevine
+08/05/2025 6:36 PM
+but that was on webOS 7 and I guess it had the same cdm as yours on
+webOS 5
+08/05/2025 6:35 PM
+that's the same error I got when I tried 2 years ago
+wsnipex 08/05/2025 6:33 PM
+it's not working with google test streams either
+[ccarnell98]
+ccarnell98 08/05/2025 5:40 PM
+I'll end up getting D+ soon I think. ITVX is only 576p (even though its
+free, I have some standards) 
+[a6oo]
+[] ccarnell98 he is using this addon:
+https://forum.kodi.tv/showthread.php?tid=353316
+a6oo 08/05/2025 5:31 PM
+No D+ here, sorry.
+[ccarnell98]
+ccarnell98 08/05/2025 4:56 PM
+Although I'm not sure if PRMNAGRA is a fail case or just some help debug
+output
+[ccarnell98]
+ccarnell98 08/05/2025 4:47 PM
+he is using this addon: https://forum.kodi.tv/showthread.php?tid=353316
+08/05/2025 4:46 PM
+@A600 do you have disney plus and if you do, does it work
+08/05/2025 4:45 PM
+I'm not sure if it is an issue with it just yet, as looking through his
+logs (from disneyplus):
+    2025-08-04 11:46:38.926 T:8815    debug <inputstream.adaptive>: ProcessEncryption: Unsupported EXT-X-KEY keyformat "PRMNAGRA"
+    2025-08-04 11:46:38.940 T:8815    debug <inputstream.adaptive>: Initialize crypto session
+    2025-08-04 11:46:38.940 T:8815    debug <inputstream.adaptive>: Default KID parsed from init data
+    2025-08-04 11:46:38.941 T:8815    debug <inputstream.adaptive>: [WV-CDM-Library] CDM version: v2.2.0-2-905-LGE
+    2025-08-04 11:46:39.247 T:8815    debug <inputstream.adaptive>: [WV-CDM-Library] CDM is initialized: false
+    2025-08-04 11:46:40.256 T:8815    error <inputstream.adaptive>: CWVCencSingleSampleDecrypter: Cannot perform License update, no session available
+    2025-08-04 11:46:40.256 T:8815    error <inputstream.adaptive>: Failed to initialize the decrypter
+[mariotaku]
+mariotaku 08/05/2025 11:24 AM
+Only on 8+ I think
+[mariotaku]
+[] ccarnell98 <@225167450713358338> any idea what version of webOS
+libwidevine-wrapper appeared?
+mariotaku 08/05/2025 11:23 AM
+Let me check that later.
+[ccarnell98]
+ccarnell98 08/05/2025 11:14 AM
+Ill have to download hia tv sources to check for any difference in
+chromium once I find out what model he has
+08/05/2025 11:13 AM
+Might need to make a change for the older library as its not working for
+@wsnipex
+08/05/2025 11:12 AM
+@Mariotaku any idea what version of webOS libwidevine-wrapper appeared?
+August 4, 2025
+[ccarnell98]
+ccarnell98 08/04/2025 7:41 PM
+hmm
+    audiokodi-webos[]svb{} [ParseKeyInfo][224] (!key_info.empty()) is false, return false
+    kodi-webos[]svb{} [WidevineDecryptor::ProcessDecrypt][101] failed to ParseKeyInfo
+    kodi-webos[]svb{} [DrmDecryptorPlugin::ProcessDecrypt][147] (ProcessDecrypt(drm_stream_chunk)) is false, goto error
+    kodi-webos[]svb{} [DrmDecryptorPlugin::ProcessDecrypt][189] video: failed to ProcessDecrypt
+    0:00:00.411571040  3855 0xdc495ab8 ERROR   passthroughdecryptor gstpassthroughdecryptor.cpp:310:gboolean gst_passthrough_decryptor_process_decrypt(GstAdaptiveDecryptor*):<decrypt-pt> Failed to ProcessDecrypt
+    0:00:00.411592520  3855 0xdc495ab8 ERROR      adaptivedecryptor gstadaptivedecryptor.cpp:786:GstFlowReturn adaptive_decryptor_buffer_list_drain(GstAdaptiveDecryptor*):<decrypt-pt> failed to process_decrypt
+    info= {"track":0,"immersive":"none"}
+[ccarnell98]
+ccarnell98 08/04/2025 6:25 PM
+despite updating PATHS
+08/04/2025 6:25 PM
+OK slightly annoying, if you copy kodi to say /media/developer/temp/kodi
+so I have write permissions in jailer, it will not play videos due to
+LSRegisterPriv error, but it works fine in its installation folder
+August 3, 2025
+[yolofant]
+yolofant 08/03/2025 4:42 PM
+generally streamed data is annex b though
+[ccarnell98]
+ccarnell98 08/03/2025 4:32 PM
+ah its because bitstreamconverter is doing some nice injection that I'm
+lacking
+[yolofant]
+yolofant 08/03/2025 3:37 PM
+generally the pipeline cannot consume extradata
+08/03/2025 3:37 PM
+annex b does not need extradata
+[ccarnell98]
+ccarnell98 08/03/2025 3:21 PM
+@Yolofant If we cannot use BitStreamConverter with an encrypted packet,
+how do we pass extradata to the media pipeline for video?
+August 2, 2025
+[ccarnell98]
+ccarnell98 08/02/2025 10:00 AM
+Doesn't look too bad, if we had access we could get it setup
+August 1, 2025
+[yolofant]
+yolofant 08/01/2025 7:39 PM
+but it seems still necessary for binary addons
+08/01/2025 7:39 PM
+that's why there is none for webOS
+08/01/2025 7:38 PM
+but generally buildsteps is deprecated I think
+08/01/2025 7:37 PM
+so it generates the toolchainfiles
+08/01/2025 7:37 PM
+the buildsteps
+08/01/2025 7:36 PM
+probably we need something like this for webos
+08/01/2025 7:36 PM
+https://jenkins.kodi.tv/blue/organizations/jenkins/xbmc%2Finputstream.adaptive/detail/Piers/160/pipeline/73
+[yolofant]
+yolofant 08/01/2025 4:39 PM
+with the toolchain file
+08/01/2025 4:38 PM
+just use the system cmake
+08/01/2025 4:38 PM
+I would just revert the merge
+08/01/2025 4:38 PM
+you probably need to put system libs into LD_LIBRARY_PATH
+[ccarnell98]
+ccarnell98 08/01/2025 4:37 PM
+fml
+[yolofant]
+yolofant 08/01/2025 4:37 PM
+target is not host
+[ccarnell98]
+ccarnell98 08/01/2025 4:36 PM
+target packages->libraries->crypto->openssl support is enabled
+[yolofant]
+yolofant 08/01/2025 4:36 PM
+there is no host openssl package in buildroot
+08/01/2025 4:36 PM
+probably it compiled against system openssl
+[ccarnell98]
+ccarnell98 08/01/2025 4:32 PM
+I just redownloaded to check
+08/01/2025 4:32 PM
+yeh the so is just missing
+[yolofant]
+[] ccarnell98 do you know what TV / webOS version
+yolofant 08/01/2025 4:32 PM
+just says G4
+[yolofant]
+yolofant 08/01/2025 4:31 PM
+I mean it must be your PR that was merged to enable ssl
+[yolofant]
+[] ccarnell98 ./cmake --help ./cmake: error while loading shared
+libraries: libssl.so.1.1: cannot open shared obje...
+yolofant 08/01/2025 4:31 PM
+do you have the correct environment?
+[ccarnell98]
+ccarnell98 08/01/2025 4:29 PM
+sample I used is from kodi samples:
+https://mega.nz/file/af4zSAbQ#gBiHRiX3oLnBvxMNnytC08v8DRkKzQIkhGpg96nAWXE
+383.08 MB file on MEGA
+[]
+08/01/2025 4:27 PM
+do you know what TV / webOS version
+08/01/2025 4:27 PM
+./cmake --help ./cmake: error while loading shared libraries:
+libssl.so.1.1: cannot open shared object file: No such file or directory
+08/01/2025 4:27 PM
+PS latest cmake is broken on buildroot
+[yolofant]
+yolofant 08/01/2025 4:26 PM
+weird
+08/01/2025 4:26 PM
+but you said it did
+08/01/2025 4:26 PM
+the latest reply says it doesn't work with dts on internal speakers
+[ccarnell98]
+ccarnell98 08/01/2025 3:59 PM
+benefit of that is that it wont randomly turn itself on as last used
+input anymore
+[ccarnell98]
+ccarnell98 08/01/2025 3:45 PM
+well to save myself the hassle on movie nights i've gone and plugged the
+blu-ray player into my amp 
+[yolofant]
+yolofant 08/01/2025 3:36 PM
+and on passthrough not because there whilst playing something you cannot
+get gui sounds
+08/01/2025 3:36 PM
+I think they always reencode on auto
+08/01/2025 3:35 PM
+so that they can mix in gui sounds for example
+08/01/2025 3:35 PM
+but I think auto goes through internal resampler
+08/01/2025 3:35 PM
+yes
+08/01/2025 3:35 PM
+not sure they care
+[ccarnell98]
+ccarnell98 08/01/2025 3:35 PM
+Auto at the end of the day should make the correct choice
+08/01/2025 3:34 PM
+tell em to report it to LG 
+[yolofant]
+yolofant 08/01/2025 3:34 PM
+there's not really anything we could be doing wrong there
+08/01/2025 3:34 PM
+yes
+[ccarnell98]
+ccarnell98 08/01/2025 3:34 PM
+gotta be a LG bug
+[yolofant]
+yolofant 08/01/2025 3:33 PM
+yeah
+08/01/2025 3:33 PM
+[:kekW:]
+[ccarnell98]
+ccarnell98 08/01/2025 3:33 PM
+blu-ray player - Dolby Atmos needs Auto (otherwise you only get Dolby
+TrueHD) (edited)
+08/01/2025 3:33 PM
+blu-ray player - DTS:X needs passthrough
+08/01/2025 3:33 PM
+OK in a rather annoying state of affairs:
+[yolofant]
+yolofant 08/01/2025 3:32 PM
+and probably if you did make one dolby would sue you
+08/01/2025 3:32 PM
+I guess technically it might be somehow possible but it's just not in
+ffmpeg and afaik there's no open source implementation
+08/01/2025 3:31 PM
+so it needs transcoding and ffmpeg cannot decode atmos bits nor encode
+them in eac3
+08/01/2025 3:31 PM
+but yeah truehd is fully unsupported
+08/01/2025 3:31 PM
+most atmos is actually inside truehd
+08/01/2025 3:31 PM
+I mean
+08/01/2025 3:31 PM
+well yeah
+[ccarnell98]
+ccarnell98 08/01/2025 3:31 PM
+stupid restrictions
+08/01/2025 3:31 PM
+ah yes that would be it
+[yolofant]
+yolofant 08/01/2025 3:30 PM
+truehd atmos is not supported
+08/01/2025 3:30 PM
+but did you try eac3 atmos
+[ccarnell98]
+ccarnell98 08/01/2025 3:28 PM
+and DD for passthrough
+08/01/2025 3:27 PM
+my denon app says PCM for some reason (back on auto)
+[yolofant]
+yolofant 08/01/2025 3:25 PM
+it works
+08/01/2025 3:25 PM
+hmm?
+[ccarnell98]
+ccarnell98 08/01/2025 3:25 PM
+oh I forgot we don't get atmos from kodi
+[yolofant]
+yolofant 08/01/2025 3:22 PM
+there's a lot of weird bugs like this one
+https://forum.webostv.developer.lge.com/t/stereo-only-for-dolby-vision-video-with-multi-channel-audio-in-hls-streams/23069
+Stereo-Only for Dolby Vision Video With Multi-Channel Audio in HLS ...
+Hi, it seems the current WebOS versions (at least version 23 and 24 as
+confirmed by an LG C4 and an LG G4) seem to have audio issues, when it
+comes to playing HLS streams with Dolby Vision video content. If an HLS
+stream contains either an DV profile 5 or an DV profile 8.1 video
+stream, then the audio output via HDMI eARC is always just stereo...
+[]
+08/01/2025 3:21 PM
+it's just LG doing some dumbass shit
+08/01/2025 3:21 PM
+yeah but it's not a kodi issue
+[ccarnell98]
+ccarnell98 08/01/2025 3:20 PM
+i'll try an atmos sample
+08/01/2025 3:20 PM
+that would be annoying to have switch options
+[yolofant]
+yolofant 08/01/2025 3:18 PM
+it's weird
+08/01/2025 3:18 PM
+for me if I have auto I can get eac3 atmos, on passthough not
+08/01/2025 3:18 PM
+I don't understand the auto / passthrough settings anyway
+08/01/2025 3:18 PM
+yeah eARC for sure is an requirement
+[ccarnell98]
+ccarnell98 08/01/2025 3:17 PM
+(TV setting)
+08/01/2025 3:17 PM
+DTS:X working when pass through audio is selected
+08/01/2025 3:17 PM
+Same thing for Kodi
+08/01/2025 3:14 PM
+its working over eARC
+08/01/2025 3:14 PM
+Auto didn't work for some reason
+[yolofant]
+yolofant 08/01/2025 3:14 PM
+good!
+[ccarnell98]
+ccarnell98 08/01/2025 3:14 PM
+hmm so I got DTS:X MSTR to work on my amp from my blu-ray player.. had
+to change audio settings to pass through on my G4
+[yolofant]
+yolofant 08/01/2025 3:13 PM
+smp is either for signage or maybe testing on x86
+08/01/2025 3:11 PM
+the real thing is in src/webos_tv_impl
+08/01/2025 3:11 PM
+it's the wrong implementation
+08/01/2025 3:11 PM
+but that is not used on webos tv
+08/01/2025 3:11 PM
+yes
+[ccarnell98]
+ccarnell98 08/01/2025 3:11 PM
+in band serializer is used in
+src/media/neva/webos/media_platform_api_webos_smp.cc
+[yolofant]
+yolofant 08/01/2025 3:10 PM
+and given there is no use of inband serializer in chromium it must
+somehow interact with it at least
+08/01/2025 3:10 PM
+but the license stuff still has to happen
+08/01/2025 3:09 PM
+first of all it's an abstraction of using any cdm
+[ccarnell98]
+ccarnell98 08/01/2025 3:08 PM
+DecryptingDemuxerStream: has that already been fed through
+CDM->Decrypt() or did they bypass and send encrypted packets
+[yolofant]
+yolofant 08/01/2025 3:07 PM
+that's good
+[ccarnell98]
+ccarnell98 08/01/2025 3:07 PM
+well I played the audio first on my TV and it had audio
+[yolofant]
+yolofant 08/01/2025 3:07 PM
+unless the detection isn't working
+08/01/2025 3:07 PM
+hmm but we set DTSX
+[ccarnell98]
+ccarnell98 08/01/2025 3:07 PM
+the fallback is to use DTS-HD Master
+[yolofant]
+yolofant 08/01/2025 3:07 PM
+and it should be using DecryptingDemuxerStream for widevine
+08/01/2025 3:06 PM
+the mediapipelines in chromium are fed by DemuxerStream subclasses
+08/01/2025 3:06 PM
+regarding L1:
+08/01/2025 3:06 PM
+only checking edidType
+08/01/2025 3:05 PM
+I don't think there's any additional checks inside chromium
+08/01/2025 3:05 PM
+but surely there's a fallback in place?
+08/01/2025 3:05 PM
+well I do only have a c2
+[ccarnell98]
+ccarnell98 08/01/2025 3:04 PM
+You would need to check if you are using (e)ARC or not?
+08/01/2025 3:03 PM
+LG G4 specs
+08/01/2025 3:03 PM
+    Dolby Atmos
+    Yes
+    DTS:X (by-pass only)
+    Yes
+08/01/2025 3:03 PM
+I think your right
+08/01/2025 3:02 PM
+hmm annoyingly my amp still says DTS-HD MSTR when the disk says DTS:X
+08/01/2025 3:01 PM
+DTS:X is the object based format like Dolby Atmos
+[yolofant]
+yolofant 08/01/2025 2:58 PM
+maybe it cannot be output via the internal speakers?
+[ccarnell98]
+ccarnell98 08/01/2025 2:52 PM
+I'll see if I've got any DTS:X blu-rays
+08/01/2025 2:52 PM
+hmm I had to google it as I didn't remember. But I think DTS-HD MA is a
+fallback when DTS:X isn't working
+[yolofant]
+yolofant 08/01/2025 2:48 PM
+So seems fine?
+[ccarnell98]
+ccarnell98 08/01/2025 2:45 PM
+My Denon says DTS-HD MSTR
+08/01/2025 2:45 PM
+Kodi: audio stream - DTS-HD MA / DTS:X IMAX 7.1
+08/01/2025 2:44 PM
+I just tried HDR10Plus_PA_DTSX.mkv
+[yolofant]
+yolofant 08/01/2025 2:34 PM
+Makes it difficult to force enable
+08/01/2025 2:33 PM
+Lg blocked it at the kernel level since webos 9
+08/01/2025 2:31 PM
+I don't have a dts enabled tv so can't check
+08/01/2025 2:30 PM
+Does dts x work for you?
+[yolofant]
+yolofant 08/01/2025 12:44 AM
+nice
+July 31, 2025
+[a6oo]
+a6oo 07/31/2025 9:29 PM
+@Yolofant I briefly tested the latest test-build and it works fine with
+both local files and inputstream streams. Many thanks!
+[yolofant]
+yolofant 07/31/2025 8:50 PM
+that does the inband thing
+07/31/2025 8:49 PM
+there's the wrapper in between
+07/31/2025 8:49 PM
+I don't think decrypt actually decrypts in secure mode
+[ccarnell98]
+ccarnell98 07/31/2025 8:43 PM
+But its not supposed to do that only in L3
+07/31/2025 8:43 PM
+I mean I could just send everything to decrypt
+07/31/2025 8:42 PM
+That would break L1 though as its supposed to be handled by the TEE
+[yolofant]
+yolofant 07/31/2025 8:40 PM
+the whole widevine implementation was never meant to be L1 so it might
+just not be correct for this use case
+07/31/2025 8:40 PM
+I think the general problem is that you get clear data which I don't
+think you necessary have to receive
+[yolofant]
+yolofant 07/31/2025 8:26 PM
+it should not be needed if you use annex b
+07/31/2025 8:26 PM
+like all this annex b stuff
+07/31/2025 8:25 PM
+essentially you just set up widevine then call decrypt on each demux
+packet
+07/31/2025 8:25 PM
+I would start nuking a lot of code out of inputstream
+07/31/2025 8:25 PM
+and inband serializer I don't think it is needed at all
+07/31/2025 8:25 PM
+the rest should already happen in inputstream
+07/31/2025 8:24 PM
+it should really only be setting up the cryptoinfo stuff in kodi
+07/31/2025 8:24 PM
+my gut feeling says that you're making it too complicated
+[ccarnell98]
+ccarnell98 07/31/2025 5:57 PM
+https://github.com/xbmc/xbmc/commit/40e084217aa14525de177024154dd4f454bdb80e
+Allow crypto sessions for webOS · xbmc/xbmc@40e0842
+[]
+07/31/2025 5:57 PM
+feeding encrypted packets into pipeline, just getting INT_ERROR at the
+moment and not sure what else to do at this point
+[yolofant]
+yolofant 07/31/2025 1:29 PM
+it's on the roadmap for v22
+[ccarnell98]
+ccarnell98 07/31/2025 10:09 AM
+any plans to merge your work so far @Yolofant
+July 29, 2025
+[yolofant]
+yolofant 07/29/2025 8:29 PM
+the evil stuff is arriving after I got confirmation that it works on
+webOS 4
+[ccarnell98]
+ccarnell98 07/29/2025 8:22 PM
+also a good idea 
+[yolofant]
+[] a6oo My motto is: "if it works, is fine"
+yolofant 07/29/2025 8:17 PM
+doing it but hiding the yikes part in webos-userland
+ 1  1
+[yolofant]
+yolofant 07/29/2025 8:07 PM
+though I don't know if devmode has rsync
+07/29/2025 8:07 PM
+it's much faster
+07/29/2025 8:07 PM
+and use the rust reimplementation of ares-package
+[ccarnell98]
+ccarnell98 07/29/2025 8:06 PM
+good idea
+[yolofant]
+yolofant 07/29/2025 8:06 PM
+rsync it
+[ccarnell98]
+ccarnell98 07/29/2025 8:06 PM
+well I could do that now that I can from ssh
+[yolofant]
+yolofant 07/29/2025 8:06 PM
+just send the binary
+07/29/2025 8:06 PM
+why make ipk
+[ccarnell98]
+ccarnell98 07/29/2025 8:06 PM
+make ipk, then webos Dev manager upload is too slow
+07/29/2025 8:05 PM
+I could do with that level of automation
+[yolofant]
+yolofant 07/29/2025 8:03 PM
+and then launch gdbserver with fully integrated debugging in the IDE
+07/29/2025 8:02 PM
+it takes roughly 30s for me to deploy
+07/29/2025 8:02 PM
+it's really worth it to setup efficient deployment
+[ccarnell98]
+ccarnell98 07/29/2025 7:37 PM
+working on the encrypted bit now
+07/29/2025 7:37 PM
+Finally have SVP wrapped unecrypted portion playing
+07/29/2025 7:37 PM
+I gather. I'm sure if I spent 5 minutes on the problem I would but I
+just zip it as up 1, 2, 3 or whatever
+[yolofant]
+yolofant 07/29/2025 7:32 PM
+but it should extract it somewhere, no?
+[ccarnell98]
+ccarnell98 07/29/2025 7:29 PM
+I'm just going on filename iterations because kodi caches every addon
+[yolofant]
+yolofant 07/29/2025 7:29 PM
+not more?
+[ccarnell98]
+ccarnell98 07/29/2025 7:20 PM
+I think i'm upto about 150 compiles of IA now 
+July 28, 2025
+[yolofant]
+yolofant 07/28/2025 11:39 PM
+[:monkaW:]
+ 1
+07/28/2025 11:39 PM
+you haven't seen it
+[a6oo]
+a6oo 07/28/2025 11:37 PM
+My motto is: "if it works, is fine"
+[yolofant]
+yolofant 07/28/2025 10:57 PM
+I do have a solution but it's [:monkaTOS:]
+[yolofant]
+[] a6oo It works fine with local videos but still has the problem with
+inputstream.adaptive streams.
+yolofant 07/28/2025 10:36 PM
+yikes
+[a6oo]
+[] yolofant ```patch Subject: [PATCH] [webOS] Handle GENERAL_EOF event
+--- Index: xbmc/cores/VideoPlayer/MediaPi...
+a6oo 07/28/2025 8:57 PM
+It works fine with local videos but still has the problem with
+inputstream.adaptive streams.
+[yolofant]
+yolofant 07/28/2025 3:31 PM
+there is no binary addons repository on webos
+[ccarnell98]
+ccarnell98 07/28/2025 3:19 PM
+guess we will find out +24 hours after a version of IA is published
+07/28/2025 3:18 PM
+apparenlty its BuildMulti-All according to docs
+[yolofant]
+yolofant 07/28/2025 3:14 PM
+runs every 2 days or so
+07/28/2025 3:14 PM
+no idea
+[ccarnell98]
+ccarnell98 07/28/2025 3:13 PM
+wheres the job for that? 
+[yolofant]
+yolofant 07/28/2025 3:10 PM
+it's with the ipk
+[ccarnell98]
+ccarnell98 07/28/2025 3:10 PM
+although I'm probably looking wrong place
+[yolofant]
+yolofant 07/28/2025 3:10 PM
+yes
+[ccarnell98]
+ccarnell98 07/28/2025 3:09 PM
+https://jenkins.kodi.tv/view/Addons/job/xbmc/job/inputstream.adaptive/job/Piers/
+? don't see webos listed
+07/28/2025 3:05 PM
+I thought it wasn't building for some reason
+[yolofant]
+yolofant 07/28/2025 3:05 PM
+it's generally inside the nightlies
+07/28/2025 3:05 PM
+wdym
+[ccarnell98]
+ccarnell98 07/28/2025 3:02 PM
+The L3 stuff is now merged into
+https://github.com/xbmc/inputstream.adaptive. Just gotta wait for a
+tagged release. How do we go about making it available? (other than
+giving people the link that is)
+[yolofant]
+yolofant 07/28/2025 2:41 PM
+yes there is some in chromium
+[ccarnell98]
+ccarnell98 07/28/2025 2:37 PM
+do we have headers for it at all
+[yolofant]
+yolofant 07/28/2025 2:33 PM
+but generally you call that function and then you get a pointer to the
+cdm
+07/28/2025 2:32 PM
+but yeah I mean they try to hide it
+[yolofant]
+[] ccarnell98 only result I can find on interweb:
+https://github.com/penthera/Download2Go-ios/blob/master/ThirdPar...
+yolofant 07/28/2025 2:32 PM
+wrong namespace
+[ccarnell98]
+ccarnell98 07/28/2025 2:30 PM
+only result I can find on interweb:
+https://github.com/penthera/Download2Go-ios/blob/master/ThirdParty/Widevine/dev/widevine_cdm_sdk_dev.framework/Headers/cdm.h
+Download2Go-ios/ThirdParty/Widevine/dev/widevine_cdm_sdk_dev.framew...
+Penthera's Download2Go iOS SDK enables best-in-class video download and
+playback solutions for a wide variety of content providers. -
+penthera/Download2Go-ios
+[]
+[yolofant]
+yolofant 07/28/2025 2:29 PM
+because they also use it
+07/28/2025 2:29 PM
+or you check inside -adapter
+07/28/2025 2:26 PM
+but probably in mainline chromium you can find it?
+[ccarnell98]
+ccarnell98 07/28/2025 2:26 PM
+oh 
+[yolofant]
+yolofant 07/28/2025 2:26 PM
+but chromium uses the adapter
+07/28/2025 2:26 PM
+I mean that is the api from the binary
+[ccarnell98]
+ccarnell98 07/28/2025 2:26 PM
+what version do you have
+[ccarnell98]
+[] yolofant widevine::Cdm::initialize(widevine::Cdm::SecureOutputType,
+widevine::Cdm::IStorage*, widevine::Cdm::...
+ccarnell98 07/28/2025 2:26 PM
+no results in mine (chromium120, LG C5 sources, webOS25)
+[yolofant]
+yolofant 07/28/2025 2:23 PM
+nah
+[ccarnell98]
+ccarnell98 07/28/2025 2:23 PM
+Maybe we should get chromium compiled
+[yolofant]
+yolofant 07/28/2025 2:22 PM
+widevine::Cdm::initialize(widevine::Cdm::SecureOutputType,
+widevine::Cdm::IStorage*, widevine::Cdm::IClock*,
+widevine::Cdm::ITimer*, widevine::Cdm::LogLevel)
+07/28/2025 2:22 PM
+I would guess in chromium
+[ccarnell98]
+ccarnell98 07/28/2025 2:21 PM
+any examples of how it is used
+[yolofant]
+yolofant 07/28/2025 2:21 PM
+they hide it
+07/28/2025 2:21 PM
+but the interface as used in IA is not directly accessible
+07/28/2025 2:21 PM
+there's only a couple of methods which create the cdm
+[yolofant]
+[] ccarnell98 <@195583665265311744> I did try ce_cdm_shared, with
+CDM_MODULE_VERSION 4 and 10. Didn't bind to Crea...
+yolofant 07/28/2025 2:21 PM
+different interface
+[yolofant]
+[] a6oo I guess so but since I don't use fast-forward/rewind (I can't
+understand why people use those button...
+yolofant 07/28/2025 2:20 PM
+    Subject: [PATCH] [webOS] Handle GENERAL_EOF event
+    ---
+    Index: xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp
+    IDEA additional info:
+    Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+    <+>UTF-8
+    ===================================================================
+    diff --git a/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp b/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp
+    --- a/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp    (revision dbf41571293ffe2b8262d529ba939b890e45e211)
+    +++ b/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp    (revision 9db6484618765c70919beaf237f373950e683628)
+    @@ -1115,7 +1115,7 @@
+             m_messageQueueParent.Put(
+                 std::make_shared<CDVDMsgType<SStateMsg>>(CDVDMsg::PLAYER_REPORT_STATE, stateMsg));
+           }
+    -      else if (msg->IsType(CDVDMsg::VIDEO_DRAIN))
+    +      else if (msg->IsType(CDVDMsg::VIDEO_DRAIN) || msg->IsType(CDVDMsg::GENERAL_EOF))
+           {
+             CLog::LogF(LOGDEBUG, "Received video message: {}", msg->GetMessageType());
+             if (!m_mediaAPIs->pushEOS())
+    patch
+    Subject: [PATCH] [VideoPlayer] Handle GENERAL_EOF event
+    ---
+    Index: xbmc/cores/VideoPlayer/VideoPlayer.cpp
+    IDEA additional info:
+    Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+    <+>UTF-8
+    ===================================================================
+    diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.cpp b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+    --- a/xbmc/cores/VideoPlayer/VideoPlayer.cpp    (revision 9db6484618765c70919beaf237f373950e683628)
+    +++ b/xbmc/cores/VideoPlayer/VideoPlayer.cpp    (revision a12ab4677251b1f226dbed8c15eb87af46713d86)
+    @@ -2861,6 +2861,9 @@
+             {
+               SetPlaySpeed(DVD_PLAYSPEED_NORMAL);
+             }
+    +
+    +        if (m_pInputStream->IsEOF())
+    +          m_VideoPlayerVideo->SendMessage(std::make_shared<CDVDMsg>(CDVDMsg::GENERAL_EOF), 0);
+           }
+           // set flag to indicate we have finished a seeking request
+ 1
+[ccarnell98]
+ccarnell98 07/28/2025 2:18 PM
+if you disable m_bitstream->Convert(data, static_cast<int>(size)); call
+you get a blank screen too. So perhaps the packets need some fixing up
+as well in SVP mode
+07/28/2025 2:17 PM
+Hmm. So I turned off SVP mode. Back to SINGLE_DECRYPT mode which routes
+everything through cdm decrypt()
+[ccarnell98]
+ccarnell98 07/28/2025 2:04 PM
+It's probably not a drop in replacement, but if its used by chromium it
+should be
+07/28/2025 2:00 PM
+@Yolofant I did try ce_cdm_shared, with CDM_MODULE_VERSION 4 and 10.
+Didn't bind to CreateCdmInstance_4 or _10, did you have a look at the
+library at all if we can use it
+[a6oo]
+a6oo 07/28/2025 1:21 PM
+I guess so but since I don't use fast-forward/rewind (I can't understand
+why people use those buttons) not being able to do the way I'm used to
+since 20 years ago is a deal breaker for me.
+[yolofant]
+[] a6oo <@195583665265311744> When watching a video I usually use "up"
+in the remote when I'm in the credits...
+yolofant 07/28/2025 1:06 PM
+removing that causes other problems
+[ccarnell98]
+ccarnell98 07/28/2025 12:40 PM
+From CastagnaIT "in theory iirc when a portion of video is unencrypted,
+the data should directly sent to the "kodi" demuxer without routing to
+DecryptSampleData then if you need to rework all data packets to force
+annexb i think you should add some code before that method
+CFragmentedSampleReader::ReadSample finish maybe reusing Transform
+method in some way?"
+07/28/2025 12:39 PM
+But... at the same time the first 14 seconds are supposed to be
+unecrypted? So I don't get that
+07/28/2025 12:38 PM
+As your not supposed to touch the packet
+07/28/2025 12:38 PM
+From I understand, in DecryptSampleData should be skipped entirely in
+SVP mode and the packet simply routed straight through to SVP wrapping
+and into media API for decryption and decoding, keeping the secure path
+07/28/2025 12:36 PM
+    2025-07-27 22:05:52.919 T:3725    debug <general>: CurlFile::Open - <https://storage.googleapis.com/wvmedia/cbcs/h264/tears/tears_audio_eng_aes_cbcs.mp4>
+    2025-07-27 22:05:52.919 T:3725    debug <general>: easy_acquire - Created session to https://storage.googleapis.com
+    2025-07-27 22:05:53.332 T:3711    debug <inputstream.adaptive>: UpdateSampleDescription: Codec fourcc: mp4a (1836069985)
+    2025-07-27 22:05:53.332 T:3711    debug <inputstream.adaptive>: ReadSample: m_singleSampleDecryptor->DecryptSampleData called, poolId: 1
+    2025-07-27 22:05:53.332 T:3711    debug <inputstream.adaptive>: DecryptSampleData: No IV present — treating sample as fully encrypted. Clear = 0, Cipher = 364
+    2025-07-27 22:05:53.332 T:3711    debug <inputstream.adaptive>: DecryptSampleData: Subsample encryption disabled or clear-only path — passing data unmodified
+    2025-07-27 22:05:53.332 T:3711    debug <inputstream.adaptive>: DecryptSampleData: Fragment processed successfully
+07/28/2025 12:36 PM
+@Yolofant Well I really need to setup stepping for remote sessions. I
+use a lot of logging:
+    2025-07-27 22:05:52.918 T:3711    debug <inputstream.adaptive>: UpdateSampleDescription: Codec fourcc: avc1 (1635148593)
+    2025-07-27 22:05:52.919 T:3711    debug <inputstream.adaptive>: ReadSample: m_singleSampleDecryptor->DecryptSampleData called, poolId: 0
+    2025-07-27 22:05:52.919 T:3711    debug <inputstream.adaptive>: DecryptSampleData: No IV present — treating sample as fully encrypted. Clear = 0, Cipher = 22532
+    2025-07-27 22:05:52.919 T:3711    debug <inputstream.adaptive>: DecryptSampleData: NALU length size: 4, subsample count: 0
+    2025-07-27 22:05:52.919 T:3711    debug <inputstream.adaptive>: DecryptSampleData: Parsing NAL Unit — Size: 756 bytes
+    2025-07-27 22:05:52.919 T:3711    debug <inputstream.adaptive>: DecryptSampleData: Injecting SPS/PPS (42 bytes)
+    2025-07-27 22:05:52.919 T:3711    debug <inputstream.adaptive>: DecryptSampleData: Appending NAL Unit as cleartext (unencrypted)
+    2025-07-27 22:05:52.919 T:3711    debug <inputstream.adaptive>: DecryptSampleData: Parsing NAL Unit — Size: 21768 bytes
+    2025-07-27 22:05:52.919 T:3711    debug <inputstream.adaptive>: DecryptSampleData: Appending NAL Unit as cleartext (unencrypted)
+    2025-07-27 22:05:52.919 T:3711    debug <inputstream.adaptive>: DecryptSampleData: Fragment processed successfully
+[a6oo]
+a6oo 07/28/2025 12:15 PM
+@Yolofant When watching a video I usually use "up" in the remote when
+I'm in the credits to play the next video but now the video keeps
+playing. Reverting
+https://github.com/sundermann/xbmc/commit/b9ae5e9e62e421db5e51b4ea5dd68408ca3e64d8
+fixed it for me.
+[webOS] Use EOS event for HasData checks · sundermann/xbmc@b9ae5e9
+[]
+[yolofant]
+yolofant 07/28/2025 10:33 AM
+then you should never get called into the decryptor
+07/28/2025 10:32 AM
+try to nuke the original video players completely in CreatePlayers and
+always just use the webos implementation without waiting for the stream
+info
+07/28/2025 10:31 AM
+and also the codec stuff runs after you receive the demux packet which
+probably also is why you never see the modified data in the pipeline
+07/28/2025 10:31 AM
+then later you skip all of that
+07/28/2025 10:31 AM
+because in that time it actually calls into the decryptor
+07/28/2025 10:31 AM
+I think that is also why the first seconds are unencrypted
+07/28/2025 10:31 AM
+like we create the normal videoplayer and then later create our own if
+the streams are supported
+07/28/2025 10:30 AM
+it might exist for a very short time
+[yolofant]
+yolofant 07/28/2025 10:06 AM
+but this should never happen
+07/28/2025 10:06 AM
+like for instance GetPicture calls VideoFrameDataToPicture
+07/28/2025 10:05 AM
+and that should be the code that is calling into the decryptor
+07/28/2025 10:05 AM
+this whole interface is not used by the new videoplayer implementation
+07/28/2025 10:05 AM
+https://github.com/xbmc/inputstream.adaptive/blob/Piers/src/main.h#L77-L86
+inputstream.adaptive/src/main.h at Piers · xbmc/inputstream.adaptive
+kodi inputstream addon for several manifest types. Contribute to
+xbmc/inputstream.adaptive development by creating an account on GitHub.
+[]
+07/28/2025 10:05 AM
+yesterday I looked at the IA code and I was wondering how it could even
+work
+07/28/2025 9:59 AM
+attach gdb to the process set breakpoint and print it
+07/28/2025 9:58 AM
+theoretically yes
+[ccarnell98]
+ccarnell98 07/28/2025 9:24 AM
+I'm pretty sure SVP wrapping works as intended, but it would be good to
+know for certain
+07/28/2025 9:23 AM
+hmm is there any way to dump the first SVP wrapped buffer for Google
+Tears so I could compare it to my own?
+July 27, 2025
+[ccarnell98]
+ccarnell98 07/27/2025 11:09 PM
+Well I'm getting audio now but still either a frozen frame or a blank
+screen when in SVP mode. Still no idea why that is just yet
+[yolofant]
+yolofant 07/27/2025 10:43 PM
+it's currently good enough that it works
+07/27/2025 10:43 PM
+but I am not going to commit this at this time unless we get inputstream
+working and this is required then I'll make the proper fix
+07/27/2025 10:42 PM
+    Subject: [PATCH] [webOS] aac adts injection
+    ---
+    Index: xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp
+    IDEA additional info:
+    Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+    <+>UTF-8
+    ===================================================================
+    diff --git a/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp b/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp
+    --- a/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp    (revision de67ced6dd5b25c31c33d950ff6d12ef1eb9c935)
+    +++ b/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp    (revision 452b9c831e659855c4de5f10c0024118c3fe2432)
+    @@ -87,6 +87,8 @@
+         {AV_CODEC_ID_AC4, "AC4"},
+         {AV_CODEC_ID_OPUS, "OPUS"},
+         {AV_CODEC_ID_MP3, "MP3"},
+    +    {AV_CODEC_ID_AAC, "AAC"},
+    +    {AV_CODEC_ID_AAC_LATM, "AAC"},
+     });
+     const auto ms_hdrInfoMap = std::map<AVColorTransferCharacteristic, std::string_view>({
+    @@ -777,6 +779,13 @@
+             Base64::Encode(reinterpret_cast<const char*>(audioHint.extradata.GetData()),
+                            audioHint.extradata.GetSize());
+       }
+    +  else if (audioHint.codec == AV_CODEC_ID_AAC || audioHint.codec == AV_CODEC_ID_AAC_LATM)
+    +  {
+    +    optInfo["aacInfo"]["channels"] = audioHint.channels;
+    +    optInfo["aacInfo"]["frequency"] = audioHint.samplerate / 1000.0;
+    +    optInfo["aacInfo"]["format"] = "adts";
+    +    optInfo["aacInfo"]["profile"] = 2;
+    +  }
+       return codecName;
+     }
+    @@ -928,6 +937,72 @@
+       if (pts < 0ns)
+         pts = 0ns;
+    +  if ((m_audioHint.codec == AV_CODEC_ID_AAC || m_audioHint.codec == AV_CODEC_ID_AAC_LATM) &&
+    +      packet->pData[0] != 0xff && (packet->pData[1] & 0xf0) != 0xf0)
+    +  {
+    +    // inject the AAC ADTS header
+    +    const int frameSize = packet->iSize + 7;
+    +    uint8_t* adts = new uint8_t[frameSize];
+    +    std::memset(adts, 0, 7);
+    +    adts[0] = 0xff;
+    +    adts[1] = 0xf0;
+    +    adts[1] |= 1;
+    +
+    +    int profile = m_audioHint.profile;
+    +    if (m_audioHint.profile >= AV_PROFILE_AAC_HE)
+    +      profile = AV_PROFILE_AAC_LOW;
+    +    adts[2] = profile << 6;
+    +
+    +    int sampleRateIndex = (m_audioHint.extradata.GetData()[0] & 0x07) << 1 |
+    +                          (m_audioHint.extradata.GetData()[1] & 0x80) >> 7;
+    +    if (sampleRateIndex > 12)
+    +      sampleRateIndex = 4;
+    +
+    +    adts[2] |= (sampleRateIndex & 0xf) << 2;
+    +
+    +    switch (m_audioHint.channels)
+    +    {
+    +      case 1:
+    +        adts[3] |= 1 << 6;
+    +        break;
+    +      case 2:
+    +        adts[3] |= 2 << 6;
+    +        break;
+    +      case 3:
+    +        adts[3] |= 3 << 6;
+    +        break;
+    +      case 4:
+    +        adts[2] |= 1;
+    +        break;
+    +      case 5:
+    +        adts[2] |= 1;
+    +        adts[3] |= 1 << 6;
+    +        break;
+    +      case 6:
+    +        adts[2] |= 1;
+    +        adts[3] |= 2 << 6;
+    +        break;
+    +      case 8:
+    +        adts[2] |= 1;
+    +        adts[3] |= 3 << 6;
+    +        break;
+    +      default:
+    +        CLog::LogF(LOGERROR, "Unsupported channel configuration: {}", m_audioHint.channels);
+    +    }
+    +    adts[3] |= (frameSize >> 11) & 0x03;
+    +    adts[4] = (frameSize >> 3) & 0xFF;
+    +    adts[5] |= (frameSize & 7) << 5;
+    +
+    +    adts[5] |= (0x7FF >> 6) & 0x1F;
+    +    adts[6] |= (0x7FF & 0x3F) << 2;
+    +    adts[6] |= 0 & 0x3;
+    +
+    +    std::copy_n(packet->pData, packet->iSize, adts + 7);
+    +    delete[] packet->pData;
+    +    packet->iSize = frameSize;
+    +    packet->pData = adts;
+    +  }
+    +
+       CVariant payload;
+       payload["bufferAddr"] = fmt::format("{:#x}", reinterpret_cast<std::uintptr_t>(packet->pData));
+       payload["bufferSize"] = packet->iSize;
+This is a bit more refined but still the parsing should be put somewhere
+else
+[yolofant]
+yolofant 07/27/2025 10:17 PM
+there's an adts parser which removes the adts information and puts it
+into extradata
+ 1
+07/27/2025 10:16 PM
+I mean look at inputstream adaptive
+07/27/2025 10:16 PM
+if it is encrypted it should already be wrapped in adts
+[ccarnell98]
+ccarnell98 07/27/2025 9:50 PM
+if packet->cryptoInfo then it should be encrypted. maybe
+07/27/2025 9:49 PM
+"Widevine audio can be encrypted — but whether it is depends entirely on
+how the content was packaged and the DRM configuration chosen by the
+provider."
+[yolofant]
+yolofant 07/27/2025 9:35 PM
+I thought it is not?
+07/27/2025 9:35 PM
+but isn't the audio not encrypted?
+07/27/2025 9:34 PM
+as that is how aac data is supposed to be streamed
+07/27/2025 9:34 PM
+but I would assume that this content would usually already come as adts
+steram
+07/27/2025 9:34 PM
+you can't inject this header on an encrypted packet
+[ccarnell98]
+ccarnell98 07/27/2025 9:13 PM
+and it kept going way after:
+    2025-07-27 20:09:04.824 T:20898   debug <general>: void CMediaPipelineWebOS::PlayerCallback(int32_t, int64_t, const char*): type: 18, numValue: 100, strValue: Playing error
+    2025-07-27 20:09:04.824 T:20898   error <general>: void CMediaPipelineWebOS::PlayerCallback(int32_t, int64_t, const char*): Pipeline INT_ERROR numValue: 100, strValue: Playing error packetId: 368
+07/27/2025 9:12 PM
+seems to be doing it:
+    Injecting AAC ADTS header for packetId 1541
+[ccarnell98]
+ccarnell98 07/27/2025 9:04 PM
+if it doesn't they still get AAC LC, just wont be able to use HE AAC
+07/27/2025 9:04 PM
+the only thing I am unsure of is, will the ADTS header injection work on
+a encrypted audio packet
+07/27/2025 9:00 PM
+otherwise it should already be present
+07/27/2025 9:00 PM
+its only necessary to inject adts header if we have extraData we are
+unable to pass
+07/27/2025 9:00 PM
+and added this
+      // If extradata is present, it typically contains an AudioSpecificConfig (ASC)
+      // This config is required for MP4/M4A containers, which do not include per-frame headers like ADTS
+      // We cannot pass extraData to the media API due to a segfault, so we need to inject the AAC ADTS header
+      if ((m_audioHint.codec == AV_CODEC_ID_AAC || m_audioHint.codec == AV_CODEC_ID_AAC_LATM) &&
+          m_audioHint.extradata && m_audioHint.extradata.GetSize() > 0 &&
+          packet->pData[0] != 0xff && (packet->pData[1] & 0xf0) != 0xf0)
+      {
+07/27/2025 9:00 PM
+I've changed it to do this:
+      else if (audioHint.codec == AV_CODEC_ID_AAC || audioHint.codec == AV_CODEC_ID_AAC_LATM)
+      {
+        optInfo["aacInfo"]["channels"] = audioHint.channels;
+        optInfo["aacInfo"]["frequency"] = audioHint.samplerate / 1000.0;
+        optInfo["aacInfo"]["profile"] = audioHint.profile;
+        optInfo["aacInfo"]["format"] = "adts";
+      }
+07/27/2025 8:59 PM
+AAC LC, HE-AAC and HE-AAC 2.0
+07/27/2025 8:59 PM
+@Yolofant It works!! 
+[ccarnell98]
+ccarnell98 07/27/2025 8:36 PM
+I'll try it now
+07/27/2025 8:36 PM
+oh I thought you was still working on it. I haven't had the chance as
+I've been out and then I fixed the CI stuff
+[yolofant]
+yolofant 07/27/2025 8:35 PM
+didn't the stuff i posted work?
+[ccarnell98]
+ccarnell98 07/27/2025 8:33 PM
+PS I had to disable "content recommendations" in the home screen to stop
+LG taking a picture of my screen every second
+07/27/2025 8:29 PM
+    lse if (audioHint.codec == AV_CODEC_ID_AAC || audioHint.codec == AV_CODEC_ID_AAC_LATM)
+      {
+        // AAC codec setup
+        optInfo["aacInfo"]["channels"] = audioHint.channels;
+        optInfo["aacInfo"]["frequency"] = audioHint.samplerate / 1000.0;
+        optInfo["aacInfo"]["profile"] = GetMpegAotFromFfmpegProfile(audioHint.profile);
+        if (audioHint.extradata)
+        {
+          CLog::LogF(LOGDEBUG, "Setting to MP4");
+          optInfo["aacInfo"]["format"] = "MP4";
+          CLog::LogF(LOGDEBUG, "Extra data size: {}", audioHint.extradata.GetSize());
+        }
+        else
+        {
+          CLog::LogF(LOGDEBUG, "Setting to adts");
+          optInfo["aacInfo"]["format"] = "adts";
+        }
+        if (audioHint.profile == AV_PROFILE_AAC_HE || audioHint.profile == AV_PROFILE_AAC_HE_V2 ||
+            audioHint.profile == AV_PROFILE_MPEG2_AAC_HE)
+        {
+          //codecName = "HE AAC";
+          //CLog::LogF(LOGDEBUG, "Setting audio codec to HE AAC");
+        }
+      }
+07/27/2025 8:28 PM
+OK wtf I have sound output in HE-AAC. It's corrupt... but its an
+improvement
+[ccarnell98]
+ccarnell98 07/27/2025 7:17 PM
+it worked, without building depends, thankfully
+07/27/2025 7:16 PM
+(no content)
+[image.png]
+ image.png
+26.74 KB External
+[ccarnell98]
+ccarnell98 07/27/2025 4:23 PM
+building all the depends just to build IA is such a PITA 
+[yolofant]
+yolofant 07/27/2025 3:16 PM
+but I'd imagine kodi needs to be installed first
+07/27/2025 3:16 PM
+no idea how addons work
+[ccarnell98]
+ccarnell98 07/27/2025 3:09 PM
+the yml only compiles IA not kodi
+07/27/2025 3:07 PM
+    CMake Error at CMakeLists.txt:17 (find_package):
+      By not providing "FindKodi.cmake" in CMAKE_MODULE_PATH this project has
+      asked CMake to find a package configuration file provided by "Kodi", but
+      CMake did not find one.
+      Could not find a package configuration file provided by "Kodi" with any of
+      the following names:
+        KodiConfig.cmake
+        kodi-config.cmake
+      Add the installation prefix of "Kodi" to CMAKE_PREFIX_PATH or set
+      "Kodi_DIR" to a directory containing one of the above files.  If "Kodi"
+      provides a separate development package or SDK, be sure it has been
+      installed.
+    -- Configuring incomplete, errors occurred!
+07/27/2025 3:07 PM
+Nice to see github had the same issue as me when I was compiling
+[yolofant]
+yolofant 07/27/2025 2:59 PM
+or use from kodi depends
+[yolofant]
+[] ccarnell98 hmm whats the workaround
+yolofant 07/27/2025 2:59 PM
+system cmake
+ 1
+[yolofant]
+[] ccarnell98 Does anyone know if you need to run .
+/tmp/arm-webos-linux-gnueabi_sdk-buildroot/environment-setup f...
+yolofant 07/27/2025 2:59 PM
+I don't think you need it at all just pass the toolchain file
+[ccarnell98]
+ccarnell98 07/27/2025 2:58 PM
+hmm whats the workaround
+07/27/2025 2:53 PM
+Unsupported protocol, ahh yes this issue again with https not supported
+by cmake
+07/27/2025 2:52 PM
+hmm what did I do wrong:
+https://github.com/cscd98/inputstream.adaptive/actions/runs/16551315522/job/46806543293
+Add CI for webOS · cscd98/inputstream.adaptive@6711ac7
+kodi inputstream addon for several manifest types. Contribute to
+cscd98/inputstream.adaptive development by creating an account on
+GitHub.
+[]
+07/27/2025 2:50 PM
+https://github.com/xbmc/inputstream.adaptive/pull/1893/commits/6711ac7c0ae5bcbe83bad81c16c614a5e5fd3702
+Add webOS support (L3) by cscd98 · Pull Request #1893 · xbmc/inpu...
+Description This adds L3 Widevine support to the webOS port of Kodi.
+Motivation and context webOS cannot use chromium supplied widevine libs
+as it still uses a 32-bit softfp tool chain. However, LG...
+[]
+07/27/2025 2:50 PM
+Does anyone know if you need to run .
+/tmp/arm-webos-linux-gnueabi_sdk-buildroot/environment-setup for each
+step?
+[ccarnell98]
+ccarnell98 07/27/2025 11:33 AM
+although that's his repo
+07/27/2025 11:31 AM
+thanks
+[ccarnell98]
+[] a6oo Check this branch:
+https://github.com/CastagnaIT/inputstream.adaptive/commits/Piers_CI/
+ccarnell98 07/27/2025 11:31 AM
+ugh uses a different branch for CI no wonder I couldnt' see it
+[ccarnell98]
+ccarnell98 07/27/2025 11:29 AM
+Then I started compiling chromium120 so I can debug that but I got stuck
+on it trying to use /usr/include headers
+07/27/2025 11:28 AM
+works for AAC LC but not HE-AAC
+07/27/2025 11:28 AM
+unsuccessfully
+07/27/2025 11:27 AM
+then various attempts to get codecData to not crash
+07/27/2025 11:27 AM
+    optInfo["aacInfo"]["channels"] = audioHint.channels;
+      optInfo["aacInfo"]["frequency"] = static_cast<int>(audioHint.samplerate / 1000.0);
+      optInfo["aacInfo"]["profile"] = GetMpegAotFromFfmpegProfile(audioHint.profile);
+07/27/2025 11:27 AM
+Yeh FYI I was just doing:
+    int GetMpegAotFromFfmpegProfile(int profile)
+    {
+      switch (profile)
+      {
+        // MPEG-4 AAC Profiles
+        case AV_PROFILE_AAC_MAIN:     return 1;   // AAC Main
+        case AV_PROFILE_AAC_LOW:      return 2;   // AAC LC (Low Complexity)
+        case AV_PROFILE_AAC_SSR:      return 3;   // AAC SSR (Scalable Sample Rate)
+        case AV_PROFILE_AAC_LTP:      return 4;   // AAC LTP (Long Term Prediction)
+        case AV_PROFILE_AAC_HE:       return 5;   // AAC HE v1 (SBR)
+        case AV_PROFILE_AAC_HE_V2:    return 29;  // AAC HE v2 (SBR+PS)
+        default:
+          CLog::LogF(LOGWARNING, "Unrecognized AAC profile: {}", profile);
+          return profile;
+      }
+    }
+[yolofant]
+yolofant 07/27/2025 11:25 AM
+works for me but the code is ugly
+[ccarnell98]
+[] yolofant ```patch Subject: [PATCH] [webOS] aac adts injection ---
+Index: xbmc/cores/VideoPlayer/MediaPipeline...
+ccarnell98 07/27/2025 11:24 AM
+You deserve a cookie if that works 
+[a6oo]
+[] ccarnell98 or is it just
+https://github.com/xbmc/inputstream.adaptive/tree/Piers/.github/workflows
+a6oo 07/27/2025 11:23 AM
+Check this branch:
+https://github.com/CastagnaIT/inputstream.adaptive/commits/Piers_CI/
+Commits · CastagnaIT/inputstream.adaptive
+kodi inputstream addon for several manifest types. Contribute to
+CastagnaIT/inputstream.adaptive development by creating an account on
+GitHub.
+[]
+ 1
+[yolofant]
+yolofant 07/27/2025 11:21 AM
+    Subject: [PATCH] [webOS] aac adts injection
+    ---
+    Index: xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp
+    IDEA additional info:
+    Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+    <+>UTF-8
+    ===================================================================
+    diff --git a/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp b/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp
+    --- a/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp    (revision de67ced6dd5b25c31c33d950ff6d12ef1eb9c935)
+    +++ b/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp    (revision 30200dc3c14ccff91bbd0850b09832476b00f392)
+    @@ -87,6 +87,8 @@
+         {AV_CODEC_ID_AC4, "AC4"},
+         {AV_CODEC_ID_OPUS, "OPUS"},
+         {AV_CODEC_ID_MP3, "MP3"},
+    +    {AV_CODEC_ID_AAC, "AAC"},
+    +    {AV_CODEC_ID_AAC_LATM, "AAC"},
+     });
+     const auto ms_hdrInfoMap = std::map<AVColorTransferCharacteristic, std::string_view>({
+    @@ -777,6 +779,13 @@
+             Base64::Encode(reinterpret_cast<const char*>(audioHint.extradata.GetData()),
+                            audioHint.extradata.GetSize());
+       }
+    +  else if (audioHint.codec == AV_CODEC_ID_AAC || audioHint.codec == AV_CODEC_ID_AAC_LATM)
+    +  {
+    +    optInfo["aacInfo"]["channels"] = audioHint.channels;
+    +    optInfo["aacInfo"]["frequency"] = audioHint.samplerate / 1000.0;
+    +    optInfo["aacInfo"]["format"] = "adts";
+    +    optInfo["aacInfo"]["profile"] = 2;
+    +  }
+       return codecName;
+     }
+    @@ -928,6 +937,81 @@
+       if (pts < 0ns)
+         pts = 0ns;
+    +  if ((m_audioHint.codec == AV_CODEC_ID_AAC || m_audioHint.codec == AV_CODEC_ID_AAC_LATM) &&
+    +    packet->pData[0] != 0xff && (packet->pData[1] & 0xf0) != 0xf0)
+    +  {
+    +    // inject the AAC ADTS header
+    +    uint8_t* adts = new uint8_t[7 + packet->iSize];
+    +    std::memset(adts, 0, 7);
+    +    adts[0] = 0xff;
+    +    adts[1] = 0xf0;
+    +    adts[1] |= 1;
+    +
+    +    switch (m_audioHint.profile) {
+    +      case AV_PROFILE_AAC_MAIN:
+    +        break;
+    +      case AV_PROFILE_AAC_HE:
+    +      case AV_PROFILE_AAC_HE_V2:
+    +      case AV_PROFILE_AAC_LOW:
+    +        adts[2] |= 1 << 6;
+    +        break;
+    +      case AV_PROFILE_AAC_SSR:
+    +        adts[2] |= 2 << 6;
+    +        break;
+    +      case AV_PROFILE_AAC_LTP:
+    +        adts[2] |= 3 << 6;
+    +        break;
+    +      default:
+    +        CLog::LogF(LOGERROR, "Unsupported AAC profile: {}", m_audioHint.profile);
+    +    }
+    +
+    +    const int sampleRateIndex = (m_audioHint.extradata.GetData()[0] & 0x07) << 1 |
+    +                                (m_audioHint.extradata.GetData()[1] & 0x80) >> 7;
+    +
+    +    adts[2] |= (sampleRateIndex & 0xf) << 2;
+    +
+    +    switch (m_audioHint.channels) {
+    +      case 1:
+    +        adts[3] |= 1 << 6;
+    +        break;
+    +      case 2:
+    +        adts[3] |= 2 << 6;
+    +        break;
+    +      case 3:
+    +        adts[3] |= 3 << 6;
+    +        break;
+    +      case 4:
+    +        adts[2] |= 1;
+    +        break;
+    +      case 5:
+    +        adts[2] |= 1;
+    +        adts[3] |= 1 << 6;
+    +        break;
+    +      case 6:
+    +        adts[2] |= 1;
+    +        adts[3] |= 2 << 6;
+    +        break;
+    +      case 8:
+    +        adts[2] |= 1;
+    +        adts[3] |= 3 << 6;
+    +        break;
+    +      default:
+    +        CLog::LogF(LOGERROR, "Unsupported channel configuration: {}", m_audioHint.channels);
+    +    }
+    +    packet->iSize += 7;
+    +    adts[3] |= (packet->iSize >> 11) & 0x03;
+    +    adts[4] = (packet->iSize >> 3) & 0xFF;
+    +    adts[5] |= (packet->iSize & 7) << 5;
+    +
+    +    adts[5] |= (0x7FF >> 6) & 0x1F;
+    +    adts[6] |= (0x7FF & 0x3F) << 2;
+    +    adts[6] |= 0 & 0x3;
+    +
+    +    std::copy_n(packet->pData, packet->iSize - 7, adts + 7);
+    +    delete[] packet->pData;
+    +    packet->pData = adts;
+    +  }
+    +
+       CVariant payload;
+       payload["bufferAddr"] = fmt::format("{:#x}", reinterpret_cast<std::uintptr_t>(packet->pData));
+       payload["bufferSize"] = packet->iSize;
+07/27/2025 11:21 AM
+addons are built on azure i think
+[ccarnell98]
+ccarnell98 07/27/2025 11:19 AM
+or is it just
+https://github.com/xbmc/inputstream.adaptive/tree/Piers/.github/workflows
+inputstream.adaptive/.github/workflows at Piers · xbmc/inputstream...
+kodi inputstream addon for several manifest types. Contribute to
+xbmc/inputstream.adaptive development by creating an account on GitHub.
+[]
+07/27/2025 11:16 AM
+https://github.com/xbmc/inputstream.adaptive/blob/Piers/azure-pipelines.yml
+inputstream.adaptive/azure-pipelines.yml at Piers · xbmc/inputstre...
+kodi inputstream addon for several manifest types. Contribute to
+xbmc/inputstream.adaptive development by creating an account on GitHub.
+[]
+07/27/2025 11:09 AM
+Anybody fancy add a CI to IA
+[yolofant]
+yolofant 07/27/2025 10:35 AM
+it'll use utf8
+07/27/2025 10:34 AM
+I think it's some sort of encoding issue
+[ccarnell98]
+ccarnell98 07/27/2025 10:33 AM
+oh. thought u just made a shortcut
+[yolofant]
+yolofant 07/27/2025 10:32 AM
+you can't make a string out of the binary directly
+07/27/2025 10:31 AM
+oh
+[ccarnell98]
+[] ccarnell98 really thought this was gonna work! ```else if
+(audioHint.codec == AV_CODEC_ID_OPUS && ms_codecMap.c...
+ccarnell98 07/27/2025 10:31 AM
+this
+[yolofant]
+yolofant 07/27/2025 10:30 AM
+hmm, what was your code?
+[ccarnell98]
+ccarnell98 07/27/2025 10:29 AM
+@Yolofant So you got Base64 to work with Opus? How come it didn't work
+for me 
+[a6oo]
+a6oo 07/27/2025 9:44 AM
+I opened a bug report and CastagnaIT fixed it right now 
+ 1
+July 26, 2025
+[a6oo]
+a6oo 07/26/2025 8:55 PM
+Wait. Yes, I think is an IA bug. I'll do some more tests later.
+[ccarnell98]
+ccarnell98 07/26/2025 8:52 PM
+But they might just say "we don't have any LG devices" to test with
+07/26/2025 8:51 PM
+Might be worth creating a bug, as I've only touched on widevine
+implementation and haven't delved into the inner workings of IA much
+07/26/2025 8:50 PM
+hmm. I was hoping it was a bug in IA
+https://github.com/xbmc/inputstream.adaptive/pull/1478. But that was
+fixed.
+Build software better, together
+GitHub is where people build software. More than 150 million people use
+GitHub to discover, fork, and contribute to over 420 million projects.
+[]
+[]
+[]
+[a6oo]
+a6oo 07/26/2025 8:44 PM
+No.
+[ccarnell98]
+ccarnell98 07/26/2025 8:39 PM
+Do you get the same issue using IA on another platform?
+[a6oo]
+a6oo 07/26/2025 8:21 PM
+@Craig I have a problem with Movistar+: Live TV works fine but VODs
+don't with an error on GenerateSidxSegments. Fortunately I found a DRM
+stream that have the same problem:
+    #KODIPROP:inputstream=inputstream.adaptive
+    #KODIPROP:inputstream.adaptive.license_type=com.widevine.alpha
+    #KODIPROP:inputstream.adaptive.license_key=https://cwip-shaka-proxy.appspot.com/no_auth||R{SSM}|
+    https://cdn.bitmovin.com/content/assets/art-of-motion_drm/mpds/11331.mpd
+    2025-07-26 20:16:52.169 T:6097    debug <inputstream.adaptive>: Initialize crypto session
+    2025-07-26 20:16:52.169 T:6097    debug <inputstream.adaptive>: Reused existing DRM session (ID: ksid70BF3339, KID: eb676abbcb345e96bbcf616630f1a3da)
+    2025-07-26 20:16:52.170 T:6097    error <inputstream.adaptive>: GenerateSidxSegments: [AS-5] Cannot generate segments from SIDX on repr id "1080_4800000", due to missing data range positions
+    2025-07-26 20:16:52.170 T:6097    error <inputstream.adaptive>: CreateStreamReader: No MOOV atom in stream
+    2025-07-26 20:16:52.170 T:6097    debug <inputstream.adaptive>: GetStream(1006)
+    2025-07-26 20:16:52.171 T:6097     info <general>: Opening stream: 1007 source: 256
+    2025-07-26 20:16:52.171 T:6097    debug <inputstream.adaptive>: OpenStream(1007)
+    2025-07-26 20:16:52.171 T:6097    debug <inputstream.adaptive>: Initialize crypto session
+    2025-07-26 20:16:52.171 T:6097    debug <inputstream.adaptive>: Reused existing DRM session (ID: ksid70BF3339, KID: eb676abbcb345e96bbcf616630f1a3da)
+    2025-07-26 20:16:52.172 T:6097    error <inputstream.adaptive>: GenerateSidxSegments: [AS-6] Cannot generate segments from SIDX on repr id "1_stereo_192000", due to missing data range positions
+    2025-07-26 20:16:52.172 T:6097    error <inputstream.adaptive>: CreateStreamReader: No MOOV atom in stream
+The streams play fine with OpenWV. (edited)
+[ccarnell98]
+ccarnell98 07/26/2025 8:18 PM
+Just for the "lols" I'm compiling chromium120
+[ccarnell98]
+ccarnell98 07/26/2025 2:39 PM
+hmm is LG still recording my screen -> 691200 Jul 26 13:36 capture.rgb
+[ccarnell98]
+ccarnell98 07/26/2025 1:48 PM
+if you omit codecSize it doesn't through a wobbly but you get no audio,
+but the video plays
+[a6oo]
+a6oo 07/26/2025 1:37 PM
+For 4k and/or HDR needs secure path, yes.
+[ccarnell98]
+ccarnell98 07/26/2025 1:35 PM
+ah OK so its enforcing L1 for 4k
+[a6oo]
+a6oo 07/26/2025 1:31 PM
+OK. The problem for UHD/HDR is this: GetCapabilities: Single decrypt
+failed, secure path only So yeah, it needs more love 
+[ccarnell98]
+ccarnell98 07/26/2025 1:23 PM
+Thats awesome
+[a6oo]
+a6oo 07/26/2025 1:09 PM
+1080p H265 plays fine but it seems HDR has problems and those streams
+show a black screen. (edited)
+07/26/2025 1:08 PM
+I enabled all the L1 features of Android in the Amazon addon and
+definitely the license server recognizes the LG as an L1 device so
+oem_crypto_security_patch_level 0 means L1.
+ 1
+[yolofant]
+yolofant 07/26/2025 1:08 PM
+was actually netflix that is always profile 2 adts
+[ccarnell98]
+ccarnell98 07/26/2025 11:52 AM
+it's definitely listed in libpf
+[yolofant]
+yolofant 07/26/2025 11:52 AM
+did you check in ghidra
+[ccarnell98]
+ccarnell98 07/26/2025 11:52 AM
+hmm just noticed that HE-AAC is only listed on webOS 2.0, but then never
+mentioned again e.g. webOS 24
+[yolofant]
+yolofant 07/26/2025 11:47 AM
+the adts information might be available on the stream
+07/26/2025 11:46 AM
+but sure it could be different on the kodi addon
+07/26/2025 11:45 AM
+it's hardcoded
+07/26/2025 11:45 AM
+it's always profile 2 and adts
+07/26/2025 11:45 AM
+not in the app
+[ccarnell98]
+ccarnell98 07/26/2025 11:44 AM
+I think from what @A600 shared yesterday, amazon streams can be
+HE-AACv2, HE-AAC, AAC-LC, so they will have different args. Have you
+ever got HE-AAC (1 or 2) to work?
+[yolofant]
+yolofant 07/26/2025 11:38 AM
+and adts
+07/26/2025 11:38 AM
+I can tell you that amazon sets profile 2
+07/26/2025 11:38 AM
+but no idea what is correct though
+07/26/2025 11:38 AM
+and yes it's just zero vs one based indices
+07/26/2025 11:37 AM
+but kodi can be providing anything
+07/26/2025 11:37 AM
+I think with adts it doesn't need extradata
+[ccarnell98]
+ccarnell98 07/26/2025 9:37 AM
+apparently you can only work this out by inspecting the first few bytes,
+which you don't have access to in Load()
+07/26/2025 9:36 AM
+because I've seen raw, adst and mp4 in different usages but I don't know
+what IA or Kodi provides (if they do) (edited)
+07/26/2025 9:36 AM
+what I could with knowing is does kodi provide you with a value for
+optInfo["aacInfo"]["format"] (edited)
+07/26/2025 9:30 AM
+maybe they start from 1 but ffmpeg starts from 0
+07/26/2025 9:29 AM
+but ffmpeg says 28
+07/26/2025 9:28 AM
+and
+    29    PS (Parametric Stereo)    2004[27] and 2006[28][29]    used with AAC LC and SBR in the "HE-AAC v2 Profile". PS coding tool was defined in 2004 and Object Type defined in 2006.
+07/26/2025 9:27 AM
+didn't have much to go on on what is wrong, but it didn't crash. but
+it's crashing again yesterday, I should have saved the code and pinned
+it on the wall 
+07/26/2025 9:26 AM
+but ffmpeg says
+    #define AV_PROFILE_AAC_HE           4
+[ccarnell98]
+[] yolofant and for the profile there should be AV_PROFILE_AAC defines
+ccarnell98 07/26/2025 9:26 AM
+https://en.wikipedia.org/wiki/MPEG-4_Part_3;
+    5    SBR (Spectral Band Replication)    2003[23]    used with AAC LC in the "High Efficiency AAC Profile" (HE-AAC v1)
+(edited)
+July 25, 2025
+[yolofant]
+yolofant 07/25/2025 11:02 PM
+and for the profile there should be AV_PROFILE_AAC defines
+[yolofant]
+yolofant 07/25/2025 10:54 PM
+It's possible that extradata is larger than needed
+[ccarnell98]
+ccarnell98 07/25/2025 10:32 PM
+Can't remember if it was raw or mp4, but at least it worked.. once
+07/25/2025 10:32 PM
+CodecData and size are also different. I tried these values, and it
+didn't crash. But it also didn't have any sound.. but thats better than
+crashing.
+07/25/2025 10:31 PM
+Turns out profile numerically is different. FFMPEG values do not match
+up to MPEG-4 AAC profiles so I wrote a function to convert
+07/25/2025 10:30 PM
+    Field    Value
+    Codec Name    aac
+    Profile    HE-AAC
+    Format    raw (MP4 fragments)
+    Channels    2 (stereo)
+    Sample Rate    44100 Hz
+    Codec Tag    mp4a (0x6134706d)
+    CodecData    1190 (hex)
+    CodecSize    2 bytes
+(according to copilot) (edited)
+07/25/2025 10:30 PM
+https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/stereo64_audio/init.mp4
+[ccarnell98]
+ccarnell98 07/25/2025 7:56 PM
+If AAC fails, drink tea. I've drank a lot of tea
+07/25/2025 7:51 PM
+Yup lol
+[yolofant]
+yolofant 07/25/2025 7:44 PM
+I remember that's why it's not used in Kodi
+07/25/2025 7:43 PM
+I feel like AAC is the worst codec [:kekW:]
+[ccarnell98]
+ccarnell98 07/25/2025 7:11 PM
+I've gotten AAC-LC working
+07/25/2025 7:11 PM
+I'm trying to get AAC working so i'm not using encrypted. I'm using
+isasamples->live streams with subtitles->Apple adv_dv_atmos and change
+audio stream to HE AAC -> crashes. (edited)
+[yolofant]
+yolofant 07/25/2025 7:10 PM
+yes not set and format is adts
+[a6oo]
+[] ccarnell98 IsVideoKeyframe might not be needed, but it follows
+similar logic from m_bitstream which isn't used ...
+a6oo 07/25/2025 7:10 PM
+Well, it isn't needed at all because I commented out the code where was
+used as you suggested above and worked just fine.
+[yolofant]
+yolofant 07/25/2025 7:09 PM
+I can check netflix sec
+07/25/2025 7:09 PM
+at least in amazon they don't send these
+07/25/2025 7:09 PM
+I think for encrypted you never send it
+[ccarnell98]
+ccarnell98 07/25/2025 7:06 PM
+ugh whenever I try and pass codecData and codecSize it always crashes
+with AAC
+[ccarnell98]
+ccarnell98 07/25/2025 6:43 PM
+    Offset    Size    Field
+    0    8 bytes    IV (clear)
+    8    2 bytes    subsample count (big-endian)
+    10    2×N × 4 B    N entries of (clear_bytes:uint16, encrypted_bytes:uint16)
+    …    …    encrypted NAL payload
+[ccarnell98]
+ccarnell98 07/25/2025 6:32 PM
+but idk
+07/25/2025 6:32 PM
+from what I understand, is that there is some clear text, then an
+encrypted portion
+[yolofant]
+yolofant 07/25/2025 6:32 PM
+I guess you can guess from size
+07/25/2025 6:32 PM
+isn't the whole point of encryption that you can't?
+07/25/2025 6:32 PM
+but how would you even detect a keyframe in encrypted data
+[ccarnell98]
+ccarnell98 07/25/2025 5:50 PM
+IsVideoKeyframe might not be needed, but it follows similar logic from
+m_bitstream which isn't used on encrypted packets
+07/25/2025 5:49 PM
+nope
+[a6oo]
+a6oo 07/25/2025 5:14 PM
+HEVC doesn't work, right? From the IsVideoKeyframe code: // TODO: HEVC,
+VP9, AV1
+[ccarnell98]
+ccarnell98 07/25/2025 5:07 PM
+Thats in WIP so id go back to the other branch for now
+ 1
+07/25/2025 5:06 PM
+Yep that is what I was expecting earlier. Still more work to be done
+then 
+[a6oo]
+a6oo 07/25/2025 5:02 PM
+With webos-l1 black screen and the audio decoder is "unknown"
+ kodi1.log
+1.5 MB External
+[a6oo]
+a6oo 07/25/2025 4:40 PM
+I'm using webos not webos-l1, but I'll try it now. (edited)
+[ccarnell98]
+ccarnell98 07/25/2025 4:32 PM
+When u zip up the archive you have to increase the filename each time as
+kodi caches addons
+07/25/2025 4:31 PM
+Are you definitely using the IA code from
+https://github.com/cscd98/inputstream.adaptive/tree/webos-l1
+GitHub - cscd98/inputstream.adaptive at webos-l1
+kodi inputstream addon for several manifest types. Contribute to
+cscd98/inputstream.adaptive development by creating an account on
+GitHub.
+[]
+[a6oo]
+a6oo 07/25/2025 4:30 PM
+I should try to enable the UHD streams and see how it works out.
+07/25/2025 4:28 PM
+Yes, no SVP at all. This log is playing with the Amazon addon an AC3
+stream and later an AAC one.
+ kodi.log
+1.26 MB External
+[ccarnell98]
+ccarnell98 07/25/2025 4:02 PM
+can't get HE-AAC to work as it crashes. I'll have a look at that one
+later
+07/25/2025 4:01 PM
+although thats a typo it should say encrypted
+07/25/2025 4:01 PM
+You should have lots of logs in kodi.log with Encoded <in> <out>
+07/25/2025 3:59 PM
+hmm that suggests its transcoding, which means its not using SVP
+[a6oo]
+a6oo 07/25/2025 3:51 PM
+WTF. I re-enabled the audio streams in the Amazon addon and now all
+audio streams work. HE-AACv2 2.0, HE-AAC 2.0, AAC-LC 2.0 and AC3
+(edited)
+[ccarnell98]
+ccarnell98 07/25/2025 3:35 PM
+any idea which one in particular Amazon uses
+07/25/2025 3:34 PM
+woot got AAC LC working in Google shaka, Apple adv_dv and bishop_dv. Now
+to try HE-AAC and HE-AACv2
+07/25/2025 3:32 PM
+Thanks 
+[a6oo]
+[] ccarnell98 If its not needed I can get rid of the IsVideoKeyframe
+function altogether as it only does h264 atm
+a6oo 07/25/2025 3:31 PM
+With that code commented out the video works fine on Amazon.
+[ccarnell98]
+ccarnell98 07/25/2025 3:19 PM
+I'll try some code
+07/25/2025 3:19 PM
+but doesn't work for the 2 apple demos
+[ccarnell98]
+ccarnell98 07/25/2025 3:09 PM
+it says starfish-AAC so I assume its working (non-encrypted test)
+(AAC-LC) Google Shaka (edited)
+[ccarnell98]
+ccarnell98 07/25/2025 3:00 PM
+ugh all the isasamples are all AAC for Widevine. AAC does exist for
+non-encrypted streams though so at least I can test that
+[a6oo]
+[] ccarnell98 <@325620853528068099> is your TV rooted? do you have
+access to /var/log/messages ?
+a6oo 07/25/2025 2:47 PM
+Unfortunately not. I lost my chance with the last exploit from January
+[ccarnell98]
+ccarnell98 07/25/2025 2:25 PM
+actually we could confirm this if we had a stream that uses AC3/AC3+ and
+see if audio plays without being decrypted
+07/25/2025 2:18 PM
+I wonder if you have to decrypt AAC first. We don't need to decrypt
+Video if it that bit is working for you in secure path
+[ccarnell98]
+ccarnell98 07/25/2025 1:48 PM
+@A600 is your TV rooted? do you have access to /var/log/messages ?
+(edited)
+[ccarnell98]
+ccarnell98 07/25/2025 1:28 PM
+If its not needed I can get rid of the IsVideoKeyframe function
+altogether as it only does h264 atm
+07/25/2025 1:28 PM
+could you try it with the following code commented out?
+    if (!m_hasSeenVideoKeyframe)
+        {
+          // check for key frame as per chromium
+          if (IsVideoKeyframe(packet))
+          {
+            m_hasSeenVideoKeyframe = true;
+            CLog::Log(LOGDEBUG, "First keyframe seen at packetId {}", m_lastPacketId);
+          }
+          else
+          {
+            CLog::Log(LOGDEBUG, "Skipping encrypted non-keyframe packetId {} — decoder not primed",
+                      m_lastPacketId);
+            return;
+          }
+        }
+07/25/2025 1:25 PM
+I need to fix my merge though as there is some old code for EAC3 in
+there as @Yolofant keeps moving stuff about 
+07/25/2025 1:24 PM
+oh good that makes sense
+07/25/2025 1:24 PM
+I wonder if its the audio then is why I am still seeing a blank screen
+[a6oo]
+a6oo 07/25/2025 1:24 PM
+This is the patch I used:
+ svp.patch
+16.17 KB External
+[ccarnell98]
+ccarnell98 07/25/2025 1:22 PM
+Is that with or without MakeSvpInBandHeader commented out 
+07/25/2025 1:22 PM
+Thanks, just confirming 
+[a6oo]
+a6oo 07/25/2025 1:21 PM
+With, otherwise it wouldn't work at all.
+[ccarnell98]
+ccarnell98 07/25/2025 1:20 PM
+is 1080p with or without this commit?
+https://github.com/xbmc/xbmc/commit/2e4ce123e618977b6a9716967b600c1a9c3644bf
+Allow crypto sessions for webOS · xbmc/xbmc@2e4ce12
+[]
+[a6oo]
+a6oo 07/25/2025 1:19 PM
+https://github.com/Sandmann79/xbmc/tree/master/plugin.video.amazon-test
+To get the 1080p manifest: In network.py change url +=
+'&operatingSystemName=Windows' if playback_req and (_g.platform &
+_g.OS_ANDROID) and devicetypeid == _g.dtid_web and _s.wvl1_device else
+'' # cookie auth on android to url += '&operatingSystemName=Windows' To
+disable the audio: In proxy.py change if lang in chosen_langs or
+chosen_langs == 'all': to if 0:
+xbmc/plugin.video.amazon-test at master · Sandmann79/xbmc
+Prime Video Addon for Kodi Media Center. Contribute to Sandmann79/xbmc
+development by creating an account on GitHub.
+[ccarnell98]
+ccarnell98 07/25/2025 1:16 PM
+what method did you use to disable audio exactly?
+07/25/2025 1:16 PM
+Not at the moment, got too much stuff to watch on other streaming
+networks
+[a6oo]
+a6oo 07/25/2025 1:15 PM
+Do you have Prime Video?
+07/25/2025 1:15 PM
+AAC

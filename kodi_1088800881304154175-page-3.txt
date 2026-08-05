@@ -1,0 +1,1843 @@
+October 7, 2023
+[yolofant]
+yolofant 10/07/2023 12:09 AM
+(no content)
+[Bildschirmfoto_2023-10-07_um_00.09.42.png]
+ Bildschirmfoto_2023-10-07_um_00.09.42.png
+688.48 KB External
+10/07/2023 12:09 AM
+it's just convenient 
+[] yolofant works great in clion together with a custom task that
+automatically uploads the stripped binary afte...
+hellobox. 10/07/2023 12:09 AM
+getting fancy
+[yolofant]
+yolofant 10/07/2023 12:08 AM
+works great in clion together with a custom task that automatically
+uploads the stripped binary after build
+10/07/2023 12:07 AM
+I've reworked the gdbserver stuff a bit. Separate debug symbol files are
+not needed, we can just use the unstripped one on the host:
+    add_custom_command(
+      OUTPUT ${APP_BINARY}.stripped
+      COMMAND cp ${APP_BINARY} ${APP_BINARY}.stripped
+      COMMAND ${CMAKE_STRIP} -g ${APP_BINARY}.stripped
+      DEPENDS ${APP_NAME_LC}
+    )
+    set(SYSROOT_PATH var/palm/jail/org.xbmc.kodi/media/developer/apps/usr/palm/applications/org.xbmc.kodi)
+    add_custom_command(
+      OUTPUT ${SYSROOT_PATH}/${APP_BINARY}
+      COMMAND mkdir -p ${SYSROOT_PATH}
+      COMMAND ln -sf ${CMAKE_BINARY_DIR}/${APP_BINARY} ${CMAKE_BINARY_DIR}/${SYSROOT_PATH}/${APP_BINARY}
+      DEPENDS ${APP_BINARY}.stripped
+    )
+    add_custom_target(split-debug-symbols
+      DEPENDS ${APP_BINARY}.stripped ${SYSROOT_PATH}/${APP_BINARY}
+    )
+    .gdbinit
+    define target hookpost-remote
+    set sysroot /Users/flux/Sourcecode/xbmc/cmake-build-default-lima
+    end
+October 6, 2023
+[satdx62]
+[] yolofant hmm ok maybe it's just a error in the log
+satdx62 10/06/2023 10:29 PM
+Thank you, I can appreciate that.
+[yolofant]
+yolofant 10/06/2023 9:58 PM
+unfortunately I'm out of ideas regarding that crash, but I'll commit the
+hack to fix the offset
+ 1
+10/06/2023 9:55 PM
+hmm ok maybe it's just a error in the log
+[satdx62]
+[] yolofant <@917488160580182068> make sure there is no linebreak after
+the `-p /media`
+satdx62 10/06/2023 9:54 PM
+It's like this:
+LD_LIBRARY_PATH="/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib:/usr/lib" /home/root/gdb --args /usr/bin/jailer -t native_devmode -i org.xbmc.kodi -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos --logging=console --debug
+[yolofant]
+yolofant 10/06/2023 9:34 PM
+@satdx62 make sure there is no linebreak after the -p /media
+10/06/2023 9:33 PM
+    root@LGwebOSTV:~# LD_LIBRARY_PATH="/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib:/usr/lib" /home/root/gdb --args /usr/bin/jailer -t native_devmode -i org.xbmc.kodi -p /media
+    /developer/apps/usr/palm/applications/org.xbmc.kodi /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos --logging=console --debug
+10/06/2023 9:33 PM
+the start command still has a linebreak
+10/06/2023 9:32 PM
+oh wait
+[yolofant]
+yolofant 10/06/2023 9:20 PM
+it can only segfault there if this is null but that also can't be
+10/06/2023 9:19 PM
+actually no idea, the crash location doesn't make sense
+[yolofant]
+yolofant 10/06/2023 8:58 PM
+hmm no, taskId is checked if it's null
+[satdx62]
+[] yolofant can you maybe get me your `libAcbAPI.so.1`?
+satdx62 10/06/2023 8:51 PM
+(no content)
+ libAcbAPI.so.1.0.0
+75.17 KB External
+[satdx62]
+satdx62 10/06/2023 8:47 PM
+Yes I can.
+[yolofant]
+yolofant 10/06/2023 8:47 PM
+I want to check if ACB::AcbCore::createTask(ACB::TaskType, long*) is
+maybe accessing the long*
+10/06/2023 8:46 PM
+can you maybe get me your libAcbAPI.so.1?
+[yolofant]
+yolofant 10/06/2023 8:35 PM
+just a wild guess, but maybe we shouldn't be pasing nullptr as taskId
+[yolofant]
+yolofant 10/06/2023 8:22 PM
+hmm ok it crashes in AcbAPI_setMediaVideoData and str is not null
+[satdx62]
+[] yolofant though usually you can just copy the `kodi-webos` file to
+the tv
+satdx62 10/06/2023 8:13 PM
+Kodi still does not start normally, only when I do a debug. Here is the
+log, and when playing video crashes.
+ debug.txt
+162.85 KB External
+[yolofant]
+yolofant 10/06/2023 7:26 PM
+sure!
+[satdx62]
+[] yolofant though usually you can just copy the `kodi-webos` file to
+the tv
+satdx62 10/06/2023 7:25 PM
+I will do later and report, because my wife is watching TV.
+[yolofant]
+yolofant 10/06/2023 7:16 PM
+though usually you can just copy the kodi-webos file to the tv (edited)
+ 1
+10/06/2023 7:16 PM
+yes if you want an ipk
+[satdx62]
+satdx62 10/06/2023 7:15 PM
+Make is through, now just need to make $MAKEOPTS -- ipk, right?
+10/06/2023 7:11 PM
+Ok.
+[yolofant]
+yolofant 10/06/2023 7:10 PM
+no need to clean everything, just running make again is enough
+10/06/2023 7:10 PM
+yep
+[satdx62]
+[] yolofant it might be a little bit offset due to the webOS 3 changes
+in your branch
+satdx62 10/06/2023 7:10 PM
+Okay, I made the change. Do I have to rebuild now?
+[satdx62]
+[] yolofant 
+satdx62 10/06/2023 7:07 PM
+Ok
+[yolofant]
+yolofant 10/06/2023 7:06 PM
+10/06/2023 7:06 PM
+it might be a little bit offset due to the webOS 3 changes in your
+branch
+10/06/2023 7:06 PM
+yeah
+[satdx62]
+[] yolofant ```c++ auto starfishMediaAPIsAddress =
+reinterpret_cast<std::uintptr_t>(m_starfishMediaAPI.get...
+satdx62 10/06/2023 7:05 PM
+For me, it starts at 357, is that right?
+[DVDVideoCodecStarfish.jpeg]
+ DVDVideoCodecStarfish.jpeg
+143.55 KB External
+[yolofant]
+yolofant 10/06/2023 6:46 PM
+that would replace
+https://github.com/xbmc/xbmc/blob/master/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecStarfish.cpp#L354
+10/06/2023 6:45 PM
+          auto starfishMediaAPIsAddress = reinterpret_cast<std::uintptr_t>(m_starfishMediaAPI.get());
+          std::uintptr_t playerAddress = starfishMediaAPIsAddress + 0x38;
+          auto* playerPtr = reinterpret_cast<boost::shared_ptr<mediapipeline::Player>*>(playerAddress);
+          auto player = static_cast<mediapipeline::CustomPlayer*>(playerPtr->get());
+10/06/2023 6:45 PM
+I'll give you some code where you only need to modify stuff in kodi
+10/06/2023 6:45 PM
+don't modify something there
+10/06/2023 6:44 PM
+hang on (edited)
+[satdx62]
+[] yolofant <@917488160580182068> can you change
+https://github.com/webosbrew/webos-userland/blob/main/include/s...
+satdx62 10/06/2023 6:44 PM
+I don't know why, but the directory “include” and “lib” is empty. You
+mean:
+kodi-deps\arm-webos-linux-gnueabi-release\include\starfish-media-pipeline\StarfishMediaAPIs.h
+[yolofant]
+yolofant 10/06/2023 6:31 PM
+maybe we can do some pointer magic in kodi instead 
+ 1
+[satdx62]
+[] yolofant
+https://github.com/xbmc/xbmc/blob/master/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecStarfis...
+satdx62 10/06/2023 6:30 PM
+Okay, I'll do that.
+[yolofant]
+yolofant 10/06/2023 6:28 PM
+https://github.com/xbmc/xbmc/blob/master/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecStarfish.cpp#L354
+replace with
+auto player = static_cast<mediapipeline::CustomPlayer*>(m_starfishMediaAPI->playerWebOS3.get());
+10/06/2023 6:28 PM
+@satdx62 can you change
+https://github.com/webosbrew/webos-userland/blob/main/include/starfish-media-pipeline/StarfishMediaAPIs.h#L72C1-L75C53
+for the above? It should be in
+kodi-deps\arm-webos-linux-gnueabi-release\include\starfish-media-pipeline\StarfishMediaAPIs.h
+10/06/2023 6:25 PM
+ok if I did the math correctly
+        char unknown[56];
+        boost::shared_ptr<mediapipeline::Player> playerWebOS3;
+        char unknown2[12];
+      public:
+        boost::shared_ptr<mediapipeline::Player> player;
+[yolofant]
+yolofant 10/06/2023 6:15 PM
+I'm not completely sure but it seems that it's at offset 0x38
+[yolofant]
+yolofant 10/06/2023 6:01 PM
+even though I remember having already checked libplayerAPIs for the
+offset and I thought it was the same
+10/06/2023 5:58 PM
+let me first confirm that the offset is wrong
+10/06/2023 5:58 PM
+we could add another variable called playerWebOS3
+10/06/2023 5:57 PM
+well
+10/06/2023 5:57 PM
+yeah
+[mariotaku]
+mariotaku 10/06/2023 5:57 PM
+How would you use different offset based on system versions though?
+[yolofant]
+yolofant 10/06/2023 5:56 PM
+but we'd still need the pointer to the gstpipeline
+10/06/2023 5:56 PM
+it's also possible to send the event through gstreamer directly
+10/06/2023 5:55 PM
+yeah, and it took me months to figure it out
+[mariotaku]
+mariotaku 10/06/2023 5:55 PM
+Got it. It's a bit hacky but we have no choice
+[yolofant]
+yolofant 10/06/2023 5:53 PM
+usually that happens in a demuxer element but since we plug into the
+pipeline after the demuxing (is done in kodi in ffmpeg) we have to send
+those events
+10/06/2023 5:52 PM
+in short, whenever there is a discontinuity in the input data, you have
+to notify gstreamer using a SEGMENT event
+10/06/2023 5:49 PM
+and seeking through playerapis was causing undesirable side effects
+10/06/2023 5:49 PM
+it's not exposed from playerapis but it's needed for gstreamer to seek
+10/06/2023 5:49 PM
+we need it to send segment events
+[mariotaku]
+mariotaku 10/06/2023 5:48 PM
+Why we need that point btw? Does libpf need that?
+[satdx62]
+[] yolofant I need libplayerAPIs
+satdx62 10/06/2023 5:47 PM
+(no content)
+ libplayerAPIs.so.1.0.0
+478.66 KB External
+[satdx62]
+satdx62 10/06/2023 5:42 PM
+Yes I can
+[yolofant]
+yolofant 10/06/2023 5:39 PM
+I need libplayerAPIs
+10/06/2023 5:39 PM
+ah no
+10/06/2023 5:38 PM
+can you send me your libpf-1.0 from your tv. I can take a look if indeed
+the offset is wrong
+10/06/2023 5:36 PM
+the good thing is that all the functions are there, it's just not the
+right offset
+[satdx62]
+satdx62 10/06/2023 5:36 PM
+3.9
+[yolofant]
+yolofant 10/06/2023 5:35 PM
+which webOS 3 is it exactly?
+10/06/2023 5:35 PM
+it's very likely that the offset is wrong for webOS 3
+https://github.com/webosbrew/webos-userland/blob/main/include/starfish-media-pipeline/StarfishMediaAPIs.h#L73
+webos-userland/include/starfish-media-pipeline/StarfishMediaAPIs.h ...
+Contribute to webosbrew/webos-userland development by creating an
+account on GitHub.
+[]
+[yolofant]
+yolofant 10/06/2023 5:26 PM
+all of this can be commented to work around that crash
+https://github.com/xbmc/xbmc/blob/master/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecStarfish.cpp#L354-L360
+but it will completely break seeking
+xbmc/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecStarfish.c...
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+10/06/2023 5:25 PM
+it crashed differently though
+[satdx62]
+[] yolofant 
+satdx62 10/06/2023 5:22 PM
+(no content)
+ Debug1.txt
+165.7 KB External
+[mariotaku]
+mariotaku 10/06/2023 5:21 PM
+Could it be missing EGL_PLATFORM?
+[yolofant]
+yolofant 10/06/2023 5:12 PM
+oh I also see why it didn't work earlier, there was a linebreak your
+startup command corrupting the HOME dir
+10/06/2023 5:08 PM
+[satdx62]
+satdx62 10/06/2023 5:08 PM
+Ok, I will do another debug.
+[yolofant]
+yolofant 10/06/2023 5:08 PM
+we are missing it now
+10/06/2023 5:08 PM
+in the original acb implementation there was a check if the metadata is
+empty (edited)
+10/06/2023 5:07 PM
+I have a suspicion
+10/06/2023 5:06 PM
+would be great if you can get a debug log
+10/06/2023 5:06 PM
+alright
+[satdx62]
+[] yolofant wasn't it starting at all when you first tried and now it
+magically started when you even removed al...
+satdx62 10/06/2023 5:06 PM
+No, is started during the debug, kodi is started, and have tried to
+start a video
+[yolofant]
+yolofant 10/06/2023 5:05 PM
+in the log we should see the arguments to AcbAPI_setMediaVideoData
+10/06/2023 5:03 PM
+do you by chance also have the kodi debug log for that too?
+10/06/2023 5:03 PM
+weird, at least we know there's a problem in acb still on playback
+10/06/2023 5:02 PM
+wasn't it starting at all when you first tried and now it magically
+started when you even removed all the proposed changes?
+10/06/2023 5:01 PM
+ok that's weird thoguh
+[satdx62]
+satdx62 10/06/2023 5:00 PM
+yes
+[yolofant]
+yolofant 10/06/2023 5:00 PM
+so crashed on playback?
+[satdx62]
+satdx62 10/06/2023 5:00 PM
+yes.
+[yolofant]
+yolofant 10/06/2023 5:00 PM
+but then it started up?
+[satdx62]
+[] yolofant also since you are running it in gdb already? Does it crash?
+can you get something if you type `bt`
+satdx62 10/06/2023 4:57 PM
+All proposed changes have not brought the desired results. I undid the
+changes and started a new debug and finally entered bt. Here is the log
+output.
+ debug_gbt_bt.txt
+2.1 KB External
+[mariotaku]
+[] yolofant managed to get `gdbserver` working in CLion with a stripped
+kodi on the target and local debug symbo...
+mariotaku 10/06/2023 2:57 PM
+noice!
+[yolofant]
+yolofant 10/06/2023 2:21 PM
+managed to get gdbserver working in CLion with a stripped kodi on the
+target and local debug symbols
+10/06/2023 2:20 PM
+    mkdir -p var/palm/jail/org.xbmc.kodi/media/developer/apps/usr/palm/applications/org.xbmc.kodi/
+    ln -s $(realpath kodi-webos.debug) $(pwd)/var/palm/jail/org.xbmc.kodi/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos.debug
+    ln -s $(realpath kodi-webos) $(pwd)/var/palm/jail/org.xbmc.kodi/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+    .gdbinit
+    define target hookpost-remote
+    set sysroot /Users/flux/Sourcecode/xbmc/cmake-build-default-lima
+    set debug-file-directory /Users/flux/Sourcecode/xbmc/cmake-build-default-lima
+    end
+    strip-debug-syms.sh
+    #!/usr/bin/env bash
+    /usr/local/Cellar/arm-linux-gnueabihf-binutils/2.41/bin/arm-linux-gnueabihf-objcopy --only-keep-debug kodi-webos kodi-webos.debug
+    /usr/local/Cellar/arm-linux-gnueabihf-binutils/2.41/bin/arm-linux-gnueabihf-objcopy --add-gnu-debuglink=kodi-webos.debug kodi-webos
+    /usr/local/Cellar/arm-linux-gnueabihf-binutils/2.41/bin/arm-linux-gnueabihf-strip -g kodi-webos
+[Bildschirmfoto_2023-10-06_um_14.20.44.png]
+ Bildschirmfoto_2023-10-06_um_14.20.44.png
+637.18 KB External
+[yolofant]
+[] mariotaku We can use native app lifecycle version 1 and register the
+app with `registerNativeApplication`. The...
+yolofant 10/06/2023 2:18 PM
+that's possible though I don't think it causes the issue in this case,
+supporting relaunches should not affect the start of the application
+[mariotaku]
+[] yolofant also since you are running it in gdb already? Does it crash?
+can you get something if you type `bt`
+mariotaku 10/06/2023 12:31 PM
+We can use native app lifecycle version 1 and register the app with
+registerNativeApplication. The lifecycle event payload is different
+though
+[yolofant]
+yolofant 10/06/2023 12:13 PM
+and btw, if you change something in the code, it is not necessary to
+always build a new ipk file and install it. You can just put the new
+kodi-webos on the tv and that will work
+10/06/2023 12:09 PM
+just some ideas, let's see if they work
+10/06/2023 12:08 PM
+https://github.com/xbmc/xbmc/blob/master/xbmc/windowing/wayland/ShellSurfaceWebOSShell.cpp#L39-L42
+replace with just m_windowSize = {1920, 1080};
+10/06/2023 12:06 PM
+    2023-10-06 10:37:03.042 T:15123   debug <general>: ProcessMessages: Configure serial 0: size 0x0 state activated,fullscreen
+that could also be it
+[yolofant]
+yolofant 10/06/2023 11:58 AM
+probably also remove nativeAppLifeCycleVersion from appinfo.json
+10/06/2023 11:57 AM
+also since you are running it in gdb already? Does it crash? can you get
+something if you type bt
+10/06/2023 11:56 AM
+no need to reinstall the ipk, just change it in the file on the tv and
+reboot I think
+10/06/2023 11:56 AM
+can you try setting handlesRelaunch to false in appinfo.json?
+10/06/2023 11:56 AM
+we are using lifecycleEventVersion 2 maybe that was not available on 3.x
+[yolofant]
+[] satdx62 Hi, I have built the new branch for webOS 3.x, also ran to
+the end error free. At startup, the Kodi ...
+yolofant 10/06/2023 11:55 AM
+hmm, ok I only see two things
+Home directory /media/developer/apps/usr/palm/applications/org.xbmc.kodi not ours.
+and
+    [HLunaServiceBridge::proc]--> {"returnValue":false,"errorCode":-1,"errorText":"Service does not exist: com.webos.service.applicationmanager."}
+    2023-10-06 10:37:00.030 T:15153   debug <general>: Got lifecycle event: {"returnValue":false,"errorCode":-1,"errorText":"Service does not exist: com.webos.service.applicationmanager."}
+[satdx62]
+[] yolofant https://github.com/webosbrew/xbmc/tree/webos-3.x-hacks tried
+to rebase our webOS 3.x hacks here
+satdx62 10/06/2023 10:56 AM
+Hi, I have built the new branch for webOS 3.x, also ran to the end error
+free. At startup, the Kodi logo comes briefly and returns to the TV
+channel. I can start in debug mode.
+ LD_LIBRARY_PATH="/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib:/usr/lib" /home/root/gdb --args /usr/bin/jailer -t native_devmode -i org.xbmc. kodi -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos --logging=console --debug
+Here is the log.
+ debug.txt
+72.61 KB External
+October 5, 2023
+[satdx62]
+[] ccarnell98 What works/doesn't work? I have a friend who'd be very
+happy
+satdx62 10/05/2023 7:29 PM
+@LuckyKnight Hi, It works well as the others for webOS > than 3.x,
+however, on weak devices with little memory and weak CPU can come to
+bottlenecks. I could even play UHD TV with HDR and Dolby Vision without
+any problems. The only limitation is the pass through with HD audio
+formats and sometimes with certain .MKV files, the sound is not in sync
+with the picture. But your friend can test it himself and report whether
+it is enough for him. My old 2017 OLED65B7D with 2GByte memory gets
+along with it. You could possibly swap out something from .kodi if the
+space in flash is too tight.
+ 1
+[yolofant]
+yolofant 10/05/2023 6:25 PM
+no idea I don't have a webos 3 device
+[ccarnell98]
+[] yolofant https://github.com/webosbrew/xbmc/tree/webos-3.x-hacks tried
+to rebase our webOS 3.x hacks here
+ccarnell98 10/05/2023 6:24 PM
+What works/doesn't work? I have a friend who'd be very happy
+[ikhadhonger]
+ikhadhonger 10/05/2023 6:01 PM
+alr thnx
+[yolofant]
+yolofant 10/05/2023 5:36 PM
+LG tvs generally only passthrough ac3/eac3 except for the new 2023 ones
+10/05/2023 5:32 PM
+yes
+[ikhadhonger]
+ikhadhonger 10/05/2023 5:22 PM
+so only DD and DD+ avaible?
+[yolofant]
+yolofant 10/05/2023 5:19 PM
+no
+[ikhadhonger]
+ikhadhonger 10/05/2023 5:17 PM
+can kodi passtrough true HD an DTS MASTER AUDIO via EARC to my receiver?
+(edited)
+October 4, 2023
+[yolofant]
+yolofant 10/04/2023 12:16 AM
+https://github.com/webosbrew/xbmc/tree/webos-3.x-hacks tried to rebase
+our webOS 3.x hacks here
+GitHub - webosbrew/xbmc at webos-3.x-hacks
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+ 2
+October 1, 2023
+[yolofant]
+[] satdx62 Okay, are you thinking of a better way to just mount the USB
+drive directly into .kodi? Or that wou...
+yolofant 10/01/2023 3:09 PM
+if you want to try that approach just move everything onto the usb drive
+then mount the usb drive directly into .kodi in that case you don't need
+any remapping
+[satdx62]
+[] yolofant but it has some drawbacks, every time you update the ipk you
+need to repeat copying it over again
+satdx62 10/01/2023 2:53 PM
+Okay, are you thinking of a better way to just mount the USB drive
+directly into .kodi? Or that would have to be integrated into kodi
+itself before creating the ipk. (edited)
+[yolofant]
+yolofant 10/01/2023 2:35 PM
+there might be a better way of simply mounting the usb drive to .kodi
+directly
+10/01/2023 2:35 PM
+but it has some drawbacks, every time you update the ipk you need to
+repeat copying it over again
+10/01/2023 2:35 PM
+I think so
+[satdx62]
+[] yolofant that will be too slow if you want to put everything like
+addons etc. there because kodi will need th...
+satdx62 10/01/2023 2:24 PM
+So, I create the advancedsettings.xml with the layout they suggested and
+that goes on the TV in .kodi folder, everything else can now be moved to
+USB. Or is something wrong in my way of thinking.
+[yolofant]
+yolofant 10/01/2023 2:15 PM
+that will be too slow if you want to put everything like addons etc.
+there because kodi will need those files instantly
+10/01/2023 2:14 PM
+the script works, but when the jail is not set up yet (can happen
+sometimes) it takes some seconds to mount the usb drive
+10/01/2023 2:14 PM
+no you still need advancedsettings.xml on the tv
+[satdx62]
+satdx62 10/01/2023 2:01 PM
+<advancedsettings> <pathsubstitution> <substitute> <from>special://thumbnails/</from> <to>/tmp/usb/sda/sda1/thumbs</to> </substitute> </pathsubstitution> </advancedsettings>
+(edited)
+[satdx62]
+[] yolofant and then probably you need change the script so it checks if
+the usb device is mounted regularily in...
+satdx62 10/01/2023 2:00 PM
+@Yolofant Thanks for explanation. Do you mean that the USB stick should
+have the following advancedsettings.xml? For me, your script worked, can
+now reach the USB under tmp/usb/sda/sda1 permanently. (edited)
+[yolofant]
+yolofant 10/01/2023 1:37 PM
+and then probably you need change the script so it checks if the usb
+device is mounted regularily instead of listing to a change in
+foreground app because that will be too slow
+10/01/2023 1:36 PM
+haven't tried it myself though
+10/01/2023 1:36 PM
+move everything else to the usb device and apply the remapping
+10/01/2023 1:36 PM
+so basically what you need to do is have only advancedsettings.xml
+inside the .kodi folder
+10/01/2023 1:35 PM
+but the script I linked probably doesn't work then because it's running
+a little too late
+10/01/2023 1:34 PM
+you can remap .kodi using special://home
+[satdx62]
+[] yolofant if you want to have some more space, you could even put the
+whole `.kodi` folder on the usb drive
+satdx62 10/01/2023 1:23 PM
+@Yolofant Can you please explain to me how to move the .kodi folder to
+USB? (edited)
+[yolofant]
+[] mariotaku Not a standard API
+yolofant 10/01/2023 10:51 AM
+is in posix though, which should be good, there's also
+std::filesystem::canonical but unfortunately we can't use
+std::filesystem yet because android and mac use too old sdks
+[yolofant]
+[] mariotaku How about `realpath`? It will resolve the final location
+for you
+yolofant 10/01/2023 10:50 AM
+oh that could also work, though I'm a little bit concerned that there
+might be some weird linux distro that might do something similar and
+break if we just changed to realpath
+[mariotaku]
+mariotaku 10/01/2023 2:58 AM
+Not a standard API
+[mariotaku]
+[] yolofant actually you could `readlink` `/etc/localtime` twice to get
+the correct info then
+mariotaku 10/01/2023 2:58 AM
+How about realpath? It will resolve the final location for you
+September 30, 2023
+[] yolofant actually you could `readlink` `/etc/localtime` twice to get
+the correct info then
+hellobox. 09/30/2023 10:25 PM
+yeah
+[yolofant]
+yolofant 09/30/2023 10:24 PM
+actually you could readlink /etc/localtime twice to get the correct info
+then
+09/30/2023 10:22 PM
+it's only used once for initialization and afterwards you can change it
+in the settings
+09/30/2023 10:22 PM
+yeah, but tbh it's not that important if it might fail on some other
+boards
+hellobox. 09/30/2023 10:20 PM
+i don't think i have any other boards up at the moment
+[yolofant]
+yolofant 09/30/2023 10:18 PM
+fixed, thanks!
+ 1
+hellobox. 09/30/2023 10:16 PM
+GAV demo to GAV memo?
+    -        #GAV demo
+    +               # YouTube DIAL
+    +        copy /etc/hosts
+    +        chmod 644 /etc/hosts
+    +
+    +        #GAV memo
+             copynod /dev/ump
+             chmod 660 /dev/ump
+             chown /dev/ump 0 44
+09/30/2023 10:14 PM
+the differences between jail_native.conf and jail_native_mvpd.conf
+are... interesting
+[yolofant]
+yolofant 09/30/2023 10:14 PM
+super easy change
+09/30/2023 10:13 PM
+yeah, good thing I refactored the logic anyway
+hellobox. 09/30/2023 10:13 PM
+and all the jail_native*.confs create it
+[yolofant]
+yolofant 09/30/2023 10:13 PM
+it's the same
+[] yolofant oh wait I didn't check from the jail
+hellobox. 09/30/2023 10:13 PM
+it's fine in youtube's jail at least
+[yolofant]
+yolofant 09/30/2023 10:13 PM
+oh wait I didn't check from the jail
+09/30/2023 10:13 PM
+so let's read from the symlink instead
+09/30/2023 10:12 PM
+yeah correct too here
+09/30/2023 10:12 PM
+lrwxrwxrwx 1 root root 33 Jan 1 2022 /var/luna/preferences/localtime -> /usr/share/zoneinfo/Europe/Berlin
+09/30/2023 10:12 PM
+let me check
+hellobox. 09/30/2023 10:12 PM
+/var/luna/preferences/localtime is correct
+09/30/2023 10:12 PM
+https://github.com/xbmc/xbmc/pull/23847#issuecomment-1741849799
+09/30/2023 10:11 PM
+maybe i missed some firstuse setup?
+[yolofant]
+yolofant 09/30/2023 10:11 PM
+[:lg:]
+hellobox. 09/30/2023 10:11 PM
+it does on my K7Lp TV (webOS 6), but not an M3 board (webOS 4.0)
+(edited)
+[yolofant]
+hellobox. <@195583665265311744> are you sure
+`/var/luna/preferences/timezone` has the correct timezone?
+yolofant 09/30/2023 10:11 PM
+well at least on my tv 
+hellobox. 09/30/2023 10:09 PM
+@Yolofant are you sure /var/luna/preferences/timezone has the correct
+timezone?
+September 28, 2023
+[yolofant]
+yolofant 09/28/2023 6:31 PM
+webOS 3.x needs some nasty tricks to get working
+ 1
+09/28/2023 6:31 PM
+I guess we do webOS 4 first because it requires less hacks
+[satdx62]
+satdx62 09/28/2023 6:24 PM
+Hi, I saw that @Mariotaku provided a new test Kodi build for webOS 4
+(21.0-ALPHA3) and works very well on C9. Is there a plan to build the
+new Kodi (21.0-ALPHA3) for webOS 3.5 to 3.9 in the future? I have tried
+to do myself, but my efforts fail due to Wayland and lack of “Acb
+Support”.
+September 27, 2023
+[] yolofant maybe you pulled it in from some package?
+hellobox. 09/27/2023 9:35 PM
+it's because i enabled libsoup, which is present on webOS (although
+libpsl is not) (edited)
+September 26, 2023
+[yolofant]
+yolofant 09/26/2023 8:52 PM
+though I guess passing --without-libpsl would be good anyway
+09/26/2023 8:50 PM
+maybe you pulled it in from some package?
+[yolofant]
+hellobox. br-nc4 has
+`arm-webos-linux-gnueabi/sysroot/usr/lib/libpsl.so.5`
+yolofant 09/26/2023 8:49 PM
+my br-nc4 doesn't have libpsl
+[yolofant]
+yolofant 09/26/2023 8:48 PM
+just run only that one makefile make -C tools/depends/target/curl
+hellobox. 09/26/2023 8:43 PM
+god, this is so frustrating. i changed
+tools/depends/target/curl/Makefile, and it's now rebuilding everything
+hellobox. 09/26/2023 8:26 PM
+perhaps curl should be configured with --without-libpsl?
+09/26/2023 8:25 PM
+but webOS 6 does not
+[] yolofant no clue about this error
+hellobox. 09/26/2023 8:23 PM
+br-nc4 has arm-webos-linux-gnueabi/sysroot/usr/lib/libpsl.so.5
+[smx2460]
+[] mariotaku But there are still a bunch of errors ahead... gotta find
+the proper way to build that.
+smx2460 09/26/2023 7:31 PM
+Docker!
+[yolofant]
+hellobox. ffffffff``` libcurl.a(libcurl_la-psl.o):psl.c:function
+Curl_psl_use: error: undefined reference to '...
+yolofant 09/26/2023 11:05 AM
+no clue about this error
+[yolofant]
+yolofant 09/26/2023 10:29 AM
+nice!
+[satdx62]
+[] yolofant I guess you can upload it somewhere and post the link 
+satdx62 09/26/2023 10:26 AM
+Just did.
+[yolofant]
+[] satdx62 How can I upload ZIP files to https://forum.kodi.tv after I
+have logged in there? I do not see any u...
+yolofant 09/26/2023 9:59 AM
+I guess you can upload it somewhere and post the link 
+[] yolofant I don't think you need to manually invoke any of the build
+scripts it should just run through
+hellobox. 09/26/2023 9:58 AM
+i used to need to run several manually
+[yolofant]
+hellobox. it seems like manual `make -C target/fmt` might not be
+required any more
+yolofant 09/26/2023 9:58 AM
+I don't think you need to manually invoke any of the build scripts it
+should just run through
+[yolofant]
+hellobox. is `$(OS)` linux for webos? ```make ifeq ($(OS),linux) NATIVE
++= expat wayland-scanner pugixml way...
+yolofant 09/26/2023 9:57 AM
+yeah, should be linux but you can use TARGET_PLATFORM
+[yolofant]
+hellobox. <@195583665265311744> thoughts?
+yolofant 09/26/2023 9:54 AM
+going to give it a try later
+hellobox. 09/26/2023 9:38 AM
+ffffffff
+    libcurl.a(libcurl_la-psl.o):psl.c:function Curl_psl_use: error: undefined reference to 'psl_latest
+[mariotaku]
+mariotaku 09/26/2023 9:21 AM
+Got another error:
+    ninja: error: loading 'build.ninja': No such file or directory
+    make[2]: *** [Makefile:45: arm-webos-linux-gnueabi-release/build/libxkbcommon.a] Error 1
+    make[1]: *** [Makefile:203: libxkbcommon] Error 2
+hellobox. 09/26/2023 9:20 AM
+it seems like manual make -C target/fmt might not be required any more
+[mariotaku]
+mariotaku 09/26/2023 9:16 AM
+But there are still a bunch of errors ahead... gotta find the proper way
+to build that.
+[mariotaku]
+hellobox. you mean it didn't build because it was already present on
+your system?
+mariotaku 09/26/2023 9:16 AM
+I think so. If wayland-scanner++ is found then pre-build scripts in
+kodi/tools/depends won't do it again.
+hellobox. 09/26/2023 9:16 AM
+i was wondering why nobody else had run into this
+[satdx62]
+[] yolofant if you want to make someone happy
+https://forum.kodi.tv/showthread.php?tid=368381&pid=3167255#pid316...
+satdx62 09/26/2023 9:08 AM
+How can I upload ZIP files to https://forum.kodi.tv after I have logged
+in there? I do not see any upload button on replay there.
+Kodi Community Forum
+Kodi Community Forum
+[] mariotaku I installed wayland-scanner++ so this passed.
+hellobox. 09/26/2023 9:06 AM
+you mean it didn't build because it was already present on your system?
+[mariotaku]
+mariotaku 09/26/2023 9:03 AM
+I installed wayland-scanner++ so this passed.
+hellobox. 09/26/2023 8:52 AM
+may just be WSL2 time shenanigans
+09/26/2023 8:51 AM
+ugh what now
+    make[2]: Entering directory 'xbmc/tools/depends/target/libbluray'
+    make -C arm-webos-linux-gnueabi-release
+    make[3]: Entering directory 'xbmc/tools/depends/target/libbluray/arm-webos-linux-gnueabi-release'
+    make[3]: *** No targets specified and no makefile found.  Stop.
+hellobox. 09/26/2023 8:30 AM
+is $(OS) linux for webos?
+    ifeq ($(OS),linux)
+      NATIVE += expat wayland-scanner pugixml waylandpp-scanner
+(tools/depends/native/Makefile) (edited)
+hellobox. 09/26/2023 8:23 AM
+why would you fix it in target but not native?
+09/26/2023 8:23 AM
+huh...?
+https://github.com/xbmc/xbmc/commit/9dfa0dced6916003ca912e3334cefe108c076273
+09/26/2023 8:20 AM
+is there a reason why waylandpp 0.2.8 is being used?
+https://github.com/NilsBrause/waylandpp/releases
+09/26/2023 8:16 AM
+this
+https://lore.kernel.org/buildroot/20230730121222.672ed2e3@windsurf/T/
+09/26/2023 8:16 AM
+looks like native waylandpp-scanner
+09/26/2023 8:16 AM
+ugh, building deps failed
+hellobox. 09/26/2023 1:24 AM
+@Yolofant thoughts?
+09/26/2023 1:24 AM
+https://github.com/xbmc/xbmc/pull/23822
+[yolofant]
+yolofant 09/26/2023 12:29 AM
+yeah but probably not worth it until the current workaround breaks
+hellobox. 09/26/2023 12:28 AM
+LG apparenty doesn't know/care about how shared libraries and versioning
+are supposed to work
+09/26/2023 12:27 AM
+some kind of nonsense so that when you link against libwayland-egl, you
+get a bit of (static) code that loads whichever version it finds
+09/26/2023 12:26 AM
+well, this one would be in the library itself though
+09/26/2023 12:26 AM
+like i did for libcrypt
+09/26/2023 12:26 AM
+that loads the correct library at runtime
+09/26/2023 12:26 AM
+the only other option i can think of is some kind of shim
+[yolofant]
+yolofant 09/26/2023 12:24 AM
+or use some other debian packaging tool since ipks are really just .deb
+files
+09/26/2023 12:23 AM
+yeah
+hellobox. 09/26/2023 12:23 AM
+on the host
+09/26/2023 12:23 AM
+oh
+[] yolofant but ares-package requires the symlink to be a valid target
+hellobox. 09/26/2023 12:23 AM
+what do you mean?
+[yolofant]
+yolofant 09/26/2023 12:23 AM
+so you'd need to have /usr/lib/libwayland-egl.so present on the host for
+that to work (edited)
+09/26/2023 12:22 AM
+but ares-package requires the symlink to be a valid target
+09/26/2023 12:22 AM
+the other option is to ship the symlink inside the ipk
+09/26/2023 12:22 AM
+yeah, but there's not really another way
+hellobox. 09/26/2023 12:21 AM
+fucking LG
+[:lg:] 1
+09/26/2023 12:21 AM
+that is... non-standard
+[yolofant]
+yolofant 09/26/2023 12:21 AM
+libwayland-egl.so
+ 1
+[] yolofant
+https://github.com/webosbrew/webos-userland/commit/60ddf7872c77994e0876391280a9d4df6f15db17
+hellobox. 09/26/2023 12:20 AM
+> Remove the SONAME so we link against the real library instead which is
+available on all webOS versions so what does it link against?
+[yolofant]
+yolofant 09/26/2023 12:18 AM
+but the toolchain includes its own copy of webos-userland so bumping it
+in kodis depends only isn't going to do it
+09/26/2023 12:18 AM
+https://github.com/webosbrew/webos-userland/commit/60ddf7872c77994e0876391280a9d4df6f15db17
+Remove libwayland-egl SONAME · webosbrew/webos-userland@60ddf78
+webOS < 5.0 has wayland < 1.0.0 meaning that the SONAME would be .0.
+Remove the SONAME so we link against the real library instead which is
+available on all webOS versions
+[]
+09/26/2023 12:17 AM
+yes
+[] yolofant so we dropped the symlinks for `libwayland-egl` alltogether
+hellobox. 09/26/2023 12:17 AM
+was that done in webos-userland or something?
+[yolofant]
+yolofant 09/26/2023 12:15 AM
+you might as well just submit the PR and then get the ipk from the
+buildserver
+09/26/2023 12:15 AM
+so we dropped the symlinks for libwayland-egl alltogether
+09/26/2023 12:14 AM
+some tvs are just missing the symlink
+09/26/2023 12:14 AM
+but the kodi buildserver is still on the old toolchain
+hellobox. 09/26/2023 12:14 AM
+i don't even remember what the cause was
+[yolofant]
+yolofant 09/26/2023 12:14 AM
+well, technically yes
+hellobox. 09/26/2023 12:14 AM
+have the libwayland-egl issues been solved?
+09/26/2023 12:14 AM
+oh yeah, how is br-nc4 working now?
+09/26/2023 12:14 AM
+i guess i should build it with these flags and make sure it runs before
+i submit a PR
+[yolofant]
+yolofant 09/26/2023 12:12 AM
+you can crash kodi if you do something stupid inside a python script
+09/26/2023 12:12 AM
+yeah
+hellobox. 09/26/2023 12:12 AM
+i assume most of the crashes are because of poorly-written addons or
+something though, right?
+[yolofant]
+yolofant 09/26/2023 12:11 AM
+valid concern, but I don't think you could check for settings in main
+because it's not initialized at that stage 
+[] yolofant possibly in `CPlatformLinux` checking if something like
+`CServiceBroker::GetSettingsComponent()->G...
+hellobox. 09/26/2023 12:10 AM
+so as long as it doesn't crash between the start of main() and there...
+[yolofant]
+yolofant 09/26/2023 12:08 AM
+possibly in CPlatformLinux checking if something like
+CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_ENABLE_CORE_DUMPS)
+is enabled
+09/26/2023 12:04 AM
+probably it shouldn't be in main.cpp though
+hellobox. 09/26/2023 12:03 AM
+or
+    #elif defined(TARGET_WEBOS)
+09/26/2023 12:02 AM
+so maybe we need an
+    #else
+      rlim.rlim_cur = rlim.rlim_max = 0;
+09/26/2023 12:02 AM
+hmmmmm
+[yolofant]
+yolofant 09/26/2023 12:02 AM
+not on my machine
+hellobox. 09/26/2023 12:01 AM
+is _DEBUG defined?
+09/26/2023 12:01 AM
+interesting
+09/26/2023 12:01 AM
+oh yeah
+[yolofant]
+yolofant 09/26/2023 12:01 AM
+it might actually be kodi setting this up
+09/26/2023 12:01 AM
+https://github.com/xbmc/xbmc/blob/master/xbmc/platform/posix/main.cpp#L50
+xbmc/xbmc/platform/posix/main.cpp at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+September 25, 2023
+hellobox. 09/25/2023 11:58 PM
+but is it used for dev mode apps?
+09/25/2023 11:58 PM
+i think they just LD_PRELOAD something
+[yolofant]
+yolofant 09/25/2023 11:57 PM
+not sure where, maybe inside the jailer?
+09/25/2023 11:57 PM
+but I guess LG is already setting up their own SIGSEGV handler
+09/25/2023 11:56 PM
+well, the apps run jailed so it's theoretically possible
+hellobox. 09/25/2023 11:55 PM
+without like, idk... setting up your own SIGSEGV handler and doing it
+yourself or something?
+09/25/2023 11:55 PM
+i don't think it's really possible to change core dump location on a
+per-application basis, right?
+[] yolofant maybe disable it unless there is debug logging enabled or
+some new advancedsettings.xml setting
+hellobox. 09/25/2023 11:51 PM
+that's what i was thinking
+[yolofant]
+yolofant 09/25/2023 11:51 PM
+maybe disable it unless there is debug logging enabled or some new
+advancedsettings.xml setting
+09/25/2023 11:50 PM
+possible
+[] yolofant I've made ignition crash and it didn't gave me a core dump
+hellobox. 09/25/2023 11:49 PM
+they might be using their hook thing for that
+[yolofant]
+yolofant 09/25/2023 11:49 PM
+I agree that it's generally annoying
+hellobox. 09/25/2023 11:49 PM
+although i guess that's only one guy
+[yolofant]
+yolofant 09/25/2023 11:49 PM
+I've made ignition crash and it didn't gave me a core dump
+hellobox. 09/25/2023 11:49 PM
+https://forum.kodi.tv/showthread.php?tid=368381&pid=3166015#pid3166015
+[yolofant]
+yolofant 09/25/2023 11:49 PM
+though I think it only happens for dev mode apps
+09/25/2023 11:48 PM
+that's true
+hellobox. 09/25/2023 11:48 PM
+i think there should be a way to disable them
+[] yolofant yeah, maybe but core dumps might be useful actually
+hellobox. 09/25/2023 11:48 PM
+true, but normal users are never going to use them
+[yolofant]
+yolofant 09/25/2023 11:48 PM
+yeah, maybe but core dumps might be useful actually
+[smx2460]
+smx2460 09/25/2023 11:47 PM
+should be ulimit -c
+[] smx2460 or `ulimit` before running i guess
+hellobox. 09/25/2023 11:47 PM
+i don't think that's possible
+[smx2460]
+smx2460 09/25/2023 11:47 PM
+or ulimit before running i guess (edited)
+hellobox. 09/25/2023 11:47 PM
+so setrlimit(RLIMIT_CORE) should work, right?
+[yolofant]
+yolofant 09/25/2023 11:46 PM
+I've used them in the past and they work in gdb
+09/25/2023 11:46 PM
+yes
+[] yolofant crashd or some service creates them
+hellobox. 09/25/2023 11:46 PM
+aren't these just regular core dumps?
+https://pasteboard.co/WEBp2AksqK31.png
+[yolofant]
+yolofant 09/25/2023 11:46 PM
+yeah, we're not changing br-nc4
+[smx2460]
+smx2460 09/25/2023 11:46 PM
+if someone had a WebOS1-2 board, we could also look into supporting
+piccap/hyperion (edited)
+09/25/2023 11:45 PM
+@Mariotaku was working on supporting WebOS 1-2 in moonlight for example
+[yolofant]
+hellobox. hmm. so `setrlimit()` won't work then?
+yolofant 09/25/2023 11:45 PM
+not sure
+[smx2460]
+smx2460 09/25/2023 11:45 PM
+but you can always make a profile for them
+[] smx2460 i mean in br-nc4
+hellobox. 09/25/2023 11:45 PM
+i'm just talking about kodi
+[] smx2460 no point in breaking compatibility arbitrarily though
+hellobox. 09/25/2023 11:45 PM
+unless the performance benefits are really compelling
+[smx2460]
+smx2460 09/25/2023 11:45 PM
+i mean in br-nc4
+[smx2460]
+[] yolofant we probably need only compatibility from 3.x onwards
+smx2460 09/25/2023 11:44 PM
+no point in breaking compatibility arbitrarily though
+[] yolofant crashd or some service creates them
+hellobox. 09/25/2023 11:43 PM
+hmm. so setrlimit() won't work then?
+[yolofant]
+yolofant 09/25/2023 11:43 PM
+probably because the apps are installed in dev mode
+09/25/2023 11:43 PM
+crashd or some service creates them
+09/25/2023 11:43 PM
+I don't think so
+hellobox. 09/25/2023 11:43 PM
+if not, should there be?
+[] yolofant yeah but most of them had some form of banned addons
+installed
+hellobox. 09/25/2023 11:43 PM
+is there a setting to disable core dumps though?
+[] yolofant it might also be questionable if M2 would even be possible
+to run kodi
+hellobox. 09/25/2023 11:43 PM
+yeah, i doubt it's going to run well. it's FHD
+[yolofant]
+yolofant 09/25/2023 11:43 PM
+yeah but most of them had some form of banned addons installed
+09/25/2023 11:42 PM
+it might also be questionable if M2 would even be possible to run kodi
+hellobox. 09/25/2023 11:42 PM
+also, i saw a bunch of people complaining about core dumps in that forum
+thread
+09/25/2023 11:42 PM
+how can i benchmark?
+[yolofant]
+yolofant 09/25/2023 11:42 PM
+then your proposed flags should still work I guess?
+[] yolofant we probably need only compatibility from 3.x onwards
+hellobox. 09/25/2023 11:37 PM
+M2 (lowest-end webOS 3.0) is actually A9
+hellobox. 09/25/2023 11:36 PM
+and i don't have complete information for every single SoC (yet )
+09/25/2023 11:36 PM
+i'd have to put it all in a spreadsheet or something
+[] yolofant we probably need only compatibility from 3.x onwards
+hellobox. 09/25/2023 11:36 PM
+there's a whole mess of different cores used
+hellobox. 09/25/2023 11:35 PM
+i guess i will
+[yolofant]
+yolofant 09/25/2023 11:35 PM
+if you think it makes sense and might allow for better optimization
+09/25/2023 11:35 PM
+why not just PR that change?
+09/25/2023 11:35 PM
+we probably need only compatibility from 3.x onwards
+hellobox. 09/25/2023 11:34 PM
+it maintains compatibility with the oldest webOS SoCs while optimizing
+for more recent/common ones
+09/25/2023 11:34 PM
+i believe those are the best we can do, although benchmarking would be
+useful (@Smx)
+[yolofant]
+hellobox. <@195583665265311744> <@985035470708826122> what do you think
+of changing CFLAGS to `-mcpu=cortex-a9...
+yolofant 09/25/2023 11:33 PM
+you probably know better than me
+hellobox. 09/25/2023 11:33 PM
+@Yolofant @wsnipex what do you think of changing CFLAGS to
+-mcpu=cortex-a9 -mtune=cortex-a53?
+[satdx62]
+[] yolofant if you want to make someone happy
+https://forum.kodi.tv/showthread.php?tid=368381&pid=3167255#pid316...
+satdx62 09/25/2023 11:31 PM
+I will definitely do that tomorrow.
+[yolofant]
+yolofant 09/25/2023 11:10 PM
+if you want to make someone happy
+https://forum.kodi.tv/showthread.php?tid=368381&pid=3167255#pid3167255
+you might upload it for him 
+[yolofant]
+yolofant 09/25/2023 10:36 PM
+[satdx62]
+[] yolofant make sure to report back if it works 
+satdx62 09/25/2023 10:31 PM
+Thanks, with your help I compiled the pvr.vuplus, and it finally worked.
+Built new kodi.ipk, installed and the pvr.vuplus now works as it
+should.
+ 1
+[satdx62]
+[] yolofant execute it from the top level xbmc directory 
+satdx62 09/25/2023 9:19 PM
+Thank you, has worked
+[yolofant]
+[] satdx62 fm@LAPTOP-DG0QB50H:~/xbmc/tools/depends$ ...
+yolofant 09/25/2023 9:06 PM
+execute it from the top level xbmc directory 
+ 1
+[] satdx62 fm@LAPTOP-DG0QB50H:~/xbmc/tools/depends$ ...
+hellobox. 09/25/2023 8:28 PM
+it's much easier to read stuff like that when in a monospace font (no
+spaces between the backticks: \\\`):
+    ` ` `
+    $ asdf
+    ` ` `
+(edited)
+[satdx62]
+wsnipex Just follow the docs...
+https://github.com/xbmc/xbmc/blob/master/docs/README.webOS.md#72-Add-Binary-...
+satdx62 09/25/2023 8:16 PM
+fm@LAPTOP-DG0QB50H:~/xbmc/tools/depends$
+make -j$(getconf _NPROCESSORS_ONLN) -C tools/depends/target/binary-addons PREFIX=$HOME/xbmc/build/tools/webOS/packaging ADDONS="pvr.vuplus pvr.hts"
+make: *** tools/depends/target/binary-addons: No such file or directory.
+Stop. (edited)
+[] satdx62 At the following configuration: cd $HOME/xbmc/tools/depends
+./bootstrap ./configure --with-toolch...
+wsnipex 09/25/2023 5:39 PM
+Just follow the docs...
+https://github.com/xbmc/xbmc/blob/master/docs/README.webOS.md#72-Add-Binary-Addons-to-Project
+xbmc/docs/README.webOS.md at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+ 1
+[satdx62]
+hellobox. just put it in your home dir
+satdx62 09/25/2023 2:57 PM
+Hat funktioniert. (edited)
+hellobox. 09/25/2023 2:55 PM
+just put it in your home dir
+ 1
+[satdx62]
+satdx62 09/25/2023 2:47 PM
+Should I create the path under User?
+hellobox. 09/25/2023 2:45 PM
+just use a different path
+[satdx62]
+hellobox. does the user you're running it as have permission to write to
+`/opt`?
+satdx62 09/25/2023 2:45 PM
+No, do I have to log in with sudo -s?
+[] satdx62 At the following configuration: cd $HOME/xbmc/tools/depends
+./bootstrap ./configure --with-toolch...
+hellobox. 09/25/2023 2:44 PM
+does the user you're running it as have permission to write to /opt?
+[satdx62]
+[] yolofant
+https://github.com/webosbrew/xbmc/commit/43388ac9b5557d4b4d9afca7353e5de7056d2b97
+satdx62 09/25/2023 2:38 PM
+At the following configuration: cd $HOME/xbmc/tools/depends ./bootstrap
+./configure
+--with-toolchain=$HOME/xbmc-dev/arm-webos-linux-gnueabi_sdk-buildroot/bin
+--prefix=/opt/xbmc-deps --host=arm-webos-linux-gnueabi
+--with-rendersystem=gles --enable-debug=no
+--with-target-cflags='-march=armv7-a -mfloat-abi=softfp -mfpu=neon'
+--with-platform=webos --with-target-cxxflags='-static-libstdc++' I get
+errors: config.status: creating native/Toolchain-Native.cmake
+'target/config.site' ->
+'/opt/xbmc-deps/arm-webos-linux-gnueabi-release/share/config.site' cp:
+cannot create regular file
+'/opt/xbmc-deps/arm-webos-linux-gnueabi-release/share/config.site':
+Permission denied 'target/config-binaddons.site' ->
+'/opt/xbmc-deps/x86_64-linux-gnu-native/share/config-binaddons.site' cp:
+cannot create regular file
+'/opt/xbmc-deps/x86_64-linux-gnu-native/share/config-binaddons.site':
+Permission denied 'target/Toolchain.cmake' ->
+'/opt/xbmc-deps/arm-webos-linux-gnueabi-release/share/Toolchain.cmake'
+cp: cannot create regular file
+'/opt/xbmc-deps/arm-webos-linux-gnueabi-release/share/Toolchain.cmake':
+Permission denied 'target/Toolchain_binaddons.cmake' ->
+'/opt/xbmc-deps/arm-webos-linux-gnueabi-release/share/Toolchain_binaddons.cmake'
+cp: cannot create regular file
+'/opt/xbmc-deps/arm-webos-linux-gnueabi-release/share/Toolchain_binaddons.cmake':
+Permission denied 'native/config.site.native' ->
+'/opt/xbmc-deps/x86_64-linux-gnu-native/share/config.site' cp: cannot
+create regular file
+'/opt/xbmc-deps/x86_64-linux-gnu-native/share/config.site': Permission
+denied 'native/Toolchain-Native.cmake' ->
+'/opt/xbmc-deps/x86_64-linux-gnu-native/share/Toolchain-Native.cmake'
+cp: cannot create regular file
+'/opt/xbmc-deps/x86_64-linux-gnu-native/share/Toolchain-Native.cmake':
+Permission denied
+[opt_xbmc_depends.jpg]
+ opt_xbmc_depends.jpg
+48.33 KB External
+[yolofant]
+yolofant 09/25/2023 12:55 AM
+so we just use br-nc4 as a regular toolchain
+09/25/2023 12:54 AM
+kodi builds the dependencies itself
+09/25/2023 12:54 AM
+https://github.com/webosbrew/xbmc/commit/43388ac9b5557d4b4d9afca7353e5de7056d2b97
+hack: builder bullshit · webosbrew/xbmc@43388ac
+[]
+[smx2460]
+[] yolofant we had kodi 19.4 working in br and probably master should
+just build fine
+smx2460 09/25/2023 12:43 AM
+how is it being built nowadays?
+September 24, 2023
+[yolofant]
+yolofant 09/24/2023 10:02 PM
+we had kodi 19.4 working in br and probably master should just build
+fine
+09/24/2023 10:01 PM
+other than that though, it should work
+09/24/2023 10:01 PM
+so we'd need another BR config with just static or both static and
+shared option
+09/24/2023 10:00 PM
+probably the ipk size would just blow up with a shared library build
+09/24/2023 9:58 PM
+I don't think the packaging can cope with all those shared libraries
+that you'd had to include (edited)
+[smx2460]
+smx2460 09/24/2023 9:58 PM
+we could fix that 
+[yolofant]
+yolofant 09/24/2023 9:57 PM
+yeah but buildroot package isn't the best way to build kodi right now
+[smx2460]
+smx2460 09/24/2023 8:42 PM
+It could be enabled in br-nc4 too
+09/24/2023 8:41 PM
+https://github.com/openlgtv/buildroot-nc4/blob/master/package/kodi-pvr-hts/Config.in
+buildroot-nc4/package/kodi-pvr-hts/Config.in at master · openlgtv/b...
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+[satdx62]
+[] yolofant hmm, usually you compile the "normal" webOS kodi and then
+just add `-DADDONS_TO_BUILD=pvr.hts` to th...
+satdx62 09/24/2023 2:51 PM
+Yes, I have an Enigma2 Vuplus server myself and I can also from all
+Android devices and also from Kodi to Raspberry Pi (libreelec) and Kodi
+to FireTV sticks.
+[yolofant]
+yolofant 09/24/2023 2:36 PM
+if it does, then chances are good that it might also work on webos
+09/24/2023 2:36 PM
+do you know if it works on android boxes?
+09/24/2023 2:36 PM
+it might be software decoding only
+09/24/2023 2:36 PM
+not sure if that works
+09/24/2023 2:36 PM
+The add-on supports IPTV by simply passing the URL to
+inputstream.ffmpegdirect, allowing a local timeshift feature similar to
+native Enigma2 streams.
+09/24/2023 2:34 PM
+make sure to report back if it works 
+09/24/2023 2:34 PM
+not sure if pvr.hts needs inputstream.adaptive though
+09/24/2023 2:34 PM
+hmm, usually you compile the "normal" webOS kodi and then just add
+-DADDONS_TO_BUILD=pvr.hts to the cmake call
+[satdx62]
+[] yolofant probably you compiled it for x64
+satdx62 09/24/2023 2:32 PM
+Yes, I suspected that too, but I don't know how to do it properly. Can
+you give me a recommendation on how to do then?
+[yolofant]
+yolofant 09/24/2023 1:29 PM
+probably you compiled it for x64
+[satdx62]
+satdx62 09/24/2023 1:15 PM
+(no content)
+ gcc_Version.txt
+1.07 KB External
+[satdx62]
+satdx62 09/24/2023 12:53 PM
+Hi, I tried to compile the Enigma2 pvr.vuplus from GitHub for Kodi.
+https://github.com/kodi-pvr/pvr.vuplus On my Windows PC under virtual
+Ubuntu environment. That's also where I built Kodi, and it works so far.
+The pvr.vuplus add-on is detected and installed, however, after
+configuration can not be activated. The following error is displayed in
+log: Unable to load
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/addons/pvr.vuplus/pvr.vuplus.so.21
+.1.1, reason:
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/addons/pvr.vuplus/pvr.vuplus.so.21.1.1:
+wrong ELF class: ELFCLASS64 I tried like this
+git clone --depth=1 --single-branch -b feature/webOS https://github.com/webosbrew/xbmc.git xbmc git clone https://github.com/kodi-pvr/pvr.hts.git cd pvr.hts && mkdir build && cd build cmake -DADDONS_TO_BUILD=pvr.hts -DADDON_SRC_PREFIX=../.. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../../xbmc/kodi-build/addons -DPACKAGE_ZIP=1 ../../xbmc/cmake/addons make
+What am I doing wrong here? Do I possibly need to build with,
+--with-toolchain=$HOME/kodi-dev/arm-webos-linux-gnueabi_sdk-buildroot
+because of Kodi 32 bit? And if so, what is the syntax/command? (edited)
+GitHub - kodi-pvr/pvr.vuplus: Kodi's Enigma2 client add-on
+Kodi's Enigma2 client add-on. Contribute to kodi-pvr/pvr.vuplus
+development by creating an account on GitHub.
+[]
+September 21, 2023
+[satdx62]
+[] yolofant if you want to have some more space, you could even put the
+whole `.kodi` folder on the usb drive
+satdx62 09/21/2023 11:15 PM
+Great, good to know, thank you.
+[yolofant]
+yolofant 09/21/2023 8:45 PM
+but then you'd had to move over the folder beforehand 
+09/21/2023 8:44 PM
+if you want to have some more space, you could even put the whole .kodi
+folder on the usb drive
+[satdx62]
+[] yolofant If you want to have thumbnails on usb drive then you just
+need to put the stuff from the xml file in...
+satdx62 09/21/2023 8:21 PM
+Thank you very much, so have made and it works.
+[yolofant]
+yolofant 09/21/2023 3:58 PM
+If you want to have thumbnails on usb drive then you just need to put
+the stuff from the xml file into advancedsettings.xml then you can clean
+up the thumbnails folder in the .kodi directory on the tv
+ 1
+09/21/2023 3:57 PM
+That script is meant to be used as a startup script in
+/var/lib/webosbrew/init.d so it runs automatically in the background and
+mounts the first usb stick
+[satdx62]
+[] yolofant Weird thing is that there is a line in the jail conf that
+should actually mount them but it doesn't ...
+satdx62 09/21/2023 3:52 PM
+With the code input in Putty has worked best. Now I can access USB
+media. How do I prepare the thumbnails on the USB stick to get the
+automatic mount?
+[satdx62]
+[] yolofant The jail should mount `/tmp/usb`
+satdx62 09/21/2023 2:14 PM
+Thanks for the quick reply. Will follow the linked instruction.
+[yolofant]
+yolofant 09/21/2023 2:02 PM
+The jail should mount /tmp/usb
+ 1
+09/21/2023 2:02 PM
+Weird thing is that there is a line in the jail conf that should
+actually mount them but it doesn't work for some reason
+09/21/2023 2:01 PM
+https://discord.com/channels/407937994037919756/1088800881304154175/1138930480696266942
+09/21/2023 2:01 PM
+Yeah, unfortunately usb devices are not available in jail by default
+[satdx62]
+satdx62 09/21/2023 1:26 PM
+Hi, How can I access USB media connected to LG TV from Kodi installed on
+LG? The TV itself can access all USB sticks and hard drives. I can only
+mount media that are on my network. In peripherals.xml, there are a few
+devices like game controllers or input devices, but no USB storage. May
+still need to assign permission or mount USB storage ? (edited)
+September 10, 2023
+[ikhadhonger]
+ikhadhonger 09/10/2023 2:56 PM
+What format needs the usb stick be formatted?
+[ikhadhonger]
+ikhadhonger 09/10/2023 2:00 PM
+Can i install kodi on a mounted usb stick?
+September 3, 2023
+[ikhadhonger]
+[] yolofant ```bash #!/bin/sh luna-send -i
+luna://com.webos.applicationManager/getForegroundAppInfo '{"subscrib...
+ikhadhonger 09/03/2023 11:42 AM
+where do i need to put this script?
+wsnipex 09/03/2023 11:23 AM
+that's quite normal
+September 2, 2023
+[ikhadhonger]
+ikhadhonger 09/02/2023 5:07 PM
+Will kodi crash while scraping my library?
+09/02/2023 5:06 PM
+I installed kodi on my LG CX and the memory usage is 80% 600mb left
+09/02/2023 5:06 PM
+Whats the normal kodi memory usage in web os?
+August 27, 2023
+Deleted User 08/27/2023 4:10 AM
+fkkkkkkkkkkkkkk
+08/27/2023 4:10 AM
+ahhhhhhhhhhh
+08/27/2023 4:10 AM
+this is the most bullshit i ever see
+[image.png]
+ image.png
+117.6 KB External
+Deleted User 08/27/2023 3:28 AM
+(no content)
+[image.png]
+ image.png
+354.53 KB External
+08/27/2023 3:28 AM
+ahhhhhhhhhhhhhhhh
+Deleted User 08/27/2023 2:11 AM
+susk
+08/27/2023 2:11 AM
+(no content)
+[image.png]
+ image.png
+841.34 KB External
+08/27/2023 2:11 AM
+sks
+08/27/2023 2:10 AM
+(no content)
+[image.png]
+ image.png
+863.35 KB External
+Deleted User 08/27/2023 2:00 AM
+always crash
+[] astur3l i couldnt get kodi to work with smb2/3, (got invalid
+argument), with smbv1 works but it requires exp...
+Deleted User 08/27/2023 1:46 AM
+i tried but kodi susked
+August 26, 2023
+[] astur3l hmm its not linked dynamically to smb libs.. its shipped with
+kodi?
+hellobox. 08/26/2023 6:42 PM
+yep. it's in the deps (edited)
+[astur3l]
+astur3l 08/26/2023 6:39 PM
+hmm its not linked dynamically to smb libs.. its shipped with kodi?
+08/26/2023 6:37 PM
+maybe its because of the samba libs in buildroot vs on my tv?
+[astur3l]
+Deleted User but i got invalid argument
+astur3l 08/26/2023 6:36 PM
+i couldnt get kodi to work with smb2/3, (got invalid argument), with
+smbv1 works but it requires explicitly enabled on windows since its a
+security disaster 
+Deleted User 08/26/2023 4:12 PM
+(no content)
+[image.png]
+ image.png
+67.98 KB External
+[] yolofant Make a debug log
+Deleted User 08/26/2023 4:11 PM
+(no content)
+ message.txt
+7.68 KB External
+[yolofant]
+yolofant 08/26/2023 4:00 PM
+Make a debug log
+Deleted User 08/26/2023 3:26 PM
+and everyone can access (edited)
+08/26/2023 3:26 PM
+my config on windows is passwordless
+08/26/2023 3:26 PM
+but i got invalid argument
+08/26/2023 3:26 PM
+im trying to connect smb
+[smx2460]
+smx2460 08/26/2023 12:11 PM
+No i think there are partners and "partners"
+ww8543 08/26/2023 9:16 AM
+yea i guess
+ww8543 there are also the native amazon and apple apps
+hellobox. 08/26/2023 9:14 AM
+probably also ported by lg (although i haven't looked) (edited)
+hellobox. i'm pretty sure they ported netflix and youtube themselves,
+for example
+ww8543 08/26/2023 9:13 AM
+there are also the native amazon and apple apps
+hellobox. 08/26/2023 1:02 AM
+i'm pretty sure they ported netflix and youtube themselves, for example
+08/26/2023 1:02 AM
+does that mean they port everything native in-house?
+08/26/2023 1:01 AM
+that one post seems to imply that they don't even offer an NDK to
+"partners"
+[smx2460]
+smx2460 08/26/2023 1:00 AM
+But it's funny how they immediately took the chat off scenes
+08/26/2023 1:00 AM
+I know you know about this
+08/26/2023 1:00 AM
+https://forum.webostv.developer.lge.com/t/rooted-device-detection/973
+Rooted Device Detection
+Hi webOS TV team, We build webOS TV app named Vidio, basically it’s a
+streaming platform. And at the moment we are preparing to broadcast
+content that need to be protected from rooted device. So rooted device
+should not be able to access the content. However, we found that there
+are many ways to root webOS TV device like this and this. But we...
+[]
+hellobox. 08/26/2023 12:58 AM
+lol
+[smx2460]
+smx2460 08/26/2023 12:58 AM
+His replies could easily be replaced with ChatGPT
+08/26/2023 12:58 AM
+So you're reduced to a chat bot
+08/26/2023 12:58 AM
+They tell you that you can """support""" people by pointing to existing
+and published info only (edited)
+hellobox. 08/26/2023 12:58 AM
+interesting. MAC-based app availability
+https://seller.lgappstv.com/seller/support/userGuide/RetrieveUserGuide.lge?pstgSeq=23
+[smx2460]
+smx2460 08/26/2023 12:57 AM
+It's more like (edited)
+hellobox. 08/26/2023 12:56 AM
+i guess i would be too if i had to offer support for such a shitty
+platform
+[smx2460]
+smx2460 08/26/2023 12:55 AM
+Lol
+hellobox. 08/26/2023 12:55 AM
+narae0.kim is kind of a dick
+https://forum.webostv.developer.lge.com/t/keep-screen-on-prevent-screensaver-blackout/740/21
+[smx2460]
+smx2460 08/26/2023 12:55 AM
+Appears it's for the galaxy watch though
+08/26/2023 12:53 AM
+If this also works for TV, it's miles ahead
+08/26/2023 12:53 AM
+https://developer.samsung.com/galaxy-watch-tizen/creating-your-first-app/native-companion/create-project.html
+Create a Native App Project | Samsung Developers
+The world runs on you.
+[]
+hellobox. 08/26/2023 12:53 AM
+i get not wanting to document (and therefore support) every key, but
+they offer a ridiculously limited set
+https://forum.webostv.developer.lge.com/t/valid-categories-and-keys-for-getsystemsettings/3550
+[image.png]
+ image.png
+27.16 KB External
+[smx2460]
+smx2460 08/26/2023 12:50 AM
+Yeah
+hellobox. 08/26/2023 12:50 AM
+99% of the posts have a reply from narae0.kim saying "no, that's not
+possible" or "partners only"
+[smx2460]
+smx2460 08/26/2023 12:50 AM
+Or they don't trust their own skills
+08/26/2023 12:49 AM
+Either you have an Open OS and it's done properly, so sharing the SDK
+and NDK shouldn't be a security concern (Android)
+hellobox. 08/26/2023 12:49 AM
+> Unfortunately, it seems that the NDK feature cannot be supported even
+when the deal proceeds. > We deeply apologize for not being able to
+assist you. > If you still wish to contract with us, please re-open the
+ticket and let us know.
+https://forum.webostv.developer.lge.com/t/native-language-c-c-support-issues/3365
+[smx2460]
+smx2460 08/26/2023 12:49 AM
+And they maybe wonder why not many apps exist
+08/26/2023 12:48 AM
+What a joke
+08/26/2023 12:48 AM
+NDK is also not public
+08/26/2023 12:48 AM
+They probably also moderate those forums so nobody really feels the need
+to contribute to such restricted forum
+08/26/2023 12:47 AM
+Anything else they will give copy pasted replies
+08/26/2023 12:47 AM
+They only offer help on Webapp APIs and only the ones they decide to
+document
+[smx2460]
+hellobox. the lg developer forum doesn't seem very helpful
+smx2460 08/26/2023 12:46 AM
+That's kind, I'd say that it's fucking useless (edited)
+[smx2460]
+[] ccarnell98 Just rename it lg-netcast 
+smx2460 08/26/2023 12:44 AM
+Will do
+August 25, 2023
+[ccarnell98]
+ccarnell98 08/25/2023 11:54 PM
+Yeh probably not a developer in sight  (edited)
+hellobox. 08/25/2023 8:56 PM
+the lg developer forum doesn't seem very helpful
+[ccarnell98]
+ccarnell98 08/25/2023 8:55 PM
+@hellobox That was me
+hellobox. 08/25/2023 8:44 PM
+@Craig is this you, or is there someone else trying to port stuff to
+webos?
+https://forum.webostv.developer.lge.com/t/access-to-ndk-download/1524
+[satdx62]
+[] ccarnell98 Just rename it lg-netcast 
+satdx62 08/25/2023 8:28 PM
+Then would be more understandable for everyone.
+[ccarnell98]
+ccarnell98 08/25/2023 7:40 PM
+Just rename it lg-netcast 
+ 1
+[smx2460]
+smx2460 08/25/2023 6:58 PM
+Maybe should be renamed to lgtv-generic
+08/25/2023 6:58 PM
+Since it ships no WebOS package
+08/25/2023 6:58 PM
+Works for both, lacks many WebOS features
+[smx2460]
+[] yolofant no lgtv is for netcast
+smx2460 08/25/2023 6:58 PM
+Or rather it's generic
+[satdx62]
+[] yolofant no lgtv is for netcast
+satdx62 08/25/2023 2:42 PM
+Thank you, I understand now
+[Got It]
+[yolofant]
+yolofant 08/25/2023 2:27 PM
+no lgtv is for netcast
+[satdx62]
+satdx62 08/25/2023 2:13 PM
+@hellobox what is the difference between the two
+“linux-gnueabi_sdk-buildroot” versions. On which platform do you use
+one, and where is the other? Could you install the
+“arm-lgtv-linux-gnueabi_sdk-buildroot” directly on the TV and build Kodi
+there? (edited)
+[linux-gnueabi_sdk-buildroot.jpg]
+ linux-gnueabi_sdk-buildroot.jpg
+59.1 KB External
+August 15, 2023
+[astur3l]
+[] matthew6870 Hello. Sometimes Kodi stops reacting to remote input.
+Movie continues playing, but I am unable to p...
+astur3l 08/15/2023 10:02 PM
+same.. also if i press back while playing something, it "frozes" for
+like 30s.. if i open the "osd" before it and press back twice it doesnt
+happen  / seeking before and exit before the osd hides
+[ccarnell98]
+ccarnell98 08/15/2023 7:05 PM
+I've watched 100s of hours now on kodi, only lost input focus maybe a
+couple of times.. but I haven't noticed that in a long time
+08/15/2023 7:04 PM
+I am but I haven't looked at that thread in a while 
+ww8543 08/15/2023 4:39 PM
+some are
+ 1
+[matthew6870]
+matthew6870 08/15/2023 4:14 PM
+Hello. Sometimes Kodi stops reacting to remote input. Movie continues
+playing, but I am unable to pause it, rewind 10 seconds etc. Controlling
+via mobile app (Kore) works. Pressing Home button opens web OS
+dashboard. So it seems like Kodi loses “focus”? Has somebody encountered
+this issue? EDIT: Are people from
+https://forum.kodi.tv/showthread.php?tid=368381 also present here? If it
+makes sense to also ask there... (edited)
+[] satdx62 If you have an old webOS just enter the following command
+under Terminal/SSH: `cp /usr/lib/libwayla...
+Deleted User 08/15/2023 5:45 AM
+worked
+ 1
+Deleted User 08/15/2023 5:40 AM
+model: 55UP7500PTC
+08/15/2023 5:37 AM
+webos:6.3.3
+08/15/2023 5:37 AM
+firmware: 03.36.35
+[satdx62]
+hellobox. <https://github.com/openlgtv/buildroot-nc4>
+satdx62 08/15/2023 1:25 AM
+Worked.
+[Built_target_ipk.jpg]
+ Built_target_ipk.jpg
+582.29 KB External
+[satdx62]
+satdx62 08/15/2023 12:03 AM
+Yes, that's exactly what I use.
+[] satdx62 What do you mean are you using the latest br-nc4? Kodi? I use
+https://github.com/Diniboy1123/xbmc-we...
+hellobox. 08/15/2023 12:02 AM
+https://github.com/openlgtv/buildroot-nc4
+[satdx62]
+hellobox. are you using the latest br-nc4?
+satdx62 08/15/2023 12:01 AM
+What do you mean are you using the latest br-nc4? Kodi? I use
+https://github.com/Diniboy1123/xbmc-webos
+GitHub - Diniboy1123/xbmc-webos: Kodi is an award-winning free and ...
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+August 14, 2023
+[] satdx62 How can I find out?
+hellobox. 08/14/2023 11:58 PM
+uh, idk. where/when did you get it?
+[satdx62]
+hellobox. are you using the latest br-nc4?
+satdx62 08/14/2023 11:57 PM
+How can I find out?
+[satdx62]
+satdx62 08/14/2023 11:56 PM
+And now currently works.
+[Work.jpg]
+ Work.jpg
+462.61 KB External
+hellobox. 08/14/2023 11:55 PM
+maybe i broke something lol
+08/14/2023 11:55 PM
+are you using the latest br-nc4?
+[] satdx62 With this have tried first time: `./bootstrap ./configure
+--prefix=$HOME/Sourcecode/kodi-deps --host...
+hellobox. 08/14/2023 11:54 PM
+i mean there doesn't seem to be anything that would cause an issue
+[satdx62]
+hellobox. so what's the difference?
+satdx62 08/14/2023 11:53 PM
+With this have tried first time:
+./bootstrap ./configure --prefix=$HOME/Sourcecode/kodi-deps --host=arm-webos-linux-gnueabi --with-toolchain=$HOME/kodi-dev/arm-webos-linux-gnueabi_sdk-buildroot --enable-debug=no --with-target-cflags='-march=armv7-a -mfloat-abi=softfp -mfpu=neon' --with-rendersystem=gles --with-platform=webos
+[] satdx62 With this command works great: cd xbmc/tools/depends
+`./bootstrap ./configure --prefix="${HOME}/kodi...
+hellobox. 08/14/2023 11:51 PM
+so what's the difference?
+[satdx62]
+hellobox. but it's worth a try
+satdx62 08/14/2023 11:50 PM
+With this command works great: cd xbmc/tools/depends
+./bootstrap ./configure --prefix="${HOME}/kodi-deps" --host=arm-webos-linux-gnueabi --with-toolchain=$HOME/kodi-dev/arm-webos-linux-gnueabi_sdk-buildroot --enable-debug=no make $MAKEOPTS
+hellobox. 08/14/2023 11:45 PM
+actually, you could look at (or send me) config.log
+08/14/2023 11:45 PM
+but it's worth a try
+08/14/2023 11:45 PM
+i thought i didn't have to when using those args...
+[satdx62]
+satdx62 08/14/2023 11:42 PM
+No. (edited)
+hellobox. 08/14/2023 11:40 PM
+did you try running the br-nc4 env script beforehand?
+08/14/2023 11:40 PM
+i mean it worked for me
+[satdx62]
+hellobox. do you have `--host=arm-webos-linux-gnueabi`? not sure if it's
+necessary
+satdx62 08/14/2023 11:40 PM
+Yes, I have, do not need?
+hellobox. 08/14/2023 11:39 PM
+do you have --host=arm-webos-linux-gnueabi? not sure if it's necessary
+08/14/2023 11:39 PM
+but that's not the current problem
+[satdx62]
+hellobox. just leave out the cflags arg
+satdx62 08/14/2023 11:39 PM
+All right, I will try, thanks.
+hellobox. 08/14/2023 11:38 PM
+just leave out the cflags arg
+[satdx62]
+hellobox. especially if you're using a recent version of br-nc4
+satdx62 08/14/2023 11:37 PM
+How should I configure it?
+hellobox. 08/14/2023 11:36 PM
+especially if you're using a recent version of br-nc4
+08/14/2023 11:36 PM
+that's not causing this problem, but it's not necessary
+[] satdx62 yes.
+--with-toolchain=$HOME/kodi-dev/arm-webos-linux-gnueabi_sdk-buildroot
+--enable-debug=no --with-...
+hellobox. 08/14/2023 11:36 PM
+don't mess with the default br-nc4 cflags
+[satdx62]
+satdx62 08/14/2023 11:35 PM
+yes.
+--with-toolchain=$HOME/kodi-dev/arm-webos-linux-gnueabi_sdk-buildroot
+--enable-debug=no --with-target-cflags='-march=armv7-a
+-mfloat-abi=softfp -mfpu=neon' --with-rendersystem=gles
+--with-platform=webos (edited)
+hellobox. 08/14/2023 11:34 PM
+https://gist.github.com/throwaway96/1a12aa49f1aba4910793646f6b7b8ab0
+08/14/2023 11:34 PM
+did you use --with-toolchain? (and have a properly set up/relocated
+toolchain at that path)? (edited)
+[satdx62]
+hellobox. i think it's just failing to compile any test program at all
+satdx62 08/14/2023 11:34 PM
+Ah, okay want to check
+hellobox. 08/14/2023 11:33 PM
+because it's trying to target arm with your system gcc
+08/14/2023 11:33 PM
+i think it's just failing to compile any test program at all
+[satdx62]
+hellobox. gcc 11 definitely supports c++17... as well as c++20
+satdx62 08/14/2023 11:32 PM
+Yes, I am surprised that I got the error message.
+hellobox. 08/14/2023 11:32 PM
+i think the issue is that it's trying to use your system gcc instead of
+the br-nc4 gcc
+08/14/2023 11:32 PM
+you're not trying to build br-nc4, right?
+08/14/2023 11:31 PM
+oh, wait a second lol

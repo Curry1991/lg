@@ -1,0 +1,129 @@
+May 21, 2022
+[infowski]
+infowski 05/21/2022 9:39 PM
+dammit.
+05/21/2022 9:39 PM
+aaaand... I screwed it up I think.
+[infowski]
+infowski 05/21/2022 9:22 PM
+oh, the patch is not even going to be that disgusting. turns out
+meta-lg-webos-ndk and buildroot ndk's both use old enough luna-service2
+package to have SECURITY_COMPATIBILITY →
+https://github.com/webosose/luna-service2/blob/b74b1859372597fcd6f0f7d9dc3f300acbf6ed6c/include/public/luna-service2/lunaservice.h#L49-L53
+luna-service2/lunaservice.h at b74b1859372597fcd6f0f7d9dc3f300acbf6...
+webOS Luna System Bus library, daemon, and utilities -
+luna-service2/lunaservice.h at b74b1859372597fcd6f0f7d9dc3f300acbf6ed6c
+· webosose/luna-service2
+[]
+[infowski]
+infowski 05/21/2022 9:07 PM
+probably not 
+[e99.tuxuser]
+e99.tuxuser 05/21/2022 9:06 PM
+Are u using the up to date branch? :p
+05/21/2022 9:05 PM
+Thought we would be returning -1 or something so it bails out
+05/21/2022 9:05 PM
+Nvm, segfault is another topic
+05/21/2022 9:04 PM
+Oh really? :/
+https://github.com/webosbrew/hyperion-webos/blob/ae5d802aff59743ad95f029fb74986aaebada3f6/src/service.c#L359
+hyperion-webos/service.c at ae5d802aff59743ad95f029fb74986aaebada3f...
+hyperion.ng video grabber for webOS. Contribute to
+webosbrew/hyperion-webos development by creating an account on GitHub.
+[]
+[infowski]
+infowski 05/21/2022 9:04 PM
+...and it was causing a segfault 
+05/21/2022 9:03 PM
+also needed to patch up power status polling since that endpoint seemed
+to be missing on that TV.
+05/21/2022 9:03 PM
+ostensibly small vnc screenshot
+[e99.tuxuser]
+e99.tuxuser 05/21/2022 9:03 PM
+Kudos! Great news
+[infowski]
+infowski 05/21/2022 9:03 PM
+(no content)
+[status.png]
+ status.png
+20.36 KB External
+[cap.png]
+ cap.png
+49.54 KB External
+05/21/2022 9:02 PM
+whee, it works.
+05/21/2022 8:58 PM
+ah, dammit. wrong testing methodology 
+05/21/2022 8:55 PM
+Hmmmmm...
+05/21/2022 8:55 PM
+That... didn't seem to help.
+[e99.tuxuser]
+e99.tuxuser 05/21/2022 8:39 PM
+aight
+[infowski]
+infowski 05/21/2022 8:38 PM
+05/21/2022 8:38 PM
+let me first try if this will even work...
+[e99.tuxuser]
+e99.tuxuser 05/21/2022 8:38 PM
+maybe the way it was done for DILE_VT_CreateEx, check if it exists...
+then call it?
+[infowski]
+infowski 05/21/2022 8:36 PM
+6.x still has LSRegisterPubPriv and other symbols deprecated in
+webosose - do we make our own stubs for that?
+05/21/2022 8:34 PM
+I guess we can't call _LSRegisterCommon? It's an exported symbol in the
+.so and LSRegister is just a direct wrapper around that.
+05/21/2022 8:32 PM
+Of course they dropped it in third commit in webosose/luna-servivce2 
+05/21/2022 8:28 PM
+Let's see if that's even exposed in webosose
+05/21/2022 8:28 PM
+So I think we need to do LSRegisterPubPriv with second argument and
+that'll probably work.
+[e99.tuxuser]
+e99.tuxuser 05/21/2022 8:27 PM
+Oh!
+[infowski]
+infowski 05/21/2022 8:26 PM
+since we just do LSRegister we only register on a private bus. Separate
+private/public buses were probably deprecated in 3.5, so that's why it
+works on 3.5+... (edited)
+05/21/2022 8:26 PM
+https://github.com/openwebos/luna-service2/blob/0f384298acde1f3a8bcc509401b1fa7a33ca44f7/src/libluna-service2/base.c#L747-L753
+luna-service2/base.c at 0f384298acde1f3a8bcc509401b1fa7a33ca44f7 · ...
+Contribute to openwebos/luna-service2 development by creating an account
+on GitHub.
+[]
+05/21/2022 8:25 PM
+https://github.com/openwebos/luna-service2/blob/0f384298acde1f3a8bcc509401b1fa7a33ca44f7/src/libluna-service2/base.c#L778-L783
+luna-service2/base.c at 0f384298acde1f3a8bcc509401b1fa7a33ca44f7 · ...
+Contribute to openwebos/luna-service2 development by creating an account
+on GitHub.
+[]
+05/21/2022 8:25 PM
+now I see it...
+05/21/2022 8:25 PM
+Oh god
+[e99.tuxuser]
+e99.tuxuser 05/21/2022 8:08 PM
+It's totally unrelated to the "public"/"all" thing, right? That's only
+related to accessibility of Luna service endpoints, correct? Just
+remembering that from homebrew channel
+[infowski]
+infowski 05/21/2022 8:01 PM
+wait, I do. now I am confused. ghidra what'cha doin...
+05/21/2022 8:00 PM
+    2022-05-21T17:56:32.389973Z [6543.770412493] user.warning hyperion-webos [] <default> LS_REQUIRES_SECURITY {"METHOD":"isRunning"} Security groups don't match for method: isRunning
+I don't have this string on 3.8...  (edited)
+05/21/2022 8:00 PM
+bing
+[infowski]
+infowski 05/21/2022 8:00 PM
+So... I just installed piccap on 3.4 and 3.8 TVs, and comparing
+/var/luna-service2-dev and /var/palm/ls2-dev, there's... absolutely no
+configuration difference between these two 

@@ -1,0 +1,2038 @@
+February 1, 2026
+[yolofant]
+yolofant 02/01/2026 7:33 PM
+ah
+[satdx62]
+[] yolofant you paste the jailer invocation
+satdx62 02/01/2026 7:32 PM
+Hello, do you mean that when I run ⁨gdb target remote 192.168.2.87:1234⁩,
+I should also run (jailer call)
+⁨jailer -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi -i org.xbmc.kodi kodi-webos⁩?
+What should the command be then? I can't seem to get it to work.
+[yolofant]
+yolofant 02/01/2026 7:29 PM
+because I doubt DEPENDS_PATH is a valid path at deployment time
+02/01/2026 7:28 PM
+like in the generated binary
+02/01/2026 7:28 PM
+because did you check what the RPATH even is in kodi-webos?
+02/01/2026 7:27 PM
+but I don't think the instruction works like that
+[yolofant]
+yolofant 02/01/2026 7:18 PM
+but not sure
+02/01/2026 7:18 PM
+i guess for wayland-client
+02/01/2026 7:15 PM
+I think the rpath is just there to make it prefer the bundled libraries
+[ccarnell98]
+ccarnell98 02/01/2026 7:05 PM
+looks like it segfaults in binding registry (but only when launching
+from menu..)
+[ccarnell98]
+ccarnell98 02/01/2026 6:46 PM
+or is that coming from the rpath
+02/01/2026 6:43 PM
+why does it need ⁨
+    set(CMAKE_INSTALL_RPATH "${DEPENDS_PATH}/lib:$ORIGIN/lib")
+⁩to find libdrm if it checks those paths anyway?
+02/01/2026 6:43 PM
+⁨
+    open("/usr/lib/libdrm.so.2", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+    open("/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libdrm.so.2", O_RDONLY|O_CLOEXEC) = 3
+⁩
+[yolofant]
+yolofant 02/01/2026 6:39 PM
+you paste the jailer invocation
+02/01/2026 6:39 PM
+but when you do target remote
+02/01/2026 6:39 PM
+just do it the regular way
+02/01/2026 6:39 PM
+no wait
+02/01/2026 6:38 PM
+yeah you can use jailer to start the gdbserver
+[satdx62]
+satdx62 02/01/2026 6:37 PM
+I can start from the terminal and enable debugging.
+[satdx62]
+[] yolofant and from terminal with jailer?
+satdx62 02/01/2026 6:36 PM
+Segmentation fault
+[yolofant]
+yolofant 02/01/2026 6:36 PM
+and from terminal with jailer?
+[satdx62]
+[] yolofant but does it work now'?
+satdx62 02/01/2026 6:35 PM
+No, it's not working. Not from the menu.
+[yolofant]
+yolofant 02/01/2026 6:32 PM
+but does it work now'?
+02/01/2026 6:32 PM
+then only a reinstall would help
+02/01/2026 6:31 PM
+unless the gid is completely messed up
+02/01/2026 6:31 PM
+looks good now
+[satdx62]
+[] yolofant `chown -R 6735:5000 .`
+satdx62 02/01/2026 6:31 PM
+⁨
+    root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi# ls -lah
+    total 81132
+    drwxrwxrwx    8 6735     5000        4.0K Feb  1 17:41 .
+    drwxrwxrwx   10 1000     root        4.0K Feb  1 17:15 ..
+    drwxrwxrwx    7 6735     5000        4.0K Feb  1 17:18 .kodi
+    drwxrwxrwx   57 6735     5000        4.0K Feb  1 17:15 addons
+    -rwxrwxrwx    1 6735     5000         397 Feb  1 17:15 appinfo.json
+    -rw-------    1 6735     5000       42.2M Feb  1 17:41 core
+    -rwxrwxrwx    1 6735     5000        1.4K Feb  1 14:41 icon.png
+    -rwxrwxrwx    1 6735     5000       69.4M Feb  1 14:41 kodi-webos
+    -rwxrwxrwx    1 6735     5000         484 Feb  1 14:41 kodi.sh
+    -rwxrwxrwx    1 6735     5000        2.4K Feb  1 14:41 largeIcon.png
+    drwxrwxrwx    3 6735     5000        4.0K Feb  1 17:15 lib
+    drwxrwxrwx    4 6735     5000        4.0K Feb  1 17:15 media
+    -rwxrwxrwx    1 6735     5000      858.1K Feb  1 14:41 strace
+    drwxrwxrwx    9 6735     5000        4.0K Feb  1 17:15 system
+    drwxrwxrwx    3 6735     5000        4.0K Feb  1 17:15 userdata
+    root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+⁩
+[ccarnell98]
+ccarnell98 02/01/2026 6:27 PM
+the ipk launches kodi.sh which runs strace first
+02/01/2026 6:27 PM
+I mean the strace output log
+[yolofant]
+[] ccarnell98 was that the log generated from running it from the menu?
+yolofant 02/01/2026 6:26 PM
+it did not generate one
+[ccarnell98]
+[] satdx62 <@1051573528522133655>,Kodi does not start from the menu.
+However, the desired log is written. It st...
+ccarnell98 02/01/2026 6:26 PM
+was that the log generated from running it from the menu?
+[satdx62]
+[] ccarnell98 can't see any logs in there to do with mediapipelinewebOS.
+Was that with debugging enabled in menu?
+satdx62 02/01/2026 6:25 PM
+No, I'll do that.
+[ccarnell98]
+[] satdx62 Click to see attachment
+ccarnell98 02/01/2026 6:24 PM
+can't see any logs in there to do with mediapipelinewebOS. Was that with
+debugging enabled in menu?
+[yolofant]
+yolofant 02/01/2026 6:22 PM
+chown -R 6735:5000 .
+[satdx62]
+[] ccarnell98 Yes definitely kodi.log plz
+satdx62 02/01/2026 6:20 PM
+(no content)
+ temp_kodi.log
+239.3 KB External
+[yolofant]
+yolofant 02/01/2026 6:20 PM
+yeah just run
+[satdx62]
+[] yolofant because most of it is world writable
+satdx62 02/01/2026 6:20 PM
+Should I set the permissions myself?
+[yolofant]
+yolofant 02/01/2026 6:19 PM
+because most of it is world writable
+02/01/2026 6:19 PM
+permissions are fucked but not sure if that's the issue
+02/01/2026 6:18 PM
+yeah
+[satdx62]
+[] yolofant no I need `ls -lah` specifically for the permissions
+satdx62 02/01/2026 6:18 PM
+⁨
+    root@LGwebOSTV:~# cd /media/developer/apps/usr/palm/applications/org.xbmc.kodi
+    root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi# ls -lah
+    total 81132
+    drwxrwxrwx    8 1000     root        4.0K Feb  1 17:41 .
+    drwxrwxrwx   10 1000     root        4.0K Feb  1 17:15 ..
+    drwxrwxrwx    7 6735     5000        4.0K Feb  1 17:18 .kodi
+    drwxrwxrwx   57 1000     root        4.0K Feb  1 17:15 addons
+    -rwxrwxrwx    1 1000     root         397 Feb  1 17:15 appinfo.json
+    -rw-------    1 6735     5000       42.2M Feb  1 17:41 core
+    -rwxrwxrwx    1 1000     root        1.4K Feb  1 14:41 icon.png
+    -rwxrwxrwx    1 1000     root       69.4M Feb  1 14:41 kodi-webos
+    -rwxrwxrwx    1 1000     root         484 Feb  1 14:41 kodi.sh
+    -rwxrwxrwx    1 1000     root        2.4K Feb  1 14:41 largeIcon.png
+    drwxrwxrwx    3 1000     root        4.0K Feb  1 17:15 lib
+    drwxrwxrwx    4 1000     root        4.0K Feb  1 17:15 media
+    -rwxrwxrwx    1 1000     root      858.1K Feb  1 14:41 strace
+    drwxrwxrwx    9 1000     root        4.0K Feb  1 17:15 system
+    drwxrwxrwx    3 1000     root        4.0K Feb  1 17:15 userdata
+    root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+⁩
+[ccarnell98]
+[] satdx62 <@1051573528522133655>,Kodi does not start from the menu.
+However, the desired log is written. It st...
+ccarnell98 02/01/2026 6:18 PM
+Yes definitely kodi.log plz
+[yolofant]
+yolofant 02/01/2026 6:17 PM
+you could check in dev mode manager if it has a crash log
+02/01/2026 6:17 PM
+it should have a number
+02/01/2026 6:17 PM
+and there is a core but I don't think that's it
+02/01/2026 6:16 PM
+no I need ls -lah specifically for the permissions
+ 1
+[satdx62]
+satdx62 02/01/2026 6:16 PM
+(no content)
+[7.png]
+ 7.png
+9.79 KB External
+[yolofant]
+yolofant 02/01/2026 6:15 PM
+can you also get me an ls -lah of the application folder?
+02/01/2026 6:14 PM
+then it must be failing very early at startup
+[satdx62]
+[] yolofant did it create a core file?
+satdx62 02/01/2026 6:13 PM
+No log, I'm looking for a core.
+[yolofant]
+yolofant 02/01/2026 6:12 PM
+did it create a core file?
+02/01/2026 6:11 PM
+is something in kodi.log?
+02/01/2026 6:10 PM
+that's unfortunate
+[satdx62]
+[] yolofant jailer -p
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi -i
+org.xbmc.kodi kodi-webos
+satdx62 02/01/2026 6:04 PM
+⁨
+    root@LGwebOSTV:~# jailer -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi -i org.xbmc.kodi kodi-webos
+    Segmentation fault
+    root@LGwebOSTV:~#
+⁩
+[yolofant]
+yolofant 02/01/2026 5:58 PM
+then check kodi.log or the terminal output
+02/01/2026 5:58 PM
+jailer -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi -i
+org.xbmc.kodi kodi-webos
+02/01/2026 5:57 PM
+You should try launching with jailer from terminal
+02/01/2026 5:57 PM
+Play with hw decoding?
+[satdx62]
+satdx62 02/01/2026 5:48 PM
+@Craig,Kodi does not start from the menu. However, the desired log is
+written. It starts from Terminal/SSH and seems to work. I can also play
+videos. If you need the kodi.log, let me know.
+ strace_output.txt
+1003.98 KB External
+[yolofant]
+yolofant 02/01/2026 3:20 PM
+then kodi can't read the database
+02/01/2026 3:20 PM
+it happens sometimes if you reinstall too often that the application
+gets a new uid/gid
+02/01/2026 3:20 PM
+also possible that the file permissions are broken
+02/01/2026 3:19 PM
+I would just run it via jailer to find out why
+[satdx62]
+[] ccarnell98 <@917488160580182068> <@1303078957586972733> can you try
+this build? https://github.com/cscd98/kodi-...
+satdx62 02/01/2026 3:12 PM
+Hello, thank you, I will test it as soon as I get home.
+[ccarnell98]
+ccarnell98 02/01/2026 11:53 AM
+@satdx62 @Skull_Face can you try this build?
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.702_all.ipk
+uninstall kodi and delete /tmp/kodi.log before you do. run it from the
+menu. it should make /media/developer/temp/strace_output.txt if you
+could paste that. it should let me know why it doesnt start from the
+menu. ALSO it now sets max frame rate to 60fps, so if you could try
+playback (from ssh after) that would be good. thanks (edited)
+[ccarnell98]
+[] satdx62 Right, I'm signing off for now, my wife wants the remote.
+I'll have to find something else to do unt...
+ccarnell98 02/01/2026 11:14 AM
+do you have strace on your TV? (if you do, whats the path to it)
+(edited)
+January 31, 2026
+[satdx62]
+[] ccarnell98 if that crashes, just turn both ON and use gdbserver
+satdx62 01/31/2026 6:00 PM
+Right, I'm signing off for now, my wife wants the remote. I'll have to
+find something else to do until then.
+[satdx62]
+[] ccarnell98 if that crashes, just turn both ON and use gdbserver
+satdx62 01/31/2026 5:55 PM
+Yes, I understand that, but I can't see the status. It's like being
+blind to me.
+ 1
+[ccarnell98]
+ccarnell98 01/31/2026 5:54 PM
+if that crashes, just turn both ON and use gdbserver
+01/31/2026 5:53 PM
+test it like that
+01/31/2026 5:53 PM
+starfish decoder should be ON, gstreamer elements should be OFF
+01/31/2026 5:53 PM
+damn thats an annoying bug 
+01/31/2026 5:53 PM
+that log is with starfish decoder off
+01/31/2026 5:49 PM
+by default they are both on
+[satdx62]
+[] ccarnell98 Can you: ⁨⁨⁨```1. renable starfish decoder 2. turn off
+Gstreamer elements (its right above) 3. try p...
+satdx62 01/31/2026 5:49 PM
+Okay, I did that, but now it freezes. No image and I can't get out.
+Also, I still don't know whether something is turned on or off. See
+image. Can you fix this in another build?
+[Kodi_Settings.png]
+ Kodi_Settings.png
+596.01 KB External
+ kodi.log
+478.79 KB External
+[ccarnell98]
+ccarnell98 01/31/2026 5:34 PM
+Can you: ⁨⁨⁨
+    1. renable starfish decoder
+    2. turn off Gstreamer elements (its right above)
+    3. try playback (if it fails, just turn gstreamer back on) :P
+    4. if it failed, lets do a new gdbserver crash trace like you was doing before
+⁩⁩⁩(edited)
+[ccarnell98]
+[] satdx62 It looks good with the disabled starfish decoder. I'll have
+to figure out how to do that, as there a...
+ccarnell98 01/31/2026 5:34 PM
+Thats great. That rules out the wayland changes being the cause of the
+crash
+[satdx62]
+[] ccarnell98 can you try ⁨```1. playing back the test file from ssh 2.
+if that fails, disable starfish decoder an...
+satdx62 01/31/2026 5:33 PM
+It looks good with the disabled starfish decoder. I'll have to figure
+out how to do that, as there are only white square tiles and no arrow
+symbols. I was able to play two different videos with images on the
+display without any crashes. It seems to be working.
+ kodi.log
+478.79 KB External
+[ccarnell98]
+ccarnell98 01/31/2026 5:15 PM
+can you try ⁨
+    1. playing back the test file from ssh
+    2. if that fails, disable starfish decoder and try playing again
+⁩
+[ccarnell98]
+[] satdx62 Hi, thank you, but I can't get Kodi to start from the menu.
+The Kodi logo appears, and then after 10...
+ccarnell98 01/31/2026 5:13 PM
+ah OK. back to running from ssh then
+ 1
+[satdx62]
+[] ccarnell98 <@917488160580182068> Can you follow these steps: ⁨⁨⁨⁨```1.
+using webOSdev manager or the webOS menu...
+satdx62 01/31/2026 5:13 PM
+Hi, thank you, but I can't get Kodi to start from the menu. The Kodi
+logo appears, and then after 10 seconds the TV picture appears instead.
+No log is written either.
+[ccarnell98]
+ccarnell98 01/31/2026 4:44 PM
+@satdx62 Can you follow these steps: ⁨⁨⁨⁨
+    1. using webOSdev manager or the webOS menu uninstall kodi 
+    2. check that /media/developer/apps/usr/palm/applications/org.xbmc.kodi deleted
+    3. rm /tmp/kodi.log
+    4. install https://github.com/cscd98/xbmc/actions/runs/21545345969/artifacts/5329101171
+    5. launch from the menu (not via ssh) - does it launch? try playing the kodi test sample earlier
+    6. if it doesn't play, change settings->player->video (expert) and turn off starfish decoder
+    7. relaunch kodi
+    8. try playing back the file again - does it play using sw decoding?
+⁩⁩⁩⁩(edited)
+[ccarnell98]
+[] yolofant well you need to calculate a cache key or make it static
+ccarnell98 01/31/2026 4:41 PM
+https://github.com/cscd98/xbmc/actions/caches seems to be there
+[yolofant]
+yolofant 01/31/2026 4:22 PM
+should probably just put 60 there always
+01/31/2026 4:22 PM
+the value gets truncated
+01/31/2026 4:22 PM
+maybe the maxFramerate is the problem because it is too low
+[satdx62]
+[] yolofant have you tried different ones?
+satdx62 01/31/2026 3:52 PM
+I will also test other files.
+[yolofant]
+yolofant 01/31/2026 3:50 PM
+have you tried different ones?
+[satdx62]
+satdx62 01/31/2026 3:49 PM
+Yes.
+[yolofant]
+yolofant 01/31/2026 3:48 PM
+so you play the video but you see nothing on screen?
+01/31/2026 3:48 PM
+as I said it only does something if it crashes
+ 1
+01/31/2026 3:47 PM
+ok that is fine though
+[satdx62]
+[] yolofant did you try it without debugging?
+satdx62 01/31/2026 3:47 PM
+I mean that nothing happens after ⁨continuing⁩ in the GDB debugger on the
+Linux PC. I can then select a video and the player interface opens, but
+without video content, and I can exit and close Kodi with Exit.
+[yolofant]
+yolofant 01/31/2026 3:31 PM
+did you try it without debugging?
+01/31/2026 3:31 PM
+I thought it worked before?
+01/31/2026 3:31 PM
+I don't understand
+[satdx62]
+satdx62 01/31/2026 3:20 PM
+stagnation
+01/31/2026 3:19 PM
+⁨⁨
+    (gdb) continue
+    Continuing.
+⁩⁩(edited)
+[yolofant]
+yolofant 01/31/2026 3:15 PM
+continue
+ 1
+[satdx62]
+satdx62 01/31/2026 3:15 PM
+[New Thread 9867.10133] [New Thread 9867.10146] [New Thread 9867.10148]
+[New Thread 9867.10149] [New Thread 9867.10150] [New Thread 9867.10151]
+[New Thread 9867.10152] [New Thread 9867.10153] [New Thread 9867.10154]
+[New Thread 9867.10155] [New Thread 9867.10157] [New Thread 9867.10160]
+[New Thread 9867.10161] [New Thread 9867.10177] [New Thread 9867.10178]
+[New Thread 9867.10179] [New Thread 9867.10182] [New Thread 9867.10184]
+[New Thread 9867.10185] [New Thread 9867.10186] [New Thread 9867.10284]
+Thread 1 "kodi-webos" received signal SIGINT, Interrupt. 0x75cab0d0 in
+cstatep_require_stage_variant () from target:/usr/lib/libmali.so (gdb)
+01/31/2026 3:14 PM
+(no content)
+ message.txt
+5.11 KB External
+01/31/2026 3:11 PM
+I'm stuck here now. Should I wait?
+ Debug.txt
+31.94 KB External
+[yolofant]
+yolofant 01/31/2026 3:06 PM
+n
+ 1
+[satdx62]
+[] yolofant so if nothing happens that is good
+satdx62 01/31/2026 3:06 PM
+y or n?
+ message.txt
+6.45 KB External
+[aabytt]
+aabytt 01/31/2026 3:05 PM
+Is it possible to make Kodi autoplay URL supplied with argv[1] on
+launch?
+[satdx62]
+[] yolofant so if nothing happens that is good
+satdx62 01/31/2026 3:02 PM
+I will repeat this and post the result.
+[satdx62]
+[] yolofant so if nothing happens that is good
+satdx62 01/31/2026 3:00 PM
+Everything comes to a standstill.
+[yolofant]
+yolofant 01/31/2026 2:59 PM
+so if nothing happens that is good
+01/31/2026 2:59 PM
+it only does something if you explicitly interrupt it or the application
+crashes
+01/31/2026 2:58 PM
+what do you mean with freezes?
+[satdx62]
+[] ccarnell98 didn't even know that was a thing, but that makes sense
+satdx62 01/31/2026 2:57 PM
+Should I wait until this build is finished? With the previous one, debug
+freezes and won't continue. However, I was able to start a video on
+Kodi. Maybe the log will be of interest to you.
+ kodi.log
+206.85 KB External
+[yolofant]
+yolofant 01/31/2026 2:53 PM
+because you never write to the cache
+01/31/2026 2:53 PM
+but how you currently set it up I dont think it works
+01/31/2026 2:52 PM
+you can remove caches from actions tab
+01/31/2026 2:52 PM
+well you need to calculate a cache key or make it static
+[ccarnell98]
+ccarnell98 01/31/2026 2:46 PM
+https://github.com/cscd98/xbmc/actions/runs/21545345969
+01/31/2026 2:44 PM
+didn't even know that was a thing, but that makes sense
+[yolofant]
+yolofant 01/31/2026 2:34 PM
+and maybe you start caching depends on the gh action so the build
+doesn't take so long
+ 1
+01/31/2026 2:31 PM
+yes
+[ccarnell98]
+[] yolofant maybe remove the exception handling from cthread to make it
+forcefully crash?
+ccarnell98 01/31/2026 2:29 PM
+Remove the try catch here?
+https://github.com/xbmc/xbmc/blob/master/xbmc/addons/kodi-dev-kit/include/kodi/tools/Thread.h#L207
+[ccarnell98]
+ccarnell98 01/31/2026 2:27 PM
+@satdx62 actually yeh lets update the build that I posted earlier and
+when it crashes (using gdbserver) run ⁨
+    threads apply all bt
+⁩just in case the PrepareFramePresentation is a red herring
+[yolofant]
+yolofant 01/31/2026 2:20 PM
+maybe remove the exception handling from cthread to make it forcefully
+crash?
+[yolofant]
+yolofant 01/31/2026 1:19 PM
+and next time do ⁨threads apply all bt⁩
+[yolofant]
+yolofant 01/31/2026 1:10 PM
+because we are missing line numbers it seems
+01/31/2026 1:10 PM
+can probably only set breakpoints on functions
+01/31/2026 1:09 PM
+at least not with that setup
+01/31/2026 1:09 PM
+hmm can't really set a breakpoint
+01/31/2026 1:08 PM
+you could set a breakpoint there
+01/31/2026 1:08 PM
+so it won't crash
+01/31/2026 1:08 PM
+because CThread catches exceptions
+01/31/2026 1:07 PM
+thing is currently it will not catch the string null thing
+[satdx62]
+satdx62 01/31/2026 12:46 PM
+I have to leave the house for a moment to run an errand. See you later!
+ 1
+01/31/2026 12:45 PM
+(no content)
+ message.txt
+2.47 KB External
+[satdx62]
+[] ccarnell98 if the problem was with feedlegacy (where it handles
+string/char) i've made it safer... building her...
+satdx62 01/31/2026 12:43 PM
+I think everything has crashed.
+[ccarnell98]
+ccarnell98 01/31/2026 12:42 PM
+if the problem was with feedlegacy (where it handles string/char) i've
+made it safer... building here:
+https://github.com/cscd98/xbmc/actions/runs/21543854667
+01/31/2026 12:41 PM
+although tbf I've never used it with kodi, only retroarch
+01/31/2026 12:41 PM
+and wait... 
+01/31/2026 12:41 PM
+I always press y
+[yolofant]
+yolofant 01/31/2026 12:37 PM
+you need to press n for the debuginfod thing
+[ccarnell98]
+ccarnell98 01/31/2026 12:35 PM
+which will tell you where
+01/31/2026 12:35 PM
+then type ⁨
+⁩
+01/31/2026 12:35 PM
+should say in gdbserver that it crashed
+[satdx62]
+[] ccarnell98 awesome. what did it output on crash
+satdx62 01/31/2026 12:34 PM
+Where can I see that?
+[ccarnell98]
+ccarnell98 01/31/2026 12:31 PM
+awesome. what did it output on crash
+[satdx62]
+satdx62 01/31/2026 12:31 PM
+I have now continued with yes.
+01/31/2026 12:30 PM
+(no content)
+ message.txt
+6.59 KB External
+[ccarnell98]
+ccarnell98 01/31/2026 12:15 PM
+this is my ~/.gdbinit (ignore some things) from my laptop: ⁨
+    # ~/.gdbinit
+    # Always use ARMv7 disassembly/decoding
+    set architecture armv7
+    # Point GDB at your extracted sysroot
+    set sysroot "/home/cscd98/Downloads/Archived LG Libraries/LG OLED65G4/Software File(Version 33.21.85)/33.21.85.01-HE_DTV_W24O_AFABATAA/super/squashfs-root"
+    # Shared library search paths
+    set solib-search-path "/media/developer/temp/retroarch/.config/retroarch/cores:/home/cscd98/Developer/dolphin-fml/build/webos:/home/cscd98/Downloads/Archived LG Libraries/LG OLED65G4/Software File(Version 33.21.85)/33.21.85.01-HE_DTV_W24O_AFABATAA/super/squashfs-root/usr/lib:/home/cscd98/Downloads/Archived LG Libraries/LG OLED65G4/Software File(Version 33.21.85)/33.21.85.01-HE_DTV_W24O_AFABATAA/super/squashfs-root/lib"
+    # Enable debuginfod lookups
+    set debuginfod enabled on
+    set breakpoint pending on
+    # Initial connection
+    target remote 192.168.1.122:1234
+⁩
+01/31/2026 12:14 PM
+then ⁨
+    target remote 192.168.1.122:1234
+⁩(TV IP)
+01/31/2026 12:13 PM
+then on my laptop: ⁨
+    gdb-multiarch --args ./kodi-webos -L --debug --portable
+⁩
+01/31/2026 12:13 PM
+then ⁨
+    gdbserver :1234 ./kodi-webos -L --debug --portable
+⁩
+01/31/2026 12:13 PM
+⁨
+    export LD_LIBRARY_PATH='/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib:/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib'
+⁩
+01/31/2026 12:13 PM
+on TV:
+01/31/2026 12:13 PM
+hmm. this is how I do it on mine:
+[satdx62]
+satdx62 01/31/2026 12:09 PM
+Yes.
+[ccarnell98]
+ccarnell98 01/31/2026 12:09 PM
+are you using gdb-multiarch (on your PC/laptop)
+[satdx62]
+[] ccarnell98 Could you run it with gdb / gdbserver to find the crash
+location?
+satdx62 01/31/2026 12:08 PM
+⁨
+    (gdb) target remote 192.168.2.87:12345
+    Remote debugging using 192.168.2.87:12345
+    warning: while parsing target description (at line 4): Target description specified unknown architecture "arm"
+    warning: Could not load XML target description; ignoring
+    Reading /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos from remote target...
+    warning: File transfers from remote targets can be slow. Use "set sysroot" to access files locally instead.
+    Reading /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos from remote target...
+    Reading symbols from target:/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos...
+    Remote 'g' packet reply is too long (expected 312 bytes, got 328 bytes): 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0fcff7e00000000407dfd76100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    (gdb) continue
+    The program is not being run.
+⁩
+[ccarnell98]
+[] satdx62 Yes,
+https://discord.com/channels/407937994037919756/1464344116325388423/1466884876589334807
+ccarnell98 01/31/2026 12:02 PM
+Could you run it with gdb / gdbserver to find the crash location?
+[yolofant]
+yolofant 01/31/2026 11:39 AM
+in the video thread
+01/31/2026 11:39 AM
+but anyway at some point you try to construct a string from null
+01/31/2026 11:39 AM
+nvm I think it's fine
+[yolofant]
+yolofant 01/31/2026 11:20 AM
+it will not necessary be null terminated
+01/31/2026 11:20 AM
+so when you copy into the char[]
+01/31/2026 11:20 AM
+std::string is not null terminated
+01/31/2026 11:20 AM
+I think you have a problem when using the returned string
+[satdx62]
+satdx62 01/31/2026 11:09 AM
+Yes,
+https://discord.com/channels/407937994037919756/1464344116325388423/1466884876589334807
+[ccarnell98]
+ccarnell98 01/31/2026 11:05 AM
+did you ever get gdb/gdbserver setup?
+[ccarnell98]
+ccarnell98 01/31/2026 10:33 AM
+error is : 2026-01-31 10:20:41.624 T:7005 debug <general>: Thread
+Terminating with Exception: basic_string::_S_construct null not valid
+[satdx62]
+[] ccarnell98 can you try something like:
+https://drive.google.com/file/d/0BwxFVkl63-lERkJRU003ZTd2VEk/view?usp=sh...
+satdx62 01/31/2026 10:32 AM
+(no content)
+ SSH_kodi.txt
+4.39 KB External
+ kodi.log
+7.22 KB External
+ temp_kodi.log
+207.84 KB External
+[ccarnell98]
+ccarnell98 01/31/2026 10:24 AM
+@satdx62 @Skull_Face @Yolofant version building here:
+https://github.com/cscd98/xbmc/actions/runs/21542339191 has a new option
+while testing: Settings->Player->Videos->GStreamer: use video elements
+(default true). So we can continue to debug the issue. (edited)
+ 1
+[ccarnell98]
+[] satdx62 Click to see attachment
+ccarnell98 01/31/2026 10:01 AM
+can you try something like:
+https://drive.google.com/file/d/0BwxFVkl63-lERkJRU003ZTd2VEk/view?usp=sharing&resourcekey=0-swC_jMVMd_EXmweT0tGKSg
+(this is from https://kodi.wiki/view/Samples). I've never seen that
+error before
+[satdx62]
+[] ccarnell98 <@1303078957586972733> <@917488160580182068> there is a
+version building here without gstreamer elem...
+satdx62 01/31/2026 12:11 AM
+(no content)
+ kodi_SSH.txt
+5.61 KB External
+ temp_kodi.log
+215.54 KB External
+January 30, 2026
+[yolofant]
+yolofant 01/30/2026 10:43 PM
+if it is indeed the problem
+01/30/2026 10:43 PM
+just maybe needs a different offset or struct layout
+01/30/2026 10:42 PM
+I guess it can probably still work
+01/30/2026 10:42 PM
+the gstreamer stuff is kind of necessary though for proper stream eos
+detection
+ 1
+[ccarnell98]
+ccarnell98 01/30/2026 10:37 PM
+@Skull_Face @satdx62 there is a version building here without gstreamer
+elements: https://github.com/cscd98/xbmc/actions/runs/21530720560
+(unless you'd rather see if that can be fixed first with what you have)
+@Skull_Face if you can try this version as we are still trying to get
+wayland to work on webOS 2 
+[yolofant]
+yolofant 01/30/2026 9:09 PM
+[satdx62]
+[] yolofant for me only gdbserver works 
+satdx62 01/30/2026 9:08 PM
+I'll try. I can't do anything on the device at the moment because my
+wife stole the remote control! She wants to watch TV. 
+[yolofant]
+yolofant 01/30/2026 9:07 PM
+for me only gdbserver works 
+01/30/2026 9:07 PM
+but as I said not sure if it works
+01/30/2026 9:07 PM
+in theory make gdb in buildroot-nc4 should get it
+[satdx62]
+[] yolofant well do you still have the `/home/root/gdb`?
+satdx62 01/30/2026 9:05 PM
+Oh no, but I can try to compile it myself.
+[yolofant]
+yolofant 01/30/2026 9:04 PM
+well do you still have the /home/root/gdb?
+[satdx62]
+[] yolofant hmm weird
+satdx62 01/30/2026 9:03 PM
+Would this help?
+    LD_LIBRARY_PATH="/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib:/usr/lib" /home/root/gdb --args /usr/bin/jailer -t native_devmode -i org.xbmc.kodi -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos --logging=console --debug
+[yolofant]
+yolofant 01/30/2026 9:01 PM
+hmm weird
+[satdx62]
+[] yolofant can it continue again?
+satdx62 01/30/2026 9:01 PM
+Program terminated with signal SIGHUP, Hangup. The program no longer
+exists. (gdb)
+[yolofant]
+yolofant 01/30/2026 9:00 PM
+can it continue again?
+[satdx62]
+[] yolofant then do continue
+satdx62 01/30/2026 8:59 PM
+(gdb) continue Continuing. Program received signal SIGHUP, Hangup.
+0x76fd7d40 in _start () from target:/lib/ld-linux.so.3 (gdb)
+[yolofant]
+yolofant 01/30/2026 8:58 PM
+then do continue
+01/30/2026 8:58 PM
+oh
+[satdx62]
+[] yolofant now type run
+satdx62 01/30/2026 8:57 PM
+The "remote" target does not support "run". Try "help target" or
+"continue". (gdb)
+[yolofant]
+yolofant 01/30/2026 8:57 PM
+now type run
+01/30/2026 8:56 PM
+good
+[satdx62]
+[] yolofant then you launch gdb-multiarch instead
+satdx62 01/30/2026 8:56 PM
+    (gdb) target remote 192.168.2.87:12345
+    Remote debugging using 192.168.2.87:12345
+    Reading /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos from remote target...
+    warning: File transfers from remote targets can be slow. Use "set sysroot" to access files locally instead.
+    Reading /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos from remote target...
+    Reading symbols from target:/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos...
+    Reading /lib/ld-linux.so.3 from remote target...
+    Reading /lib/ld-linux.so.3 from remote target...
+    Reading symbols from target:/lib/ld-linux.so.3...
+    0x76fd7d40 in _start () from target:/lib/ld-linux.so.3
+    (gdb)
+[yolofant]
+yolofant 01/30/2026 8:48 PM
+then you launch gdb-multiarch instead
+01/30/2026 8:47 PM
+yes
+ 1
+[satdx62]
+satdx62 01/30/2026 8:47 PM
+on Linux?
+[yolofant]
+yolofant 01/30/2026 8:47 PM
+I think you need to install gdb-multiarch
+[satdx62]
+[] yolofant of course replace IP_TV
+satdx62 01/30/2026 8:46 PM
+    (gdb) target remote 192.168.2.87:12345
+    Remote debugging using 192.168.2.87:12345
+    warning: while parsing target description (at line 4): Target description specified unknown architecture "arm"
+    warning: Could not load XML target description; ignoring
+    Reading /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos from remote target...
+    warning: File transfers from remote targets can be slow. Use "set sysroot" to access files locally instead.
+    Reading /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos from remote target...
+    Reading symbols from target:/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos...
+    Remote 'g' packet reply is too long (expected 312 bytes, got 328 bytes): 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0fcff7e00000000407dfd76100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    (gdb)
+[yolofant]
+yolofant 01/30/2026 8:43 PM
+of course replace IP_TV
+01/30/2026 8:43 PM
+target remote IP_TV:12345
+01/30/2026 8:43 PM
+then just type this
+01/30/2026 8:43 PM
+now launch gdb on your computer
+01/30/2026 8:43 PM
+ok
+[satdx62]
+[] yolofant /home/root/gdbserver :12345
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+--d...
+satdx62 01/30/2026 8:43 PM
+    root@LGwebOSTV:~# /home/root/gdbserver :12345 /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos --debug
+    warning: Found custom handler for signal 4 (Illegal instruction) preinstalled.
+    warning: Found custom handler for signal 6 (Aborted) preinstalled.
+    warning: Found custom handler for signal 7 (Bus error) preinstalled.
+    warning: Found custom handler for signal 8 (Floating point exception) preinstalled.
+    warning: Found custom handler for signal 11 (Segmentation fault) preinstalled.
+    warning: Found custom handler for signal 16 (Stack fault) preinstalled.
+    Some signal dispositions inherited from the environment (SIG_DFL/SIG_IGN)
+    won't be propagated to spawned programs.
+    Process /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos created; pid = 9683
+    Listening on port 12345
+[yolofant]
+yolofant 01/30/2026 8:37 PM
+/home/root/gdbserver :12345
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+--debug
+01/30/2026 8:37 PM
+ok
+[satdx62]
+[] yolofant arm-webos-linux-gnueabi/debug-root/usr/bin/gdbserver in this
+folder in buildroot-nc4
+satdx62 01/30/2026 8:37 PM
+All right, I have now set up the gdberver on TV in /home/root/gdbserver
+with 755.
+[yolofant]
+yolofant 01/30/2026 8:30 PM
+arm-webos-linux-gnueabi/debug-root/usr/bin/gdbserver in this folder in
+buildroot-nc4
+01/30/2026 8:29 PM
+from buildroot nc4
+ 1
+01/30/2026 8:29 PM
+no you need gdbserver on the tv
+[satdx62]
+[] yolofant you run gdb on your WSL2 and connect it to the gdbserver
+running on the TV
+satdx62 01/30/2026 8:29 PM
+Okay, gdb is on TV in /home/root/gdb
+[yolofant]
+yolofant 01/30/2026 8:28 PM
+you run gdb on your WSL2 and connect it to the gdbserver running on the
+TV
+01/30/2026 8:27 PM
+huh, what do you mean?
+[satdx62]
+[] yolofant at least I think that is how that works 
+satdx62 01/30/2026 8:27 PM
+Should I set up a Linux remote debugging environment with GDB?
+[yolofant]
+yolofant 01/30/2026 8:22 PM
+at least I think that is how that works 
+01/30/2026 8:22 PM
+then you just do target remote IP_TV:12345
+01/30/2026 8:21 PM
+then from your computer open a gdb session
+01/30/2026 8:20 PM
+/home/root/gdbserver :12345
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+--debug
+01/30/2026 8:18 PM
+then you launch it like this
+01/30/2026 8:17 PM
+so then you need to copy the gdbserver to the tv
+ 1
+01/30/2026 8:17 PM
+ok
+[satdx62]
+[] yolofant usually the ubuntu/debian gdb-multiarch should work
+satdx62 01/30/2026 8:16 PM
+Okay, ich habe eine.
+    fm@LAPTOP-DG0QB50H:~$ gdb --version
+    GNU gdb (Ubuntu 15.0.50.20240403-0ubuntu1) 15.0.50.20240403-git
+    Copyright (C) 2024 Free Software Foundation, Inc.
+    Lizenz GPLv3+: GNU GPL Version 3 oder später <http://gnu.org/licenses/gpl.html>
+    Dies ist freie Software: Sie können sie ändern und weitergeben.
+    Es gibt KEINE GARANTIE, soweit gesetzlich zulässig.
+    fm@LAPTOP-DG0QB50H:~$
+[yolofant]
+yolofant 01/30/2026 8:13 PM
+usually the ubuntu/debian gdb-multiarch should work
+01/30/2026 8:06 PM
+i.e in WSL2
+ 1
+01/30/2026 8:06 PM
+for your computer
+01/30/2026 8:06 PM
+but you'd also need a gdb then
+01/30/2026 8:06 PM
+arm-webos-linux-gnueabi/debug-root/usr/bin/gdbserver
+01/30/2026 8:05 PM
+ok we only have gdbserver by default
+01/30/2026 8:01 PM
+but I'm not sure if it works because for me only gdbserver works
+correctly D:
+01/30/2026 7:58 PM
+There is one in buildroot nc4
+[satdx62]
+[] yolofant do you have a gdb / gdbserver?
+satdx62 01/30/2026 7:52 PM
+When I use this gdb from here
+(https://discord.com/channels/407937994037919756/1088800881304154175/1134459237511204894),
+my Bitdefender raises an alarm: "Trojan.Linux. GenericKD.39834."
+[yolofant]
+yolofant 01/30/2026 6:31 PM
+do you have a gdb / gdbserver?
+[satdx62]
+[] yolofant did you get segmentation fault on terminal?
+satdx62 01/30/2026 6:06 PM
+No, I don't see any segmentation fault.
+ kodi_SSH.txt
+8.32 KB External
+[yolofant]
+yolofant 01/30/2026 6:04 PM
+I guess the most likely cause is the access into gstreamer elements
+01/30/2026 6:03 PM
+did you get segmentation fault on terminal?
+01/30/2026 6:03 PM
+so idk
+01/30/2026 6:03 PM
+but we never fed data yet
+01/30/2026 6:02 PM
+ok
+[satdx62]
+[] yolofant again aac audio
+satdx62 01/30/2026 5:51 PM
+(no content)
+ kodi.log
+285.49 KB External
+[yolofant]
+yolofant 01/30/2026 5:07 PM
+again aac audio
+[satdx62]
+[] yolofant something with not 4k?
+satdx62 01/30/2026 4:59 PM
+(no content)
+ kodi.log
+194.68 KB External
+[satdx62]
+[] yolofant something with not 4k?
+satdx62 01/30/2026 4:46 PM
+Okay, I'll play it in HD. Yes, that could be the reason, but I can play
+UHD/4K videos in full resolution on my webOS3 with the old Kodi version.
+(edited)
+[yolofant]
+yolofant 01/30/2026 4:32 PM
+also av1 not sure if that can work on webos 3 (edited)
+01/30/2026 4:32 PM
+I think now it is hardcoded for max 1080p
+01/30/2026 4:31 PM
+something with not 4k?
+[satdx62]
+[] yolofant maybe you could also try a different file because this one
+is aac audio which might have issues
+satdx62 01/30/2026 4:27 PM
+(no content)
+ kodi.log
+198.98 KB External
+[yolofant]
+yolofant 01/30/2026 4:22 PM
+but the last thing that happens is the loadcompleted callback
+01/30/2026 4:19 PM
+or dts
+01/30/2026 4:19 PM
+ac3 would be better
+01/30/2026 4:19 PM
+maybe you could also try a different file because this one is aac audio
+which might have issues
+01/30/2026 4:16 PM
+hmm did you see the first frame?
+[satdx62]
+[] yolofant Also enable debug logging for Video component
+satdx62 01/30/2026 4:11 PM
+Video component debugging enabled.
+ kodi.log
+219.98 KB External
+skull_face101 01/30/2026 4:06 PM
+@Craig
+01/30/2026 4:06 PM
+(no content)
+ message.txt
+10.57 KB External
+01/30/2026 4:05 PM
+(no content)
+ message.txt
+2.02 KB External
+01/30/2026 4:05 PM
+(no content)
+ message.txt
+18.47 KB External
+01/30/2026 4:05 PM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+WAYLAND_DEBUG=1 ./kodi-webos --debug [HLunaServiceBridge::proc]-->
+{"missingConfigs":["tv.model.*","tv.nyx.*"],"subscribed":false,"errorCode":-1,"returnValue":false,"errorText":"No
+Entry Found ,fetch record failed"} [1253318.663] ->
+wl_display@1.get_registry(new id wl_registry@2) [1253320.385] ->
+wl_display@1.sync(new id wl_callback@3) [1253325.689]
+wl_callback@3.done(14) [1253326.042] wl_display@1.delete_id(3)
+[1253326.309] -> wl_display@1.sync(new id wl_callback@3) [1253326.753]
+wl_callback@3.done(14) [1253326.882] wl_display@1.delete_id(3) terminate
+called after throwing an instance of 'std::runtime_error' what():
+Missing required wl_compositor protocol Segmentation fault
+[yolofant]
+yolofant 01/30/2026 3:45 PM
+the additional debug info should not matter
+01/30/2026 3:45 PM
+and it's not loaded into memory
+ 1
+01/30/2026 3:45 PM
+yes but that is storage not memory
+[satdx62]
+[] yolofant maybe you can also check if you have running processes in
+the backgroudn that consume a lot of memor...
+satdx62 01/30/2026 3:43 PM
+Hi, yes, of course I can do that as soon as I can use the TV again. The
+kodi-webos is almost 500 MB in size.
+[yolofant]
+yolofant 01/30/2026 3:35 PM
+maybe you can also check if you have running processes in the backgroudn
+that consume a lot of memory
+01/30/2026 3:35 PM
+1,7gig is already much used
+[yolofant]
+yolofant 01/30/2026 3:27 PM
+Also enable debug logging for Video component
+01/30/2026 3:27 PM
+Like significantly?
+01/30/2026 3:27 PM
+If you start the movie does that value rise?
+01/30/2026 3:27 PM
+That is kodi memory only
+01/30/2026 3:26 PM
+The mem in the debug overlay
+01/30/2026 3:26 PM
+System memory
+01/30/2026 3:26 PM
+Not storage
+[satdx62]
+[] yolofant I think the debug overlay should show it too
+satdx62 01/30/2026 3:19 PM
+(no content)
+[Kodi_info.png]
+ Kodi_info.png
+1.33 MB External
+[yolofant]
+yolofant 01/30/2026 3:07 PM
+I think the debug overlay should show it too
+01/30/2026 3:07 PM
+Can you monitor the available memory while running?
+[satdx62]
+satdx62 01/30/2026 3:03 PM
+Maybe out of memory.
+[satdx62]
+[] yolofant Did you see the movie on screen?
+satdx62 01/30/2026 3:02 PM
+It stayed on start-up, and then froze.
+[satdx62]
+satdx62 01/30/2026 3:01 PM
+No.
+[yolofant]
+yolofant 01/30/2026 3:01 PM
+Did you see the movie on screen?
+01/30/2026 2:56 PM
+Maybe out of memory?
+01/30/2026 2:56 PM
+Though it did not segfault
+01/30/2026 2:55 PM
+And it closed
+01/30/2026 2:55 PM
+After you can it
+01/30/2026 2:54 PM
+It should be on the TV
+01/30/2026 2:54 PM
+No
+[satdx62]
+[] yolofant With random number
+satdx62 01/30/2026 2:53 PM
+I would need to install it to see. I'll do that right away.
+[yolofant]
+yolofant 01/30/2026 2:52 PM
+With random number
+01/30/2026 2:52 PM
+No core1233321
+[satdx62]
+[] yolofant In the kodi folder
+satdx62 01/30/2026 2:52 PM
+kodi-webos?
+[yolofant]
+yolofant 01/30/2026 2:49 PM
+In the kodi folder
+01/30/2026 2:49 PM
+Is there a core file?
+01/30/2026 2:48 PM
+Probably close to working now
+ 1
+[satdx62]
+[] yolofant gst-plugin-scanner is probably not needed on 3.x
+satdx62 01/30/2026 2:48 PM
+These are the libs in the working Old Kodi Build for webOS 3.x.
+[kodi_lib.png]
+ kodi_lib.png
+5.59 KB External
+[satdx62]
+[] yolofant gst-plugin-scanner is probably not needed on 3.x
+satdx62 01/30/2026 2:39 PM
+(no content)
+ temp_kodi.log
+192.62 KB External
+ wayland_kodi-webos_5770.log
+1.32 MB External
+ tmp_kodi.log
+7.82 KB External
+ kodi_SSH.txt
+4.3 KB External
+[satdx62]
+[] yolofant so the env variable probably should jusdt not be set
+satdx62 01/30/2026 2:33 PM
+I'll do that right away.
+[yolofant]
+yolofant 01/30/2026 2:32 PM
+so the env variable probably should jusdt not be set
+01/30/2026 2:32 PM
+gst-plugin-scanner is probably not needed on 3.x
+01/30/2026 2:31 PM
+@satdx62 try deleting
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/gst-plugin-scanner
+[satdx62]
+[] ccarnell98 <@1303078957586972733> <@917488160580182068> new build:
+https://github.com/cscd98/xbmc/actions/runs/...
+satdx62 01/30/2026 2:17 PM
+Thank you, here are the results:
+ temp_kodi.log
+194.81 KB External
+ tmp_kodi.log
+7.82 KB External
+ wayland_kodi-webos_5697.log
+1.14 MB External
+ SSH_kodi.log
+4.52 KB External
+[ccarnell98]
+ccarnell98 01/30/2026 1:51 PM
+@Skull_Face @satdx62 new build:
+https://github.com/cscd98/xbmc/actions/runs/21512914466/artifacts/5317627044
+[ccarnell98]
+ccarnell98 01/30/2026 11:25 AM
+ah nvm I can see one was run as root and the other not
+[ccarnell98]
+ccarnell98 01/30/2026 11:14 AM
+something weird is going on since I updated discord yesterday I can't
+download the files  (edit: it works in web client) (edited)
+[ccarnell98]
+skull_face101
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+WAYLAND_DEBUG=1 ./kodi-web...
+ccarnell98 01/30/2026 11:10 AM
+is that from the 1st or 2nd run of kodi (its important) as your first
+kodi.log gets further (edited)
+[ccarnell98]
+ccarnell98 01/30/2026 11:07 AM
+i'll comment out for now
+[ccarnell98]
+[] yolofant or check in old chromium how it is done there
+ccarnell98 01/30/2026 11:05 AM
+its in the class, but its never called in chromium *updateHdrInfo*.
+There is the class definition for HdrInfo though (edited)
+[yolofant]
+yolofant 01/30/2026 10:56 AM
+the webos 2 is more involved [:kekW:]
+01/30/2026 10:56 AM
+do the webos 3 one first
+01/30/2026 10:56 AM
+for Load there seems to be only the overload without userdata
+01/30/2026 10:54 AM
+¯\_(ツ)_/¯
+01/30/2026 10:54 AM
+can only comment this stuff for now
+01/30/2026 10:54 AM
+maybe I guess
+01/30/2026 10:54 AM
+then it will be a problem with seeks
+01/30/2026 10:53 AM
+now you are missing sendSegmentEvent
+01/30/2026 10:53 AM
+I mean
+01/30/2026 10:53 AM
+well yeah
+[ccarnell98]
+ccarnell98 01/30/2026 10:53 AM
+for 2.2.3:
+    Missing symbol: _ZN17StarfishMediaAPIs16changeAudioCodecERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_
+    Missing symbol: _ZN17StarfishMediaAPIs4LoadEPKcPFvixS1_PvES2_
+    Missing symbol: _ZN3smp4util21getMaxVideoResolutionENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPiS7_S7_
+    Missing symbol: _ZN13mediapipeline14CustomPipeline16sendSegmentEventEv
+    Missing symbol: _ZN13mediapipeline14CustomPipeline14setContentInfoE23MEDIA_CUSTOM_SRC_TYPE_TP25MEDIA_CUSTOM_CONTENT_INFO
+    Missing symbol: _ZN17StarfishMediaAPIs4FeedB5cxx11EPKc
+    Missing symbol: _ZN17StarfishMediaAPIs10setHdrInfoEPKc
+[yolofant]
+yolofant 01/30/2026 10:48 AM
+I guess usually the function is not called because ffmpeg does not
+provide all the information and then returns early
+01/30/2026 10:48 AM
+but then it should already not work on 4.x now?
+01/30/2026 10:47 AM
+though setHdr is only there from 5.x?
+01/30/2026 10:45 AM
+usually hdr metadata is in the packets too
+01/30/2026 10:45 AM
+I would just comment the call for now [:kekW:]
+01/30/2026 10:45 AM
+D:
+01/30/2026 10:45 AM
+it also uses std::string
+01/30/2026 10:44 AM
+the struct is actually a class and it has a virtual destructor which
+might mess with the memory layout
+01/30/2026 10:44 AM
+or check in old chromium how it is done there
+01/30/2026 10:40 AM
+but you'd have to add the struct
+01/30/2026 10:39 AM
+there is that
+01/30/2026 10:39 AM
+StarfishMediaAPIs::updateHdrInfo(mediapipeline::HdrInfo const*)
+01/30/2026 10:39 AM
+but setHdrInfo is missing too
+01/30/2026 10:39 AM
+then feed is ok
+01/30/2026 10:39 AM
+max video resolution I don't think is there, you need to do it
+differently or assume something
+01/30/2026 10:39 AM
+changeAudioCodec we already knew it is >=6.x
+01/30/2026 10:39 AM
+oof
+[ccarnell98]
+ccarnell98 01/30/2026 10:37 AM
+hmm
+    Verify result for firmware Firmware 05.60.30.01, webOS 3.4.0, OTA ID: HE_DTV_W16N_AFADABAA:
+    Missing symbol: _ZN17StarfishMediaAPIs16changeAudioCodecERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_
+    Missing symbol: _ZN3smp4util21getMaxVideoResolutionENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPiS7_S7_
+    Missing symbol: _ZN17StarfishMediaAPIs4FeedB5cxx11EPKc
+    Missing symbol: _ZN17StarfishMediaAPIs10setHdrInfoEPKc
+[yolofant]
+yolofant 01/30/2026 10:32 AM
+because I do not see it in compat data dumps
+01/30/2026 10:32 AM
+are you sure it is in libplayerapis on 3.x?
+[ccarnell98]
+ccarnell98 01/30/2026 10:30 AM
+at least that one is readable 
+01/30/2026 10:30 AM
+    c++filt _ZN3smp4util21getMaxVideoResolutionENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPiS7_S7_
+    smp::util::getMaxVideoResolution(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int*, int*, int*)
+[yolofant]
+yolofant 01/30/2026 10:29 AM
+I used clang one
+01/30/2026 10:29 AM
+just more verbose
+01/30/2026 10:29 AM
+that is the same
+01/30/2026 10:29 AM
+yes
+[ccarnell98]
+[] yolofant you can use c++filt to unmangle the symbol
+ccarnell98 01/30/2026 10:29 AM
+    c++filt _ZN3smp4util21getMaxVideoResolutionESsPiSsSs
+    smp::util::getMaxVideoResolution(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int*, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+[yolofant]
+yolofant 01/30/2026 10:28 AM
+you can use c++filt to unmangle the symbol
+01/30/2026 10:27 AM
+smp::util::getMaxVideoResolution(std::string, int*, std::string,
+std::string)
+[yolofant]
+[] ccarnell98 <@195583665265311744> any idea? playerIds is:
+https://github.com/cscd98/webos-userland/blob/smp4util...
+yolofant 01/30/2026 10:27 AM
+hmm either there is another overload or the signature is different
+[ccarnell98]
+ccarnell98 01/30/2026 10:22 AM
+@Skull_Face what is the difference between the first and third log? (the
+first gets further) (edited)
+skull_face101 01/30/2026 12:58 AM
+@Craig
+01/30/2026 12:58 AM
+(no content)
+ message.txt
+10.57 KB External
+01/30/2026 12:57 AM
+(no content)
+ message.txt
+2.02 KB External
+01/30/2026 12:57 AM
+(no content)
+ message.txt
+18.4 KB External
+01/30/2026 12:57 AM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+WAYLAND_DEBUG=1 ./kodi-webos --debug [HLunaServiceBridge::proc]-->
+{"missingConfigs":["tv.model.*","tv.nyx.*"],"subscribed":false,"errorCode":-1,"returnValue":false,"errorText":"No
+Entry Found ,fetch record failed"} [2604810.060] ->
+wl_display@1.get_registry(new id wl_registry@2) [2604810.778] ->
+wl_display@1.sync(new id wl_callback@3) [2604811.202]
+wl_callback@3.done(466) [2604811.370] wl_display@1.delete_id(3)
+[2604811.584] -> wl_display@1.sync(new id wl_callback@3) [2604811.971]
+wl_callback@3.done(466) [2604812.062] wl_display@1.delete_id(3)
+terminate called after throwing an instance of 'std::runtime_error'
+what(): Missing required wl_compositor protocol Segmentation fault
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+[ccarnell98]
+[] satdx62 Click to see attachment
+ccarnell98 01/30/2026 12:12 AM
+Getting closer each version 
+ 1
+[ccarnell98]
+[] satdx62 The symbols are also missing everywhere in the menus.
+ccarnell98 01/30/2026 12:11 AM
+I noticed that before. Weird but low priority
+ 1
+[satdx62]
+satdx62 01/30/2026 12:08 AM
+The symbols are also missing everywhere in the menus.
+[7.png]
+ 7.png
+272.81 KB External
+[satdx62]
+[] ccarnell98 <@1303078957586972733> <@917488160580182068> when its
+finishing building: https://github.com/cscd98/...
+satdx62 01/30/2026 12:04 AM
+(no content)
+ Kodi_SSH.txt
+4.32 KB External
+ tmp_kodi.log
+7.82 KB External
+ temp_kodi.log
+187.73 KB External
+ kodi.log
+45.58 KB External
+January 29, 2026
+[ccarnell98]
+ccarnell98 01/29/2026 11:58 PM
+MediaPipelineWebOSLegacy.cpp:
+    #define _GLIBCXX_USE_CXX11_ABI 0
+    #include <memory>
+    #include <cstring>
+    #include <starfish-media-pipeline/StarfishMediaAPIs.h>
+    #include "MediaPipelineWebOS.h"
+    std::unique_ptr<char[]> CMediaPipelineWebOS::FeedLegacy(StarfishMediaAPIs* api, const char* payload)
+    {
+        auto res = api->Feed(payload);
+        auto p = std::unique_ptr<char[]>(new char[res.size() + 1]);
+        std::strncpy(p.get(), res.c_str(), res.size() + 1);
+        return p;
+    }
+    bool CMediaPipelineWebOS::getLegacyMaxVideoResolution(const char* codec, int32_t* maxWidth, 
+        int32_t* maxHeight, int32_t* maxFramerate)
+    {
+        std::string legacyCodec(codec);
+        return smp::util::getMaxVideoResolution(legacyCodec, maxWidth, maxHeight, maxFramerate);
+    }
+(edited)
+01/29/2026 11:58 PM
+called like
+      m_useLegacy ? getLegacyMaxVideoResolution(ms_codecMap.at(videoHint.codec).data(), &maxWidth, &maxHeight,
+                                                &maxFramerate) :
+        smp::util::getMaxVideoResolution(ms_codecMap.at(videoHint.codec).data(), &maxWidth, &maxHeight,
+                                         &maxFramerate);
+01/29/2026 11:58 PM
+@Yolofant any idea? playerIds is:
+https://github.com/cscd98/webos-userland/blob/smp4util/src/playerAPIs.lds
+    [100%] Linking CXX executable kodi-webos
+    build/cores/VideoPlayer/VideoPlayer.a(MediaPipelineWebOSLegacy.cpp.o):MediaPipelineWebOSLegacy.cpp:function CMediaPipelineWebOS::getLegacyMaxVideoResolution(char const*, int*, int*, int*):(.text+0x1c8): error: undefined reference to 'smp::util::getMaxVideoResolution(std::string, int*, int*, int*)'
+(edited)
+[yolofant]
+yolofant 01/29/2026 9:16 PM
+technically there are more abi incompabilities between c++11 and pre
+c++11 but std::string is probably the most prominent one
+01/29/2026 9:15 PM
+should probably check if there are more functions we call that take
+std::string
+01/29/2026 9:08 PM
+same change as with the feed legacy
+01/29/2026 9:08 PM
+you need to call the pre c++11 one now
+01/29/2026 9:08 PM
+you need to change kodi too
+[ccarnell98]
+ccarnell98 01/29/2026 9:05 PM
+@Skull_Face @satdx62 when its finishing building:
+https://github.com/cscd98/xbmc/actions/runs/21492958729
+ 2
+[yolofant]
+yolofant 01/29/2026 8:52 PM
+yes
+ 2
+[ccarnell98]
+ccarnell98 01/29/2026 8:44 PM
+to playerAPIs.ids?
+    "_ZN3smp4util21getMaxVideoResolutionESsPiSsSs" = "dummy";
+(edited)
+[yolofant]
+yolofant 01/29/2026 8:38 PM
+jsut with that GLIBC macro set to 0
+01/29/2026 8:37 PM
+the signature is the same
+01/29/2026 8:37 PM
+it just needs the symbol added in webos-userland
+01/29/2026 8:37 PM
+webos 3 is pre c++11
+01/29/2026 8:37 PM
+it is the c++11 version
+01/29/2026 8:37 PM
+no
+[ccarnell98]
+ccarnell98 01/29/2026 8:33 PM
+    namespace smp4util {
+        bool getMaxVideoResolution(
+            std::string video,
+            int* width,
+            std::string* height,
+            std::string* frameRate
+        );
+    }
+01/29/2026 8:27 PM
+do I just need to add the namespace/func to
+tools/depends/target/webos-userland/arm-webos-linux-gnueabi-release/include/starfish-media-pipeline/StarfishMediaAPIs.h
+?
+01/29/2026 8:23 PM
+playerAPIs.lds:
+    "_ZN3smp4util21getMaxVideoResolutionENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPiS7_S7_" = "dummy";
+[ccarnell98]
+[] yolofant that one is not in webos-userland
+ccarnell98 01/29/2026 8:17 PM
+is
+_ZN3smp4util21getMaxVideoResolutionENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPiS7S7
+not the same as
+    smp::util::getMaxVideoResolution(ms_codecMap.at(videoHint.codec).data(), &maxWidth, &maxHeight,
+                                       &maxFramerate);
+? (edited)
+[yolofant]
+yolofant 01/29/2026 8:06 PM
+or maybe dlsym
+ 1
+01/29/2026 8:05 PM
+so you'd need to add it there too
+01/29/2026 8:05 PM
+that one is not in webos-userland
+01/29/2026 8:04 PM
+yeah needs more patches for the c++ abi [:kekW:]
+[satdx62]
+[] ccarnell98 <@1303078957586972733> finished building:
+https://github.com/cscd98/xbmc/actions/runs/21487624078/ar...
+satdx62 01/29/2026 7:53 PM
+There was no “libAcb*”. Here are the results. The video started, but the
+Kodi UI was closed.
+ kodi.SSH.txt
+4.26 KB External
+ temp_kodi.log
+190.84 KB External
+ tmp_kodi.log
+7.82 KB External
+ wayland_kodi-webos_14218.log
+935.9 KB External
+[ccarnell98]
+[] satdx62 Thank you, I understand.
+ccarnell98 01/29/2026 7:26 PM
+@Skull_Face finished building:
+https://github.com/cscd98/xbmc/actions/runs/21487624078/artifacts/5308066076.
+make sure to run
+    rm /media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libAcb*
+first to get rid of the dummy file (edited)
+[satdx62]
+[] ccarnell98 It will work again for you. But I'll need to come up with
+another workaround as without libACBApi.so...
+satdx62 01/29/2026 6:39 PM
+Thank you, I understand.
+[ccarnell98]
+[] satdx62 Your new build has been running for about 24 minutes now.
+Isn't that fixed? <https://github.com/cscd...
+ccarnell98 01/29/2026 6:38 PM
+It will work again for you. But I'll need to come up with another
+workaround as without libACBApi.so it will crash on everyone elses TV
+after version 4
+[satdx62]
+[] ccarnell98 Thanks thats good so it should find lib/libdrm (in the
+IPK) but it doesn't with that build which is ...
+satdx62 01/29/2026 6:36 PM
+Your new build has been running for about 24 minutes now. Isn't that
+fixed? https://github.com/cscd98/xbmc/actions/runs/21487624078 (edited)
+[ccarnell98]
+[] satdx62 This is the result:
+ccarnell98 01/29/2026 6:33 PM
+Thanks thats good so it should find lib/libdrm (in the IPK) but it
+doesn't with that build which is annoying (edited)
+[satdx62]
+[] ccarnell98 and ls -la /usr/lib/libdrm* returns nothing? (on your TV)
+satdx62 01/29/2026 6:32 PM
+This is the result:
+ rootLGwebOSTV_ls_-la_usrliblibdr.txt
+2.32 KB External
+[ccarnell98]
+[] satdx62 Yes, libdrm.so.2 is available.
+ccarnell98 01/29/2026 6:21 PM
+and ls -la /usr/lib/libdrm* returns nothing? (on your TV) (edited)
+[satdx62]
+[] ccarnell98 libdrm is still in the IPK
+satdx62 01/29/2026 6:17 PM
+Yes, libdrm.so.2 is available.
+[ccarnell98]
+ccarnell98 01/29/2026 6:13 PM
+rebuilding: https://github.com/cscd98/xbmc/actions/runs/21487624078
+ 1
+01/29/2026 6:13 PM
+libdrm is still in the IPK
+01/29/2026 6:11 PM
+as I wanted to still include the fake libACBApi so
+01/29/2026 6:09 PM
+I would have thought it would have find libdrm without that
+01/29/2026 6:09 PM
+hmm I might have been premature removing ORIGIN/lib from RPATH
+    set(CMAKE_INSTALL_RPATH "${DEPENDS_PATH}/lib:$ORIGIN/lib")
+[yolofant]
+yolofant 01/29/2026 5:48 PM
+Just copy it from the other one
+[satdx62]
+[] ccarnell98 <@917488160580182068> <@1303078957586972733> new build:
+https://github.com/cscd98/xbmc/actions/runs/...
+satdx62 01/29/2026 5:20 PM
+The version does not start:
+    root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi# WAYLAND_DEBUG=1 ./kodi-webos --debug
+    ./kodi-webos: error while loading shared libraries: libdrm.so.2: cannot open shared object file: No such file or directory
+    root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+But I see that a new one is on the way.
+[yolofant]
+yolofant 01/29/2026 5:00 PM
+I mean it is ugly but it could work
+ 1
+01/29/2026 5:00 PM
+yes I think that is ok
+[ccarnell98]
+ccarnell98 01/29/2026 1:33 PM
+https://github.com/cscd98/xbmc/commit/dc74a0e0525cb4c4ed66bbc4ae386b558c63e98c
+[ccarnell98]
+[] yolofant i think it only is correct on > 5
+ccarnell98 01/29/2026 1:06 PM
+You're probably right. I had to add a workaround for retroarch
+[yolofant]
+yolofant 01/29/2026 12:57 PM
+i think it only is correct on > 5
+01/29/2026 12:56 PM
+and not sure if the webos version check works
+01/29/2026 12:56 PM
+it must be in a different compilation unit
+01/29/2026 12:56 PM
+no
+[ccarnell98]
+ccarnell98 01/29/2026 12:49 PM
+https://github.com/cscd98/xbmc/commit/882c2dbde613fe60d29ed6272cb21c1223a6255a
+?
+[yolofant]
+yolofant 01/29/2026 12:33 PM
+not sure if we use more APIs that are c++11 ABI
+01/29/2026 12:32 PM
+and i am not sure if we have the symbols in webos-userland
+01/29/2026 12:31 PM
+but you need to put the call to feed in another compilation unit
+01/29/2026 12:31 PM
+don't really need the weakref stuff if you can query it from the webOS
+version
+01/29/2026 12:31 PM
+https://github.com/webosbrew/xbmc/commit/bb982de7a3d9debfc6cd8cb79f64e5f04b40b96f
+webos: support 3.x SMP · webosbrew/xbmc@bb982de
+01/29/2026 12:30 PM
+it's probably crashing now in Feed
+01/29/2026 12:30 PM
+you need to fix the c++11 abi stuff
+[ccarnell98]
+ccarnell98 01/29/2026 12:18 PM
+@satdx62 @Skull_Face new build:
+https://github.com/cscd98/xbmc/actions/runs/21478255187/artifacts/5304013265
+(includes changes below now) (edited)
+[satdx62]
+satdx62 01/29/2026 12:28 AM
+(no content)
+ kodi.log
+7.82 KB External
+[satdx62]
+[] ccarnell98 <@917488160580182068> <@1303078957586972733> Fixed remote
+hopefully.. should be built in 1hr 20 min....
+satdx62 01/29/2026 12:28 AM
+The remote control is now functioning. The video could start, but then
+Kodi crashed.
+ temp_kodi.log
+174.01 KB External
+skull_face101 01/29/2026 12:03 AM
+(no content)
+ message.txt
+2.02 KB External
+01/29/2026 12:03 AM
+(no content)
+ message.txt
+18.4 KB External
+01/29/2026 12:03 AM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+WAYLAND_DEBUG=1 ./kodi-webos --debug [HLunaServiceBridge::proc]-->
+{"missingConfigs":["tv.model.*","tv.nyx.*"],"subscribed":false,"errorCode":-1,"returnValue":false,"errorText":"No
+Entry Found ,fetch record failed"} [3170595.039] ->
+wl_display@1.get_registry(new id wl_registry@2) [3170597.368] ->
+wl_display@1.sync(new id wl_callback@3) [3170612.431]
+wl_callback@3.done(40) [3170612.643] wl_display@1.delete_id(3)
+[3170612.915] -> wl_display@1.sync(new id wl_callback@3) [3170613.373]
+wl_callback@3.done(40) [3170613.478] wl_display@1.delete_id(3) terminate
+called after throwing an instance of 'std::runtime_error' what():
+Missing required wl_compositor protocol Segmentation fault
+January 28, 2026
+01/28/2026 11:56 PM
+(no content)
+ message.txt
+2.02 KB External
+01/28/2026 11:55 PM
+(no content)
+ message.txt
+18.4 KB External
+01/28/2026 11:55 PM
+[HLunaServiceBridge::proc]-->
+{"missingConfigs":["tv.model.*","tv.nyx.*"],"subscribed":false,"errorCode":-1,"returnValue":false,"errorText":"No
+Entry Found ,fetch record failed"} [2716947.863] ->
+wl_display@1.get_registry(new id wl_registry@2) [2716949.460] ->
+wl_display@1.sync(new id wl_callback@3) [2716956.584]
+wl_callback@3.done(40) [2716956.778] wl_display@1.delete_id(3)
+[2716957.053] -> wl_display@1.sync(new id wl_callback@3) [2716957.491]
+wl_callback@3.done(40) [2716957.600] wl_display@1.delete_id(3) terminate
+called after throwing an instance of 'std::runtime_error' what():
+Missing required wl_compositor protocol ^CSegmentation fault
+[ccarnell98]
+ccarnell98 01/28/2026 11:21 PM
+https://github.com/cscd98/xbmc/actions/runs/21455555203/artifacts/5295408877
+skull_face101 01/28/2026 10:27 PM
+I reported libffi issues before
+[] ccarnell98 <@1303078957586972733> can you give me the output of:
+```ls -la /usr/lib/libffi*``` from your TV. ta
+skull_face101 01/28/2026 10:27 PM
+root@LGwebOSTV:~# ls -la /usr/lib/libffi* lrwxrwxrwx 1 root root 15 Apr
+4 2022 /usr/lib/libffi.so.6 -> libffi.so.6.0.0 -rwxr-xr-x 1 root root
+24844 Apr 4 2022 /usr/lib/libffi.so.6.0.0
+ 1
+[ccarnell98]
+ccarnell98 01/28/2026 10:11 PM
+@satdx62 @Skull_Face Fixed remote hopefully.. should be built in 1hr 20
+min.. https://github.com/cscd98/xbmc/actions/runs/21455555203 (edited)
+ 1
+[ccarnell98]
+ccarnell98 01/28/2026 4:07 PM
+not --verbose, that was for retroarch 
+ 1
+01/28/2026 4:07 PM
+@Skull_Face now that I've tested the build locally, it remind me you
+should run it like this
+    WAYLAND_DEBUG=1 ./kodi-webos --debug
+(edited)
+[ccarnell98]
+ccarnell98 01/28/2026 1:54 PM
+not bad, actually you only get 5.7gb on a G4 so its not as massive
+upgrade 
+[satdx62]
+satdx62 01/28/2026 1:02 PM
+Despite my old webOS3 TV, I still have enough flash memory available.
+[7.png]
+ 7.png
+43.03 KB External
+[satdx62]
+[] ccarnell98 wow thats massive
+satdx62 01/28/2026 12:59 PM
+For devices that do not have such a large flash memory, only a minimal
+installation for Kodi without add-ons should be built at first. Building
+an add-on is quick and easy.
+[ccarnell98]
+ccarnell98 01/28/2026 12:56 PM
+@Skull_Face can you give me the output of:
+    ls -la /usr/lib/libffi*
+from your TV. ta
+01/28/2026 12:50 PM
+awesome. it also means I can remove another hack once we get @Skull_Face
+working
+ 1
+[satdx62]
+[] ccarnell98 I'm pretty sure libffi is not required, as I don't see it
+listed in the libs (but I used it anyway f...
+satdx62 01/28/2026 12:50 PM
+I deleted them, Kodi starts even without them.
+[7.png]
+ 7.png
+1.08 MB External
+[ccarnell98]
+ccarnell98 01/28/2026 12:45 PM
+I'm pretty sure libffi is not required, as I don't see it listed in the
+libs (but I used it anyway from the 3 year old version)
+01/28/2026 12:45 PM
+let me know if it still launches the GUI
+01/28/2026 12:45 PM
+and relaunch
+01/28/2026 12:45 PM
+could you try something for me ?
+    rm /media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libffi*
+01/28/2026 12:44 PM
+i'll have a look at the remote issue
+ 1
+01/28/2026 12:43 PM
+you have a lot more space on newer TVs
+01/28/2026 12:43 PM
+wow thats massive
+[satdx62]
+[] ccarnell98 Check the folder for core dumps. They can be deleted. Also
+if you are not fussed about losing settin...
+satdx62 01/28/2026 12:42 PM
+I have no way of navigating menus; it seems that the remote control/CEC
+is not working. I can't find any core dumps except for 'codi-webos'.
+[7.png]
+ 7.png
+8.53 KB External
+ tmp_kodi.log
+5.81 KB External
+ wayland_kodi-webos_17040.log
+77.01 KB External
+ temp_kodi.log
+27.41 KB External
+ 1
+[ccarnell98]
+ccarnell98 01/28/2026 11:01 AM
+@Skull_Face next build:
+https://github.com/cscd98/xbmc/actions/runs/21431364620/artifacts/5285706489
+(edited)
+[ccarnell98]
+ccarnell98 01/28/2026 9:48 AM
+(once this all works we can get rid of the logging/core dumps/debug
+build) (edited)
+[ccarnell98]
+ccarnell98 01/28/2026 9:38 AM
+and delete the log file at /tmp/kodi.log
+[ccarnell98]
+[] satdx62 <@1051573528522133655> , I can't use Kodi anymore because
+Kodi WebOS has ballooned to 500 MB. I can'...
+ccarnell98 01/28/2026 9:33 AM
+Check the folder for core dumps. They can be deleted. Also if you are
+not fussed about losing settings you can uninstall and reinstall
+(edited)
+skull_face101 01/28/2026 12:57 AM
+/tmp/kodi.log
+ message.txt
+2.02 KB External
+01/28/2026 12:56 AM
+/home/root/.kodi/temp/kodi.log ^
+01/28/2026 12:56 AM
+(no content)
+ message.txt
+10.43 KB External
+01/28/2026 12:55 AM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+WAYLAND_DEBUG=1 ./kodi-webos --verbose [HLunaServiceBridge::proc]-->
+{"missingConfigs":["tv.model.*","tv.nyx.*"],"subscribed":false,"errorCode":-1,"returnValue":false,"errorText":"No
+Entry Found ,fetch record failed"} [1514245.423] ->
+wl_display@1.get_registry(new id wl_registry@2) [1514246.838] ->
+wl_display@1.sync(new id wl_callback@3) [1514252.006]
+wl_callback@3.done(26) [1514252.359] wl_display@1.delete_id(3) terminate
+called after throwing an instance of 'std::runtime_error' what():
+Missing required wl_compositor protocol Segmentation fault (edited)
+January 27, 2026
+[satdx62]
+satdx62 01/27/2026 11:12 PM
+@Craig , I can't use Kodi anymore because Kodi WebOS has ballooned to
+500 MB. I can't even turn on debugging.
+[ccarnell98]
+ccarnell98 01/27/2026 10:15 PM
+next one with the some new workarounds (and more logging yay..)
+https://github.com/cscd98/xbmc/actions/runs/21414330863 (will take 1 hr
+20 min to compile) (edited)
+01/27/2026 10:14 PM
+(they are not included in the next IPK but if you install over the top
+it keeps old files)
+01/27/2026 10:13 PM
+as they are not required anymore
+01/27/2026 10:13 PM
+first
+01/27/2026 10:12 PM
+and
+    rm /media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libwayland*
+01/27/2026 10:12 PM
+OK for the next build, make sure you do:
+    rm /media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libasound*
+skull_face101 01/27/2026 10:00 PM
+(no content)
+ message.txt
+10.67 KB External
+01/27/2026 10:00 PM
+(no content)
+ message.txt
+10.67 KB External
+01/27/2026 9:59 PM
+(no content)
+ message.txt
+2.02 KB External
+01/27/2026 9:59 PM
+(no content)
+ message.txt
+10.13 KB External
+01/27/2026 9:59 PM
+(no content)
+ message.txt
+10.43 KB External
+01/27/2026 9:58 PM
+and the previous one crashed without output (edited)
+skull_face101 01/27/2026 9:38 PM
+thats the latest one ^^^ (edited)
+01/27/2026 9:37 PM
+(no content)
+ message.txt
+10.57 KB External
+01/27/2026 9:37 PM
+(no content)
+ message.txt
+2.02 KB External
+01/27/2026 9:36 PM
+(no content)
+ message.txt
+10.33 KB External
+01/27/2026 9:36 PM
+root@LGwebOSTV:~# export
+LD_LIBRARY_PATH='/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devm
+ode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib:/media/developer/apps/usr/pal
+m/applications/org.xbmc.kodi/lib' root@LGwebOSTV:~# cd
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+WAYLAND_DEBUG=1 ./kodi-webos --verbos e [HLunaServiceBridge::proc]-->
+{"missingConfigs":["tv.model.*","tv.nyx.*"],"subscribed":false,"errorCode":-1,"returnValue":false,"errorText":"No
+Entry Found ,fetch record failed"} [2480146.729] ->
+wl_display@1.get_registry(new id wl_registry@2) [2480148.024] ->
+wl_display@1.sync(new id wl_callback@3) [2480155.853]
+wl_callback@3.done(22) [2480156.243] wl_display@1.delete_id(3) terminate
+called after throwing an instance of 'std::runtime_error' what():
+Missing required wl_compositor protocol Segmentation fault (edited)
+01/27/2026 9:35 PM
+(no content)
+ Forwarded
+Try this:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.702_arm.ipk.
+Run it from ssh like before:
+    export LD_LIBRARY_PATH='/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib:/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib'
+    cd /media/developer/apps/usr/palm/applications/org.xbmc.kodi
+    ./kodi-webos --verbose
+[ccarnell98]
+ccarnell98 01/27/2026 9:34 PM
+yep always set LD path from command line
+01/27/2026 9:34 PM
+can't remember
+skull_face101 01/27/2026 9:34 PM
+and LD Lib path?
+[ccarnell98]
+ccarnell98 01/27/2026 9:34 PM
+yeh WAYLAND_DEBUG=1 ./kodi-webos --verbose (edited)
+skull_face101 01/27/2026 9:34 PM
+from the command line? (edited)
+[ccarnell98]
+ccarnell98 01/27/2026 9:33 PM
+yeh just try this one as its the latest
+[] ccarnell98 <@1303078957586972733> can you try
+https://github.com/cscd98/xbmc/actions/runs/21407291747/artifacts...
+skull_face101 01/27/2026 9:33 PM
+Which one First? (edited)
+[satdx62]
+[] ccarnell98 if you get that far next time, goto
+system->settings->logging and enable debug logging (and componen...
+satdx62 01/27/2026 9:12 PM
+I'll do that as soon as I can.
+ 1
+[ccarnell98]
+ccarnell98 01/27/2026 9:11 PM
+only need to playback for a couple of seconds otherwise the log will get
+massive
+01/27/2026 9:10 PM
+if you get that far next time, goto system->settings->logging and enable
+debug logging (and component-specific logging enabled with video and
+audio ticked) and give me the log. the next thing to do is to get the
+hardware video decoding working
+ 1
+01/27/2026 9:08 PM
+did you try playing a video?
+01/27/2026 9:07 PM
+no worries 
+[satdx62]
+[] ccarnell98 Did it show the kodi GUI?
+satdx62 01/27/2026 9:07 PM
+Yes, that was displayed! Unfortunately, my wife is watching TV on a
+webOS3 device and cannot perform any real tests at the moment.
+[ccarnell98]
+ccarnell98 01/27/2026 9:06 PM
+its only required for webOS 1 and 2
+01/27/2026 9:06 PM
+@satdx62 delete
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libasound*,
+its not required for webOS 3 and let me know if the
+    2026-01-27 20:48:33.403 T:6638    error <general>: ActiveAE::InitSink - returned error
+    2026-01-27 20:48:33.904 T:6639     info <general>: CActiveAESink::OpenSink - initialize sink
+    2026-01-27 20:48:33.904 T:6639    error <general>: CActiveAESink::OpenSink - no sink was returned
+goes away
+ 1
+01/27/2026 9:01 PM
+@Skull_Face can you try
+https://github.com/cscd98/xbmc/actions/runs/21407291747/artifacts/5276946807
+as well
+[ccarnell98]
+[] satdx62 Can report the first success. 
+ccarnell98 01/27/2026 8:59 PM
+Did it show the kodi GUI?
+[satdx62]
+[] ccarnell98 fix will be compiled in like... 1 hr 20 mins lol:
+https://github.com/cscd98/xbmc/actions/runs/214072...
+satdx62 01/27/2026 8:53 PM
+Can report the first success. 
+ tmp_kodi.log
+1.72 KB External
+ wayland_kodi-webos_6595.log
+101.87 KB External
+ kodi.log
+65.89 KB External
+ 1
+[ccarnell98]
+ccarnell98 01/27/2026 6:32 PM
+fix will be compiled in like... 1 hr 20 mins lol:
+https://github.com/cscd98/xbmc/actions/runs/21407291747
+ 1
+[satdx62]
+[] ccarnell98 <@1303078957586972733> <@917488160580182068> new build:
+https://github.com/cscd98/xbmc/actions/runs/...
+satdx62 01/27/2026 6:11 PM
+Not binding Wayland protocol wl_output because server has only version 1
+(we need at least version 2)
+ kodi.log
+10.49 KB External
+ tmp_kodi.log
+1.72 KB External
+ wayland_kodi-webos_13984.log
+3.44 KB External
+[ccarnell98]
+ccarnell98 01/27/2026 5:25 PM
+@Skull_Face @satdx62 new build:
+https://github.com/cscd98/xbmc/actions/runs/21401618264/artifacts/5274644176
+skull_face101 01/27/2026 4:25 PM
+Yeah I forgot that Path (edited)
+[satdx62]
+[] ccarnell98 <@917488160580182068> <@1303078957586972733> next build:
+https://github.com/cscd98/xbmc/actions/runs...
+satdx62 01/27/2026 4:23 PM
+The logs are created in /tmp/ for me, but it still crashes. The regular
+kodi.log is created in /home/root/.kodi/temp/ and not, as expected, in
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/temp/, because
+no temp directory is created there. (I assume this is due to the crash.)
+skull_face101 01/27/2026 3:17 PM
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/.kodi/temp/kodi.log
+no logs today
+01/27/2026 3:17 PM
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/.kodi/temp/kodi.log
+yesterday's log ^^
+01/27/2026 3:17 PM
+(no content)
+ message.txt
+10.67 KB External
+01/27/2026 3:16 PM
+Today's log (edited)
+ message.txt
+2.13 KB External
+01/27/2026 3:16 PM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+WAYLAND_DEBUG=1 ./kodi-webos --verbose [HLunaServiceBridge::proc]-->
+{"missingConfigs":["tv.model.*","tv.nyx.*"],"subscribed":false,"errorCode":-1,"returnValue":false,"errorText":"No
+Entry Found ,fetch record failed"} [1118715.819] ->
+wl_display@1.get_registry(new id wl_registry@2) [1118722.409] ->
+wl_display@1.sync(new id wl_callback@3)
+[ccarnell98]
+ccarnell98 01/27/2026 2:42 PM
+@satdx62 @Skull_Face next build:
+https://github.com/cscd98/xbmc/actions/runs/21396971024/artifacts/5272475198
+(if this doesn't work, i'll have to rethink it)
+[ccarnell98]
+[] satdx62 Hello, I tested your build and here are the logs. However, it
+seems to me that your ipk is twice as ...
+ccarnell98 01/27/2026 1:16 PM
+the reason its so big is that Its a debug build (has debug symbols) so I
+can find out the cause of the crashes
+ 1
+[satdx62]
+[] ccarnell98 <@1303078957586972733> new build:
+https://github.com/cscd98/xbmc/actions/runs/21391576476/artifacts/...
+satdx62 01/27/2026 1:14 PM
+Hello, I tested your build and here are the logs. However, it seems to
+me that your ipk is twice as large as the normal Kodi ipk at 177 MB. My
+compilation only comes to 79.7 MB.
+ kodi.log_SSH.txt
+4.33 KB External
+ kodi.log
+10.34 KB External
+ wayland_kodi-webos_11567.log
+695 Bytes External
+ tmp_kodi.log
+1.72 KB External
+[ccarnell98]
+ccarnell98 01/27/2026 11:52 AM
+@Skull_Face new build:
+https://github.com/cscd98/xbmc/actions/runs/21391576476/artifacts/5270332172

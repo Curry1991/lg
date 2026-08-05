@@ -1,0 +1,2059 @@
+January 15, 2026
+[ccarnell98]
+ccarnell98 01/15/2026 9:42 PM
+I fixed it
+[ccarnell98]
+ccarnell98 01/15/2026 1:08 PM
+not an issue when using wayland directly though
+01/15/2026 1:06 PM
+https://github.com/webosbrew/RetroArch/commit/5ca959acc779210a3501fd5a1dc64df3b1b49e9e
+(edited)
+01/15/2026 1:06 PM
+I managed to fix ??? getting input to text boxes with sdl2 whenever you
+go up/down/left/right on the virtual keyboard, but selecting a key still
+enters ? in the box
+January 13, 2026
+[ccarnell98]
+ccarnell98 01/13/2026 9:50 AM
+@Mariotaku There is one annoying bug and its to do with sdl2. When you
+are in the menu, and you use the left/down/up/right on the remote, it
+will enter ? for each press into text boxes (which is annoying, e.g.
+trying to enter an IP address etc.). Any idea how to fix that one
+January 12, 2026
+[ccarnell98]
+ccarnell98 01/12/2026 11:40 AM
+didn't open the GUI, but as you can see from the logs, appeared to work
+01/12/2026 11:40 AM
+worked for him:
+    [INFO] [Wayland/webOS] Registry: wl_compositor (id=1, version=2)
+    [INFO] [Wayland/webOS] Registry: wl_shm (id=2, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_output (id=3, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_shell (id=4, version=1)
+    [INFO] [Wayland/webOS] Registry: qt_output_extension (id=5, version=1)
+    [INFO] [Wayland/webOS] Registry: qt_surface_extension (id=6, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_mali (id=7, version=1)
+    [INFO] [Wayland/webOS] Registry: qt_windowmanager (id=8, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_seat (id=9, version=1)
+    [INFO] [Wayland/webOS] Registry: text_model_factory (id=10, version=1)
+    [INFO] [Wayland/webOS] Registry: input_method (id=11, version=1)
+    [INFO] [Wayland/webOS] Registry: input_panel (id=12, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_webos_xinput_extension (id=13, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_starfish_output (id=14, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_starfish_pointer (id=15, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_webos_shell (id=16, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_webos_surface_group_compositor (id=17, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_webos_input_manager (id=18, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_seat (id=19, version=1)
+    [INFO] [Wayland/webOS] Registry: wl_seat (id=20, version=1)
+    [INFO] [EGL] get_egl_display(platform=0x31d8, native=0xeb16c8)
+    [INFO] [EGL] eglGetPlatformDisplayEXT symbol=0x7591f7d9
+    [ERROR] [EGL] eglGetPlatformDisplayEXT failed, error=0x300c
+    [INFO] [EGL] Falling back to eglGetDisplay(native=0xeb16c8)
+    [INFO] [EGL] eglGetDisplay succeeded: 0xf28940
+    [INFO] [EGL] EGL version: 1.4.
+    [INFO] [GL] Found GL context: "wayland".
+01/12/2026 11:38 AM
+couldn't find the code locally but I digged out the commit
+https://github.com/webosbrew/RetroArch/commit/8689b34c417b3650082b34ef9ffd70ca4cf64a16
+01/12/2026 11:35 AM
+yeh its frustrating though because it clearly works for your SDL fork 
+(edited)
+[mariotaku]
+mariotaku 01/12/2026 11:34 AM
+Maybe 2 binaries would be the solution for now...
+ 1
+[mariotaku]
+[] ccarnell98 ah that was my previous attempt at a fix too. That one
+actually ran without errors (logs looked GOOD...
+mariotaku 01/12/2026 11:34 AM
+That's strange!
+[ccarnell98]
+[] mariotaku Another idea would be just use it without prefix, so loader
+always use the backport
+ccarnell98 01/12/2026 11:32 AM
+ah that was my previous attempt at a fix too. That one actually ran
+without errors (logs looked GOOD!) but failed to launch (edited)
+[mariotaku]
+[] ccarnell98 Thanks but that is what I copied. But it didn't work for
+the user. It just crashed on a unrelated er...
+mariotaku 01/12/2026 11:31 AM
+Another idea would be just use it without prefix, so loader always use
+the backport
+[ccarnell98]
+[] mariotaku FYI a backport for
+wl_proxy_marshal_constructor_versioned/wl_proxy_marshal_constructor
+ccarnell98 01/12/2026 11:30 AM
+Thanks but that is what I copied. But it didn't work for the user. It
+just crashed on a unrelated error
+https://github.com/webosbrew/RetroArch/commit/135ac32220dad038507c3a02f6cd8885d63b552f
+[mariotaku]
+[] ccarnell98
+wl_proxy_marshal_constructor_versioned/wl_proxy_marshal_constructor,
+plus wl_display_cancel_read/pre...
+mariotaku 01/12/2026 11:24 AM
+FYI a backport for
+wl_proxy_marshal_constructor_versioned/wl_proxy_marshal_constructor
+ wl_proxy_marshal_constructor.c
+4.47 KB External
+[ccarnell98]
+ccarnell98 01/12/2026 11:00 AM
+but for now, at least people can use RetroArch on hopefully every
+version of webOS
+01/12/2026 10:56 AM
+but another option would be 2 add support to webOS dev manager instead
+of offering 2 IPKs, I might look at that
+01/12/2026 10:55 AM
+but it also highlighed some missing symbols with libxkbcommon and also
+GLES 3 usage (the latter probably just needs fixing in retroarch). The
+first maybe I could static link libxkbcommon maybe
+01/12/2026 10:54 AM
+wl_proxy_marshal_constructor_versioned/wl_proxy_marshal_constructor,
+plus wl_display_cancel_read/prepare_read/read_events
+01/12/2026 10:52 AM
+still need to produce 2 IPKs though as I couldn't get the workaround
+working for missing wayland stuff, but it clearly works with SDL2 but
+without a device to test with its slow going (edited)
+[mariotaku]
+mariotaku 01/12/2026 10:51 AM
+native_devmode jail is so cursed lol
+[ccarnell98]
+ccarnell98 01/12/2026 10:51 AM
+so the fallback works for webOS 1 / 2
+[ccarnell98]
+[] mariotaku How did you solve the filesystem issue?
+ccarnell98 01/12/2026 10:50 AM
+I decided that if the user cannot write to HOME they are screwed anyway,
+so if that happens write to
+/media/developer/temp/webosbrew/com.retroarch.webos.
+[mariotaku]
+[] ccarnell98 I got it to work, the user confirmed webOS 1.4 is working
+with RetroArch. I'll do another release wh...
+mariotaku 01/12/2026 10:49 AM
+How did you solve the filesystem issue?
+January 11, 2026
+[ccarnell98]
+ccarnell98 01/11/2026 11:16 PM
+I got it to work, the user confirmed webOS 1.4 is working with
+RetroArch. I'll do another release when the next release of RetroArch is
+due
+[mariotaku]
+mariotaku 01/11/2026 1:33 PM
+Nyx is available on webOS 1 so I guess it's going to be there. Although
+I would still suggest using luna call for systemproperty . You can
+utilize pthread to wait for the result so you can get the version
+synchonously
+ 1
+[ccarnell98]
+ccarnell98 01/11/2026 1:25 PM
+it does on 10
+01/11/2026 1:25 PM
+does /var/run/nyx/os_info.json exist on webOS 1 + 2 ?
+[mariotaku]
+mariotaku 01/11/2026 1:24 PM
+Also JSON files in /var/run/nyx/ (if the path is corect & in devmode...)
+(edited)
+01/11/2026 1:23 PM
+I think it at least is available on older versions
+[ccarnell98]
+ccarnell98 01/11/2026 1:20 PM
+but if it exists for older versions (without root) I can still use it
+01/11/2026 1:20 PM
+not for me, unless it needs root:
+    cat /etc/starfish-release
+    cat: can't open '/etc/starfish-release': No such file or directory
+[mariotaku]
+mariotaku 01/11/2026 1:19 PM
+Let me try that. I remember it is
+[ccarnell98]
+[] mariotaku You can read /etc/starfish-release as well
+ccarnell98 01/11/2026 1:19 PM
+is that present on every webOS version?
+[mariotaku]
+[] ccarnell98 hmm the only problem is its an async callback and I want
+it to run right at the start
+mariotaku 01/11/2026 1:14 PM
+You can read /etc/starfish-release as well
+[ccarnell98]
+ccarnell98 01/11/2026 12:53 PM
+hmm the only problem is its an async callback and I want it to run right
+at the start
+[ccarnell98]
+ccarnell98 01/11/2026 12:45 PM
+luna://com.webos.service.tv.systemproperty - sdkVersion since version
+1.2 apparently
+[yolofant]
+yolofant 01/11/2026 12:35 PM
+but else it should not
+01/11/2026 12:35 PM
+tmp might survive a power cycle if you have quickstart enabled
+01/11/2026 12:35 PM
+webos 1 / 2 is very cursed
+ 1
+[ccarnell98]
+ccarnell98 01/11/2026 12:25 PM
+how about all apps on webOS 1 / 2 write to
+/media/developer/temp/webosbrew/<ipk package name>
+01/11/2026 12:24 PM
+does /media/developer/temp exist on all versions?
+01/11/2026 12:22 PM
+@Mariotaku Looks like /media/developer/temp does persist on a power
+cycle!. Is there a way for me to detect if the user is on webOS 1 ? I
+know of methods that kodi uses, but want to be sure it works on version
+1
+January 10, 2026
+[ccarnell98]
+ccarnell98 01/10/2026 2:37 PM
+was hoping for a simple solution to the retroarch problem (would also
+need to store cores/saves etc)
+[ccarnell98]
+ccarnell98 01/10/2026 1:44 PM
+ah that sucks. does /tmp survive a reboot on webOS 1?
+[mariotaku]
+mariotaku 01/10/2026 1:31 PM
+For webOS 3, a reboot would fix that
+01/10/2026 1:31 PM
+It doesn't allow write
+[mariotaku]
+[] ccarnell98 is it only webOS 1?
+mariotaku 01/10/2026 1:31 PM
+Before webOS 3, the app installation dir has permission f-ed up
+[ccarnell98]
+ccarnell98 01/10/2026 1:12 PM
+is it only webOS 1?
+01/10/2026 1:12 PM
+what do other apps do
+[ccarnell98]
+[] mariotaku I had some idea about using db8 (probably the only way of
+persisting data)
+ccarnell98 01/10/2026 1:09 PM
+eek so it doesn't even allow you to persist data normally? I thought
+maybe it was a different path I needed to use
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Any ideas on where webOS 1.4 stores
+it app user data?
+mariotaku 01/10/2026 1:09 PM
+I had some idea about using db8 (probably the only way of persisting
+data)
+[ccarnell98]
+ccarnell98 01/10/2026 12:35 PM
+@Mariotaku Any ideas on where webOS 1.4 stores it app user data?
+January 4, 2026
+[ccarnell98]
+ccarnell98 01/04/2026 5:10 PM
+If I omit webos-foreign, it actually launches on webOS 3.4 (as per
+homebrew chat) - in fact it seems to start just fine then quit looking
+at the users log, but I don't know why (edited)
+01/04/2026 5:08 PM
+I did a workaround looking at code from SDL2 for
+wl_proxy_marshal_constructor_versioned
+[ccarnell98]
+[] yolofant it should work on all webos
+ccarnell98 01/04/2026 5:08 PM
+I keep forgetting about this wonderful tool that @Mariotaku made:
+    webosbrew-elf-verify --executables retroarch
+    Verify result for firmware Firmware 03.23.06.01, webOS 1.2.0, OTA ID: HE_DTV_WT1M_AFAAABAA:
+    Missing symbol: wl_display_cancel_read
+    Missing symbol: wl_display_prepare_read
+    Missing symbol: wl_display_read_events
+    Missing symbol: wl_proxy_marshal_constructor
+    Missing symbol: wl_proxy_marshal_constructor_versioned
+    Verify result for firmware Firmware 05.06.10.01, webOS 1.4.0, OTA ID: HE_DTV_WT1H_AFAAABAA:
+    Missing symbol: wl_display_cancel_read
+    Missing symbol: wl_display_prepare_read
+    Missing symbol: wl_display_read_events
+    Missing symbol: wl_proxy_marshal_constructor
+    Missing symbol: wl_proxy_marshal_constructor_versioned
+    Verify result for firmware Firmware 04.06.75.01, webOS 2.2.3, OTA ID: HE_DTV_W15M_AFAAABAA:
+    Missing symbol: wl_display_cancel_read
+    Missing symbol: wl_display_prepare_read
+    Missing symbol: wl_display_read_events
+    Missing symbol: wl_proxy_marshal_constructor
+    Missing symbol: wl_proxy_marshal_constructor_versioned
+    Verify result for firmware Firmware 05.60.30.01, webOS 3.4.0, OTA ID: HE_DTV_W16N_AFADABAA:
+    Missing symbol: wl_proxy_marshal_constructor_versioned
+    Verify result for firmware Firmware 06.19.80.01, webOS 3.9.2, OTA ID: HE_DTV_W17H_AFADABAA:
+    Missing symbol: wl_proxy_marshal_constructor_versioned
+January 2, 2026
+[ccarnell98]
+ccarnell98 01/02/2026 11:15 AM
+fantastic 
+[yolofant]
+yolofant 01/02/2026 1:18 AM
+it should work on all webos
+01/02/2026 1:18 AM
+acb is unrelated to wayland
+January 1, 2026
+[ccarnell98]
+ccarnell98 01/01/2026 10:12 PM
+(not a big deal, as already producing 2 binaries, one for gles 2 and
+another for gles 3) - the gless 3 one can have the wayland support as
+well as they are about teh same version of webOS anyway leaving the gles
+2 one to continue to work (edited)
+01/01/2026 10:11 PM
+@Yolofant do you think retroarch with wayland support bedded in now will
+work on older webOS? I know you did the ACB stuff for kodi, which I
+never understood. Or it will be webOS 5+ only because ACB stuff was
+needed?
+[ccarnell98]
+ccarnell98 01/01/2026 12:17 PM
+Think I spent more time on getting the back button to work than on
+anything else 
+01/01/2026 12:17 PM
+Not had a chance to look at this, but I finally got wayland working
+enough to PR it
+December 28, 2025
+[ccarnell98]
+[] mariotaku I guess the way RetroArch loads a core could have some
+window issue. It destroys the menu window and...
+ccarnell98 12/28/2025 1:55 PM
+it recreates the context on starting the game/or switching
+fullscreen/windows mode (binds the gl frame buffer). Thats about as far
+as my knowledge goes
+December 22, 2025
+[mariotaku]
+[] ccarnell98 one annoying bug, sometimes retroarch will minimize when
+launching a game, then you have to goto the...
+mariotaku 12/22/2025 12:33 AM
+I guess the way RetroArch loads a core could have some window issue. It
+destroys the menu window and creates a new one right?
+December 21, 2025
+[ccarnell98]
+ccarnell98 12/21/2025 6:30 PM
+one annoying bug, sometimes retroarch will minimize when launching a
+game, then you have to goto the webOS launcher and select retroarch
+again (and the content is still there). any ideas how to fix @Mariotaku
+? (edited)
+December 7, 2025
+[ccarnell98]
+ccarnell98 12/07/2025 3:54 PM
+https://github.com/webosbrew/RetroArch/commit/1bf39fe0e3dafe78f900e6dac05886ba05b7b6c7
+12/07/2025 3:53 PM
+    int handle_xkb(int code, int value)
+    {
+       unsigned i;
+       const xkb_keysym_t *syms = NULL;
+       unsigned num_syms        = 0;
+       uint16_t mod             = 0;
+       /* Convert Linux evdev to X11 (xkbcommon docs say so at least ...) */
+       int xk_code              = code + 8;
+       if (!xkb_state)
+          return -1;
+       if (value == 2) /* Repeat, release first explicitly. */
+          xkb_state_update_key(xkb_state, xk_code, XKB_KEY_UP);
+       if (value)
+          num_syms = xkb_state_key_get_syms(xkb_state, xk_code, &syms);
+       if (value > 0)
+          xkb_state_update_key(xkb_state, xk_code, XKB_KEY_DOWN);
+       else
+          xkb_state_update_key(xkb_state, xk_code, XKB_KEY_UP);
+    #if defined(WEBOS) && defined(HAVE_USERLAND)
+       int retrok_code = -1;
+       static int last_retrok_code = -1;
+       if(syms != NULL)
+       {
+          switch (code) {
+             case XKB_KEY_WEBOS_BACK:
+                retrok_code = RETROK_BACKSPACE;
+                break;
+             case XKB_KEY_WEBOS_EXIT:
+                retrok_code = RETROK_F1;
+                break;
+             case XKB_KEY_WEBOS_RED:
+                retrok_code = RETROK_x;
+                break;
+             case XKB_KEY_WEBOS_GREEN:
+                retrok_code = RETROK_z;
+                break;
+             case XKB_KEY_WEBOS_YELLOW:
+                retrok_code = RETROK_s;
+                break;
+             case XKB_KEY_WEBOS_BLUE:
+                retrok_code = RETROK_a;
+                break;
+          }
+          if(retrok_code != -1)
+          {
+             last_retrok_code = retrok_code;
+             input_keyboard_event(value, retrok_code,
+                retrok_code, mod, RETRO_DEVICE_KEYBOARD);
+             return 0;
+          }
+          else if(last_retrok_code != -1)
+          {
+             // This is a key release for a webOS button
+             input_keyboard_event(0, last_retrok_code, 0, mod, RETRO_DEVICE_KEYBOARD);
+             last_retrok_code = -1;
+             return 0;
+          }
+       }
+    #endif
+12/07/2025 3:53 PM
+If anyone has any insight into why this dumb code doesn't work.. I can
+clearly see it hitting XKB_WEBOS_BACK, then calling input_keyboard_event
+with the code, but it does nothing
+December 2, 2025
+[yolofant]
+yolofant 12/02/2025 9:36 PM
+might be in kodi I don't remember right now
+12/02/2025 9:36 PM
+not sure
+[ccarnell98]
+ccarnell98 12/02/2025 9:31 PM
+but maybe thats a retroarch issue and i've not got the code right. apart
+from _WEBOS_ACCESS_POLICY_KEYS_EXIT still making the cursor appear
+12/02/2025 9:30 PM
+except prints nicely
+12/02/2025 9:30 PM
+does nothing
+12/02/2025 9:30 PM
+    #if defined(WEBOS) && defined(HAVE_USERLAND)
+       switch (syms[0]) {
+          case XKB_KEY_WEBOS_BACK:
+             printf("back button\n");
+             input_keyboard_event(value, RETRO_DEVICE_ID_MOUSE_RIGHT,
+                                  xkb_keysym_to_utf32(syms[0]), mod,
+                                  RETRO_DEVICE_MOUSE);
+             return 0;
+          case XKB_KEY_WEBOS_EXIT:
+             printf("exit button\n");
+             input_keyboard_event(value, RETROK_F1,
+                                  xkb_keysym_to_utf32(syms[0]), mod,
+                                  RETRO_DEVICE_KEYBOARD);
+             return 0;
+       }
+    #endif
+12/02/2025 9:30 PM
+beside that last thing is just to get the thing to do I want which it
+doesn't atm.
+    back button
+    evdev code 412, xkb keysym 0x120000
+12/02/2025 9:28 PM
+is _WEBOS_ACCESS_POLICY_KEYS_EXIT the holding the back button?
+12/02/2025 9:24 PM
+great hopefully mean I wont need to make 2 IPKs
+[yolofant]
+yolofant 12/02/2025 9:23 PM
+every webos tv has wayland
+[ccarnell98]
+ccarnell98 12/02/2025 8:20 PM
+so for now I'll just make 2 IPKs available
+[ccarnell98]
+[] yolofant Usually you'd do runtime checking on GLES features
+ccarnell98 12/02/2025 8:16 PM
+oh I think I fixed that bug on the way to implementing wayland
+(https://github.com/libretro/RetroArch/pull/18436) but I got no guinea
+pig to test (edited)
+[ccarnell98]
+ccarnell98 12/02/2025 8:13 PM
+(wayland in general)
+12/02/2025 8:13 PM
+what is the earliest version we can use it on? webOS 5?
+[yolofant]
+yolofant 12/02/2025 8:08 PM
+but yeah you should use all of them
+12/02/2025 8:08 PM
+the last one should be the remote usually
+[ccarnell98]
+ccarnell98 12/02/2025 8:04 PM
+actually I got it work  you're a legend
+[ccarnell98]
+[] mariotaku Watch for multiple seats
+ccarnell98 12/02/2025 4:59 PM
+Damn. Any idea which one I'm supposed to pick :-)
+    [DEBUG] [Wayland/webOS] Registry wl_seat!: wl_seat (id=11, version=4)
+    [DEBUG] [Wayland/webOS] Registry wl_seat!: wl_seat (id=20, version=4)
+    [DEBUG] [Wayland/webOS] Registry wl_seat!: wl_seat (id=23, version=4)
+(edited)
+[mariotaku]
+[] ccarnell98 keyboard_listener is never called, but xkb_init is called.
+no input works at all
+mariotaku 12/02/2025 12:51 AM
+Watch for multiple seats
+November 29, 2025
+[ccarnell98]
+ccarnell98 11/29/2025 4:24 PM
+keyboard_listener is never called, but xkb_init is called. no input
+works at all
+11/29/2025 4:20 PM
+compiled as make -f Makefile.webos ipk PACKAGE_NAME=org.retroarch.webos
+ADD_SDL2_LIB=1 DEBUG=1 HAVE_EGL=1 HAVE_WAYLAND=1 HAVE_OPENGLES3=1
+HAVE_OPENGLES3_1=1 HAVE_OPENGLES3_2=1 -j$(getconf _NPROCESSORS_ONLN)
+11/29/2025 4:20 PM
+I added wayland support to RetroArch but I can't get input to work at
+all using the wayland input driver.. any ideas?
+https://github.com/webosbrew/RetroArch/commit/f6c31462ba12d2187154142d6ef379e253c7bdf4
+November 24, 2025
+[ccarnell98]
+ccarnell98 11/24/2025 9:25 AM
+I adapted your code for RetroArch, it doesn't work yet (it crashes
+during download)
+https://github.com/webosbrew/RetroArch/commit/38b6cc414c81ae932f4404797c94990287df89e0
+[ccarnell98]
+[] mariotaku Yes, it would work for all kinds of native apps in dev jail
+ccarnell98 11/24/2025 9:23 AM
+It wont apply on mine, presumably as I have a working .conf/.sig
+already. But if the USB is mounted under prisoner shouldn't it also now
+work under RetroArch?
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Do you your jailer fix would work
+for RetroArch (seems like a few people now h...
+mariotaku 11/24/2025 5:17 AM
+Yes, it would work for all kinds of native apps in dev jail
+November 23, 2025
+[ccarnell98]
+ccarnell98 11/23/2025 1:34 PM
+on my G4, I can clearly see contents of USB stick in /tmp/usb/sda/sda1
+as prisoner, but in RetroArch its empty
+[ccarnell98]
+ccarnell98 11/23/2025 10:46 AM
+@Mariotaku Do you your jailer fix would work for RetroArch (seems like a
+few people now having this issue accessing USB on RetroArch now as well)
+(with modifications obviously)
+November 21, 2025
+[ccarnell98]
+ccarnell98 11/21/2025 12:34 PM
+well actually with SDL_SetRelativeMouseMode to TRUE, it does let you
+turn, but its janky as it bounces back
+11/21/2025 12:27 PM
+edit: mouse works, but you are limited as you cannot turn in quake 2, as
+it hits the edge of the screen lol
+[ccarnell98]
+ccarnell98 11/21/2025 12:08 PM
+it also now works in scummvm (edited)
+[ccarnell98]
+ccarnell98 11/21/2025 12:00 PM
+I can now move with the mouse in quake 2. any idea if its safe to set to
+relative permanent? as we have your patched SDL2 (edited)
+11/21/2025 11:59 AM
+it was hard coded to abs for WEBOS in retroarch:
+                   case RETRO_DEVICE_ID_MOUSE_X:
+                      return sdl->mouse_x; // mouse_abs_x
+                   case RETRO_DEVICE_ID_MOUSE_Y:
+                      return sdl->mouse_y; // mouse_abs_y
+11/21/2025 11:59 AM
+progress!
+November 20, 2025
+[ccarnell98]
+ccarnell98 11/20/2025 3:44 PM
+I did try it in here but this function never gets called for some reason
+    #ifdef HAVE_SDL2
+    static void sdl2_grab_mouse(void *data, bool state)
+    {
+       sdl2_video_t *video_ptr = NULL;
+       if (string_is_not_equal(video_driver_get_ident(), "sdl2"))
+          return;
+       video_ptr = (sdl2_video_t*)video_driver_get_ptr();
+       if (video_ptr)
+          SDL_SetWindowGrab(video_ptr->window, state ? SDL_TRUE : SDL_FALSE);
+    }
+    #endif
+11/20/2025 3:43 PM
+going Full screen removes the webOS cursor so at least something
+positive  (edited)
+11/20/2025 3:42 PM
+I must be doing something wrong as I set it here (wrong place because it
+runs every retro_run but doesn't hurt for testing).. but no change
+    static void sdl_poll_mouse(sdl_input_t *sdl)
+    {
+       SDL_SetRelativeMouseMode(SDL_TRUE);
+       Uint8 btn     = SDL_GetRelativeMouseState(&sdl->mouse_x, &sdl->mouse_y);
+       SDL_GetMouseState(&sdl->mouse_abs_x, &sdl->mouse_abs_y);
+       sdl->mouse_l  = (SDL_BUTTON(SDL_BUTTON_LEFT)      & btn) ? 1 : 0;
+       sdl->mouse_r  = (SDL_BUTTON(SDL_BUTTON_RIGHT)     & btn) ? 1 : 0;
+       sdl->mouse_m  = (SDL_BUTTON(SDL_BUTTON_MIDDLE)    & btn) ? 1 : 0;
+       sdl->mouse_b4 = (SDL_BUTTON(SDL_BUTTON_X1)        & btn) ? 1 : 0;
+       sdl->mouse_b5 = (SDL_BUTTON(SDL_BUTTON_X2)        & btn) ? 1 : 0;
+    #ifndef HAVE_SDL2
+       sdl->mouse_wu = (SDL_BUTTON(SDL_BUTTON_WHEELUP)   & btn) ? 1 : 0;
+       sdl->mouse_wd = (SDL_BUTTON(SDL_BUTTON_WHEELDOWN) & btn) ? 1 : 0;
+    #endif
+    }
+[mariotaku]
+[] ccarnell98 would it work at all talking directly to wayland? or could
+we adapt SDL_SetRelativeMouseMode ? Just ...
+mariotaku 11/20/2025 10:48 AM
+SDL_SetRelativeMouseMode was the one I'm talking about
+[mariotaku]
+[] ccarnell98 I'm not sure but I'm not seeing working mouse on scummvm,
+amiga or quake 2. Is that half-working wor...
+mariotaku 11/20/2025 10:47 AM
+Yes. It's baked into the SDL2 backport so you can use it as if it's
+there (edited)
+[ccarnell98]
+ccarnell98 11/20/2025 10:16 AM
+RetroArch doesnt seem to use SDL_SetWindowRelativeMouseMode
+[ccarnell98]
+ccarnell98 11/20/2025 9:44 AM
+would it work at all talking directly to wayland? or could we adapt
+SDL_SetRelativeMouseMode ? Just wondering how they handle it for nvidia
+cloud streaming etc. (or could we add evdev to retroarch, although I'm
+sure /dev/input is already supported) (edited)
+[ccarnell98]
+[] mariotaku I suppose Quake 2 is using relative mouse mode right? It's
+not supported on webOS.
+ccarnell98 11/20/2025 9:43 AM
+I'm not sure but I'm not seeing working mouse on scummvm, amiga or quake
+2. Is that half-working workaround what you are using for moonlight?
+(edited)
+[mariotaku]
+mariotaku 11/20/2025 12:25 AM
+My SDL2 port has a half-working workaround for that
+[mariotaku]
+[] ccarnell98 This is what Quake 2 does at the moment. When using Device
+Type: Keyboard + Mouse controls, mouse ju...
+mariotaku 11/20/2025 12:25 AM
+I suppose Quake 2 is using relative mouse mode right? It's not supported
+on webOS.
+November 18, 2025
+[ccarnell98]
+ccarnell98 11/18/2025 9:16 PM
+any ideas @Mariotaku
+11/18/2025 9:16 PM
+This is what Quake 2 does at the moment. When using Device Type:
+Keyboard + Mouse controls, mouse just looks at the floor and spins
+forever. Tested with/without "mouse focus" option. Left click to shoot
+works. Using "game focus" mode (scroll lock key) keyboard works though
+ (edited)
+ 20251118_201204.mp4
+9.55 MB External
+November 17, 2025
+[ccarnell98]
+ccarnell98 11/17/2025 8:49 PM
+nah that didnt work
+[ccarnell98]
+ccarnell98 11/17/2025 6:45 PM
+on the plus side, this might work for cores with needing static linking
+libstdc++ but I'm struggling to find a core on mine to test with:
+https://github.com/webosbrew/RetroArch/commit/5eecbf6aca80d6d15d6c72ee641a3ee1ed426076
+webOS: set LD_LIBRARY_PATH for cores to check app lib directory · ...
+[]
+[ccarnell98]
+ccarnell98 11/17/2025 5:39 PM
+works in teh frontend fine though
+11/17/2025 5:37 PM
+mouse cursor moves in the right place it just doesnt do what its
+supposed to do
+11/17/2025 5:37 PM
+@Mariotaku mouse input registers clicking now, but not in the right
+place. For example, in scumm vm you cannot move, and in uae with alien
+breed, it seems to think the mouse exists in a small box top left and
+that seems to change the options, so maybe its not scaling properly?
+11/17/2025 5:31 PM
+yeh that works now as well, setting useAllKeyboardKeys true disables
+webOS F10 key etc (edited)
+[ccarnell98]
+ccarnell98 11/17/2025 5:06 PM
+like f10 is mute
+11/17/2025 5:06 PM
+think i'll do useAllKeyboardKeys true as well, as the f keys do special
+webOS stuff (edited)
+[ccarnell98]
+ccarnell98 11/17/2025 4:34 PM
+yay no more right click menu, thanks!
+11/17/2025 4:28 PM
+oh let me try without ""
+11/17/2025 4:22 PM
+didn't work, at least not when testing scummvm
+https://github.com/webosbrew/RetroArch/commit/92e1175101fee6ef3ad5d708f212a122ff37a00f
+webOS: fix for webOS 8.3 - 10+ to receive all mouse/pad button even...
+[]
+[mariotaku]
+[] ccarnell98 thats awesome. should we set cloudgame_active also?
+mariotaku 11/17/2025 4:13 PM
+Yes, so you handle all the gamepad events
+[ccarnell98]
+[] mariotaku useAllMouseButtons in appinfo
+https://www.webosbrew.org/develop/guides/appinfo/
+ccarnell98 11/17/2025 3:59 PM
+thats awesome. should we set cloudgame_active also?
+[mariotaku]
+[] ccarnell98 any ideas on how to get right click to get passed to the
+emulators using a real mouse? at the moment...
+mariotaku 11/17/2025 12:28 AM
+useAllMouseButtons in appinfo
+https://www.webosbrew.org/develop/guides/appinfo/
+November 16, 2025
+[ccarnell98]
+ccarnell98 11/16/2025 11:23 AM
+any ideas on how to get right click to get passed to the emulators using
+a real mouse? at the moment, you get a "Back / Home" popup, which is
+presumably from webOS (edited)
+November 10, 2025
+[ccarnell98]
+ccarnell98 11/10/2025 6:40 PM
+they've pulled the tag on 1.22 so i'll look at it again when they re-tag
+it. The've pulled it 3 times..  (edited)
+11/10/2025 6:38 PM
+to be definitive, but for now 2 releases can suffice
+[ccarnell98]
+ccarnell98 11/10/2025 6:31 PM
+need a "beta" tester
+11/10/2025 6:31 PM
+well someone on github tested it (they have LM5700PTC - webOS 4.10.2,
+GLES 2 only) and the core just crashed but that might be user error for
+all I know (edited)
+[yolofant]
+yolofant 11/10/2025 6:05 PM
+So IMHO you should define both
+11/10/2025 6:04 PM
+The tool chain should allow building both
+11/10/2025 6:04 PM
+Usually you'd do runtime checking on GLES features
+[ccarnell98]
+[] mariotaku Currently there's no way to do that, oh man I really wanted
+to verify that but unfortunately I had s...
+ccarnell98 11/10/2025 2:43 PM
+No worries you get better soon
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Going to release retroarch 1.22
+later once ive finished testing. Im thinking o...
+mariotaku 11/10/2025 10:18 AM
+Currently there's no way to do that, oh man I really wanted to verify
+that but unfortunately I had some health matters to deal with so can't
+find any time...
+ 1
+[ccarnell98]
+ccarnell98 11/10/2025 10:11 AM
+@Mariotaku Going to release retroarch 1.22 later once ive finished
+testing. Im thinking of two builds, the default being gles 2 and another
+with gles 3. Im just wondering if its possible to list 2 IPKs for
+download on dev manager? If not users will have to goto github to
+download the gles 3 enabled version
+October 27, 2025
+[ccarnell98]
+ccarnell98 10/27/2025 1:55 PM
+thats OK. appreciate it! Would be really useful to know also whats the
+minimum webOS version it will run on (seperate question to GLES v3).
+[mariotaku]
+mariotaku 10/27/2025 12:30 AM
+Sad  still no time yet
+October 25, 2025
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Did you get a chance to have a look?
+mariotaku 10/25/2025 5:07 PM
+Not yet. I'll try to find some on Sunday
+ 1
+[ccarnell98]
+ccarnell98 10/25/2025 1:06 PM
+Here is a link to the build:
+https://github.com/webosbrew/RetroArch/actions/runs/18801268305/artifacts/4370220266
+[ccarnell98]
+ccarnell98 10/25/2025 10:50 AM
+@Mariotaku Did you get a chance to have a look?
+October 23, 2025
+[ccarnell98]
+ccarnell98 10/23/2025 12:27 PM
+oh after testing they don't even get used unless you add to
+Makefile.webos (after the other DEFINES)
+    ifeq ($(HAVE_OPENGLES3_1),1)
+    DEFINES += -DHAVE_OPENGLES3_1
+    endif
+    ifeq ($(HAVE_OPENGLES3_2),1)
+    DEFINES += -DHAVE_OPENGLES3_2
+    endif in addition to: HAVE_OPENGLES = 1
+    HAVE_OPENGLES3 = 1
+    HAVE_OPENGLES3_1 = 1
+    HAVE_OPENGLES3_2 = 1
+(edited)
+[mariotaku]
+mariotaku 10/23/2025 12:13 PM
+Maybe 3
+[mariotaku]
+[] ccarnell98 if RetroArch even works on that yeh 
+mariotaku 10/23/2025 12:13 PM
+Oh you're right lol
+[ccarnell98]
+ccarnell98 10/23/2025 12:13 PM
+if RetroArch even works on that yeh 
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Do you think you could compile
+RetroArch with ```HAVE_OPENGLES = 1 HAVE_OPENGL...
+mariotaku 10/23/2025 12:12 PM
+Lemme try later! webOS 2 is good enough right?
+[ccarnell98]
+ccarnell98 10/23/2025 10:04 AM
+I can this core supports both: https://github.com/hrydgard/ppsspp
+GitHub - hrydgard/ppsspp: A PSP emulator for Android, Windows, Mac ...
+A PSP emulator for Android, Windows, Mac and Linux, written in C++. Want
+to contribute? Join us on Discord at https://discord.gg/5NJB6dD or just
+send pull requests / issues. For discussion use the ...
+[]
+[ccarnell98]
+ccarnell98 10/23/2025 9:42 AM
+I'm trying to see if we can safely enable GLES v3 and it wont break
+anyone on GLES v2
+10/23/2025 9:42 AM
+Here is a an example core:
+https://github.com/Des-Nerger/libretro_test_gl_shaders.zig
+GitHub - Des-Nerger/libretro_test_gl_shaders.zig
+Contribute to Des-Nerger/libretro_test_gl_shaders.zig development by
+creating an account on GitHub.
+[]
+October 22, 2025
+[ccarnell98]
+ccarnell98 10/22/2025 9:14 PM
+@Mariotaku Do you think you could compile RetroArch with
+    HAVE_OPENGLES = 1
+    HAVE_OPENGLES3 = 1
+    HAVE_OPENGLES3_1 = 1
+    HAVE_OPENGLES3_2 = 1
+and then try it on an old webOS version? anything that doesn't have GLES
+v3 and try a core with GLES v2 and see if it still works please?
+August 17, 2025
+[ccarnell98]
+ccarnell98 08/17/2025 10:22 AM
+IT would be good to know, as a side project was thinking of porting the
+source engine (HL-2)
+08/17/2025 10:21 AM
+Also added it to the template for next time
+[ccarnell98]
+ccarnell98 08/17/2025 10:09 AM
+I've asked in the github issue
+ 1
+08/17/2025 10:04 AM
+He/she also mentioned Quake 2, there is a core for that
+08/17/2025 10:04 AM
+@Mariotaku Just realized he/she never said. It's Mario Paint which is
+only on the SNES I think, so probably snes9x
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Can you use a normal mouse (USB or
+bluetooth) as a mouse? https://github.com/w...
+mariotaku 08/17/2025 4:15 AM
+What core+game is needed for the test?
+August 16, 2025
+[ccarnell98]
+ccarnell98 08/16/2025 9:46 PM
+@Mariotaku Can you use a normal mouse (USB or bluetooth) as a mouse?
+https://github.com/webosbrew/retroarch-cores/issues/16#issuecomment-3190943574
+[Bug] Retroarch not fully captured mouse hardware · Issue #16 · w...
+webOS Version 4.10.2 Device Model Number LM5700PTC Describe the issue
+While moving mouse on Mario Paint or some mouse games always moving on
+right corner and can&#39;t moving mouse anymore. Can you...
+[]
+August 6, 2025
+[ccarnell98]
+ccarnell98 08/06/2025 5:37 PM
+we ship it with kodi. It fixes his issue with libatomic missing for
+ppsspp emulator on webOS 4?
+[mariotaku]
+mariotaku 08/06/2025 5:14 PM
+It doesn't have to be shipped IMO
+08/06/2025 5:14 PM
+I remember there were some patches in br-nc4
+[ccarnell98]
+ccarnell98 08/06/2025 12:07 PM
+hmm do you think we need to start bundling libatomic as well?
+https://github.com/webosbrew/retroarch-cores/issues/15
+[Error] PPSSPP core failed to open · Issue #15 · webosbrew/retroa...
+webOS Version 4.10.2-29 Device Model Number 43LM5700PTC Describe the
+issue Another failed to open PPSSPP core cause library libatomic.so.1
+not found Optional Log Output `[INFO] RetroArch 1.21.0 (Gi...
+[]
+[ccarnell98]
+ccarnell98 08/06/2025 11:27 AM
+or maybe we could change the LD_LIBRARY_PATH for loading cores? so it
+loads our lib folder first. Just an idea. But its fixed for now
+[ccarnell98]
+ccarnell98 08/06/2025 11:07 AM
+I tried static linking it to the retroarch binary itself, didn't fix it.
+So it must be done per core
+[mariotaku]
+[] ccarnell98 yes that fixed it 
+mariotaku 08/06/2025 5:37 AM
+Nice. In that case, stop shipping libstdc++ sounds good!
+August 5, 2025
+[ccarnell98]
+ccarnell98 08/05/2025 5:58 PM
+yes that fixed it 
+[ccarnell98]
+ccarnell98 08/05/2025 5:51 PM
+just for the core itself
+08/05/2025 5:50 PM
+hmm just remembering some old kodi stuff, perhaps we could do
+-static-libstdc++ ?
+August 4, 2025
+[ccarnell98]
+ccarnell98 08/04/2025 9:31 PM
+mine only goes upto 1.13.13 on webOS24
+08/04/2025 9:31 PM
+I'm guessing its not being loaded
+08/04/2025 9:31 PM
+the one we are bundling has
+    strings libstdc++.so.6 | grep CXXABI
+    CXXABI_1.3.15
+(edited)
+[ccarnell98]
+ccarnell98 08/04/2025 9:10 PM
+actually nvm its broken on my install as well, I'll have a look
+08/04/2025 9:05 PM
+We are bundling libstdc++ with retroarch
+08/04/2025 9:05 PM
+https://github.com/webosbrew/retroarch-cores/issues/14 any ideas? He was
+LM5700PTC 05.40.97
+    [ERROR] Failed to open libretro core: "/media/developer/apps/usr/palm/applications/com.retroarch.webos/.config/retroarch/cores/parallel_n64_libretro.so"
+    [ERROR] Error(s): /media/developer/apps/usr/palm/applications/com.retroarch.webos/lib/libstdc++.so.6: version `CXXABI_1.3.15' not found (required by /media/developer/apps/usr/palm/applications/com.retroarch.webos/.config/retroarch/cores/parallel_n64_libretro.so)
+Failed to open ParallelN64 core · Issue #14 · webosbrew/retroarch...
+heres the error [ERROR] Failed to open libretro core:
+&quot;/media/developer/apps/usr/palm/applications/com.retroarch.webos/.config/retroarch/cores/parallel_n64_libretro.so&quot;
+[ERROR] Error(s): ...
+[]
+June 28, 2025
+[mariotaku]
+mariotaku 06/28/2025 11:26 AM
+Then I'll cherry-pick webOS patches to make a new release
+06/28/2025 11:26 AM
+I'll test on webOS 6 today and if it works, I'll mark the PR as ready
+for merging
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Tested with and without gamepad,
+working on my C3 (webOS24)
+mariotaku 06/28/2025 11:25 AM
+Nice
+[ccarnell98]
+ccarnell98 06/28/2025 11:22 AM
+@Mariotaku Tested with and without gamepad, working on my C3 (webOS24)
+June 26, 2025
+[ccarnell98]
+ccarnell98 06/26/2025 9:49 PM
+You sir are the bomb 
+[mariotaku]
+mariotaku 06/26/2025 7:53 AM
+I noticed Xbox One controller does not work, but PS4 controller works
+06/26/2025 7:52 AM
+Here is the snapshot which fixed freezing:
+https://github.com/libretro/RetroArch/actions/runs/15893743152
+[webOS] Update to SDL 2.30.12 · libretro/RetroArch@e513caf
+Cross-platform, sophisticated frontend for the libretro API. Licensed
+GPLv3. - [webOS] Update to SDL 2.30.12 · libretro/RetroArch@e513caf
+[]
+[mariotaku]
+mariotaku 06/26/2025 5:27 AM
+There is a unwanted wl_display_cancel_read call in my SDL2 port
+ 1
+06/26/2025 5:26 AM
+Fixed!
+[mariotaku]
+mariotaku 06/26/2025 4:52 AM
+I think I found the reason
+June 25, 2025
+[ccarnell98]
+[] mariotaku You're talking about SDL2 right? It was rebasing like this
+onto 2.30.x
+ccarnell98 06/25/2025 10:18 PM
+Yeh I meant if the bug was fixed upstream sdl2 maybe we could rebase. I
+don't know what changes were required for webos
+[mariotaku]
+mariotaku 06/25/2025 6:21 PM
+I'm not sure what triggered the issue, but the Wayland client ran into a
+deadlock
+ 1
+[mariotaku]
+mariotaku 06/25/2025 5:01 PM
+OK it stuck in wl_display_dispatch_pending
+[mariotaku]
+mariotaku 06/25/2025 2:41 PM
+But without testing on real device, there's no way to tell what causes
+the issue
+[mariotaku]
+[] ccarnell98 Any reason we can't rebase the webos fork on something
+like 2.32.8? unless theres a reason technical...
+mariotaku 06/25/2025 2:41 PM
+You're talking about SDL2 right? It was rebasing like this onto 2.30.x
+[ccarnell98]
+ccarnell98 06/25/2025 2:09 PM
+Any reason we can't rebase the webos fork on something like 2.32.8?
+unless theres a reason technically it wouldn't work?
+[mariotaku]
+mariotaku 06/25/2025 5:50 AM
+K2LP board arrived! I'll take some time finding out the root cause.
+ 1
+June 19, 2025
+[ccarnell98]
+ccarnell98 06/19/2025 7:53 PM
+yup me too. it didn't work anyway, segfaulted
+[mariotaku]
+[] ccarnell98 untested:
+mariotaku 06/19/2025 4:24 PM
+I'm kind worried about such hacks will not meet standard of upstream
+[ccarnell98]
+ccarnell98 06/19/2025 12:34 PM
+https://github.com/libretro/RetroArch/compare/master...webosbrew:RetroArch:joypad-fix
+Comparing libretro:master...webosbrew:joypad-fix · libretro/RetroArch
+Cross-platform, sophisticated frontend for the libretro API. Licensed
+GPLv3. - Comparing libretro:master...webosbrew:joypad-fix ·
+libretro/RetroArch
+[]
+06/19/2025 12:34 PM
+untested:
+[mariotaku]
+mariotaku 06/19/2025 12:06 PM
+Because if you link with the symbol, by default the program will refuse
+to start if the symbol doesn't exist
+[mariotaku]
+[] ccarnell98 could change the code to SDL_GetVersion and then it can do
+it at runtime
+mariotaku 06/19/2025 12:05 PM
+It's possible with some big caveats. You will need to change the linker
+option to make it not crash when a symbol is not found
+[ccarnell98]
+ccarnell98 06/19/2025 11:55 AM
+that only helps if we dont ship libSDL2 with it though
+06/19/2025 11:51 AM
+could change the code to SDL_GetVersion and then it can do it at runtime
+06/19/2025 11:50 AM
+ah OK
+[mariotaku]
+[] ccarnell98 then SDL_JoystickRumble should exist?
+mariotaku 06/19/2025 11:49 AM
+On his k2lp, I don't think so. It has 2.0.4 or 2.0.1
+[ccarnell98]
+ccarnell98 06/19/2025 11:49 AM
+then SDL_JoystickRumble should exist?
+[mariotaku]
+mariotaku 06/19/2025 11:48 AM
+SDK always have 2.24 that's why we see 2.24.x in the log output, despite
+we ship 2.30.0
+[ccarnell98]
+ccarnell98 06/19/2025 11:48 AM
+good point
+06/19/2025 11:48 AM
+lols
+[mariotaku]
+[] ccarnell98 But.. there is a check for #if SDL_VERSION_ATLEAST(2, 0,
+9), this passes yet he doesn't have SDL_Joy...
+mariotaku 06/19/2025 11:48 AM
+That's a compile time check
+[ccarnell98]
+ccarnell98 06/19/2025 11:47 AM
+But.. there is a check for #if SDL_VERSION_ATLEAST(2, 0, 9), this passes
+yet he doesn't have SDL_JoystickRumble on his TV and it should exist
+[mariotaku]
+mariotaku 06/19/2025 11:47 AM
+The version we ship is 2.30.0, so I doubt that's related (edited)
+[ccarnell98]
+ccarnell98 06/19/2025 11:47 AM
+it might be a bug they introduced.. but this was for mac
+https://github.com/libsdl-org/SDL/issues/12255.
+libsdl-org/SDL
+Simple Directmedia Layer. Contribute to libsdl-org/SDL development by
+creating an account on GitHub.
+[]
+[mariotaku]
+[] ccarnell98 <@225167450713358338>
+https://github.com/libretro/RetroArch/blob/ad19353073fb982e1e510ecea62b07fda66...
+mariotaku 06/19/2025 11:46 AM
+I'll need the board to investigate more. Or would you prefer making
+RetroArch targeting the oldest SDL2 possible, and not shipping the
+backport?
+[ccarnell98]
+ccarnell98 06/19/2025 11:44 AM
+@Mariotaku
+https://github.com/libretro/RetroArch/blob/ad19353073fb982e1e510ecea62b07fda66d889b/input/drivers_joypad/sdl_joypad.c#L509
+RetroArch/input/drivers_joypad/sdl_joypad.c at ad19353073fb982e1e51...
+Cross-platform, sophisticated frontend for the libretro API. Licensed
+GPLv3. - libretro/RetroArch
+[]
+[ccarnell98]
+ccarnell98 06/19/2025 12:26 AM
+not in this thread, but best bet is https://github.com/xbmc/xbmc/issues
+xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&amp;#39;s ava...
+[]
+June 18, 2025
+[pasmatic]
+pasmatic 06/18/2025 11:49 PM
+ok now kodi on my lg crash....do you repair this ?
+ 1
+[ccarnell98]
+[] pasmatic is possible to load roms into a direcory in lan ?
+ccarnell98 06/18/2025 11:35 PM
+I'm not sure. I mean my kodi on my TV uses NFS to load its files off my
+hard drive which is plugged into a orange pi. Not sure. If you check the
+retroarch docs they should apply to this
+[pasmatic]
+[] ccarnell98 took me most of a day to do those, thanks 
+pasmatic 06/18/2025 11:34 PM
+Thank you (edited)
+[pasmatic]
+pasmatic 06/18/2025 11:32 PM
+is possible to load roms into a direcory in lan ?
+06/18/2025 11:29 PM
+eureka!!
+[ccarnell98]
+[] pasmatic wow have lot a core
+ccarnell98 06/18/2025 11:28 PM
+took me most of a day to do those, thanks 
+[ccarnell98]
+ccarnell98 06/18/2025 11:28 PM
+@Mariotaku OK it's definitely an issue with webosbrew/libSDL2. I've
+commented out SDL_joystickRumble in RetroArch, so it didn't need the
+newer libSDL2 and instead he's using his TV one and it works
+[pasmatic]
+pasmatic 06/18/2025 11:28 PM
+wow have lot a core
+06/18/2025 11:27 PM
+06/18/2025 11:27 PM
+and show your magic
+06/18/2025 11:27 PM
+now test all
+[ccarnell98]
+ccarnell98 06/18/2025 11:26 PM
+woooooooooooooooooooot
+[pasmatic]
+[] ccarnell98 download
+https://github.com/cscarnell98/test/raw/refs/heads/main/com.retroarch.webos_1.21.0_arm.ipk
+pasmatic 06/18/2025 11:26 PM
+now start and not freeze
+[pasmatic]
+pasmatic 06/18/2025 11:24 PM
+ok
+06/18/2025 11:24 PM
+look this for search
+ retroarch.cfg
+109.16 KB External
+[ccarnell98]
+ccarnell98 06/18/2025 11:20 PM
+run from menu
+06/18/2025 11:20 PM
+install
+06/18/2025 11:20 PM
+download
+https://github.com/cscarnell98/test/raw/refs/heads/main/com.retroarch.webos_1.21.0_arm.ipk
+06/18/2025 11:20 PM
+uninstall
+[pasmatic]
+pasmatic 06/18/2025 11:16 PM
+(no content)
+[rn_image_picker_lib_temp_f2f4841e-4030-405c-9936-626689ad26ae.jpg]
+ rn_image_picker_lib_temp_f2f4841e-4030-405c-9936-626689ad26ae.jpg
+4.07 MB External
+06/18/2025 11:15 PM
+There is no directory at all
+[ccarnell98]
+ccarnell98 06/18/2025 11:15 PM
+I have an idea
+06/18/2025 11:12 PM
+normally when stuff crashes though it kicks you out to the menu
+06/18/2025 11:11 PM
+anything in /tmp/faultmanager/crash ?
+[pasmatic]
+pasmatic 06/18/2025 11:11 PM
+Well then I don't know
+[ccarnell98]
+ccarnell98 06/18/2025 11:10 PM
+could well be a bug in retroarch. I mean 1.9.1 works -> same compiler,
+same libstdc++ and same libSDL
+[pasmatic]
+pasmatic 06/18/2025 11:10 PM
+And I know maybe he tries to update it and it crashes
+[ccarnell98]
+ccarnell98 06/18/2025 11:10 PM
+because the 1.9.1 one doesn't crash
+[pasmatic]
+pasmatic 06/18/2025 11:09 PM
+And but how come the one that works immediately asks me to update the
+assets and this one doesn't and yes
+[ccarnell98]
+ccarnell98 06/18/2025 11:09 PM
+so assets aren't much use 
+[pasmatic]
+pasmatic 06/18/2025 11:09 PM
+Total freeze on start
+06/18/2025 11:09 PM
+No
+[ccarnell98]
+ccarnell98 06/18/2025 11:09 PM
+but the input doesn't work?
+[pasmatic]
+pasmatic 06/18/2025 11:08 PM
+Or full directory
+06/18/2025 11:08 PM
+And if you send me the asset of the new one
+[pasmatic]
+[] ccarnell98 did you run that from the menu?
+pasmatic 06/18/2025 11:07 PM
+Yes
+[ccarnell98]
+ccarnell98 06/18/2025 11:03 PM
+if it is, seems like a normal startup, except for: [INFO] [GL]:
+Detecting screen resolution: 0x0. which resolves to [INFO] [GL]: Using
+resolution 1920x108 anyway
+[ccarnell98]
+ccarnell98 06/18/2025 10:45 PM
+did you run that from the menu?
+[ccarnell98]
+ccarnell98 06/18/2025 10:38 PM
+yeh should be
+[pasmatic]
+pasmatic 06/18/2025 10:37 PM
+@Craig ??
+06/18/2025 10:34 PM
+/media/developer/apps/usr/palm/applications/com.retroarch.webos/.config/retroarch/logs
+is esact directory ?
+06/18/2025 10:33 PM
+oook
+ retroarch.log
+3.42 KB External
+06/18/2025 10:32 PM
+hi all!!
+[ccarnell98]
+ccarnell98 06/18/2025 10:03 PM
+the screen that is, not the laptop
+06/18/2025 10:02 PM
+this isn't good, my laptop screen broke 2 days ago (fuzzy lines) and now
+it wont switch on 
+[ccarnell98]
+ccarnell98 06/18/2025 4:32 PM
+I could live with that, better performance (probably down to having
+hardfp). compatibility with widevine. dolphin 64-bit arm recompiler and
+other stuff I haven't thought about
+[mariotaku]
+[] ccarnell98 It would be so much easier if LG just switched to aarch64
+mariotaku 06/18/2025 4:20 PM
+It would cause us to provide 2 versions though
+[ccarnell98]
+ccarnell98 06/18/2025 3:02 PM
+It would be so much easier if LG just switched to aarch64
+06/18/2025 3:01 PM
+I'm obsessed. Currently backporting (reversing) the removal of ARM
+32-bit from dolphin emu and refactoring it to work with the current code
+base  (edited)
+[ccarnell98]
+ccarnell98 06/18/2025 10:44 AM
+this IPK has verbose logging to file turned on by default
+June 17, 2025
+[ccarnell98]
+ccarnell98 06/17/2025 10:59 PM
+get the logs from .config/retroarch/logs folder and share them
+06/17/2025 10:59 PM
+run from menu
+06/17/2025 10:59 PM
+install this
+https://github.com/cscarnell98/test/raw/refs/heads/main/com.retroarch.webos_1.21.0_arm.ipk
+06/17/2025 10:59 PM
+uninstall retroarch new
+06/17/2025 10:59 PM
+@pasmatic Can you
+[ccarnell98]
+ccarnell98 06/17/2025 9:59 PM
+nah it was just github playing up
+06/17/2025 9:53 PM
+@Mariotaku Are you tinkering?
+06/17/2025 9:53 PM
+ah well
+[ccarnell98]
+[] pasmatic But if I remember correctly there was a version that if I
+started it with the USB receiver it did th...
+ccarnell98 06/17/2025 9:53 PM
+[ccarnell98]
+[] pasmatic Could it be that I have YouTube adfree installed?
+ccarnell98 06/17/2025 9:51 PM
+No
+[pasmatic]
+pasmatic 06/17/2025 9:46 PM
+Could it be that I have YouTube adfree installed?
+06/17/2025 9:45 PM
+I don't remember what version of RetroArch it was
+06/17/2025 9:44 PM
+If I removed it and started RetroArch then yes, then I connected it and
+everything was fine.
+06/17/2025 9:44 PM
+But if I remember correctly there was a version that if I started it
+with the USB receiver it did the same thing
+06/17/2025 9:42 PM
+Then I looked at the clock and saw that everything was frozen. (edited)
+06/17/2025 9:42 PM
+The new one no.
+06/17/2025 9:42 PM
+No but then if you start the old one it tells you yes it is missing the
+assets and to update it
+[ccarnell98]
+ccarnell98 06/17/2025 9:41 PM
+I didn't even notice it had a clock.. and I've used it a lot 
+06/17/2025 9:41 PM
+good spot
+[pasmatic]
+pasmatic 06/17/2025 9:41 PM
+And RetroArch is freeze (edited)
+06/17/2025 9:41 PM
+In my country
+06/17/2025 9:41 PM
+Now is a 21.41
+06/17/2025 9:40 PM
+(no content)
+[rn_image_picker_lib_temp_a0a7105a-54d3-448a-bf02-4fea3cb9ae27.jpg]
+ rn_image_picker_lib_temp_a0a7105a-54d3-448a-bf02-4fea3cb9ae27.jpg
+2.1 MB External
+06/17/2025 9:40 PM
+If I look at the clock in the top right it doesn't go forward in
+RetroArch
+[ccarnell98]
+ccarnell98 06/17/2025 9:39 PM
+want to do it on my TV 
+06/17/2025 9:39 PM
+what I need is verbose logging from menu. I tried to enable that by
+default yesterday but it didn;t
+[pasmatic]
+pasmatic 06/17/2025 9:39 PM
+The TV can see any USB but RetroArch cannot because it is blocked
+[ccarnell98]
+ccarnell98 06/17/2025 9:39 PM
+I'm just trying to work out if the program has crashed or its not
+accepting input
+[pasmatic]
+pasmatic 06/17/2025 9:38 PM
+is a image freeze
+[ccarnell98]
+ccarnell98 06/17/2025 9:38 PM
+not sure what you mean
+[pasmatic]
+pasmatic 06/17/2025 9:38 PM
+yea
+[ccarnell98]
+ccarnell98 06/17/2025 9:38 PM
+clock?
+[pasmatic]
+pasmatic 06/17/2025 9:38 PM
+and show 37
+06/17/2025 9:38 PM
+now is 38
+06/17/2025 9:38 PM
+is freeze but the clock is block
+06/17/2025 9:37 PM
+whitout usb
+06/17/2025 9:37 PM
+no same
+06/17/2025 9:36 PM
+?
+[ccarnell98]
+ccarnell98 06/17/2025 9:35 PM
+use the magic remote
+[pasmatic]
+pasmatic 06/17/2025 9:35 PM
+(no content)
+[rn_image_picker_lib_temp_21192955-f1eb-4726-939f-d1c1e7daf33f.jpg]
+ rn_image_picker_lib_temp_21192955-f1eb-4726-939f-d1c1e7daf33f.jpg
+2.5 MB External
+[ccarnell98]
+ccarnell98 06/17/2025 9:35 PM
+relaunch from menu
+06/17/2025 9:35 PM
+ok unplug it
+[pasmatic]
+pasmatic 06/17/2025 9:32 PM
+yes
+[ccarnell98]
+ccarnell98 06/17/2025 9:32 PM
+has your gamepad always been plugged in / connected
+[pasmatic]
+[] ccarnell98 try this one:
+https://github.com/cscarnell98/test/raw/refs/heads/main/com.retroarch.webos_1.21.0_arm...
+pasmatic 06/17/2025 9:31 PM
+same
+[pasmatic]
+pasmatic 06/17/2025 9:30 PM
+https://pastebin.com/bsxJ6J1z
+retro - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+06/17/2025 9:30 PM
+ok look this and try new ipk
+[ccarnell98]
+ccarnell98 06/17/2025 9:30 PM
+try this one:
+https://github.com/cscarnell98/test/raw/refs/heads/main/com.retroarch.webos_1.21.0_arm.ipk
+[pasmatic]
+pasmatic 06/17/2025 9:27 PM
+https://pastebin.com/Zw2qNw0E
+retro - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+06/17/2025 9:25 PM
+block on first image but not have control and not show asset is missing
+06/17/2025 9:25 PM
+same
+[ccarnell98]
+ccarnell98 06/17/2025 9:22 PM
+load from menu
+06/17/2025 9:22 PM
+download
+https://github.com/cscarnell98/test/raw/refs/heads/main/com.retroarch.webos_1.21.0_arm.ipk
+06/17/2025 9:22 PM
+uninstall retroarch (new)
+[pasmatic]
+pasmatic 06/17/2025 9:18 PM
+but no control menu
+06/17/2025 9:18 PM
+always connect a usb show ad hid controller
+06/17/2025 9:18 PM
+no is freee
+[ccarnell98]
+ccarnell98 06/17/2025 9:16 PM
+I'm gonna send you another IPK in a few min
+06/17/2025 9:16 PM
+well try it just in case
+[pasmatic]
+pasmatic 06/17/2025 9:16 PM
+bluetooth
+06/17/2025 9:16 PM
+is a 8bitdo
+06/17/2025 9:16 PM
+work whit gamepad
+[ccarnell98]
+ccarnell98 06/17/2025 9:16 PM
+my TV has bluetooth, but its newer
+[pasmatic]
+pasmatic 06/17/2025 9:16 PM
+i search have a min keyboard but is bluetooth
+[ccarnell98]
+ccarnell98 06/17/2025 9:15 PM
+does it work with your TV?
+[pasmatic]
+pasmatic 06/17/2025 9:15 PM
+only gamepad whit usb bluetooth
+[ccarnell98]
+ccarnell98 06/17/2025 9:13 PM
+do you have a keyboard you could plug in?
+[pasmatic]
+pasmatic 06/17/2025 9:13 PM
+(no content)
+[rn_image_picker_lib_temp_a61606eb-e755-4d16-86c9-2be2547324dc.jpg]
+ rn_image_picker_lib_temp_a61606eb-e755-4d16-86c9-2be2547324dc.jpg
+2.43 MB External
+06/17/2025 9:12 PM
+ok
+[ccarnell98]
+ccarnell98 06/17/2025 9:12 PM
+can you post a picture when it froze?
+[pasmatic]
+pasmatic 06/17/2025 9:12 PM
+you say contex do debug of debug all ? (edited)
+06/17/2025 9:11 PM
+i try to copy and paste the log on webos dev manager
+[ccarnell98]
+ccarnell98 06/17/2025 9:11 PM
+can you check for any logs when you launch it from the menu
+[pasmatic]
+pasmatic 06/17/2025 9:11 PM
+is strange whit old retroarch. on ssh dont run and return on tv channel
+but from tv menu work fine
+06/17/2025 9:10 PM
+from tv freeze on first menu
+06/17/2025 9:09 PM
+on ssh return to tv channel
+[ccarnell98]
+ccarnell98 06/17/2025 9:09 PM
+so, on the new, when launching from TV (freezes), when launching from
+SSH it also freezes?
+[pasmatic]
+pasmatic 06/17/2025 9:08 PM
+but not return to tv channek
+06/17/2025 9:08 PM
+new retroarch now on delete .config freeze first menu
+[ccarnell98]
+ccarnell98 06/17/2025 9:08 PM
+but the new just quits right?
+[pasmatic]
+pasmatic 06/17/2025 9:08 PM
+old not have problem. it solved run on menu tv and work
+[ccarnell98]
+ccarnell98 06/17/2025 9:07 PM
+are you saying it now works? or is this the old version your saying has
+missing assets (edited)
+06/17/2025 9:07 PM
+old
+[pasmatic]
+pasmatic 06/17/2025 9:06 PM
+speak new or old retroarch ?
+[ccarnell98]
+ccarnell98 06/17/2025 9:06 PM
+youll have to download assets again
+06/17/2025 9:05 PM
+and then load through the TV menu
+06/17/2025 9:05 PM
+quit out of retroarch, delete the .config folder
+[pasmatic]
+pasmatic 06/17/2025 9:05 PM
+and force to another folder in retroarch.cfg ?
+[ccarnell98]
+ccarnell98 06/17/2025 9:04 PM
+when it created it
+06/17/2025 9:04 PM
+root probably changed ownership of .config in retroarch folder
+06/17/2025 9:04 PM
+its probably a permission issue as you run root a lot I assume and your
+TV apps dont
+[pasmatic]
+pasmatic 06/17/2025 9:03 PM
+whit ssh, on tv menu work fine (edited)
+06/17/2025 9:03 PM
+old retroarch
+06/17/2025 9:02 PM
+now show missing asset and return to tv
+[ccarnell98]
+ccarnell98 06/17/2025 9:01 PM
+guess they had to get the code from somewhere
+06/17/2025 9:01 PM
+well I didn't know webos used a Qt Wayland Compositor
+[pasmatic]
+pasmatic 06/17/2025 8:41 PM
+syslog
+06/17/2025 8:40 PM
+this is log for webos dev whit only warning
+06/17/2025 8:40 PM
+https://pastebin.com/2xgqdH7u
+retro-log - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[pasmatic]
+pasmatic 06/17/2025 8:31 PM
+i run on menu of tv run fine
+06/17/2025 8:31 PM
+i need help, i run old retroarch on ssh and run but escape
+[pasmatic]
+pasmatic 06/17/2025 8:22 PM
+log dont write nothing
+06/17/2025 8:21 PM
+second
+06/17/2025 8:21 PM
+https://pastebin.com/znVqpBXP
+retro2 - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+06/17/2025 8:19 PM
+this is first command
+06/17/2025 8:19 PM
+https://pastebin.com/X0nFd0yb
+reto - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+06/17/2025 8:15 PM
+this for new retroarch
+[ccarnell98]
+ccarnell98 06/17/2025 8:08 PM
+danke 
+06/17/2025 8:08 PM
+and after that try this:
+    export XDG_RUNTIME_DIR='/tmp/xdg'
+    export XDG_DIR='/tmp/xdg'
+    export XKB_CONFIG_ROOT=/usr/share/X11/xkb
+    export WAYLAND_DISPLAY=wayland-0 
+    export EGL_PLATFORM=wayland
+    export SDL_VIDEODRIVER=wayland
+    export LD_LIBRARY_PATH='/media/developer/temp/lib:/media/developer/temp/usr/lib:/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib'
+[ccarnell98]
+ccarnell98 06/17/2025 7:42 PM
+and give logs plz
+06/17/2025 7:42 PM
+then run ./retroarch --verbose
+06/17/2025 7:42 PM
+ok copy and paste
+    export XDG_RUNTIME_DIR='/tmp/xdg'
+    export XDG_DIR='/tmp/xdg'
+    export XKB_CONFIG_ROOT=/usr/share/X11/xkb
+    export WAYLAND_DISPLAY=wayland-0 
+    export EGL_PLATFORM=wayland
+    export SDL_VIDEODRIVER=wayland
+    export LD_LIBRARY_PATH='/media/developer/apps/usr/palm/applications/com.retroarch.webos/lib:/media/developer/temp/lib:/media/developer/temp/usr/lib:/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib'
+[pasmatic]
+pasmatic 06/17/2025 7:31 PM
+root@LGwebOSTV:~# ls -la /usr/lib/libSDL* lrwxrwxrwx 1 root root 20 Mar
+27 04:45 /usr/lib/libSDL2-2.0.so.0 -> libSDL2-2.0.so.0.2.1 -rwxr-xr-x 1
+root root 581988 Mar 27 04:39 /usr/lib/libSDL2-2.0.so.0.2.1 lrwxrwxrwx 1
+root root 26 Mar 27 04:45 /usr/lib/libSDL2_image-2.0.so.0 ->
+libSDL2_image-2.0.so.0.0.0 -rwxr-xr-x 1 root root 36268 Mar 27 04:42
+/usr/lib/libSDL2_image-2.0.so.0.0.0 lrwxrwxrwx 1 root root 26 Mar 27
+04:45 /usr/lib/libSDL2_mixer-2.0.so.0 -> libSDL2_mixer-2.0.so.0.0.0
+-rwxr-xr-x 1 root root 38880 Mar 27 04:42
+/usr/lib/libSDL2_mixer-2.0.so.0.0.0 lrwxrwxrwx 1 root root 24 Mar 27
+04:45 /usr/lib/libSDL2_net-2.0.so.0 -> libSDL2_net-2.0.so.0.0.0
+-rwxr-xr-x 1 root root 11200 Mar 27 04:42
+/usr/lib/libSDL2_net-2.0.so.0.0.0 lrwxrwxrwx 1 root root 25 Mar 27 04:45
+/usr/lib/libSDL2_ttf-2.0.so.0 -> libSDL2_ttf-2.0.so.0.10.2 -rwxr-xr-x 1
+root root 16844 Mar 27 04:42 /usr/lib/libSDL2_ttf-2.0.so.0.10.2
+root@LGwebOSTV:~#
+[ccarnell98]
+ccarnell98 06/17/2025 7:22 PM
+ls -la /usr/lib/libSDL*
+06/17/2025 7:22 PM
+@pasmatic could you do this and tell me the output?
+[mariotaku]
+mariotaku 06/17/2025 7:21 PM
+I did similar support to a few people, sadly they're living far so the
+ping is terrible
+[ccarnell98]
+ccarnell98 06/17/2025 7:21 PM
+@pasmatic it was wrong with 1.9.1 so we changed it
+[mariotaku]
+mariotaku 06/17/2025 7:20 PM
+@pasmatic Another idea (not very secure though), would be using stuff
+like tailscale to open up remote connection so @Craig could SSH into
+your TV directly
+[mariotaku]
+[] ccarnell98 export XDG_RUNTIME_DIR='/tmp/xdg' export
+XDG_DIR='/tmp/xdg' export XKB_CONFIG_ROOT=/usr/share/X11/xk...
+mariotaku 06/17/2025 7:19 PM
+I think the best way would be waiting for the board to arrive so I could
+directly attach debugger
+[mariotaku]
+[] pasmatic The work RetroArch is on com.retroarch and not working is on
+com.retroarch.webos
+mariotaku 06/17/2025 7:15 PM
+The package name has changed recently, yes.
+[pasmatic]
+pasmatic 06/17/2025 7:14 PM
+The work RetroArch is on com.retroarch and not working is on
+com.retroarch.webos
+06/17/2025 7:12 PM
+Of retroarch
+06/17/2025 7:12 PM
+But the directory is different
+[ccarnell98]
+ccarnell98 06/17/2025 7:12 PM
+then re-run it with logs
+06/17/2025 7:11 PM
+export XDG_RUNTIME_DIR='/tmp/xdg' export XDG_DIR='/tmp/xdg' export
+XKB_CONFIG_ROOT=/usr/share/X11/xkb export WAYLAND_DISPLAY=wayland-0
+export EGL_PLATFORM=wayland export SDL_VIDEODRIVER=wayland export
+SDL_LOGGING='*=verbose'
+06/17/2025 7:11 PM
+could you try
+[pasmatic]
+pasmatic 06/17/2025 7:11 PM
+And if I try to log the working one? 1.9.1?
+[ccarnell98]
+ccarnell98 06/17/2025 7:08 PM
+actually since yesterday it has regressed. because yesterday he had
+[INFO] [GL]: Version: OpenGL ES 3.1 build 1.6@3626709.
+06/17/2025 7:07 PM
+and on my TV apparently
+06/17/2025 7:07 PM
+in one provided yesterday by @pasmatic https://pastebin.com/P5C5QG6s
+retroarch.log - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[mariotaku]
+mariotaku 06/17/2025 7:03 PM
+Why it's 2.24.1? I don't remember webOS has this version
+[ccarnell98]
+ccarnell98 06/17/2025 7:03 PM
+    [INFO] [SDL_GL] SDL 2.24.1 gfx context driver initialized.
+    [INFO] [GL]: Found GL context: "gl_sdl".
+    [INFO] [GL]: Detecting screen resolution: 1920x1080.
+06/17/2025 7:03 PM
+on my device:
+06/17/2025 7:03 PM
+    [INFO] [SDL_GL] SDL 2.30.12 gfx context driver initialized.
+    [INFO] [GL]: Found GL context: "gl_sdl".
+    [INFO] [GL]: Detecting screen resolution: 0x0.
+[mariotaku]
+mariotaku 06/17/2025 6:57 PM
+So I think linkage isn't the root cause
+06/17/2025 6:57 PM
+Otherwise, you would see "Failed to load library_name"
+06/17/2025 6:56 PM
+In fact, almost all the symbols are not required
+[ccarnell98]
+ccarnell98 06/17/2025 6:55 PM
+OK saves me some trouble then
+[mariotaku]
+mariotaku 06/17/2025 6:54 PM
+Register app error would happen if: 1. APPID env not set properly 2.
+appinfo.json is not matching APPID
+[mariotaku]
+[] ccarnell98 I tried adding luna registerApp
+mariotaku 06/17/2025 6:53 PM
+HNDLSetLSHandle is not a required symbol (edited)
+[ccarnell98]
+ccarnell98 06/17/2025 6:47 PM
+No I have a C3
+[pasmatic]
+pasmatic 06/17/2025 6:46 PM
+?
+[pasmatic]
+[] ccarnell98 although I don't think its the issue as the app works fine
+on my TV
+pasmatic 06/17/2025 6:46 PM
+Same tv
+[pasmatic]
+pasmatic 06/17/2025 6:44 PM
+Ctrl+z doesn't work
+06/17/2025 6:44 PM
+I tried ssh from prompt
+06/17/2025 6:43 PM
+I'm sorry but it doesn't go any further
+[rn_image_picker_lib_temp_4b01d007-c5c2-4b96-ab4b-b87fcf39641a.jpg]
+ rn_image_picker_lib_temp_4b01d007-c5c2-4b96-ab4b-b87fcf39641a.jpg
+2.61 MB External
+[ccarnell98]
+ccarnell98 06/17/2025 6:43 PM
+although I don't think its the issue as the app works fine on my TV
+[ccarnell98]
+ccarnell98 06/17/2025 6:35 PM
+@Yolofant
+06/17/2025 6:34 PM
+    ake -f Makefile.webos ipk PACKAGE_NAME=org.retroarch.webos ADD_SDL2_LIB=1 -j$(getconf _NPROCESSORS_ONLN)
+    CC retroarch.c
+    In file included from retroarch.c:54:
+    /home/ccarnell/Toolchains/buildroot-nc4-craig/output/host/arm-webos-linux-gnueabi/sysroot/usr/include/webos-helpers/libhelpers.h:20:15: error: expected declaration specifiers or ‘...’ before ‘*’ token
+       20 | typedef bool (*LSFilterFunc) (LSHandle *sh, LSMessage *reply, void *ctx);
+          |               ^
+    /home/ccarnell/Toolchains/buildroot-nc4-craig/output/host/arm-webos-linux-gnueabi/sysroot/usr/include/webos-helpers/libhelpers.h:30:5: error: unknown type name ‘LSFilterFunc’
+       30 |     LSFilterFunc callback;
+          |     ^~~~~~~~~~~~
+    make: *** [Makefile.webos:249: obj-unix/debug/retroarch.o] Error 1
+06/17/2025 6:34 PM
+but..
+06/17/2025 6:34 PM
+I tried adding luna registerApp
+[pasmatic]
+pasmatic 06/17/2025 6:33 PM
+WebOS dev report no crash reports
+06/17/2025 6:31 PM
+or crash ssh? or retroarch ?
+[mariotaku]
+mariotaku 06/17/2025 6:30 PM
+I believe it would still output more logs, but if it stops there, I
+don't have any idea either. When the board comes, I could test on my
+side as if I have your same TV model
+[pasmatic]
+pasmatic 06/17/2025 6:28 PM
+https://pastebin.com/VVPg3tWt
+retro - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+06/17/2025 6:26 PM
+(no content)
+[rn_image_picker_lib_temp_e21479e0-56a9-4c6c-a3df-4ffd75896bfa.jpg]
+ rn_image_picker_lib_temp_e21479e0-56a9-4c6c-a3df-4ffd75896bfa.jpg
+3.83 MB External
+06/17/2025 6:26 PM
+Little by little other lines come out
+06/17/2025 6:25 PM
+In my opinion he doesn't write it because he slowly adds other lines
+[mariotaku]
+mariotaku 06/17/2025 6:22 PM
+Does it match your case?
+06/17/2025 6:22 PM
+The whole command would be like /path/to/retroarch > /tmp/retroarch.log
+[pasmatic]
+pasmatic 06/17/2025 6:21 PM
+empty file
+[mariotaku]
+mariotaku 06/17/2025 6:17 PM
+Can you append  > /tmp/retroarch.log and then copy the file from /tmp
+instead? The log captured is still incomplete
+[pasmatic]
+pasmatic 06/17/2025 6:17 PM
+https://pastebin.com/a6aqmVa3
+retroooooo - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Any ideas?
+mariotaku 06/17/2025 6:15 PM
+My k2lp board is on the way
+[mariotaku]
+[] pasmatic
+https://tenor.com/view/explosion-explode-clouds-of-smoke-gif-17216934
+mariotaku 06/17/2025 6:12 PM
+Are you sure the outputs are all captured? It seems incomplete
+[pasmatic]
+pasmatic 06/17/2025 5:58 PM
+[ccarnell98]
+ccarnell98 06/17/2025 5:55 PM
+@Mariotaku Any ideas?
+[pasmatic]
+pasmatic 06/17/2025 5:47 PM
+This gamepad is waiting for the new RetroArch 
+[rn_image_picker_lib_temp_1c2e087c-0b0a-4c57-ace8-0d22ce09f678.jpg]
+ rn_image_picker_lib_temp_1c2e087c-0b0a-4c57-ace8-0d22ce09f678.jpg
+1.98 MB External
+06/17/2025 5:45 PM
+oot@LGwebOSTV:~# ls -la
+/media/developer/apps/usr/palm/applications/com.retroarch.webos/lib
+total 3912 drwxrwxrwx 2 root root 4096 Jun 17 17:36 . drwxrwxrwx 3 root
+root 4096 Jun 17 17:36 .. -rwxr-xr-x 1 root root 1552148 Jun 17 17:28
+libSDL2-2.0.so.0 -rwxr-xr-x 1 root root 2444304 Jun 17 17:28
+libstdc++.so.6
+[ccarnell98]
+ccarnell98 06/17/2025 5:45 PM
+ls -la
+/media/developer/apps/usr/palm/applications/com.retroarch.webos/lib
+06/17/2025 5:45 PM
+now type:
+[pasmatic]
+pasmatic 06/17/2025 5:44 PM
+root@LGwebOSTV:~# echo $LD_LIBRARY_PATH
+/media/developer/apps/usr/palm/applications/com.retroarch.webos/lib:/media/developer/temp/lib:/media/developer/temp/usr/lib:/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib
+[ccarnell98]
+ccarnell98 06/17/2025 5:43 PM
+what is the output
+06/17/2025 5:43 PM
+echo $LD_LIBRARY_PATH
+06/17/2025 5:43 PM
+then
+06/17/2025 5:43 PM
+export
+LD_LIBRARY_PATH='/media/developer/apps/usr/palm/applications/com.retroarch.webos/lib:/media/developer/temp/lib:/media/developer/temp/usr/lib:/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib'
+06/17/2025 5:42 PM
+hmm try this one more time:
+06/17/2025 5:41 PM
+and just do killall retroarch
+06/17/2025 5:41 PM
+you can open another terminal
+[pasmatic]
+pasmatic 06/17/2025 5:41 PM
+I think it's blocked because then I have to reconfirm to the ssh
+06/17/2025 5:40 PM
+first screen and return to tv channel
+06/17/2025 5:39 PM
+https://pastebin.com/VK7FX1QF
+retrooo - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+06/17/2025 5:39 PM
+ok
+06/17/2025 5:39 PM
+lk
+06/17/2025 5:39 PM
+at once
+[ccarnell98]
+ccarnell98 06/17/2025 5:39 PM
+copy and paste
+[pasmatic]
+pasmatic 06/17/2025 5:39 PM
+is possible to copy and paste this command ? or use single command
+[ccarnell98]
+ccarnell98 06/17/2025 5:38 PM
+SDL_LOGGING='*=verbose' ./retroarch --verbose
+06/17/2025 5:37 PM
+then run:
+06/17/2025 5:37 PM
+export
+LD_LIBRARY_PATH='/media/developer/apps/usr/palm/applications/com.retroarch.webos/lib:/media/developer/temp/lib:/media/developer/temp/usr/lib:/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib'
+06/17/2025 5:37 PM
+OK type this into terminal
+[pasmatic]
+pasmatic 06/17/2025 5:37 PM
+(no content)
+[rn_image_picker_lib_temp_7f94b97e-92fe-4437-a26e-fc1ae05cc26b.jpg]
+ rn_image_picker_lib_temp_7f94b97e-92fe-4437-a26e-fc1ae05cc26b.jpg
+3.73 MB External
+06/17/2025 5:36 PM
+now reinstall
+06/17/2025 5:36 PM
+whit uninstall all directory removed
+[ccarnell98]
+ccarnell98 06/17/2025 5:35 PM
+what files are in /lib
+[pasmatic]
+pasmatic 06/17/2025 5:35 PM
+yes whit webos dev manager
+[ccarnell98]
+ccarnell98 06/17/2025 5:34 PM
+make sure you uninstall the old one, dont want any left over files
+[pasmatic]
+pasmatic 06/17/2025 5:34 PM
+https://pastebin.com/pYpF6BuJ
+retrooo - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+06/17/2025 5:33 PM
+first screen and return to tv channel
+[ccarnell98]
+ccarnell98 06/17/2025 5:32 PM
+https://github.com/cscarnell98/test/raw/refs/heads/main/com.retroarch.webos_1.21.0_arm.ipk
+06/17/2025 5:32 PM
+Can you try this IPK please? It has debug symbols in there.
+[pasmatic]
+pasmatic 06/17/2025 5:30 PM
+https://pastebin.com/8HHub2bd
+retro - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[pasmatic]
+pasmatic 06/17/2025 5:18 PM
+DEBUG: Video subsystem has not been initialized DEBUG: Video subsystem
+has not been initialized DEBUG: Video subsystem has not been initialized
+DEBUG: Failed loading HNDLSetLSHandle: /usr/lib/libhelpers.so.2:
+undefined symbol: _HNDLSetLSHandle [HLunaServiceBridge::proc]-->
+{"returnValue":false,"errorText":"Invalid appId specified OR Unsupported
+Application Type: (null)"} DEBUG: Failed to parse output of
+luna://com.webos.applicationManager/getAppInfo DEBUG: Failed to get
+nativeLifeCycleInterfaceVersion: Failed to parse output of
+luna://com.webos.applicationManager/getAppInfo ERROR: Failed to register
+app: Failed to get nativeLifeCycleInterfaceVersion: Failed to parse
+output of luna://com.webos.applicationManager/getAppInfo DEBUG: Failed
+loading HNDLSetLSHandle: /usr/lib/libhelpers.so.2: undefined symbol:
+_HNDLSetLSHandle DEBUG: Failed loading HNDLSetLSHandle:
+/usr/lib/libhelpers.so.2: undefined symbol: _HNDLSetLSHandle DEBUG:
+Failed loading wl_proxy_get_version: /usr/lib/libwayland-client.so.0:
+undefined symbol: _wl_proxy_get_version DEBUG: Failed loading
+wl_proxy_get_version: /usr/lib/libwayland-egl.so: undefined symbol:
+_wl_proxy_get_version DEBUG: Failed loading wl_proxy_get_version:
+/usr/lib/libwayland-cursor.so.0: undefined symbol: _wl_proxy_get_version
+DEBUG: Failed loading wl_proxy_get_version: /usr/lib/libxkbcommon.so.0:
+undefined symbol: _wl_proxy_get_version DEBUG: Failed loading
+wl_proxy_create_wrapper: /usr/lib/libwayland-client.so.0: undefined
+symbol: _wl_proxy_create_wrapper DEBUG: Failed loading
+wl_proxy_create_wrapper: /usr/lib/libwayland-egl.so: undefined symbol:
+_wl_proxy_create_wrapper DEBUG: Failed loading wl_proxy_create_wrapper:
+/usr/lib/libwayland-cursor.so.0: undefined symbol:
+_wl_proxy_create_wrapper DEBUG: Failed loading wl_proxy_create_wrapper:
+/usr/lib/libxkbcommon.so.0: undefined symbol: _wl_proxy_create_wrapper
+DEBUG: Failed loading wl_proxy_wrapper_destroy:
+/usr/lib/libwayland-client.so.0: undefined symbol:
+_wl_proxy_wrapper_destroy
+[pasmatic]
+[] ccarnell98 Click to see attachment
+pasmatic 06/17/2025 5:18 PM
+first screen and return to tv channel
+[pasmatic]
+pasmatic 06/17/2025 5:18 PM
+hi all
+[mariotaku]
+[] ccarnell98 could you not ignore line endings in git?
+mariotaku 06/17/2025 2:33 PM
+I think it should have been LF in the first place. If you think it's
+better to separate LF change & content change, then I'll do
+ 1
+[ccarnell98]
+ccarnell98 06/17/2025 11:36 AM
+but yeh I agree LF would be preferred
+06/17/2025 11:35 AM
+could you not ignore line endings in git?
+[mariotaku]
+mariotaku 06/17/2025 11:21 AM
+Somehow, the line ending was always CRLF (and LF should be correct), so
+I think it's better to leave the file as LF in version control
+06/17/2025 11:21 AM
+https://github.com/webosbrew/RetroArch/pull/11
+Enable Debug Build for webOS by mariotaku · Pull Request #11 · we...
+Guidelines Rebase before opening a pull request If you are sending
+several unrelated fixes or features, use a branch and a separate pull
+request for each If possible try squashing everything in a ...
+[]
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Yes teach me Obiwan of webOS 
+mariotaku 06/17/2025 11:04 AM
+Sadly it was stripped, so I have to use Ghidra to take a look
+[ccarnell98]
+ccarnell98 06/17/2025 10:51 AM
+https://github.com/webosbrew/RetroArch/actions/runs/15620668634
+Add environment variables missing from webOS 3 · webosbrew/RetroAr...
+Cross-platform, sophisticated frontend for the libretro API. Licensed
+GPLv3. - Add environment variables missing from webOS 3 ·
+webosbrew/RetroArch@730cb13
+[]
+06/17/2025 10:51 AM
+@Mariotaku Yes teach me Obiwan of webOS 
+[mariotaku]
+[] ccarnell98 I woudn't know how to tell. I haven't looked at crash
+dumps in any depth
+mariotaku 06/17/2025 10:49 AM
+Can you point me to the built IPK? I think addr2line would give you an
+insight
+[ccarnell98]
+ccarnell98 06/17/2025 10:45 AM
+I woudn't know how to tell. I haven't looked at crash dumps in any depth
+[mariotaku]
+mariotaku 06/17/2025 10:44 AM
+And the address 0x23678 correspond to runloop.c#L3675 right?
+[ccarnell98]
+ccarnell98 06/17/2025 10:43 AM
+Yep. The only change before this was adding the missing env variable.
+https://pastebin.com/DdYJUe9z
+retroarch-crash - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[mariotaku]
+[] ccarnell98 He did have this error:
+https://github.com/libretro/RetroArch/blob/master/runloop.c#L3675 but I
+assu...
+mariotaku 06/17/2025 10:40 AM
+webOS runtime should always set proper environment variables, so I think
+the error could be caused by other versions. For the segfault, does it
+happen on the latest release?
+[ccarnell98]
+ccarnell98 06/17/2025 10:14 AM
+He did have this error:
+https://github.com/libretro/RetroArch/blob/master/runloop.c#L3675 but I
+assume it was because XDG_RUNTIME_DIR was not set yet, that was much
+earlier in the conversation before it was added to the IPK (edited)
+[ccarnell98]
+ccarnell98 06/17/2025 10:04 AM
+The other test logs aren't much use seeing as I was given him stubs 
+06/17/2025 10:03 AM
+I think there was a dependency on libffi which was not provided: DEBUG:
+Failed loading libwayland-client.so.0: libffi.so.8: cannot open shared
+object file: No such file or directory (edited)
+06/17/2025 10:01 AM
+On 1.21.0 - our libSDL2 is loaded, perhaps it has a different name. If
+we remove it, there is a symbol missing SDL_joystickRumble, which I
+assume was added later on compared to the TV version. His
+https://pastebin.com/DdYJUe9z shows our libSDL2 version loaded (edited)
+retroarch-crash - Pastebin.com
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+06/17/2025 10:00 AM
+1.9.1 webos version works, doesn't ship with libSDL2 in the package
+06/17/2025 10:00 AM
+Few things I found out to save you trawling through all the messages.
+[mariotaku]
+[] ccarnell98 These ones?
+https://github.com/webosbrew/webos-userland/blob/main/CMakeLists.txt
+mariotaku 06/17/2025 9:44 AM
+Those are all stubs, yeah
+[ccarnell98]
+ccarnell98 06/17/2025 9:41 AM
+These ones?
+https://github.com/webosbrew/webos-userland/blob/main/CMakeLists.txt
+webos-userland/CMakeLists.txt at main · webosbrew/webos-userland
+Contribute to webosbrew/webos-userland development by creating an
+account on GitHub.
+[mariotaku]
+mariotaku 06/17/2025 9:41 AM
+The sysroot is not bootable, it just has the entries to symbols
+(especially for webOS part)
+[mariotaku]
+[] ccarnell98 I had the feeling. How can I find out which ones are stubs
+and which ones aren't?
+mariotaku 06/17/2025 9:40 AM
+Basically, no libraries except for basic ones like stdc++ in the
+buildroot sysroot can be shipped
+[ccarnell98]
+ccarnell98 06/17/2025 9:39 AM
+I had the feeling. How can I find out which ones are stubs and which
+ones aren't?
+[mariotaku]
+mariotaku 06/17/2025 9:38 AM
+That one doesn't have any valid driver so definitely wouldn't work. It's
+a stub library to link against
+[ccarnell98]
+ccarnell98 06/17/2025 9:36 AM
+Yep
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Yeh ignore that one, I was just
+testing something
+mariotaku 06/17/2025 9:33 AM
+Was it from the buildroot SDK?
+[ccarnell98]
+ccarnell98 06/17/2025 9:29 AM
+@Mariotaku Yeh ignore that one, I was just testing something
+[mariotaku]
+mariotaku 06/17/2025 9:20 AM
+I really can't replicate any errors, so I bought a k2lp board for
+testing
+ 1
+[mariotaku]
+mariotaku 06/17/2025 5:46 AM
+@Craig looks strange that the SDL2 library requires GLIBC_2.34, is it
+from the SDL-webOS repo?
+[ccarnell98]
+ccarnell98 06/17/2025 1:33 AM
+(no content)
+ webos.zip
+1.36 MB External

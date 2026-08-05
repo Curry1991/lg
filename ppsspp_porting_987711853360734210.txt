@@ -1,0 +1,186 @@
+June 20, 2022
+[ingwiephoenix]
+[] smx2460 I dont think he knew you were already using the buildroot
+one. Maybe he thought you were doing deps ...
+ingwiephoenix 06/20/2022 4:42 AM
+Well some deps I did compile by hand if they were not available or did
+not satisfy requirements. o.o
+June 19, 2022
+[mariotaku]
+mariotaku 06/19/2022 6:29 PM
+Yeah, I thought that's the case.
+[smx2460]
+[] ingwiephoenix The NDK is what I initially used for many of my
+testing; but I often found myself running into probl...
+smx2460 06/19/2022 1:17 PM
+I dont think he knew you were already using the buildroot one. Maybe he
+thought you were doing deps by hand (edited)
+[ingwiephoenix]
+ingwiephoenix 06/19/2022 10:40 AM
+But since you did SDL stuff, might want to take a peek.
+06/19/2022 10:40 AM
+So what confuses me is why the GUI isn't rendering - unless it's not
+just rendering SDL within the GUI but another layer. I am noe xpert in
+this, but whilst reading their main in the SDL folder, i didn't see
+anything out of the ordinary.
+06/19/2022 10:39 AM
+From what I know, PPSSPP's GUI is just SDL ($repo/SDL) but while the
+emulated game runs, it translates GPU calls to GL or GLES.
+06/19/2022 10:38 AM
+That ought to be what you described. Well, from what I see, webOS
+doesn't really behave like a typical window manager in the first place,
+either.
+06/19/2022 10:38 AM
+Especially that last part. I changed my RetroArch resolution in the
+naive belief I could run it at 4k for the lulz and I noticed oddities
+with the viewport.
+06/19/2022 10:37 AM
+Interesting.
+[mariotaku]
+mariotaku 06/19/2022 9:53 AM
+Also, if you hide a window on webOS, it's hard to show it again, also
+better not to change resolution
+06/19/2022 9:52 AM
+All the display resources are obtained though wayland protocol, but it's
+not worth doing directly
+06/19/2022 9:52 AM
+webOS 3 has SDL 2.0.4, webOS 4 has SDL 2.0.5, 5+ has 2.0.10+
+06/19/2022 9:51 AM
+Although you can get EGL context, it's very hard to use EGL without
+worrying about compatibility issue, so the best way is to completely get
+rid of it and use SDL
+06/19/2022 9:50 AM
+webOS supports GLES 2.0 at least, some of them has 3.2 while I never use
+them.
+[mariotaku]
+[] ingwiephoenix Whilst browsing the `/sys` folder, I noticed that there
+are multiple `fb` devices. That had me think...
+mariotaku 06/19/2022 9:50 AM
+I don't think so. Let me share some of my findings while developing SDL
+based app
+[ingwiephoenix]
+ingwiephoenix 06/19/2022 8:54 AM
+Whilst browsing the /sys folder, I noticed that there are multiple fb
+devices. That had me thinking: Since you said the crash dialog let the
+functioning UI shine through; what if PPSSPP is allocating its surfaces
+on the wrong fb device?
+[ingwiephoenix]
+ingwiephoenix 06/19/2022 6:29 AM
+I don't have DEBUG enabled on mine. How can I do that? Might be useful!
+[mariotaku]
+mariotaku 06/19/2022 5:20 AM
+I'll share my fork repo and show what I've changed
+[mariotaku]
+mariotaku 06/19/2022 5:06 AM
+But if you close the dialog, it went black again.
+06/19/2022 5:05 AM
+And, when I run the binary, you can see functioning UI working under the
+popup dialog
+06/19/2022 5:05 AM
+Something interesting happened yesterday. When I close the app it
+crashes, and popped a dialog to collect logs. This is because I enabled
+DEBUG mode on TV
+[ingwiephoenix]
+ingwiephoenix 06/19/2022 5:04 AM
+This is my current build that i am testing with:
+https://nextcloud.ingwie.io/s/fcW9ZBHZFkBJyHx
+ndk_org.ppsspp_1.12.3_all.ipk
+Nextcloud - a safe home for all your data
+[]
+[ingwiephoenix]
+ingwiephoenix 06/19/2022 4:17 AM
+    16:16:296 OpenGL/GLRenderManager.cpp:266 I[G3D]: GL submission thread paused. Frame=0
+    16:16:296 UI/NativeApp.cpp:976 I[SYSTEM]: NativeShutdownGraphics
+    16:16:296 UI/NativeApp.cpp:1021 I[SYSTEM]: NativeShutdownGraphics done
+    16:16:372 OpenGL/GLRenderManager.cpp:174 I[G3D]: ThreadEnd
+    16:16:374 Core/Config.cpp:1657 I[SYSTEM]: CleanRecent took 0.00
+    16:16:397 Core/Config.cpp:1510 I[LOADER]: Config saved (NativeShutdown): '/media/developer/apps/usr/palm/applications/org.ppsspp/.config/ppsspp/PSP/SYSTEM/ppsspp.ini'
+    16:16:399 Core/Config.cpp:1523 I[LOADER]: Controller config saved: /media/developer/apps/usr/palm/applications/org.ppsspp/.config/ppsspp/PSP/SYSTEM/controls.ini
+    16:16:399 UI/NativeApp.cpp:1467 I[SYSTEM]: NativeShutdown called
+    16:16:399 UI/NativeApp.cpp:1471 I[SYSTEM]: Missing translation [Graphics]: OpenGL ES
+Frame=0? Now that's interesting. It seems to be stuck at rendering the
+very first frame, perhaps. I'll look into this a little more.
+06/19/2022 4:14 AM
+Still a black screen tho. You can replicate this with the PK i sent
+before: Open PPSSPPSDL as its just a shell script and append -d. I think
+-v also works...
+06/19/2022 4:12 AM
+    10:30:015 UI/NativeApp.cpp:931 I[SYSTEM]: NativeInitGraphics completed
+    10:30:166 OpenGL/GLRenderManager.cpp:237 I[G3D]: Running first frame (0)
+    10:30:298 SDL/SDLGLGraphicsContext.cpp:433 I[G3D]: SDL SwapInterval: 0
+    10:30:413 Core/Config.cpp:1657 I[SYSTEM]: CleanRecent took 0.00
+    10:30:458 Core/Config.cpp:1510 I[LOADER]: Config saved (clearFailedGPUBackends): '/media/developer/apps/usr/palm/applications/org.ppsspp/.config/ppsspp/PSP/SYSTEM/ppsspp.ini'
+    10:30:461 Core/Config.cpp:1523 I[LOADER]: Controller config saved: /media/developer/apps/usr/palm/applications/org.ppsspp/.config/ppsspp/PSP/SYSTEM/controls.ini
+06/19/2022 4:12 AM
+    VulkanMayBeAvailable: Device allowed ('SDL:Linux')
+    Vulkan loader: Library not available
+    DEBUG: Vulkan is not available, not using Vulkan.
+    [SDL2:SYSTEM:0] SDL Init start with flag : 8752
+    XDG_RUNTIME_DIR (/tmp/xdg) is not owned by us (uid 5526), but by uid 0! (This could e g happen if you try to connect to a non-root PulseAudio as a root user, over the native protocol. Don't do that.)
+    Info: We compiled against SDL version 2.0.5, but we are linking against SDL version 2.0.10., be aware that this can lead to unexpected behaviors
+    ThreadManager::Init(compute threads: 4, all: 8)
+    10:29:858 Core/Config.cpp:629 I[G3D]: Longest display side: -1 pixels. Choosing scale 1
+    10:29:886 Core/Config.cpp:1657 I[SYSTEM]: CleanRecent took 0.00
+    10:29:908 Core/Config.cpp:1510 I[LOADER]: Config saved (got storage permission): '/media/developer/apps/usr/palm/applications/org.ppsspp/.config/ppsspp/PSP/SYSTEM/ppsspp.ini'
+    10:29:909 Core/Config.cpp:1523 I[LOADER]: Controller config saved: /media/developer/apps/usr/palm/applications/org.ppsspp/.config/ppsspp/PSP/SYSTEM/controls.ini
+    Pixels: 1920 x 1080
+    Virtual pixels: 1920 x 1080
+    egl_unified_query 94 : status 0
+    egl_unified_query 94 : status 0
+    10:29:932 OpenGL/GLFeatures.cpp:195 I[G3D]: GPU Vendor : ARM ; renderer: Mali-G51 version str: OpenGL ES 3.2 v1.r9p0-01rel0.5fa3737ac24396a69b1d512b70e9e31d ; GLSL version str: OpenGL ES GLSL ES 3.20
+    10:29:933 OpenGL/GLFeatures.cpp:307 I[G3D]: OpenGL ES 3.1 support detected!
+    10:29:936 SDL/SDLMain.cpp:119 I[AUDIO]: SDL: Trying a different audio device
+    XDG_RUNTIME_DIR (/tmp/xdg) is not owned by us (uid 5526), but by uid 0! (This could e g happen if you try to connect to a non-root PulseAudio as a root user, over the native protocol. Don't do that.)
+    (...)
+06/19/2022 4:07 AM
+I wonder if maybe its not showing an error; I'll see if there is
+something there.
+06/19/2022 4:07 AM
+Black screen still.
+06/19/2022 4:07 AM
+Did a successful compile with the ndk toolchain; although I had to add a
+few defines; ppsspp_config.h does not pick up on NEON on that version of
+GCC. That said, the output is still sort of the same:
+    VulkanMayBeAvailable: Device allowed ('SDL:Linux')
+    Vulkan loader: Library not available
+    DEBUG: Vulkan is not available, not using Vulkan.
+    [SDL2:SYSTEM:0] SDL Init start with flag : 8752
+    XDG_RUNTIME_DIR (/tmp/xdg) is not owned by us (uid 5526), but by uid 0! (This could e g happen if you try to connect to a non-root PulseAudio as a root user, over the native protocol. Don't do that.)
+    Info: We compiled against SDL version 2.0.5, but we are linking against SDL version 2.0.10., be aware that this can lead to unexpected behaviors
+    ThreadManager::Init(compute threads: 4, all: 8)
+    04:29:987 Core/Config.cpp:629 I[G3D]: Longest display side: -1 pixels. Choosing scale 1
+    Pixels: 1920 x 1080
+    Virtual pixels: 1920 x 1080
+    egl_unified_query 94 : status 0
+    egl_unified_query 94 : status 0
+    XDG_RUNTIME_DIR (/tmp/xdg) is not owned by us (uid 5526), but by uid 0! (This could e g happen if you try to connect to a non-root PulseAudio as a root user, over the native protocol. Don't do that.)
+    loading control pad mappings from gamecontrollerdb.txt(...snip...)
+[ingwiephoenix]
+ingwiephoenix 06/19/2022 3:10 AM
+The NDK is what I initially used for many of my testing; but I often
+found myself running into problems because it did not support c++17 (GCC
+6.2.0); hence I switched to the buildroot one. But I'll see what happens
+if I build ppsspp against that one.
+June 18, 2022
+[mariotaku]
+mariotaku 06/18/2022 6:10 PM
+Also, use https://github.com/webosbrew/meta-lg-webos-ndk this toolchain
+and it will save you tons of time
+GitHub - webosbrew/meta-lg-webos-ndk: Most important tool to brew s...
+Most important tool to brew some native app for webOS TV - GitHub -
+webosbrew/meta-lg-webos-ndk: Most important tool to brew some native app
+for webOS TV
+[]
+06/18/2022 6:09 PM
+I think PPSSPP uses some SDL window flag webOS doesn't support so it
+messes up displaying
+06/18/2022 6:09 PM
+Following CMAKE options makes the build easier:
+-DUSING_GLES2=ON -DARMV7_DEVICE=ON -DUSE_FFMPEG=OFF -DUSE_DISCORD=OFF -DUSING_X11_VULKAN=OFF -DUSE_WAYLAND_WSI=OFF -DUSING_EGL=OFF
+[mariotaku]
+mariotaku 06/18/2022 6:09 PM
+It didn't look for shared libraries, apparently, only static ones. There
+is the proper ffmpeg version in the ppsspp source tree. Just compile
+that, set --prefix to something quick and just do a make install -j <N>
+. Then, when in PPSSPP, use -DFFMPEG_DIR= and specify where you
+"installed" the proper ffmpeg. It'll then get picked up. 

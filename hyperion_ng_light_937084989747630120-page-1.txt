@@ -1,0 +1,1888 @@
+March 2, 2022
+[smx2460]
+smx2460 03/02/2022 9:12 PM
+[e99.tuxuser]
+e99.tuxuser 03/02/2022 3:19 PM
+@Smx heureka! toolchain w/ QT5 and in turn also hyperion.ng builds with
+glibc2.12.2 and your patch :)) ofc, there has to an issue, right? this
+is however with the WIP serial-library integration:
+    /buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/11.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: ../../lib/libserial.a(unix.cc.o): undefined reference to symbol 'clock_gettime@@GLIBC_2.4'
+    /buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/11.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/lib/librt.so.1: error adding symbols: DSO missing from command line
++ target_link_libraries(.. rt) does the trick (edited)
+ 1
+[e99.tuxuser]
+e99.tuxuser 03/02/2022 9:28 AM
+cat hyperion.ng_unofficial_webos_20200302.tar.gz.000 hyperion.ng_unofficial_webos_20200302.tar.gz.001 > hyperion.ng_unofficial_webos_20200302.tar.gz
+03/02/2022 9:28 AM
+(no content)
+ hyperion.ng_unofficial_webos_20200302.tar.gz.000
+7.81 MB External
+ hyperion.ng_unofficial_webos_20200302.tar.gz.001
+7.33 MB External
+03/02/2022 9:22 AM
+https://github.com/tuxuser/hyperion.ng/commit/d325e0f8bfd1575a53e427cd846201661789b3d9
+Dirty: Make ProviderRs232 use wjwwood/serial library (backport from...
+…yperion-non.ng)
+[]
+[mariotaku]
+[] smx2460 <@!225167450713358338> <@!501722020434673674>
+<@!308650987252613120> do you think building buildroot...
+mariotaku 03/02/2022 2:04 AM
+Perfectly legit, it's compiling code besides we tried to speed up its
+process
+[e99.tuxuser]
+e99.tuxuser 03/02/2022 12:10 AM
+cheers (edited)
+03/02/2022 12:09 AM
+I hope so too bud, will do the same
+ 1
+03/02/2022 12:09 AM
+better
+03/02/2022 12:09 AM
+https://github.com/hyperion-project/hyperion.ng/pull/1435/files
+libsrc/utils: Do not catch SIGILL signal by tuxuser · Pull Request ...
+Summary libcrypto performs cpu feature checks on ARM platforms, by
+calling OPENSSL_cpuid_setup. In there, it tries to call various
+instructions and traps illegal instructions aka. non-existing inst...
+[]
+[smx2460]
+smx2460 03/02/2022 12:09 AM
+Ich hoffe morgen geht es mir besser
+03/02/2022 12:08 AM
+Ich gehe schlafen
+03/02/2022 12:08 AM
+[e99.tuxuser]
+e99.tuxuser 03/02/2022 12:08 AM
+thats why you commented it out...
+[smx2460]
+smx2460 03/02/2022 12:08 AM
+ (edited)
+[e99.tuxuser]
+e99.tuxuser 03/02/2022 12:08 AM
+ah now I see, duh
+[smx2460]
+smx2460 03/02/2022 12:07 AM
+it will kill the program
+03/02/2022 12:07 AM
+so with nothing in place to handle SIGILL
+03/02/2022 12:07 AM
+because the openssl handler likely unregisters itself after being used
+03/02/2022 12:07 AM
+if your handler doesn't inhibit the openssl one, you shouldn't rethrow
+it
+03/02/2022 12:07 AM
+if it's AFTER, then no
+03/02/2022 12:06 AM
+if it's delivered to you BEFORE openssl, then yes
+03/02/2022 12:06 AM
+then you shouldn't forward it
+03/02/2022 12:06 AM
+if the signal is delivered both to libcrypto AND you
+03/02/2022 12:06 AM
+i.e.
+03/02/2022 12:06 AM
+the issue might be related to when you're called
+03/02/2022 12:06 AM
+i still believe you shouldn't catch it
+03/02/2022 12:05 AM
+¯\_(ツ)_/¯
+[e99.tuxuser]
+e99.tuxuser 03/02/2022 12:05 AM
+SIGILL which then kills the program, yes
+[smx2460]
+smx2460 03/02/2022 12:05 AM
+but it kills the program aswell?
+03/02/2022 12:04 AM
+that's normal
+03/02/2022 12:04 AM
+well yes
+[e99.tuxuser]
+e99.tuxuser 03/02/2022 12:02 AM
+wtf, SIGILL still occurs
+March 1, 2022
+[smx2460]
+smx2460 03/01/2022 11:56 PM
+@ztuxnet
+https://api.cirrus-ci.com/v1/artifact/task/6617920502497280/sdk/output/images/arm-lgtv-linux-gnueabi_sdk-buildroot.tar.gz
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 11:35 PM
+fair use
+[smx2460]
+smx2460 03/01/2022 11:34 PM
+i'm seriously pondering on this
+03/01/2022 11:34 PM
+or a "fair use"?
+03/01/2022 11:34 PM
+for using it as a powerhouse
+03/01/2022 11:34 PM
+@Mariotaku @infowski @ztuxnet do you think building buildroot on
+CirrusCI infrastructure is a ToS violation?
+[smx2460]
+smx2460 03/01/2022 11:25 PM
+or if it's destined to die there seen by nobody 
+03/01/2022 11:25 PM
+not sure if gists are indexed or anything
+03/01/2022 11:25 PM
+you can find a copy here btw
+03/01/2022 11:25 PM
+https://gist.github.com/smx-smx/6d8856d27ac81899f56efdb7cbaf9003
+CirrusCI log tail
+CirrusCI log tail. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+03/01/2022 11:24 PM
+aka it's efficient
+03/01/2022 11:23 PM
+which runs the given script for each input line ($argn)
+03/01/2022 11:23 PM
+php -R spawns one PHP instance
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 11:23 PM
+websocat is building
+[smx2460]
+smx2460 03/01/2022 11:23 PM
+one per line
+03/01/2022 11:23 PM
+the things you get back are json messages
+03/01/2022 11:23 PM
+and prints everything it receives
+03/01/2022 11:22 PM
+after sending the message
+03/01/2022 11:22 PM
+but yeah, the -n in websocat causes it to stay there
+03/01/2022 11:22 PM
+but i didn't have it installed
+[smx2460]
+[] e99.tuxuser well, thats why you put a little json_decode() in there
+haha
+smx2460 03/01/2022 11:22 PM
+@infowski pointed out i could have used jq
+[smx2460]
+smx2460 03/01/2022 11:22 PM
+(aka it should be parametrized too) (edited)
+03/01/2022 11:21 PM
+(it's called like that in the YAML, nothing standard) (edited)
+03/01/2022 11:21 PM
+and it subscribes you to the output of the "build" script
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 11:21 PM
+well, thats why you put a little json_decode() in there haha
+[smx2460]
+smx2460 03/01/2022 11:21 PM
+you need to send that JSON to websocket
+03/01/2022 11:21 PM
+i could have done it in PHP but i was too lazy
+03/01/2022 11:21 PM
+it was the quickest way
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 11:21 PM
+if you have websocat that is xD
+[smx2460]
+smx2460 03/01/2022 11:20 PM
+without crashing your browser (logs piling up)
+03/01/2022 11:20 PM
+live output straight from cirrus ci
+03/01/2022 11:20 PM
+(no content)
+[unknown.png]
+ unknown.png
+265.71 KB External
+03/01/2022 11:19 PM
+to follow
+03/01/2022 11:19 PM
+    $ ./cirrus-tail 6617920502497280
+03/01/2022 11:19 PM
+    $ cat cirrus-tail
+    #!/bin/bash
+    taskId="$1"
+    echo "{\"type\":\"logs\",\"taskId\":${taskId},\"command\":\"build\"}" \
+    | websocat -n "wss://api.cirrus-ci.com/ws" \
+    | php -R 'echo json_decode($argn)->data;'
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 11:19 PM
+[smx2460]
+smx2460 03/01/2022 11:19 PM
+https://github.com/openlgtv/buildroot-nc4/commit/1ee9cc39e5ba41f5cdee285b69479284b81351ef
+glibc: fix for c++11 math breakage · openlgtv/buildroot-nc4@1ee9cc3
+[]
+03/01/2022 11:17 PM
+which was added after 2.12.2
+03/01/2022 11:17 PM
+but i'm not bumping it unless there is a breaking missing API
+03/01/2022 11:17 PM
+it is old, yes
+03/01/2022 11:16 PM
+something like that
+03/01/2022 11:16 PM
+2001 or 2004
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 11:16 PM
+its too old tho 
+[smx2460]
+smx2460 03/01/2022 11:16 PM
+apparently those functions were introduced in 2001 lol
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 11:16 PM
+fair fair
+[smx2460]
+smx2460 03/01/2022 11:15 PM
+sorry 
+03/01/2022 11:15 PM
+it's too old come on bro
+03/01/2022 11:15 PM
+duude why using glibc 2.12.2
+03/01/2022 11:15 PM
+@ztuxnet SLAP
+03/01/2022 11:15 PM
+    ac_cv_header_tgmath_h=yes
+    glibcxx_cv_c99_math_cxx11=yes
+    glibcxx_cv_c99_math_cxx98=yes
+    glibcxx_cv_c99_math_tr1=yes
+[smx2460]
+smx2460 03/01/2022 10:48 PM
+then rebuild both glibc and gcc-final (edited)
+03/01/2022 10:48 PM
+give it a different number, applying it as last should work
+03/01/2022 10:48 PM
+@ztuxnet paste this in the 2.12.2 patchset
+03/01/2022 10:48 PM
+(no content)
+ 0001-Always-provide-declarations-of-long-double-math-func.patch
+2.42 KB External
+03/01/2022 10:48 PM
+yep, works
+03/01/2022 10:47 PM
+let's hack the patch
+03/01/2022 10:47 PM
+fails on Changelog/news, which we don't care about
+03/01/2022 10:47 PM
+meh
+03/01/2022 10:47 PM
+    sm@debian:/mnt/ExtData/glibc_archive$ git format-patch -1 998832a4668
+    0001-Always-provide-declarations-of-long-double-math-func.patch
+03/01/2022 10:46 PM
+first, let's see if we can apply it cleanly on top of 2.12.2
+03/01/2022 10:46 PM
+or fork glibc and add it in
+03/01/2022 10:46 PM
+we can either save it as a .patch
+03/01/2022 10:45 PM
+this is our fix
+03/01/2022 10:45 PM
+    commit 998832a46688b9fb3a101eccae77bc45e7c1d7ab
+    Author: Andreas Schwab <schwab@redhat.com>
+    Date:   Fri Nov 4 14:39:05 2011 +0100
+        Always provide declarations of long double math functions when !_LIBC
+03/01/2022 10:45 PM
+we're actually missing out that change 
+03/01/2022 10:45 PM
+with this date
+03/01/2022 10:45 PM
+    Date:   Mon Dec 13 11:45:50 2010 +0100
+        glibc 2.12.2 release
+03/01/2022 10:45 PM
+and since we're actually using 2.12.2
+03/01/2022 10:44 PM
+    998832a4668 (Andreas Schwab    2011-11-04 14:39:05 +0100 122) /* Include the file of declarations again, this time using `long double'
+    998832a4668 (Andreas Schwab    2011-11-04 14:39:05 +0100 123)    instead of `double' and appending l to each function name.  */
+    998832a4668 (Andreas Schwab    2011-11-04 14:39:05 +0100 124)
+03/01/2022 10:44 PM
+    $ git blame math/math.h | grep "201"
+03/01/2022 10:44 PM
+and when you're out of ideas...
+[lord.grey]
+[] e99.tuxuser Yes I tested the PR and indeed, it works. even seeing
+that it calls `kill` on the pid lol
+lord.grey 03/01/2022 10:20 PM
+That you both, kill being a forwarder makes sense and is what I
+expected. Thanks for confirming that I should read it this way.
+ 2
+[smx2460]
+smx2460 03/01/2022 10:20 PM
+as all l variants of the functions are missing
+03/01/2022 10:20 PM
+something tells me there is some script or macro that emits sym and
+sym + l
+03/01/2022 10:19 PM
+i'm still grinding in the commits to find clues
+03/01/2022 10:19 PM
+until one doesn't work (edited)
+03/01/2022 10:19 PM
+otherwise there's a painful bisect ahead where you try 2.16, 2.15, etc.
+03/01/2022 10:18 PM
+2.17 works, but why
+03/01/2022 10:18 PM
+and the issue is to figure out when they fixed it
+03/01/2022 10:18 PM
+but something there is fucked up
+03/01/2022 10:18 PM
+if it's generated or not (probably is)
+03/01/2022 10:18 PM
+i'm not sure wtf is responsible for writing math.h
+03/01/2022 10:14 PM
+that kill is more like "forward this signal"
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 10:14 PM
+Yes I tested the PR and indeed, it works. even seeing that it calls kill
+on the pid lol
+[smx2460]
+smx2460 03/01/2022 10:14 PM
+looks like it (also checked it)
+[lord.grey]
+[] e99.tuxuser https://github.com/hyperion-project/hyperion.ng/pull/1435
+lord.grey 03/01/2022 10:12 PM
+Did you test the PR? I m not too detailed in the signal handling, but
+with the PR it looks like, as still a stack trace would be printed and
+the process be killed… Is this what is intended? I assume that the
+SIGILL should have not been processed? (edited)
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 10:12 PM
+so I guess libserial it is
+03/01/2022 10:12 PM
+PS: We cannot make use of Qt5SerialPort sadly, as it requires a more
+recent kernel than 3.0..
+[smx2460]
+smx2460 03/01/2022 10:08 PM
+uh
+03/01/2022 10:08 PM
+https://lists.llvm.org/pipermail/llvm-dev/2018-February/120989.html
+03/01/2022 10:02 PM
+let's see
+03/01/2022 10:02 PM
+so... which commit actually fixed it?
+03/01/2022 10:01 PM
+it's a header issue
+03/01/2022 10:01 PM
+so it's not just acoshl
+03/01/2022 10:01 PM
+all these functions are not exported in math.h
+03/01/2022 10:01 PM
+    $ arm-lgtv-linux-gnueabi-gcc glibcxx_cv_c99_math_tr1.c -lm 2>&1 | grep ": implicit declaration" | grep -Po "‘(.*?)’" | perl -pe "s/‘(.*?)’/\1/g"
+    acoshl
+    asinhl
+    atanhl
+    cbrtl
+    copysignl
+    erfl
+    erfcl
+    exp2l
+    expm1l
+    fdiml
+    fmal
+    fmaxl
+    fminl
+    hypotl
+    ilogbl
+    lgammal
+    llrintl
+    llroundl
+    log1pl
+    log2l
+    logbl
+    lrintl
+    lroundl
+    nanl
+    nearbyintl
+    nextafterl
+    nexttowardl
+    remainderl
+    remquol
+    rintl
+    roundl
+    scalblnl
+    scalbnl
+    tgammal
+    truncl
+03/01/2022 10:01 PM
+which are very likely fatal in autoconf
+03/01/2022 10:01 PM
+-Wimplicit-function-declaration (edited)
+03/01/2022 10:01 PM
+the program actually links, but generates warnings
+03/01/2022 10:01 PM
+are NOT defined anywhere in math.h
+03/01/2022 10:01 PM
+long variants
+03/01/2022 10:01 PM
+the issue is that all l functions
+03/01/2022 9:59 PM
+ok actually
+03/01/2022 9:56 PM
+03/01/2022 9:56 PM
+    sm@debian:/mnt/ExtData/glibc_archive$ git log --oneline | grep acoshl
+    440169d681 Fix ldbl-128ibm acoshl inaccuracy (bug 18019).
+    396e3ecf3e Fix ldbl-128ibm acoshl inaccuracy (bug 16384).
+    e0b780ad5b BZ #15055: Use __ieee754_sqrl in acoshl for lbdl-128ibm
+    6c112c15ad (__ieee754_acoshl): acosh(x) = ln(2x) if x > 2^30.
+03/01/2022 9:55 PM
+nope
+03/01/2022 9:54 PM
+let's do a preliminary grep
+03/01/2022 9:54 PM
+we can see the definitions are in
+/mnt/ExtData/buildroot-nc4/output/host/arm-lgtv-linux-gnueabi/sysroot/usr/include/bits/mathcalls.h
+03/01/2022 9:54 PM
+using gcc -E
+03/01/2022 9:54 PM
+or, better
+03/01/2022 9:54 PM
+or let's just look at commits
+03/01/2022 9:53 PM
+to ease the diff
+03/01/2022 9:53 PM
+let's just diff with 2.15
+03/01/2022 9:52 PM
+is there an acoshl being added?
+03/01/2022 9:52 PM
+now in the big patch
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:52 PM
+[smx2460]
+smx2460 03/01/2022 9:52 PM
+despite it being there
+03/01/2022 9:52 PM
+acoshl is missing from math.h
+03/01/2022 9:52 PM
+bingo
+03/01/2022 9:51 PM
+    $ arm-lgtv-linux-gnueabi-gcc -std=c99 glibcxx_cv_c99_math_tr1.c 2>&1 | head
+    glibcxx_cv_c99_math_tr1.c: In function ‘test’:
+    glibcxx_cv_c99_math_tr1.c:7:19: warning: implicit declaration of function ‘acoshl’ [-Wimplicit-function-declaration]
+        7 |                   acoshl(0.0l);
+          |                   ^~~~~~
+    glibcxx_cv_c99_math_tr1.c:2:1: note: include ‘<math.h>’ or provide a declaration of ‘acoshl’
+        1 | #include <math.h>
+      +++ |+#include <math.h>
+        2 | typedef double_t  my_double_t;
+    glibcxx_cv_c99_math_tr1.c:7:19: warning: incompatible implicit declaration of built-in function ‘acoshl’ [-Wbuiltin-declaration-mismatch]
+        7 |                   acoshl(0.0l);
+03/01/2022 9:51 PM
+oh wait i'm stupid
+03/01/2022 9:47 PM
+UHM
+03/01/2022 9:47 PM
+    glibcxx_cv_c99_math_tr1.c:4:25: error: expected declaration specifiers or ‘...’ before numeric constant
+        4 |                   acosh(0.0);
+          |                         ^~~
+    glibcxx_cv_c99_math_tr1.c:5:26: error: expected declaration specifiers or ‘...’ before numeric constant
+        5 |                   acoshf(0.0f);
+          |                          ^~~~
+    glibcxx_cv_c99_math_tr1.c:6:26: error: expected declaration specifiers or ‘...’ before numeric constant
+        6 |                   acoshl(0.0l);
+          |                          ^~~~
+    glibcxx_cv_c99_math_tr1.c:7:25: error: expected declaration specifiers or ‘...’ before numeric constant
+        7 |                   asinh(0.0);
+          |                         ^~~
+    glibcxx_cv_c99_math_tr1.c:8:26: error: expected declaration specifiers or ‘...’ before numeric constant
+        8 |                   asinhf(0.0f);
+          |                          ^~~~
+    glibcxx_cv_c99_math_tr1.c:9:26: error: expected declaration specifiers or ‘...’ before numeric constant
+        9 |                   asinhl(0.0l);
+          |                          ^~~~
+    glibcxx_cv_c99_math_tr1.c:10:25: error: expected declaration specifiers or ‘...’ before numeric constant
+       10 |                   atanh(0.0);
+03/01/2022 9:46 PM
+let's see if a simple gcc run highlights problems (edited)
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:46 PM
+https://github.com/hyperion-project/hyperion.ng/pull/1435
+libsrc/utils: Do not catch SIGILL signal by tuxuser · Pull Request ...
+Summary libcrypto performs cpu feature checks on ARM platforms, by
+calling OPENSSL_cpuid_setup. In there, it tries to call various
+instructions and traps illegal instructions aka. non-existing inst...
+[]
+[smx2460]
+smx2460 03/01/2022 9:46 PM
+i copied the test code to glibcxx_cv_c99_math_tr1.c
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:46 PM
+will test asap, right now preparing two PRs for hyperion.ng
+[smx2460]
+smx2460 03/01/2022 9:45 PM
+yeah
+03/01/2022 9:45 PM
+    $ grep cv_ config.log  | grep "_math_"
+    glibcxx_cv_c99_math_cxx11=yes
+    glibcxx_cv_c99_math_cxx98=yes
+    glibcxx_cv_c99_math_tr1=no
+03/01/2022 9:45 PM
+we should extract it and compile it standalone
+03/01/2022 9:45 PM
+maybe the check itself is broken too
+03/01/2022 9:44 PM
+as the functions are exported in the .so
+03/01/2022 9:44 PM
+it might be a bug in the math headers
+03/01/2022 9:44 PM
+this is strange and suspicious
+03/01/2022 9:44 PM
+and strangely, none of those are checked by c++11 math
+03/01/2022 9:43 PM
+it's literally just isinfl + isnanl
+03/01/2022 9:43 PM
+so it's even better
+03/01/2022 9:43 PM
+    $ (syms="$(readelf -sW /mnt/ExtData/buildroot-nc4/output/target/lib/libm.so.6  | rev | cut -d ' ' -f1 | rev)"; grep "was not declared" config.log  | cut -d ' ' -f3 | sort | uniq | perl -pe "s/\'(.*)\'/\1/g" | grep -vE 'pthread|^_' | while read symbol; do echo "${syms}" | grep -qi "${symbol}" && echo "${symbol} -> OK" || echo "${symbol} -> NOT OK"; done) | grep "NOT OK"
+    CTL_HW -> NOT OK
+    HW_NCPU -> NOT OK
+    isinfl -> NOT OK
+    isnanl -> NOT OK
+    qfpclass -> NOT OK
+    RLIMIT_VMEM -> NOT OK
+03/01/2022 9:43 PM
+second run
+03/01/2022 9:43 PM
+missing the W
+03/01/2022 9:43 PM
+    readelf -sW
+03/01/2022 9:43 PM
+there was an issue with the command, truncating long symbols
+03/01/2022 9:43 PM
+correction
+03/01/2022 9:42 PM
+strange
+03/01/2022 9:42 PM
+oh, actually
+03/01/2022 9:41 PM
+when was that even introduced  (edited)
+03/01/2022 9:41 PM
+YOLO if you use nexttowardl 
+03/01/2022 9:41 PM
+"the user ruled we have c++11 math"
+03/01/2022 9:41 PM
+and skip the test
+03/01/2022 9:41 PM
+the idea is that autotools will see that already being in the
+environment (it does that for each check)
+03/01/2022 9:40 PM
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:40 PM
+ok, I can give that a go
+[smx2460]
+smx2460 03/01/2022 9:38 PM
+which autotools reads
+03/01/2022 9:38 PM
+they are just environment variables in any case
+03/01/2022 9:37 PM
+CONF_ENV in buildroot lets you override autoconf checks
+03/01/2022 9:37 PM
+but the actual variable is still no in config.status
+03/01/2022 9:36 PM
+you patched the check with if true
+03/01/2022 9:36 PM
+i think the issue is that you didn't actually make the variable yes
+03/01/2022 9:36 PM
+    ifeq ($(BR2_TOOLCHAIN_USES_UCLIBC),y)
+    BASH_CONF_ENV += bash_cv_getenv_redef=no
+    else
+    BASH_CONF_ENV += bash_cv_getenv_redef=yes
+    endif
+    endif
+03/01/2022 9:36 PM
+for example, see bash/bash.mk
+03/01/2022 9:36 PM
+or something along those lines
+03/01/2022 9:36 PM
+GCC_FINAL_CONF_ENV += glibcxx_cv_c99_stdint_tr1=yes (edited)
+03/01/2022 9:35 PM
+what if you instead try...
+03/01/2022 9:35 PM
+so it didn't work
+03/01/2022 9:35 PM
+you patched the check, but then something else skipped declaring the
+functions in std namespace
+03/01/2022 9:35 PM
+i suspect it hast to be patched in multiple places
+03/01/2022 9:35 PM
+"why didn't my patch work?" (edited)
+03/01/2022 9:35 PM
+so you might be thinking
+03/01/2022 9:35 PM
+so sadly, nexttowardl is the source of all problems (edited)
+03/01/2022 9:34 PM
+of those functions, glibcxx_cv_c99_math_tr1 checks nexttowardl
+03/01/2022 9:34 PM
+i didn't even rebuild it, just looking at the last build logs
+03/01/2022 9:34 PM
+it's the existing HEAD of buildroot-nc4, from my last local build
+03/01/2022 9:33 PM
+i didn't touch anything
+03/01/2022 9:33 PM
+that IS glibc 2.12
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:33 PM
+and thats even with ancient glibc 2.12.2 ?
+[smx2460]
+smx2460 03/01/2022 9:33 PM
+and cross checking with acinclude.m4
+03/01/2022 9:33 PM
+    fpclass -> NOT OK
+    isinfl -> NOT OK
+    isnanl -> NOT OK
+    nexttowardl -> NOT OK
+    qfpclass -> NOT OK
+03/01/2022 9:32 PM
+excluding the false positives...
+03/01/2022 9:32 PM
+    acoshl -> OK
+    acosl -> OK
+    asinhl -> OK
+    asinl -> OK
+    atan2l -> OK
+    atanhl -> OK
+    atanl -> OK
+    cabsl -> OK
+    cacoshl -> OK
+    cacosl -> OK
+    cargl -> OK
+    casinhl -> OK
+    casinl -> OK
+    catanhl -> OK
+    catanl -> OK
+    cbrtl -> OK
+    ccoshl -> OK
+    ccosl -> OK
+    ceill -> OK
+    cexpl -> OK
+    clogl -> OK
+    copysignl -> OK
+    coshl -> OK
+    cosl -> OK
+    cpowl -> OK
+    cprojl -> OK
+    csinhl -> OK
+    csinl -> OK
+    csqrtl -> OK
+    ctanhl -> OK
+    ctanl -> OK
+    CTL_HW -> NOT OK
+    erfcl -> OK
+    erfl -> OK
+    exp2l -> OK
+    expl -> OK
+    expm1l -> OK
+    fabsl -> OK
+    fdiml -> OK
+    finitel -> OK
+    floorl -> OK
+    fmal -> OK
+    fmaxl -> OK
+    fminl -> OK
+    fmodl -> OK
+    fpclass -> NOT OK
+    frexpl -> OK
+    HW_NCPU -> NOT OK
+    hypotl -> OK
+    ilogbl -> OK
+    isinfl -> NOT OK
+    isnanl -> NOT OK
+    ldexpl -> OK
+    lgammal -> OK
+    llrintl -> OK
+    llroundl -> OK
+    log10l -> OK
+    log1pl -> OK
+    log2l -> OK
+    logbl -> OK
+    logl -> OK
+    lrintl -> OK
+    lroundl -> OK
+    modfl -> OK
+    nanl -> OK
+    nearbyintl -> OK
+    nextafterl -> OK
+    nexttowardl -> NOT OK
+    powl -> OK
+    qfpclass -> NOT OK
+    remainderl -> OK
+    remquol -> OK
+    rintl -> OK
+    RLIMIT_VMEM -> NOT OK
+    roundl -> OK
+    scalblnl -> OK
+    scalbnl -> OK
+    sincosl -> OK
+    sinhl -> OK
+    sinl -> OK
+    sqrtl -> OK
+    tanhl -> OK
+    tanl -> OK
+    tgammal -> OK
+    truncl -> OK
+03/01/2022 9:32 PM
+    (syms="$(readelf -s /mnt/ExtData/buildroot-nc4/output/target/lib/libm.so.6  | rev | cut -d ' ' -f1 | rev)"; grep "was not declared" config.log  | cut -d ' ' -f3 | sort | uniq | perl -pe "s/\'(.*)\'/\1/g" | grep -vE 'pthread|^_' | while read symbol; do echo "${syms}" | grep -qi "${symbol}" && echo "${symbol} -> OK" || echo "${symbol} -> NOT OK"; done)
+03/01/2022 9:29 PM
+they are in the final .so
+03/01/2022 9:29 PM
+and that's a bit strange/suspicious
+03/01/2022 9:28 PM
+    grep "was not declared" config.log  | cut -d ' ' -f3 | sort | uniq | perl -pe "s/\'(.*)\'/\1/g" | grep -vE 'pthread|^_'
+    acoshl
+    acosl
+    asinhl
+    asinl
+    atan2l
+    atanhl
+    atanl
+    cabsl
+    cacoshl
+    cacosl
+    cargl
+    casinhl
+    casinl
+    catanhl
+    catanl
+    cbrtl
+    ccoshl
+    ccosl
+    ceill
+    cexpl
+    clogl
+    copysignl
+    coshl
+    cosl
+    cpowl
+    cprojl
+    csinhl
+    csinl
+    csqrtl
+    ctanhl
+    ctanl
+    CTL_HW
+    erfcl
+    erfl
+    exp2l
+    expl
+    expm1l
+    fabsl
+    fdiml
+    finitel
+    floorl
+    fmal
+    fmaxl
+    fminl
+    fmodl
+    fpclass
+    frexpl
+    HW_NCPU
+    hypotl
+    ilogbl
+    isinfl
+    isnanl
+    ldexpl
+    lgammal
+    llrintl
+    llroundl
+    log10l
+    log1pl
+    log2l
+    logbl
+    logl
+    lrintl
+    lroundl
+    modfl
+    nanl
+    nearbyintl
+    nextafterl
+    nexttowardl
+    powl
+    qfpclass
+    remainderl
+    remquol
+    rintl
+    RLIMIT_VMEM
+    roundl
+    scalblnl
+    scalbnl
+    sincosl
+    sinhl
+    sinl
+    sqrtl
+    tanhl
+    tanl
+    tgammal
+    truncl
+03/01/2022 9:26 PM
+it wanted, but couldn't find:
+03/01/2022 9:26 PM
+from my last build
+03/01/2022 9:26 PM
+    buildroot-nc4/output/build/host-gcc-final-11.2.0/build/arm-lgtv-linux-gnueabi/libstdc++-v3/config.log
+03/01/2022 9:26 PM
+(no content)
+[unknown.png]
+ unknown.png
+123.88 KB External
+03/01/2022 9:20 PM
+but that's -ffinite-math-only
+03/01/2022 9:19 PM
+    diff --git a/math/Versions b/math/Versions
+    index 39c47626f6..09888510b1 100644
+    --- a/math/Versions
+    +++ b/math/Versions
+    @@ -168,4 +168,34 @@ libm {
+         # puts exp2l in GLIBC_2.1, which will override this entry.
+         exp2l;
+       }
+    +  GLIBC_2.15 {
+    +    # Optimized -ffinite-math-only entry points
+    +    __acos_finite; __acosf_finite; __acosl_finite;
+    +    __acosh_finite; __acoshf_finite; __acoshl_finite;
+    +    __asin_finite; __asinf_finite; __asinl_finite;
+    +    __atan2_finite; __atan2f_finite; __atan2l_finite;
+    +    __atanh_finite; __atanhf_finite; __atanhl_finite;
+    +    __cosh_finite; __coshf_finite; __coshl_finite;
+    +    __exp10_finite; __exp10f_finite; __exp10l_finite;
+    +    __exp2_finite; __exp2f_finite; __exp2l_finite;
+    +    __fmod_finite; __fmodf_finite; __fmodl_finite;
+    +    __hypot_finite; __hypotf_finite; __hypotl_finite;
+    +    __j0_finite; __j0f_finite; __j0l_finite;
+    +    __y0_finite; __y0f_finite; __y0l_finite;
+    +    __j1_finite; __j1f_finite; __j1l_finite;
+    +    __y1_finite; __y1f_finite; __y1l_finite;
+    +    __jn_finite; __jnf_finite; __jnl_finite;
+    +    __yn_finite; __ynf_finite; __ynl_finite;
+    +    __lgamma_r_finite; __lgammaf_r_finite; __lgammal_r_finite;
+    +    __log_finite; __logf_finite; __logl_finite;
+    +    __log10_finite; __log10f_finite; __log10l_finite;
+    +    __log2_finite; __log2f_finite; __log2l_finite;
+    +    __pow_finite; __powf_finite; __powl_finite;
+    +    __remainder_finite; __remainderf_finite; __remainderl_finite;
+    +    __scalb_finite; __scalbf_finite; __scalbl_finite;
+    +    __sinh_finite; __sinhf_finite; __sinhl_finite;
+    +    __sqrt_finite; __sqrtf_finite; __sqrtl_finite;
+    +    __gamma_r_finite; __gammaf_r_finite; __gammal_r_finite;
+    +    __exp_finite; __expf_finite; __expl_finite;
+    +  }
+     }
+03/01/2022 9:17 PM
+i guess it would work on RPI but SIGILL on MStar (edited)
+03/01/2022 9:17 PM
+you could try to slap that mrrc in the feature tester, @ztuxnet (edited)
+03/01/2022 9:16 PM
+    .globl    _armv7_tick
+    .type    _armv7_tick,%function
+    _armv7_tick:
+        AARCH64_VALID_CALL_TARGET
+    #ifdef    __APPLE__
+        mrs    x0, CNTPCT_EL0
+    #else
+        mrs    x0, CNTVCT_EL0
+    #endif
+        ret
+    .size    _armv7_tick,.-_armv7_tick
+03/01/2022 9:16 PM
+    .global    _armv7_tick
+    .type    _armv7_tick,%function
+    _armv7_tick:
+    #ifdef    __APPLE__
+        mrrc    p15,0,r0,r1,c14        @ CNTPCT
+    #else
+        mrrc    p15,1,r0,r1,c14        @ CNTVCT
+    #endif
+        bx    lr
+    .size    _armv7_tick,.-_armv7_tick
+03/01/2022 9:15 PM
+i didn't know "tick" was an ARM feature
+03/01/2022 9:15 PM
+so that's why there was TICK in the stack trace
+03/01/2022 9:15 PM
+ah
+03/01/2022 9:15 PM
+        sigfillset(&all_masked);
+        sigdelset(&all_masked, SIGILL);
+        sigdelset(&all_masked, SIGTRAP);
+        sigdelset(&all_masked, SIGFPE);
+        sigdelset(&all_masked, SIGBUS);
+        sigdelset(&all_masked, SIGSEGV);
+        memset(&ill_act, 0, sizeof(ill_act));
+        ill_act.sa_handler = ill_handler;
+        ill_act.sa_mask = all_masked;
+        sigprocmask(SIG_SETMASK, &ill_act.sa_mask, &oset);
+        sigaction(SIGILL, &ill_act, &ill_oact);
+03/01/2022 9:15 PM
+notice how it specifically sets a sigaction
+[] e99.tuxuser For completeness, the stacktrace when SIGILL occurs ```
+Program received signal SIGILL, Illegal inst...
+Deleted User 03/01/2022 9:15 PM
+https://github.com/unbit/uwsgi/issues/1340#issuecomment-276314946
+[smx2460]
+smx2460 03/01/2022 9:15 PM
+https://github.com/openssl/openssl/blob/954f45ba4c504570206ff5bed811e512cf92dc8e/crypto/armcap.c#L183
+openssl/armcap.c at 954f45ba4c504570206ff5bed811e512cf92dc8e · open...
+TLS/SSL and crypto library. Contribute to openssl/openssl development by
+creating an account on GitHub.
+[]
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:14 PM
+yeah, I get the idea now
+[smx2460]
+smx2460 03/01/2022 9:14 PM
+maybe it tests other features then
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:14 PM
+03/01/2022 9:14 PM
+pi@octopi:~ $ ./test_arm_features Beginning features test You have NEON
+if you can read this You have VFPv3 D16 if you can read this You have
+VFPv3 D32 if you can read this
+ 1
+03/01/2022 9:13 PM
+root@LGwebOSTV:~# ./test_arm_features Beginning features test You have
+NEON if you can read this You have VFPv3 D16 if you can read this You
+have VFPv3 D32 if you can read this
+ 1
+[smx2460]
+smx2460 03/01/2022 9:13 PM
+my NC4 has 32 FPU regs, as well as all modern WebOS TVs (edited)
+03/01/2022 9:13 PM
+earlier NC4s have 16 FPU regs
+03/01/2022 9:12 PM
+i wrote that to test mtk5369, mtk5398 and lx FPUs (edited)
+03/01/2022 9:12 PM
+it does raw syscalls to print (edited)
+03/01/2022 9:12 PM
+it doesn't depend on any library
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:12 PM
+yeah, no worries
+[smx2460]
+smx2460 03/01/2022 9:12 PM
+but you can build and try that
+03/01/2022 9:12 PM
+now i am too lazy to look at openssl sources
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:12 PM
+ah, I will test on webos tv and rpi now 
+[smx2460]
+smx2460 03/01/2022 9:11 PM
+you could get a SIGILL in one of the 3
+03/01/2022 9:11 PM
+    static char msg_begin[]    = "Beginning features test\n";
+    static char msg_neon[]     = "You have NEON if you can read this\n";
+    static char msg_vfpv3d16[] = "You have VFPv3 D16 if you can read this\n";
+    static char msg_vfpv3d32[] = "You have VFPv3 D32 if you can read this\n";
+03/01/2022 9:11 PM
+look at my test program
+03/01/2022 9:11 PM
+it doesn't trap it tho, it's a kamikaze approach
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:11 PM
+because its a different processor aka. slightly different instruction
+set?
+[smx2460]
+smx2460 03/01/2022 9:11 PM
+here i made one that does a similar thing (edited)
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:11 PM
+however, what's just odd, how does it not trigger SIGILL on RasPi
+platform? armv7l // aarch64 ?
+[smx2460]
+smx2460 03/01/2022 9:10 PM
+https://gist.github.com/smx-smx/485eefdf4e767d10f000fbf7a03cc3e0
+Arm FPU Test
+Arm FPU Test. GitHub Gist: instantly share code, notes, and snippets.
+[]
+03/01/2022 9:10 PM
+yep
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:10 PM
+its totally understandable, that SIGILL occurs when it tries to test
+certain CPU ops
+[smx2460]
+smx2460 03/01/2022 9:09 PM
+as expected
+[smx2460]
+[] e99.tuxuser For completeness, the stacktrace when SIGILL occurs ```
+Program received signal SIGILL, Illegal inst...
+smx2460 03/01/2022 9:09 PM
+yeah, it's a setup call
+[smx2460]
+smx2460 03/01/2022 9:09 PM
+which are pointless for us (edited)
+03/01/2022 9:09 PM
+@ztuxnet the patch also includes new files for new architectures and
+things like that
+[e99.tuxuser]
+[] lord.grey Thx. <@!308650987252613120> I am currently traveling, but I
+will have a look later when being back h...
+e99.tuxuser 03/01/2022 9:08 PM
+cheers
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:08 PM
+For completeness, the stacktrace when SIGILL occurs
+    Program received signal SIGILL, Illegal instruction.
+    0x755601c8 in _armv7_tick () from /home/root/hyperion.ng/libcrypto.so.1.1
+    (gdb) bt
+    #0  0x755601c8 in _armv7_tick () from /home/root/hyperion.ng/libcrypto.so.1.1
+    #1  0x7555a1f0 in OPENSSL_cpuid_setup () from /home/root/hyperion.ng/libcrypto.so.1.1
+    #2  0x769e0664 in call_init (l=<optimized out>, argc=argc@entry=1, argv=argv@entry=0x7e9ffd44, env=env@entry=0x7e9ffd4c)
+        at /usr/src/debug/glibc/2.24-r0/git/elf/dl-init.c:72
+    #3  0x769e0798 in call_init (env=<optimized out>, argv=<optimized out>, argc=<optimized out>, l=<optimized out>) at /usr/src/debug/glibc/2.24-r0/git/elf/dl-init.c:30
+    #4  _dl_init (main_map=0x769ff958, argc=1, argv=0x7e9ffd44, env=0x7e9ffd4c) at /usr/src/debug/glibc/2.24-r0/git/elf/dl-init.c:120
+    #5  0x769d2ac4 in _dl_start_user () from /lib/ld-linux.so.3
+    Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+[lord.grey]
+[] e99.tuxuser totally forgot that both devs are indeed on this server
+lord.grey 03/01/2022 9:08 PM
+Thx. @ztuxnet I am currently traveling, but I will have a look later
+when being back home…
+[smx2460]
+smx2460 03/01/2022 9:08 PM
+and if 2.15 is also going to work (as i suspect) it could be shorter
+03/01/2022 9:07 PM
+it has a lot of things we don't care about
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:07 PM
+that's a bigass patch
+[smx2460]
+smx2460 03/01/2022 9:07 PM
+@ztuxnet meanwhile
+03/01/2022 9:07 PM
+(no content)
+ glibc_213_to_217.patch.xz
+2.94 MB External
+03/01/2022 9:04 PM
+you're welcome 
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 9:04 PM
+@Smx thx for takin the time explaining it thoroughly
+03/01/2022 9:03 PM
+    diff --git a/libsrc/utils/DefaultSignalHandler.cpp b/libsrc/utils/DefaultSignalHandler.cpp
+    index 0800bf6b..c0f670a9 100644
+    --- a/libsrc/utils/DefaultSignalHandler.cpp
+    +++ b/libsrc/utils/DefaultSignalHandler.cpp
+    @@ -26,7 +26,7 @@ const Signal ALL_SIGNALS[] = {
+            { SIGABRT, "SIGABRT" },
+            { SIGBUS,  "SIGBUS"  },
+            { SIGFPE,  "SIGFPE"  },
+    -       { SIGILL,  "SIGILL"  },
+    +       //{ SIGILL,  "SIGILL"  },
+            { SIGSEGV, "SIGSEGV" },
+            { SIGTERM, "SIGTERM" },
+            { SIGHUP,  "SIGHUP"  },
+    @@ -137,6 +137,8 @@ void signal_handler(int signum, siginfo_t * /*info*/, void * /*context*/)
+            case SIGSEGV:
+            case SIGABRT:
+            case SIGFPE :
+    +       case SIGILL:
+    +       case SIGCHLD:
+                    print_trace();
+                    /* Don't catch our own signal */
+03/01/2022 9:03 PM
+totally forgot that both devs are indeed on this server
+03/01/2022 9:03 PM
+@Deleted User @Lord-Grey
+[smx2460]
+smx2460 03/01/2022 9:02 PM
+TL;DR: tell me why handling SIGILL is of any use
+03/01/2022 9:02 PM
+this is neither, so i think disabling SIGILL trapping is NOT a
+workaround, but the best solution (edited)
+03/01/2022 9:01 PM
+or you're building for the wrong platform, and it doesn't make sense
+03/01/2022 9:01 PM
+either you're writing a JIT compiler, and that could make sense
+03/01/2022 9:01 PM
+i don't see a situation where handling SIGILL is useful
+03/01/2022 9:01 PM
+but in all fairness
+03/01/2022 9:01 PM
+maybe you can disable handling SIGILL, then init libcrypto, then enable
+it
+03/01/2022 9:01 PM
+or if it's done the first time you do a crypto call
+03/01/2022 9:01 PM
+i don't remember which function causes the SIGILL
+03/01/2022 9:00 PM
+it's a situation where you want "forward to application"
+03/01/2022 9:00 PM
+hyperion.ng incorrectly traps/intercepts it (edited)
+03/01/2022 8:59 PM
+it's handled by libcrypto
+03/01/2022 8:59 PM
+it must NOT be trapped
+03/01/2022 8:59 PM
+so it's expected that it will throw SIGILL
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 8:59 PM
+I cannot explain the reasoning behind it to hyperion.ng guys, you can
+tho 
+[smx2460]
+smx2460 03/01/2022 8:59 PM
+because it has an internal routine to check if your CPU can do certain
+ops
+03/01/2022 8:59 PM
+the SIGILL is generated by libcrypto
+03/01/2022 8:59 PM
+but
+03/01/2022 8:59 PM
+(won't last long, already losing it)
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 8:59 PM
+sure
+03/01/2022 8:59 PM
+@Lord-Grey hey, can you listen in for a sec? 
+[smx2460]
+smx2460 03/01/2022 8:58 PM
+and i'm at my desk, in ~30 mins of lucidity
+03/01/2022 8:58 PM
+it's a proper fix
+03/01/2022 8:58 PM
+no it's not a workaround
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 8:58 PM
+we worked around it
+[smx2460]
+smx2460 03/01/2022 8:58 PM
+we fixed it last time (edited)
+03/01/2022 8:58 PM
+@ztuxnet since when is the SIGILL a problem (edited)
+03/01/2022 8:58 PM
+wait
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 8:58 PM
+About the SIGILL
+    (gdb) r
+    Starting program: /home/root/hyperion.ng/hyperiond 
+    warning: Unable to find libthread_db matching inferior's thread library, thread debugging will not be available.
+    Dwarf Error: wrong version in compilation unit header (is 5, should be 2, 3, or 4) [in module /home/root/hyperion.ng/libz.so.1]
+    Dwarf Error: wrong version in compilation unit header (is 5, should be 2, 3, or 4) [in module /home/root/hyperion.ng/libgssapi_krb5.so.2]
+    Dwarf Error: wrong version in compilation unit header (is 5, should be 2, 3, or 4) [in module /home/root/hyperion.ng/libpng16.so.16]
+    Dwarf Error: wrong version in compilation unit header (is 5, should be 2, 3, or 4) [in module /home/root/hyperion.ng/libpcre2-16.so.0]
+    Dwarf Error: wrong version in compilation unit header (is 5, should be 2, 3, or 4) [in module /home/root/hyperion.ng/libkrb5.so.3]
+    Dwarf Error: wrong version in compilation unit header (is 5, should be 2, 3, or 4) [in module /home/root/hyperion.ng/libk5crypto.so.3]
+    Dwarf Error: wrong version in compilation unit header (is 5, should be 2, 3, or 4) [in module /home/root/hyperion.ng/libcom_err.so.3]
+    Dwarf Error: wrong version in compilation unit header (is 5, should be 2, 3, or 4) [in module /home/root/hyperion.ng/libkrb5support.so.0]
+    Dwarf Error: wrong version in compilation unit header (is 5, should be 2, 3, or 4) [in module /home/root/hyperion.ng/libcrypto.so.1.1]
+    Program received signal SIGILL, Illegal instruction.
+    0x755601c8 in _armv7_tick () from /home/root/hyperion.ng/libcrypto.so.1.1
+[smx2460]
+smx2460 03/01/2022 5:23 PM
+K
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 5:23 PM
+So whenever our toolchain is ready, it will just work
+03/01/2022 5:23 PM
+For the time being, will look into the issue that is strictly bound to
+hyperion.ng codebase / build system and fix them
+03/01/2022 5:22 PM
+Ok, no worries, just lemme know whenever you have time, right now that's
+the best, non-hacky fix there is to get it compiling
+[smx2460]
+smx2460 03/01/2022 5:12 PM
+But I'm not able to help rn
+03/01/2022 5:12 PM
+The "missing" functions weren't added in those new versions
+03/01/2022 5:11 PM
+@ztuxnet I still don't think updating glibc Is the fix
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 4:53 PM
+Here the update message I posted on hyperion.ng server: Little
+update: 1) Got a toolchain built that should support WebOS v1 - v5.
+Before it was sing glibc 2.12.2, now it uses glibc 2.17 (makes qt5 and
+hyperion.ng build without the math.h patches) 2) Two things need to be
+researched:
+    diff --git a/src/hyperion-remote/CMakeLists.txt b/src/hyperion-remote/CMakeLists.txt
+    index ab2b6508..2a209457 100644
+    --- a/src/hyperion-remote/CMakeLists.txt
+    +++ b/src/hyperion-remote/CMakeLists.txt
+    @@ -6,9 +6,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Network Widgets REQUIRED)
+     # The following I do not understand completely...
+     # libQtCore.so uses some hardcoded library path inside which are incorrect after copying the file RPi file system
+     # Therefore, an extra path is needed on which to find the required libraries
+    -IF ( EXISTS ${CMAKE_FIND_ROOT_PATH}/lib/arm-linux-gnueabihf )
+    -       LINK_DIRECTORIES(${LINK_DIRECTORIES} ${CMAKE_FIND_ROOT_PATH}/lib/arm-linux-gnueabihf)
+    -ENDIF()
+     set(hyperion-remote_HEADERS
+            JsonConnection.h)
+- How to overcome the SIGILL signal catching (edited)
+03/01/2022 4:52 PM
+Ok, thanks!
+ww8543 03/01/2022 4:51 PM
+    root@LGSmartTV:~# /lib/libc.so.6
+    GNU C Library stable release version 2.14.1, by Roland McGrath et al.
+    Copyright (C) 2011 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.
+    There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    Compiled by GNU CC version 4.6.4 20120731 (prerelease).
+    Compiled on a Linux 3.4.0 system on 2013-08-28.
+    Available extensions:
+            crypt add-on version 2.1 by Michael Glad and others
+            Native POSIX Threads Library by Ulrich Drepper et al
+            Support for some architectures added on, not maintained in glibc core.
+            BIND-8.2.3-T5B
+    libc ABIs: UNIQUE
+    For bug reporting instructions, please see:
+    <http://www.gnu.org/software/libc/bugs.html>.
+03/01/2022 4:50 PM
+uuuh
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 4:49 PM
+@ww so you know what's the oldest glibc utilized on WebOS 1?
+[smx2460]
+smx2460 03/01/2022 4:48 PM
+Then it should be workable on 2.13 too
+03/01/2022 4:48 PM
+Which I doubt anyone is using lol
+03/01/2022 4:48 PM
+But this means that unless you are using gammal
+03/01/2022 4:45 PM
+I think 2.15 is the culprit
+03/01/2022 4:44 PM
+https://abi-laboratory.pro/index.php?view=compat_report&l=glibc&v1=2.14.1&v2=2.15&obj=ff6e6&kind=abi#Added
+Binary compatibility report for glibc: 2.14.1 vs 2.15
+[]
+03/01/2022 4:42 PM
+2.16? 2.15? 2.14?
+03/01/2022 4:42 PM
+How lower can you go before it stops working?
+[smx2460]
+[] e99.tuxuser With glibc2.17 qt5base compiles just fine, yup
+smx2460 03/01/2022 4:41 PM
+The question would be
+[e99.tuxuser]
+[] smx2460 I am down with temperature again... 
+e99.tuxuser 03/01/2022 3:55 PM
+Very good!
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 3:55 PM
+With glibc2.17 qt5base compiles just fine, yup
+[smx2460]
+smx2460 03/01/2022 2:54 PM
+It might be a bug rather than a missing function
+03/01/2022 2:54 PM
+But I was thinking that it's odd that the functions aren't there
+03/01/2022 2:54 PM
+I am down with temperature again... 
+03/01/2022 2:54 PM
+And that works?
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 1:57 PM
+some promising news for a change:
+https://github.com/tuxuser/buildroot-nc4/commit/dbbdf41f4c809a87ec139257c02ab2762d984445
+webos toolchain: Use glibc 2.17 · tuxuser/buildroot-nc4@dbbdf41
+[]
+ 1
+[infowski]
+infowski 03/01/2022 9:18 AM
+heh, nice indeed
+[smx2460]
+smx2460 03/01/2022 8:30 AM
+This is a very nice report btw (edited)
+03/01/2022 8:30 AM
+https://abi-laboratory.pro/?view=timeline&l=glibc
+API/ABI changes review for glibc
+[]
+03/01/2022 8:29 AM
+I will check when those functions have been introduced
+03/01/2022 8:27 AM
+Makes sense
+03/01/2022 8:27 AM
+THEY are seeing that
+03/01/2022 8:27 AM
+Ah
+03/01/2022 8:26 AM
+If you have 2.24, you shouldn't be seeing that
+[smx2460]
+[] e99.tuxuser ``` ./hyperion-webos: /lib/libc.so.6: version
+`GLIBC_2.17' not found (required by ./hyperion-webos) ...
+smx2460 03/01/2022 8:26 AM
+What?
+[e99.tuxuser]
+e99.tuxuser 03/01/2022 1:57 AM
+    ./hyperion-webos: /lib/libc.so.6: version `GLIBC_2.17' not found (required by ./hyperion-webos)
+03/01/2022 1:56 AM
+https://github.com/TBSniller/piccap/issues/29#issuecomment-1030640921
+is it a possible to add sypport for WebOS 1-2? · Issue #29 · TBSnil...
+I have root access on my TV, and Homebrew installed. PicCap also
+installed, but not all setting available for me.. Is it a possible to
+add 1-2 WebOs versions support?
+[]
+03/01/2022 1:56 AM
+WebOS 1 is glibc 2.17 it seems
+February 28, 2022
+[smx2460]
+smx2460 02/28/2022 11:25 PM
+I hope I'll be fine the upcoming days
+ 1
+02/28/2022 11:25 PM
+Just not in shake to do it now
+02/28/2022 11:23 PM
+Or just as I said pull in the missing symbols manually so the version
+doesn't change
+02/28/2022 11:23 PM
+That adds the missing symbols
+02/28/2022 11:22 PM
+I'm tempted to make an additional c99math.a
+02/28/2022 11:22 PM
+Btw I don't think it's impossible to support all
+02/28/2022 11:22 PM
+Yep
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 11:20 PM
+so, versions could toggled via config?
+https://github.com/openlgtv/buildroot-nc4/blob/master/package/glibc/glibc.mk#L7
+buildroot-nc4/glibc.mk at master · openlgtv/buildroot-nc4
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 11:12 PM
+its maybe just too much to want to support NC4 && webos 1..5 at the same
+time? 
+02/28/2022 11:12 PM
+yeah ofc, I get that
+ 1
+[smx2460]
+smx2460 02/28/2022 11:11 PM
+I'll drop this quote meanwhile
+02/28/2022 11:11 PM
+    The easiest way to do that is to install an older operating system that has the version of glibc you want, which is the typical advice of "build on the oldest platform you want to support," possibly using a more modern toolset (gcc et al.), such as Red Hat's Developer Toolset, which was created for this purpose. That way, the new program depends only on compatibility symbols that are available in that old glibc and any newer glibc. Older glibcs cannot, of course, know the future. 
+02/28/2022 11:11 PM
+I'm in my bed otherwise
+02/28/2022 11:11 PM
+@ww might answer
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 11:07 PM
+which glibc is used by webos 1? (edited)
+[smx2460]
+smx2460 02/28/2022 11:02 PM
+Sad
+02/28/2022 11:02 PM
+Tho it would mean I now need 2 toolchains
+02/28/2022 11:02 PM
+I guess I could also have a switch to choose glibc 2.12 vs 2.24
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 11:02 PM
+(no content)
+ libc_2.24_syms.log
+826.96 KB External
+ 1
+[smx2460]
+smx2460 02/28/2022 11:01 PM
+And this is guaranteed (edited)
+02/28/2022 11:01 PM
+It will not work on older glibc
+02/28/2022 11:01 PM
+But if you use a newer glibc symbol
+02/28/2022 11:01 PM
+This means that using an older glibc with a newer glibc will probably
+work (compat symbols) (edited)
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 11:00 PM
+PS: are there still people around using NC4?
+02/28/2022 11:00 PM
+as ancient as NC4
+02/28/2022 11:00 PM
+ancient stuff 
+[smx2460]
+smx2460 02/28/2022 11:00 PM
+2.12.2 actually
+02/28/2022 10:59 PM
+Iirc we're on 2.13
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 10:59 PM
+    GNU C Library (GNU libc) stable release version 2.24, by Roland McGrath et al.
+    Copyright (C) 2016 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.
+    There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    Compiled by GNU CC version 6.2.0.
+[smx2460]
+smx2460 02/28/2022 10:59 PM
+Maybe I don't need to take that precaution
+02/28/2022 10:59 PM
+Interesting
+02/28/2022 10:58 PM
+https://developers.redhat.com/blog/2019/08/01/how-the-gnu-c-library-handles-backward-compatibility#add_magical_symbols
+How the GNU C Library handles backward compatibility | Red Hat Deve...
+The GNU C Library handles backward compatibility like a champ. Learn how
+to use compat symbols to control which version of glibc the linkers use.
+[]
+02/28/2022 10:57 PM
+Not all programs
+02/28/2022 10:57 PM
+I want to break only programs using C++11 math
+02/28/2022 10:57 PM
+Or something like that
+02/28/2022 10:57 PM
+Glibc@@2.foo
+02/28/2022 10:57 PM
+As symbols are tagged
+02/28/2022 10:56 PM
+So that we don't change the actual glibc version
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 10:56 PM
+I suppose upgrading glibc is the most sensical choice <-- When upgrading
+glibc anyways, why cherry-pick still?
+[smx2460]
+smx2460 02/28/2022 10:56 PM
+Then update the makefile to pull from the forked git repo
+02/28/2022 10:55 PM
+Probably will fork glibc and cherry pick them
+02/28/2022 10:55 PM
+And then I'll need to find the commits adding them
+02/28/2022 10:55 PM
+This means you need to check if the symbols are there in your glibc
+02/28/2022 10:55 PM
+And provide a statically linked glibc for NC4 only
+02/28/2022 10:54 PM
+Rather than supporting a 2013 era device
+02/28/2022 10:54 PM
+I suppose upgrading glibc is the most sensical choice
+02/28/2022 10:53 PM
+You would get the error in QT
+02/28/2022 10:53 PM
+I mean with that
+[e99.tuxuser]
+[] smx2460 If we could turn that off, we could delay the error at link
+phase
+e99.tuxuser 02/28/2022 10:53 PM
+this sounds the best ? (edited)
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 10:50 PM
+the choice is yours
+[smx2460]
+smx2460 02/28/2022 10:49 PM
+I.e. when a program tries to actually use atanhl
+02/28/2022 10:48 PM
+If we could turn that off, we could delay the error at link phase
+02/28/2022 10:48 PM
+Although the reason for the error is the fact that libstdc++ wants to
+precompile headers
+02/28/2022 10:47 PM
+And I bet it does
+02/28/2022 10:46 PM
+I.e. we need to check if WebOs provides those symbols in glibc
+02/28/2022 10:46 PM
+(but this would only apply to uses of the backported functions and
+probably only in NC4)
+02/28/2022 10:46 PM
+(Unless you statically link glibc in your builds and then it would work)
+02/28/2022 10:45 PM
+- cherry pick the commits adding the functions in glibc (easiest but
+less portable)
+02/28/2022 10:45 PM
+- provide a polyfill for the missing functions (still needs the autoconf
+checks to find out which tho)
+02/28/2022 10:44 PM
+- ifdef only the missing functions out in cmath (but autoconf needs
+finer and more granular checks) (edited)
+02/28/2022 10:44 PM
+Now we need to decide how we wanna patch that
+02/28/2022 10:43 PM
+So...
+[smx2460]
+[] e99.tuxuser ``` In file included from
+/br-nc4/output/build/host-gcc-final-11.2.0/libstdc++-v3/include/precompile...
+smx2460 02/28/2022 10:43 PM
+So those are the missing functions
+[smx2460]
+smx2460 02/28/2022 10:42 PM
+Yay
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 10:20 PM
+log.txt
+ message.txt
+24.32 KB External
+02/28/2022 10:19 PM
+    In file included from /br-nc4/output/build/host-gcc-final-11.2.0/libstdc++-v3/include/precompiled/stdc++.h:41:
+    /br-nc4/output/build/host-gcc-final-11.2.0/build/arm-webos-linux-gnueabi/libstdc++-v3/include/cmath:1071:11: error: ‘acoshl’ has not been declared in ‘::’
+     1071 |   using ::acoshl;
+          |           ^~~~~~
+    /br-nc4/output/build/host-gcc-final-11.2.0/build/arm-webos-linux-gnueabi/libstdc++-v3/include/cmath:1075:11: error: ‘asinhl’ has not been declared in ‘::’
+     1075 |   using ::asinhl;
+          |           ^~~~~~
+    /br-nc4/output/build/host-gcc-final-11.2.0/build/arm-webos-linux-gnueabi/libstdc++-v3/include/cmath:1079:11: error: ‘atanhl’ has not been declared in ‘::’
+     1079 |   using ::atanhl;
+          |           ^~~~~~
+    /br-nc4/output/build/host-gcc-final-11.2.0/build/arm-webos-linux-gnueabi/libstdc++-v3/include/cmath:1083:11: error: ‘cbrtl’ has not been declared in ‘::’
+02/28/2022 10:19 PM
+    /br-nc4/output/build/host-gcc-final-11.2.0/build/./gcc/xgcc -shared-libgcc -B/br-nc4/output/build/host-gcc-final-11.2.0/build/./gcc -nostdinc++ -L/br-nc4/output/build/host-gcc-final-11.2.0/build/arm-webos-linux-gnueabi/libstdc++-v3/src -L/br-nc4/output/build/host-gcc-final-11.2.0/build/arm-webos-linux-gnueabi/libstdc++-v3/src/.libs -L/br-nc4/output/build/host-gcc-final-11.2.0/build/arm-webos-linux-gnueabi/libstdc++-v3/libsupc++/.libs -B/br-nc4/output/host/arm-webos-linux-gnueabi/bin/ -B/br-nc4/output/host/arm-webos-linux-gnueabi/lib/ -isystem /br-nc4/output/host/arm-webos-linux-gnueabi/include -isystem /br-nc4/output/host/arm-webos-linux-gnueabi/sys-include    -x c++-header -nostdinc++ -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64  -Os -g0  -D_GNU_SOURCE  -I/br-nc4/output/build/host-gcc-final-11.2.0/build/arm-webos-linux-gnueabi/libstdc++-v3/include/arm-webos-linux-gnueabi -I/br-nc4/output/build/host-gcc-final-11.2.0/build/arm-webos-linux-gnueabi/libstdc++-v3/include -I/br-nc4/output/build/host-gcc-final-11.2.0/libstdc++-v3/libsupc++  -O2 -g -std=gnu++0x /br-nc4/output/build/host-gcc-final-11.2.0/libstdc++-v3/include/precompiled/stdc++.h \
+    -o arm-webos-linux-gnueabi/bits/stdc++.h.gch/O2ggnu++0x.gch
+02/28/2022 10:17 PM
+well, it kinda worked
+[smx2460]
+smx2460 02/28/2022 9:59 PM
+@ztuxnet grep for CONF_ENV
+02/28/2022 9:58 PM
+glibcxx_cv_blabla=yes
+02/28/2022 9:58 PM
+I know it can be used to override cached autoconf checks
+02/28/2022 9:58 PM
+But I don't guarantee it
+02/28/2022 9:57 PM
+Maybe you can avoid patching autoconf by using CONF_ENV
+02/28/2022 9:57 PM
+Worked?
+02/28/2022 9:57 PM
+:o
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 9:52 PM
+Fuck autoconf
+    diff -NurpP gcc-11.2.0-old/libstdc++-v3/acinclude.m4 gcc-11.2.0/libstdc++-v3/acinclude.m4
+    --- gcc-11.2.0-old/libstdc++-v3/acinclude.m4    2022-02-27 17:37:47.397345175 +0100
+    +++ gcc-11.2.0/libstdc++-v3/acinclude.m4        2022-02-28 21:47:19.461031223 +0100
+    @@ -1997,7 +1997,7 @@ AC_DEFUN([GLIBCXX_CHECK_C99_TR1], [
+                     ],[glibcxx_cv_c99_math_tr1=yes], [glibcxx_cv_c99_math_tr1=no])
+       ])
+       AC_MSG_RESULT($glibcxx_cv_c99_math_tr1)
+    -  if test x"$glibcxx_cv_c99_math_tr1" = x"yes"; then
+    +  if true; then
+         AC_DEFINE(_GLIBCXX_USE_C99_MATH_TR1, 1,
+                  [Define if C99 functions or macros in <math.h> should be imported
+                  in <tr1/cmath> in namespace std::tr1.])
+    diff -NurpP gcc-11.2.0-old/libstdc++-v3/configure gcc-11.2.0/libstdc++-v3/configure
+    --- gcc-11.2.0-old/libstdc++-v3/configure       2022-02-27 17:37:48.925371509 +0100
+    +++ gcc-11.2.0/libstdc++-v3/configure   2022-02-28 21:48:33.110277049 +0100
+    @@ -20143,7 +20143,7 @@ typedef double_t  my_double_t;
+       return 0;
+     }
+     _ACEOF
+    -if ac_fn_cxx_try_compile "$LINENO"; then :
+    +if true; then :
+       glibcxx_cv_c99_math_tr1=yes
+     else
+       glibcxx_cv_c99_math_tr1=no
+    @@ -20154,7 +20154,7 @@ fi
+       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $glibcxx_cv_c99_math_tr1" >&5
+     $as_echo "$glibcxx_cv_c99_math_tr1" >&6; }
+    -  if test x"$glibcxx_cv_c99_math_tr1" = x"yes"; then
+    +  if true; then
+     $as_echo "#define _GLIBCXX_USE_C99_MATH_TR1 1" >>confdefs.h
+(edited)
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 9:36 PM
+    Applying 0003-force-glibcxx-cv-c99-math-tr1-enabled.patch using patch: 
+    patching file libstdc++-v3/acinclude.m4
+    >>> host-gcc-final 11.2.0 Updating config.sub and config.guess
+    for file in config.guess config.sub; do for i in $(find /tmp/buildroot-nc4/output/build/host-gcc-final-11.2.0 -name $file); do cp support/gnuconfig/$file $i; done; done
+    >>> host-gcc-final 11.2.0 Configuring
+    mkdir -p /tmp/buildroot-nc4/output/build/host-gcc-final-11.2.0/build
+    ln -sf ../configure /tmp/buildroot-nc4/output/build/host-gcc-final-11.2.0/build/configure
+    >>> host-gcc-final 11.2.0 Autoreconfiguring
+    autoreconf: error: 'configure.ac' is required
+    make: *** [package/pkg-generic.mk:284: /tmp/buildroot-nc4/output/build/host-gcc-final-11.2.0/.stamp_configured] Error 1
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 9:23 PM
+will just dump all thsoe definitions in there, just in case
+02/28/2022 9:22 PM
+./package/gcc/gcc-final/gcc-final.mk
+    HOST_GCC_FINAL_AUTORECONF = YES
+    GCC_AUTORECONF = YES
+    GCC_FINAL_AUTORECONF = YES
+(edited)
+[smx2460]
+smx2460 02/28/2022 9:10 PM
+You will want to do that in the -final pkg very likely
+[smx2460]
+[] e99.tuxuser Cannot find anything related to auto(Re)conf in either of
+package/gcc/**/*.mk
+smx2460 02/28/2022 8:56 PM
+Add
+[smx2460]
+smx2460 02/28/2022 8:55 PM
+It's <PACKAGE>_AUTORECONF = YES tho
+02/28/2022 8:55 PM
+look for AUTORECONF in .mk
+[e99.tuxuser]
+e99.tuxuser 02/28/2022 8:35 PM
+Cannot find anything related to auto(Re)conf in either of
+package/gcc/**/*.mk
+[e99.tuxuser]
+[] smx2460 You can enable it in the .mk
+e99.tuxuser 02/28/2022 8:35 PM
+Which *.mk?
+[smx2460]
+smx2460 02/28/2022 8:29 PM
+Or, just for testing, do it manually
+02/28/2022 8:29 PM
+You can enable it in the .mk (edited)
+02/28/2022 8:28 PM
+Yeah but you def. Need autoreconf
+[e99.tuxuser]
+[] e99.tuxuser Let see how this turns out... cat
+./package/gcc/11.2.0/0003-force-glibcxx-cv-c99-math-tr1-enabled.p...
+e99.tuxuser 02/28/2022 8:28 PM
+No, this is the whole patch
+[smx2460]
+smx2460 02/28/2022 8:28 PM
+To trigger it
+02/28/2022 8:28 PM
+You could also set FOO_AUTORECONF = YES iirc
+[smx2460]
+[] e99.tuxuser that patch did not yield success, qt5base does not
+compile still
+smx2460 02/28/2022 8:28 PM
+You did autoreconf, right?
+[smx2460]
+smx2460 02/28/2022 8:22 PM
+(no content)
+[IMG_20220228_202229.jpg]
+ IMG_20220228_202229.jpg
+184.66 KB External
+February 27, 2022
+[e99.tuxuser]
+e99.tuxuser 02/27/2022 8:21 PM
+Yes, it's from a full rebuild actually
+[smx2460]
+smx2460 02/27/2022 8:10 PM
+Under libstdc++
+02/27/2022 8:10 PM
+And doing a manual make install afaik
+02/27/2022 8:10 PM
+It could be done by going in build/gcc-final
+02/27/2022 8:10 PM
+Did you rebuild and install libstdc++?
+[e99.tuxuser]
+e99.tuxuser 02/27/2022 8:00 PM
+    /home/e99/Development/personal/lgtv/buildroot-nc4/output/host/bin/arm-webos-linux-gnueabi-g++ -c -pipe -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Os -g0 --sysroot=/home/e99/Development/personal/lgtv/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot -std=c++1z -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wvla -Wdate-time -Wshift-overflow=2 -Wduplicated-cond -Wno-stringop-overflow -Wno-format-overflow -D_REENTRANT -fPIC -DQT_NO_LINKED_LIST -DQT_NO_JAVA_STYLE_ITERATORS -DQT_NO_USING_NAMESPACE -DQT_NO_FOREACH -DQT_NO_NARROWING_CONVERSIONS_IN_CONNECT -DQT_BUILD_CORE_LIB -DQT_BUILDING_QT -DQT_NO_CAST_TO_ASCII -DQT_ASCII_CAST_WARNINGS -DQT_MOC_COMPAT -DQT_USE_QSTRINGBUILDER -DQT_DEPRECATED_WARNINGS -DQT_DISABLE_DEPRECATED_BEFORE=0x050000 -DQT_DEPRECATED_WARNINGS_SINCE=0x060000 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -DQT_NO_DEBUG -I. -Iglobal -I../3rdparty/md5 -I../3rdparty/md4 -I../3rdparty/sha3 -I../3rdparty -I../3rdparty/double-conversion/include -I../3rdparty/harfbuzz/src -I../3rdparty/forkfd -I../3rdparty/tinycbor/src -I.rcc -I../../include -I../../include/QtCore -I../../include/QtCore/5.15.2 -I../../include/QtCore/5.15.2/QtCore -I.moc -I.tracegen -I/home/e99/Development/personal/lgtv/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/include/glib-2.0 -I/home/e99/Development/personal/lgtv/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/lib/glib-2.0/include -I../../mkspecs/devices/linux-buildroot-g++ -o .obj/qringbuffer.o tools/qringbuffer.cpp
+    tools/qline.cpp: In member function ‘qreal QLineF::length() const’:
+    tools/qline.cpp:587:17: error: no matching function for call to ‘hypot(qreal, qreal)’
+      587 |     return hypot(dx(), dy());
+          |            ~~~~~^~~~~~~~~~~~
+02/27/2022 7:59 PM
+ffs, did discord decrease maximum number of characters, for free users?
+02/27/2022 7:57 PM
+that patch did not yield success, qt5base does not compile still
+[e99.tuxuser]
+e99.tuxuser 02/27/2022 6:42 PM
+Let see how this turns out... cat
+./package/gcc/11.2.0/0003-force-glibcxx-cv-c99-math-tr1-enabled.patch
+    diff -NurpP gcc-11.2.0-old/libstdc++-v3/acinclude.m4 gcc-11.2.0/libstdc++-v3/acinclude.m4
+    --- gcc-11.2.0-old/libstdc++-v3/acinclude.m4    2022-02-27 17:37:47.397345175 +0100
+    +++ gcc-11.2.0/libstdc++-v3/acinclude.m4    2022-02-27 17:39:12.242807131 +0100
+    @@ -1997,7 +1997,7 @@ AC_DEFUN([GLIBCXX_CHECK_C99_TR1], [
+              ],[glibcxx_cv_c99_math_tr1=yes], [glibcxx_cv_c99_math_tr1=no])
+       ])
+       AC_MSG_RESULT($glibcxx_cv_c99_math_tr1)
+    -  if test x"$glibcxx_cv_c99_math_tr1" = x"yes"; then
+    +  if true; then
+         AC_DEFINE(_GLIBCXX_USE_C99_MATH_TR1, 1,
+               [Define if C99 functions or macros in <math.h> should be imported
+               in <tr1/cmath> in namespace std::tr1.])
+[smx2460]
+smx2460 02/27/2022 1:09 PM
+(even better, pull the patches and offer them conditionally - Netcast vs
+WebOS)
+02/27/2022 1:08 PM
+- see which functions bare missing and cherry pick commits in glibc
+02/27/2022 1:08 PM
+- patch that check and see if it builds as long as those functions arent
+used
+02/27/2022 1:07 PM
+In any case, what I'd do in order is
+02/27/2022 1:01 PM
+https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/acinclude.m4#L1817
+gcc/acinclude.m4 at master · gcc-mirror/gcc
+Contribute to gcc-mirror/gcc development by creating an account on
+GitHub.
+[]
+02/27/2022 12:56 PM
+So i can't really help :/
+02/27/2022 12:56 PM
+Btw i am down with flu+high temperature
+02/27/2022 12:56 PM
+@ztuxnet
+02/27/2022 12:56 PM
+Did it work?
+[e99.tuxuser]
+e99.tuxuser 02/27/2022 7:52 AM
+    gcc-11.2.0/libstdc++-v3/
+    acinclude.m4:2001:    AC_DEFINE(_GLIBCXX_USE_C99_MATH_TR1, 1,
+    grep: config: Is a directory
+    config.h.in:905:#undef _GLIBCXX_USE_C99_MATH_TR1
+    configure:20159:$as_echo "#define _GLIBCXX_USE_C99_MATH_TR1 1" >>confdefs.h
+ 1
+February 23, 2022
+[e99.tuxuser]
+e99.tuxuser 02/23/2022 7:42 PM
+thx for the explaintation, its more clear to me now
+[smx2460]
+smx2460 02/23/2022 3:43 PM
+The problem is that other functions, that NC4 doesn't have and QT
+doesn't use, cause the whole C++11 math to be disabled
+02/23/2022 3:43 PM
+QT actually doesn't use them, it uses functions even NC4 had
+02/23/2022 3:42 PM
+Not QT necessarily, but a program using that particular math function
+missing in C++11
+02/23/2022 3:42 PM
+It would probably work, but fail to start on say NC4
+02/23/2022 3:42 PM
+If we patch glibc to have whatever missing symbol is needed (e.g. cherry
+pick)
+02/23/2022 3:41 PM
+Hacking the QT sources is also an option, though required for every
+C++11 math consumer and not just QT
+02/23/2022 3:40 PM
+Many possibilities 
+02/23/2022 3:40 PM
+Add a conditional switch to pull in a newer glibc
+02/23/2022 3:40 PM
+Since the missing functions are probably only missing in NC4 and no
+longer missing in WebOS
+02/23/2022 3:39 PM
+Or
+02/23/2022 3:39 PM
+Alternatively we could force it to be included, knowing that we might
+need to add a static library for the missing functions
+02/23/2022 3:39 PM
+So that it only excludes the really missing parts rather than disabling
+C++11 math entirely
+02/23/2022 3:38 PM
+I would prefer if we could patch that check out
+02/23/2022 3:38 PM
+The problem is that libstdc++ believes our libc isn't C++11 compliant
+because of a missing gamma function or similar
+02/23/2022 3:38 PM
+@ztuxnet well
+[e99.tuxuser]
+e99.tuxuser 02/23/2022 12:35 PM
+@Smx what was your glibc math suggestion again? To include QT5 in
+buildroot properly, without the #include <math.h> tweak
+February 4, 2022
+[e99.tuxuser]
+e99.tuxuser 02/04/2022 11:56 AM
+https://gist.github.com/tuxuser/7a31b0ae7394578fcea8ceddf21833d2
+hyperion.ng light patch
+hyperion.ng light patch. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+[e99.tuxuser]
+e99.tuxuser 02/04/2022 2:28 AM
+    BR2_arm=y
+    BR2_cortex_a9=y
+    BR2_ARM_ENABLE_NEON=y
+    BR2_ARM_ENABLE_VFP=y
+    BR2_ARM_EABI=y
+    BR2_ARM_FPU_VFPV3=y
+    # BR2_PIC_PIE is not set
+    BR2_SSP_NONE=y
+    BR2_RELRO_NONE=y
+    BR2_FORTIFY_SOURCE_NONE=y
+    BR2_TOOLCHAIN_BUILDROOT_GLIBC=y
+    BR2_KERNEL_HEADERS_VERSION=y
+    BR2_DEFAULT_KERNEL_VERSION="3.0.13"
+    BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_3_0=y
+    BR2_BINUTILS_VERSION_2_37_X=y
+    BR2_GCC_VERSION_11_X=y
+    BR2_TOOLCHAIN_BUILDROOT_CXX=y
+    BR2_GCC_ENABLE_LTO=y
+    BR2_GCC_ENABLE_GRAPHITE=y
+    BR2_PACKAGE_QT5=y
+    BR2_PACKAGE_QT5BASE_SQLITE_QT=y
+    BR2_PACKAGE_QT5BASE_GUI=y
+    BR2_PACKAGE_QT5BASE_WIDGETS=y
+    BR2_PACKAGE_QT5BASE_JPEG=y
+    BR2_PACKAGE_QT5BASE_PNG=y
+    BR2_PACKAGE_QT5SERIALPORT=y
+    BR2_PACKAGE_OPENSSL=y
+    BR2_PACKAGE_LIBKRB5=y
+    BR2_PACKAGE_LIBUNWIND=y
+    BR2_PACKAGE_LTTNG_LIBUST=y
+    BR2_PACKAGE_ICU=y
+[e99.tuxuser]
+e99.tuxuser 02/04/2022 2:20 AM
+cheers 
+[smx2460]
+smx2460 02/04/2022 2:19 AM
+    cmake .. -DCMAKE_TOOLCHAIN_FILE=buildroot/toolchainfile.cmake -DHYPERION_LIGHT=ON -DENABLE_EFFECTENGINE=OFF   -DENABLE_JSONCHECKS=OFF   -DENABLE_DEV_SERIAL=ON   -DENABLE_DEV_USB_HID=OFF   -DENABLE_DEV_WS281XPWM=OFF   -DENABLE_DEV_TINKERFORGE=OFF -DENABLE_AVAHI=OFF -DENABLE_DEPLOY_DEPENDENCIES=OFF -DENABLE_FLATBUF_SERVER=ON -DIMPORT_FLATC=../build-x86x64/flatc_export.cmake && make -j
+(edited)
+February 3, 2022
+[e99.tuxuser]
+[] e99.tuxuser I summon you, masters of cmake and webosbrew. The guys
+over @ hyperion.ng were so nice to extend th...
+e99.tuxuser 02/03/2022 11:54 PM
+^
+[e99.tuxuser]
+e99.tuxuser 02/03/2022 11:54 PM
+hello
+January 30, 2022
+[e99.tuxuser]
+e99.tuxuser 01/30/2022 10:28 PM
+bump to not get cancelled 
+ 1
+[e99.tuxuser]
+e99.tuxuser 01/30/2022 12:45 AM
+I found the moc file by using find in the webos-sdk directory lol
+01/30/2022 12:45 AM
+January 29, 2022
+[smx2460]
+smx2460 01/29/2022 11:28 PM
+@ztuxnet
+[smx2460]
+smx2460 01/29/2022 11:18 PM
+i don't know where you got AUTOMOC_EXECUTABLE from (edited)
+01/29/2022 11:18 PM
+    It means it is trying to use "Qt::moc" which is an IMPORTED executable
+    defined by the Qt5 configuration files rather than the QT_MOC_EXECUTABLE
+    variable.
+    It is setup with code similar to:
+    add_executable(Qt5::moc IMPORTED)
+    set_target_properties(Qt5::moc PROPERTIES
+    IMPORTED_LOCATION "/path/to/moc"
+    )
+    For a smoother experience I'd use find_package() (and CMAKE_PREFIX_PATH)
+    for local builds as well rather than trying to mimic the behavior of the
+    configuration files.
+    Nils
+01/29/2022 11:17 PM
+where is the error coming from?
+01/29/2022 11:17 PM
+well
+[e99.tuxuser]
+e99.tuxuser 01/29/2022 11:11 PM
+/home/e99/webos-sdk-x86_64/1.0.g/sysroots/armv7a-neon-webos-linux-gnueabi/usr/bin/qt5/.debug/moc
+Appending:
+-DAUTOMOC_EXECUTABLE=/home/e99/webos-sdk-x86_64/1.0.g/sysroots/armv7a-neon-webos-linux-gnueabi/usr/bin/qt5/.debug/moc
+Still:
+CMake Error: AUTOMOC for target mbedcrypto: Could not find moc executable target Qt5::moc
+(edited)
+01/29/2022 11:07 PM
+nop, not it
+[smx2460]
+smx2460 01/29/2022 11:05 PM
+just in case (edited)
+01/29/2022 11:05 PM
+-DUSE_SYSTEM_MBEDTLS_LIBS=OFF ? (edited)
+[e99.tuxuser]
+e99.tuxuser 01/29/2022 11:04 PM
+or this:
+https://github.com/Lord-Grey/hyperion.ng/blob/master/CMakeLists.txt#L30-L32
+hyperion.ng/CMakeLists.txt at master · Lord-Grey/hyperion.ng
+The successor to Hyperion aka Hyperion Next Generation -
+hyperion.ng/CMakeLists.txt at master · Lord-Grey/hyperion.ng
+[]
+01/29/2022 11:02 PM
+https://github.com/Lord-Grey/hyperion.ng/blob/master/dependencies/CMakeLists.txt#L193
+hyperion.ng/CMakeLists.txt at master · Lord-Grey/hyperion.ng
+The successor to Hyperion aka Hyperion Next Generation -
+hyperion.ng/CMakeLists.txt at master · Lord-Grey/hyperion.ng
+[]
+01/29/2022 11:01 PM
+yes, <root>/dependencies
+[smx2460]
+smx2460 01/29/2022 11:00 PM
+it's bundled?
+[e99.tuxuser]
+e99.tuxuser 01/29/2022 10:59 PM
+I am happy to go that route after finding out why it fails with the
+webosbrew toolchain, as hyperion.ng should build mbedtls as a shared or
+static lib if it's not found in the sysroot
+[smx2460]
+smx2460 01/29/2022 10:56 PM
+(i was thinking about that just now)
+01/29/2022 10:56 PM
+say to a temporary location where we capture all the files
+01/29/2022 10:56 PM
+option B would be to add a "package" phase to buildroot where the
+package is installed twice
+01/29/2022 10:55 PM
+about packaging, the option A would be to port those packages over to
+Yocto
+01/29/2022 10:53 PM
+and i guess this too, if it needs qt5
+01/29/2022 10:52 PM
+    # BR2_PACKAGE_QT5 is not set

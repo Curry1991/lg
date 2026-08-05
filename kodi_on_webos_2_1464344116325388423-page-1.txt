@@ -1,0 +1,1977 @@
+July 2, 2026
+[ccarnell98]
+ccarnell98 07/02/2026 9:11 PM
+yep definitely. took the risk and updated kodi on my other TV, no
+crackly audio
+[ccarnell98]
+ccarnell98 07/02/2026 8:49 PM
+I'm on 43.50.56. maybe its just broke in that firmware
+[yolofant]
+yolofant 07/02/2026 8:48 PM
+not for me
+[ccarnell98]
+ccarnell98 07/02/2026 8:37 PM
+I use the viwX addon a lot (ITVX) in the UK, easily reproducable,
+doesn't do it on my other TV which has an older build of kodi on it
+(edited)
+07/02/2026 8:35 PM
+@Yolofant don't know if you get it, but latest nightlies of kodi produce
+scratchy audio constantly on webOS 26 at least
+June 30, 2026
+[] ccarnell98 <@917488160580182068> <@1242796344549183490> could you try
+this build and if it works i'll submit a ...
+febman_21236 06/30/2026 12:08 PM
+Tested last night and the icons all display perfectly on webOS 3.4.
+Again, many thanks for your continuing hard work to support older webOS
+versions.
+ 1
+June 28, 2026
+[ccarnell98]
+ccarnell98 06/28/2026 9:48 PM
+@Yolofant You'll be glad to know not a single (new) kodi patch was
+required for gcc 16 (edited)
+[ccarnell98]
+[] satdx62 Hi, thanks for the new build. This is the best version yet.
+That’s probably because it was compil...
+ccarnell98 06/28/2026 5:17 PM
+Cheers thx 
+[satdx62]
+[] ccarnell98 <@917488160580182068> <@1242796344549183490> could you try
+this build and if it works i'll submit a ...
+satdx62 06/28/2026 5:05 PM
+Hi, thanks for the new build. This is the best version yet. That’s
+probably because it was compiled with GCC 16.1.0. The icons display
+perfectly, and all video formats play back in all resolutions up to 4K
+Dolby Vision. My compiled pvr.vuplus v22.3.6 (Enigma2 PVR client) is
+also running flawlessly.
+[ccarnell98]
+ccarnell98 06/28/2026 3:41 PM
+@satdx62 @febman could you try this build and if it works i'll submit a
+PR for the icon fix.
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.801_arm-WEBOS-3-plus-RELEASE.ipk
+June 27, 2026
+[ccarnell98]
+ccarnell98 06/27/2026 2:13 PM
+perhaps we can extend
+CServiceBroker::GetRenderSystem()->GetRenderVersion(major, minor);
+06/27/2026 2:13 PM
+even if it does resolve it
+06/27/2026 2:12 PM
+I mean pragmatically really. not sure TARGET_WEBOS would be acceptable
+[yolofant]
+yolofant 06/27/2026 2:12 PM
+I dont know
+[ccarnell98]
+ccarnell98 06/27/2026 2:11 PM
+@Yolofant is there a better way of doing this to fix the icon issue?
+https://github.com/cscd98/xbmc/commit/39b350058e1611be73d903e54b2b16ab81ed0cbd
+June 26, 2026
+[ccarnell98]
+ccarnell98 06/26/2026 8:37 PM
+finally. thanks 
+[yolofant]
+yolofant 06/26/2026 8:12 PM
+it worked
+[ccarnell98]
+ccarnell98 06/26/2026 5:22 PM
+OK i'll try the original patch and if that doesn't ill try that one
+[yolofant]
+yolofant 06/26/2026 5:22 PM
+but
+    --- a/Makefile.am
+    +++ b/Makefile.am
+    @@ -35,8 +35,6 @@ endif
+     SUBDIRS += po
+     if ENABLE_TOOLS
+     SUBDIRS += src/gl src
+    -else
+    -SUBDIRS += src/gl
+     endif
+     if ENABLE_TESTS
+also applies here
+06/26/2026 5:22 PM
+this is the other option
+06/26/2026 5:21 PM
+    --- a/src/gl/Makefile.am
+    +++ b/src/gl/Makefile.am
+    @@ -128,7 +128,7 @@
+     DISTCLEANFILES =
+     MAINTAINERCLEANFILES =
+     # No GNU Make output.
+    -SUBDIRS += . tests
+    +SUBDIRS += .
+     EXTRA_DIST += m4/gnulib-cache.m4
+     AM_CPPFLAGS =
+[ccarnell98]
+ccarnell98 06/26/2026 5:15 PM
+my first thought
+[yolofant]
+yolofant 06/26/2026 5:15 PM
+I guess it did not had a newline at the end?
+[ccarnell98]
+ccarnell98 06/26/2026 5:13 PM
+    cd arm-webos-linux-gnueabi-release; patch -p1 -i ../0002-makefile-am-wasm-fix.patch
+    patching file Makefile.am
+    patch unexpectedly ends in middle of line
+    patch unexpectedly ends in middle of line
+    cd arm-webos-linux-gnueabi-release; /home
+[yolofant]
+yolofant 06/26/2026 5:12 PM
+why
+06/26/2026 5:12 PM
+the problem is the tests
+[ccarnell98]
+ccarnell98 06/26/2026 5:12 PM
+it didn't like your patch
+[yolofant]
+yolofant 06/26/2026 5:12 PM
+the commit you just pushed does nothing
+[yolofant]
+yolofant 06/26/2026 3:44 PM
+alternatively you can also remove the test subdir from gnulib in its
+makefile
+06/26/2026 3:44 PM
+chatgpt said gnulib is only needed for tools but it may be wrong
+06/26/2026 3:43 PM
+yes but it should remove it completely
+[ccarnell98]
+ccarnell98 06/26/2026 3:41 PM
+It's already
+     36 if ENABLE_TOOLS
+     37 SUBDIRS += src/gl src
+     38 else
+     39 SUBDIRS += src/gl
+     40 endif
+[yolofant]
+yolofant 06/26/2026 2:41 PM
+this may work
+06/26/2026 2:41 PM
+    --- a/Makefile.am
+    +++ b/Makefile.am
+    @@ -35,8 +35,6 @@ endif
+     SUBDIRS += po
+     if ENABLE_TOOLS
+     SUBDIRS += src/gl src
+    -else
+    -SUBDIRS += src/gl
+     endif
+     if ENABLE_TESTS
+[yolofant]
+yolofant 06/26/2026 2:21 PM
+the error comes from m4
+06/26/2026 2:21 PM
+because it at leasts prints that
+06/26/2026 2:21 PM
+hmm ok weird
+[ccarnell98]
+ccarnell98 06/26/2026 2:18 PM
+--disable-tests is already in the configure
+[yolofant]
+yolofant 06/26/2026 2:14 PM
+but it may not be tests because build runs in parallel so the output
+might be unrelated
+06/26/2026 2:10 PM
+    ## ---------------------------------------------------- ##
+    ## ------------------- Gnulib tests ------------------- ##
+    ## You can ignore compiler warnings in this directory.  ##
+    ## ---------------------------------------------------- ##
+    /Applications/Xcode_15.2.app/Contents/Developer/usr/bin/make  all-recursive
+    Making all in .
+      CC       locale.o
+      CC       btoc32.o
+      CC       btowc.o
+      CC       binary-io.o
+      CC       c32tob.o
+      CC       concat-filename.o
+      CC       dtotimespec.o
+      CC       getcwd-lgpl.o
+      CC       localename-table.o
+      CC       getlocalename_l-unsafe.o
+      CC       localename.o
+      CC       localename-environ.o
+    getlocalename_l-unsafe.c:662:3: error: "Please port gnulib getlocalename_l-unsafe.c to your platform! Report this to bug-gnulib."
+      662 |  #error "Please port gnulib getlocalename_l-unsafe.c to your platform! Report this to bug-gnulib."
+          |   ^
+    1 error generated.
+    make[9]: *** [getlocalename_l-unsafe.o] Error 1
+    make[9]: *** Waiting for unfinished jobs....
+    none
+    make[8]: *** [all-recursive] Error 1
+    make[7]: *** [all] Error 2
+    make[6]: *** [all-recursive] Error 1
+    make[5]: *** [all] Error 2
+    make[4]: *** [all-recursive] Error 1
+    make[3]: *** [all] Error 2
+    make[2]: *** [wasm32-unknown-emscripten-release/lib/.libs/libgnutls.a] Error 2
+    make[1]: *** [gnutls] Error 2
+Maybe you can just disable tests? (edited)
+[ccarnell98]
+ccarnell98 06/26/2026 2:10 PM
+damn wasm. can't see the error though
+[yolofant]
+yolofant 06/26/2026 1:25 PM
+I think they all run on the same mac mini
+[ccarnell98]
+ccarnell98 06/26/2026 1:24 PM
+can't believe how slow the iOS builder and wasm is
+[yolofant]
+yolofant 06/26/2026 12:00 PM
+I think the fix is recent
+06/26/2026 11:59 AM
+oof
+[ccarnell98]
+[] yolofant <@1051573528522133655>
+https://github.com/Homebrew/homebrew-core/commit/286ca1128e3c2b5b5aa03425f175...
+ccarnell98 06/26/2026 11:59 AM
+damn thanks. wish they would just tag a new version. I mean gmp has had
+this bug (with 15) for like a year too (edited)
+[yolofant]
+yolofant 06/26/2026 11:55 AM
+for wasm no idea
+06/26/2026 11:55 AM
+@Craig
+https://github.com/Homebrew/homebrew-core/commit/286ca1128e3c2b5b5aa03425f1752efddf93c042
+gnutls: backport commit to build with older clang · Homebrew/homeb...
+[]
+June 25, 2026
+[satdx62]
+[] ccarnell98 <@917488160580182068> <@1242796344549183490> updated with
+previous icon patch https://github.com/csc...
+satdx62 06/25/2026 10:24 AM
+Yes, in this version (22.0-BETA1 (21.90.801) Git:20260624-ee5036019e),
+compiled on June 25, 2026, using GCC 15.2.0 for webOS ARM 32-bit version
+3.10.19 (199187), the icons are displayed correctly. I can run further
+tests later if desired. Thanks!
+ 1
+[ccarnell98]
+ccarnell98 06/25/2026 10:11 AM
+@satdx62 @febman updated with previous icon patch
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.801_arm-WEBOS-3-plus-RELEASE.ipk
+[ccarnell98]
+[] satdx62 I did a quick test—it launches from the menu, the test video
+starts and plays, but the icons are bro...
+ccarnell98 06/25/2026 9:55 AM
+OK thanks I'll roll back the patch
+June 24, 2026
+[satdx62]
+[] ccarnell98 if the fix doesn't work let me know and I'll apply the
+older patch
+satdx62 06/24/2026 11:11 PM
+I did a quick test—it launches from the menu, the test video starts and
+plays, but the icons are broken. The icons are displayed correctly in
+Kodi (22.0-ALPHA3 (21.90.703) Git:20260330-d6234e848c). (edited)
+[ccarnell98]
+ccarnell98 06/24/2026 10:44 PM
+if the fix doesn't work let me know and I'll apply the older patch
+06/24/2026 10:44 PM
+@satdx62 @febman could you try this build? It has the possible fix to
+the icons from @Yolofant above but it is also using an updated toolchain
+with GCC 15:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.801_arm-WEBOS-3-plus-RELEASE.ipk
+[ccarnell98]
+skull_face101 will it be added to the repo?
+ccarnell98 06/24/2026 10:37 PM
+probably not, as is still some work to do to get it merged
+skull_face101 06/24/2026 10:34 PM
+will it be added to the repo?
+06/24/2026 10:34 PM
+whats next
+06/24/2026 10:33 PM
+lets say we fully made it work
+[] ccarnell98 I will publish a version on github for you
+skull_face101 06/24/2026 10:33 PM
+then what?
+[ccarnell98]
+skull_face101 I mean after that
+ccarnell98 06/24/2026 10:32 PM
+I will publish a version on github for you
+[] ccarnell98 from your logs I will try and fix kodi
+skull_face101 06/24/2026 10:31 PM
+I mean after that
+[ccarnell98]
+[] yolofant you could try this patch for the GLES white texture issue:
+ccarnell98 06/24/2026 10:28 PM
+oh didn't notice this message thx. will try it (or rather ask others to
+test it)
+[ccarnell98]
+skull_face101 btw, once we figured how to make it work, whats next? will
+you add another package for old device(ie...
+ccarnell98 06/24/2026 10:28 PM
+from your logs I will try and fix kodi
+[ccarnell98]
+ccarnell98 06/24/2026 10:18 PM
+thanks 
+[yolofant]
+yolofant 06/24/2026 10:07 PM
+uploaded
+06/24/2026 10:06 PM
+sure
+[ccarnell98]
+ccarnell98 06/24/2026 10:06 PM
+yeh lets go with 4.0
+[yolofant]
+yolofant 06/24/2026 10:06 PM
+but can also uplaod 4.0
+06/24/2026 10:06 PM
+3.10.2
+[ccarnell98]
+ccarnell98 06/24/2026 10:06 PM
+4.0 or 3.whatever it was 
+06/24/2026 10:06 PM
+awesome. i've fixed the nettle patch now. which did you upload?
+[yolofant]
+yolofant 06/24/2026 9:54 PM
+same for nettle
+06/24/2026 9:53 PM
+gnutls is uploaded, it should be on mirrors in an hour or so
+[ccarnell98]
+ccarnell98 06/24/2026 9:52 PM
+patch isn't compatible - disable test suite
+[ccarnell98]
+[] yolofant any reason you did not update to nettle 4.0?
+ccarnell98 06/24/2026 9:49 PM
+hmm actually let me see if it compiles
+[ccarnell98]
+ccarnell98 06/24/2026 9:49 PM
+the other one is gnutls 3.8.13
+[yolofant]
+yolofant 06/24/2026 9:48 PM
+any reason you did not update to nettle 4.0?
+[ccarnell98]
+ccarnell98 06/24/2026 9:47 PM
+I mean 2
+[ccarnell98]
+[] yolofant <@1051573528522133655> if you need anything on mirrors just
+ping me directly, I can upload stuff now
+ccarnell98 06/24/2026 9:47 PM
+awesome will do. will need 3 uploaded to fix gcc 15
+[yolofant]
+yolofant 06/24/2026 9:47 PM
+I'll upload nettle now
+06/24/2026 9:47 PM
+@Craig if you need anything on mirrors just ping me directly, I can
+upload stuff now
+[yolofant]
+yolofant 06/24/2026 9:32 PM
+maybe this fixes swizzling
+06/24/2026 9:32 PM
+moves stuff into VBOs which should be more compatible
+06/24/2026 9:32 PM
+you could try this patch for the GLES white texture issue:
+ message.txt
+5.9 KB External
+skull_face101 06/24/2026 9:24 PM
+btw, once we figured how to make it work, whats next? will you add
+another package for old device(ie: Kopdi legacy)
+06/24/2026 9:23 PM
+Sorry I will grab the logs you need next week end
+June 22, 2026
+[ccarnell98]
+febman_21236 Sorry, I meant the directory where the zips are downloaded
+to and/or installed to, so I can check if...
+ccarnell98 06/22/2026 8:21 PM
+try
+    jailer -d -t native -p /media/developer/temp -i test /bin/sh then curl http://www.google.co.uk/
+[] ccarnell98 should be
+/media/developer/apps/usr/palm/applications/com.retroarch.webos or on
+older webOS sometim...
+febman_21236 06/22/2026 7:48 PM
+Sorry, I meant the directory where the zips are downloaded to and/or
+installed to, so I can check if they are actually being downloaded and
+installed. So far I am not convinced this is really happening, even
+though the on-screen messages says it is, as there appears to be no end
+product. (edited)
+[ccarnell98]
+febman_21236 Finally found the time to try the above. Update core info
+files appears to download a zip file, as d...
+ccarnell98 06/22/2026 6:44 PM
+should be
+/media/developer/apps/usr/palm/applications/com.retroarch.webos or on
+older webOS sometimes
+/media/developer/temp/webosbrew/com.retroarch.webos (edited)
+[] ccarnell98 <@1242796344549183490> could you try retroarch? it uses
+http to download the cores. If that works I ...
+febman_21236 06/22/2026 5:59 PM
+Finally found the time to try the above. Update core info files appears
+to download a zip file, as does update assets, core downloader briefly
+shows Fetching core list... but does nothing - No Entries to Display
+still appears at the top of the screen. Not sure where the files are
+being downloaded to - checked/tmp but saw nothing re core info/assets
+zip files.
+June 18, 2026
+[] ccarnell98 although saying that if it works on http you can then just
+go into the settings and change the URL t...
+febman_21236 06/18/2026 11:52 AM
+Thanks. A bit busy at the mo - will try later today/early tomorrow and
+let you know how it goes.
+[ccarnell98]
+ccarnell98 06/18/2026 10:21 AM
+although saying that if it works on http you can then just go into the
+settings and change the URL to https for the cores and then try it
+06/18/2026 10:17 AM
+@febman could you try retroarch? it uses http to download the cores. If
+that works I could quickly send you a https version. Installl from webOS
+dev manager, retroarch, then use online updater to update core info
+files, assets and then download a core (edited)
+June 17, 2026
+[yolofant]
+yolofant 06/17/2026 7:00 PM
+you could also just jail your shell and test if you can use the network
+06/17/2026 6:57 PM
+but if http also does not work it's unlikely an openssl issue though
+06/17/2026 6:56 PM
+you could use LD_DEBUG to find out when/if openssl is loaded
+[] ccarnell98 have you tried backing up your .kodi folder, unistall kodi
+and do a fresh install?
+febman_21236 06/17/2026 6:56 PM
+Numerous times. I even did a full reset of the TV and started from
+scratch (re-rooting and reinstalling everything). Besides, due to lack
+of available TV memory the .kodi directory is on my external USB hard
+drive, so no need to back it up. I also tested using a default install
+with a clean drive with only a few files and using the default .kodi
+directory, but same issue. I do not believe it is file permissions re
+the media files, as if I connect the USB drive to my 6.5 TV, everything
+works perfectly, unless 3.4 is looking for different file permissions to
+6.5.
+[ccarnell98]
+ccarnell98 06/17/2026 6:47 PM
+at least it would rule out file permissions (edited)
+[ccarnell98]
+febman_21236 Well, not sure if this affecting anything without a
+reference point, but I am happy with its 3D play...
+ccarnell98 06/17/2026 6:45 PM
+have you tried backing up your .kodi folder, unistall kodi and do a
+fresh install?
+[] yolofant because I remember there are 3d things that we did not set
+up for the media pipeline
+febman_21236 06/17/2026 6:40 PM
+Well, not sure if this affecting anything without a reference point, but
+I am happy with its 3D playback! Many thanks for everything you do to
+fix and update Kodi.
+[yolofant]
+yolofant 06/17/2026 6:38 PM
+but I guess it can figure it out by itself
+06/17/2026 6:38 PM
+because I remember there are 3d things that we did not set up for the
+media pipeline
+febman_21236 06/17/2026 6:37 PM
+Yes, very well, and not just side-by-side etc files. It even detects and
+plays the ones exclusively encoded as FS for LG 3D TVs and the quality
+is better than the stock media player. (edited)
+[yolofant]
+yolofant 06/17/2026 6:35 PM
+does 3d even work from kodi?
+febman_21236 06/17/2026 6:34 PM
+If this TV wasn't the last of the 3D models I would have just bought a
+new one, but I would still like to be able to play films from my large
+3D collection.
+[] yolofant it's probably easier to find out why using i.e. strace
+febman_21236 06/17/2026 6:34 PM
+OK. I will look into strace.
+[yolofant]
+yolofant 06/17/2026 6:30 PM
+it's probably easier to find out why using i.e. strace
+06/17/2026 6:30 PM
+not sure how you would reasonably compare jailer versions as it's
+closest source without fully reversing both
+06/17/2026 6:30 PM
+I guess it depends
+[] yolofant or the jailer does something with openssl and that might
+mess up the symbols
+febman_21236 06/17/2026 6:29 PM
+Would an A-B comparison of the jailers on webOS 6.5 vs 3.4 shed any
+light on what is happening, as this same Kodi version will connect to
+the Internet on 6.5. If it is a permissions issue re the jailer, how can
+this be rectified?
+[yolofant]
+yolofant 06/17/2026 6:26 PM
+or the jailer does something with openssl and that might mess up the
+symbols
+06/17/2026 6:25 PM
+possibly strace could tell
+06/17/2026 6:25 PM
+yes
+febman_21236 06/17/2026 6:01 PM
+Doesn't this point to there being some sort of permissions issue? You
+mentioned this back in March re permissions in the jail being messed up
+but did not provide any insight as to how to troubleshoot it or what to
+check to confirm if this is the case, as I looked but could not find
+anything in the Kodi wiki to assist with troubleshooting a jailer issue.
+(edited)
+[] yolofant launch from terminal
+febman_21236 06/17/2026 6:00 PM
+If I start Kodi from a root terminal it will connect to the Internet.
+[yolofant]
+yolofant 06/17/2026 5:58 PM
+launch from terminal
+[] yolofant you could add an http media source
+febman_21236 06/17/2026 5:49 PM
+Done, but unable to connect to http or https sources from within Kodi.
+Is there something I can check in order to confirm if this lack of
+Internet connectivity from within Kodi is being caused by the jailer?
+[yolofant]
+yolofant 06/17/2026 5:30 PM
+you could add an http media source (edited)
+febman_21236 06/17/2026 5:28 PM
+On-screen pop-up message within Kodi.
+[ccarnell98]
+febman_21236 Message: Unable to connect. Couldn't retrieve directory
+information. This could be due to the networ...
+ccarnell98 06/17/2026 5:27 PM
+was that from kodi or the log
+febman_21236 06/17/2026 5:24 PM
+Network is definitely connected, as YT is working fine, as is the web
+browser - well, as fine as it can seing how old it is! (edited)
+[] ccarnell98 follow this to add slyguy.uk repo, see if it lists the
+addons after https://www.matthuisman.nz/2020/...
+febman_21236 06/17/2026 5:23 PM
+Message: Unable to connect. Couldn't retrieve directory information.
+This could be due to the network not being connected.
+[ccarnell98]
+febman_21236 How do I do so from within Kodi, as all other apps connect
+fine to the Internet - YT, web browser to...
+ccarnell98 06/17/2026 5:16 PM
+follow this to add slyguy.uk repo, see if it lists the addons after
+https://www.matthuisman.nz/2020/02/slyguy-kodi-repository.html (edited)
+[] yolofant Just check if you can connect to some http
+febman_21236 06/17/2026 5:14 PM
+How do I do so from within Kodi, as all other apps connect fine to the
+Internet - YT, web browser to https sites etc?
+[] ccarnell98 can you install addons via addons/all repos->pick a random
+addon
+febman_21236 06/17/2026 5:13 PM
+No. Doesn't work. Unable to install error messages.
+[yolofant]
+yolofant 06/17/2026 5:11 PM
+Then check https
+06/17/2026 5:10 PM
+Just check if you can connect to some http
+[ccarnell98]
+febman_21236 What do I have to do to troubleshoot the jailer, as I went
+through the documentation on the Kodi wik...
+ccarnell98 06/17/2026 5:08 PM
+can you install addons via addons/all repos->pick a random addon
+[] yolofant Yes but it might be the jailer messing symbol resolving up
+febman_21236 06/17/2026 5:07 PM
+What do I have to do to troubleshoot the jailer, as I went through the
+documentation on the Kodi wiki and could not find anything about this?
+[] ccarnell98 <@1242796344549183490> could you install
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs...
+febman_21236 06/17/2026 5:05 PM
+Unable to play the stream. Error: Cannot download the stream manifest
+file.
+[yolofant]
+yolofant 06/17/2026 5:04 PM
+Yes but it might be the jailer messing symbol resolving up
+[ccarnell98]
+ccarnell98 06/17/2026 5:03 PM
+thought so, so it shouldnt be an issue if static linked + bundled certs?
+[yolofant]
+yolofant 06/17/2026 5:02 PM
+I think so
+06/17/2026 5:02 PM
+The xkb thing is normal because lg did not add support for key composing
+[ccarnell98]
+ccarnell98 06/17/2026 5:02 PM
+is openssl static linked? (edited)
+[yolofant]
+yolofant 06/17/2026 5:02 PM
+It is likely an openssl issue because kodi bundles certificates
+febman_21236 06/17/2026 4:56 PM
+Never mind - must have been an issue re my connection.
+[] ccarnell98 <@1242796344549183490> could you install
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs...
+febman_21236 06/17/2026 4:54 PM
+ISA samples is only 22 bytes and will not extract - must be an issue
+with the archive.
+[] satdx62 Hi, I used to have a problem with my webOS 3.9 where I
+couldn't run btop unless I set UTF-8, but aft...
+febman_21236 06/17/2026 4:50 PM
+Thanks for your input. I did run those commands as well as the
+certificate script, but no change.
+[ccarnell98]
+ccarnell98 06/17/2026 4:49 PM
+although theirs probably an easier way to test a internet connection
+from kodi 
+[satdx62]
+[] ccarnell98 Was 2 a fix you tried and worked? or was it AI suggestions
+satdx62 06/17/2026 4:49 PM
+Hi, I used to have a problem with my webOS 3.9 where I couldn't run btop
+unless I set UTF-8, but after running those two commands, btop ran
+without any issues.
+[grafik.png]
+ grafik.png
+4.16 KB External
+[ccarnell98]
+febman_21236 Just on 3.4 or 6.5 as well?
+ccarnell98 06/17/2026 4:49 PM
+just 3.4
+ 1
+[] ccarnell98 <@1242796344549183490> could you install
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs...
+febman_21236 06/17/2026 4:49 PM
+Just on 3.4 or 6.5 as well?
+[ccarnell98]
+ccarnell98 06/17/2026 4:47 PM
+@febman could you install
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/inputstream.adaptive-22.3.15.zip
+then ISA samples
+https://test.ssgithub.com/?url=https://github.com/xbmc/inputstream.adaptive/tree/Piers/plugin.video.isasamples
+here. Then on kodi, goto "Inpustream adaptive samples", then "Manifest
+dash", then "Dash VOD", then "Akamaized bunny" and see if it plays.
+[ccarnell98]
+[] satdx62 Hi, I noticed the following errors in your log: 1. `error
+<general>: [xkb] [XKB-679] No Compose fil...
+ccarnell98 06/17/2026 4:34 PM
+Was 2 a fix you tried and worked? or was it AI suggestions
+febman_21236 06/17/2026 4:20 PM
+root@LGwebOSTV:~# export export
+DMALLOC_OPTIONS='debug=0x34f47d83,inter=100,log=logfile' export
+EDITOR='/bin/vi' export HISTFILESIZE='1000' export HISTSIZE='1000'
+export HOME='/home/root' export HOSTNAME='LGwebOSTV' export
+INPUTRC='/etc/inputrc' export LOGNAME='root' export OPIEDIR export
+PAGER='/bin/more ' export PATH='/usr/sbin:/usr/bin:/sbin:/bin' export
+PS1='\u@\h:\w\$ ' export PWD='/home/root' export QPEDIR export QTDIR
+export SHELL='/bin/sh' export SSH_CLIENT='192.168.43.90 47734 22' export
+SSH_CONNECTION='192.168.43.90 47734 192.168.43.72 22' export
+SSH_TTY='/dev/pts/6' export TERM='xterm' export USER='root'
+[ccarnell98]
+febman_21236 Yes. If I run Kodi as root it can connect, so perhaps a
+permissions issue?
+ccarnell98 06/17/2026 4:19 PM
+as root, can you run export and tell me what it outputs
+[] ccarnell98 I mean running kodi as root?
+febman_21236 06/17/2026 4:19 PM
+Yes. If I run Kodi as root it can connect, so perhaps a permissions
+issue?
+[ccarnell98]
+ccarnell98 06/17/2026 4:18 PM
+I mean running kodi as root?
+[ccarnell98]
+febman_21236 Tried it, but unfortunately no joy. Still no Internet from
+Kodi.
+ccarnell98 06/17/2026 4:18 PM
+it works from root?
+[] ccarnell98 <@1242796344549183490> its worth trying.
+https://github.com/tf318/lg but at your own risk 
+febman_21236 06/17/2026 4:17 PM
+Tried it, but unfortunately no joy. Still no Internet from Kodi.
+[ccarnell98]
+ccarnell98 06/17/2026 4:15 PM
+maybe its not actually using them
+06/17/2026 4:14 PM
+oh yes I am right we have them in here:
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/system/certs
+(edited)
+06/17/2026 4:13 PM
+@febman its worth trying. https://github.com/tf318/lg but at your own
+risk 
+06/17/2026 4:09 PM
+My first thought was SSL certificates but I'm sure I remember we bundled
+newer ones in kodi
+[satdx62]
+febman_21236 Hi <@1051573528522133655>, I appreciate you are busy, so no
+rush, but when you have a mo, just wonde...
+satdx62 06/17/2026 3:37 PM
+Hi, I noticed the following errors in your log: 1.
+error <general>: [xkb] [XKB-679] No Compose file for locale ”en_US.UTF-8“: locale is either invalid or not installed” and "error <general>: [xkb] [XKB-679] couldn't find a Compose file for locale “C” (mapped to ‘C’).
+2. When accessing “https://api.themoviedb.org/xxx”, an SSL error occurs
+and the database cannot be updated. The first error isn't necessarily
+relevant, but it can probably be easily fixed with:
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
+The second error, SSLCertVerificationError may be caused by outdated SSL
+certificates in your firmware. For this reason, you need to update the
+LG-CA certificates to replace the recently expired Let's Encrypt CA
+certificates. I had this problem as well and found a solution on GitHub.
+See: https://github.com/tf318/lg (edited)
+ message.txt
+8.2 KB External
+GitHub - tf318/lg: LG webos tools
+LG webos tools. Contribute to tf318/lg development by creating an
+account on GitHub.
+[]
+febman_21236 06/17/2026 3:29 PM
+Completely unrelated, but I noticed the pause button on my IR remotes
+works with this version on both TVs, which is a first and great to see!
+(edited)
+06/17/2026 3:25 PM
+Not sure if old certificates on 3.4 could be the cause???
+[] ccarnell98 so you can compare
+febman_21236 06/17/2026 3:24 PM
+Installed on both TVs - 3.4 & 6.5. No Internet connection from Kodi on
+3.4 but fine on 6.5, so same as always. YT etc is able to connect fine
+on 3.4. One other weird ongoing thing - playback of DVD MKVs is very
+juddery on 6.5 but the exact same file plays perfectly on 3.4, despite
+the faster processor and increased memory on the 6.5 TV. This has been
+an ongoing issue since the change to Kodi 22 Piers and now installing
+the exact same version of Kodi on both TVs further confirms that there
+is something weird going on with ffmpeg on 6.5.
+[ccarnell98]
+ccarnell98 06/17/2026 2:34 PM
+so you can compare
+ 1
+[ccarnell98]
+febman_21236 Hi <@1051573528522133655>, I appreciate you are busy, so no
+rush, but when you have a mo, just wonde...
+ccarnell98 06/17/2026 2:30 PM
+Here is updated build from today. Try installing it on both your devices
+(3 and 6?)
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-3-RELEASE.ipk
+febman_21236 06/17/2026 1:20 PM
+In case you need them, log files are attached in the above issue post.
+06/17/2026 1:17 PM
+Hi @Craig, I appreciate you are busy, so no rush, but when you have a
+mo, just wondering if you have any idea what could prevent Kodi for
+webOS 3.4 being able to connect to the Internet? Or is it just me and
+the other testers are not experiencing this @satdx62 @Skull_Face? I did
+raise it as an issue on github https://github.com/xbmc/xbmc/issues/28114
+but they refused to look at it as they said this version is not
+supported. It's a pain as it means nothing can be updated, including
+apps, movie/TV db etc. Thanks in advance.
+Kodi 22 Piers on webOS 3.x cannot connect to movie/tv.db sites · I...
+Bug report Describe the bug Here is a clear and concise description of
+what the problem is: Kodi is unable to connect to the movie or TV db
+sites when adding files in order to populate the Kodi mov...
+[]
+June 14, 2026
+skull_face101 06/14/2026 11:35 AM
+I will try
+[ccarnell98]
+skull_face101 any new builds?
+ccarnell98 06/14/2026 11:00 AM
+I need output from a working playback to see what JSON works on webOS 2.
+So I just need another streaming apps output
+June 11, 2026
+skull_face101 06/11/2026 5:28 PM
+any new builds? (edited)
+06/11/2026 5:28 PM
+Hi Guys
+May 31, 2026
+[.lollipopman]
+.lollipopman 05/31/2026 9:35 PM
+(no content)
+ Download_12.mp4
+3.91 MB External
+May 30, 2026
+skull_face101 05/30/2026 2:31 AM
+I will have some time to test some builds starting next Sunday
+05/30/2026 2:30 AM
+Hi @Craig
+05/30/2026 2:30 AM
+Kodi is extendable with plugins
+05/30/2026 2:30 AM
+Kodi and Jellyfin clients are all you need
+May 12, 2026
+[gira_tina]
+gira_tina 05/12/2026 5:43 PM
+[:kawaii:]
+[gira_tina]
+[] ccarnell98 i'll add the fix so its permanent when I get a chance
+gira_tina 05/12/2026 5:43 PM
+i actually wish we had stremio instead of kodi (edited)
+[gira_tina]
+gira_tina 05/12/2026 4:38 PM
+okay
+[ccarnell98]
+ccarnell98 05/12/2026 4:36 PM
+i'll add the fix so its permanent when I get a chance
+[gira_tina]
+[] gira_tina its working
+gira_tina 05/12/2026 4:32 PM
+@Craig
+ 1
+[gira_tina]
+gira_tina 05/12/2026 4:31 PM
+i changed app and opened again
+05/12/2026 4:31 PM
+its working
+[ccarnell98]
+ccarnell98 05/12/2026 4:30 PM
+oh good
+[gira_tina]
+gira_tina 05/12/2026 4:30 PM
+i can open menu
+05/12/2026 4:30 PM
+working
+05/12/2026 4:30 PM
+the other buttons
+05/12/2026 4:30 PM
+yea
+05/12/2026 4:30 PM
+it hanged
+[ccarnell98]
+ccarnell98 05/12/2026 4:30 PM
+oh it hanged?
+05/12/2026 4:30 PM
+try playing a video
+[gira_tina]
+gira_tina 05/12/2026 4:30 PM
+rip lil tv (edited)
+05/12/2026 4:30 PM
+05/12/2026 4:30 PM
+is it unable to process it or what
+05/12/2026 4:29 PM
+kek
+[ccarnell98]
+ccarnell98 05/12/2026 4:29 PM
+but I hate ewaste
+05/12/2026 4:29 PM
+well your TV is pretty old
+[gira_tina]
+gira_tina 05/12/2026 4:29 PM
+(no content)
+[IMG_20260512_195917.jpg]
+ IMG_20260512_195917.jpg
+303.43 KB External
+05/12/2026 4:29 PM
+it got stuck on the screen where i opened
+05/12/2026 4:29 PM
+i opened the kodi after restarting
+05/12/2026 4:28 PM
+android tv box
+05/12/2026 4:28 PM
+i mean
+05/12/2026 4:28 PM
+better to just get an android tv
+[ccarnell98]
+ccarnell98 05/12/2026 4:28 PM
+05/12/2026 4:28 PM
+think you should treat yourself to a new one
+[gira_tina]
+gira_tina 05/12/2026 4:28 PM
+no ...
+05/12/2026 4:27 PM
+ts is old af
+[ccarnell98]
+ccarnell98 05/12/2026 4:27 PM
+then you can press that and select quit
+05/12/2026 4:27 PM
+oh in the case turn it off and on again. unless your remote has the ...
+button (edited)
+[gira_tina]
+gira_tina 05/12/2026 4:27 PM
+no output
+[ccarnell98]
+ccarnell98 05/12/2026 4:26 PM
+give me the output
+05/12/2026 4:26 PM
+ps aux | grep kodi
+05/12/2026 4:26 PM
+type
+05/12/2026 4:26 PM
+no need
+[gira_tina]
+gira_tina 05/12/2026 4:26 PM
+should i just turn the tv off and on
+05/12/2026 4:26 PM
+kodi is still on my screen
+[ccarnell98]
+[] gira_tina  u remember all that we did?
+ccarnell98 05/12/2026 4:26 PM
+yep. somehow 
+[gira_tina]
+gira_tina 05/12/2026 4:26 PM
+do those 2?
+[ccarnell98]
+ccarnell98 05/12/2026 4:26 PM
+kill -9 <the pid of kodi>
+[gira_tina]
+[] ccarnell98 its actually a simple fix, I will add it to the next build
+gira_tina 05/12/2026 4:25 PM
+ u remember all that we did?
+[ccarnell98]
+ccarnell98 05/12/2026 4:25 PM
+ps aux | grep kodi
+05/12/2026 4:25 PM
+sometimes kodi hangs on quitting
+[gira_tina]
+gira_tina 05/12/2026 4:25 PM
+i am stuck on the exit screen rn
+05/12/2026 4:25 PM
+but when i clicked exit it got stuck
+[ccarnell98]
+ccarnell98 05/12/2026 4:25 PM
+its actually a simple fix, I will add it to the next build
+[gira_tina]
+gira_tina 05/12/2026 4:25 PM
+when i just changed app and came back nothing happened
+[ccarnell98]
+ccarnell98 05/12/2026 4:24 PM
+quit it and try and run via the menu
+[gira_tina]
+gira_tina 05/12/2026 4:24 PM
+or is there someway i can export my ipk so it can be useful for others
+05/12/2026 4:24 PM
+05/12/2026 4:24 PM
+but,if someone wanted to use it in the future,would they have to do all
+that we just did?
+05/12/2026 4:23 PM
+thanks
+05/12/2026 4:23 PM
+05/12/2026 4:23 PM
+now
+05/12/2026 4:23 PM
+its running pretty finen ow
+05/12/2026 4:23 PM
+yeah
+[ccarnell98]
+ccarnell98 05/12/2026 4:23 PM
+gd, is it running?
+[gira_tina]
+gira_tina 05/12/2026 4:22 PM
+but i also got a log
+05/12/2026 4:22 PM
+it opened
+05/12/2026 4:22 PM
+yo
+[ccarnell98]
+ccarnell98 05/12/2026 4:22 PM
+./kodi-webos --portable --debug
+05/12/2026 4:22 PM
+export
+LD_LIBRARY_PATH='/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib:/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib'
+05/12/2026 4:22 PM
+OK
+[gira_tina]
+gira_tina 05/12/2026 4:22 PM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+ln -s lib/libdrm.so.2.4.0 lib/libdrm.so. 2 ln: lib/libdrm.so.2: File
+exists
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+[ccarnell98]
+ccarnell98 05/12/2026 4:21 PM
+ln -s lib/libdrm.so.2.4.0 lib/libdrm.so.2
+[gira_tina]
+gira_tina 05/12/2026 4:21 PM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+cd /media/developer/apps/usr/palm/applic ations/org.xbmc.kodi
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+[ccarnell98]
+ccarnell98 05/12/2026 4:21 PM
+cd /media/developer/apps/usr/palm/applications/org.xbmc.kodi
+[gira_tina]
+gira_tina 05/12/2026 4:20 PM
+(no content)
+ message.txt
+2.2 KB External
+[ccarnell98]
+ccarnell98 05/12/2026 4:20 PM
+ls -la /usr/lib/libdrm*
+05/12/2026 4:20 PM
+ok give me the output of
+[gira_tina]
+gira_tina 05/12/2026 4:19 PM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+./kodi-webos --portable --debug ./kodi-webos: error while loading shared
+libraries: libdrm.so.2: cannot open shared object file: No such file or
+directory
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+[ccarnell98]
+ccarnell98 05/12/2026 4:19 PM
+./kodi-webos --portable --debug
+05/12/2026 4:19 PM
+ok try running it again
+[gira_tina]
+gira_tina 05/12/2026 4:18 PM
+root@LGwebOSTV:~# cd
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+ls -la preload-lib total 48 drwxr-xr-x 2 root root 4096 May 12 19:41 .
+drwxrwxrwx 10 1000 root 4096 May 12 19:41 .. lrwxrwxrwx 1 root root 27
+May 12 19:17 libwayland-client.so.0 -> libwayland-client.so.0.22.0
+-rwxrwxrwx 1 1000 root 38940 May 12 19:06 libwayland-client.so.0.22.0
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+[ccarnell98]
+ccarnell98 05/12/2026 4:18 PM
+ls -la preload-lib
+05/12/2026 4:18 PM
+cd /media/developer/apps/usr/palm/applications/org.xbmc.kodi
+[gira_tina]
+[] ccarnell98 ls -la preload-lib
+gira_tina 05/12/2026 4:17 PM
+root@LGwebOSTV:~# ls -la preload-lib ls: preload-lib: No such file or
+directory
+[ccarnell98]
+ccarnell98 05/12/2026 4:17 PM
+ls -la preload-lib
+05/12/2026 4:17 PM
+what does this give output of:
+[gira_tina]
+gira_tina 05/12/2026 4:12 PM
+but finally it gave a log ig
+[gira_tina]
+[] ccarnell98 then run kodi
+gira_tina 05/12/2026 4:12 PM
+ it gave one hell of a log
+ message.txt
+7.43 KB External
+[ccarnell98]
+ccarnell98 05/12/2026 4:10 PM
+then run kodi
+05/12/2026 4:10 PM
+ln -s /usr/lib/libwayland-egl.so.0.1 lib/libwayland-egl.so.1
+05/12/2026 4:10 PM
+hang on
+05/12/2026 4:10 PM
+./kodi-webos --portable --debug
+05/12/2026 4:10 PM
+then run kodi again:
+05/12/2026 4:09 PM
+ln -s /usr/lib/libwayland-egl.so.0.1 libwayland-egl.so.1
+05/12/2026 4:09 PM
+type this:
+[gira_tina]
+gira_tina 05/12/2026 4:07 PM
+    lrwxrwxrwx    1 root     root            26 Apr 25  2025 /usr/lib/libwayland-client.so.0 -> libwayland-client.so.0.3.0
+    -rwxr-xr-x    1 root     root         29744 Apr 25  2025 /usr/lib/libwayland-client.so.0.3.0
+    lrwxrwxrwx    1 root     root            26 Apr 25  2025 /usr/lib/libwayland-cursor.so.0 -> libwayland-cursor.so.0.0.0
+    -rwxr-xr-x    1 root     root         22584 Apr 25  2025 /usr/lib/libwayland-cursor.so.0.0.0
+    lrwxrwxrwx    1 root     root            21 Apr 25  2025 /usr/lib/libwayland-egl.so -> libwayland-egl.so.0.1
+    lrwxrwxrwx    1 root     root            21 Apr 25  2025 /usr/lib/libwayland-egl.so.0 -> libwayland-egl.so.0.1
+    -rwxr-xr-x    1 root     root          3424 Apr 25  2025 /usr/lib/libwayland-egl.so.0.1
+    lrwxrwxrwx    1 root     root            26 Apr 25  2025 /usr/lib/libwayland-server.so.0 -> libwayland-server.so.0.1.0
+    -rwxr-xr-x    1 root     root         41352 Apr 25  2025 /usr/lib/libwayland-server.so.0.1.0
+    lrwxrwxrwx    1 root     root            35 Apr 25  2025 /usr/lib/libwayland-starfish-client.so.1 -> libwayland-starfish-client.so.1.0.0
+    lrwxrwxrwx    1 root     root            35 Apr 25  2025 /usr/lib/libwayland-starfish-client.so.1.0 -> libwayland-starfish-client.so.1.0.0
+    -rwxr-xr-x    1 root     root          9200 Apr 25  2025 /usr/lib/libwayland-starfish-client.so.1.0.0
+    lrwxrwxrwx    1 root     root            32 Apr 25  2025 /usr/lib/libwayland-webos-client.so.1 -> libwayland-webos-client.so.1.0.0
+    -rwxr-xr-x    1 root     root         11548 Apr 25  2025 /usr/lib/libwayland-webos-client.so.1.0.0
+    lrwxrwxrwx    1 root     root            32 Apr 25  2025 /usr/lib/libwayland-webos-server.so.1 -> libwayland-webos-server.so.1.0.0
+    -rwxr-xr-x    1 root     root         11548 Apr 25  2025 /usr/lib/libwayland-webos-server.so.1.0.0
+    root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+(edited)
+[ccarnell98]
+ccarnell98 05/12/2026 4:06 PM
+ls -la /usr/lib/libwayland*
+05/12/2026 4:06 PM
+hmm type this and give me the output:
+[gira_tina]
+gira_tina 05/12/2026 4:05 PM
+(no content)
+[image.png]
+ image.png
+20.28 KB External
+05/12/2026 4:04 PM
+but yea
+05/12/2026 4:04 PM
+it wasnt indented like what you gave
+05/12/2026 4:04 PM
+when i pasted it in
+05/12/2026 4:04 PM
+(no content)
+[image.png]
+ image.png
+3.36 KB External
+[ccarnell98]
+ccarnell98 05/12/2026 4:03 PM
+did you run export first?
+[gira_tina]
+gira_tina 05/12/2026 4:03 PM
+./kodi-webos: error while loading shared libraries: libwayland-egl.so.1:
+cannot open shared object file: No such file or directory
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+[ccarnell98]
+ccarnell98 05/12/2026 4:03 PM
+that will run kodi
+[gira_tina]
+gira_tina 05/12/2026 4:03 PM
+will this run kodi
+[gira_tina]
+[] ccarnell98 ./kodi-webos --portable --debug
+gira_tina 05/12/2026 4:03 PM
+run this after running kodi or
+[ccarnell98]
+ccarnell98 05/12/2026 4:03 PM
+./kodi-webos --portable --debug
+05/12/2026 4:02 PM
+then run kodi again
+05/12/2026 4:02 PM
+export
+LD_LIBRARY_PATH='/lib:/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib:/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib'
+05/12/2026 4:02 PM
+type this
+[gira_tina]
+gira_tina 05/12/2026 4:02 PM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+echo "$LD_LIBRARY_PATH" ./lib
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+[ccarnell98]
+ccarnell98 05/12/2026 4:01 PM
+echo "$LD_LIBRARY_PATH"
+[gira_tina]
+gira_tina 05/12/2026 4:01 PM
+do you want me to go to that directory
+05/12/2026 4:01 PM
+this
+05/12/2026 4:01 PM
+./kodi-webos: error while loading shared libraries: libwayland-egl.so.1:
+cannot open shared object file: No such file or directory
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+i am sus about if i tinkered anything before when trying to make it work
+is there some command to reset everything without losing root
+05/12/2026 4:01 PM
+what you gave
+05/12/2026 4:01 PM
+i pasted the result of
+[ccarnell98]
+ccarnell98 05/12/2026 4:01 PM
+what does this give you
+[gira_tina]
+gira_tina 05/12/2026 4:01 PM
+[:meep:]
+05/12/2026 4:00 PM
+i am sus about if i tinkered anything before when trying to make it work
+is there some command to reset everything without losing root
+05/12/2026 4:00 PM
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+./kodi-webos --portable --debug ./kodi-webos: error while loading shared
+libraries: libwayland-egl.so.1: cannot open shared object file: No such
+file or directory
+root@LGwebOSTV:/media/developer/apps/usr/palm/applications/org.xbmc.kodi#
+[ccarnell98]
+ccarnell98 05/12/2026 3:59 PM
+and paste the output
+05/12/2026 3:59 PM
+./kodi-webos --portable --debug
+05/12/2026 3:59 PM
+if not try running it from ssh
+05/12/2026 3:59 PM
+did it make a log file in the directory I gave you earlier?
+[gira_tina]
+[] ccarnell98 was there a log generated?
+gira_tina 05/12/2026 3:58 PM
+should i try the log generation right after opening kodi?
+[gira_tina]
+gira_tina 05/12/2026 3:58 PM
+im checking
+[ccarnell98]
+ccarnell98 05/12/2026 3:56 PM
+was there a log generated?
+[gira_tina]
+gira_tina 05/12/2026 3:53 PM
+The best way to reboot is to use the reboot button in the homebrew
+application right
+[gira_tina]
+[] ccarnell98 here ya go:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21....
+gira_tina 05/12/2026 3:51 PM
+ i alr opened 2 times back to back,verified it's the apk with A9 and
+reinstalled amd tried 2 times,then rebooted and tried 2 times (edited)
+ VID_20260512_191826.mp4
+2.81 MB External
+[gira_tina]
+[] ccarnell98 here ya go:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21....
+gira_tina 05/12/2026 3:40 PM
+Okay
+[ccarnell98]
+ccarnell98 05/12/2026 3:38 PM
+run it twice if it fails to run the first time
+[ccarnell98]
+[] gira_tina oh
+ccarnell98 05/12/2026 3:37 PM
+here ya go:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-3-RELEASE-A9.ipk
+[gira_tina]
+gira_tina 05/12/2026 3:04 PM
+oh
+05/12/2026 3:04 PM
+[ccarnell98]
+ccarnell98 05/12/2026 3:02 PM
+takes a while to compile
+05/12/2026 3:02 PM
+actually I typed the wrong command and deleted some stuff so gotta have
+to wait an hour 
+[gira_tina]
+gira_tina 05/12/2026 2:55 PM
+just send by whenever u can thanks
+[gira_tina]
+[] ccarnell98 i already have a set of libraries that will work on your
+old CPU. just gotta fix the compiler so bea...
+gira_tina 05/12/2026 2:54 PM
+ I am the one getting help all i can do is be grateful
+[ccarnell98]
+ccarnell98 05/12/2026 2:54 PM
+i already have a set of libraries that will work on your old CPU. just
+gotta fix the compiler so bear with (edited)
+[gira_tina]
+gira_tina 05/12/2026 2:47 PM
+i do not have any image ,should i install his version
+05/12/2026 2:47 PM
+it was working with all the options
+05/12/2026 2:47 PM
+but later i tweaked and it came back into proper resolution
+[gira_tina]
+[] ccarnell98 what does the one <@917488160580182068> do? 1/4 of the
+screen?
+gira_tina 05/12/2026 2:46 PM
+it first loaded with like very big resolution which sent some options
+out of the screen
+[ccarnell98]
+ccarnell98 05/12/2026 2:46 PM
+can you post a picture?
+05/12/2026 2:46 PM
+what does the one @satdx62 do? 1/4 of the screen?
+[gira_tina]
+[] ccarnell98 Ah OK its because your CPU is older than Cortex A53, so I
+will have to recompile for Cortex A9
+gira_tina 05/12/2026 2:46 PM
+oh..
+[gira_tina]
+[] satdx62 <@1051573528522133655> I think by “component” he means that
+the Kodi logo appears for a second and t...
+gira_tina 05/12/2026 2:46 PM
+it is somethng like this yes
+[ccarnell98]
+ccarnell98 05/12/2026 2:46 PM
+Ah OK its because your CPU is older than Cortex A53, so I will have to
+recompile for Cortex A9
+[gira_tina]
+gira_tina 05/12/2026 2:45 PM
+i just ran it after i turned on my tv
+[gira_tina]
+[] ccarnell98 cat /proc/cpuinfo
+gira_tina 05/12/2026 2:44 PM
+    root@LGwebOSTV:~# cat /proc/cpuinfo
+    processor       : 0
+    model name      : ARMv7 Processor rev 1 (v7l)
+    BogoMIPS        : 2390.01
+    Features        : half thumb fastmult vfp edsp neon vfpv3 tls vfpd32 
+    CPU implementer : 0x41
+    CPU architecture: 7
+    CPU variant     : 0x4
+    CPU part        : 0xc09
+    CPU revision    : 1
+    processor       : 1
+    model name      : ARMv7 Processor rev 1 (v7l)
+    BogoMIPS        : 2390.01
+    Features        : half thumb fastmult vfp edsp neon vfpv3 tls vfpd32 
+    CPU implementer : 0x41
+    CPU architecture: 7
+    CPU variant     : 0x4
+    CPU part        : 0xc09
+    CPU revision    : 1
+    Hardware        : mustang
+    Revision        : 0020
+    Serial          : 0000000000000000
+    root@LGwebOSTV:~# 
+    root@LGwebOSTV:~#
+(edited)
+[gira_tina]
+gira_tina 05/12/2026 2:42 PM
+ok
+[ccarnell98]
+ccarnell98 05/12/2026 2:41 PM
+cat /proc/cpuinfo
+05/12/2026 2:41 PM
+or
+05/12/2026 2:41 PM
+lscpu
+[gira_tina]
+[] ccarnell98 what is the output of lscpu or cat /proc/cpuinfo
+gira_tina 05/12/2026 2:41 PM
+what should i put in terminal to get this
+[ccarnell98]
+[] gira_tina It opens the "component" application
+ccarnell98 05/12/2026 2:39 PM
+what is the output of lscpu or cat /proc/cpuinfo
+[satdx62]
+[] gira_tina This same thing happened when i downloaded the one from the
+homebrew store but did not happen when i...
+satdx62 05/12/2026 2:38 PM
+@Craig I think by “component” he means that the Kodi logo appears for a
+second and then the normal TV picture comes up. It works flawlessly for
+me, though—I have webOS 3.9, not 3.5.
+ 1
+[gira_tina]
+gira_tina 05/12/2026 2:16 PM
+This same thing happened when i downloaded the one from the homebrew
+store but did not happen when i downloaded the one which satdx2
+made,that one opened
+05/12/2026 2:15 PM
+i think its for an external input
+05/12/2026 2:15 PM
+It opens the "component" application
+[ccarnell98]
+ccarnell98 05/12/2026 2:15 PM
+what happens when you launch kodi from the menu?
+[gira_tina]
+gira_tina 05/12/2026 1:49 PM
+.
+May 9, 2026
+skull_face101 05/09/2026 2:38 PM
+I will test again later when I have time
+05/09/2026 2:38 PM
+Sorry, I have been busy and still am
+05/09/2026 2:38 PM
+Hi Guys
+May 3, 2026
+[] ccarnell98 updated hopefully with that fix again:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/h...
+febman_21236 05/03/2026 6:15 PM
+This version sort of fixes the icon issue. They are visible, but only
+because they now have a black square around them, whereas the last time
+you fixed it they displayed exactly as expected - the same as on all
+other webOS versions (no black square).
+[ccarnell98]
+febman_21236 Is there anything specific you want me to test?
+ccarnell98 05/03/2026 2:59 PM
+no I just wanted to make sure it launches on older webOS versions. I
+have updated the toolchain but I've only got a webOS 25 and 26 device to
+test on. The fact that it launches stilll on webOS 3 is a good sign
+ 1
+[ccarnell98]
+febman_21236 Works, but the "white square block" icon issue is back.
+ccarnell98 05/03/2026 2:58 PM
+updated hopefully with that fix again:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-3-RELEASE.ipk
+febman_21236 05/03/2026 2:53 PM
+Is there anything specific you want me to test?
+[] ccarnell98 <@1242796344549183490> <@917488160580182068> updated
+build: https://github.com/cscd98/kodi-webos-bin...
+febman_21236 05/03/2026 2:53 PM
+Works, but the "white square block" icon issue is back.
+May 2, 2026
+[ccarnell98]
+ccarnell98 05/02/2026 9:37 PM
+@febman @satdx62 updated build:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-3-RELEASE.ipk
+(built with the new toolchain) just wanna make sure it works, plus its
+updated from master
+April 30, 2026
+[.lollipopman]
+.lollipopman 04/30/2026 12:03 PM
+(no content)
+[Goth]
+[ccarnell98]
+ccarnell98 04/30/2026 11:09 AM
+hmm I am not sure then how to collect dev logs as that works on mine.
+Perhaps someone else knows @Mariotaku ?
+[.lollipopman]
+.lollipopman 04/30/2026 11:08 AM
+Yes
+[ccarnell98]
+ccarnell98 04/30/2026 11:08 AM
+are you on webOS 2?
+[.lollipopman]
+.lollipopman 04/30/2026 11:07 AM
+@Craig
+[image0.png]
+ image0.png
+578.25 KB External
+04/30/2026 11:05 AM
+İ will try
+04/30/2026 11:05 AM
+İdk
+04/30/2026 11:05 AM
+Eaut
+[ccarnell98]
+[] .lollipopman Click to see attachment
+ccarnell98 04/30/2026 11:04 AM
+Not seeing the logs. what does this output
+    PmLogCtl show
+(edited)
+[.lollipopman]
+[] ccarnell98 Didn't give me the logs I needed. Can you run both:
+```luna-send -n 1 luna://com.webos.service.confi...
+.lollipopman 04/30/2026 10:54 AM
+(no content)
+ x.txt
+5.5 KB External
+[.lollipopman]
+.lollipopman 04/30/2026 10:41 AM
+Okey
+[ccarnell98]
+ccarnell98 04/30/2026 9:56 AM
+then retry yt adree and prime
+[ccarnell98]
+[] .lollipopman luna-send -n 1
+luna://com.webos.service.config/setConfigs
+'{"configs":{"system.collectDevLogs":true}...
+ccarnell98 04/30/2026 9:56 AM
+Didn't give me the logs I needed. Can you run both:
+    luna-send -n 1 luna://com.webos.service.config/setConfigs '{"configs":{"system.collectDevLogs":true}}'
+    PmLogCtl set '*' debug
+[ccarnell98]
+[] .lollipopman Click to see attachment
+ccarnell98 04/30/2026 9:48 AM
+see https://www.webosbrew.org/pages/logging.html. Depends on your
+version of webOS
+April 29, 2026
+[.lollipopman]
+.lollipopman 04/29/2026 11:36 PM
+Chatgpt told me to write this.
+04/29/2026 11:36 PM
+(no content)
+[image0.png]
+ image0.png
+226.17 KB External
+04/29/2026 11:35 PM
+This worked
+04/29/2026 11:35 PM
+luna-send -n 1 luna://com.webos.service.config/setConfigs
+'{"configs":{"system.collectDevLogs":true}}'
+04/29/2026 11:35 PM
+(no content)
+ messages_2.txt
+22.03 KB External
+[.lollipopman]
+.lollipopman 04/29/2026 11:24 PM
+(no content)
+[image0.png]
+ image0.png
+396.88 KB External
+04/29/2026 11:24 PM
+@Craig
+[ccarnell98]
+ccarnell98 04/29/2026 8:50 PM
+should give you output in /tmp/var/log/messages like
+    { \"args\": [ { \"mediaTransportType\": \"BUFFERSTREAM\", \"option\": { \"appId\": \"amazon\", \"queryPosition\": true, \"windowId\": \"_Window_Id_29\", \"avSink\": { \"videoSink\": { }, \"audioSink\": { } }, \"drm\": { \"type\": \"PLAYREADY\" }, \"externalStreamingInfo\": { \"streamQualityInfo\": true, \"totalStreamSize\": 256, \"restartStreaming\": false, \"svpVersion\": 30, \"contents\": { \"provider\": \"amazon\", \"format\": \"RAW\", \"ac3PlusInfo\": { \"channels\": 6, \"frequency\": 48.0 }, \"immersive\": \"ATMOS\", \"codec\": { \"video\": \"H264\", \"audio\": \"AC3 PLUS\" }, \"esInfo\": { \"ptsToDecode\": 0, \"pauseAtDecodeTime\": true, \"seperatedPTS\": true, \"videoWidth\": 1920, \"videoHeight\": 1088 } }, \"bufferingCtrInfo\": { \"preBufferByte\": 0, \"bufferMinLevel\": 0, \"bufferMaxLevel\": 0, \"qBufferLevelVideo\": 1048576, \"qBufferLevelAudio\": 1048576, \"srcBufferLevelVideo\": { \"minimum\": 1048576, \"maximum\": 8388608 }, \"srcBufferLevelAudio\": { \"minimum\": 1048576, \"maximum\": 2097152 } } }, \"seekMode\": \"late_Iframe\", \"lipsyncOffset\": 100, \"adaptiveStreaming\": { \"maxWidth\": 3840, \"maxHeight\": 2160, \"maxFrameRate\": 60 } } } ] }"
+ 1 [:anlasildi2:] 1
+[.lollipopman]
+.lollipopman 04/29/2026 8:49 PM
+Okey bro
+[ccarnell98]
+ccarnell98 04/29/2026 8:49 PM
+try both if you've got them
+[.lollipopman]
+.lollipopman 04/29/2026 8:49 PM
+Prime video?
+04/29/2026 8:49 PM
+İts ok?
+[ccarnell98]
+ccarnell98 04/29/2026 8:49 PM
+or another streaming app
+[.lollipopman]
+.lollipopman 04/29/2026 8:49 PM
+İm using yt adfree
+[ccarnell98]
+ccarnell98 04/29/2026 8:49 PM
+then use youtube and play a video
+[.lollipopman]
+.lollipopman 04/29/2026 8:49 PM
+Okey
+[ccarnell98]
+ccarnell98 04/29/2026 8:49 PM
+in terminal enter:
+    luna-send -n 1 -f 'luna://com.webos.pmlogd/setdevlogstatus' '{"recordDevLogs":true}'
+[.lollipopman]
+.lollipopman 04/29/2026 8:49 PM
+Oh kk
+04/29/2026 8:48 PM
+Log
+[.lollipopman]
+[] ccarnell98 Could you try something like youtube and give me the
+output of /tmp/var/log/messages. make sure you ...
+.lollipopman 04/29/2026 8:48 PM
+How can i on
+[.lollipopman]
+.lollipopman 04/29/2026 8:47 PM
+I use it without ads.
+04/29/2026 8:47 PM
+I'm not home right now, I'll send it in 1-2 hours.
+[ccarnell98]
+ccarnell98 04/29/2026 8:35 PM
+I assume that kodi crashes playing for you
+[ccarnell98]
+[] .lollipopman Now i can try kodi Again
+ccarnell98 04/29/2026 8:35 PM
+Could you try something like youtube and give me the output of
+/tmp/var/log/messages. make sure you enable logging first:
+    luna-send -n 1 -f 'luna://com.webos.pmlogd/setdevlogstatus' '{"recordDevLogs":true}'
+April 28, 2026
+[ccarnell98]
+ccarnell98 04/28/2026 8:51 PM
+@Yolofant do we use (via libpf) use parseOptionStringSpi or
+parseOptionString? (edited)
+April 23, 2026
+[.lollipopman]
+.lollipopman 04/23/2026 10:04 PM
+Yey opened
+[.lollipopman]
+[] ccarnell98 4 years later 
+.lollipopman 04/23/2026 10:02 PM
+Now i can try kodi Again
+[.lollipopman]
+.lollipopman 04/23/2026 10:00 PM
+[:rtk:]
+[ccarnell98]
+ccarnell98 04/23/2026 10:00 PM
+4 years later 
+04/23/2026 10:00 PM
+I've only recently rooted my TV
+[:anlasildi2:] 1
+[.lollipopman]
+.lollipopman 04/23/2026 10:00 PM
+Oh
+[ccarnell98]
+ccarnell98 04/23/2026 10:00 PM
+Actually I am not sure what log file webOS writes to for other apps to
+see working JSON @Yolofant any idea?
+[.lollipopman]
+[] ccarnell98 from /var/log/messages or /tmp/var/log/messages
+.lollipopman 04/23/2026 9:59 PM
+I didn't quite understand what you meant, but...
+ text.txt
+17.36 KB External
+[.lollipopman]
+.lollipopman 04/23/2026 9:46 PM
+I'll try again later.
+04/23/2026 9:45 PM
+Just opened 1 time
+04/23/2026 9:45 PM
+İpk
+04/23/2026 9:45 PM
+I just installed IPKY.
+[ccarnell98]
+[] .lollipopman But when I open it, the photo appears and then stays on
+a black screen.
+ccarnell98 04/23/2026 9:44 PM
+did you run it twice? the first time it need to setup a file
+[:adibaskopke:] 1
+[.lollipopman]
+[] ccarnell98 Not that build but this one:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/...
+.lollipopman 04/23/2026 9:44 PM
+But when I open it, the photo appears and then stays on a black screen.
+[.lollipopman]
+.lollipopman 04/23/2026 9:41 PM
+İ rooted
+[ccarnell98]
+ccarnell98 04/23/2026 9:39 PM
+from /var/log/messages or /tmp/var/log/messages
+[ccarnell98]
+[] .lollipopman Can I use it on webos2?
+ccarnell98 04/23/2026 9:38 PM
+Not that build but this one:
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-2-TEST.ipk.
+Kodi should open, but playback does not work yet. Are you rooted? What I
+need is some debug output of working playback from a built in app such
+as netflix or whatever, to see what the working JSON is
+[.lollipopman]
+.lollipopman 04/23/2026 7:16 PM
+Can I use it on webos2?
+April 21, 2026
+[] ccarnell98 If I get some time I'll see if I can have a look but
+without a device to test with its a PITA 
+febman_21236 04/21/2026 5:55 PM
+Many thanks. I truly appreciate all of your efforts in getting this to
+work on webOS 3.x in the first place, let alone all of the subsequent
+troubleshooting.
+ 1
+[ccarnell98]
+ccarnell98 04/21/2026 5:54 PM
+If I get some time I'll see if I can have a look but without a device to
+test with its a PITA  (edited)
+[ccarnell98]
+febman_21236 Not sure if these will help, but I did both a dmesg
+--follow and ls-monitor when resuming a video in...
+ccarnell98 04/21/2026 5:45 PM
+Thanks but we need to go back and look at chromium sources and figure
+out the correct layout of the class/structs for webOS 3. Something
+@Yolofant has more experience of  (edited)
+ 1
+April 19, 2026
+[] ccarnell98 or get the pipeline elements working
+febman_21236 04/19/2026 9:40 PM
+Not sure if these will help, but I did both a dmesg --follow and
+ls-monitor when resuming a video in the stock media player and captured
+the output. Perhaps there is some information in one or both of these
+logs that could prove more useful than the var-log-messages output:
+ dmesg-stock_media_resume.txt
+132.81 KB External
+ ls-monitor-media-client.txt
+142.98 KB External
+[ccarnell98]
+ccarnell98 04/19/2026 5:29 PM
+or get the pipeline elements working
+04/19/2026 5:29 PM
+OK so we will have to find out the equivalent of contentInfo.ptsToDecode
+for webOS 3
+04/19/2026 5:28 PM
+nope it did not lol
+febman_21236 04/19/2026 3:48 PM
+I started the video, skipped forwards, played for a short while, stopped
+and then resumed it. (edited)
+04/19/2026 3:48 PM
+Doesn't seem to have captured much:
+ var-log-messages-start-stop-resume-stock-media-player.txt
+2.56 KB External
+[] ccarnell98 <@1242796344549183490> does the built in media player
+resume? If it does could you post /var/log/mes...
+febman_21236 04/19/2026 3:34 PM
+Yes, it does. Will do.
+[ccarnell98]
+ccarnell98 04/19/2026 3:33 PM
+@febman does the built in media player resume? If it does could you post
+/var/log/messages? (edited)
+[yolofant]
+yolofant 04/19/2026 2:03 PM
+both
+ 1
+[ccarnell98]
+[] yolofant yes
+ccarnell98 04/19/2026 2:01 PM
+the first or the second 
+[yolofant]
+yolofant 04/19/2026 12:41 PM
+yes
+[ccarnell98]
+febman_21236 <@1051573528522133655> just wondering if you need any
+additional info from me re this issue?
+ccarnell98 04/19/2026 10:25 AM
+No they are very useful especially the screenshots to confirm the issue,
+just not had the time 
+ 1
+[ccarnell98]
+ccarnell98 04/19/2026 10:25 AM
+@Yolofant hmm is the resume issue because this code is gated?
+https://github.com/cscd98/xbmc/blob/webos-legacy/xbmc/cores/VideoPlayer/MediaPipelineWebOS.cpp#L1211
+do we always start off on pts 0 and seek later?
+febman_21236 04/19/2026 10:07 AM
+@Craig just wondering if you need any additional info from me re this
+issue?
+April 13, 2026
+febman_21236 04/13/2026 2:32 PM
+Just tested a mp4 test file (Exodus Sample) from the Kodi sample file
+downloads - also does the pause/play thing but the video is not long
+enough to trigger resume.
+04/13/2026 2:28 PM
+Possibly related - pause then play and the file jumps forwards approx 10
+secs and may start playing, or may freeze for a while then play, or
+freeze and not play.
+04/13/2026 2:26 PM
+Always on all H26x mkv files. 720p mpeg files that do not use starfish
+will resume OK. (edited)
+[ccarnell98]
+febman_21236 I included audio/video timing in the debug logs, just in
+case. Two sets of captures/logs: H264 & H26...
+ccarnell98 04/13/2026 2:24 PM
+Is it specific to a type of codec or does it always do it?
+febman_21236 04/13/2026 2:08 PM
+(no content)
+[capture3-H265-resume-point.jpg]
+ capture3-H265-resume-point.jpg
+155.48 KB External
+[capture4-H265-playing-after-resume.jpg]
+ capture4-H265-playing-after-resume.jpg
+66.3 KB External
+ kodi-H265-resume-issue.log
+9 MB External
+04/13/2026 2:07 PM
+I included audio/video timing in the debug logs, just in case. Two sets
+of captures/logs: H264 & H265. Both behave identically. Screenshots are
+of the respective stated resume points and of the videos playing from
+the beginning with blank screens and no audio after clicking resume.
+(edited)
+[capture1-H264-resume-point.jpg]
+ capture1-H264-resume-point.jpg
+143.85 KB External
+[capture2-H264-playing-after-resume.jpg]
+ capture2-H264-playing-after-resume.jpg
+76.47 KB External
+ kodi-H264-resume-issue.log
+9 MB External
+febman_21236 04/13/2026 1:35 PM
+Perhaps audio/video timing?
+04/13/2026 1:35 PM
+In order to troubleshoot the resume issue effectively, do you need me to
+enable debug logging of components other than video and audio?
+[] ccarnell98 If you could post a debug log for the issue with resume
+that would be great
+febman_21236 04/13/2026 1:34 PM
+@Craig , Sorry, I thought I had already posted the log for the resume
+issue, but clearly forgot to do so. Sidetracked by other issues, I
+think!
+April 8, 2026
+[ccarnell98]
+ccarnell98 04/08/2026 9:36 AM
+if you could try a streaming app on the TV as well, then post
+/tmp/var/log/messages that would give us working JSON to look at, I
+could then make suitable adjustments to kodi JSON output (edited)
+04/08/2026 9:36 AM
+then re-run kodi and playback same file, post /tmp/var/log/messages
+[ccarnell98]
+skull_face101 Click to see attachment
+ccarnell98 04/08/2026 9:35 AM
+Try this
+    PmLogCtl set '*' debug
+skull_face101 04/08/2026 1:54 AM
+/tmp/var/log/messages
+04/08/2026 1:54 AM
+(no content)
+ message.txt
+6.41 KB External
+04/08/2026 1:53 AM
+Yes its under tmp
+April 7, 2026
+febman_21236 04/07/2026 10:04 PM
+I don't have webOS 2.x to confirm.
+04/07/2026 10:04 PM
+Just checked on my system and /tmp/var/log is actually linked to
+/var/log, so see if you have /var in /tmp. Maybe it isn't linked back to
+/var/ on your TV. (edited)
+febman_21236 04/07/2026 9:50 PM
+Can you post the output from: ls -Rd /var/* | more
+skull_face101 04/07/2026 7:51 PM
+I am logged in as root not prisoner
+[] ccarnell98 even as root? weird
+skull_face101 04/07/2026 7:51 PM
+Yes
+[ccarnell98]
+skull_face101 but there is no logs folder
+ccarnell98 04/07/2026 7:37 PM
+even as root? weird (edited)
+[ccarnell98]
+febman_21236 Yes, /var/log/messages. Not sure if root is a requirement.
+ccarnell98 04/07/2026 7:34 PM
+Yep its definitely a root requirement, as my TV is not rooted Thanks 
+[] ccarnell98 <@917488160580182068> <@1242796344549183490> where is the
+log located normally - is it /var/log/mess...
+febman_21236 04/07/2026 6:42 PM
+Yes, /var/log/messages. Not sure if root is a requirement. (edited)
+ 1
+[ccarnell98]
+ccarnell98 04/07/2026 6:18 PM
+@satdx62 @febman where is the log located normally - is it
+/var/log/messages?
+skull_face101 04/07/2026 6:01 PM
+but there is no logs folder
+04/07/2026 6:01 PM
+I can access /var
+[ccarnell98]
+skull_face101 Click to see attachment
+ccarnell98 04/07/2026 5:44 PM
+Thanks. I thought you was rooted? Can you not access /var/log/messages?
+(edited)
+ 1
+skull_face101 04/07/2026 5:40 PM
+@Craig
+04/07/2026 5:37 PM
+it still crashes when loading video
+04/07/2026 5:37 PM
+no var/log/messages
+04/07/2026 5:37 PM
+(no content)
+ message.txt
+97.39 KB External
+[ccarnell98]
+ccarnell98 04/07/2026 9:56 AM
+Make sure you post kodi.log and var/log/messages
+[ccarnell98]
+skull_face101 Any new builds?
+ccarnell98 04/07/2026 9:10 AM
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-2-TEST.ipk
+skull_face101 04/07/2026 12:31 AM
+Any new builds? (edited)
+04/07/2026 12:30 AM
+Hi
+April 2, 2026
+[yolofant]
+yolofant 04/02/2026 3:12 PM
+No
+ 1
+[] yolofant most likely the permissions in the jail are messed up
+febman_21236 04/02/2026 1:44 PM
+Is the jailer fix for USB drive access now part of the nightly builds?
+[yolofant]
+yolofant 04/02/2026 10:42 AM
+No v21 had no swizzling
+ 1
+[] ccarnell98 <@917488160580182068> <@1242796344549183490>
+https://github.com/cscd98/kodi-webos-binary-addons/raw/...
+febman_21236 04/02/2026 10:17 AM
+The icons are displayed perfectly with this version. I appreciate this
+is a "workaround" version. Many thanks to you guys for your ongoing
+efforts.
+ 1
+[ccarnell98]
+ccarnell98 04/02/2026 10:14 AM
+I wonder if it would be right to set it to 2, but I don't know about the
+other consequences of setting it globally rather than just for those 2
+specific functions
+04/02/2026 10:14 AM
+I was obviously not paying attention at the time but there is
+CServiceBroker::GetRenderSystem()->GetRenderVersion(major, minor);
+[ccarnell98]
+ccarnell98 04/02/2026 10:05 AM
+or is there a possibility of another fix
+04/02/2026 10:05 AM
+@Yolofant did the version from 3 years ago default to GLES 2? is that
+why the issue did not occur before?
+[satdx62]
+[] ccarnell98 <@917488160580182068> could you try this claude suggestion
+for the icon issue? https://github.com/cs...
+satdx62 04/02/2026 8:42 AM
+Hello, The menu icons are not displayed in the TEST.ipk version, but
+they are back in the RELEASE.ipk version.
+ 1
+April 1, 2026
+[ccarnell98]
+ccarnell98 04/01/2026 10:19 PM
+@satdx62 could you try this claude suggestion for the icon issue?
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-3-TEST.ipk
+if it don't work just reinstall the release version (edited)
+[yolofant]
+yolofant 04/01/2026 10:17 PM
+so you might miss out on something
+ 1
+04/01/2026 10:16 PM
+and I think there is no feature parity between GLES2 and GLES3
+04/01/2026 10:16 PM
+ideally this wouldnt be disabled
+04/01/2026 10:15 PM
+so if you for instance have a texture only for alpha then using ARGB
+would be wasting 3 channels increasing memory size
+04/01/2026 10:14 PM
+I think what that does is that if you have a texture that is not ARGB
+but only a subset of these channels then GLES can use these directly
+without converting them to ARGB first
+[ccarnell98]
+[] yolofant not sure if it does anything, it might just be casual AI
+slop
+ccarnell98 04/01/2026 10:10 PM
+Cant say i even know what sizzle is. But what I did was jut GLES 2 if
+webOS <= 4 in both places. Is there a way to do this elsewhere?
+[yolofant]
+yolofant 04/01/2026 9:30 PM
+not sure if it does anything, it might just be casual AI slop
+04/01/2026 9:30 PM
+because I have no idea I asked claude
+    diff --git a/xbmc/guilib/TextureGLES.cpp b/xbmc/guilib/TextureGLES.cpp
+    index ae0c9a69e8..6f08c8c9a4 100644
+    --- a/xbmc/guilib/TextureGLES.cpp
+    +++ b/xbmc/guilib/TextureGLES.cpp
+    @@ -374,6 +374,14 @@ bool CGLESTexture::SupportsFormat(KD_TEX_FMT textureFormat, KD_TEX_SWIZ textureS
+     void CGLESTexture::SetSwizzle(bool swapRB)
+     {
+     #if defined(GL_ES_VERSION_3_0)
+    +  // When the swizzle is the default identity and no RB swap is needed,
+    +  // skip setting GL_TEXTURE_SWIZZLE_* parameters. The OpenGL default is
+    +  // already {RED, GREEN, BLUE, ALPHA}. Explicitly setting it to identity
+    +  // triggers driver bugs on some older Mali GPUs (Midgard architecture)
+    +  // where textures may sample incorrectly after an explicit swizzle set.
+    +  if (m_textureSwizzle == KD_TEX_SWIZ_RGBA && !swapRB)
+    +    return;
+    +
+[ccarnell98]
+ccarnell98 04/01/2026 9:19 PM
+I wont submit a PR just yet then
+[yolofant]
+yolofant 04/01/2026 9:18 PM
+there's still a chance something is wrong with the swizzling code
+ 1
+[ccarnell98]
+ccarnell98 04/01/2026 9:15 PM
+for dodgy drivers 
+[yolofant]
+yolofant 04/01/2026 9:11 PM
+well, that's unfortunately only a workaround
+ 1
+[satdx62]
+[] ccarnell98 <@917488160580182068> <@1242796344549183490>
+https://github.com/cscd98/kodi-webos-binary-addons/raw/...
+satdx62 04/01/2026 9:06 PM
+Wow! It works perfectly—all the icons are there. Great job! Thanks to
+you and @Yolofant !
+ 1
+[ccarnell98]
+ccarnell98 04/01/2026 8:54 PM
+@satdx62 @febman
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-3-RELEASE.ipk
+-> let us know if the icon issue is fixed
+[ccarnell98]
+[] yolofant <@1051573528522133655>
+https://github.com/xbmc/xbmc/issues/28036#issuecomment-4172101842
+ccarnell98 04/01/2026 8:54 PM
+thanks let see!
+[yolofant]
+yolofant 04/01/2026 8:44 PM
+swizzling was not in v21 so it makes sense
+04/01/2026 8:44 PM
+@Craig https://github.com/xbmc/xbmc/issues/28036#issuecomment-4172101842
+Kodi 22 (Piers) on webOS 4.x: Estuary icons rendered as white squar...
+name: Problem report about: Create an extensive report to help us
+document a problem Bug report Describe the bug On webOS 4.x (LG SK8500,
+2018 model), Kodi 22 (Piers) renders all Estuary skin icons...
+[]
+March 28, 2026
+[ccarnell98]
+ccarnell98 03/28/2026 10:28 PM
+hmm there might be a free one you could use? it would give us some
+helpful debug output of working video. if not try the last build anyway
+as I have stripped the json down to its bare minimum like I did earlier
+skull_face101 03/28/2026 9:48 PM
+I dont use streaming apps yet (edited)
+03/28/2026 9:47 PM
+Yes Rooted (edited)
+[ccarnell98]
+ccarnell98 03/28/2026 8:58 PM
+@Skull_Face also if you are rooted, give me the output /var/log/messages
+when you try netflix/amazon or another streaming app
+03/28/2026 8:58 PM
+@Skull_Face try this one
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-2-TEST.ipk
+[ccarnell98]
+skull_face101 Crashed when loading video
+ccarnell98 03/28/2026 8:39 PM
+Are you rooted? if so could you give /var/log/messages output?
+skull_face101 03/28/2026 7:21 PM
+Kodi config same as before
+03/28/2026 7:21 PM
+(no content)
+ message.txt
+101.61 KB External
+03/28/2026 7:19 PM
+Video is MP4 H264 video downloaded from youtube (edited)
+[] ccarnell98 <@1303078957586972733>
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xb...
+skull_face101 03/28/2026 7:19 PM
+Crashed when loading video
+[ccarnell98]
+ccarnell98 03/28/2026 3:04 PM
+@Skull_Face
+https://github.com/cscd98/kodi-webos-binary-addons/raw/refs/heads/main/org.xbmc.kodi_21.90.703_arm-WEBOS-2-TEST.ipk
+[ccarnell98]
+febman_21236 Could you make a webOS 3.x test build from v21
+incorporating the changes you made to get H264 workin...
+ccarnell98 03/28/2026 1:13 PM
+There is too many changes and the audio is out of sync on v21 so its not
+worth it
+ 1
+[] ccarnell98 but its the latest code from master this morning
+febman_21236 03/28/2026 1:11 PM
+Could you make a webOS 3.x test build from v21 incorporating the changes
+you made to get H264 working? I would like to test a few things and also
+see if it resolves a number of the current issues, which seem to have
+come around with the v22 update. If not, no problem. Thanks in advance.
+[ccarnell98]
+ccarnell98 03/28/2026 12:44 PM
+but its the latest code from master this morning
+03/28/2026 12:44 PM
+Kodi v22 (Piers) alpha 2 I think
+ 1
+febman_21236 03/28/2026 12:01 PM
+I'm assuming Kodi 22?
+[] ccarnell98 <@1242796344549183490> if you could paste a debug log also
+here for the icon issue: https://github.c...
+febman_21236 03/28/2026 12:01 PM
+Craig, can you confirm the Kodi version for last file I downloaded so I
+can accurately report these issues along with debug logs. Thanks.
+[ccarnell98]
+ccarnell98 03/28/2026 11:35 AM
+@febman if you could paste a debug log also here for the icon issue:
+https://github.com/xbmc/xbmc/issues/28036
+ 1
+[] ccarnell98 and provide a sample of the video file if poss
+febman_21236 03/28/2026 11:32 AM
+OK. Will do some testing with this latest version and see if the same
+issues occur, then generate a debug log.
+[ccarnell98]
+ccarnell98 03/28/2026 11:27 AM
+not really sure as we don't own those devices
+03/28/2026 11:27 AM
+some of those bugs might also affect other users (e.g. webOS 4)
+03/28/2026 11:26 AM
+and provide a sample of the video file if poss

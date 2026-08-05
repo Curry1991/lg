@@ -1,0 +1,916 @@
+January 29, 2022
+[smx2460]
+smx2460 01/29/2022 6:19 PM
+Which is misconfigured when doing "thumb on arm"
+01/29/2022 6:19 PM
+-1 means "automatic detection"
+01/29/2022 6:19 PM
+The third argument in particular
+01/29/2022 6:18 PM
+Change the invocation of the backup function
+01/29/2022 6:18 PM
+Then
+01/29/2022 6:18 PM
+Or 8 + longest instruction in thumb mode
+01/29/2022 6:18 PM
+So you might have 8 or 9 bytes
+01/29/2022 6:18 PM
+And add the instruction size to the count
+01/29/2022 6:18 PM
+You need to check if, after 8 bytes, you end up in the middle of an
+instruction
+01/29/2022 6:17 PM
+But in thumb mode, it might not be the case
+01/29/2022 6:17 PM
+In arm mode, that corresponds to 2 instructions always (hence no
+capstone needed)
+01/29/2022 6:17 PM
+Both in arm and thumb mode
+01/29/2022 6:17 PM
+The Number of bytes that get trashed is 8 bytes
+01/29/2022 6:17 PM
+So
+01/29/2022 6:15 PM
+It'd be cool to see if that is the problem
+01/29/2022 6:15 PM
+But before I do that
+01/29/2022 6:15 PM
+Unless I send a new build of ezinject with capstone in
+[infowski]
+infowski 01/29/2022 6:14 PM
+Mhmmm...
+[smx2460]
+smx2460 01/29/2022 6:14 PM
+You need to specify by hand how many bytes you need to save
+01/29/2022 6:14 PM
+So
+01/29/2022 6:14 PM
+The First one in particular (edited)
+01/29/2022 6:13 PM
+    inline int inj_opcode_bytes(){
+        #ifdef USE_ARM_THUMB
+        return -1;
+        #else
+        return 4;
+        #endif
+    }
+    inline int inj_absjmp_opcode_bytes() {
+        #ifdef USE_ARM_THUMB
+        return 4 + 4;
+        #else
+        return inj_opcode_bytes() * 2;
+        #endif
+    }
+01/29/2022 6:13 PM
+That it will not calculate the correct backup size
+01/29/2022 6:13 PM
+Then what happens is
+01/29/2022 6:12 PM
+But what if you use ez inject arm to hook thumb code?
+01/29/2022 6:12 PM
+"if we build ezinject in arm mode, don't bother"
+01/29/2022 6:12 PM
+"if we build ezinject in thumb mode, we will surely need capstone"
+[infowski]
+infowski 01/29/2022 6:12 PM
+is that a problem?
+01/29/2022 6:12 PM
+I am trying to inject into a symbol from a shared object
+01/29/2022 6:12 PM
+OK, one note, actually.
+[smx2460]
+smx2460 01/29/2022 6:12 PM
+The (broken) logic says
+01/29/2022 6:12 PM
+The issue is that the build system doesn't include capstone unless you
+are enabling thumb
+01/29/2022 6:11 PM
+Ok I know why, crap.
+01/29/2022 6:11 PM
+If that is a thumb function....
+01/29/2022 6:11 PM
+Ah wait
+01/29/2022 6:10 PM
+It checks if the pointer is arm/thumb
+01/29/2022 6:10 PM
+Because the code should be correct
+01/29/2022 6:10 PM
+I think I need the first bytes of the function you're injecting
+[infowski]
+infowski 01/29/2022 6:09 PM
+but thank you very much for your work nevertheless :3
+ 1
+[smx2460]
+smx2460 01/29/2022 6:07 PM
+I know why, probably (edited)
+[infowski]
+infowski 01/29/2022 6:06 PM
+Sadly, won't be able to play with this anymore today  (edited)
+01/29/2022 6:06 PM
+It was the same last time with thumb vs non-thumb.
+[smx2460]
+smx2460 01/29/2022 6:06 PM
+Hmm
+[infowski]
+infowski 01/29/2022 6:06 PM
+So not reaching print.
+[smx2460]
+smx2460 01/29/2022 6:06 PM
+Is it reached?
+[infowski]
+infowski 01/29/2022 6:06 PM
+Yes, I actually am, but I am also printing stuff before that.
+[smx2460]
+smx2460 01/29/2022 6:06 PM
+Or, if you have a print before that
+01/29/2022 6:05 PM
+Are you calling the original function?
+[infowski]
+infowski 01/29/2022 6:05 PM
+just to clarify - it should be possible to make it work universally,
+right?
+01/29/2022 6:05 PM
+veyr likely, like all webOS stuff. let me check in a second.
+[smx2460]
+smx2460 01/29/2022 6:04 PM
+Is the proper app thumb?
+[infowski]
+infowski 01/29/2022 6:04 PM
+It was the same last time I played with ezinject.
+01/29/2022 6:04 PM
+As in - sample target works, but proper app does not.
+[smx2460]
+smx2460 01/29/2022 6:04 PM
+Hmm
+[infowski]
+infowski 01/29/2022 6:04 PM
+OK. So... When trying to hook actual binaries, it seems like it
+consistently fails/crashes when a replaced function is called. I have a
+feeling this is due to thumb thing again :/ (edited)
+[smx2460]
+smx2460 01/29/2022 5:19 PM
+Considering all the times I have to get that path in shell and it's
+never consistent
+[smx2460]
+[] smx2460 ```php require_once __DIR__ . '/libhooks.php'; ```
+smx2460 01/29/2022 5:19 PM
+__DIR__ being the dir where this file is located
+[smx2460]
+smx2460 01/29/2022 5:15 PM
+(disclaimer: i used both) (edited)
+01/29/2022 5:14 PM
+with the difference that it's much quicker to try things
+01/29/2022 5:14 PM
+their ORM, Doctrine, is like a copy of Hibernate
+01/29/2022 5:14 PM
+Symphony is much more Java-like
+01/29/2022 5:14 PM
+Laravel does a lot of magic
+[infowski]
+infowski 01/29/2022 5:13 PM
+back when it was just starting up, and I needed to do some PHP shit,
+when I already used Flask for everything (edited)
+01/29/2022 5:13 PM
+though I did a little bit of Laravel I think
+[smx2460]
+smx2460 01/29/2022 5:13 PM
+lol
+01/29/2022 5:13 PM
+     Deprecated PHP Framework
+[infowski]
+infowski 01/29/2022 5:13 PM
+xD
+01/29/2022 5:13 PM
+> RIP Kohana 2007 - 2017
+01/29/2022 5:13 PM
+bruh
+01/29/2022 5:13 PM
+>https://kohanaframework.org/ >>last stable release: 3.3.6 / 25. July
+2016.
+Kohana: The Swift PHP Framework
+Kohana homepage. Kohana is an HMVC PHP5 framework that provides a rich
+set of components for building web applications.
+01/29/2022 5:12 PM
+Yeah, I kinda recall autoloaders in PHP
+[smx2460]
+smx2460 01/29/2022 5:12 PM
+    namespace WinSxS;
+    use Common\Registry;
+    use Common\RegistryKey;
+01/29/2022 5:12 PM
+example
+01/29/2022 5:12 PM
+and then all other files will find classes based on the namespace
+01/29/2022 5:12 PM
+at the beginning of the main file
+01/29/2022 5:12 PM
+require_once __DIR__ . '/vendor/autoload.php';
+01/29/2022 5:11 PM
+you just add a single
+01/29/2022 5:11 PM
+unless you change the namespaces
+01/29/2022 5:11 PM
+you just need to do it once
+01/29/2022 5:11 PM
+it emits vendor/autoload.php
+01/29/2022 5:11 PM
+and then when you do composer dump-autoload -o
+01/29/2022 5:11 PM
+you can also map the empty string for "every class"
+01/29/2022 5:11 PM
+        "autoload": {
+            "psr-4": {
+                "Smx\\": "./src/"
+            }
+        }
+01/29/2022 5:11 PM
+because the nice thing about composer is that you can do this
+01/29/2022 5:10 PM
+hmm ok
+01/29/2022 5:10 PM
+wait
+[infowski]
+infowski 01/29/2022 5:10 PM
+pls daddy i don't want composer
+[smx2460]
+smx2460 01/29/2022 5:10 PM
+the output is a composer.json file
+01/29/2022 5:10 PM
+you do composer init
+[smx2460]
+[] infowski or probably the other way around - make this `bootstrap.php`
+and `require_once $argv[2];` at the end...
+smx2460 01/29/2022 5:10 PM
+for that
+[smx2460]
+smx2460 01/29/2022 5:10 PM
+the absolute best way would be to make a library
+[infowski]
+infowski 01/29/2022 5:10 PM
+or probably the other way around - make this bootstrap.php and
+require_once $argv[2]; at the end, before the while loop 
+[smx2460]
+smx2460 01/29/2022 5:10 PM
+    require_once __DIR__ . '/libhooks.php';
+01/29/2022 5:09 PM
+recommended way is
+01/29/2022 5:09 PM
+yes
+[infowski]
+infowski 01/29/2022 5:09 PM
+Just to make sure - I can dump these classes into libhooks.php or
+whatever and then just require_once "./libhooks.php"; in my code, right?
+[smx2460]
+smx2460 01/29/2022 5:08 PM
+new impl
+01/29/2022 5:08 PM
+(no content)
+ hello.php
+2.62 KB External
+01/29/2022 5:07 PM
+(and hooking at the middle of a function is not really supported, it
+might work but most likely won't without manual fixups) (edited)
+[infowski]
+infowski 01/29/2022 5:07 PM
+ok, let me play a little bit with the thing now 
+[smx2460]
+smx2460 01/29/2022 5:07 PM
+(but most functions don't have that code at the beginning of the
+function)
+01/29/2022 5:06 PM
+(because when the code is backed up, the location the code runs from is
+changed)
+01/29/2022 5:06 PM
+(unless the backup holds some PC-relative esoteric code that frida might
+handle better than i do) (edited)
+[infowski]
+infowski 01/29/2022 5:06 PM
+just two jumps more on every functoin call (edited)
+[smx2460]
+smx2460 01/29/2022 5:06 PM
+yeah
+[infowski]
+infowski 01/29/2022 5:06 PM
+yes, exactly. it'll still technically work
+[smx2460]
+smx2460 01/29/2022 5:05 PM
+it will overwrite "jmp -> hook" with "jmp -> (backup -> remaining part)"
+(edited)
+[infowski]
+infowski 01/29/2022 5:05 PM
+yeah, so if you inj_replace already injected function with a backup,
+it'll do double jump basically?
+[smx2460]
+smx2460 01/29/2022 5:05 PM
+so it always modifies the original code location, with a JMP (edited)
+01/29/2022 5:05 PM
+this is what inj_replace does
+01/29/2022 5:04 PM
+(no content)
+[unknown.png]
+ unknown.png
+11.33 KB External
+[infowski]
+infowski 01/29/2022 5:04 PM
+yes, I get that part 
+[smx2460]
+smx2460 01/29/2022 5:04 PM
+this is what inj_backup does
+01/29/2022 5:04 PM
+(no content)
+[unknown.png]
+ unknown.png
+11.82 KB External
+[infowski]
+infowski 01/29/2022 5:04 PM
+except for the fact that every load/unload would make the jump chain
+longer?
+01/29/2022 5:03 PM
+functionally i mean
+01/29/2022 5:03 PM
+It doesn't really matter, right?
+01/29/2022 5:03 PM
+ah indeed.
+[smx2460]
+smx2460 01/29/2022 5:03 PM
+it wouldn't be identical to how you started tho
+[infowski]
+infowski 01/29/2022 5:03 PM
+Couldn't you just inj_replace_function with the backed up one?
+01/29/2022 5:03 PM
+Just asking in general, how hard would that be.
+[smx2460]
+smx2460 01/29/2022 5:03 PM
+you must copy the backup over the original minus the trailing jump
+[infowski]
+infowski 01/29/2022 5:02 PM
+Yeah, I can imagine
+01/29/2022 5:02 PM
+revert all hooks, kill PHP interpreter.
+[smx2460]
+smx2460 01/29/2022 5:02 PM
+i didn't implement an API for that, but it's simple to do
+[infowski]
+infowski 01/29/2022 5:02 PM
+or even - full unload as a complete feature
+01/29/2022 5:02 PM
+I was honestly more thinking about full unload, and then reinjection
+[smx2460]
+smx2460 01/29/2022 5:02 PM
+it writes a new call over the last one
+01/29/2022 5:02 PM
+inj_replace_function can be called as many times as you want
+01/29/2022 5:01 PM
+so yes it can be reused
+01/29/2022 5:01 PM
+and this has an added fact: that the backup is always the same size
+01/29/2022 5:01 PM
+i'm using an absolute jump for ease (without calculating the relative
+max range and whatnot)
+01/29/2022 5:01 PM
+the backup can be shared, yes
+[infowski]
+infowski 01/29/2022 5:01 PM
+Yeah, basically. Or just unload all the hooks and load new ones back
+again.
+[smx2460]
+smx2460 01/29/2022 5:00 PM
+you mean to swap hooks?
+01/29/2022 5:00 PM
+hmm
+[infowski]
+infowski 01/29/2022 4:56 PM
+I guess we could? Just replace_function into backed up once again to
+clean everything up, and then load everything back again?
+01/29/2022 4:56 PM
+Now wondering - whether we could also unrelated to all the base
+functionality, add injections hot-reload 
+01/29/2022 4:55 PM
+yeah that explains it 
+[smx2460]
+smx2460 01/29/2022 4:54 PM
+it knows it has to put the arguments in an array
+01/29/2022 4:54 PM
+still, that's smart
+01/29/2022 4:54 PM
+01/29/2022 4:54 PM
+ah it knows how many there are from the signature, right
+01/29/2022 4:54 PM
+but it looks like it instructs FFI to "catch all arguments" that way
+01/29/2022 4:54 PM
+unless maybe it will not work for more complex functions
+01/29/2022 4:53 PM
+since i'm not telling it how many args there are
+01/29/2022 4:53 PM
+i was afraid ...$args wouldn't work
+01/29/2022 4:53 PM
+this is the actual entry from native code
+01/29/2022 4:53 PM
+    Closure::fromCallable(function(...$args) use($pfnOrig, $hookCb){
+                return $hookCb($pfnOrig, ...$args);
+            });
+01/29/2022 4:53 PM
+i mean
+01/29/2022 4:52 PM
+that's attention to details
+01/29/2022 4:52 PM
+i was surprised to see the variaric argument syntax works with FFI
+[infowski]
+infowski 01/29/2022 4:52 PM
+inb4 seen worse
+01/29/2022 4:52 PM
+fairly easy to follow.
+ 1
+01/29/2022 4:51 PM
+I actually kinda did x-D
+[smx2460]
+smx2460 01/29/2022 4:50 PM
+ever seen PHP like this? 
+01/29/2022 4:50 PM
+    class HookFactory {
+        private FFI $ffi;
+        private CData $self;
+        /**
+         * @var HookHandle[]
+         */
+        private array $handles = array();
+        public function __construct(){
+            $this->ffi = FFI::cdef("
+                void *inj_backup_function(void *original_code, size_t *num_saved_bytes, int opcode_bytes_to_restore);
+                int inj_replace_function(void *original_fn, void *replacement_fn);
+                void *dlopen(const char *filename, int flag);
+                void *dlsym(void *handle, const char *symbol);
+            ");
+            $this->self = $this->ffi->dlopen(NULL, 0x01);
+            if($this->self == null){
+                throw new \Exception("dlopen self failed");
+            }
+        }
+        public static function makePfn(string $type, $closure){
+            $fnT = FFI::type($type);
+            $arrT = FFI::arrayType($fnT, [1]);
+            $arr = FFI::new($arrT);
+            $arr[0] = $closure;
+            return $arr[0];
+        }
+        public function newHook(string $type, string $funcName, callable $hook){
+            $pvCode = $this->ffi->dlsym($this->self, $funcName);
+            if($pvCode == null){
+                return null;
+            }
+            $pvOrig = $this->ffi->inj_backup_function($pvCode, NULL, -1);
+            $pfnOrig = self::makePfn($type, $pvOrig);
+            $handle = new HookHandle($type, $pfnOrig, $hook);
+            $this->ffi->inj_replace_function($pvCode, $handle->getNativeHandle());
+            $this->handles[] = $handle;
+            return $handle;
+        }
+    }
+    class HookHandle {
+        private Closure $wrapCb;
+        private Closure $hookCb;
+        private CData $nat;
+        public function __construct(string $type, CData $pfnOrig, callable $hookCb){
+            $this->wrapCb = Closure::fromCallable(function(...$args) use($pfnOrig, $hookCb){
+                return $hookCb($pfnOrig, ...$args);
+            });
+            $this->nat = HookFactory::makePfn($type, $this->wrapCb);
+        }
+        public function getNativeHandle(){
+            return $this->nat;
+        }
+    }
+01/29/2022 4:50 PM
+(no content)
+[unknown.png]
+ unknown.png
+15.28 KB External
+[infowski]
+infowski 01/29/2022 4:50 PM
+yeah, that looks amazing
+[smx2460]
+smx2460 01/29/2022 4:50 PM
+now?
+01/29/2022 4:50 PM
+    $hf = new HookFactory;
+    $handle = $hf->newHook("int (*)(int, int)", "func1", function(callable $orig, int $arg1, int $arg2){
+        $orig(0, 1);
+        return 1234;
+    });
+    while(true){
+        sleep(1);
+    }
+01/29/2022 4:49 PM
+but i refactored it anyways
+01/29/2022 4:49 PM
+so it was returning garbage
+01/29/2022 4:48 PM
+i missed a return
+01/29/2022 4:48 PM
+meh
+01/29/2022 4:44 PM
+yeah
+[infowski]
+infowski 01/29/2022 4:44 PM
+You probably should store all hook handles in the factory itself as
+well?
+[smx2460]
+smx2460 01/29/2022 4:43 PM
+changing HookHandle to store that too
+01/29/2022 4:43 PM
+and thus not
+01/29/2022 4:43 PM
+while previously it was stored as a new SampleHook
+01/29/2022 4:43 PM
+it might be because the inline callable is disposed
+01/29/2022 4:43 PM
+i think i know why
+[infowski]
+infowski 01/29/2022 4:41 PM
+doesn't your PHP code just throw some unhandled error? or you already
+log that?
+[smx2460]
+smx2460 01/29/2022 4:40 PM
+not even segfault, it just dies (edited)
+[infowski]
+[] smx2460 like this it faults
+infowski 01/29/2022 4:40 PM
+as in segfaults? huh
+[smx2460]
+smx2460 01/29/2022 4:40 PM
+with the former it was working
+01/29/2022 4:40 PM
+let me see why
+[infowski]
+infowski 01/29/2022 4:40 PM
+(again, my PHP is very crusty, so I'm not sure what's allowed and what's
+not, guessing from my latest experience with js/python :D)
+[smx2460]
+smx2460 01/29/2022 4:40 PM
+like this it faults
+01/29/2022 4:40 PM
+interesting
+[infowski]
+infowski 01/29/2022 4:39 PM
+as in something like $hf->newHook("...", "...", &$h->invoke); maybe?
+01/29/2022 4:39 PM
+the former would be sensible if you needed some extra state and such,
+but then you could probably just point newHook at an instance method?
+01/29/2022 4:39 PM
+kinda like what frida seems to target mostly? (never used it, only seen
+some exapmles)
+01/29/2022 4:38 PM
+I mean, the latter is nice for quick prototyping
+[smx2460]
+smx2460 01/29/2022 4:38 PM
+let's change it
+01/29/2022 4:38 PM
+why not
+01/29/2022 4:38 PM
+sure
+[infowski]
+infowski 01/29/2022 4:38 PM
+totally honestly? Wouldn't something like this work as well?
+    $hf->newHook("int (*)(int, int)", "func1", function (callable $orig, $arg1, $arg2) {
+        return 420;
+    });
+(edited)
+[smx2460]
+smx2460 01/29/2022 4:37 PM
+    class SampleHook implements Hook {
+        public function invoke(callable $orig, ...$args){
+            return 1234;
+        }
+    }
+01/29/2022 4:37 PM
+what do you think about this?
+01/29/2022 4:37 PM
+welcome back
+[infowski]
+infowski 01/29/2022 4:36 PM
+Just got back.
+[smx2460]
+smx2460 01/29/2022 4:36 PM
+    $hf = new HookFactory;
+    $h = new SampleHook;
+    $handle = $hf->newHook("int (*)(int, int)", "func1", $h);
+    while(true){
+        sleep(1);
+    }
+    $handle = null;
+01/29/2022 4:36 PM
+@infowski
+[smx2460]
+smx2460 01/29/2022 3:14 PM
+but it'd suck to throw my work out
+01/29/2022 3:13 PM
+i talked to the author and he made some improvements
+[infowski]
+infowski 01/29/2022 3:13 PM
+Yeah, I was unable to build frida at all 
+[smx2460]
+smx2460 01/29/2022 2:56 PM
+i'd ofc prefer if our php solution works
+01/29/2022 2:56 PM
+but building it is a bit inconvenient and it's technically my competitor
+^,^
+01/29/2022 2:55 PM
+if you really want to sin, you could use Frida....
+01/29/2022 2:54 PM
+    #if defined(EZ_ARCH_ARM) && defined(HAVE_PSR_T_BIT)
+        // set the ARM/Thumb flag for the shellcode invocation
+        #ifdef USE_ARM_THUMB
+        REG(*new_ctx, ARM_cpsr) = REG(*new_ctx, ARM_cpsr) | PSR_T_BIT;
+        #else
+        REG(*new_ctx, ARM_cpsr) = REG(*new_ctx, ARM_cpsr) & ~PSR_T_BIT;
+        #endif
+    #endif
+01/29/2022 2:54 PM
+    int inj_build_abs_jump(uint8_t *buffer, void *jump_destination, void *jump_opcode_address) {
+        // we want to store the following word onto the $pc register
+        // on arm, PC is +8 at execution time, so need an offset of -4
+        //   ARM   -> ldr pc, [pc, #-4] -> E5 1F F0 04
+        // on thumb, PC is +4 at execution time, so we need no offset
+        //   THUMB -> ldr pc, [pc]      -> F8 DF F0 00"
+        if((uintptr_t)jump_opcode_address & 1){
+            // thumb encoding
+            WRITE16(buffer, 0xF8DF);
+            WRITE16(buffer, 0xF000);
+        } else {
+            // arm encoding
+            WRITE32(buffer, 0xE51FF004);
+        }
+        WRITE32(buffer, (uint32_t)jump_destination);
+        return 0;
+    }
+01/29/2022 2:53 PM
+but it shouldn't die
+01/29/2022 2:53 PM
+still will do a (potentially slow?) mode switch
+01/29/2022 2:53 PM
+i mean there have been fixes to it
+[infowski]
+infowski 01/29/2022 2:53 PM
+cool.
+[smx2460]
+smx2460 01/29/2022 2:53 PM
+it should be now
+[infowski]
+infowski 01/29/2022 2:53 PM
+yeah - and that was not working correctly
+[smx2460]
+smx2460 01/29/2022 2:53 PM
+the CPU has to switch every time it calls you
+01/29/2022 2:53 PM
+i.e. if ezinject is not thumb and you hook thumb
+01/29/2022 2:53 PM
+just that it will do a mode switch
+01/29/2022 2:52 PM
+but it should work with both at runtime
+01/29/2022 2:52 PM
+ezinject has a flag to generate its code in THUMB or ARM mode
+[infowski]
+infowski 01/29/2022 2:52 PM
+which was fairly inconvenient.
+[smx2460]
+smx2460 01/29/2022 2:52 PM
+well
+[infowski]
+infowski 01/29/2022 2:52 PM
+since last time I needed a specific build for thumb vs non-thumb
+binraies I think.
+[smx2460]
+smx2460 01/29/2022 2:52 PM
+you had issues with it?
+[infowski]
+infowski 01/29/2022 2:52 PM
+I need to go, will be back later. wonder how THUMB handling works in
+ezinject today  (edited)
+[smx2460]
+smx2460 01/29/2022 2:44 PM
+so it should even be relatively quick, surely quicker than Python
+01/29/2022 2:44 PM
+they also added a JIT compiler in PHP 8
+01/29/2022 2:44 PM
+and i want to believe in that 
+01/29/2022 2:43 PM
+the PHP team has built libffi in PHP 7 to enable it to reach more
+scenarios it previously wasn't considered for
+[infowski]
+infowski 01/29/2022 2:43 PM
+Yes, literally xposed but for webos, scripted in php  (edited)
+[dystopian1]
+[] infowski <@!186222152645738496> ↑ you like PHP?
+dystopian1 01/29/2022 2:43 PM
+I hardly understand that you do something like XPosed for android, I
+don't know if PHP is good or bad for that, but yeah, I like PHP more
+than perl/python (can't compare with lua as I've never touch it) 
+[infowski]
+infowski 01/29/2022 2:43 PM
+@Dystopian so tl;dr I'll try to build some nice POC on how to catch and
+replace requests/responses in luna calls to system services...
+[smx2460]
+smx2460 01/29/2022 2:42 PM
+should work
+01/29/2022 2:42 PM
+    $callableOrig = FFI::cast("int (*)(int, int)", $pfnOrig);
+01/29/2022 2:41 PM
+for example like i did here
+01/29/2022 2:41 PM
+    $this->pfnInitialize = \FFI::cast(
+                "long (*)(void *)",
+                $this->GetProcAddress($this->hWcp, "?InitializeDeltaCompressor@Rtl@Windows@@YAJPEAX@Z")
+            );
+01/29/2022 2:41 PM
+you need to cast it to the correct function type before calling it
+01/29/2022 2:41 PM
+that is however a void *
+[infowski]
+infowski 01/29/2022 2:40 PM
+yeah, that could work as well.
+[smx2460]
+smx2460 01/29/2022 2:40 PM
+which injects pfnOrig in the lambda
+01/29/2022 2:40 PM
+    $replace = function(int $arg1, int $arg2) use($pfnOrig){
+            return 1234;
+    };
+(edited)
+[infowski]
+infowski 01/29/2022 2:40 PM
+as in something like:
+    $arr[0] = function (...&$args) {
+    return $closure($original, ...&$args);
+    };
+or however you'd do this
+[smx2460]
+smx2460 01/29/2022 2:40 PM
+but you can do this
+01/29/2022 2:40 PM
+the closure receives the arguments of the original function being hooked
+(edited)
+[infowski]
+infowski 01/29/2022 2:39 PM
+Honestly was just thinking of passing pfnOrig as a first argument to
+$closure
+[smx2460]
+smx2460 01/29/2022 2:39 PM
+you could have a kind of Java-equivalent to Callable
+01/29/2022 2:38 PM
+that hides all the dirty FFI-ness
+01/29/2022 2:38 PM
+sure, we can make a class
+[infowski]
+infowski 01/29/2022 2:38 PM
+@Smx wondering if we could make some nice API that'd pass original
+function to our replacement as well?
+[smx2460]
+smx2460 01/29/2022 2:38 PM
+btw the purpose of makePfn is to simulate **destPtr = pfn
+[infowski]
+infowski 01/29/2022 2:37 PM
+    <?php
+    print("Hello World\n");
+    $ffi = FFI::cdef("
+            void *inj_backup_function(void *original_code, size_t *num_saved_bytes, int opcode_bytes_to_restore);
+            int inj_replace_function(void *original_fn, void *replacement_fn);
+            int func1(int arg1, int arg2);
+    ");
+    function makePfn(string $type, $closure){
+            $fnT = FFI::type($type);
+            $arrT = FFI::arrayType($fnT, [1]);
+            $arr = FFI::new($arrT);
+            $arr[0] = $closure;
+            return $arr[0];
+    }
+    $replace = function(int $arg1, int $arg2){
+            return 1234;
+    };
+    $pfnReplace = makePfn("int (*)(int, int)", $replace);
+    $pfnOrig = $ffi->inj_backup_function($ffi->func1, NULL, -1);
+    $ffi->inj_replace_function($ffi->func1, $pfnReplace);
+    while(true){
+            sleep(1);
+    }
+[smx2460]
+smx2460 01/29/2022 2:37 PM
+injected in a process
+01/29/2022 2:37 PM
+we might be the first ones using PHP like this
+01/29/2022 2:37 PM
+you can in fact load them from a .h file
+[infowski]
+infowski 01/29/2022 2:37 PM
+@Dystopian ↑ you like PHP?
+[smx2460]
+smx2460 01/29/2022 2:37 PM
+you can make bindings for luna, yep
+[infowski]
+infowski 01/29/2022 2:36 PM
+enough to build. luna firewall kind of deal
+[smx2460]
+smx2460 01/29/2022 2:36 PM
+because i disabled everything else
+01/29/2022 2:36 PM
+you probably don't have iconv, for localization
+[infowski]
+infowski 01/29/2022 2:36 PM
+werks.
+[smx2460]
+smx2460 01/29/2022 2:36 PM
+you have PCRE, JSON, HASH and FFI oob
+01/29/2022 2:35 PM
+to see how nice it would be to use it in "production" 
+01/29/2022 2:35 PM
+so now you can do a super professional feasibility study
+01/29/2022 2:35 PM
+dupa.php 
+01/29/2022 2:34 PM
+this should now be truly self contained
+01/29/2022 2:34 PM
+(no content)
+ libphp.so
+4.55 MB External
+01/29/2022 2:34 PM
+fixed
+01/29/2022 2:33 PM
+i'm close to linking with libffi
+01/29/2022 2:33 PM
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-buildroot-linux-gnueabi/11.2.0/../../../../arm-buildroot-linux-gnueabi/bin/ld: /mnt/ExtData/buildroot-nc4/output/staging/usr/lib/libffi.a(tramp.o): relocation R_ARM_MOVW_ABS_NC against `a local symbol' can not be used when making a shared object; recompile with -fPIC
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-buildroot-linux-gnueabi/11.2.0/../../../../arm-buildroot-linux-gnueabi/bin/ld: /mnt/ExtData/buildroot-nc4/output/staging/usr/lib/libffi.a(tramp.o)(.text+0x268): unresolvable R_ARM_CALL relocation against symbol `fgets@@GLIBC_2.4'
+01/29/2022 2:33 PM
+[infowski]
+infowski 01/29/2022 2:33 PM
+important
+01/29/2022 2:33 PM
+sed -i 's/libffi.so.8/libffi.so.6/g' libphp.so
+01/29/2022 2:33 PM
+    Hello World from main
+    argv[0] = /tmp/libphp.so
+    argv[1] = /tmp/dupa.php
+    [/mnt/ExtData/ezpatch/clean/crt/crt_user.c:24] [DEBG] lib_main returned: -1
+    [/mnt/ExtData/ezpatch/clean/crt/crt.c:118] [DEBG] ret
+    pl:b
+    [/mnt/ExtData/ezpatch/clean/samples/php/php_embed.c:37] [INFO] Running /tmp/dupa.php
+    Hello World
+    [/mnt/ExtData/ezpatch/clean/crt/lh/interface/cpu/cpu_common.c:177] [INFO] Opcode bytes to save: 8
+    [/mnt/ExtData/ezpatch/clean/crt/lh/interface/hook/lh_hook.c:64] [DEBG] jump trampoline
+     >04F01FE5 08D0F896<                   ........         00000000
+    return1() = 1234
+    return1() = 1234
+    return1() = 1234
+    return1() = 1234
+    return1() = 1234
+    return1() = 1234
+    return1() = 1234
+01/29/2022 2:31 PM
+yolo
+[smx2460]
+smx2460 01/29/2022 2:31 PM
+i'll be building it statically meanwhile
+[infowski]
+infowski 01/29/2022 2:31 PM
+kek
+[smx2460]
+smx2460 01/29/2022 2:31 PM
+or hex editing the name
+01/29/2022 2:31 PM
+and want to try with patchelf
+01/29/2022 2:31 PM
+@infowski unless you feel adventurous
+01/29/2022 2:30 PM
+i'll rebuild it static
+01/29/2022 2:30 PM
+ok...so libffi is only built dynamically in buildroot so it seems
+01/29/2022 2:30 PM
+it's not a static library
+01/29/2022 2:29 PM
+oh.
+01/29/2022 2:29 PM
+but yeah let's get this fixed quickly for now
+01/29/2022 2:29 PM
+i also should be using pkgconfig or better things like php-config
+01/29/2022 2:28 PM
+screw that
+01/29/2022 2:28 PM
+because probably libtool
+01/29/2022 2:28 PM
+.la
+01/29/2022 2:28 PM
+MEH
+01/29/2022 2:28 PM
+    libffi.la        libffi.so        libffi.so.8      libffi.so.8.1.0
+01/29/2022 2:28 PM
+      Could not find FFI_LIBRARY using the following names: libffi.a
+01/29/2022 2:28 PM
+i did a clean build and now i get
+01/29/2022 2:28 PM
+ah
+01/29/2022 2:27 PM
+let me check why libffi is not static
+[infowski]
+infowski 01/29/2022 2:27 PM
+yooooo
+[smx2460]
+smx2460 01/29/2022 2:27 PM
+yo, we are doing mad science here
