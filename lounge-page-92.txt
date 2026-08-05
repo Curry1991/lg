@@ -1,0 +1,1525 @@
+January 15, 2022
+[mariotaku]
+ww8543 ahem
+mariotaku 01/15/2022 8:51 PM
+It's overlapping with netcast, although I really love the way it named
+ww8543 why not `arm-openlgtv-linux-gnueabi`?
+ww8543 01/15/2022 8:50 PM
+ahem
+ 1
+[smx2460]
+smx2460 01/15/2022 8:43 PM
+The specific webos_tv_defconfig has WebOS options so I guess yes
+01/15/2022 8:42 PM
+I guess so, although it's also ABI compatible with NC4 (edited)
+[mariotaku]
+mariotaku 01/15/2022 8:41 PM
+I think we can build one and put to GitHub releases :) are you good with
+the target triple arm-webos-linux-gnueabi?
+[smx2460]
+smx2460 01/15/2022 8:38 PM
+Cool, was asking to see if there was something missing i could help with
+[mariotaku]
+mariotaku 01/15/2022 8:38 PM
+Currently nothing. The one in webos-experiment offering everything to
+build moonlight.
+[smx2460]
+smx2460 01/15/2022 8:36 PM
+@Mariotaku so what's missing with the new toolchain?
+January 14, 2022
+[smx2460]
+smx2460 01/14/2022 7:07 PM
+nice catch
+01/14/2022 7:06 PM
+Oh I used $(STAGING) instead of $(HOST_DIR)
+[smx2460]
+[] mariotaku <@!310158180728700929> ccache did its job!
+smx2460 01/14/2022 7:05 PM
+Nice!
+[smx2460]
+smx2460 01/14/2022 7:05 PM
+So I installed lempar.c next to the binary but I don't like it
+01/14/2022 7:04 PM
+Debian patched it to look in /usr/share but it's still hard coded
+01/14/2022 7:04 PM
+And lemon reads lempar.c hard coded from bin
+01/14/2022 7:04 PM
+I created it from sqlite
+[smx2460]
+[] mariotaku lemon package has a small issue causes build error. I'll
+create a PR to webos branch for that.
+smx2460 01/14/2022 7:04 PM
+Lemon package is a hax
+[mariotaku]
+mariotaku 01/14/2022 5:57 PM
+webOS branch is slower because it has more packages
+01/14/2022 5:56 PM
+@Smx ccache did its job!
+[unknown.png]
+ unknown.png
+84.13 KB External
+[mariotaku]
+mariotaku 01/14/2022 12:36 PM
+lemon package has a small issue causes build error. I'll create a PR to
+webos branch for that.
+01/14/2022 12:35 PM
+By the way I almost got build for webOS (+cache) working
+[smx2460]
+smx2460 01/14/2022 12:33 PM
+One of these days
+01/14/2022 12:33 PM
+I'll re-try it
+01/14/2022 12:31 PM
+gcc-initial is a C compiler that is used to compile the start files/C
+library only, then gcc-final is instructed to use them by default
+(edited)
+01/14/2022 12:31 PM
+Aka gcc-final but cross compiled
+01/14/2022 12:31 PM
+Using the first one's sysroot
+01/14/2022 12:30 PM
+Disregard everything then..... I think the best idea is to build a
+second gcc (edited)
+01/14/2022 12:30 PM
+So yeah I'm not sure how many edits one needs to make
+01/14/2022 12:29 PM
+To get from _start to main(argc, argv)
+01/14/2022 12:29 PM
+Even if you use dynamic linking, the C library has the so called
+startfiles that are linked in every executable
+01/14/2022 12:28 PM
+Otherwise you'd potentially use say newlib in place of glibc
+01/14/2022 12:28 PM
+I mean crti, crtn and friends
+01/14/2022 12:27 PM
+And override it with the buildroot one
+01/14/2022 12:27 PM
+It can work provided you disregard the default CRT/libc (edited)
+01/14/2022 12:27 PM
+It might be arm-none tho
+01/14/2022 12:27 PM
+In the msys repo
+01/14/2022 12:27 PM
+Actually I think there is actually an arm toolchain already
+01/14/2022 12:26 PM
+crosstool-ng might be able to do it
+01/14/2022 12:26 PM
+Otherwise yeah we need a way to cross gcc
+01/14/2022 12:26 PM
+Ideally we would keep the same binutils and GCC versions but it's not a
+big deal
+01/14/2022 12:25 PM
+It should work indeed
+[smx2460]
+[] mariotaku I think we can use precompiled toolchain by linaro with our
+own sysroot
+smx2460 01/14/2022 12:25 PM
+Linaro for windows?
+[infowski]
+[] mariotaku <@!501722020434673674> tried to build deb directly, I think
+for now ares-package is still a better s...
+infowski 01/14/2022 9:40 AM
+Sure. I was honestly thinking of just building these "manually" - i
+think it should be possible to extend metadata by calling dpkg-deb, but
+it can just be a subproject for later 
+[mariotaku]
+mariotaku 01/14/2022 9:22 AM
+@infowski tried to build deb directly, I think for now ares-package is
+still a better solution because some metadata can't be added with cpack.
+webOS-Package-Format-Version: 2
+[mariotaku]
+[] smx2460 the second time you'd need to somehow take that buildroot's
+`host` dir
+mariotaku 01/14/2022 4:07 AM
+I think we can use precompiled toolchain by linaro with our own sysroot
+[mariotaku]
+[] smx2460 you just need to make `appinfo.json.in`
+mariotaku 01/14/2022 4:06 AM
+I'm doing this too!
+January 13, 2022
+[smx2460]
+smx2460 01/13/2022 11:02 PM
+then we might have a windows toolchain (edited)
+01/13/2022 11:02 PM
+assuming we do all the patches to do this (if it's worth it, otherwise
+it's just something that will introduce more upstream differences)
+01/13/2022 11:01 PM
+but it needs to use the previously built linux-native binutils to link
+it as .exe (edited)
+01/13/2022 11:01 PM
+build: linux x64 host: mingw32 target: arm
+01/13/2022 11:01 PM
+the second time it needs to be
+01/13/2022 11:01 PM
+note that we also need to build binutils twice
+01/13/2022 11:00 PM
+which means having special casing in binutils and gcc
+01/13/2022 11:00 PM
+and use it to generate the windows xgcc
+01/13/2022 11:00 PM
+the second time you'd need to somehow take that buildroot's host dir
+01/13/2022 11:00 PM
+and we have all linux binaries
+01/13/2022 11:00 PM
+the first time regularly
+01/13/2022 10:59 PM
+one way to do this could be to build buildroot twice
+01/13/2022 10:59 PM
+would be unable to run unless you use wine
+01/13/2022 10:59 PM
+additionally, all host packages like python, cmake, etc.
+01/13/2022 10:59 PM
+aka build: linux x64 host: linux x64 target: mingw64
+01/13/2022 10:58 PM
+the problem is that it depends on binutils being recompiled to target
+windows .exe and .dll
+01/13/2022 10:58 PM
+i tried changing --host of gcc in a new package i called "gcc-cross"
+(edited)
+01/13/2022 10:58 PM
+the main issue is that buildroot doesn't support this, but it's not the
+end of the world
+01/13/2022 10:58 PM
+where build: linux x64 host: mingw64 target: arm
+01/13/2022 10:57 PM
+for starters, the official name for that is "canadian cross"
+01/13/2022 10:57 PM
+@Mariotaku i took a look at the mingw cross idea
+[smx2460]
+smx2460 01/13/2022 7:43 PM
+when you have dinner i am having lunch lol
+01/13/2022 7:42 PM
+you're 8 hours ahead lol
+01/13/2022 7:41 PM
+timezones suck tho
+[unknown.png]
+ unknown.png
+12.83 KB External
+01/13/2022 7:40 PM
+in a way non dissimilar from Java properties
+01/13/2022 7:40 PM
+which will perform variable expansion
+01/13/2022 7:40 PM
+and give it to CMake
+01/13/2022 7:40 PM
+you just need to make appinfo.json.in
+01/13/2022 7:40 PM
+LG uses it too, for pkg-config files
+01/13/2022 7:39 PM
+which are substituted with variables
+01/13/2022 7:39 PM
+CMake supports template files
+01/13/2022 7:39 PM
+and
+01/13/2022 7:39 PM
+keep in mind that CMake is turing complete
+[smx2460]
+[] mariotaku And now the only problem to solve is how we generate
+appinfo without external tool
+smx2460 01/13/2022 7:39 PM
+what do you mean "without external tool"
+[smx2460]
+smx2460 01/13/2022 7:38 PM
+the problem with autotools ^
+01/13/2022 7:38 PM
+(no content)
+[unknown.png]
+ unknown.png
+35.04 KB External
+[mariotaku]
+mariotaku 01/13/2022 5:47 PM
+json is so simple that we can easily concat strings
+01/13/2022 5:46 PM
+And now the only problem to solve is how we generate appinfo without
+external tool
+01/13/2022 5:43 PM
+Then you install binaries to their location, and cpack will generate a
+Deb package for you. For newer cmake it can even output IPK
+01/13/2022 5:42 PM
+First you specify install prefix to usr/palm/applications/APPID, then
+add for usr/palm/packages/PKGID as well.
+[infowski]
+infowski 01/13/2022 5:38 PM
+huh, til cpack
+[mariotaku]
+mariotaku 01/13/2022 5:38 PM
+Should be simple
+01/13/2022 5:38 PM
+I tried to use cpack + deb
+[infowski]
+infowski 01/13/2022 5:36 PM
+for JS stuff we can use @webosose/ares-cli, especially that mostly these
+things already use NPM
+01/13/2022 5:35 PM
+at least for native apps
+01/13/2022 5:35 PM
+I'd opt for using dpkg-deb and friends directly. Possibly in some very
+simple .sh wrapper
+[smx2460]
+smx2460 01/13/2022 5:32 PM
+@Mariotaku do we need a package for ares stuff too?
+[mariotaku]
+mariotaku 01/13/2022 5:06 PM
+A small nice wrapper to be in place of cmake executable
+ 1
+01/13/2022 5:05 PM
+https://github.com/webosbrew/dev-utils/blob/main/scripts/cmake-wrapper.sh
+dev-utils/cmake-wrapper.sh at main · webosbrew/dev-utils
+Contribute to webosbrew/dev-utils development by creating an account on
+GitHub.
+[smx2460]
+[] mariotaku Like `libcurl.so.4/5`
+smx2460 01/13/2022 4:38 PM
+I'll check after
+[smx2460]
+smx2460 01/13/2022 4:38 PM
+Hmm
+[mariotaku]
+mariotaku 01/13/2022 4:36 PM
+what about netcast? I think two SDKs will be provided separately
+ww8543 01/13/2022 4:28 PM
+why not arm-openlgtv-linux-gnueabi?
+[mariotaku]
+mariotaku 01/13/2022 4:12 PM
+And I changed the name of toolchain to arm-webos-linux-gnueabi instead
+of arm-buildroot-linux-gnueabi.
+01/13/2022 4:11 PM
+Like libcurl.so.4/5
+01/13/2022 4:10 PM
+Just realized that some libs are different between webOS and NetCast
+[smx2460]
+smx2460 01/13/2022 2:32 PM
+Meanwhile I merged your pr
+01/13/2022 2:32 PM
+Sure, feel free
+[mariotaku]
+mariotaku 01/13/2022 1:21 PM
+Noice. Then I'll mess with things and remove branch when finished
+[smx2460]
+smx2460 01/13/2022 1:18 PM
+So you can already see there
+01/13/2022 1:18 PM
+All branches will trigger Cirrus CI
+[smx2460]
+[] mariotaku Oh, I just wanted to explore things without messing your
+repo lol
+smx2460 01/13/2022 1:18 PM
+That's what branches are for  (edited)
+[smx2460]
+smx2460 01/13/2022 1:17 PM
+If you cache the compiler output it would probably take 10 mins or so
+lol (edited)
+01/13/2022 1:17 PM
+27 mins
+01/13/2022 1:17 PM
+A bit less when caching downloads
+01/13/2022 1:17 PM
+30 mins
+01/13/2022 1:17 PM
+But not with the WebOS config yet
+[mariotaku]
+mariotaku 01/13/2022 1:17 PM
+Yep. How's the build time now?
+[smx2460]
+[] mariotaku I think with a faster builder we can just `make sdk`
+smx2460 01/13/2022 1:16 PM
+Cirrus CI is already doing so
+[smx2460]
+smx2460 01/13/2022 1:16 PM
+[mariotaku]
+[] smx2460 Does it make the basic toolchain without the libs?
+mariotaku 01/13/2022 1:07 PM
+I think with a faster builder we can just make sdk
+[mariotaku]
+[] smx2460 (not sure why you're reinventing the CI setup)
+mariotaku 01/13/2022 1:06 PM
+Oh, I just wanted to explore things without messing your repo lol
+[smx2460]
+smx2460 01/13/2022 1:02 PM
+Technically NC4 might need DirectFB tho, and WebOS wayland
+01/13/2022 1:02 PM
+We could just ship a unified one if there are no conflicting packages
+01/13/2022 1:01 PM
+Only difference is the set of packages we add after
+01/13/2022 1:01 PM
+I ask because the toolchain is identical for NC4 and WebOS
+01/13/2022 1:01 PM
+make SDK also installs libs and headers for all enabled components
+01/13/2022 1:01 PM
+Does it make the basic toolchain without the libs?
+01/13/2022 1:01 PM
+I didn't know about "make toolchain" tho
+01/13/2022 1:00 PM
+(no content)
+[Screenshot_2022-01-13-12-59-59-885_org.mozilla.firefox.jpg]
+ Screenshot_2022-01-13-12-59-59-885_org.mozilla.firefox.jpg
+230.86 KB External
+01/13/2022 12:59 PM
+(not sure why you're reinventing the CI setup)
+[smx2460]
+[] mariotaku If it's working, we can add that to buildroot as a package
+and start to ship binaries
+smx2460 01/13/2022 12:59 PM
+And I already have binaries on Cirrus CI
+[smx2460]
+smx2460 01/13/2022 11:53 AM
+once you confirm, you can push directly to buildroot-nc4
+01/13/2022 11:53 AM
+@Mariotaku access granted!
+[mariotaku]
+mariotaku 01/13/2022 9:43 AM
+If it's working, we can add that to buildroot as a package and start to
+ship binaries
+01/13/2022 9:43 AM
+Cool. Whether it's enabled or not it's fast. I'll make a toolchain
+script to see if it can be used as standalone SDK.
+[smx2460]
+smx2460 01/13/2022 8:52 AM
+But it's faster than your "with cache" situation without it
+01/13/2022 8:52 AM
+If I enable the cache on Cirrus CI it would be even quicker
+01/13/2022 8:52 AM
+I mean
+01/13/2022 8:52 AM
+XD
+01/13/2022 8:52 AM
+It's faster on Cirrus CI without the cache
+ww8543 01/13/2022 8:38 AM
+thats quite the time saver 
+[mariotaku]
+[] smx2460 how big is the final cache?
+mariotaku 01/13/2022 8:30 AM
+600MB
+[mariotaku]
+mariotaku 01/13/2022 3:54 AM
+Definitely worth it @Smx
+01/13/2022 3:54 AM
+ccache hit:
+    real    17m36.979s
+    user    38m35.794s
+    sys     8m2.401s
+[mariotaku]
+mariotaku 01/13/2022 3:38 AM
+Compile log rolls like lighting on second try
+01/13/2022 3:38 AM
+I have a good feeling about this
+01/13/2022 3:35 AM
+ccache empty:
+    real    33m44.463s
+    user    144m52.252s
+    sys     18m26.315s
+[mariotaku]
+[] smx2460 And I will eventually merge WebOS with master
+mariotaku 01/13/2022 2:11 AM
+Sure! I'll be happy to have write permission
+[smx2460]
+smx2460 01/13/2022 1:17 AM
+Just pull commits in, fast forward
+01/13/2022 1:17 AM
+As there is nothing to merge really
+01/13/2022 1:17 AM
+And I will eventually merge WebOS with master
+01/13/2022 1:16 AM
+I can just add you to the group so you can push to it
+01/13/2022 1:16 AM
+openlgtv/WebOSbrew
+01/13/2022 1:16 AM
+Also, do we really need another fork?
+January 12, 2022
+[smx2460]
+[] mariotaku Sounds nice, eh?
+smx2460 01/12/2022 10:31 PM
+i'll take a look tomorrow actually, too tired this evening
+[smx2460]
+smx2460 01/12/2022 9:50 PM
+into something yafex can consume (edited)
+01/12/2022 9:50 PM
+converts the existing epk2extract squashfs code
+01/12/2022 9:50 PM
+this piece of shell script
+01/12/2022 9:49 PM
+    #!/bin/bash
+    EPK2EXTRACT=$HOME/epk2extract
+    OUTDIR=Yafex/bin/Debug/net5.0
+    gcc -shared -nostdlib \
+        -o ${OUTDIR}/squashfs.dll \
+        -L${EPK2EXTRACT}/build_cygwin/obj/src/squashfs \
+        -Wl,-whole-archive -lsquashfs \
+        -Wl,-no-whole-archive \
+        -llzo2 -lz \
+        -lgcc -lc -lcygwin -lkernel32
+ww8543 01/12/2022 9:49 PM
+golang rewrite, when?
+[smx2460]
+smx2460 01/12/2022 9:49 PM
+this is an example of how file formats are implemented
+01/12/2022 9:49 PM
+@infowski
+https://github.com/smx-smx/yafex/blob/master/Yafex/FileFormats/MStarPkg/MStarPkgAddon.cs
+yafex/MStarPkgAddon.cs at master · smx-smx/yafex
+Yet another Firmware/File Extractor. Contribute to smx-smx/yafex
+development by creating an account on GitHub.
+[]
+01/12/2022 9:48 PM
+i'm not throwing it away yet tho (edited)
+01/12/2022 9:48 PM
+so i think i'll have to give up the "i'd like to use Kotlin" and settle
+with C#
+01/12/2022 9:48 PM
+also C# is a bit faster all things considered
+01/12/2022 9:48 PM
+because you need JNA and it's generally annoying to do
+01/12/2022 9:47 PM
+it's much easier to do in C# than Kotlin (JVM) (edited)
+01/12/2022 9:47 PM
+for example SquashFS
+01/12/2022 9:47 PM
+the problem is with supporting native extensions
+01/12/2022 9:47 PM
+and i was favouring it because i liked it more
+01/12/2022 9:47 PM
+the Kotlin one has approx the same feature set
+01/12/2022 9:46 PM
+which has been renamed to yafex
+01/12/2022 9:46 PM
+the other is called FirmexSharp
+01/12/2022 9:46 PM
+one is part of the elGee toolbox, called firmex (edited)
+[infowski]
+infowski 01/12/2022 9:46 PM
+Ah!
+[smx2460]
+smx2460 01/12/2022 9:46 PM
+@infowski i have 2 PoCs for the new implementation
+[infowski]
+infowski 01/12/2022 9:42 PM
+could you remind me what was the kotlin piece of software? 
+ww8543 01/12/2022 9:40 PM
+you finally decided on a name?
+01/12/2022 9:40 PM
+wow
+[smx2460]
+smx2460 01/12/2022 9:24 PM
+but that's epk2extract-ng
+01/12/2022 9:24 PM
+it still needs some love
+01/12/2022 9:24 PM
+but i wanted to start publishing something
+01/12/2022 9:24 PM
+it might be a bit rough
+01/12/2022 9:24 PM
+@ww https://github.com/smx-smx/yafex
+smx-smx/yafex
+Yet another Firmware/File Extractor. Contribute to smx-smx/yafex
+development by creating an account on GitHub.
+[]
+[infowski]
+infowski 01/12/2022 7:59 PM
+Yeah.
+[dsl444]
+dsl444 01/12/2022 7:58 PM
+I just Use the repo Version should be v.1
+[infowski]
+infowski 01/12/2022 7:58 PM
+piccap "0.2.1" is still prerelease/development so it's not visible on
+homebrew channel yet.
+[dsl444]
+dsl444 01/12/2022 7:57 PM
+[infowski]
+infowski 01/12/2022 7:57 PM
+but there are no notifications yet.
+01/12/2022 7:57 PM
+it'll tell you if there's an update or not.
+01/12/2022 7:57 PM
+Or just open homebrew channel page for that app
+[dsl444]
+dsl444 01/12/2022 7:57 PM
+So i have to check manual in the repo for a PicCap Update 
+[infowski]
+[] dsl444 Hello everyone, if there are updates in the store, is there
+actually a notification? 
+infowski 01/12/2022 7:50 PM
+Sadly not.
+[dsl444]
+dsl444 01/12/2022 7:48 PM
+Hello everyone, if there are updates in the store, is there actually a
+notification? 
+[smx2460]
+[] infowski now i am wondering how broken is buildroot on nixos :^)
+smx2460 01/12/2022 6:56 PM
+Try it 
+[smx2460]
+[] mariotaku Are you interested in adding ccache? I'm trying that to see
+how good it can speed up build process
+smx2460 01/12/2022 6:50 PM
+Let me know if it's worth it
+[smx2460]
+smx2460 01/12/2022 6:18 PM
+how big is the final cache?
+[mariotaku]
+mariotaku 01/12/2022 5:09 PM
+Are you interested in adding ccache? I'm trying that to see how good it
+can speed up build process
+01/12/2022 5:07 PM
+Noice
+[smx2460]
+smx2460 01/12/2022 5:06 PM
+Which means they can also offer more
+[infowski]
+infowski 01/12/2022 5:06 PM
+sure, makes sense.
+[smx2460]
+smx2460 01/12/2022 5:06 PM
+They apparently cut 80% of gcloud costs like that
+01/12/2022 5:05 PM
+It never happened to me so far
+01/12/2022 5:05 PM
+Which means that you could have your build cancelled in between
+01/12/2022 5:05 PM
+They use GCloud preemptive VMs
+[infowski]
+infowski 01/12/2022 5:05 PM
+never set it up. if it works well with github releases and things like
+that, then why not.
+01/12/2022 5:05 PM
+https://cirrus-ci.org/faq/#are-there-any-limits heh, indeed.
+FAQ - Cirrus CI
+Cirrus CI is a modern Continuous Integration system built for the era of
+cloud computing. Cirrus CI supports Linux, Windows, macOS and FreeBSD
+environments as well as various cloud computing services like
+Kubernetes, Google Cloud, AWS and Azure.
+[smx2460]
+smx2460 01/12/2022 5:04 PM
+Unless you use macOS, then it's 12
+01/12/2022 5:04 PM
+8 per task
+01/12/2022 5:04 PM
+16 cores allocatable per build
+01/12/2022 5:03 PM
+Single build
+[infowski]
+infowski 01/12/2022 5:03 PM
+>2 hours limit is that monthly limit, or just single build? what are
+actual caps there?
+[smx2460]
+smx2460 01/12/2022 5:02 PM
+Without any WebOS component
+01/12/2022 5:02 PM
+It's taking around 30 minutes for a base build
+01/12/2022 5:02 PM
+Which is already set up, faster, and has a max 2 hours limit so it can
+def. Handle it
+01/12/2022 5:01 PM
+https://cirrus-ci.com/task/4959613656236032
+Cirrus CI
+Cirrus CI makes your development cycle fast, efficient, and secure by
+leveraging modern cloud technologies.
+[]
+[smx2460]
+[] mariotaku I'm setting up github actions build for buildroot to see if
+it can handle that
+smx2460 01/12/2022 5:01 PM
+Why not Cirrus CI
+[mariotaku]
+mariotaku 01/12/2022 4:06 PM
+Or if not, find the GUID and let's build the mapping
+[mariotaku]
+[] infowski I think controllers are supposed to just work on moonlight?
+<@!225167450713358338> ? :3
+mariotaku 01/12/2022 4:06 PM
+Should be
+[infowski]
+infowski 01/12/2022 3:50 PM
+sadly seems like webOS 3.x Bluetooth controller support is very deeply
+tied to DS4s, and I don't even have any BT Classic controllers outside
+of that DS4 (actually borrowed from a friend to test that out) to try
+hacking around these limitations. (edited)
+01/12/2022 3:49 PM
+yeah, probably, if you don't have enough DS4 controllers.
+[sebsorano]
+sebsorano 01/12/2022 3:49 PM
+So I guess a usb-hub with a long cable to the TV then controllers
+connected to the hub would be the best way to go for couchgaming
+[infowski]
+infowski 01/12/2022 3:48 PM
+[n e g a t i v e l a t e n c y]
+[sebsorano]
+sebsorano 01/12/2022 3:48 PM
+Shame that the Stadia controller does not support using bluetooth for
+actually playing.
+[infowski]
+infowski 01/12/2022 3:46 PM
+I am suspecting it will work, since the controllers just appear as
+normal SDL controllers, same as USB ones, and USB works perfectly on
+Moonlight iiuc.
+[sebsorano]
+sebsorano 01/12/2022 3:46 PM
+Ok, thats still good to hear.
+[infowski]
+infowski 01/12/2022 3:46 PM
+Though UI doesn't support navigation using controllers as far as I could
+tell.
+[sebsorano]
+sebsorano 01/12/2022 3:46 PM
+Probably going to test it later this evening when kids are asleep.
+[infowski]
+infowski 01/12/2022 3:45 PM
+I think controllers are supposed to just work on moonlight? @Mariotaku ?
+:3
+[sebsorano]
+[] infowski Nope, since I don't have server-side set up.
+sebsorano 01/12/2022 3:45 PM
+Same.
+[infowski]
+infowski 01/12/2022 3:45 PM
+Nope, since I don't have server-side set up.
+[sebsorano]
+sebsorano 01/12/2022 3:45 PM
+I could not find any settings in the app for managing controllers
+01/12/2022 3:45 PM
+Have you tried moonlight?
+01/12/2022 3:45 PM
+Hehe, no sweat 
+[infowski]
+infowski 01/12/2022 3:44 PM
+I am not great at english, okay?
+[sebsorano]
+sebsorano 01/12/2022 3:44 PM
+Oh yeah, my bad
+[infowski]
+infowski 01/12/2022 3:44 PM
+I meant - it works for me. 
+[sebsorano]
+sebsorano 01/12/2022 3:44 PM
+Which webos are you on that it isn't working?
+[infowski]
+infowski 01/12/2022 3:43 PM
+Yeah - that one is for keyboard only and doesn't work probably. 
+[sebsorano]
+sebsorano 01/12/2022 3:43 PM
+I did not use the file from the gist
+[infowski]
+infowski 01/12/2022 3:43 PM
+yeah. great to hear it works for someone besides me  (edited)
+ 1
+[sebsorano]
+sebsorano 01/12/2022 3:43 PM
+Yeah, just the luna-send commands and replaced the mac obviously.
+[infowski]
+[] sebsorano 3.9.0
+infowski 01/12/2022 3:42 PM
+Sweet - so you followed my "guide" from that issue? (edited)
+[infowski]
+infowski 01/12/2022 3:42 PM
+Or somewhere in system settings, it's called "webOS TV Version"
+[sebsorano]
+sebsorano 01/12/2022 3:42 PM
+3.9.0
+[unknown.png]
+ unknown.png
+3.72 KB External
+[infowski]
+infowski 01/12/2022 3:41 PM
+cat /etc/issue if you have root ssh/telnet already (edited)
+[sebsorano]
+sebsorano 01/12/2022 3:41 PM
+I dont know lol... Which is the easiset way to find out?
+[infowski]
+[] sebsorano I just paired my dualshock 4 controllers and could remap
+bindings in Retroarch using the controller.
+infowski 01/12/2022 3:40 PM
+Which webOS version are you on?
+[sebsorano]
+sebsorano 01/12/2022 3:39 PM
+I just paired my dualshock 4 controllers and could remap bindings in
+Retroarch using the controller.
+[mariotaku]
+mariotaku 01/12/2022 3:03 PM
+I'm setting up github actions build for buildroot to see if it can
+handle that
+[mariotaku]
+mariotaku 01/12/2022 1:12 PM
+Or we can use prebuilt toolchain?
+[smx2460]
+smx2460 01/12/2022 1:05 PM
+Debian does it
+01/12/2022 1:05 PM
+Technically you can have multiple gccs cohexist
+01/12/2022 1:04 PM
+buildroot doesn't have a facility for this , we'll make something up
+01/12/2022 1:04 PM
+Or whatever else
+01/12/2022 1:04 PM
+It might be output/host/usr/mingw
+01/12/2022 1:03 PM
+But what if I want to cross compile GCC for macOS (edited)
+01/12/2022 1:03 PM
+It's true that it has .exe
+01/12/2022 1:03 PM
+So you don't accidentally overwrite some Linux files with windows
+equivalent
+01/12/2022 1:03 PM
+You might need/want a sub prefix
+01/12/2022 1:02 PM
+To keep things simple I think we'll have a single SDK that works on both
+Linux and Windows
+01/12/2022 1:02 PM
+You still need to build the Linux version of GCC ofc, for libraries and
+other stuff (edited)
+01/12/2022 1:01 PM
+I can take a look this evening
+01/12/2022 1:01 PM
+Both should work with the same libraries and headers
+01/12/2022 1:01 PM
+One with .exe extension and one without
+01/12/2022 1:01 PM
+We'll end up with 2 binutils and 2 gccs
+01/12/2022 12:59 PM
+So Linux cross compiles GCC for Windows while targeting Arm
+01/12/2022 12:59 PM
+So you need to duplicate the host-gcc package
+01/12/2022 12:59 PM
+The other for Windows x64 --> Linux ARM
+01/12/2022 12:58 PM
+One for Linux x64 --> Linux ARM
+01/12/2022 12:58 PM
+You want 2 gccs
+01/12/2022 12:58 PM
+Actually not even that
+[mariotaku]
+mariotaku 01/12/2022 12:57 PM
+Sounds nice, eh?
+[smx2460]
+smx2460 01/12/2022 12:57 PM
+What you want to do is probably called Canadian cross
+01/12/2022 12:55 PM
+From Linux
+[smx2460]
+[] mariotaku Like build the SDK for windows
+smx2460 01/12/2022 12:55 PM
+Maybe you can cross compile it
+[smx2460]
+smx2460 01/12/2022 12:54 PM
+It would be TERRIBLY slow
+01/12/2022 12:54 PM
+Even if it worked in Msys/cygwin tho
+01/12/2022 12:54 PM
+Making upstream merges more troublesome
+01/12/2022 12:54 PM
+In that it's not officially supported and would need hacks
+01/12/2022 12:53 PM
+Even macOS/BSD has the same issues iirc
+01/12/2022 12:53 PM
+Technically possible but practically a nightmare
+01/12/2022 12:53 PM
+@Mariotaku I think it's unsupported
+[mariotaku]
+mariotaku 01/12/2022 12:41 PM
+Nah syscall headers missing
+[mariotaku]
+ww8543 if that doesnt work, you could also try cygwin....
+mariotaku 01/12/2022 11:21 AM
+ded with mingw, trying cygwin now
+[] mariotaku I'm thinking something crazy. Can I run buildroot under
+msys2?
+ww8543 01/12/2022 11:02 AM
+if that doesnt work, you could also try cygwin....
+[infowski]
+infowski 01/12/2022 10:48 AM
+now i am wondering how broken is buildroot on nixos :^)
+01/12/2022 10:44 AM
+I don't think that's supported at all, but still probably worth a try.
+[mariotaku]
+mariotaku 01/12/2022 10:43 AM
+Like build the SDK for windows
+01/12/2022 10:43 AM
+I'm thinking something crazy. Can I run buildroot under msys2?
+[infowski]
+[] sebsorano How is the controller support on LG's?
+infowski 01/12/2022 10:42 AM
+Game controllers? Depends on webOS version. I think pretty much all
+webOS versions support USB HID ones. For Bluetooth - for example on
+webOS 3.8 only DS4 (PS4) controllers are working (though require minor
+hacks) -
+https://github.com/webosbrew/apps-repo/issues/20#issuecomment-1007444639
+(edited)
+ 1
+[mariotaku]
+mariotaku 01/12/2022 10:33 AM
+Ooh sweet
+[infowski]
+[] smx2460 <@!501722020434673674> just figured out "make sdk" is a
+target in buildroot
+infowski 01/12/2022 10:32 AM
+there
+[mariotaku]
+mariotaku 01/12/2022 10:31 AM
+@Smx Can this be built into a complete tarball (including cross gcc?)
+[smx2460]
+smx2460 01/12/2022 9:21 AM
+Ah :)
+[sebsorano]
+sebsorano 01/12/2022 9:15 AM
+How is the controller support on LG's?
+[mariotaku]
+mariotaku 01/12/2022 9:14 AM
+Nope, never needed 
+[smx2460]
+smx2460 01/12/2022 8:43 AM
+Json c no longer required?
+[smx2460]
+[] mariotaku I'll issue a PR soon
+smx2460 01/12/2022 8:43 AM
+Perfect!
+[mariotaku]
+mariotaku 01/12/2022 5:11 AM
+I'll issue a PR soon
+ 1
+01/12/2022 5:11 AM
+Everything is perfect now
+[mariotaku]
+[] smx2460 i'll wait for マリオオタク for the remaining dependency
+related patches i want to merge in
+mariotaku 01/12/2022 5:10 AM
+Got moonlight running!
+[smx2460]
+smx2460 01/12/2022 1:49 AM
+you need an account on the LG site first
+01/12/2022 1:49 AM
+@MaryJohanna420 NC4 crap
+[maryjohanna42069]
+maryjohanna42069 01/12/2022 1:34 AM
+You can sign ipks and you can then install those without dev mode?
+[maryjohanna42069]
+[] smx2460 Click to see attachment
+maryjohanna42069 01/12/2022 1:33 AM
+What is this for exactly?
+[smx2460]
+smx2460 01/12/2022 12:28 AM
+nice
+01/12/2022 12:28 AM
+x86 builds of libnc*api too
+01/12/2022 12:26 AM
+not sure what that is
+01/12/2022 12:26 AM
+they have some strange CGI called billing in there
+01/12/2022 12:25 AM
+    VM_BILLSERVER=/usr/local/bin/BillingServer.jar
+    killall -q -9 java                      # kill previoius java -jar BillingServer.jar
+    if [ -e $VM_BILLSERVER ]; then
+            echo "-- executing VM BILLING SERVER --"
+            java -jar $VM_BILLSERVER &
+    fi
+01/12/2022 12:25 AM
+    lrwxrwxrwx  1 root   root         10 2014-01-20 17:54 RELEASE -> DVB-BB-X86
+01/12/2022 12:24 AM
+there is an x86 build of RELEASE
+01/12/2022 12:24 AM
+xD (edited)
+01/12/2022 12:24 AM
+i noticed too late and i overwrote some
+01/12/2022 12:24 AM
+they also left some of root's history
+01/12/2022 12:24 AM
+lol
+01/12/2022 12:24 AM
+      key = 0;
+      while ( *buf )
+        key = 31 * key + *buf++;
+      return key;
+01/12/2022 12:24 AM
+they wrote this tool to do it
+01/12/2022 12:23 AM
+      memcpy(dest, "sudo blkid", 0xBu);
+      cmd = popen(dest, "r");
+      if ( !cmd )
+        return -1;
+      key = 0;
+      while ( fgets(s, 256, cmd) )
+        key += makeKey(s);
+      memcpy(dest, "sudo cryptsetup luksOpen /dev/sdb platform", 0x2Bu);
+      sprintf(command, "echo \"%d\" | ", key);
+      strcat(command, dest);
+      if ( popen(command, "r") )
+        return 0;
+      else
+        return -1;
+    }
+01/12/2022 12:23 AM
+lol
+01/12/2022 12:23 AM
+is the key for the luks disk
+01/12/2022 12:23 AM
+01/12/2022 12:23 AM
+trough this function
+01/12/2022 12:23 AM
+    acc = acc * 31 + chr
+01/12/2022 12:23 AM
+running the output of "blkid"
+01/12/2022 12:22 AM
+LG's super complicated LUKS key for the NC4 VM
+01/12/2022 12:22 AM
+@retr0id
+01/12/2022 12:22 AM
+ladies and gentlemen
+[smx2460]
+smx2460 01/12/2022 12:12 AM
+lol
+01/12/2022 12:12 AM
+LG left the root history
+January 11, 2022
+[smx2460]
+smx2460 01/11/2022 11:37 PM
+has any of you ever messed with LUKS? (edited)
+[smx2460]
+smx2460 01/11/2022 11:18 PM
+lel
+01/11/2022 11:18 PM
+    logger.debug("sava snapshot info : " + strFileName);
+01/11/2022 11:17 PM
+wtf?!
+01/11/2022 11:17 PM
+    try {
+                   boolean bCheck = false;
+                   String line = "";
+                   String command = "ps -ef";
+                   run = Runtime.getRuntime();
+                   proc = run.exec(command);
+                   is = proc.getInputStream();
+                   isr = new InputStreamReader(is);
+                   br = new BufferedReader(isr);
+                   while(true) {
+                      line = br.readLine();
+                      if (line == null) {
+                         CommonVar.bPlexMediaServer = bCheck;
+                         break;
+                      }
+                      if (line.toLowerCase().contains("plex media server")) {
+                         bCheck = true;
+                         logger.debug(line);
+                      }
+                   }
+01/11/2022 11:11 PM
+it's encrypted iirc
+01/11/2022 11:11 PM
+that i never really explored much
+01/11/2022 11:11 PM
+tho it has a NC4 VDI
+01/11/2022 11:11 PM
+heh
+01/11/2022 11:11 PM
+for web stuff
+01/11/2022 11:11 PM
+useless SDK
+01/11/2022 11:08 PM
+(no content)
+[unknown.png]
+ unknown.png
+18.22 KB External
+01/11/2022 11:08 PM
+(no content)
+[unknown.png]
+ unknown.png
+58.95 KB External
+[smx2460]
+smx2460 01/11/2022 10:15 PM
+(he just needs to push them or drop me a git diff)
+01/11/2022 10:15 PM
+i'll wait for マリオオタク for the remaining dependency related patches
+i want to merge in
+01/11/2022 10:13 PM
+@Mariotaku @infowski
+https://github.com/openlgtv/buildroot-nc4/commit/9e252169f76991c1f22374bf7dcd85254e3c2faa
+libcurl: added optional soname_bump switch · openlgtv/buildroot-nc4...
+[]
+ 1
+[tpmodding]
+tpmodding 01/11/2022 9:08 PM
+Ah okay 
+[infowski]
+infowski 01/11/2022 9:08 PM
+I... don't think we have any questions yet, but may at some point. 
+[tpmodding]
+tpmodding 01/11/2022 9:08 PM
+Here i am
+[infowski]
+infowski 01/11/2022 9:08 PM
+yeah, and Paulchen-Panther.
+[smx2460]
+smx2460 01/11/2022 9:07 PM
+[] infowski I think we actually happen to have someone from hyperion.ng
+project here lol
+ww8543 01/11/2022 9:07 PM
+yes! @TPmodding isn't it
+[smx2460]
+smx2460 01/11/2022 8:21 PM
+the file will be loaded "early" (when?)
+01/11/2022 8:21 PM
+    If cmake(1) is invoked with the command line parameter --toolchain path/to/file or -DCMAKE_TOOLCHAIN_FILE=path/to/file, the file will be loaded early to set values for the compilers. The CMAKE_CROSSCOMPILING variable is set to true when CMake is cross-compiling.
+01/11/2022 8:21 PM
+maybe only the toolchain file i think
+01/11/2022 8:21 PM
+at the very start, almost nothing is set (edited)
+01/11/2022 8:21 PM
+at each step, more variables are populated
+01/11/2022 8:21 PM
+nothing defined - toolchain settings defined - oh it's a C project, add
+C settings - platform settings defined etc...
+01/11/2022 8:20 PM
+the thing is, CMake has different levels of initialization
+[infowski]
+[] smx2460 how do you define what to pull in
+infowski 01/11/2022 8:19 PM
+You either consider a child project like a subprocess and just take over
+all existing cmake environment, or just inherit top-level environment
+variables like it was executed from clean start in the same shell.
+[smx2460]
+smx2460 01/11/2022 8:19 PM
+it contains the system name, compiler settings, sysroot settings, etc.
+01/11/2022 8:19 PM
+the toolchain file is the "top level environment" you're talking about
+01/11/2022 8:19 PM
+to the external project
+01/11/2022 8:19 PM
+the only fix you really need to add is to pass
+-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+01/11/2022 8:18 PM
+and it's not turing complete either
+01/11/2022 8:18 PM
+in that it forces you to follow a pattern
+01/11/2022 8:18 PM
+Meson is completely opposite
+01/11/2022 8:17 PM
+i like the freedom that CMake gives you in this regard
+01/11/2022 8:17 PM
+and what not to
+[smx2460]
+[] infowski Yeah - then at least it should pull in variables from "top
+level" environment. I don't know. This is...
+smx2460 01/11/2022 8:17 PM
+how do you define what to pull in
+[smx2460]
+smx2460 01/11/2022 8:16 PM
+if it wasn't defined, it will be empty
+01/11/2022 8:16 PM
+if you want to build a library for the same target, you pass it
+[infowski]
+infowski 01/11/2022 8:16 PM
+Yeah - then at least it should pull in variables from "top level"
+environment. I don't know. This is all weird, inconsistent and not very
+well documented.
+[smx2460]
+smx2460 01/11/2022 8:15 PM
+then you don't pass it
+01/11/2022 8:15 PM
+but what if you actually want to build a host tool?
+01/11/2022 8:15 PM
+the common cross-build options are in TOOLCHAIN_FILE
+01/11/2022 8:15 PM
+it shouldn't really pass them to all child projects
+01/11/2022 8:15 PM
+beause if your project has custom CFLAGS (edited)
+[smx2460]
+[] infowski Yeah - but exactly like in shell scripts - I'd expect
+"child" project to receive parent "environment...
+smx2460 01/11/2022 8:15 PM
+i don't really really agree
+[smx2460]
+smx2460 01/11/2022 8:10 PM
+    output/target/usr/lib/libcurl.so.5
+01/11/2022 8:10 PM
+解決しました
+[infowski]
+[] smx2460 because it is generic
+infowski 01/11/2022 8:09 PM
+Yeah - but exactly like in shell scripts - I'd expect "child" project to
+receive parent "environment" variables. Eh. Dunno.
+[smx2460]
+smx2460 01/11/2022 7:55 PM
+01/11/2022 7:55 PM
+    Today, we know of no one who ever got a SONAME bump auto-detected and we
+    don't know of anyone who's using the manual bump feature. The auto-
+    detection is also no longer working since we introduced defining
+    curl_off_t in system.h (7.55.0).
+    Finally, this bumping logic is not present in the cmake build.
+01/11/2022 7:55 PM
+why it didn't work
+01/11/2022 7:55 PM
+@Mariotaku
+https://github.com/curl/curl/commit/d1da545a6881dbeafff86077f696f0dc22d3fc81
+configure: remove --enable-soname-bump and SONAME_BUMP · curl/curl@...
+Back in 2008, (and commit 3f3d6ebe665f3) we changed the logic in how we
+determine the native type for `curl_off_t`. To really make sure we
+didn&#39;t break ABI without bumping SONAME, we introd...
+[]
+[smx2460]
+[] infowski It seems like a mess. Why doesn't it pass these things by
+default?
+smx2460 01/11/2022 7:51 PM
+because it is generic
+[smx2460]
+smx2460 01/11/2022 7:50 PM
+which creates a nice target
+[infowski]
+infowski 01/11/2022 7:50 PM
+It seems like a mess. Why doesn't it pass these things by default?
+[smx2460]
+smx2460 01/11/2022 7:50 PM
+it's just a download,configure,build,install
+[infowski]
+infowski 01/11/2022 7:50 PM
+I am still confused on how cmake external project works
+[smx2460]
+smx2460 01/11/2022 7:50 PM
+therefore, it builds libyuv for the host
+01/11/2022 7:50 PM
+the problem is that it doesn't pass the CMAKE_TOOLCHAIN_FILE
+[infowski]
+infowski 01/11/2022 7:50 PM
+I think we actually happen to have someone from hyperion.ng project here
+lol
+[smx2460]
+smx2460 01/11/2022 7:50 PM
+it pulls in libyuv as an external project
+01/11/2022 7:49 PM
+no
+[infowski]
+infowski 01/11/2022 7:49 PM
+did they build libyuv for host platform somehow?
+01/11/2022 7:49 PM
+huh wat
+[smx2460]
+smx2460 01/11/2022 7:49 PM
+needs some love
+01/11/2022 7:49 PM
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-buildroot-linux-gnueabi/11.2.0/../../../../arm-buildroot-linux-gnueabi/bin/ld: libyuv/lib/libyuv.a: error adding symbols: file format not recognized
+01/11/2022 7:49 PM
+hyperion
+01/11/2022 7:49 PM
+and since you are around... 
+[infowski]
+infowski 01/11/2022 7:48 PM
+Yeah I guess so.
+[smx2460]
+smx2460 01/11/2022 7:48 PM
+as you/we prefer
+[smx2460]
+[] infowski Maybe we could base off official buildroot and just
+encapsulate all our patches/modifications in our...
+smx2460 01/11/2022 7:48 PM
+it's not that hard to merge with upstream either way
+[infowski]
+infowski 01/11/2022 7:47 PM
+I think it's kinda like yocto meta layers (but just less mature = not
+everything is a meta layer = good x-D)
+ 1
+01/11/2022 7:46 PM
+Maybe we could base off official buildroot and just encapsulate all our
+patches/modifications in our ext tree
+01/11/2022 7:46 PM
+Not sure if we overriden any existing packages though.
+[smx2460]
+smx2460 01/11/2022 7:46 PM
+looks like a valid thing
+[infowski]
+infowski 01/11/2022 7:46 PM
+I used it for our internal packages, and I think to ship our defconfigs
+as well.
+01/11/2022 7:46 PM
+Or it works completely differently to yocto/bitbake bbappend mechanism?
+[smx2460]
+smx2460 01/11/2022 7:46 PM
+hmm never used
+[infowski]
+[] smx2460 (p.s. Maybe you should wrap those local changes in a patch,
+later)
+infowski 01/11/2022 7:45 PM
+I recall something called br2-external - is that a thing still, and
+would it match our usecase? (edited)
+[smx2460]
+smx2460 01/11/2022 7:41 PM
+as i always say, timezones suck
+[mariotaku]
+mariotaku 01/11/2022 7:40 PM
+Nothing to sorry about, it's all about timezones! Good night :)
+[smx2460]
+smx2460 01/11/2022 7:40 PM
+good night @Mariotaku
+01/11/2022 7:40 PM
+oh sorry
+[mariotaku]
+mariotaku 01/11/2022 7:29 PM
+Thanks. I have to sleep, there's an interview waiting tomorrow lol
+[smx2460]
+smx2460 01/11/2022 7:27 PM
+I'll take a look at it in a few mins
+[mariotaku]
+mariotaku 01/11/2022 7:27 PM
+Hmm then how we gonna do then? I can use another http lib though... but
+for other apps they will still in pain.
+[smx2460]
+smx2460 01/11/2022 7:27 PM
+(p.s. Maybe you should wrap those local changes in a patch, later)
+01/11/2022 7:25 PM
+Unless you didn't edit it properly or you didn't remove the old lib
+01/11/2022 7:25 PM
+But yeah that's the right way then
+01/11/2022 7:24 PM
+XD
+[mariotaku]
+mariotaku 01/11/2022 7:24 PM
+Another reason not to use their system lol
+01/11/2022 7:24 PM
+I think that's because oe fucked the ABI up:
+https://github.com/openembedded/openembedded-core/commit/49c848018484827c433e1bcf9c63416640456f3e
+curl: Fix wrong assumption about sizeof off_t on largefile systems ...
+This issue was reported on poky ml as well see
+https://lists.yoctoproject.org/pipermail/poky/2013-December/009435.html
+Change-Id: Iedf22467889893111fde0433e411fd0546a38546 (From OE-Core rev:
+3c587...
+[]
+01/11/2022 7:22 PM
+https://github.com/webosose/meta-webosose/blob/builds/webosose/master/1/meta-webos/recipes-support/curl/curl_7.50.1.bbappend
+meta-webosose/curl_7.50.1.bbappend at builds/webosose/master/1 · we...
+Yocto layer for webOS. Contribute to webosose/meta-webosose development
+by creating an account on GitHub.
+[]
+01/11/2022 7:17 PM
+But I really don't feel like to ship it
+01/11/2022 7:17 PM
+Well... yeah
+[smx2460]
+[] mariotaku So they broke libcurl before webOS 5
+smx2460 01/11/2022 7:17 PM
+Ah
+[smx2460]
+smx2460 01/11/2022 7:16 PM
+You still have the option to link it in statically i guess
+[mariotaku]
+mariotaku 01/11/2022 7:16 PM
+So they broke libcurl before webOS 5
+[smx2460]
+[] mariotaku ``` $ find -name 'libcurl.so.?'
+./05.80.70.01-HE_DTV_W17P_AFADABAA/rootfs.pak.unsquashfs/usr/lib/lib...
+smx2460 01/11/2022 7:16 PM
+Wtf
+[smx2460]
+smx2460 01/11/2022 7:16 PM
+    15.1 use correct SONAME
+     The autotools build sets the SONAME properly according to VERSIONINFO in
+     lib/Makefile.am and so should cmake to make comparable build.
+[mariotaku]
+mariotaku 01/11/2022 7:15 PM
+    $ find -name 'libcurl.so.?'
+    ./05.80.70.01-HE_DTV_W17P_AFADABAA/rootfs.pak.unsquashfs/usr/lib/libcurl.so.5
+    ./05.80.70.01-HE_DTV_W17P_AFADABAA/swue.pak.unsquashfs/usr/lib/libcurl.so.5
+    ./03.20.45.01-HE_DTV_W21O_AFABATAA/rootfs.pak.unsquashfs/usr/lib/libcurl.so.5
+    ./03.20.45.01-HE_DTV_W21O_AFABATAA/rootfs.pak.unsquashfs/usr/lib/libcurl.so.4
+    ./05.00.15.01-HE_DTV_WT1M_AFAAABAA/rootfs.pak.unsquashfs/usr/lib/libcurl.so.5
+    ./05.00.02.01-HE_DTV_W19H_AFADJAAA/rootfs.pak.unsquashfs/usr/lib/libcurl.so.5
+    ./05.00.15.01-HE_DTV_W19H_AFADJAAA/rootfs.pak.unsquashfs/usr/lib/libcurl.so.5
+    ./03.21.06.01-HE_DTV_W20L_AFAAJAAA/rootfs.pak.unsquashfs/usr/lib/libcurl.so.5
+    ./03.21.06.01-HE_DTV_W20L_AFAAJAAA/rootfs.pak.unsquashfs/usr/lib/libcurl.so.4
+(edited)
+[smx2460]
+smx2460 01/11/2022 7:14 PM
+    The previous major library soname number bumps (breaking backwards
+    compatibility) happened the following times:
+    0 - libcurl 7.1, August 2000
+    1 - libcurl 7.5 December 2000
+    2 - libcurl 7.7 March 2001
+    3 - libcurl 7.12.0 June 2004
+    4 - libcurl 7.16.0 October 2006
+01/11/2022 7:14 PM
+https://github.com/curl/curl/blob/a28464ae77c201ae29afc9dc9dc756b80a960d4c/docs/libcurl/ABI.md
+curl/ABI.md at a28464ae77c201ae29afc9dc9dc756b80a960d4c · curl/curl
+A command line tool and library for transferring data with URL syntax,
+supporting DICT, FILE, FTP, FTPS, GOPHER, GOPHERS, HTTP, HTTPS, IMAP,
+IMAPS, LDAP, LDAPS, MQTT, POP3, POP3S, RTMP, RTMPS, RTSP...
+[]
+01/11/2022 7:13 PM
+I mean you sure you did the soname bump properly?
+01/11/2022 7:13 PM
+You sure?
+[mariotaku]
+mariotaku 01/11/2022 7:13 PM
+So we have to introduce a patch to break libcurl
+01/11/2022 7:11 PM
+Obviously!
+[smx2460]
+smx2460 01/11/2022 7:11 PM
+How strange 
+01/11/2022 7:11 PM
+[:lg:] doing it wrong?
+01/11/2022 7:11 PM
+Lol 
+01/11/2022 7:11 PM
+    Basically, libcurl.so.5 (instead of libcurl.so.4) means "you are doing it wrong". curl configure detects that the ABI is broken (because off_t is not 64bits) and bumps the SONAME, see lib/README.curl_off_t in the curl source.
+[mariotaku]
+mariotaku 01/11/2022 7:09 PM
+https://www.openembedded.org/pipermail/openembedded-core/2017-February/132583.html
+[smx2460]
+smx2460 01/11/2022 7:09 PM
+Wut (edited)
+01/11/2022 7:08 PM
+    VERSIONINFO=-version-info 6:0:1
+    +else
+    +VERSIONINFO=-version-info 5:0:1
+    +endif
+[mariotaku]
+mariotaku 01/11/2022 7:07 PM
+--enable-soname-bump has been passed to configure but it's still
+libcurl.so.4
+01/11/2022 7:07 PM
+Strange
+[smx2460]
+smx2460 01/11/2022 7:00 PM
+You might need to rm the .4 libcurl in target and staging (edited)
+[mariotaku]
+mariotaku 01/11/2022 7:00 PM
+Building...
+[smx2460]
+smx2460 01/11/2022 6:53 PM
+lemme know if it works 
+01/11/2022 6:52 PM
+but for now just add it in
+01/11/2022 6:52 PM
+if you really want it done nicely, it would be a config option to pick
+it from menuconfig
+01/11/2022 6:52 PM
+https://github.com/curl/curl/commit/8dabd34432bc77408c58bdfb575510f671e5ed26
+Introduced the configure option --enable-soname-bump that lets a us...
+… enforce an SONAME bump.
+[]
+01/11/2022 6:51 PM
+4) make
+01/11/2022 6:51 PM
+3) rm -rf output/build/*curl* (edited)
+01/11/2022 6:51 PM
+2) append --enable-soname-bump to LIBCURL_CONF_OPTS
+01/11/2022 6:51 PM
+1) edit package/libcurl/libcurl.mk
+01/11/2022 6:50 PM
+https://curl.se/mail/lib-2017-08/0113.html
+01/11/2022 6:50 PM
+https://curl.se/mail/lib-2017-06/0004.html
+[mariotaku]
+mariotaku 01/11/2022 6:50 PM
+Let me see how LG do that
+01/11/2022 6:50 PM
+Yep and I don't want to patch the source itself.
+[smx2460]
+smx2460 01/11/2022 6:50 PM
+you need .5?
+[mariotaku]
+mariotaku 01/11/2022 6:50 PM
+It will output libcurl.so.4 by default smh
+[smx2460]
+smx2460 01/11/2022 6:49 PM
+    LIBCURL_VERSION = 7.79.1
+[mariotaku]
+[] smx2460 to do what
+mariotaku 01/11/2022 6:49 PM
+yes
+[smx2460]
+smx2460 01/11/2022 6:49 PM
+soname?
+[smx2460]
+[] mariotaku I think it's a build switch in libcurl
+smx2460 01/11/2022 6:49 PM
+to do what
+[smx2460]
+smx2460 01/11/2022 6:41 PM
+in that binary
+01/11/2022 6:41 PM
+look at app_init
+01/11/2022 6:40 PM
+but it's the app platform
+01/11/2022 6:40 PM
+don't remember what H is
+01/11/2022 6:40 PM
+H Open Api
+01/11/2022 6:40 PM
+yeah
+[mariotaku]
+mariotaku 01/11/2022 6:39 PM
+HOA is a must right?
+[smx2460]
+smx2460 01/11/2022 6:39 PM
+    HOA_APP_SetResolution(appWidth, appHeight);
+    HOA_APP_RequestToFocusedApp(appWidth, appHeight);
+[mariotaku]
+mariotaku 01/11/2022 6:39 PM
+Hmm
+[smx2460]
+smx2460 01/11/2022 6:39 PM
+    HOA_CTRL_SetAVBlock(0, 0);
+01/11/2022 6:38 PM
+@Mariotaku
+    HOA_CTRL_SetDisplayMode(3);
+01/11/2022 6:36 PM
+xd
+01/11/2022 6:36 PM
+no it's not lewd
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 6:36 PM
+tf (edited)
+[smx2460]
+smx2460 01/11/2022 6:36 PM
+it's the app name
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 6:36 PM
+nice filename
+[smx2460]
+smx2460 01/11/2022 6:35 PM
+to find where i put it
+01/11/2022 6:35 PM
+(no content)
+ HotChicks
+505.47 KB External
+01/11/2022 6:35 PM
+@Mariotaku it took me a while to get this file lol
+[mariotaku]
+mariotaku 01/11/2022 6:08 PM
+We can know how it displays stuff
+01/11/2022 6:08 PM
+And even better
+[smx2460]
+smx2460 01/11/2022 6:07 PM
+if i can remember where
+[mariotaku]
+mariotaku 01/11/2022 6:07 PM
+And, try to run in debug env
+[smx2460]
+[] mariotaku Let's find some binaries linking to `lgncopenapi` first
+smx2460 01/11/2022 6:07 PM
+i have one around...somewhere
+[smx2460]
+smx2460 01/11/2022 6:07 PM
+the pointer is not null
+[mariotaku]
+mariotaku 01/11/2022 6:07 PM
+Let's find some binaries linking to lgncopenapi first
+[smx2460]
+smx2460 01/11/2022 6:07 PM
+crashing 
+[mariotaku]
+mariotaku 01/11/2022 6:07 PM
+This is it?
+01/11/2022 6:07 PM
+What
+[smx2460]
+smx2460 01/11/2022 6:06 PM
+    EGLDisplay LGNC_eglGetDisplay(int windowId){
+            void *(*_dl_eglGetCurrentDisplay)() = dlsym(RTLD_DEFAULT, "_dl_eglGetCurrentDisplay");
+            return _dl_eglGetCurrentDisplay();
+    }
+[mariotaku]
+mariotaku 01/11/2022 6:05 PM
+Yeah LGNC_egl doesn't exist on real LGNC platforms
+[smx2460]
+smx2460 01/11/2022 6:04 PM
+    ./sample-egl: symbol lookup error: ./sample-egl: undefined symbol: LGNC_eglGetDisplay
+[mariotaku]
+mariotaku 01/11/2022 6:04 PM
+But how come, are there netcast 4 and 5?

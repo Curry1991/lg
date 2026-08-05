@@ -1,0 +1,1914 @@
+June 7, 2024
+[ymica.ose]
+ymica.ose 06/07/2024 4:32 PM
+(also tell me if I need to move to other channels if I needed to)
+06/07/2024 4:30 PM
+am I still able to root this thing? (edited)
+06/07/2024 4:30 PM
+I won't be home until the end of this June, so I asked my family to
+check the firmware version of our OLED65E9PTA (2019), and it's currently
+on 05.40.35 (which after looking up, seems like it was released around
+May 12-20th). I can't get them to check the exact webOS version but I
+will try if I can (and yes I told them to turn off automatic updates)
+(edited)
+06/07/2024 4:28 PM
+hi guys I rushed to this place after discovering dejavuln-autoroot late,
+just to see if there has been any firmware updates that patched it. I'm
+pretty sure I read almost everything I needed to know here and it seems
+there is no mentioning of anything relevant for now (edited)
+[jaruba]
+jaruba 06/07/2024 3:47 PM
+@aabytt @hellobox thanks a lot for all the details! i'm pretty sure we
+got the logic for webos tracks nailed down now 
+[] jaruba are there any cases where ac3 is not supported on 2020+
+models?
+hellobox. 06/07/2024 2:52 PM
+idk. here are the ones i checked in the past:
+    lm18a: "tv.model.edidType": "dts"
+    k6hp: "tv.model.edidType": "TrueHD"
+    k7lp: ""tv.model.edidType": "ac3"
+    o22: "tv.model.edidType": "TrueHD"
+    k8lpn: "tv.model.edidType": "ac3"
+[mattzildjian]
+Deleted User yeah
+mattzildjian 06/07/2024 2:48 PM
+thanks
+[jaruba]
+hellobox. ```json "ac3", "ac3+dts", "TrueHD", "TrueHD+dts"```
+jaruba 06/07/2024 2:32 PM
+are there any cases where ac3 is not supported on 2020+ models? (edited)
+[aabytt]
+[] jaruba are these also just filtered out of the tracks list like dts
+and truehd?
+aabytt 06/07/2024 1:57 PM
+yep
+[jaruba]
+[] aabytt HDMV_PGS
+jaruba 06/07/2024 1:57 PM
+are these also just filtered out of the tracks list like dts and truehd?
+[jaruba]
+jaruba 06/07/2024 1:57 PM
+as we tested this module and it works pretty well, it's just very
+inefficient https://www.npmjs.com/package/matroska-subtitles
+06/07/2024 1:56 PM
+and at this point we're also thinking of maybe handling ssa embedded
+subs from mkv too.. for Samsung TV support
+06/07/2024 1:55 PM
+we use these on both webos and tizen btw, on webos to retrieve tracks
+instead of sourceInfo and on samsung to add the subtitle / audio tracks
+languages for 2021+ TVs
+[aabytt]
+[] jaruba is there any known unsupported subtitle format? we couldn't
+find one from our tests, seems they all ...
+aabytt 06/07/2024 1:55 PM
+HDMV_PGS
+[jaruba]
+jaruba 06/07/2024 1:54 PM
+is there any known unsupported subtitle format? we couldn't find one
+from our tests, seems they all support SSA embedded subs too
+06/07/2024 1:53 PM
+they don't use any external binaries or WASM, just JS
+06/07/2024 1:52 PM
+there is a bigint dependency issue which limits to node 10+, if bigint
+is polyfilled that gives support for node 8+
+06/07/2024 1:52 PM
+and this for mp4, uses mp4box under the hood:
+https://github.com/Stremio/mp4-tracks
+06/07/2024 1:51 PM
+this for mkv, made by a team member, uses ts-ebml underneath:
+https://github.com/tymmesyde/get-tracks-data
+[aabytt]
+[] jaruba fetching tracks on our side is really a plausible solution at
+this point
+aabytt 06/07/2024 1:50 PM
+which nodejs module you use to fetch tracks?
+[jaruba]
+jaruba 06/07/2024 1:47 PM
+fetching tracks on our side is really a plausible solution at this point
+06/07/2024 1:45 PM
+that simplifies things
+[aabytt]
+[] jaruba would a tv that supports both truehd and dts show 3 audio
+track options for english?
+aabytt 06/07/2024 1:45 PM
+All 3
+[jaruba]
+jaruba 06/07/2024 1:45 PM
+or would it also show only 1? (best audio of 3 codecs) (edited)
+06/07/2024 1:45 PM
+would a tv that supports both truehd and dts show 3 audio track options
+for english?
+[aabytt]
+aabytt 06/07/2024 1:44 PM
+also need to check for default tag because some webos (like 4+ I guess)
+handle it and move a tagged track to the top of the list
+[jaruba]
+jaruba 06/07/2024 1:44 PM
+and is left with 1 audio track
+06/07/2024 1:44 PM
+it filters out dts and truehd
+06/07/2024 1:44 PM
+in this case, english has 3 audio tracks
+06/07/2024 1:44 PM
+    [{"id":1,"type":"video","lang":null,"name":"Shazam 2019 BluRay 1080p ReMux AVC DTS-HD MA TrueHD 7.1 Atmos-MgB","codec":"MPEG4/ISO/AVC"},{"id":2,"type":"audio","lang":null,"name":"English DTS-HD MA 7.1 @ 4217 Kbps - Original","codec":"DTS"},{"id":3,"type":"audio","lang":null,"name":"English TrueHD 7.1 Atmos @ 3645 Kbps - Original","codec":"TRUEHD"},{"id":4,"type":"audio","lang":null,"name":"English AC3 5.1 @ 448 Kbps","codec":"AC3"},{"id":5,"type":"audio","lang":"hin","name":"Hindi AC3 5.1 @ 448 Kbps","codec":"AC3"},{"id":6,"type":"audio","lang":"tam","name":"Tamil AC3 5.1 @ 448 Kbps","codec":"AC3"},{"id":7,"type":"audio","lang":"tel","name":"Telugu AC3 5.1 @ 448 Kbps","codec":"AC3"},{"id":8,"type":"text","lang":null,"name":"English-SRT","codec":"TEXT/UTF8"},{"id":9,"type":"text","lang":null,"name":"English-SDH-SRT","codec":"TEXT/UTF8"},{"id":42,"type":"text","lang":"hin","name":"Hindi-PGS","codec":"HDMV/PGS"}]
+06/07/2024 1:44 PM
+i do have a question
+06/07/2024 1:44 PM
+but
+06/07/2024 1:43 PM
+lol
+06/07/2024 1:43 PM
+that's why i'm asking
+06/07/2024 1:43 PM
+yes
+[aabytt]
+[] jaruba instead we now parse mk4 and mp4 tracks with nodejs
+aabytt 06/07/2024 1:42 PM
+bur you need to filter them to match webos tracks list
+[jaruba]
+jaruba 06/07/2024 1:40 PM
+instead we now parse mk4 and mp4 tracks with nodejs
+06/07/2024 1:40 PM
+we stopped trying to get sourceInfo, lol
+06/07/2024 1:40 PM
+this is a nice solution
+hellobox. 06/07/2024 1:39 PM
+or just check whether TrueHD is listed
+06/07/2024 1:39 PM
+yes
+[jaruba]
+hellobox. look in toolopts for EDID_TYPE
+jaruba 06/07/2024 1:38 PM
+you mean this?
+https://github.com/jellyfin/jellyfin-webos/issues/190#issuecomment-2054107367
+hellobox. 06/07/2024 1:35 PM
+look in toolopts for EDID_TYPE
+[jaruba]
+jaruba 06/07/2024 1:34 PM
+@hellobox not sure if i follow 
+06/07/2024 1:33 PM
+is audio not in passthrough mode though? wouldn't connecting a soundbar
+that supports more audio codecs allow to play those tracks?
+hellobox. 06/07/2024 1:33 PM
+    "ac3",
+    "ac3+dts",
+    "TrueHD",
+    "TrueHD+dts"
+06/07/2024 1:32 PM
+    "tv.model.edidType": "TrueHD"
+[aabytt]
+[] jaruba we did notice that LG TV filters out audio tracks with DTS and
+TRUEHD codecs, does 2023+ oled suppor...
+aabytt 06/07/2024 1:31 PM
+I think TRUEHD is not supported by any
+[jaruba]
+[] aabytt afaik 2020+ do not support DTS except 2023+ oled models
+jaruba 06/07/2024 1:30 PM
+we did notice that LG TV filters out audio tracks with DTS and TRUEHD
+codecs, does 2023+ oled support both or just DTS? (edited)
+Deleted User they did release new updates to patch it tho
+hellobox. 06/07/2024 1:05 PM
+No patched firmware has been released except for 2024 models
+Deleted User 06/07/2024 12:49 PM
+beware
+06/07/2024 12:48 PM
+they did release new updates to patch it tho
+[] mattzildjian safe to update to latest and still be able to use that
+tool?
+Deleted User 06/07/2024 12:48 PM
+yeah
+ 1
+[mattzildjian]
+Deleted User you can use dejavuln autoroot
+mattzildjian 06/07/2024 12:43 PM
+safe to update to latest and still be able to use that tool?
+Deleted User 06/07/2024 11:54 AM
+you can use dejavuln autoroot
+[mattzildjian]
+mattzildjian 06/07/2024 10:59 AM
+just received an LG G2 (2022) directly from LG. whats the likelyhood I
+can root it? should I avoid updates? Will I be missing out on features
+if I don't update it? (it's still in the box for now)
+hellobox. 06/07/2024 1:26 AM
+i wonder if this applies to webOS 5 only
+https://webostv.developer.lge.com/faq/2022-11-15-the-accept-language-request-http-header-cannot-be-set-on-webos-tv-5.0
+hellobox. 06/07/2024 1:19 AM
+https://forum.webostv.developer.lge.com/t/failed-to-load-module-script-error-on-webos-5-lg-tvs/2351/4 >
+Kind of stupid, but I guess that encapsulates LG TV-app development in
+general.
+hellobox. 06/07/2024 1:07 AM
+i have seen this response many times: > If your app is a packaged web
+app, please try again as a hosted web app. Thank you.
+06/07/2024 1:06 AM
+lol asking for help with kodi
+https://forum.webostv.developer.lge.com/t/how-to-delete-a-kodi-backup/6985
+06/07/2024 1:05 AM
+you can't even provide a client cert? weird
+https://forum.webostv.developer.lge.com/t/autologin-or-mutual-tls-authentication-in-webapp/6776
+06/07/2024 1:00 AM
+i didn't know (well, probably forgot) about the one session limit
+https://forum.webostv.developer.lge.com/t/developer-mode-losing-authentication/7247 >
+Developer Mode is disabled: > After the TV reboot ten times while the TV
+is not connected to a network. > After the TV reboot when the remaining
+session time has run out. > After the TV reboot when you sign in to
+another TV with the same account. > And if you sign in to multiple TVs
+with one account, only the session of the latest TV that you sign in to
+is maintained.
+06/07/2024 12:59 AM
+helpful as usual
+https://forum.webostv.developer.lge.com/t/app-disappeared-from-the-store/7288
+06/07/2024 12:58 AM
+huh. you're not allowed to run websocket servers on webOS?
+https://forum.webostv.developer.lge.com/t/socketeventshandler-disconnected-invalid-origin-1008/7322
+06/07/2024 12:56 AM
+because webOS isn't a real OS...
+https://forum.webostv.developer.lge.com/t/ms-paint-like-app-for-standbyme/7008
+(same for
+https://forum.webostv.developer.lge.com/t/can-someone-link-me-to-a-new-webos-browser/7317)
+(edited)
+06/07/2024 12:53 AM
+lmao
+https://forum.webostv.developer.lge.com/t/web-browser-installation/7443 >
+That’s not a tool we provide. Please contact webOS Dev Manager support.
+Thank you.
+06/07/2024 12:52 AM
+https://forum.webostv.developer.lge.com/t/integrate-react-into-a-webos-application/7422/3 >
+For questions about the procot/webostv package, please contact procot
+06/07/2024 12:50 AM
+spam
+https://forum.webostv.developer.lge.com/t/progressive-web-solutions-the-future-of-web-development-is-here/7493
+rel="noopener nofollow ugc" i wonder if this even works on webOS.
+doesn't seem to say anything about it
+https://digitrends.co/progressive-web-apps/ (edited)
+06/07/2024 12:49 AM
+https://forum.webostv.developer.lge.com/t/question-about-what-you-think-of-the-sdk/2289
+June 6, 2024
+[] madalinost If panel is the issue
+hellobox. 06/06/2024 8:03 PM
+The panel being the problem is the best case. It's not necessary
+[weekstrt]
+weekstrt 06/06/2024 7:44 PM
+I lost it though
+06/06/2024 7:44 PM
+it was a russian group
+06/06/2024 7:43 PM
+where WebOS is discussed
+06/06/2024 7:43 PM
+does someone have a link to a telegram channel
+[madalinost]
+madalinost 06/06/2024 7:35 PM
+If panel is the issue
+[madalinost]
+hellobox. anybody near aldridge (WS9)?
+<https://www.ebay.co.uk/itm/204819945483>
+madalinost 06/06/2024 7:35 PM
+It would cost a lot more to replace that broken oled panel
+hellobox. 06/06/2024 4:24 PM
+anybody near aldridge (WS9)? https://www.ebay.co.uk/itm/204819945483
+[madalinost]
+hellobox. with LE7500 and lower, you get limited joy
+madalinost 06/06/2024 11:03 AM
+Broadband tv? Aka IPTV over 3g/4g ?
+June 5, 2024
+[mattzildjian]
+mattzildjian 06/05/2024 6:16 PM
+does anyone know if it is possible to integer scale a 1080p signal to 4k
+on an LG G2 (2022) ?
+[jaruba]
+jaruba 06/05/2024 4:53 PM
+@aabytt we did, it made things worst somehow
+[danar435]
+danar435 06/05/2024 11:01 AM
+Is it possible to capture an HDMI source? Seems like only AV can capture
+video
+[aabytt]
+[] jaruba <@459582492970844162> can you confirm that you are using the
+same pattern as us? 1. we do `video.src...
+aabytt 06/05/2024 10:24 AM
+What if trying 1-5-2-3-4-6
+    The sourceInfo event provides information about the media that has just been loaded
+(edited)
+hellobox. or are they on the top and bottom as well?
+ww8543 06/05/2024 9:33 AM
+i had a tv like that, it was in vertical stripes for mine
+hellobox. 06/05/2024 3:36 AM
+so i guess those diagrams are (kind of) accurate
+06/05/2024 3:36 AM
+> 55LX6500 Active 3D has 16 zones (2x8) Edge (top/bottom led strips) > >
+55LW6500 Passive 3D has 16 zones (8x2) Edge (left/right side led strips)
+[dogelition]
+dogelition 06/05/2024 3:34 AM
+> IOL - Integrated Optical Lens > > IOP - Integrated Optical Plate
+ 1
+06/05/2024 3:34 AM
+https://www.avsforum.com/threads/led-lcd-with-the-most-dimmable-zones.1326054/page-3?post_id=20763303#post-20763303
+hellobox. 06/05/2024 3:33 AM
+400Hz?
+[dogelition]
+dogelition 06/05/2024 3:32 AM
+More Clear More Real [:lg:]
+ 1
+hellobox. 06/05/2024 3:32 AM
+i assume ALEF and IOP are both LGD marketing terms from the early 2010s
+06/05/2024 3:32 AM
+i have no idea what this means
+[gg7n8mF.png]
+ gg7n8mF.png
+280.82 KB External
+[] dogelition most images i can find on google just have the LEDs along
+the top and bottom edges
+hellobox. 06/05/2024 3:31 AM
+(no content)
+[vW52gG4.png]
+ vW52gG4.png
+193.1 KB External
+hellobox. 06/05/2024 3:30 AM
+interesting. LG tconless designs
+[ANu2COG.png]
+ ANu2COG.png
+810.29 KB External
+06/05/2024 3:29 AM
+so IOP > edge?
+06/05/2024 3:28 AM
+with LE7500 and lower, you get limited joy
+[eB5ccB4.png]
+ eB5ccB4.png
+174.18 KB External
+06/05/2024 3:27 AM
+> Edge LED Models : LV3700 / LV5500 / LW5700 > ALEF & IOP model : LW9500
+/ LW7700/LZ9700 > [ All in one main PCB for XXLW9500, ALEF LED
+Backlight] > [ All in one main PCB for LE55 & LE75 edge & LE85 IOP LED
+Backlight] > Back Light CCFL/Edge-LED/IOP-LED (edited)
+06/05/2024 3:24 AM
+and what are IOL and IOP? god, this is confusing
+[dogelition]
+dogelition 06/05/2024 3:21 AM
+which would make way more sense
+06/05/2024 3:21 AM
+most images i can find on google just have the LEDs along the top and
+bottom edges
+06/05/2024 3:19 AM
+good question, not sure how the placement on that image makes sense
+hellobox. 06/05/2024 3:18 AM
+or are they on the top and bottom as well?
+[dogelition]
+dogelition 06/05/2024 3:18 AM
+by having multiple LEDs along the edges
+[] dogelition i guess having those 12 zones counts as "local", as
+opposed to global dimming where you can only dim...
+hellobox. 06/05/2024 3:18 AM
+yeah but how do you get 6 zones horizontally?
+[dogelition]
+hellobox. how do you do local dimming with an edge-lit screen?
+dogelition 06/05/2024 3:17 AM
+i guess having those 12 zones counts as "local", as opposed to global
+dimming where you can only dim the entire screen
+hellobox. 06/05/2024 3:16 AM
+90% of the results (both wordings) are for this:
+https://www.artemide.net/en/product/?family=pad-systemssuspension
+06/05/2024 3:16 AM
+i think it may be "Advanced Light Emitting Film" (or "Advanced Lighting
+Emitting Film"... there are about as many results on google)
+06/05/2024 3:15 AM
+anyone know what "ALEF" is?
+[IAbRE56.png]
+ IAbRE56.png
+246.87 KB External
+06/05/2024 3:12 AM
+how do you do local dimming with an edge-lit screen?
+[vyeqNpw.png]
+ vyeqNpw.png
+190.19 KB External
+June 4, 2024
+[jaruba]
+jaruba 06/04/2024 5:08 PM
+seems just like our's, except the screen saver thing.. 
+[notix]
+notix 06/04/2024 5:07 PM
+this.playUrl = function (streamUrl) { me.mediaId = null; video.src =
+streamUrl; me.retrieveMediaId(); me.disableScreenSaver(); };
+[jaruba]
+jaruba 06/04/2024 5:03 PM
+@Notix
+06/04/2024 5:00 PM
+is it just video.src = "https://..." and nothing else? is there any
+timeout to starting retrieveMediaIdInterval after setting video.src? or
+any other specific method that you use from the html5 player at all
+before subscribing? (edited)
+[jaruba]
+jaruba 06/04/2024 4:52 PM
+what i'm curious about is what happens prior to trying to get the
+mediaId
+06/04/2024 4:49 PM
+06/04/2024 4:49 PM
+curious if there is some hint as to wtf we are doing wrong
+06/04/2024 4:49 PM
+any chance you could show the code around where you set
+retrieveMediaIdInterval? (instead of the code of retrieveMediaIdInterval
+itself) (edited)
+06/04/2024 4:48 PM
+uhm..
+[notix]
+notix 06/04/2024 4:38 PM
+For example we had transform style on the root of our dom, on element
+which includes player, and it was interfering with webos native ascept
+ratio, and users in our app could not change the aspect ratio because of
+this, we had no clue
+[notix]
+[] jaruba stranger thing is that ur code and Lampa's code are similar to
+our's, yet u say ur users don't compl...
+notix 06/04/2024 4:37 PM
+I would try to isolate just this code snippet for basic player mechanics
+and see how it goes
+[notix]
+[] jaruba to be precise, we tested 38 videos y-day and only 2 of them
+had the correct audio tracks count and s...
+notix 06/04/2024 4:37 PM
+this is really low percentage, on our video player people use wide
+variety of embedded subtitles, and the only platform they had issue on
+was Tizen
+[jaruba]
+jaruba 06/04/2024 4:25 PM
+stranger thing is that ur code and Lampa's code are similar to our's,
+yet u say ur users don't complain and i see no issues created for Lampa
+about such bugs either (edited)
+06/04/2024 4:24 PM
+to be precise, we tested 38 videos y-day and only 2 of them had the
+correct audio tracks count and subtitle tracks count, all others had
+only 1 audio track shown (edited)
+06/04/2024 4:23 PM
+especially that in most cases when it does answer with sourceInfo, it
+only has one audio track and no subtitle tracks, although we know the
+video definitely has multiple audio tracks and multiple subtitles
+06/04/2024 4:20 PM
+many different kinds of issues for some reason..
+06/04/2024 4:20 PM
+well, we have seen media id invalid errors, pipeline not running errors,
+and we even saw cases where result.bufferRange does not progress at all
+and result.sourceInfo is never retrieved (edited)
+[notix]
+[] jaruba <@459582492970844162>
+https://github.com/Stremio/stremio-video/blob/master/src/WebOsVideo/WebOsVideo...
+notix 06/04/2024 4:17 PM
+It's hard to debug it because you can't reproduce it every time?
+[jaruba]
+jaruba 06/04/2024 3:48 PM
+very similarly to how u do it
+06/04/2024 3:48 PM
+@Notix
+https://github.com/Stremio/stremio-video/blob/master/src/WebOsVideo/WebOsVideo.js#L971-L986
+[notix]
+notix 06/04/2024 3:40 PM
+How do you get it?
+06/04/2024 3:40 PM
+Did you debug mediaId?
+06/04/2024 3:40 PM
+We are doing things in same order as yours (edited)
+[notix]
+[] jaruba <@459582492970844162> hi, just a quick reminder 
+notix 06/04/2024 3:39 PM
+Thank you 
+[jaruba]
+jaruba 06/04/2024 2:50 PM
+@Notix hi, just a quick reminder 
+ 1
+[jaruba]
+jaruba 06/04/2024 12:24 PM
+@Notix alright, thanks for helping!
+[notix]
+[] jaruba <@459582492970844162> can you confirm that you are using the
+same pattern as us? 1. we do `video.src...
+notix 06/04/2024 12:23 PM
+I can check in 2hrs
+[jaruba]
+jaruba 06/04/2024 12:21 PM
+@Notix can you confirm that you are using the same pattern as us? 1. we
+do video.src = "https://..." (where video is the html5 video element,
+and "https://..." is the streaming url) 2. we try to get media id from
+video.mediaId 3. we subscribe to the media id 4. we unsubscribe to the
+media id 5. we do video.load() 6. we do video.play() (edited)
+[notix]
+[] jaruba <@459582492970844162> we do that too (load and play after)
+notix 06/04/2024 12:19 PM
+Hmm, it's strange, I remember having the same issue. It's a shame that
+this is kept as nasa top secret. I have around 100k people using it
+daily from webos 1 and they haven't complained since last year. The
+interesting thing about webOS is that small details can disrupt the
+behavior of such things. If I were you, I would try to isolate a small
+app just for testing, to perform only that function, because it might
+happen that some things interfere with it. I had a similar situation
+with the aspect ratio on webOS.
+[:lg:] 1
+[jaruba]
+jaruba 06/04/2024 12:14 PM
+no subs when there are 10 embedded subs..
+06/04/2024 12:14 PM
+like getting only 1 audio track instead of 5
+06/04/2024 12:14 PM
+but the responses for sourceInfo are a complete mess (when sourceInfo is
+retrieved, which is not always)
+06/04/2024 12:13 PM
+we only set video.src before subscribing
+06/04/2024 12:13 PM
+@Notix we do that too (load and play after)
+[notix]
+notix 06/04/2024 11:59 AM
+the main catch here is to loadandplay video after unsubsring as i
+remember, it solved all issues
+06/04/2024 11:57 AM
+    me.retrieveMediaIdInterval = setInterval(function () {
+          if (video.mediaId != null && video.mediaId != me.mediaId) {
+            me.mediaId = video.mediaId;
+            me.answered = false;
+            try {
+              webOS.service.request("luna://com.webos.media", {
+                method: "subscribe",
+                parameters: {
+                  "mediaId": video.mediaId,
+                  "subscribe": true
+                },
+                onSuccess: function (result) {
+                  if (result.sourceInfo && !me.answered) {
+                    me.answered = true;
+                    player.onSourceInfo(result.sourceInfo);
+                    webOS.service.request("luna://com.webos.media", {
+                      method: "subscribe",
+                      parameters: {
+                        "mediaId": video.mediaId,
+                        "subscribe": false
+                      },
+                      onSuccess: function (result) {
+                        me.loadAndPlay();
+                      },
+                      onFailure: function (result) {
+                        me.loadAndPlay();
+                      }
+                    });
+                  }
+                },
+                onFailure: function (result) {
+                  console.log('error', result)
+                  me.answered = true;
+                  webOS.service.request("luna://com.webos.media", {
+                    method: "subscribe",
+                    parameters: {
+                      "mediaId": video.mediaId,
+                      "subscribe": false
+                    },
+                    onSuccess: function (result) {
+                      me.loadAndPlay();
+                    },
+                    onFailure: function (result) {
+                      me.loadAndPlay();
+                    }
+                  });
+                }
+              });
+              clearInterval(me.retrieveMediaIdInterval);
+              me.retrieveMediaIdInterval = null;
+            } catch (error) {
+            }
+          }
+        }, 300);
+(edited)
+[aabytt]
+[] jaruba <@834184545230258226> hopefully someone can, do u happen to
+know what audio codecs LG TV doesn't sup...
+aabytt 06/04/2024 11:56 AM
+afaik 2020+ do not support DTS except 2023+ oled models (edited)
+[notix]
+[] jaruba <@834184545230258226> hopefully someone can, do u happen to
+know what audio codecs LG TV doesn't sup...
+notix 06/04/2024 11:52 AM
+Which webos are you using for this test?
+[jaruba]
+jaruba 06/04/2024 11:50 AM
+@aabytt hopefully someone can, do u happen to know what audio codecs LG
+TV doesn't support at all?
+[aabytt]
+[] jaruba here are logs from when it doesn't work, as you can see,
+bufferRange details are just `0`
+aabytt 06/04/2024 11:41 AM
+If you check with ls-monitor sourceInfo is always being fired after
+video load. So I guess it is something with timing of your subscription.
+btw, @Notix has resolved same (?) issues in his app. Possible he can
+advice.
+June 3, 2024
+[danar435]
+danar435 06/03/2024 5:38 PM
+But my main concern is Kodi
+06/03/2024 5:36 PM
+From what I remember using either moonlight or steam link (I don't
+remember) I'd see the picture for a second and then it'll freeze and
+become unusable
+06/03/2024 5:36 PM
+It's been a while since I last tried them, but since them I've updated
+to the last version before crashd was patched
+[mariotaku]
+[] danar435 Ah I wasn't aware, last time I tried to use them they didn't
+work
+mariotaku 06/03/2024 5:34 PM
+Hmm. Did you update? At least moonlight should fall back to NetCast
+Legacy decoder
+[danar435]
+danar435 06/03/2024 5:09 PM
+Ah I wasn't aware, last time I tried to use them they didn't work
+[mariotaku]
+[] danar435 Here's hoping for fixing moonlight, steam link and kodi for
+k5lp?
+mariotaku 06/03/2024 5:02 PM
+Moonlight & Steam Link works on K5LP now. Just with limited decoders
+hellobox. 06/03/2024 4:56 PM
+Although if somebody really wants it, I might be able to ship it myself
+06/03/2024 4:55 PM
+They don't ship outside the US apparently
+[danar435]
+[] mariotaku Sounds interesting. May I have the link?
+danar435 06/03/2024 4:34 PM
+Here's hoping for fixing moonlight, steam link and kodi for k5lp?
+hellobox. 06/03/2024 4:05 PM
+dejavuln-autoroot would definitely work
+[mariotaku]
+[] madalinost Does it come pre-rooted?
+mariotaku 06/03/2024 4:04 PM
+Since it probably has not been powered for years, even rootmy.tv would
+work
+ 1
+hellobox. 06/03/2024 3:29 PM
+i'm not selling it. it's just on eBay
+[] madalinost Does it come pre-rooted?
+hellobox. 06/03/2024 3:28 PM
+not unless you want to pay me to buy it, root it, and ship it to you
+[madalinost]
+hellobox. K5Lp board for $8 if anyone wants it (free shipping in the US)
+madalinost 06/03/2024 10:45 AM
+Does it come pre-rooted?
+hellobox. 06/03/2024 4:42 AM
+not that the level 1 perks are useful to us. the first one that looks
+useful is the 50MB uploads, which is at 7 boosts
+06/03/2024 4:41 AM
+lol
+[FX4ITEE.png]
+ FX4ITEE.png
+12.09 KB External
+hellobox. 06/03/2024 4:12 AM
+i bet these o208k boards are rare because they quickly cook themselves
+to death (in addition to being for expensive TVs)
+06/03/2024 4:07 AM
+the keys must be free
+06/03/2024 4:07 AM
+like if they don't have the full service code, am i just going to have
+to gamble on boards that will probably cost well over $100? 
+06/03/2024 4:06 AM
+how the fuck am i ever going to get an e60 board? 65NANO956NA.BEUFEJ is
+e60, but 65NANO956NA.BEUFLJP is o208k
+[mariotaku]
+hellobox. K5Lp board for $8 if anyone wants it (free shipping in the US)
+mariotaku 06/03/2024 3:53 AM
+Sounds interesting. May I have the link?
+hellobox. 06/03/2024 3:43 AM
+ (the reason there are 2 sets of images is that
+https://www.lg.com/ch_fr/service/software-firmware?csSalesCode=65NANO956NA.AEU"
+target="_blank" rel="noopener noreferrer">this model uses both e60 and
+o208k) (edited)
+[mtqVgg6.png]
+ mtqVgg6.png
+86.34 KB External
+hellobox. 06/03/2024 3:28 AM
+K5Lp board for $8 if anyone wants it (free shipping in the US)
+hellobox. 06/03/2024 2:27 AM
+this heatsink may be undersized
+[5cOlOrs.png]
+ 5cOlOrs.png
+1.82 MB External
+hellobox. 06/03/2024 2:16 AM
+eep
+    [ 1667.096928] pm           NOT (00000:00000) o20_check_ts              889: O20 SET AVS HIGH: GPU TEMP[81]'C  RAW[28888]
+hellobox. 06/03/2024 2:08 AM
+i think that might be (related to) H5D
+06/03/2024 2:05 AM
+what the hell? https://www.youtube.com/watch?v=X9St56NLPGs
+Realtek Marcom
+Realtek_AI Super Resolution Fidelity Recovery IC (RTD2892NND)
+[] Watch video
+06/03/2024 2:02 AM
+> 8K Decoder Dongle 
+[nbxA151.png]
+ nbxA151.png
+16.42 KB External
+hellobox. 06/03/2024 1:44 AM
+this is pretty cool. too bad it only does 4K@60Hz
+https://www.socionext.com/en/download/catalog/AD04-00065-2E.pdf
+06/03/2024 1:38 AM
+(no content)
+[0psdbKJ.png]
+ 0psdbKJ.png
+104.39 KB External
+06/03/2024 1:38 AM
+i was thinking maybe they could be squeezing in a higher clock rate if
+the chips are close to each other (on the same board), but they're often
+on separate boards
+06/03/2024 1:36 AM
+the answer must be that the SoC is not actually transmitting 8K 120Hz
+video, right?
+06/03/2024 1:35 AM
+well, potentially up to 24 lanes SoC -> FRC, but 8 of those would be for
+OSD. only 16 for video
+06/03/2024 1:35 AM
+can one of you video nerds please explain to me why you need 64 Vx1
+lanes going to the panel from the FRC chip for 8K@120Hz, but you only
+need 16 lanes from the SoC to the FRC?
+hellobox. 06/03/2024 1:27 AM
+up there with m16pbno
+06/03/2024 1:27 AM
+my god it's going to be hard to get an e60 board
+06/03/2024 1:27 AM
+like for 65NANO95, but only in certain regions
+06/03/2024 1:26 AM
+actually E60 seems to have only been used for very specific models
+    55NANO953NA.BEUFEJP
+    55NANO956NA.BEKFEJP
+    55NANO956NA.BPDFEJP
+    55NANO959NA.BEUFEJP
+    65NANO956NA.BDRFEJP 65NANO956NA.BEUFEJP
+    65NANO956NA.BVSFEJP
+    55NANO956NA.BDRFEJP
+    55NANO956NA.BEUFEJP 55NANO956NA.BPIFEJP 65NANO953NA.BEUFEJP
+    65NANO956NA.BEKFEJP 65NANO956NA.BPIFEJP 55NANO956NA.ARUFEJU
+(edited)
+06/03/2024 1:23 AM
+huh, so it looks like E60 got used for lower-end 8K models in 2020, but
+E60N was used for all 8K models in 2021
+hellobox. 06/03/2024 1:02 AM
+    Trying RSA key: o208k.pem...
+    Succesfully verified 0x5b4 out of 0x5b4 bytes
+    Succesfully verified 0xeb74 out of 0xeb74 bytes
+    Firmware info
+    -------------
+    Firmware magic: EPK3
+    Firmware otaID: HE_DTV_W20K_AFADABAA
+    Firmware version: 03.00.55.01
+    packageInfoSize: 60276
+    bChunked: 0
+    EncryptType: prodke
+    UpdateType:  NSU
+    unknown: 00 00 00
+    updatePlatformVersion: 0.000000
+    compatibleMinimumVersion: 0.000000
+    needToCheckCompatibleVersion: 0
+    Extraction is finished.
+hellobox. 06/03/2024 12:49 AM
+where's the like 3 full screens worth of garbage?!
+[:lg:] 2
+06/03/2024 12:49 AM
+wait, this is everything in the home app list?!
+[ywA8j5l.png]
+ ywA8j5l.png
+182.1 KB External
+06/03/2024 12:48 AM
+maybe i should add a check for that
+06/03/2024 12:48 AM
+ah but autostart didn't work because i didn't have the EULA(s) accepted
+06/03/2024 12:46 AM
+i think that was the first time i actually used it to root something
+06/03/2024 12:46 AM
+dejavuln-autoroot works nicely
+06/03/2024 12:43 AM
+as a Store Mode?
+[oyf4GWj.png]
+ oyf4GWj.png
+4.89 KB External
+06/03/2024 12:41 AM
+    {"returnValue":true,"product_name":"webOSTV 5.0","model_name":"HE_DTV_W20K_AFADATAA","sw_type":"FIRMWARE","major_ver":"03","minor_ver":"00.55","country":"US8","country_group":"US","device_id":"58:fd:b1:xx:xx:xx","auth_flag":"N","ignore_disable":"N","eco_info":"01","config_key":"00","language_code":"en-US"}
+hellobox. 06/03/2024 12:31 AM
+but whatever that H5D thing is, i'm sure it's not used most of the time
+06/03/2024 12:31 AM
+i guess it's fair that "headless mode" wasn't a major design
+consideration
+06/03/2024 12:31 AM
+well, without like holding them in reset in hardware
+06/03/2024 12:30 AM
+i wish there was a way to shut off the secondary chips
+06/03/2024 12:30 AM
+i can't even tell which chip is contributing the most heat
+06/03/2024 12:29 AM
+and there is significant surface area on the heatsinks (edited)
+06/03/2024 12:29 AM
+even without a fan, it's not inside a cramped case right now
+06/03/2024 12:29 AM
+how does LG get these things to run so damn hot?!
+[lightfire]
+lightfire 06/03/2024 12:28 AM
+if that reading is correct its dead now
+hellobox. 06/03/2024 12:26 AM
+i wonder if i can get a fan for it
+06/03/2024 12:26 AM
+wow it is actually pretty hot for not doing anything
+[VuXf7Hm.png]
+ VuXf7Hm.png
+38.05 KB External
+06/03/2024 12:24 AM
+[a3SZARl.png]
+ a3SZARl.png
+7.31 KB External
+06/03/2024 12:21 AM
+my router is slow to respond to DHCP requests
+06/03/2024 12:19 AM
+    udp      UNCONN    0         0                                     0.0.0.0:67              0.0.0.0:*       users:(("dnsmasq",pid=584,fd=4))
+06/03/2024 12:18 AM
+it's the OTHER raspberry pi!
+06/03/2024 12:18 AM
+it's not this
+06/03/2024 12:18 AM
+oh wait
+06/03/2024 12:15 AM
+now how the hell do i turn it off?
+06/03/2024 12:14 AM
+i think i set this up a while back. i don't know if it ever worked for
+what i wanted it to... nice(?) to see it's working now
+06/03/2024 12:14 AM
+    UNCONN             0                  0                                    0.0.0.0:68                                  0.0.0.0:*                 users:(("dhcpcd",pid=574,fd=2),("dhcpcd",pid=574,fd=1),("dhcpcd",pid=574,fd=0))
+[lightfire]
+lightfire 06/03/2024 12:12 AM
+it wants to get out
+06/03/2024 12:12 AM
+[:jail:]
+hellobox. 06/03/2024 12:11 AM
+whyyyyyyyyyy is my raspberry pi responding to fucking DHCP requests?
+hellobox. 06/03/2024 12:04 AM
+i don't think the 4x 51-pin Vx1 pinouts are standard
+06/03/2024 12:04 AM
+and i highly doubt i can get any video output
+06/03/2024 12:04 AM
+it's too new for NVM
+06/03/2024 12:03 AM
+ah shit. this board isn't appearing on my network
+June 2, 2024
+[jaruba]
+jaruba 06/02/2024 10:13 PM
+we'll figure something out one way or another
+06/02/2024 10:13 PM
+alright, thanks for trying to help 
+[aabytt]
+[] jaruba strangely named for something that gets sourceInfo 
+aabytt 06/02/2024 10:01 PM
+Unfortunately it is not a public call
+[jaruba]
+jaruba 06/02/2024 9:39 PM
+we'll try
+06/02/2024 9:39 PM
+strangely named for something that gets sourceInfo 
+[aabytt]
+[] jaruba <@834184545230258226> just a quick reminder in case u forgot
+aabytt 06/02/2024 9:27 PM
+I think it is getPipelineState
+    luna-send -n 2 -f luna://com.webos.media/getPipelineState '{"mediaId": "_fgQ2BwECgyZIeM"}'
+(edited)
+[jaruba]
+jaruba 06/02/2024 8:41 PM
+@aabytt just a quick reminder in case u forgot 
+hellobox. 06/02/2024 7:45 PM
+any idea wtf models E60 was used in?
+hellobox. 06/02/2024 7:35 PM
+i guess there's the QNED99T models supposedly coming this year
+06/02/2024 7:33 PM
+here they only have OLED77Z3PCA, which is out of stock
+https://www.lg.com/hk_en/tv-soundbars/8k-tvs/
+06/02/2024 7:27 PM
+has LG given up on 8K models?! https://www.lg.com/us/8k-tvs the only
+thing listed on this page is OLED77Z2PUA
+hellobox. 06/02/2024 7:03 PM
+were SM99 the first 8K models? they would have been o18k
+06/02/2024 7:01 PM
+so is NANO/QNED90 equivalent to Sx90?
+hellobox. i don't think so... so what does SN90/SN95 mean?
+hellobox. 06/02/2024 7:01 PM
+oh, these must be like SM90/SM98 but for 2020. i don't think they used
+"SN" though; they replaced it with NANO and QNED
+hellobox. 06/02/2024 7:00 PM
+RAD33107901 is OLEDTCONJIG OLED T-con SVC Repair Jig SERVEONE CO., LTD.
+RAD33387801 is
+OLED TCON JIG2 Light ver. OLED T-CON JIG For SVC SERVEONE CO., LTD. SERVEONE CO., LTD.
+06/02/2024 6:58 PM
+(no content)
+[IClEzLX.png]
+ IClEzLX.png
+177.21 KB External
+06/02/2024 6:56 PM
+(no content)
+[sWLyQTH.png]
+ sWLyQTH.png
+127.13 KB External
+06/02/2024 6:55 PM
+they do sell a $600+ OLED tcon jig (RAD33107901/RAD33387801) though...
+[fdIKNuH.png]
+ fdIKNuH.png
+489.67 KB External
+06/02/2024 6:55 PM
+wtf they don't sell the power board test jig anymore?!
+hellobox. 06/02/2024 6:38 PM
+SMH200-H28S4 To SMH200-H28S4_L 
+06/02/2024 6:33 PM
+i thought they were all 28 to 24+4 (or 4+24...)
+06/02/2024 6:32 PM
+shit! is there a 28-pin to 28-pin SMAW200 power cable?!
+hellobox. 06/02/2024 6:06 PM
+they're pointing to the 24-pin IR/button/Wi-Fi connector and showing the
+pinout for the 28-pin power connector
+06/02/2024 6:06 PM
+[:lg:]
+[n0jQnfA.png]
+ n0jQnfA.png
+412.29 KB External
+[jaruba]
+jaruba 06/02/2024 11:12 AM
+i also just wrote an issue at Lampa on github too, in hopes that maybe
+yumata could offer some clues regarding what we're doing wrong
+06/02/2024 11:11 AM
+alright, thanks!
+[aabytt]
+aabytt 06/02/2024 11:05 AM
+Will check on this when get home
+[jaruba]
+jaruba 06/02/2024 10:57 AM
+it doesn't seem to be documented here though:
+https://gist.github.com/aabytt/bddbb1bcf031a050d89a89aeee3a6737
+06/02/2024 10:56 AM
+06/02/2024 10:56 AM
+willing to try anything at this point, as i keep trying random things
+without much success (edited)
+[aabytt]
+aabytt 06/02/2024 10:55 AM
+There is a different Luna call to get source info at any time but I do
+not remember if it is a public call
+[jaruba]
+jaruba 06/02/2024 10:54 AM
+and here is an example of when it does work, as you can see bufferRange
+is progressing properly
+[Screenshot_2024-06-02_at_11.52.59.png]
+ Screenshot_2024-06-02_at_11.52.59.png
+714.79 KB External
+06/02/2024 10:54 AM
+here are logs from when it doesn't work, as you can see, bufferRange
+details are just 0
+[Screenshot_2024-06-02_at_11.53.12.png]
+ Screenshot_2024-06-02_at_11.53.12.png
+280.31 KB External
+06/02/2024 10:48 AM
+it is like the video is not trying to load when it does not work
+06/02/2024 10:48 AM
+when it does not work, it looks like result.bufferRange makes no
+progress at all
+06/02/2024 10:48 AM
+one thing we noticed is that there is some result.bufferRange object
+06/02/2024 10:47 AM
+we then unsubscribe and do video.load() then video.play()
+06/02/2024 10:47 AM
+we wait to get sourceInfo (we sometimes never get it though)
+06/02/2024 10:47 AM
+then we subscribe through luna (edited)
+06/02/2024 10:47 AM
+what we do is that we set video.src to the streaming url (edited)
+[aabytt]
+[] jaruba <@834184545230258226> we only support webos 5+ so older
+versions are not a concern
+aabytt 06/02/2024 10:46 AM
+sourceInfo is fired just after video is loaded. You sure you subscribe
+early enough?
+[jaruba]
+jaruba 06/02/2024 10:46 AM
+but sometimes it never responds with sourceInfo for some reason
+06/02/2024 10:46 AM
+and we are also subscribing just to retrieve sourceInfo
+06/02/2024 10:45 AM
+@aabytt we only support webos 5+ so older versions are not a concern
+[aabytt]
+aabytt 06/02/2024 10:43 AM
+@jaruba
+06/02/2024 10:42 AM
+But I am not sure
+06/02/2024 10:42 AM
+What I remember is that he had to subscribe to catch sourceinfo object
+and then unsubscribe to continue control of playback with web apis. But
+for webOS < 5 it did not work as there was no longer control over
+playback after unsubscribe. So the workaround for older webOS was to
+load video, get sourceinfo, remember it and restart video (with new
+mediaID) but having tracks info from first launch.
+[jaruba]
+jaruba 06/02/2024 10:02 AM
+i'm not sure if this is only happening in Stremio or if this luna
+subscribe method is flaky in Lampa (and other apps) too
+06/02/2024 10:01 AM
+users currently go back from the video and start it again, sometimes
+this works, sometimes not 
+06/02/2024 10:01 AM
+other times it gives no error, but still no audio tracks / embedded
+subtitles list
+06/02/2024 10:01 AM
+sometimes it says that mediaId is invalid, other times it says that the
+pipeline for the mediaId is not running
+06/02/2024 10:00 AM
+the issue is that this method seems to randomly fail at retrieving the
+audio tracks and embedded subtitles list for videos (it fails more than
+not though) (edited)
+06/02/2024 9:59 AM
+which uses this "subscribe" method prior to starting playback:
+https://github.com/Stremio/stremio-video/blob/14ab8eeeffea762f77c560f04847c402226162bb/src/WebOsVideo/WebOsVideo.js#L237
+stremio-video/src/WebOsVideo/WebOsVideo.js at 14ab8eeeffea762f77c56...
+Abstraction layer on top of different media players -
+Stremio/stremio-video
+[]
+06/02/2024 9:59 AM
+most of the video player code was inherited from Lampa
+06/02/2024 9:58 AM
+we're facing an issue in Stremio on LG TV that is pretty annoying and i
+haven't been able to get to the bottom of it in the last weeks of
+attempts
+06/02/2024 9:58 AM
+@aabytt srry for pinging directly, but i'm not sure if the others would
+be able to help with this
+[kitsuned]
+hellobox. huh, did LG dumb TVs from ~10 years ago use different IR codes
+than smart models?
+kitsuned 06/02/2024 9:43 AM
+(no content)
+[image.png]
+ image.png
+318.13 KB External
+hellobox. 06/02/2024 4:22 AM
+these LED driver boards look quite similar. the only difference i can
+see at a glance is a slightly larger electrolytic cap for the 65" one
+[g233jHi.png]
+ g233jHi.png
+954.69 KB External
+06/02/2024 4:18 AM
+i don't think so... so what does SN90/SN95 mean? (edited)
+06/02/2024 4:17 AM
+oh, are NANO/QNED90s 8K 60Hz?
+[67lHIsn.png]
+ 67lHIsn.png
+40.91 KB External
+06/02/2024 4:16 AM
+[P22CS81.png]
+ P22CS81.png
+3.8 KB External
+06/02/2024 4:15 AM
+[LWLliDS.png]
+ LWLliDS.png
+31.05 KB External
+06/02/2024 4:14 AM
+so 2020 NANO95s have the F20 on a separate FRC board
+hellobox. 06/02/2024 4:02 AM
+USB camera
+[GWruBCo.png]
+ GWruBCo.png
+294.23 KB External
+06/02/2024 4:01 AM
+lol "help there's arcing inside my TV"
+[iILPSkY.png]
+ iILPSkY.png
+371.26 KB External
+06/02/2024 4:01 AM
+LX1T is the Posé stuff i guess
+[BOxlgFT.png]
+ BOxlgFT.png
+76.99 KB External
+06/02/2024 3:57 AM
+(no content)
+[YSENIRX.png]
+ YSENIRX.png
+109.83 KB External
+06/02/2024 3:55 AM
+wow, they actually (slightly) shrunk the ads?!
+[vF7TcMe.png]
+ vF7TcMe.png
+539.04 KB External
+06/02/2024 3:54 AM
+apparently it was only (supposed to be) released at the end of march
+[QutDa1O.png]
+ QutDa1O.png
+77.36 KB External
+06/02/2024 3:53 AM
+webOS 24 has a *chatbot*?!
+[HzX4Tvt.png]
+ HzX4Tvt.png
+87.24 KB External
+06/02/2024 3:52 AM
+i never did get around to investigating F20... my guess is xtensa
+06/02/2024 3:51 AM
+hmm. what's multi view again?
+[CRJRf39.png]
+ CRJRf39.png
+101.85 KB External
+06/02/2024 3:49 AM
+> - There is not much useful content in the top category. lol (ads)
+[MA5zNIZ.png]
+ MA5zNIZ.png
+317.82 KB External
+06/02/2024 3:44 AM
+is E60(N) only in 8K 120Hz models or something?
+06/02/2024 3:43 AM
+2022 8K models seem to have up to 4 fans
+hellobox. 06/02/2024 3:30 AM
+is SNFI just a mediatek thing? like it's mediatek's name for their SPI
+NAND flash driver?
+https://patchwork.kernel.org/project/linux-mediatek/patch/20211130083202.14228-4-xiangsheng.hou@mediatek.com/#24647279
+06/02/2024 3:27 AM
+i wonder if H5D would show up as a normal USB device...
+06/02/2024 3:22 AM
+check out that wide inductor by the power connector
+06/02/2024 3:21 AM
+the other massive BGA (near the 4x 51-pin Vx1 connectors) must be F20
+06/02/2024 3:20 AM
+and you can see it has 4 pairs (HDMI?) + one pair (USB?) connecting it
+to what is presumably the SoC
+06/02/2024 3:19 AM
+i believe the big BGA thing closest to the fan is H5D
+[BJPlZf4.png]
+ BJPlZf4.png
+3.25 MB External
+06/02/2024 3:16 AM
+this: Fidelix FM35Q1GA-IB http://www.fidelix.co.kr/pages/sub222_en.php
+06/02/2024 3:12 AM
+looks like its firmware is on... SPI NAND? 
+06/02/2024 3:11 AM
+like the SoC sends some data to it over USB and gets back video over
+HDMI? (edited)
+06/02/2024 3:11 AM
+what the hell could it be?
+[08o01QV.png]
+ 08o01QV.png
+10.02 KB External
+hellobox. hmm, what's H5D?
+hellobox. 06/02/2024 3:10 AM
+H5D again...
+hellobox. 06/02/2024 3:04 AM
+even ZX seems to be O20
+06/02/2024 3:04 AM
+which models is E60 used in? it looks like 2020 NANO99s use O20 (o208k)
+hellobox. 06/02/2024 2:48 AM
+> AUK will be in company with a new wave of the future, Smart Society.
+(this is their own translation)
+06/02/2024 2:48 AM
+https://auk.co.kr/eng/s2/module_list.asp?idx=7#n R12 series
+06/02/2024 2:47 AM
+https://en.wikipedia.org/wiki/Auk
+Auk
+An auk or alcid is a bird of the family Alcidae in the order
+Charadriiformes. The alcid family includes the murres, guillemots,
+auklets, puffins, and murrelets. The family contains 25 extant or
+recently extinct species that are divided into 11 genera. Apart from the
+extinct great auk, all auks can fly, and are excellent swimmers and
+divers (app...
+[]
+06/02/2024 2:47 AM
+oh yeah, i remember this confusing japanese/korean company structure now
+https://en.wikipedia.org/wiki/Kodenshi_AUK_Group
+06/02/2024 2:44 AM
+https://www.kodenshi.co.jp/top/wp-content/uploads/2019/08/PIC79603.pdf >
+PIC79603 is the supper-miniature surface mounting Ir receiver module lol
+supper miniature
+06/02/2024 2:42 AM
+well, they (sometimes) use knockoffs
+06/02/2024 2:42 AM
+i'm not sure whether i confirmed LG actually uses the TSOP77438 or one
+of the other TSOP variants
+06/02/2024 2:40 AM
+Heimdall footprint
+[CqcjJfI.png]
+ CqcjJfI.png
+27.27 KB External
+06/02/2024 2:39 AM
+while i would like to not have to worry about affecting all the nearby
+boards with IR, it would be a bit less convenient than just reaching for
+a remote control i guess
+06/02/2024 2:36 AM
+although most (all?) boards are also missing passives
+06/02/2024 2:36 AM
+it would be nice to have a way to adapt those footprints to 3-pin
+connectors
+06/02/2024 2:34 AM
+apparently the package is called "Heimdall" (by vishay anyway)
+06/02/2024 2:34 AM
+maybe i could make a board that can be soldered in the debug TSOP77438
+footprint
+06/02/2024 2:31 AM
+i wonder how hard it would be to make something that emulates an IR
+receiver
+06/02/2024 2:29 AM
+oh, are the bits reversed or something?
+06/02/2024 2:25 AM
+wait, what? https://gitlab.com/-/snippets/1690600
+06/02/2024 2:23 AM
+specifically, NEC address 0x20 rather than 0x04 edit: probably not
+(edited)
+06/02/2024 2:22 AM
+huh, did LG dumb TVs from ~10 years ago use different IR codes than
+smart models?
+June 1, 2024
+[jimdude.]
+jimdude. 06/01/2024 4:40 PM
+i want LF Channels gone
+06/01/2024 4:40 PM
+yes
+[mariotaku]
+[] jimdude. im trying to basically remove the LG Channels button from my
+IR remote
+mariotaku 06/01/2024 4:40 PM
+Do you want to get rid of it?
+[jimdude.]
+jimdude. 06/01/2024 4:38 PM
+im trying to basically remove the LG Channels button from my IR remote
+[jimdude.]
+[] mariotaku Are you trying to map game controller input to remote?
+jimdude. 06/01/2024 4:38 PM
+no
+[mariotaku]
+mariotaku 06/01/2024 3:50 PM
+Are you trying to map game controller input to remote?
+[jimdude.]
+jimdude. 06/01/2024 3:50 PM
+They dont show any of the IDs
+[jimdude.]
+[] mariotaku And how do you handle the key events? I have multiple kinds
+of mappings, not sure which one is for y...
+jimdude. 06/01/2024 3:49 PM
+I dont know, none of the logging techniques work at all on my tv
+[mariotaku]
+[] jimdude. Ye
+mariotaku 06/01/2024 1:29 PM
+And how do you handle the key events? I have multiple kinds of mappings,
+not sure which one is for you
+[jimdude.]
+[] mariotaku For the remote?
+jimdude. 06/01/2024 12:51 PM
+Ye
+[mariotaku]
+[] jimdude. so i know what keys im remapping
+mariotaku 06/01/2024 9:47 AM
+For the remote?
+[jimdude.]
+jimdude. 06/01/2024 7:14 AM
+so i know what keys im remapping
+06/01/2024 7:14 AM
+does anyone have like a map for the controller layout
+May 31, 2024
+[bredcat2220]
+bredcat2220 05/31/2024 5:14 PM
+Thanks
+[] bredcat2220 How does it exactly login? Does it logon using the
+official YouTube.com tv url login page or its own...
+Deleted User 05/31/2024 4:42 PM
+the same way yt does
+[m3m3dub5]
+[] timmods I tried accepting the user agreements but nothing changed.
+Its also gone for me. I believe it worked...
+m3m3dub5 05/31/2024 4:31 PM
+Webos 6.4.0-1703 on a b1
+[bredcat2220]
+Deleted User you can
+bredcat2220 05/31/2024 4:07 PM
+How does it exactly login? Does it logon using the official YouTube.com
+tv url login page or its own custom google login where it asks access to
+your account and shi (edited)
+[] bredcat2220 Can i login with google and get video recommendations or
+not
+Deleted User 05/31/2024 4:05 PM
+you can
+[bredcat2220]
+bredcat2220 05/31/2024 4:05 PM
+Can i login with google and get video recommendations or not
+05/31/2024 4:05 PM
+Oh
+Deleted User 05/31/2024 3:59 PM
+its a custom client
+[] bredcat2220 It loads the web version of YouTube+ad free extension
+like webos?
+Deleted User 05/31/2024 3:59 PM
+no
+[bredcat2220]
+Deleted User smarttubenext
+bredcat2220 05/31/2024 3:53 PM
+It loads the web version of YouTube+ad free extension like webos?
+[lightfire]
+lightfire 05/31/2024 3:41 PM
+doesnt hdr for me tho [:meep:]
+05/31/2024 3:41 PM
+its better than ytaf tbh
+[] bredcat2220 Hii, i love the YouTube ad free app so much but i wanna
+ask, is there a similar app for Android tv n...
+Deleted User 05/31/2024 2:39 PM
+smarttubenext
+[bredcat2220]
+bredcat2220 05/31/2024 2:17 PM
+Is there a way to implement this through some browser on Android tv?
+05/31/2024 2:17 PM
+Hii, i love the YouTube ad free app so much but i wanna ask, is there a
+similar app for Android tv now that I've bought a tv box, which
+basically just loads the web version of YouTube+an adfree extension
+May 30, 2024
+[timmods]
+timmods 05/30/2024 10:27 AM
+On a side note, latest firmware broke some stuff for me
+unfortunately. 1. Quit App option in app settings menus no longer work.
+Not sure yet why. 2. Recent Input tile on homescreen has undeclared
+variables and won't show the apps input title anymore. Fixed this on my
+own 
+05/30/2024 10:23 AM
+I tried accepting the user agreements but nothing changed. Its also gone
+for me. I believe it worked on previous firmware. What WebOS version are
+you on? Im on 8.3.1-30 (G3 03.31.45)
+[m3m3dub5]
+[] timmods I think this only works if your data/usage is tracked
+m3m3dub5 05/30/2024 9:52 AM
+Any idea how to check that?
+[timmods]
+[] m3m3dub5 Has lg removed the intelligent app list feature? Can’t for
+the life of me figure out how to do it
+timmods 05/30/2024 9:45 AM
+I think this only works if your data/usage is tracked
+May 29, 2024
+[aabytt]
+[] purplehaze915 How come it works for Youtube but not Plex. Unless Plex
+is not actually called cdp-30? root@LGwebO...
+aabytt 05/29/2024 12:40 PM
+"supportGIP": true is a must for this feature to work (edited)
+ 1
+[parkerlreed]
+[] czxe7 Tv is a early C2 I’ve had for almost a year and half now. It’s
+on the latest update, will dejavuln w...
+parkerlreed 05/29/2024 6:53 AM
+Try and see if it's been patched it just won't do anything.
+[czxe7]
+czxe7 05/29/2024 5:54 AM
+Tv is a early C2 I’ve had for almost a year and half now. It’s on the
+latest update, will dejavuln work?
+[purplehaze915]
+purplehaze915 05/29/2024 2:37 AM
+How come it works for Youtube but not Plex. Unless Plex is not actually
+called cdp-30? root@LGwebOSTV:~# luna-send-pub -n 1
+'luna://com.webos.service.eim/addDevice' '{
+"appId":"cdp-30","pigImage":"","mvpdIcon":""}' {"returnValue":true}
+Maybe I need to do this whatever it does edit the appinfo.json file for
+Plex and added "supportGIP": true per the docs (edited)
+[purplehaze915]
+purplehaze915 05/29/2024 2:11 AM
+google was better. thanks [:Okayge:]
+https://www.webosbrew.org/pages/luna-service-comwebosserviceeim.html
+[] purplehaze915 I just dont understand what this means
+"pigImage":"","mvpdIcon":""
+hellobox. 05/29/2024 2:10 AM
+have you tried discord search?
+[purplehaze915]
+purplehaze915 05/29/2024 2:08 AM
+I just dont understand what this means "pigImage":"","mvpdIcon":""
+05/29/2024 2:08 AM
+Can you guys help out with what command I need to set Plex as input
+application? like luna-send-pub -n 1
+'luna://com.webos.service.eim/addDevice'
+'{"appId":"youtube.leanback.v4","pigImage":"","mvpdIcon":""}'
+May 28, 2024
+[mikuhl_]
+mikuhl_ 05/28/2024 4:15 AM
+and thats on preiod
+hellobox. 05/28/2024 1:50 AM
+preiod
+    setPstreamerPreiodText: (t) =>
+      e(
+        ((e) => ({
+          type: "SET_PSTREAMER_PREIOD_TEXT",
+          pstreamerPeriodText: e || "",
+        }))(t)
+      ),
+    setPstreamerOriginPreiodText: (t) =>
+      e(
+        ((e) => ({
+          type: "SET_PSTREAMER_ORIGIN_PREIOD_TEXT",
+          pstreameOriginrPeriodText: e || "",
+        }))(t)
+      ),
+(edited)
+May 27, 2024
+[firelight]
+hellobox. ``` realmedia: remove RM we remove the all related in the Real
+Media.``` anybody remember RealPlay...
+firelight 05/27/2024 10:49 PM
+that realplayer logo visualizer was 
+[itsyogsothoth]
+itsyogsothoth 05/27/2024 11:23 AM
+RealAlternative forever in my heart
+hellobox. 05/27/2024 1:51 AM
+    realmedia: remove RM
+    we remove the all related in the Real Media.
+anybody remember RealPlayer? 
+[kitsuned]
+hellobox. can you do like version comparisons with CSS selectors?
+kitsuned 05/27/2024 12:27 AM
+a bunch of string equality comparisons would be ok...
+hellobox. 05/27/2024 12:16 AM
+hmm
+https://stackoverflow.com/questions/24412767/css-comparison-operators
+[] kitsuned CSS selectors go brrr <:trollface:779317952028606504>
+hellobox. 05/27/2024 12:14 AM
+can you do like version comparisons with CSS selectors?
+May 26, 2024
+[madalinost]
+hellobox. > Since webOS6.0 version, LGE has decided to no longer support
+DivX files because of expiring licens...
+madalinost 05/26/2024 12:52 PM
+Oh, I remember the custom activation video for divx back on my 2013 lg
+monitor
+hellobox. 05/26/2024 5:20 AM
+> Since webOS6.0 version, LGE has decided to no longer support DivX
+files because of expiring license.
+May 25, 2024
+[filip.roksandic]
+filip.roksandic 05/25/2024 11:26 AM
+In WebOS
+05/25/2024 11:26 AM
+Can I show Live TV channels in a small window while having a HDMI input
+as the main screen?
+05/25/2024 11:24 AM
+Hi
+May 24, 2024
+[halfspec]
+halfspec 05/24/2024 9:42 PM
+Thank you very much for the advice
+[] halfspec Thanks. So I guess from a purchase point of view you just
+have to look around to box and hope there’...
+hellobox. 05/24/2024 9:05 PM
+The date of manufacture is not (currently) relevant
+ 1
+[halfspec]
+halfspec 05/24/2024 7:22 PM
+Thanks. So I guess from a purchase point of view you just have to look
+around to box and hope there’s a manufacturing date
+[] halfspec Hi. Been here a week or so and have been following convos /
+reading the faq etc trying to see if the...
+hellobox. 05/24/2024 7:17 PM
+Any model year prior to 2024
+[halfspec]
+halfspec 05/24/2024 6:35 PM
+I don’t have an older LG to tinker with but may be in the market for one
+if I can jailbreak an LG or find some other alternative to neuter the
+smarts from a current tv
+05/24/2024 6:34 PM
+Hi. Been here a week or so and have been following convos / reading the
+faq etc trying to see if the question I’m about to ask comes up
+frequently, but I haven’t seen it / found it yet, so risking that it’s
+in plain sight and I’m just a dumbass… Are there known model numbers
+that are still on the shelves that can be jailbroken?
+May 23, 2024
+[parkerlreed]
+parkerlreed 05/23/2024 7:14 PM
+Just now realizing I mixed up the homebrew channel music with the Wii
+Shop channel music, but whatever.
+05/23/2024 7:12 PM
+(no content)
+ VID_20240523_103104496.mp4
+7.15 MB External
+[m3m3dub5]
+m3m3dub5 05/23/2024 12:31 PM
+Has lg removed the intelligent app list feature? Can’t for the life of
+me figure out how to do it
+Deleted User 05/23/2024 12:20 AM
+Good night everyone
+May 22, 2024
+[madalinost]
+madalinost 05/22/2024 9:24 PM
+https://forum.kodi.tv/showthread.php?tid=263350
+[madalinost]
+madalinost 05/22/2024 9:16 PM
+(no content)
+[image0.jpg]
+ image0.jpg
+177.76 KB External
+05/22/2024 9:15 PM
+I purchased 2 tunners to improve the experience. But I did not find the
+option to predict frequency and pre-tune the second tuner, to improve
+zapping speed between frequencies
+05/22/2024 9:14 PM
+I plan to only use tvheadend instead of DVB on my lg tv. Any suggestions
+how to make the experience better? Recommended settings..? Thanks
+May 21, 2024
+[kitsuned]
+kitsuned 05/21/2024 5:33 PM
+CSS selectors go brrr [:trollface:]
+05/21/2024 5:32 PM
+we can add attributes to the document like
+data-version-major/minor/patch, lol
+[mariotaku]
+mariotaku 05/21/2024 4:33 PM
+Although I hate to ask you making more changes to 0.6.4, but this could
+be pretty trivial
+[mariotaku]
+hellobox. Is there any other mechanism for notifying users that a new
+version is available?
+mariotaku 05/21/2024 4:32 PM
+The one comes to my mind is the notice above
+hellobox. 05/21/2024 4:30 PM
+Is there any other mechanism for notifying users that a new version is
+available?
+[mariotaku]
+mariotaku 05/21/2024 4:20 PM
+<div class="cert-error-hint">If you can see this, update hbchannel</dev>
+And display:none in newer hbchannel
+ 2
+[mariotaku]
+hellobox. also, for the certificate issue specifically the best thing
+you can do is test <https://github.com/t...
+mariotaku 05/21/2024 4:19 PM
+It runs pretty well. BTW, I have an idea about showing additional hint
+text in all the HTML descriptions
+hellobox. 05/21/2024 3:26 PM
+also, for the certificate issue specifically the best thing you can do
+is test
+https://github.com/throwaway96/webos-homebrew-channel/releases/tag/v0.6.4-test21
+(although even after the next version is released, there will be a long
+tail of people with old versions for god knows how long...)
+[] friya hah, I was just typing: One thing that might work is if you
+take the age of the user asking into acc...
+hellobox. 05/21/2024 1:21 PM
+might as well just respond to every user's first post with "see #
+unknown-channel"; it'll be right more often than not...
+ 1  1
+[] friya Or is it _only_ intent?
+Deleted User 05/21/2024 12:36 PM
+i havent seen LLMs
+[friya]
+friya 05/21/2024 12:08 PM
+Or is it only intent?
+05/21/2024 12:07 PM
+What underlying models do they use? Llama3 70b? 8b?
+05/21/2024 12:07 PM
+the Meta offering there seems pretty decent actually
+[lightfire]
+lightfire 05/21/2024 11:36 AM
+[:meep:]
+[] friya I don't even have a Meta account 
+Deleted User 05/21/2024 11:36 AM
+fb and meta are seperate now
+ 1
+[lightfire]
+lightfire 05/21/2024 11:36 AM
+I would run a cronjob that posts the faq answers every 12 hours and call
+that ai
+[] friya free forever?
+Deleted User 05/21/2024 11:36 AM
+yep
+[kitsuned]
+kitsuned 05/21/2024 11:31 AM
+(i'm cf workers simp, sorry)
+05/21/2024 11:31 AM
+https://ai.cloudflare.com
+[friya]
+friya 05/21/2024 11:29 AM
+I don't even have a Meta account 
+05/21/2024 11:28 AM
+free forever?
+Deleted User 05/21/2024 11:27 AM
+and done
+05/21/2024 11:27 AM
+just sign in using meta account (wit.ai is owned by meta) and create
+some intents and train some messages
+[] friya You can get decent intent classification from a 500k param
+model
+Deleted User 05/21/2024 11:27 AM
+you dont need to host wit.ai
+Deleted User 05/21/2024 11:26 AM
+but checking member join date is a nice idea
+[friya]
+friya 05/21/2024 11:26 AM
+You can get decent intent classification from a 500k param model
+Deleted User 05/21/2024 11:26 AM
+and yeah it did get triggered even if youre not having that specific
+issue
+05/21/2024 11:25 AM
+i used wit.ai to classify messages which worked decently
+[friya]
+friya 05/21/2024 11:25 AM
+I think Gemma or llama 8b would be the goto ones for cheap/fast
+[kitsuned]
+kitsuned 05/21/2024 11:25 AM
+i have an unused RTX 3060 (12 GB) 
+05/21/2024 11:24 AM
+in any case, which self-hosted LLMs are popular nowadays?
+[friya]
+[] firelight enough to talk about it out of nowhere
+friya 05/21/2024 11:24 AM
+well, I do think it's been discussed quite a bit in the past :D
+ 1
+[kitsuned]
+[] friya It's nicer to have the bot miss a few rather than being too
+aggressive
+kitsuned 05/21/2024 11:23 AM
+yeah...
+[friya]
+friya 05/21/2024 11:23 AM
+It's nicer to have the bot miss a few rather than being too aggressive
+[friya]
+[] kitsuned i think that modern LLMs won't make mistakes very often. in
+addition, we can only trigger on newbies...
+friya 05/21/2024 11:22 AM
+hah, I was just typing: One thing that might work is if you take the age
+of the user asking into account. I.e. only respond to newbies. I think
+it might be more pleasant to have
+ 2
+[firelight]
+firelight 05/21/2024 11:22 AM
+enough to talk about it out of nowhere
+05/21/2024 11:22 AM
+okay, lets be realistic here. Who is gonna be excited about security
+certificates?
+[kitsuned]
+[] friya The problem with discord bots is that it is annoying to talk
+about topics that match its keywords; e...
+kitsuned 05/21/2024 11:22 AM
+i think that modern LLMs won't make mistakes very often. in addition, we
+can only trigger on newbies' messages.
+[friya]
+friya 05/21/2024 11:12 AM
+The problem with discord bots is that it is annoying to talk about
+topics that match its keywords; even if you throw chats into an LLM
+and/or intent-classifier in an attempt to reduce false positives.
+[lightfire]
+[] firelight tfw I'm ignored 
+lightfire 05/21/2024 10:51 AM
+@Firelight NICE NICKNAME BRUDER. I RECOMMEND FUCK AROUND AND FIND OUT
+LIKE A REAL MAN OF SCIENCE 
+[mariotaku]
+mariotaku 05/21/2024 7:36 AM
+I'd love if those FAQs can be detected and responded without us typing
+(as well as crossposts), but I'm not familiar to Discord, let's see if
+they're interested
+ 1
+[mariotaku]
+[] firelight tfw I'm ignored 
+mariotaku 05/21/2024 7:35 AM
+IIRC it's midnight in his timezone
+ 1
+[firelight]
+hellobox.
+<https://www.reddit.com/r/webos/comments/1cm4gfz/lg_32_horror/> > LG 32"
+Android TV huh
+firelight 05/21/2024 5:49 AM
+tfw I'm ignored 
+hellobox. 05/21/2024 4:05 AM
+i guess it must be a 32" FHD webOS model
+05/21/2024 4:04 AM
+https://www.reddit.com/r/webos/comments/1cm4gfz/lg_32_horror/ > LG 32"
+Android TV huh
+[firelight]
+Deleted User well ask the admins
+firelight 05/21/2024 1:01 AM
+@Smx do you and the other admins mind if we make a bot for this?
+May 20, 2024
+[] firelight PLEASE. And handle spelling mistakes and missing words in
+the phrase. I'm about to have an aneurysm ...
+Deleted User 05/20/2024 8:24 AM
+well ask the admins
+[firelight]
+Deleted User i could make a bot for here that both scans normal messages
+and images with texts :trolley:
+firelight 05/20/2024 6:42 AM
+PLEASE. And handle spelling mistakes and missing words in the phrase.
+I'm about to have an aneurysm from the sheer amount of people here that
+are incapable of scrolling up or using the search bar
+Deleted User 05/20/2024 6:10 AM
+ive done it before
+[] firelight Someone make a god damn bot that OCRs screenshots for
+"issuer certificate" and replies with the FAQ
+Deleted User 05/20/2024 6:10 AM
+i could make a bot for here that both scans normal messages and images
+with texts :trolley:
+[firelight]
+firelight 05/20/2024 5:12 AM
+I swear I've seen like 50 tech support messages by now from that issue
+alone
+05/20/2024 5:11 AM
+Someone make a god damn bot that OCRs screenshots for "issuer
+certificate" and replies with the FAQ
+May 19, 2024
+hellobox. 05/19/2024 8:36 PM
+that might make it easier to find stuff
+05/19/2024 8:35 PM
+maybe # unknown-channel should be converted to a forum
+[yaafsama]
+yaafsama 05/19/2024 12:57 PM
+Workaround to select audio track in Stremio. Can someone try and see if
+this works for them? Edit: Works for smaller streams only. Less than
+20GB approx.
+https://github.com/Stremio/stremio-bugs/issues/792#issuecomment-2119183655
+(edited)
+Can't change audio tracks and subtitles in certain videos in LG web...
+Describe the bug Basically can't change audio tracks and subtitles from
+certain sources in LG's native webOS app. For certain videos If same
+video source have multiple audio tracks i can...
+[]
+hellobox. 05/19/2024 5:08 AM
+LG writes such shitty code, but their mistakes are often not exploitable
+for clearly unintentional reasons
+hellobox. 05/19/2024 4:08 AM
+    *** Error in `...': malloc(): memory corruption: 0xb5e1b100 ***
+hellobox. 05/19/2024 3:05 AM
+i could probably find another way to get on that I2C bus, but nobody
+else uses NVM anyway
+05/19/2024 3:05 AM
+oh man, is NVM under the heatsink? 
+05/19/2024 3:01 AM
+ah, nice. i wanted to test something on the latest version of webOS 3.0,
+and my 2nd K2Lp board already had it installed
+[smx2460]
+hellobox. ``` [AI] WARNING: ignore ATV clock setting 'coz focus is
+wrong!!!!```
+smx2460 05/19/2024 2:13 AM
+'coz
+[smx2460]
+smx2460 05/19/2024 2:13 AM
+https://archive.fosdem.org/2023/schedule/event/om_vlc/
+FOSDEM 2023 - Dual presentation: FFmpeg 6 and VLC.js
+[]
+May 18, 2024
+hellobox. 05/18/2024 10:01 PM
+    [AI] WARNING: ignore ATV clock setting 'coz focus is wrong!!!!
+[smx2460]
+smx2460 05/18/2024 10:00 PM
+!!!!!!!!!!!!!!!
+05/18/2024 10:00 PM
+hellobox. 05/18/2024 10:00 PM
+    [Night Mode Init !!!!!!!!!!!!!!!!!!!!!!!!!]
+May 17, 2024
+[llbranco]
+llbranco 05/17/2024 4:38 PM
+Follow this step by step tutorial And good luck 
+[llbranco]
+[] neoarmstrongcyclonejettcannon I wanted to jailbreak my ps4 with a
+rooted lg tv
+llbranco 05/17/2024 4:38 PM
+https://youtu.be/BIeljeDINqk?si=b2Uhfej382pUI1Vz
+MODDED WARFARE
+Use your TV to Jailbreak the PS4 on 11.00
+How to use an LG TV to Jailbreak the PS4 on 11.00. Playlist:
+https://youtu.be/c99oey4lz9Q?si=gJt_b1hppvBqAVL8 Steps to fix bus error:
+uname -m wget
+https://nightly.link/xfangfang/PPPwn_cpp/workflows/ci.yaml/main/aarch64-linux-musl.zip
+unzip aarch64-linux-musl.zip tar -xzvf pppwn.tar.gz LG Input Hook
+command: cd /media/internal/downloads/...
+[] Watch video
+[philau.6]
+philau.6 05/17/2024 9:01 AM
+Finnaly rooted my LG tv , youtube no Ads working well , the only problem
+i have is Kodi crashing a lot because of the memory 
+[IMG_0748.jpg]
+ IMG_0748.jpg
+467.76 KB External
+May 16, 2024
+[mariotaku]
+mariotaku 05/16/2024 1:21 PM
+https://www.encrypted.at/remote-root-shell-on-lg-tv-2013-netcast-models/
+mwllgr
+Remote root shell on LG TV 2013 (NetCast) models – en|crypted.at
+Gaining remote root access on older LG TV models - running the NetCast
+operating system - models sold in 2013, for example.
+[]
+[neoarmstrongcyclonejettcannon]
+neoarmstrongcyclonejettcannon 05/16/2024 1:04 PM
+What's that
+hellobox. 05/16/2024 1:03 PM
+search for "chariot"
+[neoarmstrongcyclonejettcannon]
+neoarmstrongcyclonejettcannon 05/16/2024 1:00 PM
+I don't know anything about rooting a tv
+[neoarmstrongcyclonejettcannon]
+hellobox. it's probably possible, but you'll have to do a lot of work
+yourself
+neoarmstrongcyclonejettcannon 05/16/2024 1:00 PM
+Shit
+hellobox. 05/16/2024 12:55 PM
+what the hell? it doesn't use wget...
+https://github.com/throwaway96/dejavuln-autoroot/issues/8
+[] neoarmstrongcyclonejettcannon I wanted to jailbreak my ps4 with a
+rooted lg tv
+hellobox. 05/16/2024 12:43 PM
+it's probably possible, but you'll have to do a lot of work yourself
+[neoarmstrongcyclonejettcannon]
+neoarmstrongcyclonejettcannon 05/16/2024 12:39 PM
+Nothing else
+[neoarmstrongcyclonejettcannon]
+[] mariotaku It is probably rootable but not with methods discussed
+here, and you can't do much even if you got r...
+neoarmstrongcyclonejettcannon 05/16/2024 12:39 PM
+I wanted to jailbreak my ps4 with a rooted lg tv
+[mariotaku]
+[] neoarmstrongcyclonejettcannon So it wouldn't work?
+mariotaku 05/16/2024 12:38 PM
+It is probably rootable but not with methods discussed here, and you
+can't do much even if you got root
+[neoarmstrongcyclonejettcannon]
+[] mariotaku It's not a webOS TV (netcast 4.5)
+neoarmstrongcyclonejettcannon 05/16/2024 12:37 PM
+So it wouldn't work?
+[mariotaku]
+[] neoarmstrongcyclonejettcannon Can 32LB582B-TB lg tv be rooted?
+mariotaku 05/16/2024 12:29 PM
+It's not a webOS TV (netcast 4.5)
+[neoarmstrongcyclonejettcannon]
+neoarmstrongcyclonejettcannon 05/16/2024 12:20 PM
+Can 32LB582B-TB lg tv be rooted?
+May 15, 2024
+[puppinoo]
+puppinoo 05/15/2024 8:45 PM
+https://troypoint.com/fen-kodi-addon/
+Troy
+How to Install FEN Light Kodi Addon (May 2024)
+The detailed guide below will show you How to Install FEN Light Kodi
+Addon and will provide you with important information that will allow
+you to use it
+[]
+05/15/2024 8:45 PM
+you have top add the addon's repo and install from that
+05/15/2024 8:44 PM
+https://real-debrid.com/
+Real-Debrid: All-in-one solution
+Real-Debrid is an unrestricted downloader that allows you to quickly
+download files hosted on the Internet or instantly stream them into an
+innovative web player
+[]
+[justasmile69]
+[] puppinoo <@344072577804664834> subscribe to RD and use some cool
+addon like fen light
+justasmile69 05/15/2024 8:31 PM
+how do u install the addon, what is RD?
+[puppinoo]
+puppinoo 05/15/2024 8:22 PM
+or if you dont want to pay you can try with some addon with torrent
+support but (to me but maybe Im not good enough) they are "uglier"
+05/15/2024 8:20 PM
+@JustASmile subscribe to RD and use some cool addon like fen light
+[justasmile69]
+[] the_dcoder I just rooted my TV, what cool stuff can I do on it? 
+justasmile69 05/15/2024 8:11 AM
+waiting someone to drop kodi guide with all the good sources in it
+ 1
+[the_dcoder]
+the_dcoder 05/15/2024 6:36 AM
+I just rooted my TV, what cool stuff can I do on it? 
+May 14, 2024
+[aabytt]
+aabytt 05/14/2024 10:57 AM
+@jaruba Mostly not. Usually it contains some extended info like (edited)
+[IMG_2331.png]
+ IMG_2331.png
+735.24 KB External
+[jaruba]
+jaruba 05/14/2024 10:51 AM
+@aabytt isn't title tag just expanded language tag? as in: English vs en
+[aabytt]
+[] jaruba <@834184545230258226> not sure if u care or not, but we had a
+discussion about LG TV not retrieving ...
+aabytt 05/14/2024 10:40 AM
+I know about the lang, but title tag missing on all webos
+[jaruba]
+jaruba 05/14/2024 10:28 AM
+on Samsung TV it is worst though, 2019 and 2020 TVs have languages and
+2021+ TVs are missing language for both embedded subs and audio tracks
+05/14/2024 10:27 AM
+@aabytt not sure if u care or not, but we had a discussion about LG TV
+not retrieving the subtitle / audio track languages from mkv, we asked
+the Stremio community to test this, as we support only webos 5+, we
+found that embedded subtitles lang is missing only from webos 5 (it
+retrieves audio track languages though), for LG TV 2021-2023 they all
+retrieve language for embedded subs and audio tracks from mkv
+May 13, 2024
+[puppinoo]
+puppinoo 05/13/2024 11:48 PM
+hi, when I read "save binary to service dir" where is this folder
+exactly and can I put my own binaries in there? (edited)
+[nerona_imu]
+nerona_imu 05/13/2024 3:55 PM
+How do I change resolution again? I want to try out interpolation if
+it's a thing available (edited)
+[madalinost]
+madalinost 05/13/2024 9:23 AM
+Lg tries to hard to be relatable. Now mimics apple tv control center
+[image0.jpg]
+ image0.jpg
+237.07 KB External
+05/13/2024 9:20 AM
+Also magic remote services
+[madalinost]
+Deleted User thats literally just android
+madalinost 05/13/2024 9:13 AM
+No fancy webos like app bar?
+Deleted User 05/13/2024 8:01 AM
+with custom colors
+05/13/2024 8:01 AM
+thats literally just android
+[madalinost]
+madalinost 05/13/2024 7:14 AM
+Android tv with lg old webos like UI. That s cool
+05/13/2024 7:14 AM
+(no content)
+[image0.jpg]
+ image0.jpg
+547.46 KB External

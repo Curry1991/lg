@@ -1,0 +1,1499 @@
+January 11, 2022
+[smx2460]
+smx2460 01/11/2022 10:05 AM
+i can't find it
+01/11/2022 10:05 AM
+@Mariotaku what is "libhelpers.so.2"
+[smx2460]
+[] mariotaku Should I nuke everything and start over?
+smx2460 01/11/2022 10:05 AM
+shouldn't be needed
+[smx2460]
+smx2460 01/11/2022 10:05 AM
+6) make
+01/11/2022 10:05 AM
+so it also rebuilds it
+01/11/2022 10:05 AM
+5) rm -rf output/build/moonlight-* for safety
+01/11/2022 10:05 AM
+4) verify "BR2_PACKAGE_SDL2_WEBOS" is now enabled in .config
+01/11/2022 10:04 AM
+3) "make oldconfig" at the top level (edited)
+01/11/2022 10:04 AM
+2) rm -rf output/build/sdl2*
+[mariotaku]
+mariotaku 01/11/2022 10:04 AM
+Should I nuke everything and start over?
+[smx2460]
+smx2460 01/11/2022 10:04 AM
+1) added "BR2_PACKAGE_SDL2_WEBOS" to Config.in
+[smx2460]
+[] mariotaku missing SDL_webOS*** symbols
+smx2460 01/11/2022 10:04 AM
+checklist:
+[smx2460]
+smx2460 01/11/2022 10:04 AM
+where does this come from
+[mariotaku]
+mariotaku 01/11/2022 10:04 AM
+missing SDL_webOS*** symbols
+[smx2460]
+smx2460 01/11/2022 10:04 AM
+    /mnt/usb/usb3/Drive1/moonlight # LD_LIBRARY_PATH=$PWD ./moonlight
+    ./moonlight: error while loading shared libraries: /mnt/usb/usb3/Drive1/moonlight/libhelpers.so.2: file too short
+[smx2460]
+[] mariotaku Because I still got errors
+smx2460 01/11/2022 10:03 AM
+such as?
+[smx2460]
+smx2460 01/11/2022 10:03 AM
+target only for what ends up on the target system
+01/11/2022 10:03 AM
+staging is used (or should be used) to install dev headers, libs and
+such
+01/11/2022 10:03 AM
+it's controlled in the .mk
+[mariotaku]
+mariotaku 01/11/2022 10:03 AM
+Because I still got errors
+[smx2460]
+smx2460 01/11/2022 10:03 AM
+no
+[mariotaku]
+mariotaku 01/11/2022 10:02 AM
+Does it installed to target already?
+[smx2460]
+smx2460 01/11/2022 9:59 AM
+make (edited)
+01/11/2022 9:59 AM
+rm -rf output/build/sdl2*
+01/11/2022 9:59 AM
+you need to rebuild sdl2 by doing so
+01/11/2022 9:58 AM
+(and add dependency to moonlight - this time only in Config.in - since
+it's a modifier of SDL2 and SDL2 is already marked as dependency)
+(edited)
+01/11/2022 9:58 AM
+now, once you enable it
+01/11/2022 9:58 AM
+"BR2_PACKAGE_SDL2_WEBOS"
+01/11/2022 9:58 AM
+i forgot to make it depend on
+01/11/2022 9:57 AM
+oh
+[mariotaku]
+mariotaku 01/11/2022 9:57 AM
+error: ‘SDL_webOSCreateExportedWindo ’ was not declared in this scope I
+saw you fixed that?
+[smx2460]
+smx2460 01/11/2022 9:56 AM
+[mariotaku]
+mariotaku 01/11/2022 9:56 AM
+It's building moonlight now
+[smx2460]
+smx2460 01/11/2022 9:56 AM
+make mariotaku_defconfig
+01/11/2022 9:56 AM
+then someone else can do
+01/11/2022 9:56 AM
+cp .config configs/mariotaku_defconfig
+01/11/2022 9:56 AM
+if you want to make a new defconfig: (edited)
+01/11/2022 9:55 AM
+oh, right "make oldconfig" whenever you edit .in files
+[mariotaku]
+mariotaku 01/11/2022 9:55 AM
+Damn that's smooth
+[smx2460]
+smx2460 01/11/2022 9:55 AM
+then edit Config.in with the line above and you're set
+01/11/2022 9:55 AM
+yes
+[mariotaku]
+mariotaku 01/11/2022 9:55 AM
+Like this?
+01/11/2022 9:55 AM
+(no content)
+[unknown.png]
+ unknown.png
+17.03 KB External
+[smx2460]
+smx2460 01/11/2022 9:54 AM
+the one in the .mk is for the build order (edited)
+01/11/2022 9:54 AM
+the dependency in Config.in is for the configuration selection
+01/11/2022 9:54 AM
+:))
+[mariotaku]
+mariotaku 01/11/2022 9:54 AM
+420% better than bitbake
+[smx2460]
+smx2460 01/11/2022 9:54 AM
+otherwise clean builds will always fail
+01/11/2022 9:54 AM
+yes correct
+[mariotaku]
+mariotaku 01/11/2022 9:54 AM
+Yep
+01/11/2022 9:53 AM
+So it should be declaring deps to swig.
+[smx2460]
+smx2460 01/11/2022 9:53 AM
+so you start to understand how it works 
+01/11/2022 9:53 AM
+and select BR2_PACKAGE_HOST_SWIG added to Config.in
+01/11/2022 9:53 AM
+that one should have "host-swig" added to the .mk
+01/11/2022 9:53 AM
+that
+[mariotaku]
+mariotaku 01/11/2022 9:53 AM
+umediaserver-master
+[smx2460]
+smx2460 01/11/2022 9:53 AM
+who needs swig
+01/11/2022 9:53 AM
+no
+[mariotaku]
+mariotaku 01/11/2022 9:53 AM
+Host swig
+[smx2460]
+smx2460 01/11/2022 9:53 AM
+the package where it was failing should have it added
+01/11/2022 9:52 AM
+which package was it
+01/11/2022 9:52 AM
+wait tho
+[mariotaku]
+mariotaku 01/11/2022 9:52 AM
+Yep, added and continue building
+[smx2460]
+smx2460 01/11/2022 9:52 AM
+Add a dependency
+01/11/2022 9:52 AM
+Yes
+01/11/2022 9:52 AM
+Means enable the one in buildroot, if it has it
+01/11/2022 9:52 AM
+@Mariotaku I'm pretty sure I had swig in my path
+[mariotaku]
+mariotaku 01/11/2022 9:51 AM
+Build failed but sounds like a small issue:
+    CMake Error at /usr/share/cmake-3.18/Modules/FindPackageHandleStandardArgs.cmake:165 (message):
+      Could NOT find SWIG (missing: SWIG_EXECUTABLE SWIG_DIR)
+01/11/2022 9:49 AM
+It's not ABI compatible, if you're creating SDK for webOS, this patch
+should be applied
+01/11/2022 9:49 AM
+Oh it reminds me one thing. on webOS, SDL_KeyEvent is modified
+[smx2460]
+smx2460 01/11/2022 9:48 AM
+I'll do a quick test
+[mariotaku]
+mariotaku 01/11/2022 9:48 AM
+Sounds like it's for netcast too
+[smx2460]
+smx2460 01/11/2022 9:48 AM
+I want to try it
+01/11/2022 9:48 AM
+Ok hold on
+[mariotaku]
+mariotaku 01/11/2022 9:48 AM
+I use lgncopenapi for webOS 1/2/3
+[] smx2460 Not sure if/how Mariotaku uses it tho
+ww8543 01/11/2022 9:48 AM
+thats what i was trying to ask 
+[mariotaku]
+mariotaku 01/11/2022 9:48 AM
+So moonlight on netcast lol
+[smx2460]
+smx2460 01/11/2022 9:48 AM
+Not sure if/how Mariotaku uses it tho
+[mariotaku]
+mariotaku 01/11/2022 9:47 AM
+Woah
+[smx2460]
+smx2460 01/11/2022 9:47 AM
+vdec provides it
+01/11/2022 9:47 AM
+H264 is ok
+ww8543 01/11/2022 9:47 AM
+what about h264 decoding?
+[smx2460]
+smx2460 01/11/2022 9:47 AM
+With the DirectFB backend
+[mariotaku]
+mariotaku 01/11/2022 9:47 AM
+Nice
+01/11/2022 9:47 AM
+I can use the script to verify symbols at least, and make a package and
+install on my TV
+[smx2460]
+smx2460 01/11/2022 9:47 AM
+I used it to run Dosbox
+01/11/2022 9:47 AM
+The one buildroot builds works
+[mariotaku]
+mariotaku 01/11/2022 9:46 AM
+Does NC4 contain SDL2?
+[smx2460]
+smx2460 01/11/2022 9:46 AM
+It should be compatible with NC4
+[mariotaku]
+mariotaku 01/11/2022 9:46 AM
+I'm thinking is it possible to provide different pkg-config file, and
+link to something like usr/lib/libndl-directmedia/libNDL_directmedia.so
+and usr/lib/libndl-directmedia-2/libNDL_directmedia.so
+[smx2460]
+smx2460 01/11/2022 9:46 AM
+Well technically I could
+01/11/2022 9:46 AM
+It produced a binary here but I can't test it
+[smx2460]
+[] mariotaku It has C++, API calls to webOS libs, SDL2 etc
+smx2460 01/11/2022 9:46 AM
+What I am wondering is...will it run?
+ww8543 01/11/2022 9:45 AM
+they have versioned symlinks tho?
+[smx2460]
+smx2460 01/11/2022 9:44 AM
+symlinks?
+[mariotaku]
+mariotaku 01/11/2022 9:44 AM
+Some libs have same SONAME but completely incompatible
+[smx2460]
+smx2460 01/11/2022 9:44 AM
+If you don't do it within this evening (when I can look at it) I'll do
+it
+[mariotaku]
+mariotaku 01/11/2022 9:44 AM
+There is one issue however
+[smx2460]
+smx2460 01/11/2022 9:43 AM
+Sure
+01/11/2022 9:43 AM
+System wide?
+[mariotaku]
+mariotaku 01/11/2022 9:43 AM
+maybe it's a good idea to include those APIs
+01/11/2022 9:43 AM
+I remember @infowski asked if we could add
+https://github.com/webosbrew/tv-native-apis
+GitHub - webosbrew/tv-native-apis: Headers and API stubs not includ...
+Headers and API stubs not included in OSE. Contribute to
+webosbrew/tv-native-apis development by creating an account on GitHub.
+[]
+[smx2460]
+smx2460 01/11/2022 9:43 AM
+Ported all webOS components it needs
+[mariotaku]
+mariotaku 01/11/2022 9:42 AM
+It has C++, API calls to webOS libs, SDL2 etc
+01/11/2022 9:42 AM
+It's kind of compatibility test suite lol
+[smx2460]
+smx2460 01/11/2022 9:42 AM
+[mariotaku]
+mariotaku 01/11/2022 9:42 AM
+Yep lol
+[smx2460]
+smx2460 01/11/2022 9:42 AM
+^,^
+01/11/2022 9:42 AM
+Did you enable moonlight-tv?
+01/11/2022 9:41 AM
+But then you need to make sure your dependency chain is correct
+01/11/2022 9:41 AM
+It could be more efficiently strictly put
+01/11/2022 9:41 AM
+It can bottleneck in configuration steps but it's not that bad either
+[mariotaku]
+mariotaku 01/11/2022 9:40 AM
+single package parallel is good enough
+ 1
+[smx2460]
+smx2460 01/11/2022 9:40 AM
+In fact I didn't know they had added it
+01/11/2022 9:40 AM
+Yeah I did not test that
+01/11/2022 9:39 AM
+    CPUs + 1, but it can be adjusted using the BR2_JLEVEL configuration option.
+    Until 2020.02, Buildroot was however building packages in a serial fashion: each package was built one after the other, without parallelization of the build between packages. As of 2020.02, Buildroot has experimental support for top-level parallel build, which allows some signicant build time savings by building packages that have no dependency relationship in parallel. This feature is however marked as experimental and is known not to work in some cases.
+    In order to use top-level parallel build, one must:
+        Enable the option BR2_PER_PACKAGE_DIRECTORIES in the Buildroot configuration
+        Use make -jN when starting the Buildroot build 
+01/11/2022 9:38 AM
+    By default, Buildroot does not support top-level parallel build, so running make -jN is not necessary. There is however experimental support for top-level parallel build, see Section 8.12, “Top-level parallel build”.
+01/11/2022 9:38 AM
+Another one
+[mariotaku]
+mariotaku 01/11/2022 9:38 AM
+doing normal make now
+[smx2460]
+smx2460 01/11/2022 9:38 AM
+So yes, just "make"
+01/11/2022 9:37 AM
+    Buildroot runs the build of the different components sequentially, but uses make -j for the compilation of the individual components.
+01/11/2022 9:36 AM
+Which can mess things up
+01/11/2022 9:36 AM
+Running the top level one with -j parallelizes package builds
+01/11/2022 9:36 AM
+Because each build already uses -jnproc
+01/11/2022 9:35 AM
+Doing so can fuck up the build
+01/11/2022 9:35 AM
+Its mentioned specifically in buildroot
+[mariotaku]
+mariotaku 01/11/2022 9:35 AM
+oh!
+01/11/2022 9:35 AM
+so far so good
+[smx2460]
+smx2460 01/11/2022 9:35 AM
+You should NOT run make -j
+[smx2460]
+[] mariotaku lemme try again
+smx2460 01/11/2022 9:35 AM
+Oh i forgot (edited)
+[smx2460]
+smx2460 01/11/2022 9:34 AM
+@Mariotaku worky? (edited)
+[mariotaku]
+mariotaku 01/11/2022 9:18 AM
+lemme try again
+[smx2460]
+smx2460 01/11/2022 9:17 AM
+Did you do it clean?
+[mariotaku]
+mariotaku 01/11/2022 9:16 AM
+    make[3]: Entering directory 'buildroot-nc4/output/build/glibc-2.12.2/elf'
+    buildroot-nc4/output/host/bin/arm-buildroot-linux-gnueabi-gcc   -nostdlib -nostartfiles -r -o buildroot-nc4/output/build/glibc-2.12.2/build/elf/librtld.map.o '-Wl,-(' buildroot-nc4/output/build/glibc-2.12.2/build/elf/dl-allobjs.os buildroot-nc4/output/build/glibc-2.12.2/build/libc_pic.a -lgcc '-Wl,-)' -Wl,-Map,buildroot-nc4/output/build/glibc-2.12.2/build/elf/librtld.mapT
+    buildroot-nc4/output/host/lib/gcc/arm-buildroot-linux-gnueabi/10.3.0/../../../../arm-buildroot-linux-gnueabi/bin/ld: buildroot-nc4/output/build/glibc-2.12.2/build/libc_pic.a(init-first.os):(.data+0x0): multiple definition of `__libc_multiple_libcs'; buildroot-nc4/output/build/glibc-2.12.2/build/elf/dl-allobjs.os:(.bss+0xb4): first defined here
+    buildroot-nc4/output/host/lib/gcc/arm-buildroot-linux-gnueabi/10.3.0/../../../../arm-buildroot-linux-gnueabi/bin/ld: buildroot-nc4/output/build/glibc-2.12.2/build/libc_pic.a(dl-addr.os): in function `_dl_addr_inside_object':
+    dl-addr.c:(.text+0x3a4): multiple definition of `_dl_addr_inside_object'; buildroot-nc4/output/build/glibc-2.12.2/build/elf/dl-allobjs.os:(.text+0x13634): first defined here
+    buildroot-nc4/output/host/lib/gcc/arm-buildroot-linux-gnueabi/10.3.0/../../../../arm-buildroot-linux-gnueabi/bin/ld: buildroot-nc4/output/build/glibc-2.12.2/build/libc_pic.a(_itoa.os): in function `_itoa':
+    _itoa.c:(.text+0xd4): multiple definition of `_itoa'; buildroot-nc4/output/build/glibc-2.12.2/build/elf/dl-allobjs.os:(.text+0x16044): first defined here
+    collect2: error: ld returned 1 exit status
+01/11/2022 9:15 AM
+Hmm. Got this when I tried to build with my config or the one you
+provided. multiple definition of '_dl_addr_inside_object';
+ multiple definition of '_itoa';
+01/11/2022 9:13 AM
+make -j12ing
+[smx2460]
+smx2460 01/11/2022 9:12 AM
+F8 shouls bring up search
+[mariotaku]
+mariotaku 01/11/2022 9:11 AM
+Ooh nice. nconfig
+[smx2460]
+smx2460 01/11/2022 9:10 AM
+Which has a better search
+01/11/2022 9:10 AM
+Or use make nconfig
+01/11/2022 9:10 AM
+Change it to =y
+01/11/2022 9:10 AM
+Search for RPI_ (edited)
+01/11/2022 9:10 AM
+Trick: nano .config
+[smx2460]
+[] mariotaku After `make nc4_defconfig` I will still have to add
+`mesa3d` manually right?
+smx2460 01/11/2022 9:09 AM
+You can enable RPI userland
+[smx2460]
+smx2460 01/11/2022 9:08 AM
+(no content)
+[IMG_20220111_090845.jpg]
+ IMG_20220111_090845.jpg
+48.47 KB External
+[mariotaku]
+mariotaku 01/11/2022 9:08 AM
+After make nc4_defconfig I will still have to add mesa3d manually right?
+[smx2460]
+smx2460 01/11/2022 9:08 AM
+CI auto builds and publishes the SDK
+01/11/2022 9:08 AM
+It's under CI but I haven't enables WebOS options there yet
+01/11/2022 9:06 AM
+Yes
+[mariotaku]
+mariotaku 01/11/2022 9:06 AM
+Oh cool. Should I switch to webos branch?
+[smx2460]
+smx2460 01/11/2022 9:06 AM
+Head to Packages --> WebOS
+01/11/2022 9:06 AM
+    make menuconfig
+[smx2460]
+[] mariotaku I'm lost in the config menu lol
+smx2460 01/11/2022 9:06 AM
+    make nc4_defconfig
+[mariotaku]
+mariotaku 01/11/2022 5:32 AM
+I'm lost in the config menu lol
+[mariotaku]
+mariotaku 01/11/2022 4:16 AM
+Maybe less than 500mb?
+01/11/2022 4:16 AM
+How big is the toolchain+sysroot?
+[mariotaku]
+[] smx2460 hyperion currently broken until we fix the above
+mariotaku 01/11/2022 4:16 AM
+Oh man you're awesome!
+ 1
+[smx2460]
+smx2460 01/11/2022 2:59 AM
+hyperion currently broken until we fix the above
+01/11/2022 2:58 AM
+https://github.com/openlgtv/buildroot-nc4/commit/90d4bbe5350f6e1aecb69b3038153cb6fc1027b0
+WebOS bringup · openlgtv/buildroot-nc4@90d4bbe
+[]
+01/11/2022 2:55 AM
+and @Smx happy
+01/11/2022 2:55 AM
+if !blank, good things happen
+01/11/2022 2:55 AM
+if blank, nothing happens
+01/11/2022 2:55 AM
+or you need to forward CMAKE_TOOLCHAIN_FILE
+01/11/2022 2:54 AM
+    define $(2)_CONFIGURE_CMDS
+        (mkdir -p $($$(PKG)_BUILDDIR) && \
+        cd $($$(PKG)_BUILDDIR) && \
+        rm -f CMakeCache.txt && \
+        PATH=$$(BR_PATH) \
+        $($$(PKG)_CONF_ENV) $$(BR2_CMAKE) $($$(PKG)_SRCDIR) \
+            -DCMAKE_TOOLCHAIN_FILE="$$(HOST_DIR)/share/buildroot/toolchainfile.cmake" \
+            -DCMAKE_INSTALL_PREFIX="/usr" \
+            -DCMAKE_COLOR_MAKEFILE=OFF \
+            -DBUILD_DOC=OFF \
+            -DBUILD_DOCS=OFF \
+            -DBUILD_EXAMPLE=OFF \
+            -DBUILD_EXAMPLES=OFF \
+            -DBUILD_TEST=OFF \
+            -DBUILD_TESTS=OFF \
+            -DBUILD_TESTING=OFF \
+            -DBUILD_SHARED_LIBS=$$(if $$(BR2_STATIC_LIBS),OFF,ON) \
+            $$(CMAKE_QUIET) \
+            $($$(PKG)_CONF_OPTS) \
+        )
+    endef
+01/11/2022 2:54 AM
+it needs to include the host buildroot toolchain file
+01/11/2022 2:53 AM
+that won't fly
+01/11/2022 2:53 AM
+yeah..
+01/11/2022 2:53 AM
+    ExternalProject_Add(
+      libyuv
+      URL https://chromium.googlesource.com/libyuv/libyuv/+archive/fdc71956bdade0012b0628b5011b567c06c72308.tar.gz
+      CMAKE_ARGS  "-DBUILD_SHARED_LIBS=OFF" "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}" "-DCMAKE_AR=${CMAKE_AR}" "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+    )
+01/11/2022 2:52 AM
+dafuck
+01/11/2022 2:52 AM
+it built it for the host
+01/11/2022 2:52 AM
+uhmm
+01/11/2022 2:51 AM
+ummm
+01/11/2022 2:51 AM
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-buildroot-linux-gnueabi/11.2.0/../../../../arm-buildroot-linux-gnueabi/bin/ld: libyuv/lib/libyuv.a: error adding symbols: file format not recognized
+01/11/2022 2:51 AM
+better
+01/11/2022 2:50 AM
+the first include shouldn't be there
+01/11/2022 2:50 AM
+why!
+01/11/2022 2:50 AM
+    #include <lunaservice.h>
+    #include <luna-service2/lunaservice.h>
+01/11/2022 2:50 AM
+the world is wrong
+01/11/2022 2:50 AM
+the whole thing is wrong
+01/11/2022 2:50 AM
+that is wrong
+01/11/2022 2:50 AM
+hold on
+[smx2460]
+smx2460 01/11/2022 2:37 AM
+    LUNA_SERVICE2_CONF_ENV += \
+        WEBOS_INSTALL_INCLUDEDIR=$(STAGING_DIR)/usr/include \
+        WEBOS_INSTALL_LIBDIR=$(STAGING_DIR)/usr/lib
+[smx2460]
+[] smx2460 ```libdir=@WEBOS_INSTALL_LIBDIR@
+includedir=@WEBOS_INSTALL_INCLUDEDIR@```
+smx2460 01/11/2022 2:37 AM
+fix incoming...
+[smx2460]
+[] maryjohanna42069 For some reason lg or mariotaku built the gcc that
+runs on x64 but produces armel binaries with --sy...
+smx2460 01/11/2022 2:31 AM
+that's why buildroot is the way
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:18 AM
+Because even tho I specified --with-sysroot while building due to a bug
+in gcc's libgcc configure script, that gets ignored
+01/11/2022 2:17 AM
+So I had to symlink my chroot to /not/existing
+01/11/2022 2:17 AM
+For some reason lg or mariotaku built the gcc that runs on x64 but
+produces armel binaries with --sysroot=/not/existing lol (edited)
+01/11/2022 2:16 AM
+Was a bit tricky tho
+01/11/2022 2:16 AM
+I managed to build a native gcc
+[dustyangel47]
+[] smx2460 you use the cross gcc to build a gcc that runs on the target
+host
+dustyangel47 01/11/2022 2:15 AM
+tried, couldn't get the required libraries to compile, gave up
+[smx2460]
+smx2460 01/11/2022 2:15 AM
+oh...
+01/11/2022 2:15 AM
+    libdir=@WEBOS_INSTALL_LIBDIR@
+    includedir=@WEBOS_INSTALL_INCLUDEDIR@
+01/11/2022 2:15 AM
+proper .pc files should be like this
+01/11/2022 2:15 AM
+    exec_prefix=@exec_prefix@
+    libdir=@libdir@
+    includedir=@includedir@
+01/11/2022 2:14 AM
+no shit that it doesn't work
+01/11/2022 2:14 AM
+    includedir=/usr/include
+    Name: luna-service2
+    Description: Open webOS Luna System Bus library, daemon, and utilities
+    Version: 3.21.2
+    Requires.private: glib-2.0 pbnjson_c >= 2.5.0 PmLogLib >= 3.0.2
+    Libs: -L${libdir} -lluna-service2
+    Cflags: -I${includedir} -DUSE_PMLOG_DECLARATION
+01/11/2022 2:12 AM
+(no content)
+[unknown.png]
+ unknown.png
+74.35 KB External
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:11 AM
+Gonna be fun af
+01/11/2022 2:11 AM
+So I guess I will just do different builds if people report that it
+didnt run for them
+01/11/2022 2:11 AM
+Meh
+01/11/2022 2:11 AM
+Ye
+[smx2460]
+smx2460 01/11/2022 2:11 AM
+that's impossible
+01/11/2022 2:11 AM
+supporting all waylands?
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:11 AM
+What can I do
+01/11/2022 2:11 AM
+Other than building a fully static kodi build
+[smx2460]
+smx2460 01/11/2022 2:11 AM
+what is the actual issue
+[smx2460]
+[] maryjohanna42069 So yeah I am clueless
+smx2460 01/11/2022 2:11 AM
+wait
+[smx2460]
+smx2460 01/11/2022 2:11 AM
+there are many branches
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:11 AM
+So yeah I am clueless
+[smx2460]
+smx2460 01/11/2022 2:10 AM
+unless...
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:10 AM
+Fair
+[smx2460]
+smx2460 01/11/2022 2:10 AM
+before patching it myself
+01/11/2022 2:10 AM
+i think i'll wait for @infowski for the lunaservice.h
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:10 AM
+That italian text looks cute
+[smx2460]
+smx2460 01/11/2022 2:09 AM
+correct
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:09 AM
+If in theory a tv has an older wayland server, then my kodi build might
+wont work
+[smx2460]
+smx2460 01/11/2022 2:09 AM
+looks like this isn't going through then
+01/11/2022 2:09 AM
+    pkg_check_modules(LS2 REQUIRED luna-service2)
+    include_directories(${LS2_INCLUDE_DIRS})
+01/11/2022 2:09 AM
+heh
+01/11/2022 2:09 AM
+    /mnt/ExtData/buildroot-nc4/output/build/hyperion-webos-main/src/main.c:19:10: fatal error: lunaservice.h: File o directory non esistente
+       19 | #include <lunaservice.h>
+          |          ^~~~~~~~~~~~~~~
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:09 AM
+Its really that for example I depend on the /usr/lib/libwaylandserver.so
+or whatever shared object
+[smx2460]
+smx2460 01/11/2022 2:09 AM
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/include/luna-service2/lunaservice.h
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:08 AM
+But my issue is not that
+[smx2460]
+smx2460 01/11/2022 2:08 AM
+xD
+01/11/2022 2:08 AM
+i like it
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:08 AM
+Lol, when its 2 am and you mix yes and yeah
+01/11/2022 2:08 AM
+Yesh
+[smx2460]
+smx2460 01/11/2022 2:07 AM
+if you really want
+01/11/2022 2:07 AM
+you can use the produced toolchain to do that
+01/11/2022 2:07 AM
+buildroot doesn't support it but i mean who cares
+01/11/2022 2:07 AM
+but it's a pretty stupid usecase
+01/11/2022 2:07 AM
+yocto supports it
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:07 AM
+I see
+[smx2460]
+smx2460 01/11/2022 2:07 AM
+aka gcc on the TV
+01/11/2022 2:07 AM
+you use the cross gcc to build a gcc that runs on the target host
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:07 AM
+Ohh yeah, then nvm
+[smx2460]
+smx2460 01/11/2022 2:07 AM
+i.e. you don't just build a cross gcc
+01/11/2022 2:07 AM
+that you are building a gcc for the target
+01/11/2022 2:06 AM
+iirc canadian cross means
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:06 AM
+I picked this phrase up from the gcc mailing list
+01/11/2022 2:06 AM
+But not sure
+01/11/2022 2:06 AM
+I think you call that scenario canadian cross when your host arch
+differs from your target
+[smx2460]
+smx2460 01/11/2022 2:06 AM
+hyperion devs unite!
+01/11/2022 2:06 AM
+    [ 59%] Building CXX object tv-native-apis/starfish-media-pipeline/CMakeFiles/playerAPIs.dir/src/StarfishMediaAPIs_stub.cpp.o
+    /mnt/ExtData/buildroot-nc4/output/build/hyperion-webos-main/src/main.c:19:10: fatal error: lunaservice.h: File o directory non esistente
+       19 | #include <lunaservice.h>
+          |          ^~~~~~~~~~~~~~~
+01/11/2022 2:05 AM
+lol
+01/11/2022 2:05 AM
+and why is it called canadian cross
+[smx2460]
+[] maryjohanna42069 But like I tried to canadian cross compile kodi and
+it depends on a lot of precompiled libs from the...
+smx2460 01/11/2022 2:05 AM
+what do you mean by canadian cross in this context
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 2:05 AM
+Not sure how could I make it be compatible with all tvs out there
+01/11/2022 2:04 AM
+If I compile using my TV's sysroot I assume there is a chance it wont
+work on other tvs
+01/11/2022 2:04 AM
+But like I tried to canadian cross compile kodi and it depends on a lot
+of precompiled libs from the tv's sysroot, mainly the wayland stuff
+01/11/2022 2:03 AM
+I mean now that I asked it I realized thats a bit stupid
+01/11/2022 2:03 AM
+Do you think it would be possible to include all the closed source lg
+libs in this buildroot too?
+01/11/2022 2:02 AM
+Siick
+[smx2460]
+smx2460 01/11/2022 1:52 AM
+01/11/2022 1:52 AM
+    -- Install configuration: "Release"
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/lib/libmicrodns.so
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/bin/moonlight
+    -- Set runtime path of "/mnt/ExtData/buildroot-nc4/output/target/usr/bin/moonlight" to ""
+    -- Up-to-date: /mnt/ExtData/buildroot-nc4/output/target/usr/.
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/./splash.png
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/./icon_large.png
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/./assets
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/./assets/gamecontrollerdb.txt
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/./assets/webos-launch.sh
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/./icon.png
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/./appinfo.json
+[smx2460]
+smx2460 01/11/2022 1:43 AM
+    define APPLY_WEBOS_PATCHES
+        $(APPLY_PATCHES) $(@D) package/sdl2/webos \
+            webos-input-structs.patch \
+            webos-apis.patch
+    endef
+    ifeq ($(BR2_PACKAGE_SDL2_WEBOS),y)
+    SDL2_POST_PATCH_HOOKS += APPLY_WEBOS_PATCHES
+    endif
+01/11/2022 1:40 AM
+copy patches
+01/11/2022 1:40 AM
+https://github.com/webosbrew/meta-lg-webos-ndk/tree/c87c4ba6fad97de40ebe425facd8e8f40f5c5c04/recipes/libsdl2/libsdl2
+meta-lg-webos-ndk/recipes/libsdl2/libsdl2 at c87c4ba6fad97de40ebe42...
+Most important tool to brew some native app for webOS TV -
+meta-lg-webos-ndk/recipes/libsdl2/libsdl2 at
+c87c4ba6fad97de40ebe425facd8e8f40f5c5c04 · webosbrew/meta-lg-webos-ndk
+[]
+01/11/2022 1:40 AM
+nop
+[dustyangel47]
+dustyangel47 01/11/2022 1:40 AM
+Once again just define them away
+[smx2460]
+smx2460 01/11/2022 1:34 AM
+    /mnt/ExtData/buildroot-nc4/output/build/moonlight-tv-v1.3.0-1/modules/decoder/smp/src/AVStreamPlayer.cpp: In constructor ‘MoonlightStarfish::AVStreamPlayer::AVStreamPlayer()’:
+    /mnt/ExtData/buildroot-nc4/output/build/moonlight-tv-v1.3.0-1/modules/decoder/smp/src/AVStreamPlayer.cpp:41:18: error: ‘SDL_webOSCreateExportedWindow’ was not declared in this scope
+       41 |     window_id_ = SDL_webOSCreateExportedWindow(0);
+          |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /mnt/ExtData/buildroot-nc4/output/build/moonlight-tv-v1.3.0-1/modules/decoder/smp/src/AVStreamPlayer.cpp: In destructor ‘MoonlightStarfish::AVStreamPlayer::~AVStreamPlayer()’:
+    /mnt/ExtData/buildroot-nc4/output/build/moonlight-tv-v1.3.0-1/modules/decoder/smp/src/AVStreamPlayer.cpp:55:5: error: ‘SDL_webOSDestroyExportedWindow’ was not declared in this scope
+       55 |     SDL_webOSDestroyExportedWindow(window_id_);
+          |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /mnt/ExtData/buildroot-nc4/output/build/moonlight-tv-v1.3.0-1/modules/decoder/smp/src/AVStreamPlayer.cpp: In member function ‘bool MoonlightStarfish::AVStreamPlayer::load()’:
+    /mnt/ExtData/buildroot-nc4/output/build/moonlight-tv-v1.3.0-1/modules/decoder/smp/src/AVStreamPlayer.cpp:93:5: error: ‘SDL_webOSSetExportedWindow’ was not declared in this scope
+       93 |     SDL_webOSSetExportedWindow(window_id_, &src, &dst);
+          |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+01/11/2022 1:33 AM
+next one
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 1:33 AM
+Ohh
+[smx2460]
+smx2460 01/11/2022 1:32 AM
+        -DUSE_AVOUTPUTD=ON \
+01/11/2022 1:32 AM
+oh i already fixed it
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 1:32 AM
+Maybe its missing a cast?
+[smx2460]
+smx2460 01/11/2022 1:31 AM
+[maryjohanna42069]
+maryjohanna42069 01/11/2022 1:31 AM
+Smx never sleeps
+[smx2460]
+smx2460 01/11/2022 1:26 AM
+    /mnt/ExtData/buildroot-nc4/output/build/umediaserver-master/src/media_display_controller/MediaDisplayController.cpp:80:26: error: expected type-specifier before ‘WEBOS_CONNECTOR_IMPLEMENTATION’
+       80 |         , tv_display(new WEBOS_CONNECTOR_IMPLEMENTATION(connector_, connection_policy))
+          |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    In file included from /mnt/ExtData/buildroot-nc4/output/host/arm-buildroot-linux-gnueabi/include/c++/11.2.0/bits/stl_algobase.h:67,
+                     from /mnt/ExtData/buildroot-nc4/output/host/arm-buildroot-linux-gnueabi/include/c++/11.2.0/bits/char_traits.h:39,
+                     from /mnt/ExtData/buildroot-nc4/output/host/arm-buildroot-linux-gnueabi/include/c++/11.2.0/ios:40,
+                     from /mnt/ExtData/buildroot-nc4/output/host/arm-buildroot-linux-gnueabi/include/c++/11.2.0/ostream:38,
+[smx2460]
+smx2460 01/11/2022 1:13 AM
+nvm
+01/11/2022 1:08 AM
+but it didn't
+01/11/2022 1:08 AM
+i thought i'd fix it with umediaserver
+01/11/2022 1:07 AM
+    /mnt/ExtData/buildroot-nc4/output/build/moonlight-tv-v1.3.0-1/system/webos/tv-native-apis/lgncapi/src/cgl.c:11:10: fatal error: ResourceManagerClient_c.h: File o directory non esistente
+       11 | #include <ResourceManagerClient_c.h>
+          |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+    compilation terminated.
+01/11/2022 1:07 AM
+@Mariotaku now i have this problem
+[smx2460]
+smx2460 01/11/2022 12:57 AM
+i just noticed, you based it off rpi
+[smx2460]
+smx2460 01/11/2022 12:50 AM
+    In file included from /mnt/ExtData/buildroot-nc4/output/build/moonlight-tv-v1.3.0-1/system/webos/tv-native-apis/lgncapi/src/lgnc_egl.c:1:
+    /mnt/ExtData/buildroot-nc4/output/build/moonlight-tv-v1.3.0-1/system/webos/tv-native-apis/lgncapi/include/lgnc_egl.h:3:10: fatal error: EGL/egl.h: File o directory non esistente
+        3 | #include <EGL/egl.h>
+          |          ^~~~~~~~~~~
+01/11/2022 12:50 AM
+@Mariotaku how did you pull/prepare the EGL headers for the NDK?
+[smx2460]
+smx2460 01/11/2022 12:09 AM
+@infowski btw it's done
+January 10, 2022
+tomahawk1993 01/10/2022 8:17 PM
+Will do. Thanks.
+[infowski]
+tomahawk1993 I see. Ok I hope that I find the required information on
+the GitHub page. Anyway awesome project. Th...
+infowski 01/10/2022 8:16 PM
+of course if you have any questions just tell us.
+[smx2460]
+smx2460 01/10/2022 8:15 PM
+g00f evening
+tomahawk1993 01/10/2022 7:17 PM
+I see. Ok I hope that I find the required information on the GitHub
+page. Anyway awesome project. Thanks 
+[smx2460]
+tomahawk1993 Hello together, just found this project while searching for
+Hyperion and WebOS. Sadly the FAQ is ...
+smx2460 01/10/2022 7:12 PM
+# unknown-channel has been created relatively recently
+[smx2460]
+smx2460 01/10/2022 7:12 PM
+Since systemd also wants to expose itself as a library
+[smx2460]
+[] infowski why would they? :^)
+smx2460 01/10/2022 7:11 PM
+Well it makes abi compatibility potentially painful
+tomahawk1993 01/10/2022 6:16 PM
+Hello together, just found this project while searching for Hyperion and
+WebOS. Sadly the FAQ is empty here. Is there any FAQ online? Thanks 
+[infowski]
+infowski 01/10/2022 1:30 PM
+systemd is meant to be built against modern glibc - that makes sense -
+if you need new systemd, then you probably need new-ish glibc, there's
+nothing inherently wrong with that, consdiering how low level of a
+dependency systemd is
+01/10/2022 1:24 PM
+like, totally honestly
+01/10/2022 1:24 PM
+why would they? :^)
+[smx2460]
+smx2460 01/10/2022 1:11 PM
+It doesn't even try to be
+01/10/2022 1:11 PM
+It basically tracks the kernel versions
+01/10/2022 1:11 PM
+Totally not backward compatible
+01/10/2022 1:11 PM
+In any case, the systemd code base is a mess
+[smx2460]
+smx2460 01/10/2022 12:07 PM
+So I just need to force that ifdef to false
+01/10/2022 12:07 PM
+The code was even if ifdefs already
+01/10/2022 12:07 PM
+So we don't need to break NC4 backcompat either
+01/10/2022 12:06 PM
+I'll do it this evening
+01/10/2022 12:06 PM
+When I could have just disabled the hubd
+01/10/2022 12:06 PM
+I spent all that time
+[smx2460]
+[] infowski we don't necessarily need `ls-hubd` itself
+smx2460 01/10/2022 12:06 PM
+Yeah I'm an idiot
+[infowski]
+infowski 01/10/2022 9:18 AM
+just libluna-service2
+[infowski]
+[] smx2460 Click to see attachment
+infowski 01/10/2022 9:18 AM
+we don't necessarily need ls-hubd itself
+[smx2460]
+smx2460 01/10/2022 1:23 AM
+heh gotta do it from scratch
+01/10/2022 1:23 AM
+hm wait maybe i fucked up my build tree
+01/10/2022 1:22 AM
+aka 24 years ago
+01/10/2022 1:22 AM
+the offending file, which has been present since forever
+01/10/2022 1:22 AM
+https://github.com/bminor/glibc/blob/master/sysdeps/unix/sysv/linux/scsi/scsi.h
+glibc/scsi.h at master · bminor/glibc
+Unofficial mirror of sourceware glibc repository. Updated daily. -
+glibc/scsi.h at master · bminor/glibc
+[]
+01/10/2022 1:21 AM
+this bug i mean
+01/10/2022 1:21 AM
+    ../src/udev/ata_id/ata_id.c:14:10: fatal error: scsi/scsi.h: File o directory non esistente
+       14 | #include <scsi/scsi.h>
+          |          ^~~~~~~~~~~~~
+01/10/2022 1:21 AM
+the bug must be in glibc 2.12 installation
+01/10/2022 1:21 AM
+ok
+01/10/2022 1:19 AM
+on your shell
+01/10/2022 1:19 AM
+run /lib/libc.so.6 (edited)
+01/10/2022 1:19 AM
+what is the glibc version used on webos?
+[smx2460]
+smx2460 01/10/2022 1:00 AM
+-D secure_getenv=getenv coming up lol
+01/10/2022 12:59 AM
+    ../src/basic/creds-util.c:19:13: error: implicit declaration of function ‘secure_getenv’ [-Werror=implicit-function-declaration]
+01/10/2022 12:59 AM
+more booms now tho
+01/10/2022 12:59 AM
+surprisingly, it worked
+01/10/2022 12:59 AM
+hax attempt
+01/10/2022 12:59 AM
+    $ touch output/staging/usr/include/uchar.h
+01/10/2022 12:58 AM
+lol 6 years ago
+01/10/2022 12:58 AM
+let's git blame that file until uchar.h is not used (edited)
+01/10/2022 12:57 AM
+i'll proabably do the latter, it only needs it for shitty headers
+01/10/2022 12:57 AM
+or downgrade systemd
+01/10/2022 12:57 AM
+which means i can either upgrade glibc (but i would prefer not to)
+01/10/2022 12:57 AM
+    In file included from ../src/libsystemd/sd-bus/bus-internal.c:6:
+    ../src/basic/escape.h:8:10: fatal error: uchar.h: File o directory non esistente
+        8 | #include <uchar.h>
+          |          ^~~~~~~~~
+01/10/2022 12:57 AM
+i'm having problems with this version of systemd
+01/10/2022 12:57 AM
+when was systemd introduced?
+01/10/2022 12:53 AM
+i'm gonna do this in another profile
+01/10/2022 12:53 AM
+only for kernels >= 3.0 and < 3.10
+01/10/2022 12:53 AM
+i mean, it's not even necessarily true
+01/10/2022 12:53 AM
+i'm gonna break Netcast backward compatibility xD
+01/10/2022 12:52 AM
+but here we're screwed
+01/10/2022 12:52 AM
+(no content)
+[unknown.png]
+ unknown.png
+185.69 KB External
+01/10/2022 12:52 AM
+not ideal
+01/10/2022 12:52 AM
+@DustyAngel47
+    # hack
+    UTIL_LINUX_LIBS_CFLAGS = $(TARGET_CFLAGS)
+    UTIL_LINUX_LIBS_CFLAGS += -DO_PATH=010000000
+    UTIL_LINUX_LIBS_CONF_ENV += CFLAGS="$(UTIL_LINUX_LIBS_CFLAGS)"
+01/10/2022 12:47 AM
+broken headers
+[dustyangel47]
+dustyangel47 01/10/2022 12:47 AM
+it always fixes the builds
+01/10/2022 12:47 AM
+as i do
+01/10/2022 12:47 AM
+just #define O_PATH ""
+[smx2460]
+smx2460 01/10/2022 12:47 AM
+sigh
+01/10/2022 12:47 AM
+(no content)
+[unknown.png]
+ unknown.png
+30.87 KB External
+[dustyangel47]
+dustyangel47 01/10/2022 12:47 AM
+yes
+[smx2460]
+smx2460 01/10/2022 12:46 AM
+does webos use systemd now?
+[dustyangel47]
+dustyangel47 01/10/2022 12:45 AM
+yeah busybox is crazy extensive
+[smx2460]
+smx2460 01/10/2022 12:44 AM
+you should see the longest list of commands and features you never
+thought busybox had
+01/10/2022 12:44 AM
+so you can also confirm it works for you
+[smx2460]
+[] smx2460 Click to see attachment
+smx2460 01/10/2022 12:44 AM
+speaking of which, try this (please) (edited)
+[dustyangel47]
+dustyangel47 01/10/2022 12:44 AM
+i was wondering why you were using buildroot
+01/10/2022 12:43 AM
+ah neat
+[smx2460]
+smx2460 01/10/2022 12:43 AM
+new sdk, @DustyAngel47
+[dustyangel47]
+dustyangel47 01/10/2022 12:43 AM
+are you trying to build a replica webos or something?
+[smx2460]
+smx2460 01/10/2022 12:36 AM
+really!?
+01/10/2022 12:36 AM
+(no content)
+[unknown.png]
+ unknown.png
+199.69 KB External
+01/10/2022 12:33 AM
+next: libluna-service2
+01/10/2022 12:33 AM
+i have working libpbnjson and pmloglib
+01/10/2022 12:33 AM
+@infowski with GREAT pain
+[smx2460]
+smx2460 01/10/2022 12:10 AM
+almost fixed
+01/10/2022 12:10 AM
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/local/webos/usr/share/pkgconfig/pbnjson_c.pc
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/local/webos/usr/lib/libpbnjson_cpp.so.2.15.0
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/local/webos/usr/lib/libpbnjson_cpp.so.2
+    -- Set runtime path of "/mnt/ExtData/buildroot-nc4/output/target/usr/local/webos/usr/lib/libpbnjson_cpp.so.2.15.0" to ""
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/local/webos/usr/lib/libpbnjson_cpp.so
+    -- Installing: /mnt/ExtData/buildroot-nc4/output/target/usr/local/webos/usr/share/pkgconfig/pbnjson_cpp.pc
+    make[1]: uscita dalla directory «/mnt/ExtData/buildroot-nc4/output/build/libpbnjson-master/buildroot-build»
+    libpbnjson: installs files in /mnt/ExtData/buildroot-nc4/output/target//mnt/ExtData/buildroot-nc4/output
+    make: *** [package/pkg-generic.mk:392: /mnt/ExtData/buildroot-nc4/output/build/libpbnjson-master/.stamp_target_installed] Errore 1
+[infowski]
+infowski 01/10/2022 12:03 AM
+this is your mind on gnome
+01/10/2022 12:03 AM
+verbotten
+[smx2460]
+smx2460 01/10/2022 12:02 AM
+https://gitlab.gnome.org/GNOME/glib/-/merge_requests/1975
+gatomic.h: Make `glib_typeof` API break opt in. (!1975) · Merge req...
+The changes in 4273c439 did not...
+[]
+01/10/2022 12:01 AM
+it looks like a bug to me
+01/10/2022 12:01 AM
+not even sure what "behaviour" that would be
+01/10/2022 12:01 AM
+meh
+01/10/2022 12:01 AM
+    In particular, this disables new C++ behaviour introduced in GLib 2.68,
+    which caused this project to fail to build.
+[infowski]
+infowski 01/10/2022 12:00 AM
+on android the couch is brown, so it's more recognizable
+[smx2460]
+smx2460 01/10/2022 12:00 AM
+01/10/2022 12:00 AM
+i was still thinking it was a bathtub
+01/10/2022 12:00 AM
+i hadn't realised yet
+01/10/2022 12:00 AM
+01/10/2022 12:00 AM
+thanks for enlightening me
+[smx2460]
+[] infowski btw only today I realized that an icon in channel name is
+not a bathtub but an actual couch and a li...
+smx2460 01/10/2022 12:00 AM
+SAME lol
+[smx2460]
+smx2460 01/10/2022 12:00 AM
+https://github.com/brummer10/gxtuner/issues/19
+Compilation problem with gcc 11 · Issue #19 · brummer10/gxtuner
+Hello, I met an error message while compiling gxtuner on Fedora 34 with
+gcc 11: ./gxtuner.h:30:1: note: &#39;extern &quot;C&quot;&#39; linkage
+started here 30 | extern &quot;C&a...
+[]
+[infowski]
+infowski 01/10/2022 12:00 AM
+btw only today I realized that an icon in channel name is not a bathtub
+but an actual couch and a light. on my lunix workstation i have some
+font where everything is white (on that specific emoji)
+January 9, 2022
+[smx2460]
+smx2460 01/09/2022 11:59 PM
+why does it do this!?
+01/09/2022 11:59 PM
+the offender is glib
+01/09/2022 11:59 PM
+    #if defined(glib_typeof_2_68) && GLIB_VERSION_MIN_REQUIRED >= GLIB_VERSION_2_68
+    /* for glib_typeof */
+    #include <type_traits>
+    #endif
+01/09/2022 11:59 PM
+ok wtf
+[infowski]
+infowski 01/09/2022 11:57 PM
+libpbnjson not necessarily (just any JSON parser/serializer could
+probably work), not sure if luna-service2 doesn't depend on it.
+[smx2460]
+smx2460 01/09/2022 11:56 PM
+seriously asking
+01/09/2022 11:56 PM
+do we really need these libs?
+[infowski]
+infowski 01/09/2022 11:54 PM
+indeed
+01/09/2022 11:54 PM
+lol
+[smx2460]
+smx2460 01/09/2022 11:53 PM
+this is horrible
+01/09/2022 11:53 PM
+01/09/2022 11:53 PM
+(no content)
+[unknown.png]
+ unknown.png
+218.36 KB External
+01/09/2022 11:53 PM
+@infowski
+01/09/2022 11:51 PM
+apparently somewhere it works
+01/09/2022 11:51 PM
+it uses the c++ static_assert in C11 mode
+01/09/2022 11:51 PM
+this code is bad...
+01/09/2022 11:50 PM
+^ what glib does
+01/09/2022 11:50 PM
+    #if !defined(__cplusplus) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    #define G_STATIC_ASSERT(expr) _Static_assert (expr, "Expression evaluates to false")
+    #elif (defined(__cplusplus) && __cplusplus >= 201103L) || \
+          (defined(__cplusplus) && defined (_MSC_VER) && (_MSC_VER >= 1600)) || \
+          (defined (_MSC_VER) && (_MSC_VER >= 1800))
+    #define G_STATIC_ASSERT(expr) static_assert (expr, "Expression evaluates to false")
+    #else
+    #ifdef __COUNTER__
+    #define G_STATIC_ASSERT(expr) typedef char G_PASTE (_GStaticAssertCompileTimeAssertion_, __COUNTER__)[(expr) ? 1 : -1] G_GNUC_UNUSED
+    #else
+    #define G_STATIC_ASSERT(expr) typedef char G_PASTE (_GStaticAssertCompileTimeAssertion_, __LINE__)[(expr) ? 1 : -1] G_GNUC_UNUSED
+    #endif
+01/09/2022 11:49 PM
+01/09/2022 11:49 PM
+or not
+01/09/2022 11:49 PM
+it's the old glibc
+01/09/2022 11:49 PM
+oh crap
+01/09/2022 11:49 PM
+hmm LG does this
+01/09/2022 11:49 PM
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -fPIC")
+01/09/2022 11:47 PM
+that's indeed c++
+01/09/2022 11:47 PM
+meh
+01/09/2022 11:44 PM
+without declaring it
+01/09/2022 11:44 PM
+it's using c11 i think
+[infowski]
+infowski 01/09/2022 11:43 PM
+that does not look like c 
+[smx2460]
+smx2460 01/09/2022 11:43 PM
+wtf...
+01/09/2022 11:43 PM
+    /mnt/ExtData/buildroot-nc4/output/build/libpbnjson-master/src/pbnjson_c/jvalue/num_conversion.c:495: undefined reference to `static_assert'
+[mariotaku]
+mariotaku 01/09/2022 8:49 PM
+Thanks 
+[infowski]
+infowski 01/09/2022 8:48 PM
+Sure. Leave it as it is now. I'll just file a PR if I come up with some
+sensible fix.
+[mariotaku]
+mariotaku 01/09/2022 8:46 PM
+Maybe I'll even draw some badges someday
+01/09/2022 8:46 PM
+Maybe not. It's like "Get on Google Play" or something in my mind
+[infowski]
+infowski 01/09/2022 8:45 PM
+Since just the "top text" would be different probably?
+01/09/2022 8:44 PM
+Fair point... Hmmm... But then probably all of these will look fairly
+similar.
+[mariotaku]
+[] infowski Two suggestions: don't use `hr` in download button (just a
+border on an element below), don't specif...
+mariotaku 01/09/2022 8:43 PM
+I'd like to make the "button" has uniformed height, in case we have more
+in the future (install via dev-manager-desktop/homebrew channel etc), do
+you have any suggestions?
+[infowski]
+infowski 01/09/2022 8:37 PM
+After removing explicit height adjustment it looks fine. (edited)
+01/09/2022 8:36 PM
+this si what I mean
+[icon.png]
+ icon.png
+39.9 KB External
+01/09/2022 8:36 PM
+Also I'd probably put the download button in the same line as title,
+just to the right?
+[infowski]
+[] mariotaku Looks better now!
+infowski 01/09/2022 8:35 PM
+Two suggestions: don't use hr in download button (just a border on an
+element below), don't specify its height since it gets cut off when a
+different font is used
+[mariotaku]
+mariotaku 01/09/2022 8:35 PM
+If you have any idea about what to add for side menu, the home page, or
+anything related to this new theme, share your idea here:
+https://github.com/webosbrew/apps-repo/issues
+Issues · webosbrew/apps-repo
+Central repo for webOS Homebrew apps. Contribute to webosbrew/apps-repo
+development by creating an account on GitHub.
+[]
+01/09/2022 8:30 PM
+Looks better now!
+01/09/2022 8:30 PM
+(no content)
+[unknown.png]
+ unknown.png
+443.67 KB External
+ 3
+[infowski]
+infowski 01/09/2022 6:50 PM
+Yeah.
+[smx2460]
+smx2460 01/09/2022 6:48 PM
+the only tags are submissions/X (edited)
+01/09/2022 6:48 PM
+master?
+[infowski]
+infowski 01/09/2022 6:48 PM
+They are backwards compatible.
+01/09/2022 6:48 PM
+Same with libluna-service2 - you probably want one from webosose
+[smx2460]
+smx2460 01/09/2022 6:48 PM
+lel
+[infowski]
+infowski 01/09/2022 6:47 PM
+That one is from HP lol
+[smx2460]
+smx2460 01/09/2022 6:47 PM
+[infowski]
+infowski 01/09/2022 6:47 PM
+Google is useless as always for searching github projects.
+[smx2460]
+smx2460 01/09/2022 6:47 PM
+i was looking at https://github.com/openwebos/pmloglib
+GitHub - openwebos/pmloglib
+Contribute to openwebos/pmloglib development by creating an account on
+GitHub.
+[]
+01/09/2022 6:47 PM
+oh!
+01/09/2022 6:47 PM
+then done
+[infowski]
+infowski 01/09/2022 6:47 PM
+https://github.com/webosose/pmloglib/commits
+Commits · webosose/pmloglib
+webOS Logging library. Contribute to webosose/pmloglib development by
+creating an account on GitHub.
+[]
+[smx2460]
+smx2460 01/09/2022 6:47 PM
+well, edit them a bit
+01/09/2022 6:47 PM
+done 
+01/09/2022 6:47 PM
+    sm@debian:/mnt/ExtData/buildroot-nc4$ mkdir package/pmloglib
+    sm@debian:/mnt/ExtData/buildroot-nc4$ cat package/vim/Config.in > package/pmloglib/Config.in
+    sm@debian:/mnt/ExtData/buildroot-nc4$ cat package/vim/vim.mk > package/pmloglib/pmloglib.mk
+[infowski]
+infowski 01/09/2022 6:47 PM
+Is it? Ive seen some commits on pmloglib
+[smx2460]
+smx2460 01/09/2022 6:46 PM
+ok
+01/09/2022 6:46 PM
+oh it's just THAT old
+01/09/2022 6:46 PM
+version 3.2.0 is from 2014 lol
+01/09/2022 6:45 PM
+yolo master?
+01/09/2022 6:45 PM
+so what's the recommended version of say pmloglib to build
+[smx2460]
+smx2460 01/09/2022 6:15 PM
+and it's not committed in any case
+01/09/2022 6:15 PM
+the only thing you risk committing is .config, but make nc4_defconfig
+overrides that even if you do it
+01/09/2022 6:15 PM
+which is excluded
+01/09/2022 6:15 PM
+as all the artifacts are in output
+01/09/2022 6:15 PM
+and i didn't commit anything like that
+01/09/2022 6:15 PM
+at start
+01/09/2022 6:15 PM
+i'm running make nc4_defconfig
+ 1
+[infowski]
+infowski 01/09/2022 6:15 PM
+Though i touched buildroot 5 years ago, and yocto only a little 2 years
+ago...
+01/09/2022 6:14 PM
+Yeah, i remember buildroot. My minor concern with all that stuff, both
+buildtoot and Yocto, is that there's a lot of random state files like
+.config around that are not meant to be committed, so you risk random
+configuration drift you are nkt even aware of
+[smx2460]
+smx2460 01/09/2022 6:13 PM
+some time could be saved by caching the dl folder actually
+01/09/2022 6:10 PM
+here you define what should be built
+01/09/2022 6:09 PM
+https://github.com/openlgtv/buildroot-nc4/blob/master/configs/nc4_defconfig
+buildroot-nc4/nc4_defconfig at master · openlgtv/buildroot-nc4
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+01/09/2022 6:09 PM
+as libraries and headers
+01/09/2022 6:09 PM
+that building them in the whole package means that whoever downloads the
+toolchain gets them out of the box
+01/09/2022 6:09 PM
+so yeah what i was saying was
+01/09/2022 6:09 PM
+yeah 
+[smx2460]
+[] infowski That R was unintended but i cant remove it lol.
+smx2460 01/09/2022 6:08 PM
+you can't edit your message?
+[smx2460]
+smx2460 01/09/2022 6:08 PM
+just to take the files
+01/09/2022 6:07 PM
+so it spent some time building openssl and other packages
+[infowski]
+infowski 01/09/2022 6:07 PM
+That R was unintended but i cant remove it lol.
+[smx2460]
+smx2460 01/09/2022 6:07 PM
+what buildroot calls "sdk" is actually comprehensive of all package
+headers and libraries (edited)
+[infowski]
+infowski 01/09/2022 6:07 PM
+Sure, I dont think this is necessary to build these in CI, as long as
+its a one-command-from-clean-git-checkout  build
+[smx2460]
+smx2460 01/09/2022 6:06 PM
+(no content)
+[unknown.png]
+ unknown.png
+52.64 KB External
+01/09/2022 6:05 PM
+it didn't use it efficiently tho due to configure scripts being
+inefficient in nature
+01/09/2022 6:05 PM
+we technically have max 60
+01/09/2022 6:05 PM
+it used up 30 minutes of CI time
+01/09/2022 6:04 PM
+(no content)
+[unknown.png]
+ unknown.png
+33.27 KB External
+01/09/2022 6:04 PM
+build completed
+01/09/2022 6:04 PM
+https://api.cirrus-ci.com/v1/artifact/task/5216254595170304/sdk/output/images/arm-buildroot-linux-gnueabi_sdk-buildroot.tar.gz
+01/09/2022 6:04 PM
+@Unknown User https://cirrus-ci.com/task/5216254595170304
+Cirrus CI
+Cirrus CI makes your development cycle fast, efficient, and secure by
+leveraging modern cloud technologies.
+[]
+[smx2460]
+smx2460 01/09/2022 5:44 PM
+maybe not worth the effort tho
+[infowski]
+infowski 01/09/2022 5:44 PM
+In nested virt? Not sure.
+[smx2460]
+smx2460 01/09/2022 5:44 PM
+vs 8 cores (edited)
+01/09/2022 5:44 PM
+12 cores and 24gb of ram
+01/09/2022 5:44 PM
+it should be quicker still
+[infowski]
+infowski 01/09/2022 5:44 PM
+It does but it just runs virtualized linux kernel.
+[smx2460]
+smx2460 01/09/2022 5:43 PM
+need to document myself
+01/09/2022 5:42 PM
+maybe using docker? does docker on macOS support Linux containers?
+(edited)
+01/09/2022 5:42 PM
+in other words, how could i build buildroot under macOS
+01/09/2022 5:42 PM
+but i cannot use buildroot under it, can i?
+01/09/2022 5:42 PM
+macOS uses 12 physical cores
+01/09/2022 5:42 PM
+    Note that a single task can't request more than 8 CPUs (except macOS VMs which are not configurable).
+01/09/2022 5:41 PM
+16 says too high
+01/09/2022 5:41 PM
+nope
+01/09/2022 5:37 PM
+i can actually give it 16 cores
+01/09/2022 5:32 PM
+https://cirrus-ci.com/task/5216254595170304
+Cirrus CI
+Cirrus CI makes your development cycle fast, efficient, and secure by
+leveraging modern cloud technologies.
+[]
+01/09/2022 5:32 PM
+and it's doing stuff  (edited)
+01/09/2022 5:32 PM
+this time it started up much quicker, maybe it was a glitch
+01/09/2022 5:31 PM
+redoing (edited)
+01/09/2022 5:31 PM
+yep, failed due to missing deps heh
+01/09/2022 5:26 PM
+Luna on NC4 when 
+01/09/2022 5:26 PM
+@infowski i just realised that by building pmloglib and libluna on that
+toolchain, i could also run them on NC4 
+01/09/2022 5:26 PM
+or buildroot-lgtv
+01/09/2022 5:25 PM
+or similar?
+01/09/2022 5:25 PM
+should i renamed buildroot-nc4 to buildroot-openlgtv?
+01/09/2022 5:24 PM
+for priority queuing
+01/09/2022 5:24 PM
+the only way around it is $$$
+01/09/2022 5:24 PM
+but it's taking forever

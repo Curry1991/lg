@@ -1,0 +1,1506 @@
+October 23, 2023
+[smx2460]
+smx2460 10/23/2023 12:52 AM
+10/23/2023 12:52 AM
+megic
+hellobox. 10/23/2023 12:52 AM
+    void release_non_boot_core(void)
+    {
+        unsigned int waitCount=0;
+        unsigned int perCPU;
+        if(__smp_cpu_init_done())
+        {
+            secondary_start_uboot_cleanup();
+            megic_number_cleaned=1;
+            for(perCPU=1; perCPU<NR_CPUS; perCPU++)
+                thread_cond_signal(&g_sub_cond[perCPU]);
+        }
+        else
+        {
+            printf("Should not be here!!!\n");
+        }
+        while(!__smp_cpu_released())
+        {
+            ++waitCount;
+            if (SMP_WAIT_NON_BOOT_CPU_RELEASE_COUNT < waitCount)
+                do_reset(NULL, 0, 0, NULL);  //just in case, should never be here!
+        }
+    }
+[smx2460]
+smx2460 10/23/2023 12:52 AM
+does it put the secondary cores in an endless loop?
+10/23/2023 12:52 AM
+i wonder how that acquire/release works though
+hellobox. 10/23/2023 12:52 AM
+yeah it's probably needed for a linux kernel
+10/23/2023 12:51 AM
+oh, i thought you meant in general
+[smx2460]
+smx2460 10/23/2023 12:50 AM
+or for some unknown reasons it expects a particular state
+10/23/2023 12:50 AM
+either the kernel image he was trying to boot is fked
+10/23/2023 12:49 AM
+he was trying to bootm a kernel image
+10/23/2023 12:49 AM
+but this is not standalone anymore
+10/23/2023 12:48 AM
+i agree
+10/23/2023 12:48 AM
+it shouldn't fail booting due to that
+10/23/2023 12:48 AM
+but still (edited)
+10/23/2023 12:48 AM
+before running the uboot code
+[smx2460]
+hellobox. why? we're not using the other cores. i don't think it runs
+that before STANDALN
+smx2460 10/23/2023 12:48 AM
+i would assume it stalls the secondary cores
+[smx2460]
+smx2460 10/23/2023 12:47 AM
+i would backup NVM too
+[bochenekk]
+hellobox. this is why you should have backups. you're lucky you didn't
+call `mmc_write()` or something
+bochenekk 10/23/2023 12:05 AM
+haha, yep, I was thinking about that being a possibility after writing
+that “on the edge message” anyway, backup is done so we don’t have to
+worry. No longer on the edge
+[] bochenekk Click to see attachment
+hellobox. 10/23/2023 12:04 AM
+this is why you should have backups. you're lucky you didn't call
+mmc_write() or something
+[] smx2460 <@803885040827629628> I'm afraid that release_cores thing
+might be needed
+hellobox. 10/23/2023 12:03 AM
+why? we're not using the other cores. i don't think it runs that before
+STANDALN
+October 22, 2023
+[smx2460]
+smx2460 10/22/2023 10:14 PM
+so the resulting addr is always the same
+10/22/2023 10:14 PM
+i don't remember if it's a constant or the preconditions are always the
+same
+10/22/2023 10:14 PM
+but since it depends on relocaddr, i need to see how it's computed
+10/22/2023 10:14 PM
+i need to finish it and have it extract gd too
+10/22/2023 10:14 PM
+i have a WIP project on my Desktop that splits the mstar boot partition
+[bochenekk]
+bochenekk 10/22/2023 10:06 PM
+not your fault at all, haha it’s my “projects” that hog up my time but
+it’s worth it :P
+[smx2460]
+smx2460 10/22/2023 10:05 PM
+good luck with it
+10/22/2023 10:05 PM
+ohhh sorry
+[bochenekk]
+bochenekk 10/22/2023 10:05 PM
+thx. will look tmr, I’ve been putting out my exam tomorrow for this TV,
+and I only have 4 hrs to prepare 
+[smx2460]
+smx2460 10/22/2023 10:05 PM
+but the address is likely ~0xCAF0 bytes off (edited)
+10/22/2023 10:05 PM
+so they would be sane no matter where you loaded it
+10/22/2023 10:05 PM
+your xrefs didn't mess up because uboot is a relocatable binary
+10/22/2023 10:04 PM
+"16 00 00 EA" is the entry point
+10/22/2023 10:04 PM
+when the FFs stop in other words
+10/22/2023 10:04 PM
+you need to look for something like this
+10/22/2023 10:04 PM
+[]
+10/22/2023 10:03 PM
+the boot partition contains everything: sboot, keybank, uboot
+10/22/2023 10:03 PM
+ofc, silly me
+10/22/2023 10:02 PM
+it might differ in yours
+10/22/2023 10:02 PM
+in our sample it was offset 0xCAF0
+10/22/2023 10:02 PM
+this is the catch, found the missing notes
+10/22/2023 10:02 PM
+uboot doesn't start at offset 0
+10/22/2023 10:02 PM
+@bochenek ok you need to strip some code at the beginning of the dumped
+partition
+[bochenekk]
+bochenekk 10/22/2023 10:00 PM
+have a good one man
+[smx2460]
+smx2460 10/22/2023 10:00 PM
+ttyl
+10/22/2023 10:00 PM
+ok
+[bochenekk]
+bochenekk 10/22/2023 10:00 PM
+sorry man. we will pick up tomorrow if you'd like (edited)
+10/22/2023 9:59 PM
+i gotta go right now - prepare for school and shit
+[smx2460]
+smx2460 10/22/2023 9:59 PM
+i'm forgetting something important...
+10/22/2023 9:59 PM
+while relocaddr should be the new base addr...
+10/22/2023 9:58 PM
+so reloc off should be the delta between the new address and the
+original
+10/22/2023 9:58 PM
+found this in my notes (edited)
+10/22/2023 9:58 PM
+        gd->relocaddr = addr;
+        gd->start_addr_sp = addr_sp;
+        gd->reloc_off = addr - _TEXT_BASE;
+        debug("relocation Offset is: %08lx\n", gd->reloc_off);
+        memcpy(id, (void *)gd, sizeof(gd_t));
+        relocate_code(addr_sp, id, addr);
+[bochenekk]
+bochenekk 10/22/2023 9:58 PM
+no thats even worse now
+[smx2460]
+smx2460 10/22/2023 9:57 PM
+later we might
+10/22/2023 9:57 PM
+not for now
+[bochenekk]
+bochenekk 10/22/2023 9:57 PM
+oh but not ghidra then?
+[smx2460]
+smx2460 10/22/2023 9:57 PM
+to the dump command
+10/22/2023 9:57 PM
+yes
+[bochenekk]
+bochenekk 10/22/2023 9:57 PM
+to the base address aka relocaddr?
+[smx2460]
+smx2460 10/22/2023 9:56 PM
+try to add 0x15100000 to the address
+10/22/2023 9:56 PM
+i forgot about "reloc off"
+10/22/2023 9:56 PM
+    relocaddr   = 0x38600000
+    reloc off   = 0x15100000
+10/22/2023 9:55 PM
+wait
+[bochenekk]
+bochenekk 10/22/2023 9:54 PM
+wtf
+10/22/2023 9:54 PM
+same
+[smx2460]
+smx2460 10/22/2023 9:54 PM
+or if it changed
+10/22/2023 9:54 PM
+run bdinfo and check if relocaddr is the same (edited)
+[bochenekk]
+bochenekk 10/22/2023 9:53 PM
+i have zero clue
+[smx2460]
+smx2460 10/22/2023 9:53 PM
+then how can md mismatch
+[bochenekk]
+bochenekk 10/22/2023 9:53 PM
+they pointed me to the function and its correct
+10/22/2023 9:53 PM
+they're good
+[smx2460]
+smx2460 10/22/2023 9:53 PM
+i.e. do they point to where they should or are they off
+10/22/2023 9:53 PM
+are the xrefs good?
+10/22/2023 9:52 PM
+yeah then that's good
+[bochenekk]
+bochenekk 10/22/2023 9:52 PM
+(no content)
+[image.png]
+ image.png
+4.49 KB External
+[smx2460]
+smx2460 10/22/2023 9:52 PM
+2) printf is not at the right place
+10/22/2023 9:52 PM
+ok we're not
+10/22/2023 9:52 PM
+1) we're loading at the wrong address
+[bochenekk]
+bochenekk 10/22/2023 9:52 PM
+yea its the same
+[smx2460]
+smx2460 10/22/2023 9:52 PM
+there are 2 possibilities here
+[smx2460]
+[] bochenekk thats how i found this yea
+smx2460 10/22/2023 9:52 PM
+what i wanted to ask is if the 25k address is the same
+[smx2460]
+smx2460 10/22/2023 9:52 PM
+then it's wrong
+[bochenekk]
+bochenekk 10/22/2023 9:52 PM
+but the md doesnt match
+[smx2460]
+smx2460 10/22/2023 9:51 PM
+with a hex argument
+[bochenekk]
+bochenekk 10/22/2023 9:51 PM
+thats how i found this yea
+[smx2460]
+smx2460 10/22/2023 9:51 PM
+you should find a bootm command
+10/22/2023 9:51 PM
+check for strings in your uboot binary
+10/22/2023 9:51 PM
+also do a thing
+10/22/2023 9:51 PM
+and compare the code bytes
+10/22/2023 9:51 PM
+try the md then (edited)
+[bochenekk]
+bochenekk 10/22/2023 9:50 PM
+same
+[smx2460]
+smx2460 10/22/2023 9:49 PM
+just leave printf
+10/22/2023 9:48 PM
+try to remove your fcall
+10/22/2023 9:48 PM
+[bochenekk]
+bochenekk 10/22/2023 9:48 PM
+No clue what this means
+10/22/2023 9:48 PM
+(no content)
+[IMG_2080.jpg]
+ IMG_2080.jpg
+1.5 MB External
+10/22/2023 9:47 PM
+lol
+[smx2460]
+smx2460 10/22/2023 9:47 PM
+not sure where 0x3F6826EC comes from
+10/22/2023 9:47 PM
+uhh yea
+[bochenekk]
+bochenekk 10/22/2023 9:46 PM
+not 0x3F6826EC
+[bochenekk]
+[] bochenekk DECL_FUNC(0x3868a494, printf, void, const char *, ...);
+bochenekk 10/22/2023 9:46 PM
+this should be prinf addr
+[smx2460]
+smx2460 10/22/2023 9:46 PM
+how so
+[bochenekk]
+bochenekk 10/22/2023 9:46 PM
+i think i screwed it up
+10/22/2023 9:46 PM
+wait
+[smx2460]
+smx2460 10/22/2023 9:45 PM
+md yes
+[bochenekk]
+bochenekk 10/22/2023 9:45 PM
+md
+[smx2460]
+smx2460 10/22/2023 9:45 PM
+it's listed in help
+10/22/2023 9:45 PM
+damn all my notes are on my Desktop
+[bochenekk]
+bochenekk 10/22/2023 9:45 PM
+shiit i remembed vaguely that i used to do shit like this but forgot the
+command
+10/22/2023 9:44 PM
+db isnt a command
+[smx2460]
+smx2460 10/22/2023 9:44 PM
+yes
+[bochenekk]
+bochenekk 10/22/2023 9:44 PM
+uh in uboot?
+[smx2460]
+smx2460 10/22/2023 9:43 PM
+then check if they match the bytes at the printf location in ghidra
+10/22/2023 9:43 PM
+using db 0x3F6826EC 16 iirc (edited)
+10/22/2023 9:43 PM
+dump 16 bytes at 0x3F6826EC
+10/22/2023 9:43 PM
+then do this
+[bochenekk]
+bochenekk 10/22/2023 9:43 PM
+yep
+[smx2460]
+smx2460 10/22/2023 9:42 PM
+this is commented, right?
+10/22/2023 9:42 PM
+    EXPORT_FUNC(printf)
+[bochenekk]
+bochenekk 10/22/2023 9:42 PM
+    int ENTRY_FUNC main(int argc, char *argv[]){
+        printf("new\n");
+        printf("Smx and BotchedRPR say hi from Uboot!\n");
+        printf("===================\n");
+        printf("OpenLGTV Rocks!\n");
+        printf("===================\n");
+        printf("Have a nice day :)\n");
+        printf("Releasing non boot core...");
+        release_non_boot_core();
+        printf("All done. Bye!");
+        return 0xDEAD;
+    }
+[smx2460]
+smx2460 10/22/2023 9:41 PM
+what does your main look like
+[bochenekk]
+bochenekk 10/22/2023 9:41 PM
+(no content)
+[IMG_2079.jpg]
+ IMG_2079.jpg
+1.48 MB External
+10/22/2023 9:41 PM
+uh
+[smx2460]
+smx2460 10/22/2023 9:40 PM
+then go 0x25whatever (edited)
+10/22/2023 9:39 PM
+yes 25whatever
+[bochenekk]
+bochenekk 10/22/2023 9:39 PM
+same as kernel?
+10/22/2023 9:39 PM
+25?
+10/22/2023 9:39 PM
+what address do i load it at? to rule that out
+10/22/2023 9:39 PM
+dobrze
+10/22/2023 9:39 PM
+haha
+[smx2460]
+smx2460 10/22/2023 9:39 PM
+dobry
+10/22/2023 9:38 PM
+gut
+[bochenekk]
+bochenekk 10/22/2023 9:38 PM
+we built
+10/22/2023 9:38 PM
+(no content)
+[image.png]
+ image.png
+57.91 KB External
+10/22/2023 9:38 PM
+lets just comment it
+[smx2460]
+smx2460 10/22/2023 9:38 PM
+or just comment it
+[bochenekk]
+bochenekk 10/22/2023 9:38 PM
+yeah
+[smx2460]
+smx2460 10/22/2023 9:38 PM
+it should be put after the forward declaration
+[bochenekk]
+bochenekk 10/22/2023 9:38 PM
+its still complaining for whatever reason
+10/22/2023 9:38 PM
+    DECL_FUNC(0x3F6826EC, printf, int, const char *, ...);
+10/22/2023 9:38 PM
+huh
+[smx2460]
+smx2460 10/22/2023 9:37 PM
+just change the DECL_FUNC to match it
+[bochenekk]
+bochenekk 10/22/2023 9:37 PM
+yea
+[smx2460]
+smx2460 10/22/2023 9:37 PM
+leave it
+10/22/2023 9:37 PM
+if you mean you found this
+10/22/2023 9:37 PM
+    int printf(const char* fmt, ...);
+10/22/2023 9:37 PM
+leave it
+[bochenekk]
+bochenekk 10/22/2023 9:37 PM
+:P i didnt notice
+[smx2460]
+smx2460 10/22/2023 9:37 PM
+change that void to int
+[bochenekk]
+bochenekk 10/22/2023 9:36 PM
+(code is DECL_FUNC(0x3F6826EC, printf, void, const char *, ...);)
+[smx2460]
+smx2460 10/22/2023 9:36 PM
+it's also in exports.h (edited)
+[bochenekk]
+bochenekk 10/22/2023 9:36 PM
+uh
+10/22/2023 9:36 PM
+error: ‘printf’ redeclared as different kind of symbol
+[smx2460]
+smx2460 10/22/2023 9:36 PM
+you remove your "override" and uncomment that again (edited)
+10/22/2023 9:36 PM
+if you ever figure out the gd address
+10/22/2023 9:36 PM
+or it would conflict
+10/22/2023 9:36 PM
+ah yeah you comment it out
+[bochenekk]
+bochenekk 10/22/2023 9:35 PM
+and i assume to remove the printf export?
+[smx2460]
+smx2460 10/22/2023 9:35 PM
+i.e. it's not accessible from gd
+10/22/2023 9:35 PM
+the function you want to call is not exported
+[bochenekk]
+bochenekk 10/22/2023 9:35 PM
+i see
+10/22/2023 9:35 PM
+alright
+10/22/2023 9:35 PM
+ohh
+[smx2460]
+smx2460 10/22/2023 9:35 PM
+it's the list of functions uboot exports
+[bochenekk]
+bochenekk 10/22/2023 9:35 PM
+okay
+[smx2460]
+smx2460 10/22/2023 9:35 PM
+_exports.h should not be touched
+10/22/2023 9:35 PM
+no
+[bochenekk]
+bochenekk 10/22/2023 9:34 PM
+yup?
+10/22/2023 9:34 PM
+    EXPORT_FUNC(printf)
+    EXPORT_FUNC(release_non_boot_core)
+10/22/2023 9:34 PM
+and _exports.h
+10/22/2023 9:34 PM
+    DECL_FUNC(0x3F6826EC, printf, void, const char *, ...);
+    DECL_FUNC(0x38668be0, release_non_boot_core, void, void, ...);
+10/22/2023 9:34 PM
+exports.h
+10/22/2023 9:34 PM
+soooo
+[smx2460]
+smx2460 10/22/2023 9:32 PM
+yea
+[bochenekk]
+bochenekk 10/22/2023 9:32 PM
+like this?
+10/22/2023 9:31 PM
+DECL_FUNC(0x3868a494, printf, void, const char *, ...);
+10/22/2023 9:31 PM
+shit no wait
+10/22/2023 9:31 PM
+in exports?
+[smx2460]
+smx2460 10/22/2023 9:31 PM
+0x3868a494
+10/22/2023 9:31 PM
+yeah
+[bochenekk]
+bochenekk 10/22/2023 9:31 PM
+?
+10/22/2023 9:31 PM
+to that address!
+[smx2460]
+smx2460 10/22/2023 9:30 PM
+@bochenek
+10/22/2023 9:30 PM
+hardcode printf for now
+10/22/2023 9:30 PM
+so yeah we won't be finding it that way (edited)
+10/22/2023 9:30 PM
+jt is a pointer to a an array of function pointers (edited)
+10/22/2023 9:30 PM
+it will be created at runtime
+10/22/2023 9:30 PM
+it won't be found statically i think
+10/22/2023 9:29 PM
+but actually
+10/22/2023 9:29 PM
+the idea is to find this
+10/22/2023 9:29 PM
+    typedef    struct    global_data {
+        bd_t        *bd;
+        unsigned long    flags;
+        unsigned long    baudrate;
+        unsigned long    have_console;    /* serial_init() was called */
+        unsigned long    env_addr;    /* Address  of Environment struct */
+        unsigned long    env_valid;    /* Checksum of Environment valid? */
+        unsigned long    fb_base;    /* base address of frame buffer */
+        /* "static data" needed by most of timer.c on ARM platforms */
+        unsigned long    timer_rate_hz;
+        unsigned long    tbl;
+        unsigned long    tbu;
+        unsigned long long    timer_reset_value;
+        unsigned long    lastinc;
+        unsigned long    relocaddr;    /* Start address of U-Boot in RAM */
+        phys_size_t    ram_size;    /* RAM size */
+        unsigned long    mon_len;    /* monitor len */
+        unsigned long    irq_sp;        /* irq stack pointer */
+        unsigned long    start_addr_sp;    /* start_addr_stackpointer */
+        unsigned long    reloc_off;
+        unsigned long    tlb_addr;
+        void        **jt;        /* jump table */
+        char        env_buf[32];    /* buffer for getenv() before reloc. */
+    } gd_t;
+10/22/2023 9:29 PM
+wait
+10/22/2023 9:29 PM
+there should be a table
+10/22/2023 9:29 PM
+hmm
+[bochenekk]
+[] bochenekk Click to see attachment
+bochenekk 10/22/2023 9:27 PM
+okay, is this what we’re looking for?
+[smx2460]
+smx2460 10/22/2023 9:25 PM
+back
+[bochenekk]
+bochenekk 10/22/2023 9:18 PM
+ping me when you’re back if you could, thanks
+[smx2460]
+smx2460 10/22/2023 9:17 PM
+brb 1 minute
+[bochenekk]
+bochenekk 10/22/2023 9:12 PM
+(no content)
+[image.png]
+ image.png
+6.08 KB External
+10/22/2023 9:12 PM
+(no content)
+[image.png]
+ image.png
+6.29 KB External
+10/22/2023 9:12 PM
+(no content)
+[image.png]
+ image.png
+4.11 KB External
+10/22/2023 9:11 PM
+0x3868a494
+[smx2460]
+smx2460 10/22/2023 9:11 PM
+You should find the function pointer
+10/22/2023 9:11 PM
+Yeah search for the address
+[bochenekk]
+bochenekk 10/22/2023 9:10 PM
+I have the function address
+[smx2460]
+smx2460 10/22/2023 9:10 PM
+Look for any untyped value
+[bochenekk]
+[] bochenekk I got printf address
+bochenekk 10/22/2023 9:10 PM
+Just as a sidenote lol
+[smx2460]
+[] bochenekk I got printf address
+smx2460 10/22/2023 9:10 PM
+See if you can find any pointer to it (edited)
+[smx2460]
+smx2460 10/22/2023 9:10 PM
+You're welcome, I'm always glad when the 0.0001% of the population
+notices my projects
+ 1
+[bochenekk]
+bochenekk 10/22/2023 9:10 PM
+I got printf address
+10/22/2023 9:10 PM
+Okay. So I have the bin in fhidra
+10/22/2023 9:10 PM
+:)
+[smx2460]
+smx2460 10/22/2023 9:10 PM
+That's why bootSdk exists
+10/22/2023 9:09 PM
+We've been there 
+10/22/2023 9:09 PM
+So you have 2 options
+[bochenekk]
+bochenekk 10/22/2023 9:09 PM
+Honestly thanks for all of your help lol this I’ve been treating like a
+dumb experiment but hey we might get something out of this
+[smx2460]
+smx2460 10/22/2023 9:09 PM
+printf is available through gd
+[bochenekk]
+bochenekk 10/22/2023 9:09 PM
+Fair
+[smx2460]
+smx2460 10/22/2023 9:09 PM
+To make sure you're getting it
+10/22/2023 9:09 PM
+Yeah but I'd also add printf
+[bochenekk]
+bochenekk 10/22/2023 9:08 PM
+I mean there’s only one function to call isn’t it?
+[smx2460]
+[] bochenekk I can still hop on
+smx2460 10/22/2023 9:08 PM
+I'm back if you want
+[smx2460]
+smx2460 10/22/2023 9:08 PM
+Or just use direct calls only
+10/22/2023 9:08 PM
+You'll need to mix and match
+10/22/2023 9:08 PM
+So you'll see they aren't enough for what you need
+[bochenekk]
+bochenekk 10/22/2023 9:08 PM
+Ah
+[smx2460]
+smx2460 10/22/2023 9:08 PM
+The list of exported functions is in _exports.h
+[bochenekk]
+bochenekk 10/22/2023 9:08 PM
+Just as a pointer?
+[smx2460]
+smx2460 10/22/2023 9:08 PM
+You could call the functions directly
+10/22/2023 9:07 PM
+You might be able to find the address of gd, but it's not really useful
+imo
+[bochenekk]
+bochenekk 10/22/2023 9:07 PM
+I can still hop on
+[smx2460]
+smx2460 10/22/2023 9:07 PM
+While you are there
+[bochenekk]
+[] bochenekk Found the function. Address 0x38668be0
+bochenekk 10/22/2023 9:07 PM
+Does this look right?
+[smx2460]
+smx2460 10/22/2023 9:07 PM
+not a big deal
+[smx2460]
+[] bochenekk oops sorry for pinging you
+smx2460 10/22/2023 9:07 PM
+Np
+[bochenekk]
+bochenekk 10/22/2023 9:06 PM
+Off for today have a good one guys!
+10/22/2023 9:06 PM
+Found the function. Address 0x38668be0
+[bochenekk]
+hellobox. looks like it```c void kernel_jump(void) {
+tlog("\033[0;32m[%d] %s \033[0m\n", readMsTicks(), __...
+bochenekk 10/22/2023 9:02 PM
+@halal_beef
+[image.png]
+ image.png
+28.59 KB External
+[bochenekk]
+bochenekk 10/22/2023 9:01 PM
+oops sorry for pinging you
+[bochenekk]
+[] smx2460 There is the pre-reloc addr and the post-reloc addr
+bochenekk 10/22/2023 9:01 PM
+cool, loaded
+[bochenekk]
+bochenekk 10/22/2023 8:56 PM
+part2 btw
+10/22/2023 8:56 PM
+cool got it
+[smx2460]
+smx2460 10/22/2023 8:53 PM
+/dev/mmcblk0p[part num]
+10/22/2023 8:52 PM
+Will tell you
+[smx2460]
+[] bochenekk do you mean mmcblk0boot0 or a partition named boot
+smx2460 10/22/2023 8:52 PM
+/proc/partinfo
+[smx2460]
+smx2460 10/22/2023 8:52 PM
+But I don't remember exactly
+10/22/2023 8:52 PM
+Iirc uboot doesn't initialize RAM
+10/22/2023 8:51 PM
+I don't think mstar actually needs a relocation
+[smx2460]
+[] halal_beef but why
+smx2460 10/22/2023 8:51 PM
+I don't know tbh
+[smx2460]
+smx2460 10/22/2023 8:51 PM
+Got me the first time
+[bochenekk]
+bochenekk 10/22/2023 8:51 PM
+do you mean mmcblk0boot0 or a partition named boot
+[halal_beef]
+[] smx2460 In fact there are 2 copies of uboot in ram
+halal_beef 10/22/2023 8:51 PM
+but why
+[smx2460]
+smx2460 10/22/2023 8:51 PM
+But when you dump the code bytes they would appear correct
+10/22/2023 8:51 PM
+And it would crash
+10/22/2023 8:51 PM
+So you could mistakenly use the function address from the pre-reloc
+uboot
+10/22/2023 8:50 PM
+In fact there are 2 copies of uboot in ram
+[bochenekk]
+bochenekk 10/22/2023 8:50 PM
+cool
+[smx2460]
+smx2460 10/22/2023 8:50 PM
+Here we care about the latter
+10/22/2023 8:50 PM
+There is the pre-reloc addr and the post-reloc addr
+[bochenekk]
+bochenekk 10/22/2023 8:50 PM
+0x38600000
+[smx2460]
+smx2460 10/22/2023 8:49 PM
+The relocaddr you got from bdinfo will be used as loadaddr in ghidra
+[halal_beef]
+[] bochenekk nah. i like living on the edge
+halal_beef 10/22/2023 8:49 PM
+famous last words as he bricks his tv
+[smx2460]
+smx2460 10/22/2023 8:49 PM
+Then dump boot
+[bochenekk]
+bochenekk 10/22/2023 8:49 PM
+i won't mess with mmc
+10/22/2023 8:49 PM
+nah. i like living on the edge
+[smx2460]
+smx2460 10/22/2023 8:48 PM
+For backup purposes
+10/22/2023 8:48 PM
+Dump every partition
+10/22/2023 8:48 PM
+And while you are at it
+10/22/2023 8:48 PM
+Boot to Linux and dd it out
+[halal_beef]
+halal_beef 10/22/2023 8:48 PM
+cant u simply dd?
+[smx2460]
+smx2460 10/22/2023 8:48 PM
+But it's pointlessly slow
+[halal_beef]
+[] smx2460 Which is not the kernel
+halal_beef 10/22/2023 8:48 PM
+kernel + ramdisk for special ones
+[smx2460]
+smx2460 10/22/2023 8:48 PM
+You can hexdump and convert to bin
+[bochenekk]
+bochenekk 10/22/2023 8:48 PM
+ill figure it out myself
+10/22/2023 8:48 PM
+dumb questions
+10/22/2023 8:48 PM
+honestly
+10/22/2023 8:48 PM
+can i dump from uboot?
+[smx2460]
+smx2460 10/22/2023 8:48 PM
+Like in the Android world
+10/22/2023 8:47 PM
+Which is not the kernel
+[smx2460]
+[] bochenekk (plus - what partition does uboot reside in lmao)
+smx2460 10/22/2023 8:47 PM
+boot
+[smx2460]
+smx2460 10/22/2023 8:47 PM
+The bootSdk sample shows both how to call through "gd" and through
+direct address (edited)
+[bochenekk]
+bochenekk 10/22/2023 8:47 PM
+(plus - what partition does uboot reside in lmao)
+10/22/2023 8:47 PM
+but the rest is a big unknown for me
+10/22/2023 8:47 PM
+i can get the funct addr
+10/22/2023 8:46 PM
+hmmm
+10/22/2023 8:46 PM
+but that'll take a min
+[smx2460]
+smx2460 10/22/2023 8:46 PM
+Or copy its code
+10/22/2023 8:46 PM
+You need to dasm uboot, find where the function is, and call it
+10/22/2023 8:46 PM
+You can do that
+[bochenekk]
+bochenekk 10/22/2023 8:46 PM
+command
+10/22/2023 8:46 PM
+how about we make a function with release_non_boot_core();
+[smx2460]
+smx2460 10/22/2023 8:46 PM
+Maybe
+[bochenekk]
+bochenekk 10/22/2023 8:46 PM
+due to release_non_boot_core();? (edited)
+10/22/2023 8:45 PM
+okay.
+10/22/2023 8:45 PM
+hm.
+[smx2460]
+smx2460 10/22/2023 8:45 PM
+Either way i suspect bootm is not gonna work once you drop in shell
+[bochenekk]
+bochenekk 10/22/2023 8:45 PM
+name
+[smx2460]
+smx2460 10/22/2023 8:45 PM
+What does -n android even do
+[halal_beef]
+halal_beef 10/22/2023 8:42 PM
+:(
+10/22/2023 8:42 PM
+damn
+[bochenekk]
+bochenekk 10/22/2023 8:42 PM
+it was 14mb
+10/22/2023 8:42 PM
+i was already using that ramdisk recovery
+[halal_beef]
+halal_beef 10/22/2023 8:42 PM
+considering i lack a init.recovery.m7621.rc i doubt it wouldve booted
+tho
+10/22/2023 8:41 PM
+good point
+[bochenekk]
+bochenekk 10/22/2023 8:41 PM
+it should at least give me kernel out, no?
+[halal_beef]
+halal_beef 10/22/2023 8:41 PM
+try ramdisk-recovery
+10/22/2023 8:41 PM
+(no content)
+[image.png]
+ image.png
+4.63 KB External
+[bochenekk]
+bochenekk 10/22/2023 8:40 PM
+mkimage -A arm -O linux -T multi -C none -a 0x25000000 -n android -d uImage:/home/bochenek/Downloads/ramdisk.img out_uimage
+10/22/2023 8:39 PM
+well this is as far as it gets
+10/22/2023 8:39 PM
+oh
+[smx2460]
+smx2460 10/22/2023 8:38 PM
+First
+[bochenekk]
+bochenekk 10/22/2023 8:35 PM
+should kernel be the first or the second image
+[camphoto_658816051.jpg]
+ camphoto_658816051.jpg
+1.52 MB External
+[smx2460]
+smx2460 10/22/2023 8:23 PM
+And you don't get it when you drop to shell and run bootm yourself
+10/22/2023 8:23 PM
+@hellobox I'm afraid that release_cores thing might be needed
+[bochenekk]
+bochenekk 10/22/2023 8:22 PM
+okay
+[smx2460]
+smx2460 10/22/2023 8:21 PM
+make one single uimage with everything and load it there
+[smx2460]
+hellobox. looks like it```c void kernel_jump(void) {
+tlog("\033[0;32m[%d] %s \033[0m\n", readMsTicks(), __...
+smx2460 10/22/2023 8:21 PM
+@bochenek this is what you want
+[halal_beef]
+halal_beef 10/22/2023 8:20 PM
+anyways ill stop distracting u, thanks for all the information and help
+u gave us
+ 1
+[halal_beef]
+[] smx2460 But no GPU HAL for system level graphics
+halal_beef 10/22/2023 8:19 PM
+~~just hack fbcon into android and just see it draw fb when watching
+youtube~~
+[smx2460]
+smx2460 10/22/2023 8:19 PM
+TWRP just needs fb
+10/22/2023 8:18 PM
+But no GPU HAL for system level graphics
+10/22/2023 8:18 PM
+We had working TWRP gfx on h13
+[halal_beef]
+[] smx2460 Twrp is more likely
+halal_beef 10/22/2023 8:18 PM
+nice to know, thank you
+[smx2460]
+[] halal_beef and a 0.0000001% chance of seeing a glimmer of twrp
+smx2460 10/22/2023 8:18 PM
+Twrp is more likely
+[bochenekk]
+bochenekk 10/22/2023 8:18 PM
+sure, have a nice one
+ 1
+[smx2460]
+smx2460 10/22/2023 8:17 PM
+@bochenek dinner, bbl
+[halal_beef]
+halal_beef 10/22/2023 8:17 PM
+and a 0.0000001% chance of seeing a glimmer of twrp
+[bochenekk]
+bochenekk 10/22/2023 8:16 PM
+keep expectations low
+10/22/2023 8:16 PM
+this project has a 0.001% success rate of booting into a graphical
+android tv system
+10/22/2023 8:16 PM
+i just want some logs
+[halal_beef]
+halal_beef 10/22/2023 8:16 PM
+you might
+[bochenekk]
+bochenekk 10/22/2023 8:16 PM
+does it look like i care
+[halal_beef]
+halal_beef 10/22/2023 8:16 PM
+10/22/2023 8:16 PM
+i specified uImage as the prebuilt kernel
+10/22/2023 8:16 PM
+also uh i probably made the tree kinda incorrectly
+[bochenekk]
+bochenekk 10/22/2023 8:15 PM
+then i will refactor kernel
+10/22/2023 8:15 PM
+this will be one test
+10/22/2023 8:15 PM
+but hold out
+10/22/2023 8:15 PM
+lol
+10/22/2023 8:15 PM
+yes
+[halal_beef]
+halal_beef 10/22/2023 8:15 PM
+i didnt make one cause im still figuring out if ur doing usb boot or not
+10/22/2023 8:15 PM
+i excluded fstab
+[bochenekk]
+bochenekk 10/22/2023 8:15 PM
+because fstab
+10/22/2023 8:15 PM
+as recovery img has no chance of working
+10/22/2023 8:14 PM
+i guess try only ramdisk
+[halal_beef]
+halal_beef 10/22/2023 8:13 PM
+https://u-boot.readthedocs.io/en/latest/usage/cmd/bootm.html
+[bochenekk]
+bochenekk 10/22/2023 8:13 PM
+link pls
+[halal_beef]
+halal_beef 10/22/2023 8:13 PM
+not me
+10/22/2023 8:13 PM
+ask them
+10/22/2023 8:13 PM
+im reading uboot docs
+10/22/2023 8:13 PM
+idk
+[bochenekk]
+bochenekk 10/22/2023 8:13 PM
+why 400000 instead of 200000 tho
+[halal_beef]
+halal_beef 10/22/2023 8:12 PM
+seems so?
+10/22/2023 8:12 PM
+(no content)
+[image.png]
+ image.png
+5.35 KB External
+[bochenekk]
+bochenekk 10/22/2023 8:11 PM
+@Smx bootm <0xkernelimage> <0xramdiskimage>? (edited)
+10/22/2023 8:09 PM
+uh alright (edited)
+[halal_beef]
+halal_beef 10/22/2023 8:08 PM
+lel
+[bochenekk]
+bochenekk 10/22/2023 8:08 PM
+therer we go - now i get logs
+hellobox. 10/22/2023 8:07 PM
+did you set print on?
+[bochenekk]
+bochenekk 10/22/2023 8:07 PM
+weeeird
+10/22/2023 8:07 PM
+yea same as i use
+hellobox. 10/22/2023 8:07 PM
+115200
+[bochenekk]
+bochenekk 10/22/2023 8:07 PM
+what baud
+10/22/2023 8:07 PM
+waaaaat
+[] bochenekk this is pl2303?
+hellobox. 10/22/2023 8:07 PM
+no
+[bochenekk]
+hellobox. ``` [AT][MB][start kr][20692] Starting kernel ... [ 0.000000]
+Booting Linux on physical CPU 0...
+bochenekk 10/22/2023 8:07 PM
+this is pl2303?
+hellobox. 10/22/2023 8:07 PM
+    [AT][MB][start kr][20692]
+    Starting kernel   ...
+    [    0.000000] Booting Linux on physical CPU 0x0
+    [    0.000000] Initializing cgroup subsys cpuset
+    [    0.000000] Initializing cgroup subsys cpu
+    [    0.000000] Initializing cgroup subsys cpuacct
+    [    0.000000] Linux version 4.4.84-p.57.glacier.lm18a.1 (gatekeeper.tvsw@swfarm-gateuobld28) (gcc version 6.2.0 (GCC) ) #1 SMP PREEMPT Mon Nov 19 13:34:08 KST 2018
+    [    0.000000] CPU: ARMv7 Processor [410fd034] revision 4 (ARMv7), cr=10c0383d
+    [    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+    [    0.000000] Machine: m7621
+[bochenekk]
+bochenekk 10/22/2023 8:06 PM
+internal debug connector
+[halal_beef]
+halal_beef 10/22/2023 8:06 PM
+hes using internal uart
+[] bochenekk i dont get any out from the stock userspace though
+hellobox. 10/22/2023 8:06 PM
+are you using pl2303?
+[bochenekk]
+bochenekk 10/22/2023 8:05 PM
+i dont get any out from the stock userspace though
+[] bochenekk stock lg kernel
+hellobox. 10/22/2023 8:05 PM
+it should probably just work then
+[smx2460]
+smx2460 10/22/2023 8:03 PM
+or uboot is broken
+[halal_beef]
+halal_beef 10/22/2023 8:03 PM
+Tbf it does seem pretty empty, especially with no recovery/root folder
+[Screenshot_20231022_190311_Chrome.jpg]
+ Screenshot_20231022_190311_Chrome.jpg
+56.32 KB External
+[smx2460]
+smx2460 10/22/2023 8:03 PM
+either i fucked up
+[bochenekk]
+bochenekk 10/22/2023 8:03 PM
+after that maybe we go to dt
+[smx2460]
+smx2460 10/22/2023 8:03 PM
+yeah so i wonder why THAT would work but not with a standalone/program
+uimg
+[bochenekk]
+hellobox. for a stock android kernel?
+bochenekk 10/22/2023 8:03 PM
+wanna see how far we get right now and getting uart would be good
+[] smx2460 i think they do actually
+hellobox. 10/22/2023 8:03 PM
+looks like it
+    void kernel_jump(void)
+    {
+        tlog("\033[0;32m[%d] %s \033[0m\n", readMsTicks(), __FUNCTION__);
+    #if defined(CONFIG_MULTICORES_PLATFORM)
+        release_non_boot_core();
+    #endif
+        run_command("bootm 0x25000000", 0);
+    }
+[bochenekk]
+bochenekk 10/22/2023 8:02 PM
+stock lg kernel
+[smx2460]
+smx2460 10/22/2023 8:02 PM
+courtesy of @Erfan Abdi
+[bochenekk]
+bochenekk 10/22/2023 8:02 PM
+no
+[smx2460]
+smx2460 10/22/2023 8:02 PM
+https://github.com/erfanoabdi?tab=repositories&q=lg&type=&language=&sort=
+erfanoabdi - Repositories
+ I make shiny rectangles run Linux. erfanoabdi has 216 repositories
+available. Follow their code on GitHub.
+[]
+[] bochenekk so i'd guess that passing it as a bootparam wont do much
+hellobox. 10/22/2023 8:02 PM
+for a stock android kernel?
+[halal_beef]
+halal_beef 10/22/2023 8:02 PM
+Ah
+[smx2460]
+smx2460 10/22/2023 8:02 PM
+it's like comparing apples and oranges
+10/22/2023 8:02 PM
+LX SOC
+[smx2460]
+[] halal_beef Talking about twrp, smx had twrp on something with an LG
+soc IIRC, do u have the trees to that? I wa...
+smx2460 10/22/2023 8:02 PM
+yes it was h13 though
+[bochenekk]
+hellobox. mstar RIU is a bit weird
+bochenekk 10/22/2023 8:01 PM
+so i'd guess that passing it as a bootparam wont do much
+[smx2460]
+smx2460 10/22/2023 8:01 PM
+try and see
+10/22/2023 8:01 PM
+¯\_(ツ)_/¯
+10/22/2023 8:01 PM
+so perhaps it's just broken for standalone bins
+10/22/2023 8:01 PM
+i think they do actually (edited)
+10/22/2023 8:01 PM
+i don't remember if mstar uses it
+10/22/2023 8:01 PM
+then i'm starting to ponder if bootm is indeed broken
+[] bochenekk CONFIG_SERIAL_8250_MSTAR=y
+hellobox. 10/22/2023 8:01 PM
+mstar RIU is a bit weird
+[bochenekk]
+bochenekk 10/22/2023 8:00 PM
+CONFIG_SERIAL_8250_MSTAR=y
+[halal_beef]
+[] halal_beef And again, God knows if my tree is good or not
+halal_beef 10/22/2023 8:00 PM
+Talking about twrp, smx had twrp on something with an LG soc IIRC, do u
+have the trees to that? I want to compare mine
+[bochenekk]
+bochenekk 10/22/2023 8:00 PM
+seems to be
+10/22/2023 8:00 PM
+CONFIG_MP_UART_SERIAL_8250_RIU_BASE=y  (edited)
+[smx2460]
+smx2460 10/22/2023 8:00 PM
+lol...
+[] smx2460 so maybe it does some checks there too
+hellobox. 10/22/2023 8:00 PM
+    static inline ulong image_get_data (const image_header_t *hdr)
+    {
+        return ((ulong)hdr + image_get_header_size ());
+    }
+[smx2460]
+smx2460 10/22/2023 8:00 PM
+not impossible but harder
+[bochenekk]
+bochenekk 10/22/2023 8:00 PM
+i wonder if its compiled in
+10/22/2023 8:00 PM
+okay
+[smx2460]
+smx2460 10/22/2023 8:00 PM
+uart output on usb, harder
+10/22/2023 8:00 PM
+uart output on internal uart, likely
+[bochenekk]
+bochenekk 10/22/2023 7:59 PM
+possible? plausible? im?
+10/22/2023 7:59 PM
+kernel uart output
+10/22/2023 7:59 PM
+now one more thing
+[halal_beef]
+halal_beef 10/22/2023 7:59 PM
+And again, God knows if my tree is good or not
+[smx2460]
+smx2460 10/22/2023 7:59 PM
+and it didn't work either
+[halal_beef]
+[] bochenekk <@708328635207123390> extracted the recovery image for me
+halal_beef 10/22/2023 7:59 PM
+Twrp builds ramdisks as cpio and img and the main img file (edited)
+[smx2460]
+smx2460 10/22/2023 7:59 PM
+assuming uboot would memmove or memcpy it there
+10/22/2023 7:58 PM
+that i had you, @hellobox , load it at a different address than the load
+address
+10/22/2023 7:58 PM
+i remember though
+10/22/2023 7:58 PM
+or if maybe it doesn't like the load address
+[bochenekk]
+bochenekk 10/22/2023 7:58 PM
+lol
+10/22/2023 7:58 PM
+@halal_beef extracted the recovery image for me
+10/22/2023 7:58 PM
+oh
+[smx2460]
+smx2460 10/22/2023 7:58 PM
+i genuinely wonder if my invocation is wrong or what 
+10/22/2023 7:57 PM
+so maybe it does some checks there too
+10/22/2023 7:57 PM
+uhmmm appears to be the same but hdr is passed
+hellobox. 10/22/2023 7:57 PM
+although...
+            case IH_TYPE_KERNEL:
+                *os_data = image_get_data (hdr);
+                *os_len = image_get_data_size (hdr);
+                break;
+[bochenekk]
+bochenekk 10/22/2023 7:57 PM
+let me do this
+10/22/2023 7:57 PM
+okay, was off for a moment
+[smx2460]
+smx2460 10/22/2023 7:57 PM
+if you do -T -h the list is a bit longer but contains
+            standalone       Standalone Program
+hellobox. 10/22/2023 7:57 PM
+            case IH_TYPE_STANDALONE:
+                *os_data = image_get_data (hdr);
+                *os_len = image_get_data_size (hdr);
+                break;
+[smx2460]
+smx2460 10/22/2023 7:57 PM
+list from mkimage -O -h
+10/22/2023 7:56 PM
+    Invalid operating system, supported are:
+            4_4bsd           4_4BSD
+            arm-trusted-firmware  ARM Trusted Firmware
+            dell             Dell
+            efi              EFI Firmware
+            esix             Esix
+            freebsd          FreeBSD
+            integrity        INTEGRITY
+            invalid          Invalid OS
+            irix             Irix
+            linux            Linux
+            ncr              NCR
+            netbsd           NetBSD
+            openbsd          OpenBSD
+            openrtos         OpenRTOS
+            opensbi          RISC-V OpenSBI
+            ose              Enea OSE
+            plan9            Plan 9
+            psos             pSOS
+            qnx              QNX
+            rtems            RTEMS
+            sco              SCO
+            solaris          Solaris
+            svr4             SVR4
+            tee              Trusted Execution Environment
+            u-boot           U-Boot
+            vxworks          VxWorks
+10/22/2023 7:56 PM
+           -O os
+           --os os
+                  Set the operating system. The U‐Boot bootm command changes boot method based on the OS type.  Pass -h as the os to see  the  list  of  sup‐
+                  ported OSs. If -O is absent, it defaults to linux.
+[] smx2460 not sure if uboot actually does something with that
+information
+hellobox. 10/22/2023 7:54 PM
+i think it does
+[smx2460]
+smx2460 10/22/2023 7:54 PM
+i don't remember
+10/22/2023 7:54 PM
+not sure if uboot actually does something with that information
+10/22/2023 7:54 PM
+which tells uboot this ain't a kernel
+10/22/2023 7:54 PM
+but yeah i pass -T standalone
+10/22/2023 7:54 PM
+especially since the .bin works
+10/22/2023 7:54 PM
+i wonder if i'm doing it incorrectly or if mstar uboot is truly broken
+10/22/2023 7:53 PM
+this is how i create the uimg
+10/22/2023 7:53 PM
+@hellobox
+    add_custom_command(
+                OUTPUT "${outputImage}"
+                COMMAND mkimage
+                        -A arm
+                        -T standalone
+                        -O u-boot
+                        -C none
+                        -n "${BIN_TARGET}"
+                        -a ${BIN_LOADADDR}
+                        -e ${BIN_ENTRYPOINT}
+                        -d ${outputBin} ${outputImage}
+                DEPENDS ${outputBin}
+            )
+10/22/2023 7:51 PM
+but i fail to see how you'd debug the final product without UART anyways
+(edited)
+10/22/2023 7:51 PM
+and this wouldn't then require uart
+10/22/2023 7:51 PM
+so you can point it to rebooter which will then load your alt-kernel
+10/22/2023 7:51 PM
+but you can override the cmdline
+10/22/2023 7:50 PM
+mstar boot flow doesn't allow you to alter the command table
+10/22/2023 7:50 PM
+unless there's something else i haven't seen
+10/22/2023 7:50 PM
+you need to type the tftp and bootm commands on every boot
+[bochenekk]
+bochenekk 10/22/2023 7:50 PM
+ah, then i wasnt understanding it right, sorry
+[smx2460]
+smx2460 10/22/2023 7:50 PM
+but you cannot automate it
+10/22/2023 7:49 PM
+that's what i'm telling you
+[bochenekk]
+bochenekk 10/22/2023 7:49 PM
+and be on my way?
+10/22/2023 7:49 PM
+load kernel + ramdisk with uboot
+10/22/2023 7:49 PM
+cant i unpackbootimg on my PC
+10/22/2023 7:49 PM
+i mean if we both have uart
+10/22/2023 7:49 PM
+cool
+[smx2460]
+smx2460 10/22/2023 7:49 PM
+yes
+[bochenekk]
+bochenekk 10/22/2023 7:49 PM
+so in theory, kexec would work
+[smx2460]
+smx2460 10/22/2023 7:49 PM
+you can pivot root but not the kernel being used
+10/22/2023 7:49 PM
+not in uboot i mean
+[bochenekk]
+bochenekk 10/22/2023 7:48 PM
+:/
+[smx2460]
+smx2460 10/22/2023 7:48 PM
+you cannot automate loading an alt-kernel afaik (edited)
+[bochenekk]
+[] smx2460 so you can use `bootm`
+bochenekk 10/22/2023 7:48 PM
+so no kexec?
+[smx2460]
+smx2460 10/22/2023 7:48 PM
+that's the concept (edited)
+10/22/2023 7:48 PM
+load a uboot program, which has a main() and can call stuff from gd->jt,
+and returns at the end
+hellobox. 10/22/2023 7:48 PM
+i think they still use go for their "STANDALN"
+[smx2460]
+smx2460 10/22/2023 7:47 PM
+which is actually supposed to work in uboot
+10/22/2023 7:47 PM
+i set that to "standalone program"
+10/22/2023 7:47 PM
+uimg has a "type" field that indicates the type of binary being loaded
+hellobox. 10/22/2023 7:47 PM
+oh, does it work for actual kernel images?
+[smx2460]
+smx2460 10/22/2023 7:47 PM
+it doesn't work for bootSdk binaries but they are not really kernels
+[] smx2460 so you can use `bootm`
+hellobox. 10/22/2023 7:47 PM
+isn't that kind of broken?
+[smx2460]
+smx2460 10/22/2023 7:47 PM
+it might work
+10/22/2023 7:46 PM
+so you can use bootm
+10/22/2023 7:46 PM
+i guess it'll be easier if you repackage it as a uImage (edited)
+[bochenekk]
+bochenekk 10/22/2023 7:46 PM
+:)
+10/22/2023 7:46 PM
+unpackbootimg
+[smx2460]
+smx2460 10/22/2023 7:46 PM
+i.e. get the kernel contained within
+10/22/2023 7:46 PM
+if you split the bootimg it should work without any modification
+[bochenekk]
+bochenekk 10/22/2023 7:45 PM
+for development - just replacing the init, and from the init extracting
+the kernel + ramdisk (kernel only if needed) and somehow jumping to
+that, (edited)
+10/22/2023 7:44 PM
+i'm thinking of this
+10/22/2023 7:44 PM
+so
+10/22/2023 7:44 PM
+okay
+[smx2460]
+smx2460 10/22/2023 7:44 PM
+unless there's a user generated key at play
+10/22/2023 7:43 PM
+anything that can be modified by the user cannot be signed
+[] bochenekk is it signed? 
+hellobox. 10/22/2023 7:43 PM
+no. crc32
+[smx2460]
+smx2460 10/22/2023 7:43 PM
+it can't be signed
+[bochenekk]
+bochenekk 10/22/2023 7:43 PM
+so
+10/22/2023 7:43 PM
+okay
+[bochenekk]
+[] smx2460 `uenv` is just a partition
+bochenekk 10/22/2023 7:43 PM
+is it signed? 
+[smx2460]
+smx2460 10/22/2023 7:43 PM
+afaik you can't
+[bochenekk]
+bochenekk 10/22/2023 7:43 PM
+i dont think you could run an uboot script either
+[smx2460]
+smx2460 10/22/2023 7:43 PM
+uenv is just a partition
+10/22/2023 7:43 PM
+but you could do that setenv from linux
+ 1
+hellobox. 10/22/2023 7:43 PM
+not necessarily
+[smx2460]
+smx2460 10/22/2023 7:43 PM
+only for first setup
+[bochenekk]
+bochenekk 10/22/2023 7:42 PM
+so it would require uart
+[smx2460]
+smx2460 10/22/2023 7:42 PM
+and then it's done
+10/22/2023 7:42 PM
+    setenv bootmoder user
+    setenv bootargs cmdline_here
+    saveenv
+10/22/2023 7:42 PM
+it won't

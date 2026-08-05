@@ -1,0 +1,657 @@
+April 21, 2021
+[4434]
+4434 04/21/2021 2:22 PM
+try it
+[infowski]
+infowski 04/21/2021 2:22 PM
+i actually idled on #openlgtv on freenode for a while x-D
+[4434]
+4434 04/21/2021 2:22 PM
+please (edited)
+04/21/2021 2:22 PM
+try going from desktop to mobile
+[4434]
+[] infowski irc was the only sensible chat proitocol
+4434 04/21/2021 2:22 PM
+10 years ago? sure
+[4434]
+4434 04/21/2021 2:22 PM
+one? better thing
+[infowski]
+infowski 04/21/2021 2:22 PM
+irc was the only sensible chat proitocol
+[4434]
+4434 04/21/2021 2:22 PM
+there's like
+04/21/2021 2:22 PM
+there's a reason we're all using discord
+[infowski]
+infowski 04/21/2021 2:22 PM
+yeah
+[4434]
+4434 04/21/2021 2:22 PM
+hard pass
+04/21/2021 2:22 PM
+you're making connections to thousands of IP addresses
+04/21/2021 2:22 PM
+webrtc or no webrtc
+[infowski]
+infowski 04/21/2021 2:21 PM
+stun/turn, etc...
+ww8543 04/21/2021 2:21 PM
+https://matrix.org/blog/2020/06/02/introducing-p-2-p-matrix
+Introducing P2P Matrix | Matrix.org
+[]
+[infowski]
+infowski 04/21/2021 2:21 PM
+it really works
+04/21/2021 2:21 PM
+@Hyphen i mean, that's what webrtc is for
+04/21/2021 2:21 PM
+it kinda worked last time i tried it xD
+[4434]
+4434 04/21/2021 2:21 PM
+including from your own firewall setup
+[infowski]
+infowski 04/21/2021 2:21 PM
+that sure sounds funny
+ww8543 04/21/2021 2:21 PM
+it's their "p2p" experiment
+[4434]
+4434 04/21/2021 2:21 PM
+now you have to try and connect to thousands of users each behind their
+own unique firewall setups
+ww8543 04/21/2021 2:21 PM
+haha 
+[4434]
+4434 04/21/2021 2:21 PM
+oh god that sounds even worse
+ww8543 04/21/2021 2:20 PM
+also they are running experiments with each user having their own
+homeserver run in the browser or as an app through the power of wasm
+[4434]
+4434 04/21/2021 2:20 PM
+i feel like that goes against the idea/concept of matrix as a whole 
+(edited)
+[] 4434 at the very least, can't it be some sort of P2P architecture
+where other servers help with delivery ...
+ww8543 04/21/2021 2:20 PM
+propose it as a new matrix rfc?
+[4434]
+ww8543 only to people on your own server of course
+4434 04/21/2021 2:19 PM
+yeah i've done that before, it works ok enough
+[4434]
+4434 04/21/2021 2:19 PM
+at the very least, can't it be some sort of P2P architecture where other
+servers help with delivery of messages?
+ww8543 04/21/2021 2:19 PM
+only to people on your own server of course
+[4434]
+4434 04/21/2021 2:19 PM
+well yeah but you can't actually talk with other people that way, no?
+ww8543 04/21/2021 2:19 PM
+it is not mandatory
+04/21/2021 2:19 PM
+well you can run matrix without federating
+04/21/2021 2:19 PM
+thats federation, yea
+[4434]
+4434 04/21/2021 2:19 PM
+true federation sucks lol
+04/21/2021 2:18 PM
+yes
+[infowski]
+infowski 04/21/2021 2:18 PM
+@Hyphen i mean, this is what you get for true federation
+ww8543 04/21/2021 2:18 PM
+i have the db server separated out in another container tho
+[4434]
+4434 04/21/2021 2:18 PM
+want to send a message to a crowded channel? have fun sending network
+requests to 500 different servers
+[infowski]
+infowski 04/21/2021 2:18 PM
+so currently i think we are mostly getting a little bottlenecked by
+federation streams, which I didn't yet split out.
+ww8543 04/21/2021 2:18 PM
+since i am so far, the only user on my own server, i have it running as
+a monolith
+[4434]
+4434 04/21/2021 2:18 PM
+I hate the matrix architecture so so much
+[infowski]
+infowski 04/21/2021 2:17 PM
+https://github.com/turt2live/matrix-media-repo that stuff seems
+compatible with our setup (ceph → radosgw / s3-style api → win)
+turt2live/matrix-media-repo
+Matrix media repository with multi-domain in mind. -
+turt2live/matrix-media-repo
+[]
+ww8543 04/21/2021 2:17 PM
+i never knew postgres was THIS much better than other db servers, until
+i actually gave it a try for my synapse
+[infowski]
+infowski 04/21/2021 2:16 PM
+postgres is not that bad, just the media library was annoying.
+04/21/2021 2:16 PM
+yeah
+ww8543 04/21/2021 2:16 PM
+are you on pgsql db backend?
+[infowski]
+infowski 04/21/2021 2:16 PM
+and it was approx 10+ minutes of downtime. now that it's split into
+workers proeprly i can start slowly migrating to that better
+golang-based media repo
+ww8543 04/21/2021 2:15 PM
+ugh
+[infowski]
+infowski 04/21/2021 2:15 PM
+also the worst part (before workers split) was that we have it deployed
+on bare metal k8s cluster with rook.io/ceph storage, which, on every
+container restart, would fsck the filesystem and chmod/chown all media
+directory files
+ww8543 04/21/2021 2:15 PM
+100+ people? shouldnt be too dramatic actually, unless they are in big
+channels on other servers
+04/21/2021 2:14 PM
+or add rather than fix
+[infowski]
+infowski 04/21/2021 2:14 PM
+it got much better now.
+04/21/2021 2:14 PM
+it took me 2 months of constant 1 cpu usage to split it into workers
+ww8543 04/21/2021 2:14 PM
+they just need to fucking finish a bunch of essential features
+04/21/2021 2:14 PM
+dendrite will fix all that
+[infowski]
+infowski 04/21/2021 2:14 PM
+averaging about 3 cpu cores
+ww8543 04/21/2021 2:14 PM
+haha 
+[infowski]
+infowski 04/21/2021 2:14 PM
+is the pope of synapse
+ww8543 04/21/2021 2:14 PM
+neat!
+[infowski]
+infowski 04/21/2021 2:13 PM
+not great, not terrible.
+04/21/2021 2:13 PM
+i run a homeserver for 100+ people orga
+04/21/2021 2:13 PM
+well that's nice
+ww8543 04/21/2021 2:13 PM
+i even run my own homeserver
+[infowski]
+infowski 04/21/2021 2:13 PM
+no custom clients allowed my sir
+ww8543 04/21/2021 2:13 PM
+i have been talking about matrix a whole lot in here
+04/21/2021 2:13 PM
+haha no it wont
+[infowski]
+infowski 04/21/2021 2:13 PM
+i need to test discord  m*trix bridge (not gonna say the forbidden
+word, cause it sure will get me banned, won't it, my dear dicsord
+overlords?)
+ww8543 04/21/2021 2:12 PM
+it is shit
+[infowski]
+infowski 04/21/2021 2:12 PM
+resistance is futile
+[] infowski yeah, I have that, but it still highlights thechannel
+ww8543 04/21/2021 2:12 PM
+yea unfortunately it does, thats just how discord works
+[infowski]
+infowski 04/21/2021 2:12 PM
+praise our dicsord overlords
+04/21/2021 2:11 PM
+yeah, that's stupid.
+ww8543 04/21/2021 2:11 PM
+we would have to redirect those to another channel or just mute them
+entirely
+[infowski]
+infowski 04/21/2021 2:11 PM
+as if someone sent a message
+04/21/2021 2:11 PM
+yeah, I have that, but it still highlights thechannel
+ww8543 04/21/2021 2:11 PM
+but you cant filter just the joins
+[] infowski is it possible to make discord not highlight
+<#407937994520133633> channel every time someone joins ...
+ww8543 04/21/2021 2:11 PM
+you can set the notifications to only notify you if you are mentioned
+[infowski]
+infowski 04/21/2021 2:08 PM
+is it possible to make discord not highlight # unknown-channel channel
+every time someone joins the server?
+March 7, 2021
+ww8543 03/07/2021 11:29 PM
+heh :)
+Deleted User 03/07/2021 11:28 PM
+scared me a bit when i just turned it on and there were no channels
+anymore
+ww8543 03/07/2021 11:28 PM
+aha!
+Deleted User 03/07/2021 11:27 PM
+btw, if anyone looses his channels after failed russian exploit/getmein
+exploit, don't loose your mind, just rescan and everything is alright.
+ww8543 03/07/2021 3:19 PM
+03/07/2021 3:19 PM
+most people are only after the recording key, so they can decrypt their
+stuff
+03/07/2021 3:16 PM
+and the rest mostly for authentication and drm of streaming services
+03/07/2021 3:15 PM
+one is for the recordings
+03/07/2021 3:15 PM
+and then there are even more keys
+03/07/2021 3:15 PM
+and then you have the other key thats for decryption of the epk data,
+yes
+Deleted User 03/07/2021 3:15 PM
+ok now I got it thanks
+ww8543 03/07/2021 3:15 PM
+the tv only has the public key of course
+03/07/2021 3:15 PM
+but they use public and private keys for the signature signing and
+verifying
+[smx2460]
+smx2460 03/07/2021 3:14 PM
+the key is necessary to decrypt it
+ww8543 03/07/2021 3:14 PM
+there are several keys
+Deleted User 03/07/2021 3:14 PM
+read a few times in the discord about some keys
+ww8543 03/07/2021 3:14 PM
+they are for verifying the signature
+[smx2460]
+smx2460 03/07/2021 3:14 PM
+the package is both encrypted and signed
+Deleted User 03/07/2021 3:14 PM
+if not, for what are they then 
+03/07/2021 3:14 PM
+ah, the keys are for the encrypted recordings then?
+ww8543 03/07/2021 3:14 PM
+you are not interrupting 
+[smx2460]
+smx2460 03/07/2021 3:14 PM
+you can't flash anything on most models
+ww8543 03/07/2021 3:14 PM
+only lg has the private key to sign it
+Deleted User 03/07/2021 3:14 PM
+ok
+03/07/2021 3:14 PM
+sorry for interrupting you
+[smx2460]
+smx2460 03/07/2021 3:14 PM
+no
+ww8543 03/07/2021 3:14 PM
+you cant sign it
+Deleted User 03/07/2021 3:13 PM
+yet another question: did I got this right (theoretically): the firmware
+is signed with a key, which for some models is known (?). by taking the
+firmware, modifying it, signing it and flashing it to the tv, it should
+be able to get root?
+[smx2460]
+smx2460 03/07/2021 3:13 PM
+MICOM can be programmed from the main system
+03/07/2021 3:13 PM
+it's probably just to monitor the boot sequence
+03/07/2021 3:13 PM
+and i'd like to see why specifically
+03/07/2021 3:12 PM
+it's hooked to SOC_TX and SOC_RX
+03/07/2021 3:12 PM
+MICOM has access to the UART bus (edited)
+03/07/2021 3:12 PM
+for example
+03/07/2021 3:12 PM
+and how it's hooked up to the rest of the system
+03/07/2021 3:12 PM
+to know which registers are being set (edited)
+03/07/2021 3:12 PM
+i'd need to check side by side with the NEC/RL78 datasheet (edited)
+03/07/2021 3:11 PM
+but it's quite compact
+03/07/2021 3:11 PM
+i can load it up in a disassembler
+03/07/2021 3:11 PM
+and how it works
+03/07/2021 3:11 PM
+some day i'd like to figure out what the MICOM firmware exactly does
+ww8543 03/07/2021 3:11 PM
+to make the tv more expensive of course! 
+[smx2460]
+smx2460 03/07/2021 3:11 PM
+iirc it's called "submicom" in the firmware
+03/07/2021 3:11 PM
+not sure what for
+03/07/2021 3:11 PM
+yeah OLEDs have a secondary MICOM
+Deleted User 03/07/2021 3:11 PM
+ok had to re-read it a few times. now I get it what the RL78 purpose is
+ww8543 03/07/2021 3:10 PM
+both still srec
+03/07/2021 3:10 PM
+there are abmicom and micom these days on newer firmwares
+[smx2460]
+smx2460 03/07/2021 3:09 PM
+most EPK updated will contain an SREC encoded package called "mico"
+ww8543 03/07/2021 3:09 PM
+:)
+Deleted User 03/07/2021 3:09 PM
+just changed my image so you're not confused anymore @Smx
+ 1
+[smx2460]
+smx2460 03/07/2021 3:09 PM
+it's a NEC MCU
+03/07/2021 3:09 PM
+MICOM indeed
+Deleted User 03/07/2021 3:09 PM
+oh
+[smx2460]
+smx2460 03/07/2021 3:08 PM
+@Deleted User i'm telling you that because the TV has an RL78 chip in it
+ww8543 03/07/2021 3:08 PM
+a hobbyist can also learn new things
+[smx2460]
+smx2460 03/07/2021 3:08 PM
+to turn the TV on
+03/07/2021 3:08 PM
+to know if you pressed POWER
+[smx2460]
+Deleted User btw, is there an API which monitors which keys have been
+pressed on the remote?
+smx2460 03/07/2021 3:08 PM
+MICOM does that on standby
+ 1
+Deleted User 03/07/2021 3:08 PM
+nice little thing @Smx but i think for my expertise not suitable. i'm
+just a hobbyist diy guy
+ww8543 03/07/2021 3:07 PM
+btw you can also have the magic remote send ir commands
+Deleted User 03/07/2021 3:07 PM
+yeah i was planning on doing that with a IR-receiver on the ESP8266
+[] smx2460 the fact that you both have the same color here on Discord
+confuses me 
+ww8543 03/07/2021 3:07 PM
+well i cant change it :(
+ww8543 03/07/2021 3:06 PM
+you need to run something that watches the events on the input device,
+and then sends it somewhere to do something
+[smx2460]
+smx2460 03/07/2021 3:06 PM
+the fact that you both have the same color here on Discord confuses me
+Deleted User i would like to get rid of the remote for my shutters and
+make use of the colored buttons on the rem...
+ww8543 03/07/2021 3:06 PM
+that should be possible
+Deleted User 03/07/2021 3:06 PM
+nope i'll look into it hold up
+[smx2460]
+smx2460 03/07/2021 3:05 PM
+https://www.renesas.com/us/en/products/microcontrollers-microprocessors/rl78-low-power-8-16-bit-mcus
+RL78 Low Power 8 & 16-bit MCUs | Renesas
+The RL78 Family of 8/16-bit microcontrollers (MCUs) offers a
+comprehensive lineup with pin counts from 10 pins to 144 pins and memory
+sizes from 1KB to 512KB.
+03/07/2021 3:05 PM
+@Deleted User do you know anything about RL78?
+Deleted User 03/07/2021 3:05 PM
+i would like to get rid of the remote for my shutters and make use of
+the colored buttons on the remote
+ww8543 03/07/2021 3:05 PM
+ohooo
+[smx2460]
+smx2460 03/07/2021 3:05 PM
+maybe he could hack in an additional SPI flash lol
+03/07/2021 3:05 PM
+i'm not sure how much flash memory MICOM has (edited)
+Deleted User btw, is there an API which monitors which keys have been
+pressed on the remote?
+ww8543 03/07/2021 3:05 PM
+yes there is
+[smx2460]
+Deleted User i just did a small clock with esp8266 and some led-matrix
+8x8 displays, which i wanted to put on my ...
+smx2460 03/07/2021 3:04 PM
+instead of the esp, he could do that with MICOM 
+ww8543 03/07/2021 3:04 PM
+maybe you can turn on usb through it?
+[smx2460]
+smx2460 03/07/2021 3:04 PM
+well
+Deleted User 03/07/2021 3:04 PM
+btw, is there an API which monitors which keys have been pressed on the
+remote?
+ww8543 03/07/2021 3:04 PM
+hack micom!
+[smx2460]
+smx2460 03/07/2021 3:04 PM
+so it surely has a standby power source
+03/07/2021 3:04 PM
+MICOM however is always on in standby
+ww8543 03/07/2021 3:04 PM
+but yea, thats probanly the closest you can get to power the usb port
+with it semi-turned off
+[smx2460]
+ww8543 but then he mainboard is still on a little bit
+smx2460 03/07/2021 3:04 PM
+you can't avoid that
+[smx2460]
+smx2460 03/07/2021 3:03 PM
+that'd effectively be like a raspberry pi
+ww8543 03/07/2021 3:03 PM
+but then he mainboard is still on a little bit
+03/07/2021 3:03 PM
+thats another way yea
+[smx2460]
+smx2460 03/07/2021 3:03 PM
+and disable any additional core
+03/07/2021 3:03 PM
+set a conservative CPU scaling governor
+03/07/2021 3:03 PM
+then disable the tuner
+Deleted User 03/07/2021 3:03 PM
+good idea actually
+[smx2460]
+smx2460 03/07/2021 3:03 PM
+power off the inverter and panel subsystems (there's an API for that)
+03/07/2021 3:03 PM
+that we could make ourselves
+ww8543 03/07/2021 3:03 PM
+thats always a good idea with lg
+[smx2460]
+smx2460 03/07/2021 3:03 PM
+one could put the SoC in a kind of low power mode
+Deleted User 03/07/2021 3:02 PM
+i just turned off the automatic updates so I don't miss out retr0ids
+hack
+[smx2460]
+smx2460 03/07/2021 3:02 PM
+hi @Deleted User, first of all (edited)
+03/07/2021 3:02 PM
+well
+Deleted User 03/07/2021 3:01 PM
+was there some kind of hint 'only for the emulator' ? 
+ww8543 03/07/2021 3:01 PM
+and they even "fixed" it
+03/07/2021 3:00 PM
+Deleted User 03/07/2021 3:00 PM
+yeah, i'm almost used to finiding everything already available. the
+internet has spoiled me lately
+ww8543 03/07/2021 3:00 PM
+riiiight, only for the emulator
+Deleted User 03/07/2021 3:00 PM
+and the one from february which is only for the emulator 
+ww8543 03/07/2021 3:00 PM
+it is not like those other ones are public ;) (edited)
+03/07/2021 3:00 PM
+you probably have
+Deleted User 03/07/2021 3:00 PM
+i tried the russian method already
+ww8543 03/07/2021 2:59 PM
+what other stuff do you want to look into btw?
+Deleted User 03/07/2021 2:59 PM
+i thought i have scrolled through the whole discord channels lol
+ww8543 03/07/2021 2:59 PM
+there are more root methods than just retr0ids (edited)
+Deleted User 03/07/2021 2:59 PM
+right it should have at least some standby voltage
+ww8543 03/07/2021 2:58 PM
+and that is connected to the mainboard
+03/07/2021 2:58 PM
+since you can turn it on with the button
+03/07/2021 2:58 PM
+hmmm in fact, there should be something
+03/07/2021 2:58 PM
+if it is off
+03/07/2021 2:58 PM
+tho i dont know if the psu delivers that voltage
+Deleted User 03/07/2021 2:58 PM
+better than having an extra psu
+03/07/2021 2:58 PM
+was thinking about that too
+ww8543 03/07/2021 2:58 PM
+probably not worth it
+03/07/2021 2:57 PM
+but that would require opening up the tv
+03/07/2021 2:57 PM
+or you could use the 12v from the psu with a voltage step down to 5v
+Deleted User 03/07/2021 2:57 PM
+even if its not possible, theres a ton of things i'd like to look into
+which requires root
+ww8543 03/07/2021 2:56 PM
+tho that is not to say that it might be different for you
+03/07/2021 2:56 PM
+from what i know at least
+Deleted User 03/07/2021 2:56 PM
+hmm ok
+03/07/2021 2:56 PM
+well is it really off when its in the 'fast boot' mode? (if thats how
+you'd call it in english version of the software)
+ww8543 03/07/2021 2:56 PM
+i mean the os really shuts down
+03/07/2021 2:56 PM
+i dont think you can power the usb ports if the tv is off, tho
+Deleted User 03/07/2021 2:56 PM
+anyways, 2 hours later and 2 failed attempts to root i found retr0ids
+thread on xda
+03/07/2021 2:55 PM
+kinda story of my life lol
+ww8543 03/07/2021 2:55 PM
+Deleted User 03/07/2021 2:55 PM
+and i was asking myself if its possible to keep it live and then boom,
+i'm here
+ww8543 03/07/2021 2:54 PM
+oh interesting
+Deleted User 03/07/2021 2:54 PM
+after finishing i came to the conclusion that the USB-port is being
+powered off when the tv is off
+03/07/2021 2:54 PM
+i just did a small clock with esp8266 and some led-matrix 8x8 displays,
+which i wanted to put on my TV
+ww8543 03/07/2021 2:54 PM
+where did you start?
+03/07/2021 2:54 PM
+ohoo
+Deleted User 03/07/2021 2:53 PM
+nm just fell into a rabbit-hole and landed here
+ww8543 03/07/2021 2:52 PM
+@Deleted User whats happening?
+03/07/2021 2:51 PM
+hey @Deleted User! 
+Deleted User 03/07/2021 2:50 PM
+hello everyone
+March 3, 2021
+ww8543 03/03/2021 5:53 PM
+03/03/2021 5:53 PM
+that jacobs ladder experiment was not staged btw, he could have really
+killed himself with it
+03/03/2021 5:52 PM
+love him
+03/03/2021 5:52 PM
+hahah electroboom
+[francesco75]
+francesco75 03/03/2021 5:49 PM
+This guy is amazing..... 
+03/03/2021 5:48 PM
+https://twitter.com/HumansNoContext/status/1366491436984721412?s=09
+[]No Context Humans (@HumansNoContext)
+https://t.co/AqGtCU2R3w
+Retweets
+40009
+Likes
+157987
+[] Watch video
+[]Twitter3/1/2021, 9:52:01 PM
+ 2
+March 2, 2021
+[e99.tuxuser]
+e99.tuxuser 03/02/2021 9:35 PM
+had to trim down some hooks, but now its working :))
+03/02/2021 9:35 PM
+yeah, even for gpu & crypto intensive app, genymotion works nicely
+[e99.tuxuser]
+e99.tuxuser 03/02/2021 8:47 PM
+ok, just started trying genymotion a moment ago, if that does not run
+what I want, will give AVD from android studio a go, thx
+[retr0id]
+retr0id 03/02/2021 8:28 PM
+I've had the best luck using the simulator in android studio (which has
+its own x86 hypervisor iiuc, although you might be able to just import
+the disk images into virtualbox?)
+[e99.tuxuser]
+e99.tuxuser 03/02/2021 8:12 PM
+Tried so far: - BlissOS (11.2 / 12.2) - Official Android x86 project,
+CM14.1
+03/02/2021 8:11 PM
+Any recommendations for a good / quite fast setup to run android x86
+incl. working ADB in virtual box ?
+November 18, 2020
+ww8543 11/18/2020 9:46 PM
+hey @SmartSmurf 
+[smartsmurf]
+smartsmurf 11/18/2020 8:28 PM
+@retr0id: glad to see you around.
+11/18/2020 8:27 PM
+hi there everyone.
+November 16, 2020
+ww8543 11/16/2020 7:56 PM
+oooh!
+[retr0id]
+retr0id 11/16/2020 7:52 PM
+lol, nothings happening, SmartSmurf is a username I recognise from CTFs
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 11/16/2020 7:51 PM
+What in tarnation?
+ww8543 11/16/2020 7:50 PM
+whats happening? :)
+11/16/2020 7:50 PM
+hey @retr0id 
+11/16/2020 7:50 PM
+who in the what now?
+[smx2460]
+smx2460 11/16/2020 7:04 PM
+Who where when
+[retr0id]
+retr0id 11/16/2020 7:04 PM
+hi @SmartSmurf
+August 14, 2020
+ww8543 08/14/2020 6:54 PM
+haha, yea right :)
+[smx2460]
+smx2460 08/14/2020 6:42 PM
+fourth, there's no # unknown-channel we're too diligent (not really) and
+focused (edited)
+ww8543 08/14/2020 3:29 PM
+third
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 08/14/2020 3:29 PM
+Second
+[retr0id]
+retr0id 08/14/2020 3:26 PM
+first

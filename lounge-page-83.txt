@@ -1,0 +1,1688 @@
+January 11, 2023
+[infowski]
+infowski 01/11/2023 8:11 PM
+(ie. there won't be multiple callback calls at the same time)
+01/11/2023 8:10 PM
+Practically - lginput2 and tvservice/micom handling goes on in a single
+thread - so that's at least that
+01/11/2023 8:10 PM
+I think the callback will come from a different thread? Because there's
+a single main thread that's an infinite loop (checking filemtime in our
+case...), and callbacks are called in a target application, in a
+separate system thread(s) (edited)
+[smx2460]
+smx2460 01/11/2023 8:09 PM
+Actually not even that
+01/11/2023 8:09 PM
+We have an event loop
+Deleted User 01/11/2023 8:09 PM
+    while (true) {
+        $mTime = filemtime($configLocation);
+        if ($mTime != $prevMTime) {
+            $prevMTime = $mTime;
+            logmsg("Reloading keybinds...")
+            try {
+                $keybinds = json_decode(file_get_contents($configLocation), true);
+                logmsg("Keybinds reloaded.");
+            } catch (Exception $e) {
+                logmsg("Failed to reload keybinds: " . $e->getMessage());
+            }
+        }
+        sleep(1);
+    }
+[smx2460]
+smx2460 01/11/2023 8:09 PM
+I think so far we don't have multiple threads
+01/11/2023 8:09 PM
+It could happen from a different thread
+01/11/2023 8:09 PM
+Or rather
+01/11/2023 8:08 PM
+The issue is that the callback could happen at any moment (edited)
+01/11/2023 8:07 PM
+Thinking of a workaround
+[infowski]
+infowski 01/11/2023 8:07 PM
+I guess we'll see.
+01/11/2023 8:07 PM
+xD
+01/11/2023 8:07 PM
+oof
+[smx2460]
+smx2460 01/11/2023 8:06 PM
+    Yeah, I don't think that FFI callbacks are thread-safe (and they may have issue with fibers as well). I'm not sure if that's worth fixing, though.
+01/11/2023 8:06 PM
+https://github.com/php/php-src/issues/9214
+[FFI] Segmentation fault when calling callback function · Issue #92...
+Description The following code: &lt;?php class Test { public $lib;
+public function __construct() { $this-&gt;lib = \FFI::cdef(&quot;extern
+void setCloseSessionCallback(void(*fun)(unsign...
+[]
+[infowski]
+infowski 01/11/2023 8:06 PM
+and still add some try catch-es
+Deleted User 01/11/2023 8:06 PM
+okay
+[infowski]
+infowski 01/11/2023 8:06 PM
+so that it loads on first pass
+01/11/2023 8:06 PM
+@Deleted User move sleep after that if 
+Deleted User 01/11/2023 8:05 PM
+    $configLocation = '/media/developer/apps/usr/palm/services/org.webosbrew.inputhook.service/config/keybinds.json';
+    $prevMTime = 0;
+    while (true) {
+        sleep(1);
+        $mTime = filemtime($configLocation);
+        if ($mTime != $prevMTime) {
+            $prevMTime = $mTime;
+            logmsg("Reloading keybinds...")
+            $keybinds = json_decode(file_get_contents($configLocation), true);
+        }
+    }
+(edited)
+[infowski]
+infowski 01/11/2023 8:05 PM
+or they are just dumb
+01/11/2023 8:05 PM
+anonymous functions are so common I really doubt that's really the
+issue.
+01/11/2023 8:05 PM
+or specifically php code used as a c function or however are we doing
+the replacements
+01/11/2023 8:04 PM
+do they mean any anonymous functions?
+01/11/2023 8:04 PM
+yeah that sounds stupid
+[smx2460]
+smx2460 01/11/2023 8:04 PM
+(a blog)
+01/11/2023 8:04 PM
+Or who wrote it did it wrong
+01/11/2023 8:03 PM
+I wonder if this is true
+01/11/2023 8:03 PM
+Wut 
+01/11/2023 8:03 PM
+    Unfortunately, callbacks are not without issues as they are not supported on all platforms, inefficient, and leaks resources. Especially resource leak is a grave issue as this means that after a significant number of callback calls, PHP will exhaust all available process memory. This makes callbacks virtually unusable for long-running applications.
+[infowski]
+infowski 01/11/2023 8:02 PM
+cute
+01/11/2023 8:02 PM
+Deleted User 01/11/2023 8:02 PM
+works now
+[image.png]
+ image.png
+13.15 KB External
+[infowski]
+infowski 01/11/2023 8:01 PM
+is assignment like that atomic?
+01/11/2023 8:01 PM
+In practice - the question is - can we actually simultaneously replace
+$keybinds and read from it in a hook 
+[smx2460]
+smx2460 01/11/2023 8:01 PM
+Afaik, there is something similar to the GIL
+01/11/2023 8:00 PM
+But that affects the internal PHP api only
+[smx2460]
+[] infowski <@310158180728700929> hmmmm, how does php code in hooks
+work? is php threadsafe?
+smx2460 01/11/2023 8:00 PM
+When you build php, you can build it in thread safe or non thread safe
+mode
+[infowski]
+infowski 01/11/2023 8:00 PM
+that'd just pass through on any exception.
+01/11/2023 8:00 PM
+I guess we need better error handling
+[smx2460]
+smx2460 01/11/2023 8:00 PM
+        string $json,
+        ?bool $associative = null,
+        int $depth = 512,
+        int $flags = 0
+    ): mixed
+[infowski]
+infowski 01/11/2023 8:00 PM
+and now it's just crashing on every button press 
+Deleted User 01/11/2023 8:00 PM
+yeah , it crashes no matter what button i press
+[infowski]
+infowski 01/11/2023 7:59 PM
+I totally forgot that's a thing in php lol
+[smx2460]
+smx2460 01/11/2023 7:59 PM
+You need to pass "true"
+01/11/2023 7:59 PM
+If you want to decode to an associative array
+[infowski]
+infowski 01/11/2023 7:59 PM
+ahhhhhhh!
+[smx2460]
+smx2460 01/11/2023 7:59 PM
+It decodes to an anonymous object
+[smx2460]
+Deleted User so, this should work? ```php while (true) { sleep(1);
+$keybinds = json_decode(file_get_conte...
+smx2460 01/11/2023 7:59 PM
+If you use json_decode WITHOUT the second argument
+[infowski]
+infowski 01/11/2023 7:59 PM
+@Smx hmmmm, how does php code in hooks work? is php threadsafe?
+[smx2460]
+smx2460 01/11/2023 7:58 PM
+filemtime
+[smx2460]
+[] infowski You could look at file modification time or something like
+that to not reload it all the time
+smx2460 01/11/2023 7:57 PM
+Deleted User 01/11/2023 7:57 PM
+dumb
+[infowski]
+infowski 01/11/2023 7:57 PM
+dumb or magic?
+01/11/2023 7:57 PM
+wait hold up, what kind of remote are you using?
+01/11/2023 7:56 PM
+I honestly don't see a reason for it to break, hmmmm...
+Deleted User 01/11/2023 7:56 PM
+it was pressing the button
+01/11/2023 7:56 PM
+well it doesnt seem to be the loop that caused it
+01/11/2023 7:55 PM
+(no content)
+ keybinds.json
+114 Bytes External
+01/11/2023 7:55 PM
+yeah
+[infowski]
+infowski 01/11/2023 7:55 PM
+Seems valid to me honestly 
+[infowski]
+Deleted User ```json {"772":{"action":"exec","command":"luna-send -n 1
+\"luna://com.webos.service.tvpower/power/t...
+infowski 01/11/2023 7:55 PM
+This?
+[infowski]
+infowski 01/11/2023 7:54 PM
+well, what's in the JSON file?
+Deleted User 01/11/2023 7:54 PM
+and i cant press anything anymore
+01/11/2023 7:54 PM
+the log is stuck like this
+[image.png]
+ image.png
+9.66 KB External
+[infowski]
+infowski 01/11/2023 7:54 PM
+It may have crashed xD
+01/11/2023 7:54 PM
+Also - wrap it in some try catch or something so that it doesn't crash
+if the file is missing or invalid
+Deleted User 01/11/2023 7:54 PM
+i pressed the button with key id 772 and now none of the buttons on the
+remote are working anymore
+[infowski]
+infowski 01/11/2023 7:53 PM
+but should work fine.
+Deleted User 01/11/2023 7:53 PM
+and put $keybinds = []; in the middle of the file
+[infowski]
+infowski 01/11/2023 7:53 PM
+You could look at file modification time or something like that to not
+reload it all the time
+Deleted User 01/11/2023 7:53 PM
+i removed the require_once __DIR__ . '/keybinds.php';
+01/11/2023 7:53 PM
+well, i added that to the loop at the end of the file
+[infowski]
+infowski 01/11/2023 7:53 PM
+Pretty much.
+Deleted User 01/11/2023 7:48 PM
+so, this should work?
+    while (true) {
+        sleep(1);
+        $keybinds = json_decode(file_get_contents('/media/developer/apps/usr/palm/services/org.webosbrew.inputhook.service/config/keybinds.json'));
+    }
+(edited)
+01/11/2023 7:47 PM
+ah
+[infowski]
+infowski 01/11/2023 7:46 PM
+btw <<<COMMAND here is not even needed when producing stuff from JS -
+it's just a convenience function, and JSON.stringify should produce a
+correct-enough string for PHP there.
+01/11/2023 7:46 PM
+$keybinds = json_decode(file_get_contents('/media/developer/apps/usr/palm/services/XXXX/keybinds.json'));
+Deleted User 01/11/2023 7:45 PM
+but the service then converts that into this
+    <?php
+    $keybinds = [
+        772 => ["action" => "exec", "command" => <<<COMMAND
+    luna-send -n 1 "luna://com.webos.service.tvpower/power/turnOffScreen" '{}'
+    COMMAND],
+    ];
+[infowski]
+infowski 01/11/2023 7:45 PM
+yeah, so you can essentially just load that file directly from PHP
+Deleted User 01/11/2023 7:45 PM
+    {"772":{"action":"exec","command":"luna-send -n 1 \"luna://com.webos.service.tvpower/power/turnOffScreen\" '{}'"}}
+01/11/2023 7:45 PM
+in config/keybinds.json
+01/11/2023 7:43 PM
+but then additionally converted to php
+01/11/2023 7:43 PM
+the json is in fact dumped to a json file
+[infowski]
+infowski 01/11/2023 7:42 PM
+https://github.com/Simon34545/lginputhook/blob/v1.0.0/inputhookservice/inputhook_service.js#L163
+→ dump configuration to some plain json file and then replace $keybinds
+on every pass here if a file has changed →
+https://github.com/Simon34545/lginputhook/blob/v1.0.0/inputhookservice/inputhook/lginput-hook.php#L93
+ (edited)
+[] infowski "full system reboot must be made" - need help with adding
+autoreload functionality?
+Deleted User 01/11/2023 7:41 PM
+yeah, that was the next thing i was going to do but ive been a bit busy
+lately
+[kannamori]
+kannamori 01/11/2023 7:41 PM
+All I wanna do is rebind the Rakuten button to Plex.
+Deleted User 01/11/2023 7:41 PM
+i should add a readme
+01/11/2023 7:40 PM
+for now i just have it here
+https://github.com/Simon34545/lginputhook/releases/tag/v1.0.0
+Release v1.0.0 · Simon34545/lginputhook
+[]
+01/11/2023 7:40 PM
+well, probably
+[infowski]
+Deleted User you mean putting it on the repo?
+infowski 01/11/2023 7:40 PM
+Yep.
+[] infowski Any release plans? 
+Deleted User 01/11/2023 7:40 PM
+you mean putting it on the repo?
+[infowski]
+infowski 01/11/2023 7:40 PM
+it should be fairly trivial
+01/11/2023 7:40 PM
+"full system reboot must be made" - need help with adding autoreload
+functionality?
+Deleted User 01/11/2023 7:39 PM
+(no content)
+[image.png]
+ image.png
+66.18 KB External
+[infowski]
+infowski 01/11/2023 7:39 PM
+Any release plans? 
+[] infowski <@456226577798135808> was that you?
+Deleted User 01/11/2023 7:39 PM
+yeah
+[infowski]
+infowski 01/11/2023 7:39 PM
+@asturel ↑?
+01/11/2023 7:39 PM
+@Deleted User was that you?
+01/11/2023 7:39 PM
+Actually... I remember someone getting to the point of an actual
+configuration interface and such...
+[kannamori]
+kannamori 01/11/2023 7:37 PM
+How far is the rebind tool by the way?
+https://discord.com/channels/407937994037919756/713852484170547222/992077752670896209
+January 9, 2023
+[hydraxon]
+hydraxon 01/09/2023 10:30 AM
+I just wanna use moonlight on my TV without an android box :(
+January 8, 2023
+[infowski]
+infowski 01/08/2023 12:10 PM
+webOS version codenames are haristyle + national park name
+    |1.2|afro-angeles|
+    |1.3|afro-arches|
+    |1.4|afro-ashley|
+    |2.0|beehive-badlands|
+    |2.1|beehive-bighorn|
+    |2.2|beehive-biscayne|
+    |3.1|dreadlocks-denali|
+    |3.2|dreadlocks-deogyusan|
+    |3.3|dreadlocks-deua|
+    |3.4|dreadlocks-digya|
+    |3.5|dreadlocks2-dixie|
+    |3.6|dreadlocks2-dorrigo|
+    |3.7|dreadlocks2-drto|
+    |3.8|dreadlocks2-dunggir|
+    |3.9|dreadlocks2-dudhwa|
+    |4.0|goldilocks-gayasan|
+    |4.1|goldilocks-glacier|
+    |4.2|goldilocks-gomolsha|
+    |4.3|goldilocks-goobang|
+    |4.4|goldilocks-gorce|
+    |4.5|goldilocks2-grandcanyon|
+    |4.6|goldilocks2-guaricana|
+    |4.7|goldilocks2-gulaga|
+    |4.8|goldilocks2-gyeongju|
+    |4.9|goldilocks2-gympie|
+    |5.0|jhericurl-jamestowne|
+    |5.1|jhericurl-japoon|
+    |5.2|jhericurl-jardine|
+    |5.3|jhericurl-jasper|
+    |5.4|jhericurl-jebil|
+    |6.2|kisscurl-kavir|
+    |6.3|kisscurl-kinglake|
+    |7.1|mullet-maria|
+    |7.2|mullet-marine|
+    |7.3|mullet-mebbin|
+    |8.0|number1-naejangsan|
+ 9
+01/08/2023 12:10 PM
+OK GUYS THIS IS BIG
+December 28, 2022
+Deleted User 12/28/2022 2:13 PM
+any free ipk to watch movies thats not russian?
+December 27, 2022
+[friya]
+hellobox. take off every zig?
+friya 12/27/2022 2:31 AM
+For great justice.
+December 26, 2022
+hellobox. 12/26/2022 8:16 PM
+(no content)
+[image.png]
+ image.png
+477.72 KB External
+12/26/2022 8:13 PM
+take off every zig?
+[image.png]
+ image.png
+12.03 KB External
+[] smx2460 <@803885040827629628> mstar?
+hellobox. 12/26/2022 8:01 PM
+saturn7
+[smx2460]
+smx2460 12/26/2022 12:33 PM
+@hellobox mstar?
+hellobox. 12/26/2022 5:44 AM
+and the variety of modular connectors
+12/26/2022 5:43 AM
+i like the msp430
+12/26/2022 5:43 AM
+but it's only ~$14
+12/26/2022 5:43 AM
+even though it's probably useless, and i don't have the right power
+cable
+12/26/2022 5:43 AM
+i kind of want to get this:
+https://www.tvtechparts.com/assets/images/03_12_2018_1644.jpg
+[]
+December 25, 2022
+[kopiro91]
+kopiro91 12/25/2022 8:20 PM
+Personal shout-out to https://xplay.site/ - a clean Plex media player
+for LG TVs. It works without problems, it's fast and reliable. To be
+honest, also official Plex client works, but on webOS 4 (TV from 2019)
+it's super slow and it annoys me.
+XPlay
+Third party client for Plex Media Server
+December 22, 2022
+Deleted User 12/22/2022 11:46 PM
+and it was a node js service (edited)
+12/22/2022 11:46 PM
+the last time i touched services was before i discovered rooting, and i
+was using the dev mode app and webos ide
+12/22/2022 11:45 PM
+maybe, though id need to look more into how services work (edited)
+12/22/2022 11:44 PM
+oh
+[astur3l]
+Deleted User oh and, write what as a service?
+astur3l 12/22/2022 11:21 PM
+the magic remote hook  and a gui app for it
+[] astur3l then write it as a service :dd
+Deleted User 12/22/2022 11:12 PM
+oh and, write what as a service?
+Deleted User 12/22/2022 11:09 PM
+i have no idea why i dreamed about this
+12/22/2022 11:09 PM
+then i think i woke up
+Deleted User anyways, i had a dream that for some reason both of the
+tvs, after turning on, suddenly decided to a...
+Deleted User 12/22/2022 11:09 PM
+after they rebooted the homebrew was gone, and when i went to rootmy.tv
+it didnt work and i got luna call failed, so i then started trying the
+crashd method, but i was trying to do it without anyone noticing and i
+seemed to be having a really hard time typing developer mode into the
+search bar somehow, i ended up typing device manager webos but the
+developer mode app still came up, and i installed it but then for some
+reason the dev mode app started playing some kind of kids nursery rhyme
+type animations before showing me the login screen, and thats when i
+realized i needed to find my lg dev account password, but for some
+reason my chrome didnt save it and i was having a hard time finding the
+text file that i kept my login in
+[astur3l]
+astur3l 12/22/2022 11:06 PM
+there's some coding ideas at # unknown-channel too :sd
+12/22/2022 11:05 PM
+then write it as a service :dd
+Deleted User 12/22/2022 11:05 PM
+and then reboot
+12/22/2022 11:05 PM
+anyways, i had a dream that for some reason both of the tvs, after
+turning on, suddenly decided to automatically install an update, and
+change a couple of settings
+12/22/2022 11:03 PM
+i feel like i probably have ocd
+12/22/2022 11:03 PM
+make sense
+Deleted User relocated everything to /home/root or just deleted it
+Deleted User 12/22/2022 11:02 PM
+*everything except startup.sh, sshd, and init.d
+[astur3l]
+Deleted User though im the kind of person who gets bothered by certain
+things like that
+astur3l 12/22/2022 11:02 PM
+if u have time for it.. :d if i would do everything properly nothing
+would be done
+Deleted User 12/22/2022 11:01 PM
+and then tidied up the init.d directory and synched it up with the other
+tv
+12/22/2022 11:01 PM
+relocated everything to /home/root or just deleted it
+12/22/2022 11:01 PM
+i just reorganized my /var/lib/webosbrew directory yesterday
+12/22/2022 11:00 PM
+though im the kind of person who gets bothered by certain things like
+that
+12/22/2022 11:00 PM
+i guess
+[astur3l]
+astur3l 12/22/2022 11:00 PM
+or leaving as it is = 0 effort, i could open vi, just usually the tv is
+off when I'm near the pc , and i won't turn on just for remove it since
+the benefit is zero
+Deleted User 12/22/2022 10:58 PM
+couldnt you just open winscp, connect to the tv, double click the file,
+remove that part and then save it?
+[] astur3l takes effort to delete :d
+Deleted User 12/22/2022 10:58 PM
+what?
+[astur3l]
+Deleted User then you dont need the `echo 'ffi.enable=1'>/tmp/php.ini`
+anymore
+astur3l 12/22/2022 10:57 PM
+takes effort to delete :d
+Deleted User 12/22/2022 10:46 PM
+    #!/bin/sh
+    /var/lib/webosbrew/init.d/inputhook/ezinject $(pidof RELEASE) /var/lib/webosbrew/init.d/inputhook/libphp.so /var/lib/webosbrew/init.d/inputhook/lginput-hook.php 
+12/22/2022 10:45 PM
+mine is currently set up like this
+[] astur3l it's the updated
+Deleted User 12/22/2022 10:44 PM
+then you dont need the echo 'ffi.enable=1'>/tmp/php.ini anymore
+[elsoleil]
+elsoleil 12/22/2022 8:12 PM
+i cant seem to find it on their website
+12/22/2022 8:12 PM
+is there a place where i can buy the magic remote for 2022 lg tvs
+[itsyogsothoth]
+[] astur3l also probably ``./ezinject $(pidof lginput2) libphp.so
+/home/root/ezinject/lginput-hook.php`` enough...
+itsyogsothoth 12/22/2022 3:04 PM
+Indeed it is. I also renamed that sh file to ezinj in init.d directory
+and now it works fine during startup. Thanks for your help
+ 1
+[astur3l]
+astur3l 12/22/2022 2:58 PM
+also probably
+`./ezinject $(pidof lginput2) libphp.so /home/root/ezinject/lginput-hook.php enought to run (systemctl restart lginput2`
+was because i wanted to reinjected and wanted a clean start :D)
+[itsyogsothoth]
+itsyogsothoth 12/22/2022 2:54 PM
+That'd explain it
+[astur3l]
+[] itsyogsothoth I placed the sh file into `/var/lib/webosbrew/init.d`
+but it doesn't seem to run after reboot. Howev...
+astur3l 12/22/2022 2:54 PM
+run-parts doesnt execute files with .sh extension 
+[itsyogsothoth]
+[] astur3l Click to see attachment
+itsyogsothoth 12/22/2022 2:50 PM
+I placed the sh file into /var/lib/webosbrew/init.d but it doesn't seem
+to run after reboot. However when I ran it manually over ssh it seems to
+work and with keybindings updated netflix button does nothing
+[astur3l]
+Deleted User why arent you using the updated libphp?
+astur3l 12/22/2022 11:16 AM
+it's the updated
+Deleted User 12/22/2022 3:22 AM
+where you dont have to have that php.ini file
+[] astur3l Click to see attachment
+Deleted User 12/22/2022 3:21 AM
+why arent you using the updated libphp?
+December 21, 2022
+[astur3l]
+astur3l 12/21/2022 10:16 PM
+(no content)
+ ezinjc.rar
+2.09 MB External
+12/21/2022 10:09 PM
+with ezinject returning 0 (?) ignoring complety the button , like
+nothing happened
+[itsyogsothoth]
+[] aabytt If you do not use Netflix you can make some dummy app with
+netflix ID so it won’t do anything when y...
+itsyogsothoth 12/21/2022 9:50 PM
+I tried this approach, but the fact YT was closing anyway discouraged me
+from it
+[itsyogsothoth]
+itsyogsothoth 12/21/2022 9:49 PM
+I'll take a look at this
+hellobox. 12/21/2022 9:39 PM
+check around here
+https://discord.com/channels/407937994037919756/822443030761046017/1051990803389628476
+12/21/2022 9:38 PM
+people have done very similar things
+12/21/2022 9:38 PM
+you can also use ezinject and modify what happens when you press that
+button
+[aabytt]
+[] itsyogsothoth Would be interesting if they didn't enable it. Honestly
+the only reason I'd want to dig around it is...
+aabytt 12/21/2022 9:37 PM
+If you do not use Netflix you can make some dummy app with netflix ID so
+it won’t do anything when you accidentally hit it.
+[itsyogsothoth]
+itsyogsothoth 12/21/2022 6:04 PM
+Would be interesting if they didn't enable it. Honestly the only reason
+I'd want to dig around it is to disable Netflix button. Why LG designers
+thought placing it right under back button was a good idea?
+hellobox. 12/21/2022 6:01 PM
+if the security features aren't enabled
+[itsyogsothoth]
+itsyogsothoth 12/21/2022 6:00 PM
+So in theory I can use something like bus pirate to dump the firmware of
+the remote
+hellobox. 12/21/2022 5:06 PM
+since it's the F version, it has 2mbit embedded flash
+12/21/2022 5:01 PM
+(no content)
+ RTL8762C20Security20Mechanism20User20Guide20EN.1165061881.pdf
+673.85 KB External
+12/21/2022 5:01 PM
+    SWD interface is an important debug port that plays a vital role in debugging program. However, it also increases
+    the risk of exposing data and code. Security mechanism provides 3 methods to control SWD interface: Open,
+    Close and Password Control, among which Password Control denotes the SWD interfaces is always closed unless
+    correct password is received through UCI UART.
+hellobox. 12/21/2022 3:18 PM
+cortex-M4
+[itsyogsothoth]
+itsyogsothoth 12/21/2022 3:02 PM
+https://www.realtek.com/en/products/communications-network-ics/item/rtl8762c
+12/21/2022 3:01 PM
+It has this SoC
+[PXL_20221221_125810876.jpg]
+ PXL_20221221_125810876.jpg
+868.56 KB External
+[] itsyogsothoth Wait, are those some debug points in Magic Remote?
+hellobox. 12/21/2022 2:45 PM
+looks like it. does it have a cortex core? (edited)
+[itsyogsothoth]
+itsyogsothoth 12/21/2022 2:00 PM
+Wait, are those some debug points in Magic Remote?
+[PXL_20221221_125825228.jpg]
+ PXL_20221221_125825228.jpg
+722.55 KB External
+December 19, 2022
+hellobox. 12/19/2022 6:27 PM
+lg's various numbering schemes are so fucking confusing
+hellobox. 12/19/2022 5:53 PM
+i don't know what os they run (if any)
+12/19/2022 5:52 PM
+they have ethernet ports, but they're not "smart" afaik
+12/19/2022 5:52 PM
+i see a couple commercial/hospitality boards available for pretty cheap
+[6redpieri]
+6redpieri 12/19/2022 7:01 AM
+Maybe dimming the screen much isn't possible?
+[6redpieri]
+6redpieri 12/19/2022 4:25 AM
+?
+December 18, 2022
+[6redpieri]
+6redpieri 12/18/2022 5:36 AM
+Seems there might be no access?
+hellobox. 12/18/2022 12:24 AM
+thanks [:lg:]
+12/18/2022 12:24 AM
+that's annoying
+12/18/2022 12:24 AM
+so, this is where those are used
+12/18/2022 12:23 AM
+while all the other boards i have use "crossover" cables
+12/18/2022 12:23 AM
+i guess it's a "straight through" cable
+12/18/2022 12:23 AM
+god, these cables are confusing
+12/18/2022 12:23 AM
+or something
+12/18/2022 12:23 AM
+it seems to use the opposite cable
+12/18/2022 12:22 AM
+oh wait (edited)
+12/18/2022 12:17 AM
+also the power board i'm using is capable of supplying 3.4A on the 13.2V
+rail, which is more than the 1.8A (?) max of the one meant to be used
+with it
+12/18/2022 12:15 AM
+based on this image, its intended power board's connector seems to have
+the same pinout as the one i'm using
+[2021-12-07-00-13-24-ShopJimmy-KIT-32LM577BPUA-K1-TOP__14113.png]
+ 2021-12-07-00-13-24-ShopJimmy-KIT-32LM577BPUA-K1-TOP__14113.png
+2.28 MB External
+12/18/2022 12:14 AM
+any ideas on why a 32LM577BZUA board might not be working with a power
+supply board from a different model?
+December 17, 2022
+[6redpieri]
+6redpieri 12/17/2022 3:59 PM
+Hi guys. TV's too bright. What's the luna command to go even dimmer?
+luna-send-pub -f -n 1 luna://com.webos. ...?
+December 16, 2022
+[penko72]
+penko72 12/16/2022 5:24 PM
+but its 65'' tho
+12/16/2022 5:24 PM
+I got myself 4k on 60hz, at the time didn't really think of doing
+anything else but watch movies on it
+[parkerlreed]
+[] penko72 thats soo smooth
+parkerlreed 12/16/2022 5:22 PM
+1080p at 120Hz lol
+[penko72]
+[] parkerlreed Click to see attachment
+penko72 12/16/2022 5:02 PM
+thats soo smooth
+[parkerlreed]
+parkerlreed 12/16/2022 2:50 AM
+Because I'll be damned if I'm letting that little settings cog stay up
+in the upper left
+12/16/2022 2:50 AM
+I even get to have some fun with modifying the source code of magic for
+PC Web OS side
+12/16/2022 2:48 AM
+@infowski thanks
+12/16/2022 2:46 AM
+(no content)
+ 20221215_204536.mp4
+13.45 MB External
+ 1
+12/16/2022 2:44 AM
+ITS ALIVE
+[parkerlreed]
+parkerlreed 12/16/2022 2:34 AM
+    (deck@steamdeck go)$ go install github.com/mafredri/magic4linux/cmd/magic4linux@latest
+    go: github.com/mafredri/magic4linux/cmd/magic4linux@latest (in github.com/mafredri/magic4linux@v0.0.0-20220208220803-ccfe1c2ba80c):
+            The go.mod file for the module providing named packages contains one or
+            more replace directives. It must not contain directives that would cause
+            it to be interpreted differently than if it were the main module.
+12/16/2022 2:33 AM
+(╯°□°)╯︵ ┻━┻
+12/16/2022 2:33 AM
+Because of course it doesn't build with new go
+[parkerlreed]
+parkerlreed 12/16/2022 2:22 AM
+I was confused because I kept looking for /root
+12/16/2022 2:22 AM
+Thanks
+hellobox. 12/16/2022 2:22 AM
+/home/root/.ssh/authorized_keys
+12/16/2022 2:22 AM
+what do you mean?
+[parkerlreed]
+parkerlreed 12/16/2022 2:21 AM
+Starting to piss me off (edited)
+12/16/2022 2:21 AM
+I can't get in and I'm on telnet and telnet doesn't fucking accept
+control C (edited)
+12/16/2022 2:21 AM
+What file holds the damn SSH keys
+[parkerlreed]
+parkerlreed 12/16/2022 1:58 AM
+So yeah I guess I am going to build it
+12/16/2022 1:58 AM
+Oh I see there's some newer commits from you lol
+12/16/2022 1:57 AM
+@infowski it looks like magic already has releases
+[parkerlreed]
+parkerlreed 12/16/2022 1:38 AM
+Good to hear about the go lang
+12/16/2022 1:38 AM
+I'd always wanted to use that but Linux host
+[parkerlreed]
+[] infowski *but* it's fairly easily buildable.
+parkerlreed 12/16/2022 1:38 AM
+Well now I know what I'm doing
+[parkerlreed]
+parkerlreed 12/16/2022 1:37 AM
+Yeah that would definitely be nicer because with moonlight there's
+always black bars because 16x10
+12/16/2022 1:36 AM
+Neat
+[infowski]
+infowski 12/16/2022 1:36 AM
+but it's fairly easily buildable.
+[parkerlreed]
+parkerlreed 12/16/2022 1:36 AM
+Oh so you would basically have the computer on one of the inputs and the
+magic for PC runs at the same time
+[infowski]
+infowski 12/16/2022 1:36 AM
+But sadly magic4pc is not yet packaged into the homebrew channel repo.
+12/16/2022 1:36 AM
+So... less latency/artifacts if you care about it.
+12/16/2022 1:36 AM
+I mean - it displays video directly off HDMI and sends mouse movements
+over the network.
+[parkerlreed]
+parkerlreed 12/16/2022 1:35 AM
+Isn't it just sending the mouse packets over the network
+12/16/2022 1:35 AM
+Wait what do you mean works over HDMI
+12/16/2022 1:35 AM
+Nice
+[infowski]
+infowski 12/16/2022 1:35 AM
+that works over HDMI + TCP
+12/16/2022 1:35 AM
+yeah, if you want there's also magic4pc and someone made golang-based
+linux agent for that
+[parkerlreed]
+parkerlreed 12/16/2022 1:35 AM
+I like that the air mouse works with moonlight
+12/16/2022 1:31 AM
+(no content)
+ 20221215_192948.mp4
+7.72 MB External
+December 15, 2022
+hellobox. 12/15/2022 10:19 PM
+is there a reason serial EEPROM/flash ICs are so thick? (the SO8 ones)
+[geceizmx4]
+[] geceizmx4 any idea how to get hbo on my tv?
+geceizmx4 12/15/2022 9:31 PM
+and / or deezer
+[geceizmx4]
+geceizmx4 12/15/2022 9:31 PM
+i did install the homebrew channel etc was hoping there was an app for
+it on it.. sadly nothing usefull
+12/15/2022 9:31 PM
+any idea how to get hbo on my tv?
+hellobox. 12/15/2022 9:21 PM
+i already knew that from the picture, but one of the other connectors is
+also broken
+12/15/2022 9:20 PM
+on this one the speaker connector pins are bent up at an angle, and the
+plastic housing is missing
+12/15/2022 9:20 PM
+people must be pretty violent when disassembling TVs
+12/15/2022 9:17 PM
+does that mean it has a 2018 soc?
+12/15/2022 9:17 PM
+the opensource package is for webos 4.0
+12/15/2022 9:16 PM
+and my board is for an LJ9 chassis
+12/15/2022 9:16 PM
+but the name implies 2019 (i.e., 4.5)
+12/15/2022 9:15 PM
+some of these are webos 4.0, and some are 4.5
+12/15/2022 9:15 PM
+https://opensource.lge.com/product/list?page=1&ctgr=&subCtgr=&keyword=LM57
+[infowski]
+infowski 12/15/2022 9:14 PM
+lol
+hellobox. 12/15/2022 9:09 PM
+at least the board was in a heat-sealed anti-static bag (edited)
+12/15/2022 9:05 PM
+i wish they'd knock on the fucking door at least
+12/15/2022 9:05 PM
+oops, left my new board out in the rain for 2 hours
+December 14, 2022
+[infowski]
+infowski 12/14/2022 10:00 PM
+I'd be tempted to say it's their fault.
+[smx2460]
+smx2460 12/14/2022 2:10 PM
+I'm too fused right now (and at office) to think about it
+12/14/2022 2:10 PM
+Or LG made it like that
+12/14/2022 2:10 PM
+But is it a bug in the code?
+12/14/2022 2:10 PM
+You're right
+December 13, 2022
+[infowski]
+infowski 12/13/2022 10:33 PM
+tell me how it's not off by 4
+12/13/2022 10:32 PM
+decrypt segmentSize bytes at &dataPtr in-place, check first 4 bytes of
+&dataPtr as uint32_t against expected segment id, output segmentSize
+bytes from &dataPtr+4 ...
+12/13/2022 10:31 PM
+https://github.com/openlgtv/epk2extract/blob/master/src/epk3.c#L280-L300
+there
+epk2extract/epk3.c at master · openlgtv/epk2extract
+Extraction tool for LG, Hisense, Sharp, Philips/TPV, Thompson and
+similar TVs/Embedded Devices - epk2extract/epk3.c at master ·
+openlgtv/epk2extract
+[]
+12/13/2022 10:30 PM
+or - to be precise - my implementation that specifically does that
+4-trailing-plaintext-bytes outputs the same image as epk2extract 
+12/13/2022 10:29 PM
+No, that's definitely off by 4. let me find the code... (edited)
+[smx2460]
+smx2460 12/13/2022 9:59 PM
+It's the new segment index field
+12/13/2022 9:58 PM
+That's not off by 4
+12/13/2022 9:58 PM
+Wait
+[infowski]
+infowski 12/13/2022 9:41 PM
+they added that segment index thing in "new" epkv3
+12/13/2022 9:41 PM
+and leave trailing 4 bytes not encrypted because fuck if i know
+12/13/2022 9:40 PM
+since they encrypt "segment index" in every segment at the beginning
+(edited)
+[infowski]
+[] smx2460 Because LG uses AES ECB without padding
+infowski 12/13/2022 9:39 PM
+That plus an actual fucking obvious off by 4
+[rv4_]
+rv4_ 12/13/2022 9:39 PM
+to see if somebody has managed something cool
+12/13/2022 9:39 PM
+when i joined
+[rv4_]
+[] smx2460 You must be the first guy having one that joined here
+rv4_ 12/13/2022 9:39 PM
+yea used the search on here to see if anybody actually asked something
+about this model
+[smx2460]
+smx2460 12/13/2022 9:19 PM
+https://github.com/openlgtv/lgmod_bcm
+GitHub - openlgtv/lgmod_bcm: Modified rootfs for 2010/2011 Broadcom...
+Modified rootfs for 2010/2011 Broadcom models. Contribute to
+openlgtv/lgmod_bcm development by creating an account on GitHub.
+[]
+12/13/2022 9:19 PM
+@hellobox yes LG used to have 2-3 BCM platforms
+12/13/2022 9:18 PM
+You must be the first guy having one that joined here (edited)
+[smx2460]
+[] rv4_ Click to see attachment
+smx2460 12/13/2022 9:18 PM
+Oh hey, a BCM 
+[smx2460]
+smx2460 12/13/2022 9:16 PM
+So everything< 16 bytes goes out raw i think
+[smx2460]
+[] infowski and amazing features like - 4 trailing bytes of every
+segment are not actually encrypted because ???...
+smx2460 12/13/2022 9:16 PM
+Because LG uses AES ECB without padding
+[smx2460]
+[] infowski dear diary. yesterday i got fucked over by this:
+https://gitlab.com/nbdkit/nbdkit/-/issues/9 I spent...
+smx2460 12/13/2022 9:15 PM
+Oof
+Deleted User 12/13/2022 8:34 PM
+"As a starting point, LG showcased a LG Wearable Platform OS (webOS)
+smartwatch in early 2015.[32]" (edited)
+hellobox. and whatever that other thing is... a watch?
+Deleted User 12/13/2022 8:34 PM
+yeah
+[dogelition]
+dogelition 12/13/2022 6:10 PM
+the service menu on lg's ultragear oled monitor can be opened with the
+tv service remote but navigation seems to be kinda broken?
+https://www.reddit.com/r/OLED_Gaming/comments/zkvnfd/psa_lg_48gq900b_service_menu_is_much_different/
+anyone have an idea what's up with it?
+r/OLED_Gaming - PSA: LG 48GQ900-B service menu is much different th...
+1 vote and 0 comments so far on Reddit
+December 12, 2022
+[infowski]
+hellobox. are there actually webos refrigerators?
+infowski 12/12/2022 9:21 PM
+iirc there was actually one
+[] rv4_ it has netcast
+ww8543 12/12/2022 8:06 PM
+we have a dedicated # unknown-channel channel where you can discuss this
+[rv4_]
+rv4_ 12/12/2022 6:45 PM
+like this shit is so god damn old
+12/12/2022 6:45 PM
+(no content)
+[rn_image_picker_lib_temp_d5562df4-9c7c-4b2d-9a66-1d1a42ff8b34.jpg]
+ rn_image_picker_lib_temp_d5562df4-9c7c-4b2d-9a66-1d1a42ff8b34.jpg
+726.57 KB External
+hellobox. 12/12/2022 6:40 PM
+probably from another korean company
+12/12/2022 6:40 PM
+there must be some family of connectors they use
+12/12/2022 6:39 PM
+6-pin edge connector apparently of the same style as the 4-pin ones
+[2019-06-14-06-03-03.png]
+ 2019-06-14-06-03-03.png
+4.19 MB External
+[rv4_]
+rv4_ 12/12/2022 6:25 PM
+i think so
+hellobox. 12/12/2022 6:24 PM
+it's broadcom?
+hellobox. 12/12/2022 6:16 PM
+idk but it has a nice training manual
+https://elektrotanya.com/lg_47le8500_training_manual.pdf/download.html
+[rv4_]
+rv4_ 12/12/2022 6:10 PM
+just 4 fun i wanna know if i can do smth w it
+12/12/2022 6:09 PM
+it has netcast
+12/12/2022 6:09 PM
+but most of the apps lost functionality
+12/12/2022 6:09 PM
+it has internet connection and all
+12/12/2022 6:09 PM
+and youtube and everything is outdated
+12/12/2022 6:09 PM
+which is from 2011
+12/12/2022 6:09 PM
+it's a great tv but the latest firmware is 4.0.0
+12/12/2022 6:09 PM
+47LE8500.AEU
+12/12/2022 6:08 PM
+could i do smth w older tv's?
+hellobox. 12/12/2022 5:02 PM
+and whatever that other thing is... a watch?
+12/12/2022 5:02 PM
+are there actually webos refrigerators?
+[image.png]
+ image.png
+363.72 KB External
+[ronan7054]
+ronan7054 12/12/2022 3:44 PM
+for a saturn6 owner, i donno if that is relevant, but i wonder if root
+my tv would allow me to have better control on the display parameters
+[infowski]
+infowski 12/12/2022 3:42 PM
+(it's generated from github repo we happily accept PRs for)
+12/12/2022 3:42 PM
+There's webosbrew.org which is... mostly development-related stuff.
+[ronan7054]
+ronan7054 12/12/2022 3:41 PM
+i'm reading https://github.com/openlgtv/wiki/wiki/ but is there a new
+real wiki elsewhere i could contribute ?
+12/12/2022 3:38 PM
+and bim 
+12/12/2022 3:37 PM
+hdl_dump toc device --dm | sudo dmsetup create --concise
+[infowski]
+infowski 12/12/2022 3:36 PM
+(well, I technically already did 4 days ago, I was just bundling it into
+my other automation...)
+[ronan7054]
+ronan7054 12/12/2022 3:36 PM
+i did a dm stuff in hdl-dump, so i can map and mount PS2 partition
+automatically.
+[infowski]
+infowski 12/12/2022 3:36 PM
+and well, nbdkit seems plenty simple, and I can write up a simple python
+plugin...
+[ronan7054]
+ronan7054 12/12/2022 3:36 PM
+yeah dm is fine if that's goes your need, not as crude as nbd for sure.
+[infowski]
+infowski 12/12/2022 3:35 PM
+so couldn't reuse existing devicemapper encryption module, even though
+it actually supported aes mode epk uses...
+12/12/2022 3:35 PM
+and amazing features like - 4 trailing bytes of every segment are not
+actually encrypted because ?????????????
+12/12/2022 3:34 PM
+I was actually thinking of abusing dm in the first place, but the issue
+is that epk format has unaligned sectors and stuf
+[infowski]
+[] ronan7054 so you're using nbd as devicemapper.
+infowski 12/12/2022 3:34 PM
+Yeah, basically.
+[infowski]
+infowski 12/12/2022 3:34 PM
+It should be fine now.
+[ronan7054]
+ronan7054 12/12/2022 3:34 PM
+so you're using nbd as devicemapper.
+[infowski]
+infowski 12/12/2022 3:34 PM
+I screwed up, I was totally convinced private is actually just
+unlisted...
+12/12/2022 3:33 PM
+Thanks for the heads up...
+[ronan7054]
+ronan7054 12/12/2022 3:33 PM
+ah you post private snippets on public bug report ... ok
+[infowski]
+infowski 12/12/2022 3:33 PM
+Crap - are "private" snippets... actually private? This is dumb
+[ronan7054]
+ronan7054 12/12/2022 3:33 PM
+(your link is broken on the bug report)
+[infowski]
+infowski 12/12/2022 3:32 PM
+Right now I am at around ~2s for mount, guestfs spawn and all the
+inspection I need - in contrast to ~30s extraction time with epk2extract
+and 3x disk space...
+[ronan7054]
+ronan7054 12/12/2022 3:32 PM
+ho fine 
+[infowski]
+infowski 12/12/2022 3:31 PM
+Including in-flight decryption and stuff, so... I can, essentially,
+mount a webOS update into my local filesystem for inspection, without
+needing to extract it. (I'd use epk2extract otherwise, since that
+generally just works) (edited)
+[infowski]
+[] ronan7054 <@501722020434673674> : what use do you make with nbd ?
+infowski 12/12/2022 3:30 PM
+I wrote a cursed piece of python that dynamically exposes contents of
+.epk update package...
+[ronan7054]
+ronan7054 12/12/2022 1:59 PM
+@infowski : what use do you make with nbd ?
+12/12/2022 1:58 PM
+i used to read their code since nbd protocol documentation is not very
+accurate.
+12/12/2022 1:58 PM
+that's a big implementation nbdkit.
+[infowski]
+infowski 12/12/2022 9:44 AM
+dear diary. yesterday i got fucked over by this:
+https://gitlab.com/nbdkit/nbdkit/-/issues/9 I spent like 1.5h debugging
+why the hell some of my shitty python keeps the child process running in
+the background.
+exitwhen filter: deadlock on exit (#9) · Issues · nbdkit / nbdkit ·...
+Despite there being a reassuring comment about deadlocks prevention in
+the code, exitwhen filter seems to deadlock when client connects,
+disconnects (specifically - when polling_thread is waiting), and...
+[]
+December 11, 2022
+[ronan7054]
+ronan7054 12/11/2022 9:53 PM
+debian for me it's 30 years late.
+12/11/2022 9:53 PM
+i run nixos
+[darby_crash]
+darby_crash 12/11/2022 9:52 PM
+anyway I like emulators but Debian on PS2 is really cool if you can also
+play PS2 games nativally and emulate other platforms
+12/11/2022 9:50 PM
+another cool port is Android on Apple's phones
+[ronan7054]
+ronan7054 12/11/2022 9:50 PM
+so currently, this 5.x kernel only support Usb booting
+12/11/2022 9:49 PM
+(on kernel and utils-linux side)
+12/11/2022 9:49 PM
+like APA partition
+12/11/2022 9:48 PM
+i quit that stuff since 2 years perhaps now, i just try to support other
+device he's not on
+12/11/2022 9:48 PM
+the kernel devel is still on gentoo
+12/11/2022 9:48 PM
+currently i was not able to boot it really
+[darby_crash]
+darby_crash 12/11/2022 9:47 PM
+is Linux in dual boot mode?
+[ronan7054]
+ronan7054 12/11/2022 9:47 PM
+(ribbon cut)
+12/11/2022 9:46 PM
+the PS2 i found in trash was only dvd dead
+[darby_crash]
+darby_crash 12/11/2022 9:46 PM
+dvd are also slow
+[ronan7054]
+ronan7054 12/11/2022 9:45 PM
+(or soon )
+12/11/2022 9:45 PM
+without deal with DVD, when you know all lens are already dead
+12/11/2022 9:44 PM
+you can have the entire PS2 collection on one hdd
+[smx2460]
+smx2460 12/11/2022 9:44 PM
+50€ is a lot
+12/11/2022 9:44 PM
+Wut
+[ronan7054]
+ronan7054 12/11/2022 9:44 PM
+it's the ultimate item.
+12/11/2022 9:44 PM
+happens, but anyway, that more 50€ for such
+[smx2460]
+smx2460 12/11/2022 9:43 PM
+Lol
+[smx2460]
+[] smx2460 https://www.ebay.it/itm/394364410880
+smx2460 12/11/2022 9:43 PM
+Shipment is more than the value of the item
+[ronan7054]
+ronan7054 12/11/2022 9:43 PM
+my39k has SSD with that.
+12/11/2022 9:42 PM
+yeap, and you can upgrade the adapter to SAta with bitfunx or other
+trade kit
+[smx2460]
+smx2460 12/11/2022 9:42 PM
+Standard IDE drives?
+[ronan7054]
+ronan7054 12/11/2022 9:41 PM
+recent effort to port linux on ps2 https://github.com/frno7/linux
+GitHub - frno7/linux: Linux 2.2, 2.6, 3.x, 4.x and 5.x kernels for ...
+Linux 2.2, 2.6, 3.x, 4.x and 5.x kernels for the PlayStation 2. -
+GitHub - frno7/linux: Linux 2.2, 2.6, 3.x, 4.x and 5.x kernels for the
+PlayStation 2.
+[]
+12/11/2022 9:40 PM
+i'm contributor on hdl-dump to, you need it to put iso on the hdd
+12/11/2022 9:38 PM
+yeah cheap go one 
+[smx2460]
+smx2460 12/11/2022 9:37 PM
+https://www.ebay.it/itm/394364410880
+Adattatore di rete HDD ufficiale Sony PS2 PlayStation 2 (SCPH-10281...
+Le migliori offerte per Adattatore di rete HDD ufficiale Sony PS2
+PlayStation 2 (SCPH-10281) sono su eBay ✓ Confronta prezzi e
+caratteristiche di prodotti nuovi e usati ✓ Molti articoli con consegna
+gratis!
+[]
+[ronan7054]
+ronan7054 12/11/2022 9:37 PM
+can i get some decent scaling on that screen, i mean, i've better with a
+old CRT that should be ............... more 10 years older
+12/11/2022 9:36 PM
+so you have PS2 with ssd, that's what i was working one a bit btw.
+12/11/2022 9:36 PM
+but best once you have it is to aliexpress a bitfunx sata adaptation
+12/11/2022 9:35 PM
+you know, i've no money !
+12/11/2022 9:35 PM
+i bought mine at second hand store few years ago (a friend found the
+playstation in trash)
+12/11/2022 9:35 PM
+at the price of the best sold console in the world, you can found
+perhaps them easily in a pack with a console
+[smx2460]
+smx2460 12/11/2022 9:34 PM
+I didn't buy it back when i used it
+[ronan7054]
+ronan7054 12/11/2022 9:34 PM
+you can find second hand
+[smx2460]
+smx2460 12/11/2022 9:34 PM
+But can you get your hands on some?
+12/11/2022 9:34 PM
+I mean not officially
+[smx2460]
+[] ronan7054 best to have is official sony hdd/eth adapter
+smx2460 12/11/2022 9:34 PM
+Are they available/sold?
+[ronan7054]
+ronan7054 12/11/2022 9:33 PM
+quite one file for hdd support R/W
+https://github.com/bignaux/lwNBD/blob/main/drivers/atad_d.c 
+12/11/2022 9:32 PM
+but not very useful for you since you run linux except i think it's
+easier to write specific hw support to dump/patch it with mine
+12/11/2022 9:31 PM
+i contribute to OPL and write some nbd server for it
+12/11/2022 9:30 PM
+best to have is official sony hdd/eth adapter
+12/11/2022 9:29 PM
+yeah me too
+[smx2460]
+smx2460 12/11/2022 9:29 PM
+I have a SCPH-39004
+[ronan7054]
+ronan7054 12/11/2022 9:29 PM
+(idea is to use a openembedded one)
+12/11/2022 9:29 PM
+@Smx : someone else do, i try to focus on distribution
+hellobox. 12/11/2022 9:28 PM
+the previous one is REV01; this one is REV00
+https://www.opweb.de/english/company/LG/32LH2000-ZA
+[smx2460]
+smx2460 12/11/2022 9:28 PM
+Cool
+[smx2460]
+[] ronan7054 i own a 32H2000-ZA, bought for porting linux on
+playstation2, and this sh*tty screen is real bad at ...
+smx2460 12/11/2022 9:28 PM
+You're porting a new Linux kernel to the PlayStation 2?
+[ronan7054]
+ronan7054 12/11/2022 9:27 PM
+yeah PS2 is mips too 
+hellobox. 12/11/2022 9:27 PM
+i don't think i've seen that before
+[smx2460]
+smx2460 12/11/2022 9:27 PM
+Interesting
+hellobox. 12/11/2022 9:27 PM
+wow, there are two revisions of the service manual available
+[smx2460]
+smx2460 12/11/2022 9:26 PM
+They are standard mips
+12/11/2022 9:26 PM
+We have GP and GP2 toolchains
+hellobox. 12/11/2022 9:26 PM
+yeah it's mips
+[smx2460]
+smx2460 12/11/2022 9:26 PM
+But not as the primary core
+12/11/2022 9:26 PM
+Should
+hellobox. 12/11/2022 9:26 PM
+does it have aeon?
+[smx2460]
+smx2460 12/11/2022 9:26 PM
+And from bootloader you can restore everything else
+12/11/2022 9:26 PM
+Bootloader works as long as the board is a Saturn6
+[smx2460]
+[] ronan7054 i should look how to do that, don't know if i could restore
+it anyway
+smx2460 12/11/2022 9:25 PM
+I'm pretty sure yes
+[ronan7054]
+ronan7054 12/11/2022 9:25 PM
+i should look how to do that, don't know if i could restore it anyway
+hellobox. 12/11/2022 9:25 PM
+https://diagramas.diagramasde.com/otros2/LG%2032LH2000.pdf
+[smx2460]
+smx2460 12/11/2022 9:25 PM
+Which holds RELEASE.cfg
+12/11/2022 9:25 PM
+And surely the model partition
+12/11/2022 9:25 PM
+I would backup the flash first
+hellobox. 12/11/2022 9:24 PM
+or at least not the same part as -ZA
+12/11/2022 9:24 PM
+.AEU isn't part of the model
+[smx2460]
+smx2460 12/11/2022 9:24 PM
+Careful with that
+[smx2460]
+[] ronan7054 LG reference an update for 32LH2000.AEU
+smx2460 12/11/2022 9:24 PM
+Ah i Just noticed that it's a different region
+[ronan7054]
+ronan7054 12/11/2022 9:24 PM
+LG doesn't say it's compatible with -ZA but with -AEU
+[smx2460]
+smx2460 12/11/2022 9:23 PM
+GP, GP2, GP3, GP4, NC4, ....
+[ronan7054]
+ronan7054 12/11/2022 9:23 PM
+i bought it for 50 buck with an another 32" screen brandt, because there
+was a limitation on the graphic linux driver and i need more resolution,
+now it's fixed so.
+[smx2460]
+smx2460 12/11/2022 9:23 PM
+It's the first ever
+[smx2460]
+hellobox. is `HE_DTV_GP_M_AAAAABAA` the actual otaid?
+smx2460 12/11/2022 9:23 PM
+Yes
+[smx2460]
+smx2460 12/11/2022 9:23 PM
+If it's compatible with your model....sure go ahead
+hellobox. 12/11/2022 9:23 PM
+is HE_DTV_GP_M_AAAAABAA the actual otaid?
+[ronan7054]
+ronan7054 12/11/2022 9:22 PM
+in fact was just thinking to test the 32LH2000.AEU firmware update to
+see if by miracle it's improving scalling because this screen is piece
+of
+[smx2460]
+smx2460 12/11/2022 9:21 PM
+What do you plan to do with it?  (edited)
+[smx2460]
+[] ronan7054 `$ strings 0.1.57.85_ota.epk | head epak6
+HE_DTV_GP_M_AAAAABAA kern\4! DVB-SATURN6 MIPS Linux-2.6.2...
+smx2460 12/11/2022 9:21 PM
+Wew (edited)
+[ronan7054]
+ronan7054 12/11/2022 9:09 PM
+btw i'm available to try thing if people want
+hellobox. 12/11/2022 9:09 PM
+@Smx would probably know the most about it
+12/11/2022 9:08 PM
+see # unknown-channel, although that's older than netcast
+[ronan7054]
+ronan7054 12/11/2022 9:08 PM
+so i search for DVB-SATURN6 and found this project.
+12/11/2022 9:08 PM
+$ strings 0.1.57.85_ota.epk | head epak6 HE_DTV_GP_M_AAAAABAA kern\4! DVB-SATURN6 MIPS Linux-2.6.26
+12/11/2022 9:07 PM
+that contrain :
+12/11/2022 9:07 PM
+LG reference an update for 32LH2000.AEU
+12/11/2022 9:07 PM
+a bit too old to play here ?
+hellobox. 12/11/2022 9:06 PM
+wow, it's from 2009
+12/11/2022 9:06 PM
+32LH2000?
+[ronan7054]
+ronan7054 12/11/2022 9:03 PM
+(so i was looking firmware update) ...
+12/11/2022 9:03 PM
+i own a 32H2000-ZA, bought for porting linux on playstation2, and this
+sh*tty screen is real bad at scaling games.
+12/11/2022 9:02 PM
+hi, i'm new here , discover this server trying to understand .epk
+firmware from LG , because was not sure compatibility
+[darby_crash]
+darby_crash 12/11/2022 8:11 PM
+ho fatto un casino con la mia tv, se vuoi dopo ti spiego in privato,
+magari mi puoi aiutare
+ 1
+12/11/2022 8:10 PM
+bravissimo, mi piace proprio questo software, io per hobby studio un pò
+l'hacking e adesso sono entrato nel mondo delle tv LG
+[smx2460]
+smx2460 12/11/2022 8:08 PM
+https://github.com/smx-smx/yafex
+GitHub - smx-smx/yafex: Yet another Firmware/File Extractor
+Yet another Firmware/File Extractor. Contribute to smx-smx/yafex
+development by creating an account on GitHub.
+[]
+ 1
+12/11/2022 8:08 PM
+In realtà vorrei riscriverlo, ma il tempo è quello che è
+[smx2460]
+[] darby_crash mi fa piacere trovare un italiano dietro un bel software
+come epk2extract 
+smx2460 12/11/2022 8:07 PM
+Grazie!
+[darby_crash]
+darby_crash 12/11/2022 2:09 PM
+mi fa piacere trovare un italiano dietro un bel software come
+epk2extract 
+12/11/2022 2:07 PM
+l'avevo capito 
+[smx2460]
+smx2460 12/11/2022 2:07 PM
+12/11/2022 2:07 PM
+Non sapevo fossi ita, da cui la mia reazione 
+[darby_crash]
+darby_crash 12/11/2022 2:07 PM
+eheheheh vero
+[smx2460]
+smx2460 12/11/2022 2:06 PM
+@Darby_Crash piccolo il mondo?  (edited)
+[darby_crash]
+darby_crash 12/11/2022 1:50 PM
+in Italy we have a lot of Apple's fanboys
+[darby_crash]
+[] smx2460 
+darby_crash 12/11/2022 1:43 PM
+I'm not an Apple fanboy, they sell overpriced/outdated stuff
+[smx2460]
+[] darby_crash roba da pazzi
+smx2460 12/11/2022 1:10 PM
+[darby_crash]
+[] smx2460
+https://www.hwupgrade.it/immagini/apple-m1-mac-studio-1-21-03-2022.jpg
+darby_crash 12/11/2022 12:31 PM
+roba da pazzi
+December 10, 2022
+[smx2460]
+smx2460 12/10/2022 1:37 PM
+Holy cow
+12/10/2022 1:37 PM
+[]
+December 9, 2022
+[astur3l]
+astur3l 12/09/2022 2:06 PM
+btw i thought im missing the clock/weíather widget due to some hosts/qml
+hack :DDDD i didnt liked so i didnt bothered, thought it would be nice
+to know what time is it.....  seems like we have to go with atleast C
+series to know the current time  (edited)
+[raj_131]
+raj_131 12/09/2022 2:04 PM
+Rip weather widget...
+12/09/2022 2:04 PM
+Lol... I don't feel/see any improvements ... But I am happy they didn't
+take away any features i like...
+[astur3l]
+astur3l 12/09/2022 2:03 PM
+i have a1 too, just the "changelog" contains "1. Improvement"  which
+not too usual 
+ 1
+[raj_131]
+raj_131 12/09/2022 1:56 PM
+I haven't installed crashd... But I don't see any changes. None. No
+additional settings or any other changes.
+12/09/2022 1:55 PM
+Though everything feels a slight faster but tbh not much faster.
+Honestly it still lags a bit as usual. .. then again I have a lg a1 so
+maybe that's the reason.
+[raj_131]
+[] astur3l did u installed?:D any noticeable diff? /crashd still works?/
+ seems like people claiming setting...
+raj_131 12/09/2022 1:54 PM
+Yaa installed it yesterday.. no changes in any UI or settings. Which was
+nice.. i miss the clock/weather widget from 2 updates back..
+[astur3l]
+[] raj_131 Hii. A new update came up. 03.33.26
+astur3l 12/09/2022 1:44 PM
+did u installed?:D any noticeable diff? /crashd still works?/  seems
+like people claiming settings opening/navigation become faster (edited)
+[parkerlreed]
+parkerlreed 12/09/2022 6:46 AM
+@Kai!
+ 20221209_004533.mp4
+8.01 MB External
+[parkerlreed]
+parkerlreed 12/09/2022 1:11 AM
+Sure...
+12/09/2022 1:11 AM
+"Compatiblity: Perfect"
+12/09/2022 1:10 AM
+LOL
+[image.png]
+ image.png
+1.51 MB External
+12/09/2022 1:08 AM
+Oh it took a second to scan
+12/09/2022 1:07 AM
+I thought PCSX2 was supposed to read iso.gz? (edited)
+[kai095567]
+kai095567 12/09/2022 12:47 AM
+not like you need more than that for ps2 games
+12/09/2022 12:46 AM
+upscaling up to around 1080p will prob be fine
+[parkerlreed]
+parkerlreed 12/09/2022 12:46 AM
+I havent done a ton of PS2 yet on the Deck (edited)
+12/09/2022 12:46 AM
+Yeah it all just depends on what you're doing and if you want some
+upscaling
+[kai095567]
+kai095567 12/09/2022 12:45 AM
+steam deck is fine for ps2 games tbh
+[parkerlreed]
+parkerlreed 12/09/2022 12:45 AM
+With adequate hardware lol
+[kai095567]
+kai095567 12/09/2022 12:45 AM
+the ps3 emulating ps2 is horrible
+[kai095567]
+[] parkerlreed I don't know even with the software PS2 emulation on the
+PS3, I don't know which one would be ahead
+kai095567 12/09/2022 12:45 AM
+pcsx2 is waaay ahead of the ps3 ps2 emulation
+December 8, 2022
+[parkerlreed]
+parkerlreed 12/08/2022 4:09 PM
+I don't know even with the software PS2 emulation on the PS3, I don't
+know which one would be ahead
+[kai095567]
+kai095567 12/08/2022 4:02 PM
+meanwhile the ps3 strugglin with half the library (if it isnt the first
+model, ofc)
+[kai095567]
+[] parkerlreed Click to see attachment
+kai095567 12/08/2022 4:02 PM
+steam deck can actually run ps2 games
+[infowski]
+infowski 12/08/2022 8:01 AM
+yee, it pretty good
+[parkerlreed]
+parkerlreed 12/08/2022 5:04 AM
+(no content)
+ 20221207_225928.mp4
+4.25 MB External
+December 7, 2022
+[] raj_131 Ohh thanks for the tip... What's the correct way to do
+crashd? And what should I be moving around?
+hellobox. 12/07/2022 8:31 AM
+he's talking about mkdir /var/luna/preferences/devmode_enabled
+[raj_131]
+raj_131 12/07/2022 8:28 AM
+Ohh thanks for the tip... What's the correct way to do crashd? And what
+should I be moving around?
+December 6, 2022
+[infowski]
+[] raj_131 Does crashd needs me to login/enable dev mode every few days?
+Or is it a once done fix?
+infowski 12/06/2022 11:06 PM
+If you follow it correctly it shouldn't - one of the steps is moving
+stuff around to keep "developer mode" running permanently.
+[raj_131]
+raj_131 12/06/2022 5:11 PM
+Does crashd needs me to login/enable dev mode every few days? Or is it a
+once done fix?
+[raj_131]
+[] vishnu_t Looking for IPTV player that does not require payment after
+trail. like smart STB??
+raj_131 12/06/2022 12:47 PM
+r/freemediaheckyea has very good links
+[hatbrott]
+hatbrott 12/06/2022 10:30 AM
+Sorry if this is answered somewhere else. I have turned off the auto
+update as instructed but today there was a notification in the corner
+stating that soon there will come an update to my TV. Is there anything
+more than turning off auto updates that is required?
+[xkuyax]
+[] joesocks Did you ever find out an answer to this? I'm curious about
+this too
+xkuyax 12/06/2022 7:19 AM
+No, just the use wled with mic function I didn't look that hard tho 
+ 1
+Deleted User 12/06/2022 4:52 AM
+https://www.downloadmorewam.com/
+December 5, 2022
+[joesocks]
+[] xkuyax is there something like piccap but for audio? id like to use
+my tv as speakers and visualize the aud...
+joesocks 12/05/2022 11:29 PM
+Did you ever find out an answer to this? I'm curious about this too
+[vishnu_t]
+vishnu_t 12/05/2022 7:54 PM
+Looking for IPTV player that does not require payment after trail. like
+smart STB??
+December 4, 2022
+[liondrome.]
+liondrome. 12/04/2022 6:17 PM
+Browser and an app like netflix does recognize the keyboard keys being
+pressed just fine
+12/04/2022 6:17 PM
+Just got a wireless bluetooth keyboard to use with my tv but noticed
+that the adfree homebrew youtube does not seem to recognize the
+keyboard. It does recognize the keyboards touchpad though. Is there
+something that could be done
+hellobox. 12/04/2022 12:56 AM
+HP sold rebadged LG plasma TVs?
+December 3, 2022
+hellobox. 12/03/2022 11:23 PM
+anyone written an ida processor module (or ghidra equivalent) before?
+December 2, 2022
+[raj_131]
+[] newlinersseries webOS, NetCast, Android, or RokuOS?
+raj_131 12/02/2022 10:30 AM
+Lg OLED. It has webos...
+December 1, 2022
+[newlinersseries]
+newlinersseries 12/01/2022 5:52 AM
+Give me a picture
+[newlinersseries]
+[] raj_131 Is it possible to install any other browser on lg tv?
+newlinersseries 12/01/2022 5:52 AM
+webOS, NetCast, Android, or RokuOS?
+[newlinersseries]
+newlinersseries 12/01/2022 5:50 AM
+Hello, can I post a discord link here? It is a project about archiving
+the apps of various smart television platforms, especially the older
+ones. (edited)
+November 30, 2022
+[raj_131]
+raj_131 11/30/2022 8:31 AM
+Is it possible to install any other browser on lg tv?
+November 29, 2022
+[yayza_]
+yayza_ 11/29/2022 7:29 AM
+oh sweet jesus i almost had a heart attack, accidentally turned LG
+Channels on and almost couldnt figure out how to turn them off 
+[yayza_]
+yayza_ 11/29/2022 5:04 AM
+Is there a way to up my magic remote's "shake" sensitivity so the cursor
+shows up if i move the remote even slightly (and also remove/shorten the
+delay it takes to disappear)
+November 28, 2022
+[scottishforce]
+scottishforce 11/28/2022 11:49 PM
+Hi I keep getting this notification I've disabled auto updates and and
+the homebrew channel is blocking system updates?, It's for the 55b6v
+model
+[20221128_224730.jpg]
+ 20221128_224730.jpg
+226.23 KB External
+tellurider I see a pre-release announcement that's from February of
+2021. Am I missing something?
+hellobox. 11/28/2022 6:17 PM
+crashd
+hellobox. see <#822443030761046017> pinned messages
+tellurider 11/28/2022 6:17 PM
+I see a pre-release announcement that's from February of 2021. Am I
+missing something?
+tellurider Is there a reliable method to root LG tvs? rootmy.tv seems to
+be out of date.
+hellobox. 11/28/2022 6:13 PM
+see # unknown-channel pinned messages
+tellurider 11/28/2022 6:13 PM
+Is there a reliable method to root LG tvs? rootmy.tv seems to be out of
+date.
+[smx2460]
+smx2460 11/28/2022 12:12 PM
+hellobox. 11/28/2022 7:01 AM
+this is what it looks like when it's not selected
+[image.png]
+ image.png
+6.54 KB External
+ 1

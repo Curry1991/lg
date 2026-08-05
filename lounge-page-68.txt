@@ -1,0 +1,1508 @@
+October 22, 2023
+[bochenekk]
+bochenekk 10/22/2023 7:42 PM
+the thing is that i don't want the boot process to require uart
+[smx2460]
+smx2460 10/22/2023 7:41 PM
+i would use bootmode user
+10/22/2023 7:41 PM
+nah if you want to do that
+10/22/2023 7:41 PM
+because you could run your uboot variant
+[bochenekk]
+[] bochenekk okay - well, the feasiiblity of this is not really helping
+right now
+bochenekk 10/22/2023 7:41 PM
+what could be done if we made a bootimg script that gets us our ramdisk
+and orhte stuff as init?
+[smx2460]
+smx2460 10/22/2023 7:41 PM
+rebooter is more portable
+10/22/2023 7:40 PM
+and not really portable
+10/22/2023 7:40 PM
+yeah it's tedious
+10/22/2023 7:40 PM
+so you'll eventually need to do this
+[bochenekk]
+bochenekk 10/22/2023 7:40 PM
+okay - well, the feasiiblity of this is not really helping right now
+[smx2460]
+smx2460 10/22/2023 7:40 PM
+mind you, gd->jt only exports a fraction of the functions you need
+10/22/2023 7:40 PM
+and start to use that
+10/22/2023 7:40 PM
+see where printf is
+10/22/2023 7:40 PM
+what i would do is disassemble/take apart the uboot binary
+10/22/2023 7:39 PM
+it's the base of uboot after relocation
+10/22/2023 7:39 PM
+but that's not really gd
+[bochenekk]
+bochenekk 10/22/2023 7:39 PM
+haha
+10/22/2023 7:39 PM
+0x38600000
+[smx2460]
+[] bochenekk ```arch_number = 0x00000AE7 boot_params = 0x20400100 DRAM
+bank = 0x00000000 -> start = 0x200000...
+smx2460 10/22/2023 7:39 PM
+    relocaddr   = 0x38600000
+[smx2460]
+smx2460 10/22/2023 7:39 PM
+yep
+10/22/2023 7:38 PM
+was it bdinfo?
+10/22/2023 7:38 PM
+but there was a command that would print the relocaddr
+10/22/2023 7:38 PM
+with 115200 being in the baudrate field
+10/22/2023 7:38 PM
+and we used it to dump RAM until it matched the gd struct
+10/22/2023 7:38 PM
+@hellobox i think last time we used hardcoded printf address
+[] smx2460 i somehow remember there was something else printed by
+`bdinfo`, hold on
+hellobox. 10/22/2023 7:37 PM
+no, that's all i have on M2
+[bochenekk]
+bochenekk 10/22/2023 7:37 PM
+aaaaaah
+[smx2460]
+smx2460 10/22/2023 7:37 PM
+my main PC is offline (cooler broke) so i have to use my laptop and it's
+HELL uncomfortable
+[smx2460]
+[] bochenekk ```arch_number = 0x00000AE7 boot_params = 0x20400100 DRAM
+bank = 0x00000000 -> start = 0x200000...
+smx2460 10/22/2023 7:36 PM
+i somehow remember there was something else printed by bdinfo, hold on
+[bochenekk]
+bochenekk 10/22/2023 7:36 PM
+wait
+10/22/2023 7:36 PM
+i'm tripping
+[] bochenekk tried to run it as-is; expected less
+hellobox. 10/22/2023 7:36 PM
+is there even memory there?
+[bochenekk]
+bochenekk 10/22/2023 7:36 PM
+tried to run it as-is; expected less
+[image.png]
+ image.png
+38.61 KB External
+[smx2460]
+smx2460 10/22/2023 7:35 PM
+or pass the address to your second-stage
+10/22/2023 7:35 PM
+so you just modify preloader to do whatever you want with it
+10/22/2023 7:35 PM
+because it's patched-in by the PHP script
+10/22/2023 7:34 PM
+and how long it is
+10/22/2023 7:34 PM
+the preloader knows where the data starts
+[halal_beef]
+halal_beef 10/22/2023 7:34 PM
+Ah
+[smx2460]
+smx2460 10/22/2023 7:34 PM
+as-is
+[bochenekk]
+bochenekk 10/22/2023 7:34 PM
+yup
+[smx2460]
+smx2460 10/22/2023 7:34 PM
+everything you put in the payload gets copied to RAM at the address you
+specify
+[halal_beef]
+[] smx2460 i am not sure how sensical it is to patch uboot to load uimg
+vs making a simple bootimg loader
+halal_beef 10/22/2023 7:33 PM
+Question about this approach, how would we know what offsets to put in
+mkbootimg so the loader is happy
+[bochenekk]
+bochenekk 10/22/2023 7:33 PM
+    arch_number = 0x00000AE7
+    boot_params = 0x20400100
+    DRAM bank   = 0x00000000
+    -> start    = 0x20000000
+    -> size     = 0x19000000
+    ethaddr     = A8:23:FE:17:10:5A
+    ip_addr     = 192.168.0.10
+    baudrate    = 115200 bps
+    TLB addr    = 0x38FF0000
+    relocaddr   = 0x38600000
+    reloc off   = 0x15100000
+    irq_sp      = 0x375DFF70
+    sp start    = 0x375DDF60
+    FB base     = 0x00000000
+[smx2460]
+smx2460 10/22/2023 7:33 PM
+command from uboot shell
+[bochenekk]
+bochenekk 10/22/2023 7:33 PM
+oh there we go lol
+[smx2460]
+smx2460 10/22/2023 7:33 PM
+try bdinfo
+[bochenekk]
+bochenekk 10/22/2023 7:33 PM
+hmm, where do i get that value from
+[smx2460]
+smx2460 10/22/2023 7:32 PM
+to match the specific uboot build you're using
+10/22/2023 7:32 PM
+    #define GD_ADDR 0x3E5DFF70
+10/22/2023 7:32 PM
+you must change this
+10/22/2023 7:32 PM
+so in uboot.h
+[bochenekk]
+bochenekk 10/22/2023 7:32 PM
+ah obviously ubuntu changes it in config
+[smx2460]
+smx2460 10/22/2023 7:31 PM
+MStar broke it
+10/22/2023 7:31 PM
+but guess what?
+10/22/2023 7:31 PM
+that always points to gd
+[bochenekk]
+bochenekk 10/22/2023 7:31 PM
+:/
+10/22/2023 7:31 PM
+tftp error: file not found
+[smx2460]
+smx2460 10/22/2023 7:31 PM
+gd is supposed to be accessible via a reserved register
+10/22/2023 7:31 PM
+2: by hardcoding their address
+10/22/2023 7:31 PM
+1: via gd->jt (a "jump table" in the uboot "global data") (edited)
+10/22/2023 7:31 PM
+there are 2 ways you can call functions from uboot
+10/22/2023 7:30 PM
+and i'll tell you why
+10/22/2023 7:30 PM
+the produced .bin file will likely not work oob without modifications
+[smx2460]
+[] bochenekk i guess its time to set up tftp
+smx2460 10/22/2023 7:30 PM
+mind you
+[smx2460]
+smx2460 10/22/2023 7:28 PM
+i don't know how complex loading a bootimg is, but if it's not
+compressed it can't be harder than moving a few things around and
+setting up a struct or two (edited)
+10/22/2023 7:27 PM
+i am not sure how sensical it is to patch uboot to load uimg vs making a
+simple bootimg loader
+10/22/2023 7:26 PM
+just make a initramfs with rebooter, a custom bootloader, and 2 lines of
+shell in place of /init (edited)
+10/22/2023 7:25 PM
+you could have a custom boot flow implemented that way
+10/22/2023 7:25 PM
+so yeah
+10/22/2023 7:24 PM
+then the cmdline will be copied straight from env
+10/22/2023 7:24 PM
+you need to change bootmode from webos/auto to user (edited)
+10/22/2023 7:24 PM
+i remember
+10/22/2023 7:24 PM
+ah yes
+[smx2460]
+hellobox. is that persistent? i forget; i think it varies by vendor
+smx2460 10/22/2023 7:24 PM
+i have vague memories of cmdline being persisted on MStar
+[smx2460]
+smx2460 10/22/2023 7:23 PM
+before bootcmd can be even used
+10/22/2023 7:23 PM
+so the bootloader just crashes immediately before anything can happen
+10/22/2023 7:22 PM
+and MStar never expected this case to happen
+10/22/2023 7:22 PM
+however.... the bootloader has already initialized plenty of hardware by
+that time
+10/22/2023 7:22 PM
+and start evaluating it
+10/22/2023 7:22 PM
+it should theoretically jump to the original main(), the original uboot
+one
+10/22/2023 7:22 PM
+if you can get the mstar function to return(), which i did with a
+crafted kernel
+10/22/2023 7:22 PM
+and none of them reads bootcmd or cares about it
+10/22/2023 7:21 PM
+including per-category command tables (divided by boot stages)
+10/22/2023 7:21 PM
+which implements a lot of MStar custom nonsense
+10/22/2023 7:21 PM
+@bochenek the issue is that MStar doesn't respect bootcmd, because they
+divert the entire boot flow to a function called fast_boot (edited)
+[] smx2460 for untethered, i think the easiest way is to change the
+default cmdline to run a custom /init
+hellobox. 10/22/2023 7:21 PM
+is that persistent? i forget; i think it varies by vendor
+[halal_beef]
+[] bochenekk after halal gets android to a state where he can work on it
+ill work on i guess a better booting met...
+halal_beef 10/22/2023 7:21 PM
+I got a twrp tree, that's about it God knows if the twrp tree is good
+tho
+[bochenekk]
+bochenekk 10/22/2023 7:21 PM
+but right now lets just make this boot lol
+[smx2460]
+smx2460 10/22/2023 7:20 PM
+initramfs could be loaded from an unsigned partition
+[bochenekk]
+bochenekk 10/22/2023 7:20 PM
+yep thats what i was thinking of
+[smx2460]
+smx2460 10/22/2023 7:20 PM
+that runs rebooter right away
+10/22/2023 7:20 PM
+for untethered, i think the easiest way is to change the default cmdline
+to run a custom /init
+[bochenekk]
+bochenekk 10/22/2023 7:20 PM
+can rebooter be used for that though?
+10/22/2023 7:20 PM
+(famous last words)
+[smx2460]
+smx2460 10/22/2023 7:20 PM
+this would be considered a tethered boot
+[bochenekk]
+bochenekk 10/22/2023 7:20 PM
+shouldnt be too hard
+10/22/2023 7:19 PM
+after halal gets android to a state where he can work on it ill work on
+i guess a better booting method
+[smx2460]
+smx2460 10/22/2023 7:19 PM
+i had even found a way to make it crash with a crafted kernel
+10/22/2023 7:18 PM
+bugfest bootloader
+10/22/2023 7:18 PM
+yupp
+10/22/2023 7:18 PM
+you'll need the .bin instead
+[bochenekk]
+bochenekk 10/22/2023 7:18 PM
+cool cool bin it is :)
+[smx2460]
+smx2460 10/22/2023 7:18 PM
+you can try it, but MStar uboot (last time we tried) doesn't load them
+properly
+[smx2460]
+[] bochenekk i have the bin and uimg files
+smx2460 10/22/2023 7:18 PM
+don't use the uimg
+[bochenekk]
+bochenekk 10/22/2023 7:15 PM
+i guess its time to set up tftp
+ 1
+10/22/2023 7:15 PM
+just the one that were in the repo right now
+10/22/2023 7:14 PM
+i have the bin and uimg files
+10/22/2023 7:14 PM
+so
+10/22/2023 7:14 PM
+okay
+10/22/2023 7:14 PM
+thanks
+10/22/2023 7:14 PM
+yup that did it
+[smx2460]
+smx2460 10/22/2023 7:14 PM
+rm CMakeCache.txt, then do it again (edited)
+[bochenekk]
+bochenekk 10/22/2023 7:13 PM
+i guess this is not good
+10/22/2023 7:13 PM
+    CMake Warning:
+      Manually-specified variables were not used by the project:
+        CMAKE_TOOLCHAIN_FILE
+[smx2460]
+smx2460 10/22/2023 7:13 PM
+which in his case is never unless he has a script writing to
+/proc/usercalls
+10/22/2023 7:13 PM
+without that, USB will be initialized lazily (edited)
+10/22/2023 7:12 PM
+which i don't have handy rn
+hellobox. 10/22/2023 7:12 PM
+there are these, but i don't know if they're actually used
+    silent=n
+    silent_app=n
+    silent_ker=n
+[smx2460]
+smx2460 10/22/2023 7:12 PM
+and then there's the cmdline flag for usercalls (edited)
+10/22/2023 7:12 PM
+quiet is for kernel kmsg (edited)
+10/22/2023 7:12 PM
+heh "print" it was
+10/22/2023 7:11 PM
+isn't there also quiet/silent
+hellobox. 10/22/2023 7:11 PM
+and print on
+10/22/2023 7:11 PM
+yes
+[smx2460]
+hellobox. you might want to run `dbg DEBUG` (or `TRACE`? i forget which
+is higher)
+smx2460 10/22/2023 7:11 PM
+for bootloader messages?
+[bochenekk]
+bochenekk 10/22/2023 7:11 PM
+yea, currently working on it
+hellobox. 10/22/2023 7:11 PM
+you might want to run dbg DEBUG (or TRACE? i forget which is higher)
+[smx2460]
+smx2460 10/22/2023 7:11 PM
+you'll need to make a toolchain file and pass it to
+-DCMAKE_TOOLCHAIN_FILE
+10/22/2023 7:10 PM
+the top lvl CMakeLists defines the function
+10/22/2023 7:10 PM
+also the 2 sentences aren't related, i just realized 2s after 
+10/22/2023 7:10 PM
+nah, it happens
+[bochenekk]
+bochenekk 10/22/2023 7:10 PM
+lmao
+10/22/2023 7:10 PM
+i thought i was on the top level
+10/22/2023 7:09 PM
+i'm a dumbass
+10/22/2023 7:09 PM
+oh
+[smx2460]
+smx2460 10/22/2023 7:09 PM
+you need to build the top level tree
+[smx2460]
+[] bochenekk ```CMake Error at CMakeLists.txt:1 (add_binary): Unknown
+CMake command "add_binary". ```
+smx2460 10/22/2023 7:09 PM
+wtf
+[bochenekk]
+bochenekk 10/22/2023 7:09 PM
+then got debug and now messing around
+[bochenekk]
+[] smx2460 did you bring it out of the TV?
+bochenekk 10/22/2023 7:09 PM
+disassembled and got uart like that
+[smx2460]
+smx2460 10/22/2023 7:09 PM
+nice (edited)
+10/22/2023 7:08 PM
+did you bring it out of the TV?
+[bochenekk]
+bochenekk 10/22/2023 7:08 PM
+wut
+10/22/2023 7:08 PM
+    CMake Error at CMakeLists.txt:1 (add_binary):
+      Unknown CMake command "add_binary".
+10/22/2023 7:08 PM
+not willing to take it apart again :P
+10/22/2023 7:08 PM
+nah
+[smx2460]
+smx2460 10/22/2023 7:08 PM
+else, don't
+10/22/2023 7:08 PM
+so if you want to try, you could try to unhook the wifi adapter
+[bochenekk]
+bochenekk 10/22/2023 7:08 PM
+no just a straight up flash drive, usb 2.0 even (edited)
+[smx2460]
+smx2460 10/22/2023 7:08 PM
+and probably doesn't like hubs either
+10/22/2023 7:08 PM
+which is USB internally
+10/22/2023 7:07 PM
+unless it doesn't like the internal wifi adapter
+[bochenekk]
+bochenekk 10/22/2023 7:07 PM
+yep, all 2
+[smx2460]
+smx2460 10/22/2023 7:07 PM
+have you tried all usb ports?
+[bochenekk]
+bochenekk 10/22/2023 7:07 PM
+bootsdk
+10/22/2023 7:07 PM
+well
+10/22/2023 7:07 PM
+so
+10/22/2023 7:07 PM
+okay
+[smx2460]
+smx2460 10/22/2023 7:07 PM
+it was freezing all over the place iirc
+10/22/2023 7:06 PM
+it was kinda broken when we tested it with @ww , so it's not unlikely
+[bochenekk]
+bochenekk 10/22/2023 7:06 PM
+usb scan always returns only one usb dev
+[smx2460]
+smx2460 10/22/2023 7:05 PM
+but i DO remember it being buggy...ye
+hellobox. 10/22/2023 7:05 PM
+half of those are probably broken though
+[smx2460]
+smx2460 10/22/2023 7:05 PM
+yeah it sounded strange that he said there's no usb support
+hellobox. 10/22/2023 7:05 PM
+    custar  - do usb update from the specified file that is in usb.
+    eeprom2usb- dump data from eeprom to usb
+    emmcbin - emmcbin - dump emmc and restore it to fat usb disk
+    emmcbootbin- emmcbootbin - dump emmc boot partition and write it to fat usb disk
+    spi2usb - Read data from spi to usb
+    udstar  - Execute the script file that is stored in usb disk
+    usb     - USB sub-system
+    usb2eeprom- write data from usb to eeprom
+    usb2spi - write data from usb to spi
+    usb_bin_check- do usb bin document check.
+    usbboot - boot from USB device
+(edited)
+[smx2460]
+smx2460 10/22/2023 7:05 PM
+i don't even remember and don't have the sources handy
+10/22/2023 7:05 PM
+but it loads the custom MStar crap from it
+[smx2460]
+hellobox. `custar`
+smx2460 10/22/2023 7:05 PM
+this should do usb
+hellobox. 10/22/2023 7:04 PM
+custar
+[smx2460]
+smx2460 10/22/2023 7:04 PM
+i recommend tftpd_hpa
+[bochenekk]
+bochenekk 10/22/2023 7:04 PM
+i remember trying it out on some routers and failing miserably and
+jumping to windows
+[halal_beef]
+halal_beef 10/22/2023 7:04 PM
+I'm getting mixed results
+[halal_beef]
+hellobox. they're like $5 on amazon
+halal_beef 10/22/2023 7:04 PM
+U mind sending a link
+[smx2460]
+smx2460 10/22/2023 7:04 PM
+your loader could script the tftp loading process
+10/22/2023 7:04 PM
+uboot has a kind of eval command which, iirc, is run_command
+10/22/2023 7:04 PM
+you need the loader and the image on tftp
+[bochenekk]
+bochenekk 10/22/2023 7:04 PM
+oh shit - i have no clue how to tftp in linux
+[smx2460]
+smx2460 10/22/2023 7:03 PM
+was about to say that
+10/22/2023 7:03 PM
+yep
+[bochenekk]
+bochenekk 10/22/2023 7:03 PM
+tftp it is
+[smx2460]
+smx2460 10/22/2023 7:03 PM
+[bochenekk]
+bochenekk 10/22/2023 7:03 PM
+yea lol
+[smx2460]
+smx2460 10/22/2023 7:03 PM
+ok
+10/22/2023 7:03 PM
+ah
+[smx2460]
+[] bochenekk btw, uboot that's in there does not have usb mass storage
+support
+smx2460 10/22/2023 7:03 PM
+it does
+[smx2460]
+smx2460 10/22/2023 7:03 PM
+so that it will be shown in help
+[bochenekk]
+bochenekk 10/22/2023 7:03 PM
+btw, uboot that's in there does not have usb mass storage support
+(edited)
+[smx2460]
+smx2460 10/22/2023 7:03 PM
+or it can register the command and return
+10/22/2023 7:03 PM
+in the main()
+10/22/2023 7:03 PM
+your binary can either do the thing directly
+[bochenekk]
+bochenekk 10/22/2023 7:03 PM
+holy shit, its more advanced than i've thought
+[smx2460]
+smx2460 10/22/2023 7:02 PM
+you load that in memory, and jump to it via go <addr>
+10/22/2023 7:02 PM
+bootSdk produces a raw binary that you can load into uboot via tftp
+[halal_beef]
+halal_beef 10/22/2023 7:02 PM
+All of these have broken screens
+[smx2460]
+smx2460 10/22/2023 7:02 PM
+you can use bootSdk to make a new bochenek command that does your thing
+[halal_beef]
+halal_beef 10/22/2023 7:02 PM
+I've just realised something I have zero laptops that I can debug with
+[smx2460]
+smx2460 10/22/2023 7:01 PM
+by adding new commands into uboot
+hellobox. 10/22/2023 7:01 PM
+i'm not sure bootm even works (at all) in stock mstar uboot (edited)
+[smx2460]
+smx2460 10/22/2023 7:01 PM
+bootSdk allows you to also extend uboot functionality
+10/22/2023 7:01 PM
+no i wouldn't do that
+[bochenekk]
+bochenekk 10/22/2023 7:01 PM
+and so rebooter
+10/22/2023 7:01 PM
+that's where i thought a uboot binary would come in
+[bochenekk]
+[] smx2460 if you were to try with `rebooter`, you wouldn't be able to
+debug anything
+bochenekk 10/22/2023 7:00 PM
+but how would i run an android bootimg (that is the new v4 format) in a
+2011 uboot version :P
+[halal_beef]
+halal_beef 10/22/2023 7:00 PM
+Pl2303 that's the thingy
+10/22/2023 6:59 PM
+legit I just forgot the uart usb thing that smx sent
+10/22/2023 6:59 PM
+I have a really bad memory (edited)
+[bochenekk]
+bochenekk 10/22/2023 6:59 PM
+lol
+10/22/2023 6:59 PM
+i literally told you about it on telegram
+[] halal_beef I doubt uart works on production tvs
+hellobox. 10/22/2023 6:58 PM
+sure it does
+[smx2460]
+smx2460 10/22/2023 6:58 PM
+it does
+[halal_beef]
+halal_beef 10/22/2023 6:58 PM
+I doubt uart works on production tvs
+[smx2460]
+smx2460 10/22/2023 6:58 PM
+ok, then you would be able to debug somehow  (edited)
+[bochenekk]
+bochenekk 10/22/2023 6:58 PM
+i have uart though, from the internal debug conn
+[smx2460]
+smx2460 10/22/2023 6:58 PM
+if you were to try with rebooter, you wouldn't be able to debug anything
+[halal_beef]
+halal_beef 10/22/2023 6:58 PM
+It'll be worth the money ig
+hellobox. 10/22/2023 6:57 PM
+they're like $5 on amazon
+[smx2460]
+smx2460 10/22/2023 6:57 PM
+no driver in the bootloader
+[bochenekk]
+bochenekk 10/22/2023 6:57 PM
+hmm
+[halal_beef]
+halal_beef 10/22/2023 6:57 PM
+dang
+10/22/2023 6:57 PM
+[smx2460]
+smx2460 10/22/2023 6:57 PM
+not compatible
+[halal_beef]
+halal_beef 10/22/2023 6:57 PM
+I have a ch340g
+[smx2460]
+smx2460 10/22/2023 6:57 PM
+no need to take apart anything
+[halal_beef]
+halal_beef 10/22/2023 6:57 PM
+uhh
+[bochenekk]
+bochenekk 10/22/2023 6:57 PM
+@halal_beef do you have (edited)
+[smx2460]
+smx2460 10/22/2023 6:57 PM
+USB
+10/22/2023 6:57 PM
+you just need a PL2303
+[bochenekk]
+bochenekk 10/22/2023 6:57 PM
+how would you load it then without uart access
+10/22/2023 6:56 PM
+lol
+[smx2460]
+smx2460 10/22/2023 6:56 PM
+i would worry about that at step 9999
+[halal_beef]
+halal_beef 10/22/2023 6:56 PM
+hi
+[smx2460]
+smx2460 10/22/2023 6:56 PM
+that should be the very very very last step once the port is done
+[bochenekk]
+bochenekk 10/22/2023 6:56 PM
+so i want to be on the same page
+10/22/2023 6:56 PM
+@halal_beef doesnt have uart
+10/22/2023 6:56 PM
+right now just a script would do
+[smx2460]
+smx2460 10/22/2023 6:56 PM
+so you want an app that reboots to android?
+[bochenekk]
+bochenekk 10/22/2023 6:55 PM
+webOS app -> script -> shim (called from script, rebooter) -> bootimg ->
+android (edited)
+[smx2460]
+smx2460 10/22/2023 6:55 PM
+it could be extended to also load a kernel but it currently just loads
+"raw code"
+[bochenekk]
+bochenekk 10/22/2023 6:55 PM
+this is a good thought process right
+10/22/2023 6:55 PM
+i mean
+10/22/2023 6:55 PM
+exactly
+10/22/2023 6:55 PM
+yep
+[smx2460]
+smx2460 10/22/2023 6:55 PM
+it's meant to load bootloaders in RAM and jump to them
+[smx2460]
+[] bochenekk uhh what
+smx2460 10/22/2023 6:55 PM
+what are you using rebooter for
+hellobox. 10/22/2023 6:55 PM
+and what? chainload it from the stock uboot?
+[bochenekk]
+bochenekk 10/22/2023 6:55 PM
+yes
+[] bochenekk and probably making a whole new port would be easier
+hellobox. 10/22/2023 6:54 PM
+of what? uboot?
+[bochenekk]
+bochenekk 10/22/2023 6:54 PM
+uhh what
+[smx2460]
+smx2460 10/22/2023 6:54 PM
+not rebooter ko
+[bochenekk]
+bochenekk 10/22/2023 6:54 PM
+and probably making a whole new port would be easier
+[smx2460]
+smx2460 10/22/2023 6:54 PM
+if i were you i would use the uboot console to try and load it
+[bochenekk]
+bochenekk 10/22/2023 6:54 PM
+we have an android bootimg
+10/22/2023 6:54 PM
+at this point i dont know if uboot 2011 is gonna work
+[smx2460]
+smx2460 10/22/2023 6:54 PM
+what do you want to do
+[bochenekk]
+bochenekk 10/22/2023 6:53 PM
+what can i try
+10/22/2023 6:53 PM
+so
+10/22/2023 6:53 PM
+alright
+10/22/2023 6:53 PM
+yep
+[smx2460]
+smx2460 10/22/2023 6:53 PM
+we can check that later, not a big deal now
+[bochenekk]
+bochenekk 10/22/2023 6:53 PM
+yep make clean and make
+[smx2460]
+smx2460 10/22/2023 6:53 PM
+odd
+10/22/2023 6:53 PM
+you sure you recompiled?
+[bochenekk]
+bochenekk 10/22/2023 6:53 PM
+i did
+[smx2460]
+smx2460 10/22/2023 6:53 PM
+or reboot
+10/22/2023 6:53 PM
+you need to rmmod it first
+[bochenekk]
+bochenekk 10/22/2023 6:53 PM
+i wont debug
+10/22/2023 6:53 PM
+alright
+10/22/2023 6:53 PM
+wut
+10/22/2023 6:53 PM
+    [ 6353.751906] do_init_module: 'mymod'->init suspiciously returned 1, it should follow 0/-E convention
+                   do_init_module: loading module anyway...
+[smx2460]
+smx2460 10/22/2023 6:52 PM
+    if($argc < 5){
+        fwrite(STDERR, "Usage: {$argv[0]} [preloader.bin] [payload.bin] [LOADADDR] [output.bin]" . PHP_EOL);
+        return 1;
+    }
+10/22/2023 6:52 PM
+which has these arguments
+10/22/2023 6:52 PM
+then use makePayload.php
+10/22/2023 6:52 PM
+if you need to use preloader, you need to first compile it
+[bochenekk]
+bochenekk 10/22/2023 6:52 PM
+okay (edited)
+[smx2460]
+smx2460 10/22/2023 6:52 PM
+see if that works
+[bochenekk]
+bochenekk 10/22/2023 6:51 PM
+submit PR? 
+[image.png]
+ image.png
+40.43 KB External
+[smx2460]
+smx2460 10/22/2023 6:51 PM
+if it isn't, or you don't know, it's better to use that (edited)
+10/22/2023 6:51 PM
+if the binary you need to load is relocatable, you don't need
+bootSdk/preloader
+10/22/2023 6:50 PM
+either way
+10/22/2023 6:50 PM
+oh well
+10/22/2023 6:50 PM
+it should be -1
+10/22/2023 6:50 PM
+returning 1 is not the right way
+10/22/2023 6:50 PM
+i should make insmod fail
+10/22/2023 6:50 PM
+that's a bug though
+[bochenekk]
+bochenekk 10/22/2023 6:50 PM
+because i didnt throw anything at it
+10/22/2023 6:50 PM
+honestly good
+[smx2460]
+smx2460 10/22/2023 6:50 PM
+i see
+10/22/2023 6:50 PM
+oh
+[bochenekk]
+bochenekk 10/22/2023 6:50 PM
+    [ 5926.857913] load_code() failed
+    [ 5926.857928] do_init_module: 'mymod'->init suspiciously returned 1, it should follow 0/-E convention
+                   do_init_module: loading module anyway...
+    [ 5926.857941] CPU: 1 PID: 8313 Comm: insmod Tainted: P           O    4.4.84-636.glacier.26 #1
+[smx2460]
+smx2460 10/22/2023 6:49 PM
+dmesg?
+[bochenekk]
+bochenekk 10/22/2023 6:49 PM
+well
+10/22/2023 6:49 PM
+(no content)
+[image.png]
+ image.png
+6.56 KB External
+[smx2460]
+smx2460 10/22/2023 6:49 PM
+the moment you load the kernel module, it should "crash"
+10/22/2023 6:48 PM
+hmm
+[bochenekk]
+bochenekk 10/22/2023 6:48 PM
+@Smx loaded your kernel module. now just try bootsdk?
+[smx2460]
+smx2460 10/22/2023 6:04 PM
+[]
+10/22/2023 6:03 PM
+better utopia than [:mtk:]
+[infowski]
+infowski 10/22/2023 6:03 PM
+praise utopia
+[bochenekk]
+bochenekk 10/22/2023 5:56 PM
+Yep
+[smx2460]
+smx2460 10/22/2023 5:33 PM
+(and they edited it so much they cannot merge the changes into anything
+else.... and it works so they don't care) (edited)
+10/22/2023 5:33 PM
+they LOVE that version
+[smx2460]
+[] bochenekk holy shit, the uboot source is broken beyond belief
+smx2460 10/22/2023 5:33 PM
+uboot 2011
+[] halal_beef if a company opensources their bootloader theres always a
+catch
+hellobox. 10/22/2023 1:38 PM
+the main catch is that it's signed
+ 1
+[halal_beef]
+halal_beef 10/22/2023 1:37 PM
+if a company opensources their bootloader theres always a catch
+[bochenekk]
+bochenekk 10/22/2023 1:21 PM
+holy shit, the uboot source is broken beyond belief
+[halal_beef]
+halal_beef 10/22/2023 12:18 AM
+(If this soc has a stable fb)
+[halal_beef]
+[] smx2460 You first need to see how to get any kind of graphics going
+halal_beef 10/22/2023 12:17 AM
+So fb fun?
+[bochenekk]
+bochenekk 10/22/2023 12:17 AM
+Goodnight everyone
+[halal_beef]
+halal_beef 10/22/2023 12:17 AM
+Gn
+[bochenekk]
+bochenekk 10/22/2023 12:17 AM
+Going to go to sleep now
+[halal_beef]
+[] bochenekk Syncing aosp
+halal_beef 10/22/2023 12:17 AM
+Best of luck to you
+[bochenekk]
+bochenekk 10/22/2023 12:17 AM
+Will take a look at it tomorrow
+10/22/2023 12:17 AM
+Syncing aosp
+[smx2460]
+smx2460 10/22/2023 12:16 AM
+Even a triangle
+[smx2460]
+[] bochenekk Are my expectations too high?
+smx2460 10/22/2023 12:16 AM
+You first need to see how to get any kind of graphics going
+[yolofant]
+yolofant 10/22/2023 12:15 AM
+¯\_(ツ)_/¯
+[smx2460]
+smx2460 10/22/2023 12:15 AM
+Looks like he has mostly mstar repos there
+10/22/2023 12:14 AM
+Sus
+[yolofant]
+yolofant 10/22/2023 12:14 AM
+https://github.com/jockyw2001
+jockyw2001 - Overview
+jockyw2001 has 25 repositories available. Follow their code on GitHub.
+[]
+[halal_beef]
+halal_beef 10/22/2023 12:14 AM
+Does ATV even have a repo syncable manifest
+[smx2460]
+smx2460 10/22/2023 12:14 AM
+Who
+[yolofant]
+[] smx2460 Yeah that's a thing
+yolofant 10/22/2023 12:13 AM
+huh, that guy is trying to get kodi running on k5lp on the kodi forums,
+interesting (edited)
+[bochenekk]
+[] bochenekk So at best, we would have an usb-only, non-accelerated,
+slow, old Android TV install
+bochenekk 10/22/2023 12:13 AM
+Are my expectations too high?
+[smx2460]
+[] bochenekk https://github.com/jockyw2001/utopia
+smx2460 10/22/2023 12:11 AM
+Yeah that's a thing
+[bochenekk]
+bochenekk 10/22/2023 12:11 AM
+Down to do that tomorrow
+[smx2460]
+smx2460 10/22/2023 12:11 AM
+By pairing the stock kernel with am arbitrary rootfs (edited)
+10/22/2023 12:10 AM
+But that can be obtained with no effort (edited)
+[bochenekk]
+bochenekk 10/22/2023 12:10 AM
+Well hello there
+[smx2460]
+smx2460 10/22/2023 12:10 AM
+Stage one would be a CLI only, networked boot
+[bochenekk]
+bochenekk 10/22/2023 12:10 AM
+https://github.com/jockyw2001/utopia
+GitHub - jockyw2001/utopia
+Contribute to jockyw2001/utopia development by creating an account on
+GitHub.
+[]
+[halal_beef]
+halal_beef 10/22/2023 12:10 AM
+Not even sure
+10/22/2023 12:10 AM
+It might even predate android TV
+10/22/2023 12:10 AM
+That android.mk thing was from 2010-2014
+10/22/2023 12:09 AM
+sounds about right
+[bochenekk]
+bochenekk 10/22/2023 12:09 AM
+So at best, we would have an usb-only, non-accelerated, slow, old
+Android TV install
+[halal_beef]
+halal_beef 10/22/2023 12:08 AM
+I mean the bsp wouldn't leak for an soc this weirdly unknown
+[bochenekk]
+bochenekk 10/22/2023 12:08 AM
+So close yet so far
+[smx2460]
+smx2460 10/22/2023 12:08 AM
+If the LG and Android APIs are very different
+10/22/2023 12:08 AM
+I'm pondering about a shim driver but it might not be feasible
+[halal_beef]
+[] smx2460 Last attempt was on LG SoC and we had a working TWRP iirc
+halal_beef 10/22/2023 12:07 AM
+Daaang
+[bochenekk]
+bochenekk 10/22/2023 12:07 AM
+hmm
+[yolofant]
+yolofant 10/22/2023 12:07 AM
+they are using some v4l2 but it's certainly not complete
+10/22/2023 12:06 AM
+yes but it's not really standardized in a way that android can leverage
+it
+[bochenekk]
+bochenekk 10/22/2023 12:06 AM
+isn’t that in kdriver?
+[yolofant]
+yolofant 10/22/2023 12:06 AM
+most of their media decoding stuff is also non standard
+[bochenekk]
+bochenekk 10/22/2023 12:04 AM
+now - the utopia HAL is the only necessary thing that we don’t have. at
+least in the LG form.
+[smx2460]
+smx2460 10/22/2023 12:03 AM
+As well as a system that would boot and insta crash into oblivion
+without any graphical output whatsoever
+10/22/2023 12:03 AM
+Last attempt was on LG SoC and we had a working TWRP iirc
+[bochenekk]
+bochenekk 10/22/2023 12:03 AM
+I am not going to keep my hopes up
+[smx2460]
+smx2460 10/22/2023 12:03 AM
+You'll be asking yourself "why" a lot
+[bochenekk]
+bochenekk 10/22/2023 12:02 AM
+I know that this is a big thing, and that it’s probably not going to go
+anywhere - but if we don’t try, we won’t know
+[smx2460]
+smx2460 10/22/2023 12:02 AM
+You'll need mostly moral support though
+10/22/2023 12:02 AM
+Good luck... I can provide moral and technical knowledge where i can
+hellobox. 10/22/2023 12:02 AM
+good luck
+[bochenekk]
+bochenekk 10/22/2023 12:02 AM
+just the utopia HAL remains… :)
+10/22/2023 12:02 AM
+im down to port android tv to this
+ 1
+[smx2460]
+smx2460 10/22/2023 12:02 AM
+So it was never gonna fly
+10/22/2023 12:02 AM
+But we were working without a proper surfaceflinger/gralloc hal
+10/22/2023 12:01 AM
+There was an attempt to port Android to an LG SoC
+hellobox. 10/22/2023 12:01 AM
+they have a bunch of goofy names for everything, and it's hard to keep
+it straight among all the vendors
+[bochenekk]
+bochenekk 10/22/2023 12:01 AM
+honestly I’d be down to make the kernel stuff work, kdriver will just
+need lots of adaptations
+[smx2460]
+smx2460 10/22/2023 12:00 AM
+So you'd need - Android kernel config - Utopia HAL for Android - KDriver
+for Android
+hellobox. 10/22/2023 12:00 AM
+and supernova is the platform
+10/22/2023 12:00 AM
+i think utopia (which has multiple versions including utopia 2000/u2k)
+is the HAL
+[smx2460]
+smx2460 10/22/2023 12:00 AM
+The MStar platform and HAL are called Utopia
+10/22/2023 12:00 AM
+And likely adaptations and massages
+[bochenekk]
+bochenekk 10/22/2023 12:00 AM
+okay well atv
+October 21, 2023
+[smx2460]
+[] bochenekk no way…
+smx2460 10/21/2023 11:59 PM
+The chip supports Android in some way, under some target configuration,
+but you need a matching HAL
+[] bochenekk wait wait wait, android.mk???
+hellobox. 10/21/2023 11:59 PM
+the stuff for LG seems to be a fork of their android BSP
+[bochenekk]
+bochenekk 10/21/2023 11:59 PM
+no way…
+[smx2460]
+smx2460 10/21/2023 11:59 PM
+He doesn't have only 3 LM18A boards btw
+[] bochenekk but I’ll be booting from USB so that shouldn’t be an issue
+hellobox. 10/21/2023 11:59 PM
+any unual code paths have probably gotten ~0 testing
+[bochenekk]
+bochenekk 10/21/2023 11:59 PM
+wait wait wait, android.mk???
+[bochenekk]
+hellobox. i have 3 LM18A boards
+bochenekk 10/21/2023 11:58 PM
+nah, where’s the fun in that? :D
+ 1
+[bochenekk]
+bochenekk 10/21/2023 11:58 PM
+but I’ll be booting from USB so that shouldn’t be an issue
+hellobox. 10/21/2023 11:58 PM
+i have 3 LM18A boards
+10/21/2023 11:58 PM
+or buy a dev board
+[bochenekk]
+bochenekk 10/21/2023 11:58 PM
+this is an actual TV lol
+hellobox. 10/21/2023 11:58 PM
+you should also back up the important eMMC partitions and NVM if this is
+an actual TV
+[bochenekk]
+bochenekk 10/21/2023 11:57 PM
+(Pain and suffering)
+10/21/2023 11:57 PM
+It was a fun adventure enabling debug by itself lmao
+10/21/2023 11:57 PM
+webOS 4 so had to y know what
+[smx2460]
+smx2460 10/21/2023 11:57 PM
+It's bad
+hellobox. 10/21/2023 11:57 PM
+but it's probably also true
+[] smx2460 You forgot <:mtk:729099828641923143>
+hellobox. 10/21/2023 11:57 PM
+haven't really looked at their stuff tbh
+[smx2460]
+hellobox. > „If your mantra is “If it compiles, ship it!”, then you’ll
+become an excellent vendor kernel devel...
+smx2460 10/21/2023 11:56 PM
+You forgot [:mtk:]
+[bochenekk]
+bochenekk 10/21/2023 11:56 PM
+yep
+hellobox. 10/21/2023 11:56 PM
+you already enabled DEBUG, right?
+[bochenekk]
+bochenekk 10/21/2023 11:55 PM
+After my friend uploads it because im on mobile 
+10/21/2023 11:55 PM
+I’ll take a look at the kdriver now
+hellobox. 10/21/2023 11:54 PM
+btw i believe LM18A == M7621 == "marcus"
+[bochenekk]
+bochenekk 10/21/2023 11:53 PM
+Hahaha I was just thinking about it
+hellobox. 10/21/2023 11:53 PM
+> „If your mantra is “If it compiles, ship it!”, then you’ll become an
+excellent vendor kernel developer.” [:lg:] [:rtk:] [:mstar:]
+ 1
+[bochenekk]
+[] yolofant 
+bochenekk 10/21/2023 11:53 PM
+Scared now lol
+hellobox. 10/21/2023 11:52 PM
+seeTV? lm21u_dtb_mma_seeTV_defconfig
+[yolofant]
+yolofant 10/21/2023 11:52 PM
+[bochenekk]
+bochenekk 10/21/2023 11:51 PM
+I wonder how bad it is
+10/21/2023 11:51 PM
+nvm, kdriver tar
+hellobox. 10/21/2023 11:51 PM
+it varies
+[bochenekk]
+bochenekk 10/21/2023 11:51 PM
+kernel source package?
+[bochenekk]
+[] smx2460 The BSP and the "kdriver"
+bochenekk 10/21/2023 11:51 PM
+where’s the kdriver at?
+[bochenekk]
+[] yolofant and you probably don't have sources for your current kernel
+version
+bochenekk 10/21/2023 11:49 PM
+well… :/
+[bochenekk]
+bochenekk 10/21/2023 11:47 PM
+(no content)
+[IMG_2057.jpg]
+ IMG_2057.jpg
+1.99 MB External
+[IMG_2056.png]
+ IMG_2056.png
+619.95 KB External
+[yolofant]
+yolofant 10/21/2023 11:47 PM
+just request it from the website, there is a contact form
+hellobox. 10/21/2023 11:47 PM
+maybe i should try
+[yolofant]
+hellobox. so they *did* actually put up current kernel source?
+yolofant 10/21/2023 11:47 PM
+well current at that time yes, for o22 the kernel archive has like 4-5
+different versions
+[yolofant]
+yolofant 10/21/2023 11:46 PM
+but if you want to have the sources you should be very specific in your
+request and tell them exactly what is on their website and what you
+request from them
+[] yolofant no, first two mails they ignored my request and said there
+is no new kernel (clearly a lie), the 3rd...
+hellobox. 10/21/2023 11:46 PM
+so they did actually put up current kernel source?
+[yolofant]
+yolofant 10/21/2023 11:46 PM
+of course they didn't release new kernel sources for the new firmwares
+after my request
+[yolofant]
+hellobox. didn't they tell you what they released was close enough or
+something?
+yolofant 10/21/2023 11:45 PM
+no, first two mails they ignored my request and said there is no new
+kernel (clearly a lie), the 3rd mail they followed up with that they
+need some time but they will put them up
+[smx2460]
+smx2460 10/21/2023 11:45 PM
+The GPL package is otherwised released early in the product lifecycle
+[] yolofant you can actually request them it'll take them maybe 2-3
+months to put them on the website
+hellobox. 10/21/2023 11:45 PM
+didn't they tell you what they released was close enough or something?
+[yolofant]
+yolofant 10/21/2023 11:44 PM
+you can actually request them it'll take them maybe 2-3 months to put
+them on the website
+[smx2460]
+smx2460 10/21/2023 11:44 PM
+Lacking any stability or quality of life improvements
+10/21/2023 11:44 PM
+It's probably some old beta build
+10/21/2023 11:44 PM
+Yeah
+[yolofant]
+yolofant 10/21/2023 11:44 PM
+they usually only release them once
+[:lg:] 1
+10/21/2023 11:44 PM
+and you probably don't have sources for your current kernel version
+[bochenekk]
+bochenekk 10/21/2023 11:43 PM
+I assume MStar is the worst?
+[bochenekk]
+[] smx2460 And they all use proprietary interfaces
+bochenekk 10/21/2023 11:43 PM
+fuuuu…
+[smx2460]
+smx2460 10/21/2023 11:43 PM
+Switching to dvbapi even
+10/21/2023 11:43 PM
+LG SoCs are the ones that are getting closer to mainline interfaces iirc
+10/21/2023 11:42 PM
+And they all use proprietary interfaces
+[bochenekk]
+bochenekk 10/21/2023 11:42 PM
+kdriver seems interesting
+[smx2460]
+smx2460 10/21/2023 11:42 PM
+Scaler, video encoders
+[bochenekk]
+[] smx2460 Good luck with mainlining that.... If it's your plan
+bochenekk 10/21/2023 11:42 PM
+Nah. Not yet at least. I’ll work on the lg fork to make it more
+“friendly” for booting other OSes
+[smx2460]
+smx2460 10/21/2023 11:42 PM
+Such as display, GPU, etc.
+10/21/2023 11:41 PM
+That kdriver implements all non boot-critical drivers
+10/21/2023 11:41 PM
+They might be both OSS but the issue is
+10/21/2023 11:41 PM
+The BSP and the "kdriver"
+10/21/2023 11:41 PM
+There are 2 big parts into any LG TV
+10/21/2023 11:41 PM
+Just be advised
+10/21/2023 11:41 PM
+Good luck with mainlining that.... If it's your plan
+[bochenekk]
+bochenekk 10/21/2023 11:40 PM
+After that I move on to interesting topics which I already have some
+planned ;)
+10/21/2023 11:40 PM
+Right now I just want to focus on making a device tree based kernel that
+works so a bit of tinkering around.
+[smx2460]
+smx2460 10/21/2023 11:40 PM
+But it works anywhere
+10/21/2023 11:40 PM
+There is broadcom stuff in there because i also used it on my
+Technicolor BCM modem
+[smx2460]
+[] smx2460 I have a script to prepare relocatable payloads to use with
+that kernel module
+smx2460 10/21/2023 11:39 PM
+https://github.com/openlgtv/bootSdk
+GitHub - openlgtv/bootSdk: Run custom binaries in lxboot or uboot
+Run custom binaries in lxboot or uboot. Contribute to openlgtv/bootSdk
+development by creating an account on GitHub.
+[]
+[bochenekk]
+bochenekk 10/21/2023 11:39 PM
+I don’t want to continue to use atags; I’ll most likely set a port up
+from it to devicetree
+[] bochenekk Heard of 2303 support in there, from what I’ve heard the
+stock uboot doesn’t support mass storage in...
+hellobox. 10/21/2023 11:39 PM
+pretty sure you can just read the kernel(/whatever) into ram from usb
+and jump to it
+[smx2460]
+smx2460 10/21/2023 11:38 PM
+I have a script to prepare relocatable payloads to use with that kernel
+module
+10/21/2023 11:38 PM
+Or write a loader to setup ATAGs
+[bochenekk]
+bochenekk 10/21/2023 11:38 PM
+Heard of 2303 support in there, from what I’ve heard the stock uboot
+doesn’t support mass storage in config but I’ll have to. See for myself
+[smx2460]
+smx2460 10/21/2023 11:38 PM
+But for kernel you need it to be executable
+10/21/2023 11:38 PM
+Or a kernel
+10/21/2023 11:38 PM
+Which could be a patched bootloader
+[] bochenekk USB mass storage?
+hellobox. 10/21/2023 11:37 PM
+yes, as well as pl2303 usb/uart adapters
+[bochenekk]
+bochenekk 10/21/2023 11:37 PM
+Love it.
+[smx2460]
+smx2460 10/21/2023 11:37 PM
+You can use this kernel module to jump to a binary of your liking
+10/21/2023 11:37 PM
+https://github.com/smx-smx/rebooter
+GitHub - smx-smx/rebooter: Kernel module to run arbitrary code from...
+Kernel module to run arbitrary code from Linux. Contribute to
+smx-smx/rebooter development by creating an account on GitHub.
+[]
+[bochenekk]
+[] smx2460 uboot supports USB
+bochenekk 10/21/2023 11:37 PM
+USB mass storage?
+[smx2460]
+smx2460 10/21/2023 11:36 PM
+I have a fix for that too
+[bochenekk]
+bochenekk 10/21/2023 11:36 PM
+Or kexecboot I guess
+[smx2460]
+smx2460 10/21/2023 11:36 PM
+uboot supports USB
+10/21/2023 11:36 PM
+There's no need for that
+[bochenekk]
+bochenekk 10/21/2023 11:36 PM
+Stock uboot -> stock kernel -> custom init -> custom uboot with usb
+support
+[smx2460]
+smx2460 10/21/2023 11:36 PM
+As well as a patched WebOS that mounts stuff from USB
+10/21/2023 11:36 PM
+We have booted buildroot from USB too
+[bochenekk]
+bochenekk 10/21/2023 11:35 PM
+I already have a plan set out
+10/21/2023 11:35 PM
+Not on lm18a it seems
+[smx2460]
+smx2460 10/21/2023 11:35 PM
+For booting a custom kernel you could use tftp
+10/21/2023 11:35 PM
+Anyways
+10/21/2023 11:35 PM
+I need a refresher on that but i thought they used dtb
+10/21/2023 11:34 PM
+Ugh
+[bochenekk]
+bochenekk 10/21/2023 11:34 PM
+No. The legacy format. Board definition files.
+[smx2460]
+smx2460 10/21/2023 11:34 PM
+Like a flat device tree?
+[bochenekk]
+bochenekk 10/21/2023 11:34 PM
+Do they seriously still use board files in the kernel?
+[smx2460]
+smx2460 10/21/2023 11:33 PM
+I hadn't noticed that
+[smx2460]
+[] bochenekk Yep like here
+smx2460 10/21/2023 11:33 PM
+Ah
+[smx2460]
+smx2460 10/21/2023 11:33 PM
+So i think it disables certain types of auto reboots
+[bochenekk]
+[] bochenekk Click to see attachment
+bochenekk 10/21/2023 11:32 PM
+Yep like here
+[smx2460]
+[] infowski But I am not sure whether reboot is triggered by watchdog in
+the soc, or by watchdog in micom...
+smx2460 10/21/2023 11:32 PM
+Micom gets notified about yhe debug mode change as well
+[smx2460]
+smx2460 10/21/2023 11:32 PM
+The watchdog gets disabled
+[smx2460]
+[] bochenekk so there’s no way to modify /etc/init.d to stop tv reboot
+when tvservice crashes?
+smx2460 10/21/2023 11:32 PM
+Reboot gets disabled when not in RELEASE mode
+[infowski]
+infowski 10/21/2023 11:30 PM
+(and they officially announced they are only going to patch <5 years old
+models lately, right?)
+10/21/2023 11:30 PM
+Cause of course LG doesn't offer any upgrades on their old platforms
+besides security patches
+10/21/2023 11:30 PM
+Mind you that kernel hasn't really seen any significant changes since
+2018
+10/21/2023 11:29 PM
+Nice and legacy
+[bochenekk]
+[] astur3l dts?:D
+bochenekk 10/21/2023 11:22 PM
+Nope, still using Board files. Lmao!
+[astur3l]
+astur3l 10/21/2023 11:03 PM
+dts?:D
+[bochenekk]
+bochenekk 10/21/2023 10:37 PM
+In the kernel for Lm18a
+[] bochenekk They use board support files?
+hellobox. 10/21/2023 10:34 PM
+hmm?
+[bochenekk]
+bochenekk 10/21/2023 10:25 PM
+They use board support files?
+[] infowski Though I guess you could try playing with kexec-ing from a
+custom `root` partition (since you can mo...
+ww8543 10/21/2023 10:07 PM
+modify the init?
+[halal_beef]
+halal_beef 10/21/2023 9:53 PM
+Nvm I just found it
+10/21/2023 9:53 PM
+Probably stupid question but how do u update the homebrew app
+[bochenekk]
+bochenekk 10/21/2023 9:39 PM
+(no content)
+[IMG_2051.jpg]
+ IMG_2051.jpg
+2.04 MB External
+[infowski]
+infowski 10/21/2023 9:39 PM
+Yeah, i suspect that
+[bochenekk]
+[] infowski But I am not sure whether reboot is triggered by watchdog in
+the soc, or by watchdog in micom...
+bochenekk 10/21/2023 9:39 PM
+/etc/init/tvservice.conf
+[bochenekk]
+bochenekk 10/21/2023 9:35 PM
+/etc/init.d/tvservice (look for it there, I haven’t plugged my tv in to
+know exact file name)
+10/21/2023 9:34 PM
+:)
+[infowski]
+infowski 10/21/2023 9:33 PM
+Almost
+[bochenekk]
+[] infowski Funnily enough there is - this is the case with debug mode
+on :^)
+bochenekk 10/21/2023 9:32 PM
+The reboot is triggered by an init.d script
+ 1
+[infowski]
+infowski 10/21/2023 9:30 PM
+But I am not sure whether reboot is triggered by watchdog in the soc, or
+by watchdog in micom...
+[infowski]
+[] bochenekk so there’s no way to modify /etc/init.d to stop tv reboot
+when tvservice crashes?
+infowski 10/21/2023 9:29 PM
+Funnily enough there is - this is the case with debug mode on :^)
+[bochenekk]
+bochenekk 10/21/2023 9:10 PM
+okay, phew.
+[IMG_2048.jpg]
+ IMG_2048.jpg
+2.38 MB External
+ 2
+[bochenekk]
+bochenekk 10/21/2023 7:57 PM
+but now how would I patch it live that’s another question
+10/21/2023 7:56 PM
+answered myself. no.
+[bochenekk]
+bochenekk 10/21/2023 7:47 PM
+so there’s no way to modify /etc/init.d to stop tv reboot when tvservice
+crashes?
+[infowski]
+infowski 10/21/2023 5:15 PM
+@bochenek not really - the issue is that nvm is encrypted on webOS 4+

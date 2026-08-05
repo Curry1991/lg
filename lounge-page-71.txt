@@ -1,0 +1,1964 @@
+September 24, 2023
+[azzimihr]
+azzimihr 09/24/2023 4:24 PM
+can i somehow reset the firmware or is the developer mode app the only
+option now
+09/24/2023 4:24 PM
+my cousin accidentally confirmed a system update 3.9.1 on my lg tv,
+homebrew channel's gone, rootmytv not working anymore
+September 22, 2023
+hellobox. 09/22/2023 5:55 PM
+are there any other "popular" certs missing from the old ca-certificates
+used on webOS?
+[mariotaku]
+mariotaku 09/22/2023 5:54 PM
+Let's assume the initial firmware with ca-certificates 2016xxxx has that
+cert.
+09/22/2023 5:53 PM
+And I see firmwares updated from 2014 to 2016
+09/22/2023 5:53 PM
+2014 doesn't have that.
+09/22/2023 5:53 PM
+Source: git://anonscm.debian.org/collab-maint/ca-certificates.git file://0001-update-ca-certificates-remove-c-rehash.patch file://0002-update-ca-certificates-use-SYSROOT.patch file://default-sysroot.patch file://sbindir.patch file://0001-Update-mozilla-certdata.txt-to-version-1.98.patch file://root_ca.pem
+They could indeed add new certs. But so far I see the cert come only
+after 2016 version.
+hellobox. 09/22/2023 5:52 PM
+i wonder what they did change though
+09/22/2023 5:52 PM
+although they probably didn't
+[] mariotaku They're making that package based on the original one I
+guess.
+hellobox. 09/22/2023 5:52 PM
+but they could have added it
+[mariotaku]
+mariotaku 09/22/2023 5:52 PM
+They're making that package based on the original one I guess.
+hellobox. 09/22/2023 5:51 PM
+like W17P 04.70.04 (3.7.0) has 20140325-r0webos2
+09/22/2023 5:51 PM
+e.g. 20210119-r0webos3starfish13
+[] mariotaku Looks like anything with `2016xxxx` version has that
+hellobox. 09/22/2023 5:50 PM
+but LG doesn't necessarily use stock ca-certificates, do they?
+[mariotaku]
+mariotaku 09/22/2023 5:49 PM
+Let me see if 2014 has that
+09/22/2023 5:49 PM
+Looks like anything with 2016xxxx version has that
+[mariotaku]
+hellobox. or, well, which webOS major versions shipped with it from the
+beginning?
+mariotaku 09/22/2023 5:48 PM
+Checking ca-certificates version
+hellobox. 09/22/2023 5:09 PM
+or, well, which webOS major versions shipped with it from the beginning?
+09/22/2023 5:08 PM
+does anyone know which webOS versions have the ISRG Root X1
+(letsencrypt) cert?
+[kitsuned]
+hellobox. who is this for? <https://www.youtube.com/watch?v=iOi_9953RIo>
+kitsuned 09/22/2023 11:10 AM
+^^^
+[kitsuned]
+[] infowski it's 64k views and it's very likely they either pushed it as
+an ad, or just embedded on some webpage
+kitsuned 09/22/2023 11:10 AM
+oops, wrong reply
+[infowski]
+infowski 09/22/2023 8:18 AM
+not unseen
+[infowski]
+[] kitsuned >133k views >4 likes
+infowski 09/22/2023 8:18 AM
+it's 64k views and it's very likely they either pushed it as an ad, or
+just embedded on some webpage
+[kitsuned]
+kitsuned 09/22/2023 12:19 AM
+(no content)
+[image.png]
+ image.png
+9.25 KB External
+[kitsuned]
+hellobox. https://www.youtube.com/watch?v=SFd_ffqhJW0 
+kitsuned 09/22/2023 12:19 AM
+>133k views >4 likes (edited)
+September 21, 2023
+hellobox. 09/21/2023 11:48 PM
+to be fair, their _tv_sysonoff_setOledFlag() (clearly inlined) may be
+something like my blah() (but calling access() in both branches instead
+of using exists) (edited)
+hellobox. 09/21/2023 11:40 PM
+no duplicated access() calls; no goddamn system(); shorter; more
+efficient doesn't really have any error checking, but neither does
+theirs.
+    void blah(const char *path, bool should_exist) {
+        bool exists = access(path, F_OK) == 0;
+        if (should_exist) {
+            if (!exists) {
+                dbgprint("++ creating %s\n", path);
+                int fd = open(path, O_CREAT, 0755);
+                close(fd);
+            }
+        } else if (exists) {
+            dbgprint("++ deleting %s\n", path);
+            unlink(path);
+        }
+    }
+    blah("/var/luna/preferences/paneltype_oled", OSA_MD_IsSupportOLED());
+    blah("/var/luna/preferences/egallery_disabled", OSA_MD_IsHideOLEDeGallery());
+(edited)
+hellobox. 09/21/2023 11:31 PM
+they really call access() twice per file... 
+      if ( OSA_MD_IsSupportOLED() )
+      {
+        if ( access("/var/luna/preferences/paneltype_oled", F_OK) )
+        {
+          dbgprint("++ [%s] system(%s) \n", "_tv_sysonoff_setOledFlag", "touch /var/luna/preferences/paneltype_oled");
+          system("touch /var/luna/preferences/paneltype_oled");
+        }
+      }
+      else if ( !access("/var/luna/preferences/paneltype_oled", F_OK) )
+      {
+        dbgprint("++ [%s] system(%s) \n", "_tv_sysonoff_setOledFlag", "rm /var/luna/preferences/paneltype_oled");
+        system("rm /var/luna/preferences/paneltype_oled");
+      }
+      if ( OSA_MD_IsHideOLEDeGallery() )
+      {
+        if ( access("/var/luna/preferences/egallery_disabled", F_OK) )
+        {
+          dbgprint("++ [%s] system(%s) \n", "_tv_sysonoff_setOledFlag", "touch /var/luna/preferences/egallery_disabled");
+          system("touch /var/luna/preferences/egallery_disabled");
+        }
+      }
+      else if ( !access("/var/luna/preferences/egallery_disabled", F_OK) )
+      {
+        dbgprint("++ [%s] system(%s) \n", "_tv_sysonoff_setOledFlag", "rm /var/luna/preferences/egallery_disabled");
+        system("rm /var/luna/preferences/egallery_disabled");
+      }
+[friya]
+friya 09/21/2023 10:44 PM
+I want to know which car's got webOS
+hellobox. 09/21/2023 8:00 PM
+https://www.youtube.com/watch?v=SFd_ffqhJW0 
+webOS Hub
+The Upgraded OS #1 | webOS Hub 2.0S
+webOS Hub is beloved by many for its seamless integration into a
+comfortable and enriching lifestyle. We are delighted to share that an
+exciting upgrade is on the way, promising to elevate your user
+experience even further. Join us in the countdown to the official
+launch!  #webOSHub #platform #upgrade
+[] Watch video
+09/21/2023 8:00 PM
+who is this for? https://www.youtube.com/watch?v=iOi_9953RIo
+09/21/2023 7:59 PM
+this is like the old WEE content
+09/21/2023 7:59 PM
+holy fucking shit, it's ellie!
+https://www.youtube.com/channel/UCXOjRsMq0hb958Tthqba-lQ
+webOS Hub
+webOS Hub is a web-centric platform that benefits both developers and
+customers, as they can leverage its evolving ecosystem in exploring more
+opportunities in their business. Customers will be able to experience
+clear screen with convenient access to ultimate content from various
+providers. Find out how webOS Hub continues to extend into unli...
+[]
+ 1
+09/21/2023 7:58 PM
+it's like apple shit for WEE?
+https://www.notebookcheck.net/LG-webOS-Hub-smart-TVs-get-new-Apple-features-like-AirPlay-and-HomeKit.691240.0.html
+09/21/2023 7:57 PM
+https://www.lgnewsroom.com/2023/09/lg-presents-its-vision-to-become-media-and-entertainment-platform-company/
+what the fuck is webOS Hub? is it WEE?
+09/21/2023 7:56 PM
+> But what sets LG apart is its commitment to constant innovation based
+on profound consumer insights. The company has made it possible for
+users to enjoy the latest webOS versions on their home TVs, offering
+robust support for operating system upgrades even for previous TV
+models. profound consumer insight (?): people want software updates (but
+not with too much new functionality; they still have to buy a new model
+to get that) (edited)
+09/21/2023 7:55 PM
+https://www.androidpolice.com/lg-electronics-pivoting-to-global-entertainment/ >
+Furthermore, LG has diversified the application of webOS into
+projectors, digital signage, and in-vehicle infotainment systems. webOS:
+legendary jankiness, now in your car (edited)
+09/21/2023 7:53 PM
+> The theme of this event was ‘Sync to You, Open to All.' 
+09/21/2023 7:52 PM
+> The investment will be focused on “broadening the range of content
+available via the webOS platform, boosting usability by innovating the
+UI and UX, and strengthening partnerships with content production
+companies on a global scale.“ oh so not, like, fixing it
+09/21/2023 7:51 PM
+https://www.sammobile.com/news/lg-plan-media-entertainment-platform-webos/ >
+will invest KRW 1 trillion ($753 million) in the webOS business over the
+next five years > plans to expand the webOS platform to other product
+categories, and as a result of that, the brand expects to have a total
+of 300 million webOS-powered devices in the next three years. That's a
+100 million jump over the current number of webOS-powered devices, which
+is 200 million. (edited)
+September 20, 2023
+[theubusu]
+theubusu 09/20/2023 10:37 AM
+Did someone extract this sound test music ?
+.MOV preview not available — download to play
+ IMG_7026.mov
+8.22 MB External
+September 18, 2023
+[parkerlreed]
+parkerlreed 09/18/2023 6:31 PM
+python-uinput is semi-abandoned plus is specific to only Linux
+09/18/2023 6:30 PM
+Ideally this gets rewitten in something a lot more appropriate like C++
+talking to uinput proper (edited)
+[parkerlreed]
+[] parkerlreed
+https://github.com/parkerlreed/lg_magic_ble/commit/cb1e150f7c870b3c73b9a0893f75bc884a6986c2
+parkerlreed 09/18/2023 6:29 PM
+If anyone has ideas about button repeat, let me know lol. Currently if
+the button is the same as the last button it does nothing because
+otherwise it spams too often
+September 17, 2023
+Deleted User 09/17/2023 7:07 AM
+those might be frmo the usb drive thats plugged in
+09/17/2023 7:05 AM
+idk if that has anything to do with it
+09/17/2023 7:05 AM
+until it reaches 127 then it wraps around to like 8 or something
+09/17/2023 7:04 AM
+that usb device number keeps increasing
+09/17/2023 7:04 AM
+i am seeing this in dmesg
+[image.png]
+ image.png
+288.86 KB External
+[] mariotaku I mean, if you see "hid device disconnected" there may be
+some logs produced. Or, hid manager crashe...
+Deleted User 09/17/2023 7:04 AM
+it seems retroarch doesnt recognize it again after just unplugging it
+and plugging it back in
+[mariotaku]
+mariotaku 09/17/2023 6:47 AM
+You can do something like monitoring that service
+09/17/2023 6:46 AM
+com.webos.service.pdm
+09/17/2023 6:46 AM
+I mean, if you see "hid device disconnected" there may be some logs
+produced. Or, hid manager crashed
+Deleted User 09/17/2023 6:41 AM
+until i restart it seems
+09/17/2023 6:41 AM
+but it no longer works with retroarch
+09/17/2023 6:41 AM
+HID device connected
+[] mariotaku Maybe check dmesg?
+Deleted User 09/17/2023 6:41 AM
+well, the tv recognizes it
+[mariotaku]
+Deleted User even if i reconnect it
+mariotaku 09/17/2023 6:38 AM
+Maybe check dmesg?
+Deleted User 09/17/2023 6:34 AM
+i have to restart the tv
+09/17/2023 6:34 AM
+even if i reconnect it
+09/17/2023 6:34 AM
+ill see "HID device disconnected" and itll stop working
+09/17/2023 6:34 AM
+which after several minutes
+09/17/2023 6:34 AM
+im currently using a several foot long usb cable connected to a ps4
+controller
+Deleted User hm
+Deleted User 09/17/2023 6:33 AM
+does anyone know why this might be happening
+hellobox. 09/17/2023 4:48 AM
+you know, i wasn't sure about getting this... but once i saw it had
+*Triple XD Engine*, i was sold!
+[image.png]
+ image.png
+9.2 KB External
+[parkerlreed]
+parkerlreed 09/17/2023 4:35 AM
+Looked like mine from 2010
+09/17/2023 4:34 AM
+Even better they had a netcast TV up on the wall
+09/17/2023 4:32 AM
+Also the beauty of the Hilton is a completely unsupervised fitness room
+that didn't even appear to have any cameras
+hellobox. 09/17/2023 4:22 AM
+i should start bringing my tools everywhere
+[] parkerlreed If I had had my USBC to micro USB cable on me...
+hellobox. 09/17/2023 4:21 AM
+i have the same feeling right now
+[parkerlreed]
+parkerlreed 09/17/2023 4:20 AM
+I could have rooted it right then and there
+09/17/2023 4:20 AM
+If I had had my USBC to micro USB cable on me...
+[parkerlreed]
+[] mariotaku lololol
+parkerlreed 09/17/2023 4:17 AM
+(no content)
+ 20230916_204343.mp4
+21.16 MB External
+[parkerlreed]
+parkerlreed 09/17/2023 4:16 AM
+:P
+09/17/2023 4:16 AM
+Should have gotten to me sooner
+09/17/2023 4:16 AM
+I'm not even there anymore. Lol
+hellobox. 09/17/2023 4:16 AM
+open itttttttt
+[parkerlreed]
+parkerlreed 09/17/2023 4:15 AM
+So it's probably just within there I don't know what's within there
+09/17/2023 4:15 AM
+Like the box itself is for the treadmill
+[] parkerlreed It's in some random black box behind the machine
+hellobox. 09/17/2023 4:15 AM
+picture plz
+hellobox. 09/17/2023 4:15 AM
+like a WP400? STB-5000?
+[parkerlreed]
+parkerlreed 09/17/2023 4:15 AM
+It's in some random black box behind the machine
+09/17/2023 4:15 AM
+No idea
+hellobox. 09/17/2023 4:15 AM
+what's the webOS box?
+[parkerlreed]
+hellobox. i don't understand... it's an android device displaying video
+from a webOS box?
+parkerlreed 09/17/2023 4:14 AM
+Seems to be
+[] parkerlreed Click to see attachment
+hellobox. 09/17/2023 4:14 AM
+i don't understand... it's an android device displaying video from a
+webOS box?
+[mariotaku]
+mariotaku 09/17/2023 4:14 AM
+lololol
+[parkerlreed]
+parkerlreed 09/17/2023 4:13 AM
+(no content)
+[20230916_205501.jpg]
+ 20230916_205501.jpg
+625.21 KB External
+[parkerlreed]
+[] mariotaku The machine runs android
+parkerlreed 09/17/2023 4:13 AM
+So does Peloton apparently
+[mariotaku]
+mariotaku 09/17/2023 4:11 AM
+The machine runs android
+[mariotaku]
+[] parkerlreed I meant the TV portion is probably WebOS given the
+screensaver.
+mariotaku 09/17/2023 4:11 AM
+Of course, the live TV seems to be connecting to some webOS box
+[parkerlreed]
+parkerlreed 09/17/2023 4:10 AM
+Yeah the exercise software definitely isn't lol
+[parkerlreed]
+[] mariotaku My gym has this treadmill! Not webOS though, it must be
+running in the black box somewhere near the ...
+parkerlreed 09/17/2023 4:10 AM
+I meant the TV portion is probably WebOS given the screensaver.
+[parkerlreed]
+parkerlreed 09/17/2023 4:09 AM
+Yeah there is a black box back there
+[mariotaku]
+[] parkerlreed Click to see attachment
+mariotaku 09/17/2023 4:09 AM
+My gym has this treadmill! Not webOS though, it must be running in the
+black box somewhere near the treadmill
+Deleted User 09/17/2023 3:47 AM
+hm
+[image.png]
+ image.png
+7.45 KB External
+Deleted User 09/17/2023 3:39 AM
+its only removing it from the home menu
+09/17/2023 3:35 AM
+its failing to remove anything
+09/17/2023 3:34 AM
+i dont even see it in the home menu
+09/17/2023 3:34 AM
+wtf
+[image.png]
+ image.png
+38.47 KB External
+[parkerlreed]
+parkerlreed 09/17/2023 3:32 AM
+(no content)
+[20230916_213204.jpg]
+ 20230916_213204.jpg
+627.84 KB External
+09/17/2023 3:32 AM
+This workout machine has an LG TV built into it.....
+Deleted User 09/17/2023 3:31 AM
+bruh
+[image.png]
+ image.png
+13.04 KB External
+September 16, 2023
+[itsyogsothoth]
+itsyogsothoth 09/16/2023 11:16 PM
+When task manager gives more detailed information than Dell's site
+Deleted User 09/16/2023 11:16 PM
+(no content)
+[image.png]
+ image.png
+85.58 KB External
+[itsyogsothoth]
+itsyogsothoth 09/16/2023 11:16 PM
+i7 on board?
+Deleted User 09/16/2023 11:15 PM
+6 cores 12 threads
+[] astur3l so its now core 2 quad?:D
+Deleted User 09/16/2023 11:15 PM
+~~yes~~ no
+[astur3l]
+Deleted User i no longer have to compile things on what is basically a
+core 2 duo
+astur3l 09/16/2023 11:15 PM
+so its now core 2 quad?:D
+[itsyogsothoth]
+itsyogsothoth 09/16/2023 11:14 PM
+Finally you can put higher number than 2 in that make flag
+Deleted User 09/16/2023 10:53 PM
+i no longer have to compile things on what is basically a core 2 duo
+(edited)
+09/16/2023 10:52 PM
+dell latitude 5591
+09/16/2023 10:51 PM
+i dont think i ever mentioned it here but i finally have a decent laptop
+hellobox. 09/16/2023 10:48 PM
+it looks like stuff is mostly in the same place between 55NANO80UPA and
+55NANO90UNA, so someone might be able to do that upgrade, with a new
+power board (if the LED power stuff is compatible)
+https://www.shopjimmy.com/lg-ebt66607302-main-board-for-55nano80upa/
+https://www.shopjimmy.com/lg-ebt66648901-main-board-for-55nano90una/
+LG EBT66607302 Main Board for 55NANO80UPA
+Shop this replacement part to repair a variety of LG models. 180-Day
+Warranty. Ships same business day.
+[]
+LG EBT66648901 Main Board for 55NANO90UNA
+Shop this replacement part to repair a variety of LG models. 180-Day
+Warranty. Ships same business day.
+[]
+Deleted User 09/16/2023 10:46 PM
+is the retroarch update still brken
+[image.png]
+ image.png
+2.31 KB External
+hellobox. 09/16/2023 10:44 PM
+i don't think there's a 43NANO80UPA, and 50/55NANO80UPA have all the
+ports in different places than 43NANO75UPA (plus a different power
+connector)
+https://www.shopjimmy.com/lg-ebu66347802-main-board-for-50nano80upa-bussljm/
+https://www.shopjimmy.com/lg-ebt66607302-main-board-for-55nano80upa/
+(edited)
+LG EBU66347802 Main Board for 50NANO80UPA.BUSSLJM
+Shop this replacement part to repair a variety of LG models. 180-Day
+Warranty. Ships same business day.
+[]
+LG EBT66607302 Main Board for 55NANO80UPA
+Shop this replacement part to repair a variety of LG models. 180-Day
+Warranty. Ships same business day.
+[]
+09/16/2023 10:42 PM
+i'd like to find an easy way to figure out if it's using EPI, CEDS, or
+Vx1
+09/16/2023 10:42 PM
+i don't even know if you can get that information in software
+09/16/2023 10:41 PM
+oh no... there are at least 2 different video protocols used by
+55NANO75UPA boards
+https://www.shopjimmy.com/lg-ebu66466702-main-board-for-55nano75upa-busyljm/
+https://www.shopjimmy.com/lg-ebu66262803-main-board-for-55nano75upa-buscljm/
+(same thing is true for 43NANO75UPA) (edited)
+LG EBU66466702 Main Board for 55NANO75UPA.BUSYLJM
+Shop this replacement part to repair a variety of LG models. 180-Day
+Warranty. Ships same business day.
+[]
+LG EBU66262803 Main Board for 55NANO75UPA.BUSCLJM
+Shop this replacement part to repair a variety of LG models. 180-Day
+Warranty. Ships same business day.
+[]
+[parkerlreed]
+parkerlreed 09/16/2023 10:41 PM
+Not off the top of my head lol
+[] parkerlreed 43Nano75UPA
+hellobox. 09/16/2023 10:41 PM
+do you know the full "service code" model number?
+[parkerlreed]
+parkerlreed 09/16/2023 10:39 PM
+Yeah that was my thought lol
+hellobox. 09/16/2023 10:38 PM
+your options may be limited if you want something that'll align with the
+existing mounting holes/cutouts
+09/16/2023 10:38 PM
+what would you upgrade to though?
+09/16/2023 10:37 PM
+so 55NANO75UPA has the 2 68-pin FFC connectors
+09/16/2023 10:37 PM
+i also have 2 other lm21a boards: 75UP7070PUD and 50NANO80UPA
+[parkerlreed]
+parkerlreed 09/16/2023 10:36 PM
+Yeah lm21a
+09/16/2023 10:36 PM
+43Nano75UPA
+hellobox. 09/16/2023 10:36 PM
+i have a 55NANO75UPA board
+[] parkerlreed Nano75UPA
+hellobox. 09/16/2023 10:36 PM
+lm21a?
+hellobox. 09/16/2023 10:36 PM
+you'll need to match the video protocol used by your t-con
+[parkerlreed]
+parkerlreed 09/16/2023 10:36 PM
+Nano75UPA (edited)
+[] parkerlreed Mine's not too terrible but it's only got the 1.5
+gigabytes of RAM
+hellobox. 09/16/2023 10:36 PM
+what is it?
+[parkerlreed]
+parkerlreed 09/16/2023 10:35 PM
+Mine's not too terrible but it's only got the 1.5 gigabytes of RAM
+(edited)
+[] parkerlreed Would be interesting if I could upgrade my existing TV
+hellobox. 09/16/2023 10:35 PM
+i've also been thinking about that
+[] parkerlreed Are you saying just buy the motherboard from a TV?
+hellobox. 09/16/2023 10:35 PM
+yeah... how else would i have access to so many webOS versions/SoCs?
+(this is probably missing some of the more obscure ones, and i have
+multiple of several SoCs) (edited)
+[image.png]
+ image.png
+14.26 KB External
+[parkerlreed]
+parkerlreed 09/16/2023 10:35 PM
+Would be interesting if I could upgrade my existing TV
+hellobox. 09/16/2023 10:34 PM
+and either buy a cable (unfortunately often like $8) or just connect the
+rails with a couple wires
+Deleted User 09/16/2023 10:34 PM
+yes i think
+[parkerlreed]
+parkerlreed 09/16/2023 10:33 PM
+Are you saying just buy the motherboard from a TV?
+hellobox. 09/16/2023 10:33 PM
+or get a power board for like $6
+09/16/2023 10:33 PM
+and power it from any 12V supply probably
+[parkerlreed]
+parkerlreed 09/16/2023 10:33 PM
+Wat
+hellobox. 09/16/2023 10:33 PM
+in the US you can get a board for like $8
+Deleted User surprisingly, after several months unattended by me, the
+other tv is still rooted
+hellobox. 09/16/2023 10:32 PM
+you should get a dev board
+Deleted User 09/16/2023 10:31 PM
+surprisingly, after several months unattended by me, the other tv is
+still rooted
+[image.png]
+ image.png
+37.32 KB External
+[itsyogsothoth]
+itsyogsothoth 09/16/2023 5:59 PM
+HigH QuALitY
+[parkerlreed]
+parkerlreed 09/16/2023 5:51 PM
+The one I found is a clone that doesn't work 100% lol
+[parkerlreed]
+[] itsyogsothoth Wait a minute
+parkerlreed 09/16/2023 5:51 PM
+That's the real one
+hellobox. 09/16/2023 4:43 PM
+can someone with a 2023 OLED verify that this enables access to the real
+instart menu?
+    luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"other","settings":{"svcMenuFlag":"false"}}'
+    this will get the current value:
+    luna-send -f -n 1 'luna://com.webos.settingsservice/getSystemSettings' '{"category":"other","keys":["svcMenuFlag"]}'
+(edited)
+[itsyogsothoth]
+[] parkerlreed Click to see attachment
+itsyogsothoth 09/16/2023 2:13 PM
+Wait a minute
+[PXL_20230916_121327878.jpg]
+ PXL_20230916_121327878.jpg
+321.61 KB External
+[parkerlreed]
+parkerlreed 09/16/2023 4:55 AM
+(no content)
+[20230915_224830.jpg]
+ 20230915_224830.jpg
+702.6 KB External
+ 1
+09/16/2023 4:55 AM
+Fake ass remote we meet again
+September 15, 2023
+[parkerlreed]
+parkerlreed 09/15/2023 8:33 PM
+(Was just in the gist before)
+09/15/2023 8:32 PM
+https://github.com/parkerlreed/lg_magic_ble/commit/cb1e150f7c870b3c73b9a0893f75bc884a6986c2
+hidraw to uinput conversion · parkerlreed/lg_magic_ble@cb1e150
+[]
+09/15/2023 8:32 PM
+lol I forgot to post my uinput code to the github
+Deleted User 09/15/2023 5:56 PM
+[]
+ 1
+September 14, 2023
+[smx2460]
+smx2460 09/14/2023 7:32 PM
+Typical
+hellobox. 09/14/2023 7:31 PM
+random lg stuff
+[smx2460]
+smx2460 09/14/2023 7:31 PM
+Of?
+[] smx2460 ?
+hellobox. 09/14/2023 7:31 PM
+dwarf
+[smx2460]
+hellobox. you love to see it
+smx2460 09/14/2023 7:26 PM
+?
+[parkerlreed]
+parkerlreed 09/14/2023 4:26 AM
+(no content)
+ 20230913_222443.mp4
+15.85 MB External
+[:lg:] 1
+hellobox. 09/14/2023 1:23 AM
+bestech seems to have 12507WS-NNL connectors
+http://www.topbestech.com/en/index.asp
+09/14/2023 1:21 AM
+nice > 12507WR-NNL and 12507WS-NNL are Wafer and SMT Type, 12507WR-NNL
+is Right Angle and 12507WS-NNL is Straight. 12507HS-NNL is Housing.
+hellobox. 09/14/2023 12:44 AM
+you love to see it
+[image.png]
+ image.png
+11.78 KB External
+September 13, 2023
+[parkerlreed]
+parkerlreed 09/13/2023 6:45 AM
+(no content)
+[Screenshot_20230913-003950_Smart_View.png]
+ Screenshot_20230913-003950_Smart_View.png
+276.48 KB External
+[20230913_004220.jpg]
+ 20230913_004220.jpg
+453.25 KB External
+09/13/2023 6:45 AM
+Lol I'm watching Samsung TV Plus on the LG TV because Samsung devices
+let you cast individual applications to Miracast lol
+hellobox. 09/13/2023 6:17 AM
+i just figured out what "Note: This parameter is deprecated in
+IvyLeague."
+(https://www.webosose.org/docs/reference/ls2-api/com-webos-service-applicationmanager/)
+means... ivyleague is a codename for a release of the reference platform
+they didn't use for webos tv
+hellobox. 09/13/2023 6:04 AM
+bizarre
+[parkerlreed]
+parkerlreed 09/13/2023 6:04 AM
+It is literally just in the video stream
+09/13/2023 6:04 AM
+Yes
+hellobox. 09/13/2023 6:04 AM
+lol you can rewind to the waterfall?
+[parkerlreed]
+parkerlreed 09/13/2023 6:03 AM
+Like I understand it's a free service and you might need to put
+advertisements but why the hell just put a random ass waterfall in the
+middle that hard cuts it doesn't even fucking fade
+09/13/2023 6:02 AM
+(no content)
+ 20230913_000106.mp4
+13.04 MB External
+[:lg:] 3
+09/13/2023 6:02 AM
+Literally an inconvenience just to be an inconvenience
+09/13/2023 6:00 AM
+That's not even a fucking advertisement at that point
+09/13/2023 6:00 AM
+Okay that's hilarious so the LG channels watching a movie just threw a
+waterfall commercial that is a placeholder will be right back created by
+LG and you just sit there for like 20 seconds until it goes back to the
+movie
+hellobox. 09/13/2023 5:59 AM
+i guess so. not sure
+[parkerlreed]
+parkerlreed 09/13/2023 5:58 AM
+@hellobox Wait so I guess they are using gstreamer for the audio pipe?
+09/13/2023 5:52 AM
+I mean at least they're crediting the source
+09/13/2023 5:51 AM
+Wowwwwww
+09/13/2023 5:51 AM
+Oh that's hilarious I thought it was a stack overflow but it's literally
+from stack overflow
+hellobox. 09/13/2023 5:51 AM
+looks like that code gets around
+https://github.com/madebycm/AndroidBug5497Workaround
+09/13/2023 5:51 AM
+they put the code from here in their open source package
+https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
+[parkerlreed]
+parkerlreed 09/13/2023 5:50 AM
+What the hell is this
+hellobox. 09/13/2023 5:49 AM
+from LG ThinQ App(Android)_4.1.48000.zip
+https://opensource.lge.com/product/list?page=&ctgr=&subCtgr=&keyword=LG+ThinQ+App%28Android%29+4.1.48230
+ stackoverflow-7417123.txt
+1.99 KB External
+[parkerlreed]
+parkerlreed 09/13/2023 5:47 AM
+(no content)
+ 20230912_234626.mp4
+5.83 MB External
+hellobox. 09/13/2023 5:07 AM
+[:cloi:][:cloi:]
+[image.png]
+ image.png
+59.96 KB External
+09/13/2023 5:04 AM
+[:cloi:]
+[image.png]
+ image.png
+13.5 KB External
+September 12, 2023
+hellobox. 09/12/2023 2:06 AM
+https://blog.digital-forensics.it/2020/12/a-journey-into-iot-forensics-episode-2.html
+09/12/2023 2:04 AM
+lol how long before rootmy.tv is cited in an academic paper?
+[image.png]
+ image.png
+78.33 KB External
+09/12/2023 2:00 AM
+https://sites.google.com/view/skim71/
+09/12/2023 1:55 AM
+http://fileformats.archiveteam.org/wiki/LG_Smart_TV_firmware_package >
+These store updates for LG’s webOS and NetCast OSses. They can be opened
+with OpenLGTV’s epk2extract (edited)
+09/12/2023 1:55 AM
+hmm http://fileformats.archiveteam.org/wiki/LG_webOS_Smart_TV
+September 10, 2023
+hellobox. 09/10/2023 11:49 PM
+ah yes, JTEG
+[image.png]
+ image.png
+39.41 KB External
+hellobox. 09/10/2023 9:49 PM
+is it just me or are these pinouts different?
+[image.png]
+ image.png
+13.45 KB External
+[image.png]
+ image.png
+23.77 KB External
+hellobox. 09/10/2023 8:43 PM
+i guess vishay also makes fancier (higher-gain, anyway) ones in the same
+package (although they may draw slightly more current i guess) (edited)
+[image.png]
+ image.png
+77.81 KB External
+09/10/2023 8:36 PM
+LG says 37.9kHz but whatever
+09/10/2023 8:35 PM
+LG's IR stuff is NEC, right?
+09/10/2023 8:34 PM
+(no content)
+[image.png]
+ image.png
+70.71 KB External
+09/10/2023 8:34 PM
+TSOP77438TR seems to be what LG uses in their TVs
+09/10/2023 8:28 PM
+found it (the IR receiver) https://www.vishay.com/docs/82471/tsop772.pdf
+(edited)
+09/10/2023 8:25 PM
+what i really want to find is something compatible with the 12507 series
+that i can get more easily
+09/10/2023 8:24 PM
+hmm. i think 12505WR is a korean picoblade knockoff that lg also uses
+[image.png]
+ image.png
+95 KB External
+hellobox. i think this is it
+hellobox. 09/10/2023 8:22 PM
+wow. this is the full extent of the documentation
+hellobox. 09/10/2023 8:20 PM
+interesting. it looks like you can mount it two ways
+09/10/2023 8:19 PM
+i think this is it
+[16_1.png]
+ 16_1.png
+112.89 KB External
+09/10/2023 8:18 PM
+(no content)
+[image.png]
+ image.png
+251.82 KB External
+09/10/2023 8:16 PM
+anyone know of a compatible IR receiver?
+AO-R123C7G-LG(T) 2.7V TO 5.5V 450UA 37.9KHZ 15M 940NM R/TP-T 4P AUK CORP
+another random korean(/japanese) company http://www.auk.co.kr/ (edited)
+[image.png]
+ image.png
+36.46 KB External
+hellobox. so the yeonho version is apparently SMW200-24CF, which i can't
+find specs for. SMW200-24C is totally...
+hellobox. 09/10/2023 7:55 PM
+i think this board actually has one of those different SMW200 connectors
+hellobox. 09/10/2023 1:14 AM
+maybe getmenow
+citytrader2000 Hello! do anyone know if there is a method to root WebOS
+3.9?
+hellobox. 09/10/2023 1:14 AM
+nvm https://gist.github.com/throwaway96/827ff726981cc2cbc46a22a2ad7337a1
+citytrader2000 09/10/2023 12:45 AM
+Hello! do anyone know if there is a method to root WebOS 3.9?
+September 9, 2023
+Deleted User 09/09/2023 2:28 AM
+i thought maybe the owner was kicking accounts but it didnt show up in
+the audit log
+hellobox. i can still see it
+Deleted User 09/09/2023 2:28 AM
+i noticed it because both that account and one of my old friends
+accounts that was banned at the exact same time for the same reason both
+left some server at the same time
+[image.png]
+ image.png
+20.81 KB External
+hellobox. 09/09/2023 2:19 AM
+oh, i guess i can't in a new tab
+Deleted User it just got deleted
+hellobox. 09/09/2023 2:18 AM
+i can still see it
+Deleted User 09/09/2023 2:14 AM
+after about 1 month
+09/09/2023 2:14 AM
+it just got deleted
+Deleted User rip <@456226577798135808>
+Deleted User 09/09/2023 2:14 AM
+lol
+hellobox. 09/09/2023 1:34 AM
++A13V (20V) 
+[image.png]
+ image.png
+12.88 KB External
+September 8, 2023
+hellobox. 09/08/2023 11:26 PM
+i finally got an 18-pin old-style power cable, and i don't even remember
+which boards i needed it for (do i even have any?)
+[kitsuned]
+kitsuned 09/08/2023 11:03 PM
+oh it makes sense
+ww8543 09/08/2023 10:29 PM
+it probably is (edited)
+ww8543 i know my "pfp" color changed when discord did the whole name
+change thing
+hellobox. 09/08/2023 10:29 PM
+that's also what i believe happened. maybe the color is generated from
+your username
+hellobox. so i guess it's not the role
+ww8543 09/08/2023 10:28 PM
+i know my "pfp" color changed when discord did the whole name change
+thing
+hellobox. 09/08/2023 6:23 PM
+i just got a board with an electrolytic capacitor knocked off (right
+next to a PMIC/switching regulator), but it still works (edited)
+Deleted User 09/08/2023 5:50 PM
+your role color doesnt affect your pfp
+09/08/2023 5:50 PM
+but
+09/08/2023 5:50 PM
+yes
+[astur3l]
+Deleted User it was this color before
+astur3l 09/08/2023 5:50 PM
+that was the 'developer' role color
+Deleted User 09/08/2023 5:41 PM
+i dont know
+09/08/2023 5:41 PM
+maybe it changed if you changed something on your profile
+hellobox. it may have been a reddish orange
+Deleted User 09/08/2023 5:40 PM
+it was this color before
+[image.png]
+ image.png
+4.27 KB External
+hellobox. 09/08/2023 5:14 PM
+so i guess it's not the role
+hellobox. <@524362336644104215> did you change your color?
+ww8543 09/08/2023 5:14 PM
+no
+hellobox. 09/08/2023 4:54 PM
+@ww did you change your color?
+09/08/2023 4:54 PM
+it takes it from your role?
+09/08/2023 4:53 PM
+oh, is it?
+[astur3l]
+hellobox. maybe it changed when i chose a username
+astur3l 09/08/2023 4:51 PM
+isnt it because of the admin role?:D
+hellobox. 09/08/2023 4:43 PM
+i don't really see it because i have the compact display mode or
+whatever on
+[image.png]
+ image.png
+2.97 KB External
+09/08/2023 4:43 PM
+maybe it changed when i chose a username
+09/08/2023 4:42 PM
+it may have been a reddish orange
+[kitsuned]
+kitsuned 09/08/2023 4:14 PM
+i was sure you were red :P
+[kitsuned]
+hellobox. was it red? i don't remember
+kitsuned 09/08/2023 4:14 PM
+oh, I also caught cognitive dissonance
+Deleted User oh i just realized who you are, what happened to the red
+pfp?
+hellobox. 09/08/2023 4:05 PM
+was it red? i don't remember
+[infowski]
+[] itsyogsothoth HTTP 200 Response body: ```json { "status": "error",
+"code": 2137 } ```
+infowski 09/08/2023 10:28 AM
+bro
+Deleted User 09/08/2023 7:09 AM
+but i posted it
+09/08/2023 7:09 AM
+dont know when, where ,or what it was
+09/08/2023 7:09 AM
+anyways i may have posted "content intended to shock others"
+hellobox. why?
+Deleted User 09/08/2023 7:08 AM
+oh i just realized who you are, what happened to the red pfp?
+hellobox. 09/08/2023 4:28 AM
+why?
+Deleted User 09/08/2023 4:20 AM
+discords way of saying banned
+hellobox. your account was deactivated?
+Deleted User 09/08/2023 4:19 AM
+disabled
+Deleted User account was deactivated like a month ago and i finally
+rejoined
+hellobox. 09/08/2023 4:17 AM
+your account was deactivated?
+Deleted User 09/08/2023 4:04 AM
+wasnt active here anymore anyway
+09/08/2023 4:04 AM
+account was deactivated like a month ago and i finally rejoined
+09/08/2023 4:03 AM
+rip @Deleted User
+hellobox. 09/08/2023 12:15 AM
+i believe this is the datasheet for the modern power connectors (female
+plug SMH200-HNNS4; male jack SMAW200-HNNS5K)
+http://www.yeonho.com/app/product/ca/SMAW200-HNNS5K.pdf
+09/08/2023 12:11 AM
+i guess SMW are the vertical ones, and SMAW are right-angle
+09/08/2023 12:09 AM
+so the yeonho version is apparently SMW200-24CF, which i can't find
+specs for. SMW200-24C is totally different and incompatible
+09/08/2023 12:07 AM
+i don't even know how to buy a cable that i can be confident will fit
+09/08/2023 12:05 AM
+so this cable does not fit in a single one of the three boards i have
+with that type of 24-pin connector
+09/08/2023 12:03 AM
+maybe only some (random) boards get QC inspection, and R is for boards
+that are reworked. not sure about RT; maybe it only applies to a limited
+number of boards at the beginning of production
+September 7, 2023
+hellobox. 09/07/2023 11:55 PM
+ah. so that's what this means. the two boards i'm looking at right now
+(one of which is the part specified in this document) have everything up
+to "S" marked off, but not Q/R/RT D: "자삽"??? (자삽) M: SMD H: "water
+shovel final"??? (수삽 최종) I: ICT F: "primary performance" (1차 성능)
+A: AGING P: HI-POT T: "Final Inspection (ATE)" (최종 검사 (ATE)) S: "SET
+inspection"??? (SET 검사) [pretty sure this doesn't refer to Single
+Event Transient testing lol
+https://en.wikipedia.org/wiki/Single-event_upset#Testing_for_SEU_sensitivity]
+Q: "QC inspection" (QC 검사) R: "bad repair"??? (불량 수리) RT: "mass
+production proof test" (양산 보증 시험) (edited)
+[image.png]
+ image.png
+65.24 KB External
+09/07/2023 11:53 PM
+> azardous substances
+[image.png]
+ image.png
+9.52 KB External
+09/07/2023 11:51 PM
+> Micom Deberging
+[image.png]
+ image.png
+10.23 KB External
+hellobox. 09/07/2023 11:36 PM
+the pinout is (almost, one GND/NC difference) the same though, so i
+guess i can just use the new one
+09/07/2023 11:35 PM
+holy shit. it is also incredibly difficult to remove the cable from the
+vertical connector on this other power board i have. the color is
+extremely similar, but if you look inside, you can see different mold
+marks, so i guess they're from different manufacturers.
+09/07/2023 11:30 PM
+the connectors look basically fucking identical
+09/07/2023 11:28 PM
+fuck you lg
+09/07/2023 11:28 PM
+i can't even
+09/07/2023 11:27 PM
+oh my fucking god. you have got to be shitting me. i think either the
+foosung or yeonho
+(https://discord.com/channels/407937994037919756/713852484170547222/1143707620235038730)
+female connector won't fit into the other male shroud.
+hellobox. 09/07/2023 10:37 PM
+can someone please explain what "BPR" means? lg uses it to refer to main
+board assemblies i think. this is on a non-lg (vizio) board. googling
+for it just brings up mostly lg parts (and this, which is kind of cool
+https://www.optilab.com/products/bpr-23-evaluation-board). Board...
+PCB... something? Base PCB something? although the way it's presented
+(next to "RoHS") makes it seem like it's some kind of standard or
+certification... i believe lg only uses it to refer to main boards
+(possibly with cables and brackets included) as "BPR Total Assembly",
+although they may use it for other boards. i've also seen "DMS" (e.g.,
+"DMS Chassis Assembly" https://lgparts.com/products/ebt60953801), but
+IIRC that's mostly for commercial models (although the previous example
+seems to be for something like the consumer 50PJ350-UB, so who knows
+https://www.shopjimmy.com/lg-ebr65775602-eax61358603-1-main-board-for-50pj350-ub/).
+(edited)
+[image.png]
+ image.png
+181.87 KB External
+hellobox. 09/07/2023 10:22 PM
+uh?
+[image.png]
+ image.png
+338.85 KB External
+hellobox. 09/07/2023 10:01 PM
+the format of "software label" stickers appears to be:
+    xx.yy.zz
+    hhhh
+    yymmdd
+where xx.yy.zz is a version number, hhhh might be some kind of
+hash/checksum (seems to be 4 hex digits), and yymmdd looks like a date
+although one of them (affixed near the "software label" silkscreen box)
+actually has the version 3.03.7 (hash 1EBB; date 180923), while the
+other (on top of the eMMC IC) has 03.01.05 (hash 8358; date 180922) so
+the apparently newer version was programmed the day after the older one.
+the sticker not on the eMMC IC may refer to MICOM firmware or whatever
+is contained in the SPI flash
+hellobox. 09/07/2023 9:30 PM
+also, it has two "software label" stickers with different versions
+09/07/2023 9:30 PM
+i wonder why... it's not like there's ursa or something
+09/07/2023 9:30 PM
+this M3 board seems to have both eMMC and SPI flash
+[unclamped]
+[] parkerlreed You know, LG really is a piece of shit
+unclamped 09/07/2023 11:58 AM
+I love your anger lmao
+[itsyogsothoth]
+[] parkerlreed Click to see attachment
+itsyogsothoth 09/07/2023 11:22 AM
+HTTP 200 Response body:
+    {
+      "status": "error",
+      "code": 2137
+    }
+[parkerlreed]
+parkerlreed 09/07/2023 7:40 AM
+(no content)
+ 20230907_013721.mp4
+8.68 MB External
+[:lg:] 4
+09/07/2023 7:39 AM
+You know, LG really is a piece of shit
+hellobox. 09/07/2023 4:45 AM
+jailpatch.sh released: https://github.com/throwaway96/install-jail-conf
+September 6, 2023
+hellobox. 09/06/2023 7:31 PM
+wow, is that the old mediatek logo? glad lg has improved their PCB
+materials/process...
+[s-l1600.png]
+ s-l1600.png
+3.84 MB External
+September 5, 2023
+[cautioned]
+[] parkerlreed Now I want a properly fitting Wii sleeve for the LG
+remotes
+cautioned 09/05/2023 10:30 PM
+you'd be surprised, there are already some rubbery sleeves for lg
+remotes, idk if their are any with the similar line texture (edited)
+[itsyogsothoth]
+itsyogsothoth 09/05/2023 4:04 PM
+What in a god's name is that?
+[parkerlreed]
+parkerlreed 09/05/2023 7:18 AM
+This feels amazing
+09/05/2023 7:18 AM
+Now I want a properly fitting Wii sleeve for the LG remotes
+09/05/2023 7:17 AM
+Cursed
+[20230905_011720.jpg]
+ 20230905_011720.jpg
+470.03 KB External
+[20230905_011725.jpg]
+ 20230905_011725.jpg
+401.74 KB External
+ 1
+hellobox. 09/05/2023 5:53 AM
+mascots for webos reference platforms
+09/05/2023 5:53 AM
+beanbirds i guess
+[parkerlreed]
+hellobox. kind of frightening tbh
+parkerlreed 09/05/2023 5:52 AM
+WTF are those?
+hellobox. 09/05/2023 4:17 AM
+kind of frightening tbh
+[file.png]
+ file.png
+198.73 KB External
+[file.png]
+ file.png
+459.22 KB External
+[file.png]
+ file.png
+478.29 KB External
+09/05/2023 4:13 AM
+(no content)
+[file.png]
+ file.png
+457.9 KB External
+September 4, 2023
+[kitsuned]
+kitsuned 09/04/2023 4:19 PM
+https://www.theverge.com/2023/8/29/23850250/samsung-lg-app-home-connectivity-alliance-appliances-ifa
+Smart appliances are getting smarter
+Samsung and LG will soon share smart home apps.
+[]
+[unclamped]
+unclamped 09/04/2023 2:36 AM
+I couldn't understand the point of it for doing something that can't
+already be done with Dev mode or normal store apps
+[unclamped]
+hellobox. what don't you understand?
+unclamped 09/04/2023 2:35 AM
+About the dumbfoundness? I just said that because it seems crazy to me
+how rooting is a thing people actually do on TVs, not that I don't
+understand it
+[astur3l]
+[] unclamped So, what exactly is webOS? What the hell is homebrew
+supposed to be used for in a TV? H o w?
+astur3l 09/04/2023 1:49 AM
+tldr; hbc grants root to other apps/services, runs ssh/telnet as root,
+run custom init scripts (gains root by patching some startup script)
+hellobox. 09/04/2023 1:23 AM
+what don't you understand?
+[unclamped]
+unclamped 09/04/2023 12:23 AM
+I'm still dumbfounded at the concept of rooting a TV, but at the same
+time it's funny lmao (edited)
+09/04/2023 12:21 AM
+I did see the gist, that's where I found the invite to this server
+(edited)
+[Dyno]
+Dyno 09/04/2023 12:19 AM
+crashd exploit guide, working as of 2023-08-17
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f
+(only works on webOS 4+)
+[unclamped]
+unclamped 09/04/2023 12:18 AM
+So, what exactly is webOS? What the hell is homebrew supposed to be used
+for in a TV? H o w?
+09/04/2023 12:18 AM
+hey all! I just found this server while trying to enable dev mode to
+install a Jellyfin ipk. I am quite familiar with Linux and
+rooting/jailbreaking/homebrewing Android devices, but I guess this is a
+bit different, since webOS isn't Android
+September 2, 2023
+[mariotaku]
+[] kitsuned > Neiderman said Tizen may be "the worst code I've ever
+seen" after he examined the quality of Samsu...
+mariotaku 09/02/2023 3:16 AM
+I hereby invite them to give webOS source code a look
+ 1 [:lg:] 2
+September 1, 2023
+[kitsuned]
+kitsuned 09/01/2023 4:37 PM
+this server is definitely missing emoji w/ Samsung logo (edited)
+09/01/2023 4:36 PM
+> Neiderman said Tizen may be "the worst code I've ever seen" after he
+examined the quality of Samsung's software used to power most its Galaxy
+Gear-branded watches, Smart TVs, and some of its smartphones, cameras
+and home appliances. > > He added, "everything you can do wrong there,
+they do it. You can see that nobody with any understanding of security
+looked at this code or wrote it. It's like taking an undergraduate and
+letting him program your software.""You can see that nobody with any
+understanding of security looked at this code or wrote it."
+09/01/2023 4:36 PM
+lol
+https://appleinsider.com/articles/17/04/06/researcher-calls-samsungs-tizen-os-the-worst-code-ive-ever-seen
+August 31, 2023
+hellobox. 08/31/2023 3:07 PM
+lol do they mark these "WE" so it looks like "3M" at a glance?
+[image.png]
+ image.png
+22.08 KB External
+ 1
+August 28, 2023
+[] kitsuned he forgot to plug the power cord 
+hellobox. 08/28/2023 10:19 PM
+so an accurate depiction of an [:lg:] employee then?
+[kitsuned]
+[] smx2460
+https://img.freepik.com/premium-photo/bored-lazy-asian-worker-businessman-korean-japanese-man-exhaus...
+kitsuned 08/28/2023 10:17 PM
+he forgot to plug the power cord 
+[] smx2460
+https://img.freepik.com/premium-photo/bored-lazy-asian-worker-businessman-korean-japanese-man-exhaus...
+hellobox. 08/28/2023 10:08 PM
+yeah, I bet they're annoyed they have to deal with something unusual
+[smx2460]
+smx2460 08/28/2023 10:07 PM
+ to all [:lg:] employees in this room btw
+08/28/2023 10:06 PM
+[]
+08/28/2023 10:06 PM
+reality (edited)
+hellobox. 08/28/2023 10:06 PM
+(no content)
+[happy-young-asian-man-shocked-to-see-something-on-his-side-excited-gesture.png]
+happy-young-asian-man-shocked-to-see-something-on-his-side-excited-gesture.png
+200.74 KB External
+[smx2460]
+smx2460 08/28/2023 10:05 PM
+[]
+08/28/2023 10:04 PM
+more like "" (edited)
+hellobox. 08/28/2023 10:03 PM
+actual photograph of an lg employee receiving a native app submission
+from someone who isn't an lg "partner": 
+[] yolofant true, however everything they complained so far was from
+appinfo.json and the wrong platform
+hellobox. 08/28/2023 10:02 PM
+because that's all they looked at/understand
+[yolofant]
+yolofant 08/28/2023 10:02 PM
+true, however everything they complained so far was from appinfo.json
+and the wrong platform
+hellobox. 08/28/2023 9:46 PM
+and how do non-LG content store apps use it?
+[] yolofant because it's not documented
+hellobox. 08/28/2023 9:45 PM
+neither is any of the other stuff you're using
+[yolofant]
+yolofant 08/28/2023 9:44 PM
+because it's not documented
+08/28/2023 9:44 PM
+but I was afraid that lg would reject setting that flag when we submit
+the app again
+08/28/2023 9:44 PM
+I was actually wondering if we should set gip for kodi
+hellobox. 08/28/2023 9:04 PM
+anyone know of 2mm connectors with a small shroud and no
+polarization/latching stuff? i want something that will fit into all the
+various 2mm LG power connectors
+hellobox. 08/28/2023 7:16 PM
+what does GIP even stand for?
+[infowski]
+infowski 08/28/2023 7:09 PM
+rofl
+[kitsuned]
+[] kitsuned Lampa
+kitsuned 08/28/2023 6:32 PM
+https://ru.lgappstv.com/main/tvapp/detail?appId=1206661
+[kitsuned]
+kitsuned 08/28/2023 6:28 PM
+out of the box, the app only shows movie trailers. however, if you press
+a special combo you will get full access to torrents, iptv, etc.
+08/28/2023 6:27 PM
+LG accepted with russian pirate app to the store
+[kitsuned]
+hellobox. anyone know if "GIP mode" is something official content store
+apps have access to?
+kitsuned 08/28/2023 6:26 PM
+Lampa
+hellobox. 08/28/2023 6:17 PM
+i mean non-LG apps
+[infowski]
+hellobox. anyone know if "GIP mode" is something official content store
+apps have access to?
+infowski 08/28/2023 6:16 PM
+well - "LG Channels" is one of the apps that uses GIP mode (edited)
+hellobox. 08/28/2023 10:39 AM
+anyone know if "GIP mode" is something official content store apps have
+access to?
+hellobox. 08/28/2023 4:29 AM
+it looks like (at least for rtk) you can configure it to drive any kind
+of panel/tcon, as long as you have the connector for it
+        if((panel->iCONFIG_PANEL_TYPE == P_VBY1_4K2K) ||
+           (panel->iCONFIG_PANEL_TYPE == P_VBY1_TO_HDMI)||
+           (panel->iCONFIG_PANEL_TYPE == P_VBY1_TO_HDMI_MEMC_FREERUN) ||
+           (panel->iCONFIG_PANEL_TYPE == P_EPI_TYPE)||
+           (panel->iCONFIG_PANEL_TYPE == P_VBY1_TO_LVDS) ||
+           (panel->iCONFIG_PANEL_TYPE == P_VBY1_TO_LVDS_2K) ||
+           (panel->iCONFIG_PANEL_TYPE == P_CEDS))
+[bredcat2220]
+hellobox. this is pretty funny > At the moment we are forced to
+recommend different brands for TVs for our cus...
+bredcat2220 08/28/2023 2:55 AM
+I've noticed this too
+August 27, 2023
+hellobox. 08/27/2023 12:15 AM
+this is pretty funny > At the moment we are forced to recommend
+different brands for TVs for our customers, just because of this
+problem.
+https://forum.webostv.developer.lge.com/t/problem-with-download-speed-over-ethernet-on-html-based-apps/2151
+08/27/2023 12:15 AM
+i wonder why they don't have this feature after however many years webOS
+has been around. i've seen it requested a few times
+https://forum.webostv.developer.lge.com/t/is-it-possible-to-launch-lg-store-directly-to-the-publisher-app/325
+August 26, 2023
+hellobox. 08/26/2023 9:48 AM
+weird
+https://forum.webostv.developer.lge.com/t/how-to-get-limit-ad-tracking-value-from-the-system/1190
+hellobox. 08/26/2023 9:40 AM
+wow, maybe they shouldn't have killed the emulator?
+https://forum.webostv.developer.lge.com/t/ares-inspect-connection-refused/1148
+https://forum.webostv.developer.lge.com/t/simulator-error/2821 (edited)
+08/26/2023 9:38 AM
+> This is temperary string.
+https://forum.webostv.developer.lge.com/t/how-to-enable-internet-in-the-emulator/1944
+08/26/2023 9:34 AM
+accurate
+https://forum.webostv.developer.lge.com/t/is-it-possible-to-convert-my-andriod-app-apk-to-lg-app/310/6
+08/26/2023 9:32 AM
+@Smx lol
+https://forum.webostv.developer.lge.com/t/is-there-an-api-like-in-android-tv-get-screenshot-of-the-screen/1419/5
+(of course chatgpt is wrong though) (edited)
+08/26/2023 9:29 AM
+god, they don't even wan't to let you use SSH in dev mode!
+https://forum.webostv.developer.lge.com/t/how-to-ssh-into-lg-webos-tv/2134
+08/26/2023 9:28 AM
+somebody needs to post an invite to here on the webos developer forum.
+(although it would probably be deleted in hours...)
+https://forum.webostv.developer.lge.com/t/download-apps-for-webos/2717
+hellobox. 08/26/2023 3:35 AM
+which i guess is M1L+?
+08/26/2023 3:34 AM
+it's whisky
+08/26/2023 3:30 AM
+is this aeon!?
+hellobox. 08/26/2023 3:07 AM
+it must be M1L+
+08/26/2023 3:04 AM
+how are they going to call it "RS232C" when it's 3.3V/0V?
+[image.png]
+ image.png
+53.97 KB External
+08/26/2023 2:58 AM
+it's in EVENT... did i do that? i haven't had the back off yet...
+08/26/2023 2:58 AM
+anyway, it has an LGE6321
+hellobox. 08/26/2023 2:50 AM
+i think i see how it's supposed to work now. there are "ramps" onto the
+clips starting from the top center and going down the sides. i guess
+you're supposed to get something between the back and front bezel and
+move it from the top center down each side. but the gap was incredibly
+small
+hellobox. 08/26/2023 2:35 AM
+i did it like this, kind of https://www.youtube.com/watch?v=_9YKFoMKB1o
+08/26/2023 2:34 AM
+but i'm still not sure what the intended method is
+08/26/2023 2:34 AM
+i broke off two plastic clips that hold the front bezel to the panel
+08/26/2023 2:33 AM
+well, i got it apart... the wrong way
+hellobox. 08/26/2023 2:07 AM
+how the fuck are you supposed to disassemble a 24LJ4540? (i suspect
+24LF454B is the same, and 24LH4830/24LK454A also look similar... quite
+possibly all their 24" models are the same) (edited)
+hellobox. 08/26/2023 12:44 AM
+(no content)
+[s-l1600.png]
+ s-l1600.png
+1.66 MB External
+08/26/2023 12:42 AM
+whatever. i suppose i've confirmed that if i want to complete my RTK
+collection, i'll need to get a K3Lp board from europe
+hellobox. oh! there's an adapter board
+hellobox. 08/26/2023 12:38 AM
+so what does the FFC connector look like on the adapter board?
+hellobox. 08/26/2023 12:37 AM
+EADXXXXXXXX (not actually a closeup of that board)
+[image.png]
+ image.png
+76.03 KB External
+[image.png]
+ image.png
+104.27 KB External
+08/26/2023 12:36 AM
+oh! there's an adapter board
+[image.png]
+ image.png
+581.02 KB External
+hellobox. and supposedly this is from a 43UJ6200-UA
+hellobox. 08/26/2023 12:35 AM
+anyway, i'm not sure i believe this was actually
+REMOVED FROM LG-43UJ6200-UA, as the listing claims:
+https://www.ebay.com/itm/265995065867
+hellobox. 08/26/2023 12:32 AM
+does K3L even exist? (outside of scattered references) (edited)
+[image.png]
+ image.png
+25.13 KB External
+08/26/2023 12:30 AM
+i guess K3Lp came in an HSBGA package, unlike M16P
+08/26/2023 12:29 AM
+and this is for the 65UJ620V, in the same manual despite being a clearly
+different board (although i can't read any of the markings, it is likely
+chassis UD74Q) (edited)
+[image.png]
+ image.png
+339.28 KB External
+08/26/2023 12:29 AM
+so this is for 43/49/55UJ620V
+[image.png]
+ image.png
+896.15 KB External
+08/26/2023 12:22 AM
+the main board used in the 43UJ620V-ZA was EBR85107901
+(MAIN PAKING UD74P 43UJ6200-ZA SGSYLJK SKD_PACKING), which is K3Lp
+instead of M16P
+08/26/2023 12:19 AM
+this may be it. there are definitely slight differences from normal LG
+ones if you know to look
+[s-l1600.png]
+ s-l1600.png
+1.15 MB External
+08/26/2023 12:17 AM
+there does appear to be a special FFC: COV34634601
+(SKYWORTH 597V-F291E0-2520 FFC Cable 43UJ62 WIFI Cable(WIFI Combo) 25 PINS/10 PINS(IR)+12 PINS(WIFI) P=1.25MM L=292MM)
+08/26/2023 12:16 AM
+huh. they have separate "Module,Outsourcing"s: COV34608001
+(SKYWORTH 7626-T4300L-T02101 Module 43UJ62 LC430DGJ-SKA4 for SKD) and
+COV34608002 (SKYWORTH 7626-T4300L-T021 43UJ62 LC430DGJ-SKA4 for CBU) for
+semi-knocked-down and completely built units
+08/26/2023 12:13 AM
+other models (that i don't believe used outsourced parts) used the same
+UA71P/UA71Q boards. i wonder if the outsourcing was limited to UJ620*
+only (edited)
+08/26/2023 12:11 AM
+this is the power cable: COV34613301
+https://www.tvserviceparts.com/LG-COV34613301.html
+SKYWORTH 5407-320251-14H0 HARNESS 43UJ62 Main to Power Cable HOUSING 14(2.5)+ HOUSING 12(2.0)+250MM
+hellobox. huh. i am so fucking confused
+hellobox. 08/26/2023 12:09 AM
+so they must have a cable that goes from the single-row 14-pin PSU thing
+to the "normal" LG 12-pin one. i guess i have seen similar cables... but
+i wonder what the IR/button/wi-fi cable looks like (edited)
+hellobox. 08/26/2023 12:05 AM
+not really related, but they populated both types of video connector...?
+it's clearly a dev board (e.g., no XD engine; P3300 populated with a
+black plastic pad apparently still in it), but i wonder how hard it
+would be to make a production board "universal" like this (edited)
+[image.png]
+ image.png
+1.21 MB External
+08/26/2023 12:03 AM
+huh. i am so fucking confused
+[image.png]
+ image.png
+433.52 KB External
+[image.png]
+ image.png
+465.49 KB External
+08/26/2023 12:02 AM
+that same parts list says the main board is EBR85086301, with a
+description of
+Pcb-Main; , Main Paking Ua71P Skd_43Uj6200-Ua_Packing M16P Jdm Skd (JDM
+and SKD are both outsourcing-related). but that board (chassis UA71P,)
+has a normal LG 25-pin FFC connector in the bottom left, and nothing
+that looks like it has anything to do with the connector in that ebay
+listing
+[2019-06-26-23-27-31.shopjimmy-ebr85086301-top__88483.1591814229.jpg]
+ 2019-06-26-23-27-31.shopjimmy-ebr85086301-top__88483.1591814229.jpg
+1.38 MB External
+August 25, 2023
+08/25/2023 11:58 PM
+and it does indeed seem to match the one in this parts list
+(COV34551401)
+https://www.tvserviceparts.com/LG-43UJ6200-UA.CUSYLH-Parts-List.html
+https://www.tvserviceparts.com/LG-COV34551401.html
+[COV34551401.png]
+ COV34551401.png
+39.4 KB External
+hellobox. 08/25/2023 11:48 PM
+and supposedly this is from a 43UJ6200-UA
+[s-l1600.png]
+ s-l1600.png
+4.87 MB External
+08/25/2023 11:47 PM
+apparently the UJ6200 was outsourced to skyworth
+https://www.tvserviceparts.com/LG-65UJ6200-UA.AUSYLJR-Parts-List.html
+08/25/2023 11:47 PM
+what the hell is going on with these UJ620* models?
+08/25/2023 11:45 PM
+LG never used K3Lp in ATSC-land, right? (with the equivalent models
+using M16P instead) (edited)
+hellobox. 08/25/2023 8:46 PM
+> after some searching, we found that VirtualBox does not support
+silicon chips, and therefore the webOSTV emulator also does not support
+Apple silicon chips.
+https://forum.webostv.developer.lge.com/t/tv-emulator-in-m1-silicon/2373
+08/25/2023 8:45 PM
+i wonder if this is mike lindell('s employee) trying to make a webOS app
+for his site (https://frankspeech.com/)
+https://forum.webostv.developer.lge.com/t/how-do-input-chrome-executable-path-for-vscode-extension/3736
+August 24, 2023
+[mariotaku]
+hellobox. maybe here
+<https://github.com/webosbrew/dev-manager-desktop/issues/116#issuecomment-1677004134>
+mariotaku 08/24/2023 4:40 AM
+Damn! Didn't notice I made such a typo.
+[] mariotaku Just a bit curious, what gave you this impression, did you
+see some posts on the internet claiming t...
+hellobox. 08/24/2023 4:35 AM
+maybe here
+https://github.com/webosbrew/dev-manager-desktop/issues/116#issuecomment-1677004134
+[mariotaku]
+[] roul08 man when i first rooted my LGTV i thought i could install all
+apk files
+mariotaku 08/24/2023 4:01 AM
+Just a bit curious, what gave you this impression, did you see some
+posts on the internet claiming that?
+hellobox. 08/24/2023 2:22 AM
+nice
+[2019-06-24-07-25-03.shopjimmy-eay64388841-top__38902.1587017002.jpg]
+ 2019-06-24-07-25-03.shopjimmy-eay64388841-top__38902.1587017002.jpg
+829.49 KB External
+[2019-06-24-07-25-12.shopjimmy-eay64388841-bottom__43665.1587017003.jpg]
+2019-06-24-07-25-12.shopjimmy-eay64388841-bottom__43665.1587017003.jpg
+1.07 MB External
+hellobox. 08/24/2023 1:27 AM
+    [    0.000000] (0)-0000    WARNING: x1-x3 nonzero in violation of boot protocol:
+    [    0.000000]     x1: 0000000000001397
+    [    0.000000]     x2: 00000000000fd838
+    [    0.000000]     x3: 0000000000000000
+    [    0.000000] This indicates a broken bootloader or old kernel
+hellobox. 08/24/2023 1:00 AM
+looks like the board was programmed in april of this year
+hellobox. 08/24/2023 12:20 AM
+    / # uname -a
+    Linux LGwebOSID 5.4.96-83.17.manas.id.11 #1 SMP PREEMPT Thu Feb 23 06:15:05 UTC 2023 aarch64 GNU/Linux
+    / # id
+    uid=0(root) gid=0(root)
+hellobox. 08/24/2023 12:12 AM
+this is the firmware straight from the factory (not surprising given its
+history)
+08/24/2023 12:09 AM
+anyway
+    {
+        "board_type": "K8LP_ATSC",
+        "device_name": "k8lp",
+        "hardware_id": "HE_IDD_H22P_AHAAATAA",
+        "hardware_revision": "BOARD_DV_1ST",
+        "keyboard_type": "virtual",
+        "modem_present": "N",
+        "nduid": "<snip>",
+        "product_id": "55UN343H0UA",
+        "ram_size": "1.5 GB",
+        "serial_number": "<snip>",
+        "storage_size": "8 GB",
+        "wired_addr": "00:00:00:00:00:00"
+    }
+    json
+    {
+        "core_os_kernel_version": "5.4.96-83.17.manas.id.11",
+        "core_os_name": "Rockhopper",
+        "core_os_release": "7.0.0-108",
+        "core_os_release_codename": "mullet-manas",
+        "encryption_key_type": "prodkey",
+        "webos_build_datetime": "20230223061018",
+        "webos_build_id": "108",
+        "webos_imagename": "lib32-starfish-global-flash",
+        "webos_manufacturing_version": "03.30.70",
+        "webos_name": "webOS TV Lite",
+        "webos_prerelease": "",
+        "webos_release": "7.0.0",
+        "webos_release_codename": "mullet-manas",
+        "webos_release_platformcode": "7"
+    }
+08/24/2023 12:09 AM
+also an MPI/"ECI" port, but i haven't really figured that out yet
+August 23, 2023
+hellobox. 08/23/2023 11:50 PM
+there is tvlink
+[smx2460]
+smx2460 08/23/2023 11:49 PM
+uart?
+hellobox. 08/23/2023 11:49 PM
+and screen
+[smx2460]
+smx2460 08/23/2023 11:49 PM
+oh
+hellobox. 08/23/2023 11:49 PM
+lack of network
+[smx2460]
+smx2460 08/23/2023 11:48 PM
+why puzzle?
+hellobox. 08/23/2023 11:48 PM
+nice little puzzle, [:lg:]
+08/23/2023 11:48 PM
+SFU keys dumped lol
+08/23/2023 11:42 PM
+maybe because it's kind of weird to say a device with no network
+connectivity is running "webOS"
+08/23/2023 11:41 PM
+i have reason to believe it's webOS, but it seems like LG is trying to
+hide that fact
+08/23/2023 11:38 PM
+i can turn it off and stuff, but when i try to turn it on (ka 01 01) it
+stops responding
+08/23/2023 11:35 PM
+i do have tvlink access via uart and pl2303
+08/23/2023 11:29 PM
+and i don't know what OS it runs
+08/23/2023 11:29 PM
+i can't decrypt the firmware
+08/23/2023 11:29 PM
+and i don't have a screen
+08/23/2023 11:29 PM
+so there's no networking
+hellobox. 08/23/2023 11:11 PM
+(no content)
+[image.png]
+ image.png
+40.07 KB External
+08/23/2023 11:05 PM
+it just has an MPI jack
+08/23/2023 11:05 PM
+it doesn't have fucking ethernet!?
+08/23/2023 11:05 PM
+wait a second
+08/23/2023 10:59 PM
+it has a 3.5mm jack labeled "RS232C" and another one labeled "Service
+only"
+[smx2460]
+smx2460 08/23/2023 10:54 PM
+i'd say nope
+hellobox. 08/23/2023 10:54 PM
+UA2CK or UA2CN
+[smx2460]
+smx2460 08/23/2023 10:53 PM
+what chassis
+hellobox. 08/23/2023 10:53 PM
+anyone have a service manual for 55UN343H0UA or similar?
+[roul08]
+roul08 08/23/2023 8:30 PM
+i got scammed
+ 1
+08/23/2023 8:30 PM
+man when i first rooted my LGTV i thought i could install all apk files
+hellobox. 08/23/2023 6:16 PM
+[499192_6_800.png]
+ 499192_6_800.png
+638.09 KB External
+[smx2460]
+smx2460 08/23/2023 6:14 PM
+    anytime you need a special skin care, just call that sleeping LG CLOi Mister and wake him up, it makes eye contact with you, yes it has cute eyes. These eyes would recognize the location of your face, do facial recognition and scan your skin thoroughly. It delivers steam care intensively especially in the areas where you want to or need some extra care.
+08/23/2023 6:14 PM
+    This concept proposes a new solution with AI service and steam care
+08/23/2023 6:13 PM
+XD
+[] smx2460
+https://www.tuvie.com/wp-content/uploads/lg-cloi-mister-home-steam-robot2.jpg
+hellobox. 08/23/2023 6:13 PM
+does it spray the mist out of its "mouth"?
+[smx2460]
+smx2460 08/23/2023 6:12 PM
+[]
+[:cloi:] 3
+08/23/2023 6:11 PM
+https://www.trendhunter.com/trends/lg-cloi-mister-robot
+08/23/2023 6:11 PM
+Concept skincare bot
+ 1
+08/23/2023 6:11 PM
+Lol
+08/23/2023 6:11 PM
+[]
+[smx2460]
+[] smx2460 https://youtu.be/ofNQL3TAaqk?si=sabVSBU76pIp-kZL
+smx2460 08/23/2023 6:10 PM
+I mean this
+hellobox. 08/23/2023 6:10 PM
+it takes the place of MICOM
+[smx2460]
+smx2460 08/23/2023 6:10 PM
+That configuration/settings menu looks like a debug menu you could find
+on an old prototype game console lol
+08/23/2023 6:09 PM
+So it's a separate IC after all
+hellobox. 08/23/2023 6:09 PM
+PTC seems to be an MSP430 MCU (on all the b oards i have) (edited)
+[] smx2460 It's really its own ASIC
+hellobox. 08/23/2023 6:09 PM
+i think ASIC refers to the pro:idiom chip
+[smx2460]
+[] smx2460
+https://spectrum.ieee.org/media-library/lg.jpg?id=25584799&width=1200&height=580
+smx2460 08/23/2023 6:08 PM
+Well this is more like Fat Cloi (edited)
+[smx2460]
+smx2460 08/23/2023 6:07 PM
+Fat Cloi (edited)
+08/23/2023 6:07 PM
+[]
+hellobox. 08/23/2023 6:06 PM
+that article nailed it
+[smx2460]
+smx2460 08/23/2023 6:02 PM
+[smx2460]
+hellobox. > Our guess is that LG isn't expecting that these robots will
+be a commercial success, and we wouldn...
+smx2460 08/23/2023 6:02 PM
+LOL
+[] smx2460 ```LG introduced a bunch of new robots because, as near as we
+could tell, LG figured that robots wer...
+hellobox. 08/23/2023 5:40 PM
+> Our guess is that LG isn't expecting that these robots will be a
+commercial success, and we wouldn't be surprised if they weren't offered
+commercially, ever. Instead, LG will place them in airports and hotels
+just in time for the 2018 Winter Olympics, and even if they don't
+actually accomplish a whole heck of a lot, people will still be like "oh
+hey, LG makes cool robots now."
+[smx2460]
+smx2460 08/23/2023 8:37 AM
+lmao
+08/23/2023 8:37 AM
+    LG introduced a bunch of new robots because, as near as we could tell, LG figured that robots were cool so they'd better make some robots or something.
+08/23/2023 8:36 AM
+08/23/2023 8:36 AM
+"They're big, they're shiny, they're charmingly round-ish, *but are they
+actually useful?*"
+08/23/2023 8:35 AM
+https://spectrum.ieee.org/lg-introduces-three-new-cloi-commercial-robots
+(edited)
+08/23/2023 8:35 AM
+[]
+[smx2460]
+smx2460 08/23/2023 7:46 AM
+Well that could be interesting to explore
+08/23/2023 7:44 AM
+It's really its own ASIC
+08/23/2023 7:43 AM
+https://youtu.be/ofNQL3TAaqk?si=sabVSBU76pIp-kZL
+sezardon
+LG TV Commercial Mode Installer Menu
+Accessing LG TV Commercial Mode Installer Menu on 32LY560H (will also
+work on 32LX774M, 43LX774M, 55LX774M Hospital Grade Interactive
+Pro:Centric TVs). To gain access to Installer Menu: keep pressing
+Menu/Function remote button until TV stops responding, enter 4 digit
+pass code 9876 [default], [if does not work also try 1478, 4321, 3698]
+and pre...
+[] Watch video
+08/23/2023 7:42 AM
+Older GP variant of the same
+08/23/2023 7:42 AM
+https://www.lg.com/us/business/download/resources/BT00001837/BT00001837_3059.pdf
+08/23/2023 7:40 AM
+Has a dedicated port
+08/23/2023 7:40 AM
+Fancy, RJP is over RJ45
+08/23/2023 7:38 AM
+    093 - RJP AVAILABLE (Remote Jack Pack Available)
+    • 0 = Remote jack pack is not available or disabled.
+    • 1 = Legacy Model RJPs: HDMI Mode
+    Enables RJP feature for use with full cable bundle models. In
+    this mode, when an HDMI source is connected to the RJP, both
+    digital video and audio are expected via the HDMI cable. If no
+    digital audio is present, no audio will be heard.
+    • 2 = Legacy Model RJPs: DVI Mode
+    Enables RJP feature for use with full cable bundle models. In
+    this mode, when an HDMI/DVI source is connected to the RJP,
+    only digital video is expected via the HDMI cable. Analog audio
+    is provided via a separate cable, from the source, connected to
+    an RJP AUDIO IN. If no analog audio cable is connected, tuner
+    audio will be heard.
+    • 5 = Scaler Model RJPs: HDMI Mode
+    Enables RJP feature for use with reduced cable bundle models.
+    In this mode, when an HDMI source is connected to the RJP,
+    both digital video and audio are expected via the HDMI cable. If
+    no digital audio is present, no audio will be heard.
+    • 6 = Scaler Model RJPs: DVI Mode
+    Enables RJP feature for use with reduced cable bundle models.
+    In this mode, when an HDMI/DVI source is connected to the
+    RJP, only digital video is expected via the HDMI cable. Analog
+    audio is provided via separate cable, from the source, connected
+    to an RJP AUDIO IN. If no analog audio cable is connected,
+    tuner audio will be heard
+08/23/2023 7:38 AM
+"Remote Jack Part"
+08/23/2023 7:37 AM
+It's pretty detailed in the menu description too
+08/23/2023 7:36 AM
+    Acronym Description
+    CPU-CTV Pass-through Mode with Channel Lineup in CPU
+    CPU-FTG FTG Mode via CPU
+    CPU-P:C Application Tuning Mode via CPU
+    MPI-EXT External MPI Control
+    PTC-CTV Pass-through Mode with Channel Map in PTC
+08/23/2023 7:36 AM
+There is also this table
+08/23/2023 7:34 AM
+(no content)
+[Screenshot_20230823-073341_Firefox2.png]
+ Screenshot_20230823-073341_Firefox2.png
+90.29 KB External
+08/23/2023 7:33 AM
+    To create a Master TV Setup, you will need to know how to access the
+    commercial controller (PTC) Installer Menu and make changes to the
+    default values as required. If necessary, familiarize yourself with the
+    Installer Menu and how to make and save changes. See pages 30 to 40
+    for information on accessing the Installer Menu and for detailed descrip-
+    tions of the Installer Menu items
+[smx2460]
+hellobox. what does PTC mean? i don't think this is for touchscreens
+smx2460 08/23/2023 7:32 AM
+https://www.lg.com/us/business/download/resources/BT00001837/206-4307_EW960H_Comm_Mode_Setup_Rev_C.pdf
+[smx2460]
+smx2460 08/23/2023 7:30 AM
+That's brutal
+[smx2460]
+hellobox. not only is the heat-staked plastic cover missing, but the IR
+receiver was torn off, taking 2 of its...
+smx2460 08/23/2023 7:30 AM
+"new"
+[smx2460]
+hellobox. i wonder if i could use something like this to hook my boards
+up to other panels https://www.ebay.co...
+smx2460 08/23/2023 7:28 AM
+XD
+[smx2460]
+smx2460 08/23/2023 7:27 AM
+If you can at least read all pages for free
+[smx2460]
+hellobox. if anyone has a scribd or studocu account, i'd really
+appreciate a copy of these: * <https://www.scr...
+smx2460 08/23/2023 7:26 AM
+I used to have a script that converts html back to pdf (edited)
+hellobox. 08/23/2023 3:42 AM
+it seems like they may have started out using foosung connectors with
+yeonho as a second source, then moved to primarily yeonho when they
+changed to the SMAW200 series
+08/23/2023 3:41 AM
+no idea what the difference between FW20020 and FM20020 is.
+FW20020/FH20020 seems to roughly correspond to SM(A)W200/SMH200.
+hellobox. 08/23/2023 3:12 AM
+huh. i wonder what SLIM_32~52 means... kind of surprised they were using
+SMAW200 at all in a 2012 model (or maybe they didn't actually
+manufacture any with that option?)
+[image.png]
+ image.png
+39.03 KB External
+hellobox. 08/23/2023 2:48 AM
+samsung's "VD divison" lol
+08/23/2023 2:48 AM
+foosung supplies connectors to samsung
+https://dn.odroid.com/5422/ODROID-XU4/datasheets/Connectors/%5BCON3%5D%20FD05015-19.pdf
+08/23/2023 2:46 AM
+foosung is some other korean company whose logo kind of looks like
+they're a knockoff samsung
+[foosung_img.png]
+ foosung_img.png
+653.24 KB External
+08/23/2023 2:45 AM
+and the 24-pin cable is either yeonho SMW200-24CF (B) or foosung
+FW20020-24SB
+08/23/2023 2:42 AM
+JST B2P3-VH(LF)(SN)
+08/23/2023 2:39 AM
+yeonho, as usual
+[image.png]
+ image.png
+15.1 KB External
+08/23/2023 2:39 AM
+i found the spec for this very power board
+08/23/2023 2:39 AM
+oh god, this is beautiful
+hellobox. 08/23/2023 2:06 AM
+actually i have quite a few of these (mostly IEC C14, often with filters
+or at least toroids) (edited)
+hellobox. 08/23/2023 1:49 AM
+i guess JST VH would work
+08/23/2023 1:43 AM
+or, uh, 3.96mm pitch... (i think it's from 5/32" = 0.15625" = 3.96875mm)
+(edited)
+08/23/2023 1:37 AM
+if it's the "standard" (4mm pitch?) connector, i do have stuff that will
+fit (edited)
+08/23/2023 1:33 AM
+i guess this is the part i'm looking for. i wish i could find the
+dimensions of the connector
+[s-l1600.png]
+ s-l1600.png
+684.92 KB External
+hellobox. 08/23/2023 1:12 AM
+"modern" PSUs are $6 now, up from <$5
+08/23/2023 1:09 AM
+and these old power boards don't even have fucking IEC connectors. i'm
+not sure whether i have the right AC cable already, but if so i don't
+have many
+08/23/2023 1:08 AM
+i need to get a bunch of old power boards and cables
+08/23/2023 1:08 AM
+god, running all these LG boards gets so fucking expensive
+August 21, 2023
+[tim_cook]
+tim_cook 08/21/2023 11:21 PM
+I was wondering if there is anything to force Netflix (and any other
+streaming services) to use the highest possible quality (if you’re
+subscribed to it ofc)? Like on YouTube, you can just click the quality
+you want and it will only play in that quality instead of being on Auto
+quality.
+ 1
+[kitsuned]
+hellobox. what is this?
+https://www.lg.com/us/business/zero-client/lg-CBV42-B
+kitsuned 08/21/2023 1:46 AM
+sure, [:lg:] (edited)
+[image.png]
+ image.png
+13.01 KB External
+hellobox. 08/21/2023 1:07 AM
+some kind of thin client thing?
+08/21/2023 1:07 AM
+what is this? https://www.lg.com/us/business/zero-client/lg-CBV42-B
+LG CBV42-B: Zero Client TERA2 (V Series Box Type) | LG USA Business
+Get information on the LG Zero Client TERA2 (V Series Box Type). Find
+pictures, reviews, and tech specs for the LG CBV42-B
+[]
+August 20, 2023
+[naetrox]
+naetrox 08/20/2023 3:33 PM
+I know there's some network commands you can do to reset everything but
+I cannot find documentation
