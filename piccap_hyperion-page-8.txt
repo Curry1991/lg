@@ -1,0 +1,2901 @@
+May 10, 2025
+timcook4825 05/10/2025 4:01 PM
+Has anyone tried calibrating dolby vision with a pc? I have heard there
+is a „use dolby vision“ mode now in windows 11. I can‘t test that myself
+my GPU isn‘t dv compatible
+[] maxpro91 Thanks. Did a quick test with Hyperion and it has the same
+problem as HyperHDR.
+timcook4825 05/10/2025 3:56 PM
+What problem exactly? There was just one single bug with PS5 and PicCap
+but that was resolved a couple of months ago. I am using PS5 + PicCap
+without issues
+[satdx62]
+[] maxpro91 Thanks. Did a quick test with Hyperion and it has the same
+problem as HyperHDR.
+satdx62 05/10/2025 12:28 PM
+Okay, then this test ensures that the error with the PlayStation
+settings with VRR and 120 fps is not due to the LUT table and HyperHDR.
+(edited)
+ 1
+[maxpro91]
+[] satdx62 Enter the following command in Terminal/SSH: ```ln -s
+/usr/lib/libcrypt.so.2 /media/developer/apps/u...
+maxpro91 05/10/2025 12:25 PM
+Thanks. Did a quick test with Hyperion and it has the same problem as
+HyperHDR.
+[satdx62]
+satdx62 05/10/2025 12:02 PM
+(no content)
+[1.png]
+ 1.png
+46.37 KB External
+[satdx62]
+[] maxpro91 Couldn't find libcrypt in lib folder. I tried your version
+and it has the same problem. Daemon start...
+satdx62 05/10/2025 12:00 PM
+Enter the following command in Terminal/SSH:
+    ln -s /usr/lib/libcrypt.so.2 /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/libcrypt.so.1
+And start it again. This command will provide a symlink to the lib.
+(edited)
+[maxpro91]
+[] satdx62 The Hyperion.NG daemon is probably not starting because the
+**libcrypt** is missing. You can solve ...
+maxpro91 05/10/2025 11:54 AM
+Couldn't find libcrypt in lib folder. I tried your version and it has
+the same problem. Daemon started then stopped after a few seconds.
+[satdx62]
+[] maxpro91 Turn these quirks on or off makes it worked temporarily:
+QUIRK_DILE_VT_CREATE_EX, QUIRK_DILE_VT_NO_F...
+satdx62 05/10/2025 8:59 AM
+The Hyperion.NG daemon is probably not starting because the libcrypt is
+missing. You can solve this problem by executing the following command
+in Terminal:
+    ln -s /usr/lib/libcrypt.so.2 /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/libcrypt.so.1
+Have you tested the version I linked? (It should not have this problem)
+I have not been able to test it myself on a device running webOS v7 and
+above. I do not own one. Hyperion.NG
+v2.0.17-beta.3:https://github.com/satgit62/hyperion.ng-webos-loader/actions/runs/14714298229/artifacts/3024036135
+(edited)
+[maxpro91]
+[] astur3l toggle : ```luna-send -n 1 -f
+luna://org.webosbrew.piccap.service/status '{}' | grep -Fq
+'"isRunning...
+maxpro91 05/10/2025 5:38 AM
+Wow. Thanks. Maybe just a temporary solution but it works perfectly.
+[astur3l]
+[] maxpro91 I'm thinking about using LG input hook to restart PicCap but
+I don't know what command to execute. I...
+astur3l 05/10/2025 4:03 AM
+toggle :
+    luna-send -n 1 -f luna://org.webosbrew.piccap.service/status '{}' | grep -Fq '"isRunning": true' &&
+    luna-send -n 1 -f luna://org.webosbrew.piccap.service/stop '{}' ||
+    luna-send -n 1 -f luna://org.webosbrew.piccap.service/start '{}'
+    stop+start
+    luna://org.webosbrew.piccap.service/stop '{}' ; luna-send -n 1 -f luna://org.webosbrew.piccap.service/start '{}'
+(edited)
+[maxpro91]
+maxpro91 05/10/2025 2:36 AM
+I'm thinking about using LG input hook to restart PicCap but I don't
+know what command to execute. If anybody know please help me.
+[maxpro91]
+[] astur3l there are already some cases when capture needs to
+"restarted" to get capture working again, if you ...
+maxpro91 05/10/2025 2:00 AM
+I check PicCap's log but nothing abnormal. It still captures the screen,
+just distorted.
+[20250510_084932.jpg]
+ 20250510_084932.jpg
+1.08 MB External
+[20250510_084952.jpg]
+ 20250510_084952.jpg
+890.01 KB External
+[astur3l]
+astur3l 05/10/2025 12:37 AM
+there are already some cases when capture needs to "restarted" to get
+capture working again, if you check piccap verbose logs it probably
+throw a bunch of capture errors (with codes) when it happens
+[astur3l]
+[] maxpro91 Turn these quirks on or off makes it worked temporarily:
+QUIRK_DILE_VT_CREATE_EX, QUIRK_DILE_VT_NO_F...
+astur3l 05/10/2025 12:21 AM
+those quirks doesn't have effect on your device, it just triggers
+capture restart which fixes it
+ 1
+May 9, 2025
+[maxpro91]
+[] satdx62 Well, I don't have a PlayStation5 myself, so I can't speak
+for them. However, when I watch video con...
+maxpro91 05/09/2025 11:53 PM
+Turn these quirks on or off makes it worked temporarily:
+QUIRK_DILE_VT_CREATE_EX, QUIRK_DILE_VT_NO_FREEZE_CAPTURE,
+QUIRK_VTCAPTURE_FORCE_CAPTURE. I tried uninstall HyperHDR then install
+Hyperion.NG but it started then stop immediately. Not sure why. (edited)
+[satdx62]
+[] maxpro91 I mean I just used your setting and it still hasn't changed.
+Restart and everything. The only thing...
+satdx62 05/09/2025 6:16 PM
+You can test the VRR and 120fps settings with Hyperion.NG instead of
+HyperHDR. Since Hyperion.NG does not require a LUT table, you can
+quickly find out if it works with these settings. Then we will find out
+if this is due to the LUT table or not. Try my self-compiled Hyperion.NG
+version from my GitHub. Hyperion.NG
+v2.0.17-beta.3:https://github.com/satgit62/hyperion.ng-webos-loader/actions/runs/14714298229/artifacts/3024036135
+You don't need to uninstall HyperHDR, just stop the daemon and disable
+the autostart under Loader as either HyperHDR or the Hyperion.NG daemon
+is allowed to run.
+[satdx62]
+[] maxpro91 I mean I just used your setting and it still hasn't changed.
+Restart and everything. The only thing...
+satdx62 05/09/2025 5:10 PM
+Well, I don't have a PlayStation5 myself, so I can't speak for them.
+However, when I watch video content with Dolby Vision (HEVEC H.265
+dvhe), it works perfectly for me. The error may also lie in the DV-LUT
+file itself and had to be calibrated in yuv 422 or yuv 444 and
+additionally made available to HyperHDR. I would also be interested in
+what settings change in PicCap works with her PlayStation5. (edited)
+[maxpro91]
+[] satdx62 Are you sure? Your config.json said fps=0 (**"fps":0,"**) and
+that can't work like that. You must de...
+maxpro91 05/09/2025 4:51 PM
+I mean I just used your setting and it still hasn't changed. Restart and
+everything. The only thing works for me is disable VRR and 120fps so PS5
+won't switch to YUV, or let it switch to YUV then change some setting in
+piccap to restart it.
+[satdx62]
+[] maxpro91 I did and it's still the same. I have figured out why. It
+bugs when PS5 switch to YUV422 and to avoi...
+satdx62 05/09/2025 4:38 PM
+Are you sure? Your config.json said fps=0 ("fps":0,") and that can't
+work like that. You must deactivate the Instant Game Response option and
+if the ‘Quick Start+’ option is activated, you must also deactivate this
+so that a real restart takes place and the changes are applied. Just for
+testing! (edited)
+[maxpro91]
+[] satdx62 Hi, replace yours with this one:
+```{"uibackend":"auto","novideo":false,"fps":60,"vsync":true,"prior...
+maxpro91 05/09/2025 4:15 PM
+I did and it's still the same. I have figured out why. It bugs when PS5
+switch to YUV422 and to avoid it, I have to disable VRR and 120fps which
+I don't want to compromise.
+[satdx62]
+[] maxpro91 Here's my config.json
+{"uibackend":"auto","novideo":false,"fps":0,"vsync":true,"priority":150,"nv12"...
+satdx62 05/09/2025 3:31 PM
+Hi, replace yours with this one:
+    {"uibackend":"auto","novideo":false,"fps":60,"vsync":true,"priority":150,"nv12":true,"height":180,"nopowerstate":false,"nohdr":false,"quirks":0,"width":320,"backend":"auto","address":"127.0.0.1","port":19400,"unix-socket":false,"autostart":true,"nogui":false}
+and restart.
+[maxpro91]
+[] satdx62 Yes, the log now looks very good. All LUTs are queried
+correctly and loaded with the correct “**Inde...
+maxpro91 05/09/2025 3:09 PM
+Here's my config.json
+{"uibackend":"auto","novideo":false,"fps":0,"vsync":true,"priority":150,"nv12":true,"height":180,"nopowerstate":false,"nohdr":false,"quirks":0,"width":320,"backend":"auto","address":"/tmp/hyperhdr-domain","port":19400,"unix-socket":true,"autostart":true,"nogui":false}
+[satdx62]
+[] maxpro91 I installed and enabled NV12 option. It works fine and looks
+like LUT file was loaded but that bug i...
+satdx62 05/09/2025 2:53 PM
+Yes, the log now looks very good. All LUTs are queried correctly and
+loaded with the correct “Index 1 for HDR YUV” and “Tone mapping: 1”. I
+should now look at the config.json from
+    /media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/
+. Just post the files here. (edited)
+[maxpro91]
+[] satdx62 The log was too short, and I could not see if the requested
+LUT (lut_lin_tables_dv.3d) was actually ...
+maxpro91 05/09/2025 2:39 PM
+I installed and enabled NV12 option. It works fine and looks like LUT
+file was loaded but that bug is still there. I think it's a bug from
+piccap because if I change any setting on piccap then it works until
+reboot. https://pastebin.com/TLTwS9eK
+2025-05-09T21:16:44.980Z [MUXER0] Register new input 'webos@LocalSo...
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+ 1
+[satdx62]
+[] maxpro91 Thanks. I tried disable Instant game mode but nothing
+changed. I'll try NV12 option later. Here's my...
+satdx62 05/09/2025 12:46 PM
+The log was too short, and I could not see if the requested LUT
+(lut_lin_tables_dv.3d) was actually loaded. The NV12 option seems to be
+enabled. However, the FLATBUFSERVER should report Tone mapping: 1. It
+reports 0, which means that “HDR to SDR tone mapping” is not activated.
+See:https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#hdr-to-sdr-tone-mapping
+Have you installed the LUT tables for SDR, HDR and Dolby Vision?
+See:https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#warning
+(edited)
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[maxpro91]
+[] satdx62 Either no LUT table for YUV422 is loaded because it is
+missing, or it is not loaded because you have...
+maxpro91 05/09/2025 12:14 PM
+Thanks. I tried disable Instant game mode but nothing changed. I'll try
+NV12 option later. Here's my HyperHDR's log.
+https://pastebin.com/XDG9My7S
+2025-05-09T18:59:25.412Z [CORE] TTY is not attached to the log outp...
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[satdx62]
+[] maxpro91 Sorry but quick question. Has anybody encountered this bug?
+I have setup piccap and Hyper HDR, lates...
+satdx62 05/09/2025 9:52 AM
+Either no LUT table for YUV422 is loaded because it is missing, or it is
+not loaded because you have activated the 'Instant Game Response' option
+at the input of your HDMI connection, please switch this off to test
+whether the correct LUT table is loaded, and you get a picture in the
+preview. This error can also occur if you have not activated the NV12
+option in PicCap. The cause can be found quickly in the HyperHDR log by
+switching from a working video content to PlayStation. If you do not
+have any LUT tables installed, look here:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+(edited)
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+[maxpro91]
+maxpro91 05/09/2025 4:04 AM
+Sorry but quick question. Has anybody encountered this bug? I have setup
+piccap and Hyper HDR, latest version, default settings. Everything work
+fine except when I turn on games on my PS5, piccap couldn't capture the
+screen (see the photo). PS5 is connected to tv with HDMI 2.1, when games
+run it switched to YUV422. If I change any setting on piccap and save
+then it works like normal until next reboot. TV model: OLED 55B2 WebOS:
+8.x (edited)
+[Screenshot_20250509_072610_Firefox.jpg]
+ Screenshot_20250509_072610_Firefox.jpg
+98.76 KB External
+May 7, 2025
+[satdx62]
+hellobox. Wow, that guide looks very comprehensive. Don't have time to
+read it right now, but maybe I will che...
+satdx62 05/07/2025 10:22 PM
+Yes, of course, FAQ is a good place for that.
+[] satdx62 The WAGO connection block is intended exclusively for power
+distribution at the beginning and end of...
+hellobox. 05/07/2025 9:41 PM
+Wow, that guide looks very comprehensive. Don't have time to read it
+right now, but maybe I will check it out later and possibly link to it
+in # unknown-channel.
+May 4, 2025
+[satdx62]
+[] frenchtouch. But my second probleme is still there , no light on my
+led stripe Only the little red led light on ...
+satdx62 05/04/2025 7:48 PM
+As you have plugged the black wire - 5 Volt (GND) from the power supply
+unit into the left yellow terminal and the green wire Data Out from the
+RP2040 into the corresponding yellow terminal, this cannot work as the
+data signal GPIO from the RP2040 is short-circuited to GND. The black
+wire from the power supply unit must be connected to the blue terminal.
+[1.jpg]
+ 1.jpg
+13.24 KB External
+May 3, 2025
+[astur3l]
+[] frenchtouch. But my second probleme is still there , no light on my
+led stripe Only the little red led light on ...
+astur3l 05/03/2025 4:52 PM
+could be just wrong gpio pin for data output, or some contact issue
+[satdx62]
+[] frenchtouch. My setup Only one segment of 158 led (i use corner) Data
+input start in the good way (>)
+satdx62 05/03/2025 9:26 AM
+(no content)
+[Aufbau.png]
+ Aufbau.png
+518.35 KB External
+[satdx62]
+[] frenchtouch. Click to see attachment
+satdx62 05/03/2025 8:50 AM
+The WAGO connection block is intended exclusively for power distribution
+at the beginning and end of the LEDs. The additional red +5V and white
+GND wires without connectors at the beginning and end of the LED strips
+are for the power supply. See my drawing:
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS?tab=readme-ov-file#rp2040-adalight-feather-scorpio-mit-level-shifter-ausgang-gpio-16
+The 3-pin adapter (red, white and green) supplied with the LEDs is only
+intended for direct connection to the HyperSerialPico. (Make sure that
+the green line DATA input of the LEDs has direct contact with the GPIO
+output of the RP2040 and white to GND, the red wire remains free). The
+HyperHDR protocol looks OK so far. As far as the arrangement of the LEDs
+is concerned, I would arrange them exactly, e.g. the first LED
+approximately where the actual start is. However, since you have placed
+your first LED in the bottom area, you have to calculate the arrangement
+differently (Input Position/This is your first led). In this case,
+perhaps, 118 and not 114. (edited)
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[max_rez]
+max_rez 05/03/2025 4:46 AM
+anyone have feels?
+05/03/2025 4:46 AM
+hi. i haven't tried this but I'm wondering if it's worth it
+[frenchtouch.]
+frenchtouch. 05/03/2025 1:38 AM
+(no content)
+[ledlayout.PNG]
+ ledlayout.PNG
+177.85 KB External
+05/03/2025 1:38 AM
+(no content)
+[setup.jpg]
+ setup.jpg
+808.94 KB External
+05/03/2025 1:37 AM
+My setup Only one segment of 158 led (i use corner) Data input start in
+the good way (>)
+05/03/2025 1:36 AM
+(no content)
+ log_2.txt
+16.98 KB External
+05/03/2025 1:35 AM
+But my second probleme is still there , no light on my led stripe Only
+the little red led light on the first led of the strip , so i can
+presume that the led strip is powered I thinking that i have done bad
+welding , but before buying an easier rp2040 (Pimoroni Plasma 2040) , i
+want to be sure of my configuration in HyperHDR this is my log from a
+reboot tv , do you see something weid ?
+[ledhard.PNG]
+ ledhard.PNG
+109.62 KB External
+05/03/2025 1:34 AM
+Hi, First , Thx four your help @Asturel , with your help , i solved my
+probleme of the dectection of the rp2040 in Hyperserial when rebooting
+the TV i turned to ON "set(BOOT_WORKAROUND)" in CMakeLists.txt , and i
+compile it
+May 2, 2025
+[satdx62]
+[] frenchtouch. My second probleme it s that my led strip doesnt work
+even if the rp2040 is seen and selected on hyp...
+satdx62 05/02/2025 10:47 AM
+You have done everything right except that your HyperSerialPico is not
+recognized and HyperHDR is trying to open it as ttyAMA0. If the RP2040
+boots correctly and works, it will be recognized as ttyACM0 and will be
+available to HyperHDR.
+[ttyACM0.png]
+ ttyACM0.png
+152.04 KB External
+[astur3l]
+[] frenchtouch. Hi All, I need your help because my ambiligth doesnt
+work , and after searching , i dont known why ...
+astur3l 05/02/2025 2:32 AM
+bad flash https://github.com/awawa-dev/HyperSerialPico/pull/10 ?
+(edited)
+Workaround for some rp2040 boards not booting (e.g. Adafruit) by aw...
+Some boards, such as the first Adafruit revisions, may have trouble
+booting properly due to bad components used in the design. Read more
+here: raspberrypi/pico-sdk#457 and here: https://github.com/...
+[]
+[frenchtouch.]
+frenchtouch. 05/02/2025 1:32 AM
+(no content)
+[image.png]
+ image.png
+321.49 KB External
+05/02/2025 1:31 AM
+i think my cablage is good i have 158 leds and and a 10A power supply as
+recommanded on the web calculator i use the GPIO16 on my rp2040 scorpio
+(data and grnd) I can see a little red led light on the first led of the
+strip , so i can presume that the led strip is powered i really need you
+tu understand what i'm doing wrong!
+05/02/2025 1:30 AM
+My second probleme it s that my led strip doesnt work even if the rp2040
+is seen and selected on hyperserial My Picab is working , i can watch
+the direct i follow the guide from satgit62 step by step for the setting
+of the hyperhdr with-new-LUT-calibration
+05/02/2025 1:28 AM
+log from hyperserial when i push the reset buton
+ log.txt
+39.42 KB External
+05/02/2025 1:24 AM
+(no content)
+[usb.PNG]
+ usb.PNG
+357.65 KB External
+05/02/2025 1:21 AM
+log from dmesg when i reconnect the usb (edited)
+05/02/2025 1:20 AM
+log from dmesg when i boot the tv (edited)
+[boot_1.PNG]
+ boot_1.PNG
+137.24 KB External
+05/02/2025 1:19 AM
+Hi All, I need your help because my ambiligth doesnt work , and after
+searching , i dont known why ... My setup - LG C1 rooted - Picab last
+version - hyperhdr with-new-LUT-calibration - SK6812 CW - Adafruit
+Feather RP2040 SCORPIO (with the good the HyperSerialPico sk6812Cold) I
+have 2 problemes : My rp2040 isnt reconized in the hyperserial when i
+boot the TV (led hardware/outpath) , but on webos i can see it like usb
+storage (RP2) To be seen in hyperserial , i have to push the "reset
+buton" on the board or replug it while pushing the "boot buton on the
+board*
+April 29, 2025
+[gorgi.gr]
+[] satdx62 If you are using multiple LUT's table with NV12, it has been
+reported that “Instant Game Response” u...
+gorgi.gr 04/29/2025 11:42 PM
+Thanks for this piece of info @satdx62 , I'll check theHyperHDR Logsjust
+to be sure...
+[satdx62]
+[] gorgi.gr <@195583665265311744> <@917488160580182068> just so you
+know, all the lag between screen content an...
+satdx62 04/29/2025 3:10 PM
+If you are using multiple LUT's table with NV12, it has been reported
+that “Instant Game Response” under All Settings --> Image --> Additional
+settings prevents the correct LUT from loading. (edited)
+ 1
+[yolofant]
+yolofant 04/29/2025 3:02 PM
+that's simply too little time for the capture api
+ 2
+04/29/2025 3:02 PM
+all the picture enhancements are off in game mode reducing input lag to
+6-7ms
+04/29/2025 3:01 PM
+yes that's what I said
+[gorgi.gr]
+gorgi.gr 04/29/2025 2:33 PM
+@Yolofant @satdx62 just so you know, all the lag between screen content
+and LED strips disappears completely if I set my TV in some other mode
+except Gamer mode. In reality the lag only gets transferred in another
+part of the chain, in this case the mouse movement and the cursor
+movement on the screen, but screen and LED strips are perfectly in sync.
+In other words, the lag did not get fixed because my DIY Ambilight
+system got "quicker", but instead the screen got "slower", probably some
+buffering going on to accomodate TruMotion and similar shite. Now I just
+have to ask myself, what do I despise more, lag between mouse movement
+and cursor movement or lag between screen content and led strips 
+(edited)
+[gorgi.gr]
+gorgi.gr 04/29/2025 2:12 AM
+Cheers!
+04/29/2025 2:12 AM
+But hey @Yolofant thanks for your time and for the information you
+shared, I learned a few things tonight
+04/29/2025 2:11 AM
+Nothing in life is in easy mode 
+04/29/2025 2:11 AM
+I will still play around with those quirks a little bit tomorrow
+[yolofant]
+yolofant 04/29/2025 2:10 AM
+just check with the live preview
+[gorgi.gr]
+gorgi.gr 04/29/2025 2:10 AM
+Could be the case, cause even if the screen was black, the LEDs were
+showing kind of right colors, however a small mouse movement lead to a
+big movement in the LED strips
+[yolofant]
+yolofant 04/29/2025 2:09 AM
+maybe SCALER_INPUT only works with native resolution?
+[gorgi.gr]
+gorgi.gr 04/29/2025 2:09 AM
+I'll probably have to make my peace with it for now...
+[yolofant]
+yolofant 04/29/2025 2:09 AM
+yeah idk
+[gorgi.gr]
+gorgi.gr 04/29/2025 2:08 AM
+Subjectively I think SCALER_OUTPUT works best...
+04/29/2025 2:08 AM
+SCALER_INPUT leads to black screen unfortunately
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:42 AM
+even better !
+[yolofant]
+yolofant 04/29/2025 1:41 AM
+the PR has artifacts in the actions
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:41 AM
+have to cross-compile it myself probably, I don't see a release
+containing these changes
+04/29/2025 1:39 AM
+right
+[yolofant]
+yolofant 04/29/2025 1:38 AM
+yes but you need the hyperion-webos version from that PR
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:38 AM
+in my naive mind testing would be as easy as just changing the quirk
+number
+[yolofant]
+yolofant 04/29/2025 1:38 AM
+yes, it might just not work
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:37 AM
+Is it safe to play around with those?
+[yolofant]
+yolofant 04/29/2025 1:34 AM
+or you figure out in which case it works
+04/29/2025 1:34 AM
+maybe SCALER_INPUT works for you
+04/29/2025 1:34 AM
+https://github.com/webosbrew/hyperion-webos/pull/133 you could try this
+which enables more dump locations
+Add more dump location quirks for vtcapture by sundermann · Pull R...
+Adds more dump locations available in the vtcapture API.
+[]
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:33 AM
+and it seems apart from doing that and disabling the gui capturing there
+is not a lot more i can do right?
+04/29/2025 1:33 AM
+I'll enable it
+[yolofant]
+yolofant 04/29/2025 1:32 AM
+yes
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:32 AM
+is this this so called alternate location or location 2 ?
+[yolofant]
+yolofant 04/29/2025 1:32 AM
+-q 4 should give you the fastest capture location
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:32 AM
+bummer
+[yolofant]
+yolofant 04/29/2025 1:31 AM
+no, the API is quite simple
+04/29/2025 1:31 AM
+we can't measure that
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:31 AM
+Are there any ways to play around with those things? MAybe choose a
+cheap scaling method instead of an expensive one?
+04/29/2025 1:31 AM
+Oh, I thought this was already included here
+[yolofant]
+yolofant 04/29/2025 1:30 AM
+the api might return it in microseconds but still the SoC needs some
+time to copy from the internal buffers and rescale it
+04/29/2025 1:30 AM
+the captured frame returned from the API also have a delay
+04/29/2025 1:29 AM
+yes, but the picture doesn't change 900 times
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:29 AM
+In my eyes the capturing itself does not seem to be the problem, it
+looks like it happens lightning fast
+[gorgi.gr]
+[] yolofant well, yes but most likely the delay is from the capture API
+itself
+gorgi.gr 04/29/2025 1:29 AM
+Why do you say that, given that we can capture frames here with 900FPS?
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:28 AM
+And I was thinking my test with 120FPS earlier was too much 
+04/29/2025 1:27 AM
+Hahahahahaha
+04/29/2025 1:27 AM
+(no content)
+[image.png]
+ image.png
+74.34 KB External
+04/29/2025 1:27 AM
+WTAF!?!?
+[yolofant]
+yolofant 04/29/2025 1:26 AM
+try -f 1000
+04/29/2025 1:26 AM
+oh right
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:25 AM
+quite slower...
+04/29/2025 1:25 AM
+(no content)
+[image.png]
+ image.png
+103 KB External
+04/29/2025 1:25 AM
+WTF?
+[yolofant]
+[] gorgi.gr you mean only that or in combination with everything else?
+yolofant 04/29/2025 1:24 AM
+just put it after the config file
+[yolofant]
+yolofant 04/29/2025 1:23 AM
+I don't know how the SoC does the capturing internally
+[gorgi.gr]
+[] yolofant try -n -f 0
+gorgi.gr 04/29/2025 1:23 AM
+you mean only that or in combination with everything else?
+[yolofant]
+yolofant 04/29/2025 1:23 AM
+well, yes but most likely the delay is from the capture API itself
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:22 AM
+Or everything together
+04/29/2025 1:22 AM
+Yeap. But if this is the case, then the Lag comes either from the
+transmission to Pico or the processing from Hyper HDR or the driving of
+the LEDs
+[yolofant]
+yolofant 04/29/2025 1:21 AM
+almost all the time is spent waiting for vsync
+04/29/2025 1:20 AM
+that's why I said you can easily capture at hundreds of fps with vsync
+disabled
+04/29/2025 1:20 AM
+capturing video only is pretty fast
+04/29/2025 1:20 AM
+yes
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:20 AM
+Just a couple of ms for capturing
+04/29/2025 1:20 AM
+(no content)
+[image.png]
+ image.png
+103.93 KB External
+[yolofant]
+yolofant 04/29/2025 1:20 AM
+try -n -f 0
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:19 AM
+but look:
+[yolofant]
+yolofant 04/29/2025 1:19 AM
+not sure what's different from the config file though 
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:18 AM
+(no content)
+[image.png]
+ image.png
+114.36 KB External
+[yolofant]
+yolofant 04/29/2025 1:17 AM
+yeah if you disable vsync and set fps to 0
+04/29/2025 1:16 AM
+just check with the preview window in hyperhdr
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:14 AM
+I mean my LED strips are alive
+04/29/2025 1:14 AM
+it runs though
+04/29/2025 1:13 AM
+wait....
+04/29/2025 1:13 AM
+(no content)
+[image.png]
+ image.png
+65.97 KB External
+[yolofant]
+yolofant 04/29/2025 1:12 AM
+try -c config.json instead of all the parameters
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:12 AM
+(no content)
+[image.png]
+ image.png
+52.46 KB External
+04/29/2025 1:11 AM
+just a sec
+04/29/2025 1:10 AM
+I could try
+[yolofant]
+yolofant 04/29/2025 1:10 AM
+I'm always running it from the directory directly but I can't see why it
+should make a difference
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:10 AM
+shame
+[yolofant]
+yolofant 04/29/2025 1:10 AM
+hmm
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:10 AM
+also found nothing related in top
+04/29/2025 1:09 AM
+I ommitted q= 4 made no difference
+04/29/2025 1:09 AM
+I removed it in the last few tries
+04/29/2025 1:09 AM
+habit
+[yolofant]
+yolofant 04/29/2025 1:05 AM
+and not sure why you put . in the end
+04/29/2025 1:05 AM
+or try without -q 4
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:04 AM
+let me check again
+04/29/2025 1:03 AM
+wtf, I thought I killed everything related...
+[yolofant]
+yolofant 04/29/2025 1:02 AM
+usually if you have another instance running
+04/29/2025 1:02 AM
+hmm
+[gorgi.gr]
+gorgi.gr 04/29/2025 1:00 AM
+@Yolofant Does this error ring a bell?
+04/29/2025 12:59 AM
+(no content)
+[image.png]
+ image.png
+58.67 KB External
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:51 AM
+perfect, thanks
+[yolofant]
+yolofant 04/29/2025 12:51 AM
+-l -a /tmp/hyperhdr-domain
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:51 AM
+Do you have any idea how to configure local socket?
+04/29/2025 12:47 AM
+yeap
+[yolofant]
+yolofant 04/29/2025 12:47 AM
+you probably have to kill the running instance before running from cmd
+line
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:46 AM
+exactly, just found it via PID and ls -l /proc/PID/exe 
+[yolofant]
+yolofant 04/29/2025 12:44 AM
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service or
+something similar
+04/29/2025 12:44 AM
+wait
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:42 AM
+let me search
+04/29/2025 12:42 AM
+neither contains the hyperion-webos executable
+04/29/2025 12:42 AM
+interesting , in my TV there are only two folders bin and certs in the
+aforementioned hbc folder
+[yolofant]
+yolofant 04/29/2025 12:41 AM
+-q should be 0 or 4
+04/29/2025 12:39 AM
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/
+and then inside of bin or something like that
+04/29/2025 12:38 AM
+it's not
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:38 AM
+apparently on my TV the hyperion-webos location is not included in the
+PATH Env. variable...
+[yolofant]
+yolofant 04/29/2025 12:37 AM
+-v is for debug info
+04/29/2025 12:37 AM
+then try with vsync off and just give an fps number of 0 for unlimited
+04/29/2025 12:37 AM
+well you want to give -x -y -G -a -l -q -t
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:36 AM
+right
+[yolofant]
+yolofant 04/29/2025 12:35 AM
+hyperion-webos --help
+ 1
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:35 AM
+is there any documentation on this?
+[gorgi.gr]
+[] yolofant you can run hyperion-webos from the command line and enable
+debug mode where you can see the current...
+gorgi.gr 04/29/2025 12:35 AM
+this is a useful piece of info
+[yolofant]
+yolofant 04/29/2025 12:34 AM
+maybe try launching from the command line and try different options
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:34 AM
+If only I could somehow keep the delay below 50ms
+04/29/2025 12:34 AM
+Of course doing capturing on the TV is far more elegant
+04/29/2025 12:33 AM
+I used to have a WS2801 system with Arduino before that one, and I swear
+the delay was non existent
+[yolofant]
+yolofant 04/29/2025 12:32 AM
+looks pretty good to me though
+04/29/2025 12:32 AM
+zero delay is only possible if you can capture before the image is shown
+on screen which is possible when pq is enabled using the alternative
+dump location
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:32 AM
+That's with smoothing off
+04/29/2025 12:32 AM
+(no content)
+ YouCut_20250429_003131497.mp4
+2.6 MB External
+[yolofant]
+yolofant 04/29/2025 12:30 AM
+you can easily reach 100+ fps but there will still be an delay
+04/29/2025 12:30 AM
+you can run hyperion-webos from the command line and enable debug mode
+where you can see the current capture fps
+04/29/2025 12:29 AM
+it is what it is, capturing (hyperion-webos), processing (hyperhdr) and
+sending (hyperserialpico) all take their time
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:29 AM
+just to share my frustration 
+04/29/2025 12:28 AM
+ACtually let me make a new one for you
+04/29/2025 12:27 AM
+I can disable it completely but the delay is still there
+04/29/2025 12:27 AM
+The video I sent above is with smoothing at 25ms
+[yolofant]
+yolofant 04/29/2025 12:27 AM
+but have you disabled smoothing?
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:27 AM
+But the one I have used to be around 200 and now maybe 120-150ms
+04/29/2025 12:26 AM
+@Yolofant I can live even with 50ms delay
+[yolofant]
+yolofant 04/29/2025 12:26 AM
+it's just too little time
+04/29/2025 12:26 AM
+oled have like 6-7ms input lag
+04/29/2025 12:25 AM
+there's just too little time for all the processing to happen
+[gorgi.gr]
+[] yolofant but yeah there's still some delay
+gorgi.gr 04/29/2025 12:25 AM
+driving me crazy man
+[yolofant]
+yolofant 04/29/2025 12:25 AM
+I don't think you can ever have zero delay using a monitor
+04/29/2025 12:25 AM
+but yeah there's still some delay
+04/29/2025 12:24 AM
+video capture alone can run at hundreds of fps
+04/29/2025 12:24 AM
+well, you already disabled gui capture
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:23 AM
+Well to be honest In the movies I don't notice it either, but I am an
+engineer and I won't sleep well if my system isn't optimized AF 
+[yolofant]
+yolofant 04/29/2025 12:22 AM
+but that is with movies which as I explained are easier to capture
+because we can capture before all of the picture quality stuff runs
+giving hyperion-webos/hyperhdr some additional processing time
+04/29/2025 12:21 AM
+I can't really see a delay on my C2 with the alternative dump location
+enabled
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:21 AM
+Do you think the delay you see in my last video is "normal" ?
+[yolofant]
+yolofant 04/29/2025 12:20 AM
+idk, I don't really use the piccap gui
+ 1
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:19 AM
+@Yolofant Why are the quirks then organized like they are in PicCaps GUI
+screen? They imply that they belong to the old library as I undestrood
+it...
+[yolofant]
+yolofant 04/29/2025 12:19 AM
+thing is you are using it as a monitor which is probably the worst case
+scenario as normally the tv has all the pq stuff enabled which takes
+some time to process but in gaming mode all of this stuff is disabled
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:18 AM
+Current Situation...
+ YouCut_20250429_001629953.mp4
+2.14 MB External
+[yolofant]
+yolofant 04/29/2025 12:18 AM
+you should try the alternative dump location 2 which captures before the
+scaler and applying picture quality stuff
+04/29/2025 12:17 AM
+this is actually not completely correct, the quirks can be used on
+vtcapture and in fact there's more dump locations than with the older
+one
+ 1
+[gorgi.gr]
+gorgi.gr 04/29/2025 12:11 AM
+@satdx62 unfortunately increasing the baud rate for The Pico did not
+improve the problem. However disabling the GUI capturing in PicCap did
+lead to some improvment. Since I mainly use the TV as a monitor I can
+live without capturing the TV GUI, so I'll probably keep it this way.
+The delay between screen contents and LEDs is still noticeable in quick
+motions/scenes but you now have to specifically look for it. I am of
+course open for any suggestions that could improve my situation further.
+One thing I learned from all this is that most of the PicCap quirks are
+relevant for older WebOS versions. Newer TVs as mine use another library
+to capture the image , which only has one quirk for capturing "in
+special situations" whatever this means. I'll take a look at the links
+you posted!
+April 28, 2025
+[satdx62]
+[] yolofant did you disable smoothing?
+satdx62 04/28/2025 8:30 PM
+If you mean me yes, but I mentioned to @Gorgi in
+https://discord.com/channels/407937994037919756/931706504627773450/1366167934036082788
+that if the refresh rate for the LED strip driver is set too high, it
+can cause delays and processing bottlenecks. (edited)
+[1.png]
+ 1.png
+188 KB External
+[yolofant]
+yolofant 04/28/2025 7:35 PM
+did you disable smoothing?
+[satdx62]
+[] gorgi.gr You just gave me hope dude  Will check it ASAP and report
+back 
+satdx62 04/28/2025 7:17 PM
+I have not asked them which version they are currently using. If you
+want, you can also try my latest unofficial version, “22.0.0.0beta0”. It
+has been slimmed down and freed from some ballast and bugs. It is now
+only 14.8 MB instead of 37.6 MB. The LUT tables can also be installed
+via the menu as described
+here:https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+The compressed LUTs are not overwritten during a new installation, as
+they are saved separately. Only if you use uncompressed LUTs do you have
+to reinstall them. All other settings are retained. Here is the download
+link:
+https://github.com/satgit62/hyperhdr-webos-loader/actions/runs/14463245203/artifacts/2945673578
+(edited)
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+[gorgi.gr]
+[] satdx62 Yes, the RP2040 with HyperSerialPico can already handle
+higher baud rates. I drive it with 5000000, ...
+gorgi.gr 04/28/2025 6:29 PM
+You just gave me hope dude  Will check it ASAP and report back 
+(edited)
+ 1
+[satdx62]
+[] gorgi.gr The only problem seems to be this delay, which for the life
+of me I cannot pinpoint how it is caused...
+satdx62 04/28/2025 6:27 PM
+Yes, the RP2040 with HyperSerialPico can already handle higher baud
+rates. I drive it with 5000000, see picture. I also have three different
+instances running and both adalight with HyperSerialPico on RP204 and
+the FDTI controller have no delay. Only Philips Hue has a slight delay.
+[1.png]
+ 1.png
+126.98 KB External
+[2.png]
+ 2.png
+214.97 KB External
+ 1
+[gorgi.gr]
+gorgi.gr 04/28/2025 6:11 PM
+The only problem seems to be this delay, which for the life of me I
+cannot pinpoint how it is caused in the first place. Do we have any idea
+how long it takes for PicCap to capture the screen, copy it to the
+Flatbuffer (is there a zerocopy mechanism for this?), then send it over
+USB with Baudrate 2000000 to R.Pico? Is there any chance that the
+Bottleneck could be the USB connection itself? lsusb -t does not provide
+the expected details on the TV... The only thing I haven't tried yet is
+trying out the minimum functioning resolution, I'll do that as soon as I
+get my hands on the TV again. (edited)
+04/28/2025 6:07 PM
+My feeling is that my Pico and the LED strips can handle high update
+rates very well ( 60+ FPS) since the transitions are very very smooth
+when I move something in the screen. There is no jaggyness, no
+flickering, no apparent drop of frames, and the HyperHDR logfiles also
+support this. So my LED driver appears not to be the bottleneck, and the
+TV also appears not to be the bottleneck, at least CPU-wise... (edited)
+04/28/2025 6:05 PM
+These are the numbers with PicCap running with 90FPS by the way, they
+drop further when capturing with 60FPS or 30FPS
+04/28/2025 6:04 PM
+(no content)
+[2025-04-28_17h53_45.png]
+ 2025-04-28_17h53_45.png
+36.81 KB External
+[2025-04-28_17h57_55.png]
+ 2025-04-28_17h57_55.png
+34.94 KB External
+[2025-04-28_17h58_55.png]
+ 2025-04-28_17h58_55.png
+31.32 KB External
+04/28/2025 6:03 PM
+In my eyes it doesn't seem as a resource bottleneck issue. The LG G4 are
+quite expensive TVs with quite strong CPUs, but aside from speculation
+here are the hard facts:
+[satdx62]
+satdx62 04/28/2025 4:48 PM
+(no content)
+[1.png]
+ 1.png
+43.8 KB External
+[2.png]
+ 2.png
+43.23 KB External
+[3.png]
+ 3.png
+30.27 KB External
+[satdx62]
+[] gorgi.gr Thanks for your reply first of all! Judging from your Avatar
+I suspect you are also the one responsi...
+satdx62 04/28/2025 2:59 PM
+Hi, yes, I wrote the tutorial on GitHub. Since you are using
+HyperSerialPico on the RP2040, I agree that this delay of 200ms is too
+high. On my old B7, I can't see any delay with the naked eye.
+Unfortunately, since I don't own a G4 or similar device, I can't test
+this myself. Try setting the smallest resolution at which it still works
+("Most SoCs require width and height to be divisible by a certain value
+(usually 16)", says the developer). Just calculate it yourself and enter
+it manually. If none of the available quirks help, turn off UI capture
+as a test and, if necessary, sync as well. You can also reduce the
+refresh time to 30fps. You can also check the CPU/memory load with the
+top command in SSH/terminal and see what resources hyperion-webos and
+hyperhdr are using. If you want to see more details, enter
+top -H -p xxxx in the terminal, where xxxx is the PID number of the
+application you want to examine (e.g. the PID of hyperhdr or
+hyperion-webos). In this way, you can see even more precisely which
+thread within an application is consuming which resources. You will find
+out the PID when executing the top command. Press Ctrl + C to end the
+top output. (edited)
+[astur3l]
+[] gorgi.gr Thanks for your reply first of all! Judging from your Avatar
+I suspect you are also the one responsi...
+astur3l 04/28/2025 1:21 PM
+delay comes from capturing after the picture scaler, there's quirk for
+it, but on most models it won't improve the latency (like it probably
+wont on your g4), on oled a1 my tv it was like 50-60s delay, now its
+ahhead like 20-30 ms compared to display
+https://github.com/webosbrew/hyperion-webos/commit/9f1b982e127c696057487fe729657f775c8d3e11
+https://github.com/webosbrew/hyperion-webos/pull/116 (edited)
+Merge pull request #116 from sundermann/alternative-dump-location ...
+Support an alternative dump location for vtcapture
+[]
+Support an alternative dump location for vtcapture by sundermann ·...
+Supersedes #107 I don&#39;t think it makes sense to add another quirk
+which essentially does the same thing. Whilst it&#39;s true that there
+are more dump locations in the kernel, I never g...
+[]
+[gorgi.gr]
+[] satdx62 You do not need to activate all of PicCap's Quirks. Only
+those that are required for your device. Yo...
+gorgi.gr 04/28/2025 1:13 PM
+Thanks for your reply first of all! Judging from your Avatar I suspect
+you are also the one responsible for the awesome guides in GitHub, even
+if the nickname is slightly different, so thank you so much for these
+gems too!  Regading my weird issue, Awawa also told me to throttle
+down FPS so I did, I now run on 60FPS in PicCap and HyperHDR as well but
+the effect remains the same. In the HyperHDR logs I see some delays
+mentioned (for example due to smoothing) but they are around the 20ms .
+My delay is much much longer, around 200ms and it is very noticeable. 
+So I suspect it is not related with HyperHDR, but rather with the
+capturing itself. I drive the LEDs with Hyperserial Pico directly over
+USB. My TV is an LG G4. It does not make a noticeable difference if I
+use NV frames or not. Regarding the Quirks, how can I know which ones
+are the best combination for my LG G4 TV? How can I somehow help you
+help me? Any diagnostics or dmesg logs or anything else? (edited)
+April 27, 2025
+[satdx62]
+[] gorgi.gr Hi People! I'll cut right to the chase: Does anyone else
+experience a slight but noticeable lag betw...
+satdx62 04/27/2025 11:43 PM
+You do not need to activate all of PicCap's Quirks. Only those that are
+required for your device. You can also test without. In PicCap, 60 fps
+is sufficient. A resolution that is set too high can also cause delays.
+In HyperHDR, set 60 fps under Smoothing for the time being and use the
+alternative Linear (faster) under Type. If you set the refresh rate too
+high for the LED strip driver, delays and processing bottlenecks may
+occur. The transmission away to the LED controller also plays an
+important role. You have not mentioned which LED controllers operate.
+Wi-Fi or serial via USB? (edited)
+[satdx62]
+[] bahoue Wled
+satdx62 04/27/2025 11:22 PM
+For WLED, any ESP32 NodeMCU Module WLAN Wi-Fi Dev Kit C development
+board with the CP2102 serial chip can be used, as the transmission takes
+place via Wi-Fi. If you have a LAN connection behind the TV, you can use
+an ESP with a built-in LAN module, such as the ESP32 WT32-ETH01. CP2102
+is too slow for HyperSerial, so a CH340 or CH9102 must be used, as the
+transfer takes place via USB. However, additional kernel drivers must be
+installed for CH340 and CH9102. A good alternative to the ESP32 with
+CH340 and CH9102 is the ESP32 S2 Mini, which does not require any
+additional kernel drivers from LG. Be aware that in addition to the ESP
+itself, you will need additional components for smooth operation,
+including a level shifter. My favorite is definitely HyperSerialPico on
+RP2040 with built-in level shifter. (edited)
+[gorgi.gr]
+gorgi.gr 04/27/2025 10:38 PM
+Hi People! I'll cut right to the chase: Does anyone else experience a
+slight but noticeable lag between what the LGTV shows and how the Pixels
+react? For the life of me I cannot understand what the reason for this
+is. It does not seem as a HyperHDR issue since the Pixels are driven
+with 90FPS and the expected lag in such a system would be around 20ms.
+What I observe is 10 times more and quite noticeable! PicCap also
+running at 90fps. And all the quirks are enabled... Any of you have any
+ideas? (edited)
+ Delay.mp4
+3.36 MB External
+[bahoue]
+[] satdx62 Which firmware should be used to operate the ESP, WLED or
+HyperSerial?
+bahoue 04/27/2025 10:38 PM
+Wled
+[satdx62]
+[] bahoue Today if I have to buy an ESP for Ambilight, which would be
+recommended?
+satdx62 04/27/2025 10:25 PM
+Which firmware should be used to operate the ESP, WLED or HyperSerial?
+[bahoue]
+bahoue 04/27/2025 7:17 PM
+Today if I have to buy an ESP for Ambilight, which would be recommended?
+April 25, 2025
+[zooyork4201]
+zooyork4201 04/25/2025 2:13 AM
+thats it thank you so much fam!
+ 1
+[astur3l]
+[] zooyork4201 so there was a HyperHDR version for webOS that I had that
+had a gea un the upper right corner that i...
+astur3l 04/25/2025 2:03 AM
+probably
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+https://github.com/satgit62/satgit62.github.io/raw/refs/heads/main/org.webosbrew.hyperhdr.loader_0.2.5_all.ipk
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+[zooyork4201]
+zooyork4201 04/25/2025 1:28 AM
+so there was a HyperHDR version for webOS that I had that had a gea un
+the upper right corner that installes either compressed or uncompressed
+.Lut, and it worked well for my LG C2 and I was able to keep my root.
+And I cannot find it anywhere now, and the rest of them keep giving me
+problems cause it needs .lut files and I keep putting them in, and it
+doesnt change and then suddenly my root is gone. Does anyone know where
+I can find that version of HyperHDR?
+April 22, 2025
+[blasteroids]
+blasteroids 04/22/2025 10:11 AM
+DRM shouldn't be an issue as the video content works the LEDs if I
+disable GUI capture.
+ 1
+[satdx62]
+[] blasteroids No output with both set to auto. Using HyperHDR with
+HyperSerialESP32
+satdx62 04/22/2025 10:06 AM
+I wanted to draw your attention to the fact that capturing DRM-protected
+video content via the internal applications does not work. This only
+works via HDMI.
+[satdx62]
+[] blasteroids TV is a LG UQ8000 running WebOS22
+satdx62 04/22/2025 9:38 AM
+Ok, I have no experience with this device and if they have tested all
+resolutions with or without sync without success, they need to do away
+with UI capture or maybe @Yolofant can comment or work some magic here.
+[blasteroids]
+blasteroids 04/22/2025 9:27 AM
+TV is a LG UQ8000 running WebOS22
+04/22/2025 9:27 AM
+No output with both set to auto. Using HyperHDR with HyperSerialESP32
+[satdx62]
+[] blasteroids I tried all the resolutions. They both work on the same
+resolution but only when the other is switch...
+satdx62 04/22/2025 9:20 AM
+Have you set the recording backend mode UI and video to automatic? Which
+device do you have? (edited)
+[blasteroids]
+blasteroids 04/22/2025 8:52 AM
+I tried all the resolutions. They both work on the same resolution but
+only when the other is switched as disabled. It's like there's some kind
+of conflict. I guess there's a way to see debug outputs? The log in
+picap doesn't show any errors.
+[satdx62]
+[] blasteroids I might dive into the HDR LUT bits in the future, Thanks
+for the link. I'm just confused why the le...
+satdx62 04/22/2025 8:46 AM
+Unfortunately, there is no standard resolution with which both the user
+interface and video capture work for all LG models. You will therefore
+have to try out all resolutions yourself until you find the right one.
+    384x216
+    256x144
+    192x108
+    160x90
+    128x72
+(edited)
+April 21, 2025
+[blasteroids]
+[] satdx62 Hi, that's not bad either if you rely on the latest versions
+from the homebrew channel. (Provided yo...
+blasteroids 04/21/2025 10:29 PM
+I might dive into the HDR LUT bits in the future, Thanks for the link.
+I'm just confused why the leds will only work with either GUI capture or
+Video capture. Shouldn't both be working at the same time?
+[satdx62]
+[] blasteroids Hmm, it stopped working in gui unless I disabled video.
+Now oddly disabling gui the video is now wor...
+satdx62 04/21/2025 8:47 PM
+Hi, that's not bad either if you rely on the latest versions from the
+homebrew channel. (Provided you are up-to-date and keep yourself
+informed in between), however, the new PicCap with the NV12 option
+requires to be calibrated LUTs for SDR, HDR and Dolby Vision. Firstly,
+HyperHDR from the Homebrew Channel does not offer this option. In this
+case, everyone must take care of the calibration themselves and save the
+tables in the directories provided for this purpose. Secondly, the 50 MB
+LUT “flat_lut_lin_tables.3d” is no longer supported as of this version
+and should therefore be deleted and replaced by a valid LUT compressed
+or uncompressed. In my guide link (an article about theirs) I have
+calibrated the necessary LUTs and made them available so that they can
+be installed via a menu. If you can read, you have an advantage ...
+See:https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+There is also a description of why all this is necessary. (edited)
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+[blasteroids]
+blasteroids 04/21/2025 4:43 PM
+Hmm, it stopped working in gui unless I disabled video. Now oddly
+disabling gui the video is now working.
+[blasteroids]
+blasteroids 04/21/2025 4:22 PM
+Does anyone know if YTAF should work with leds? GUI now seems to work on
+Picap, Home, Jellyfin. Although that didn't at the start, oddly it
+started to work when I selected the combination of dile + halgal. After
+trying some other options, the GUI started to show with
+vtcapture+halgal, but no leds on video when playing any video on
+Jellyfin & YTAF. There's currently no HDMI device connected atm and no
+aerial in, so I can't try them. Any help grately appreciated. I'm using
+the Picap & HyperionHDR from HBC, so I guess they are the latest
+version.
+April 20, 2025
+[satdx62]
+Deleted User Is there a megathread or some sorts of guide where i can
+find all i need to get started?
+satdx62 04/20/2025 6:41 PM
+Hello, as this topic is very complex and there are several ways to build
+an Ambilight, I recommend that you first read these instructions to the
+end. You can then decide on a solution in the hardware section. If you
+already know which LED controller and LEDs are used, you can start with
+the installation for the respective configuration:
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+And then here:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+(edited)
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+Deleted User 04/20/2025 5:27 PM
+Is there a megathread or some sorts of guide where i can find all i need
+to get started?
+[] satdx62 Hi, to isolate the error, you should set the Hyperion.NG log
+to “Debug” and save a Hyperion.NG log a...
+aalborgdoors_38945 04/20/2025 7:25 AM
+Hi! Thanks for the help. I only did install piccap - not explicitly
+hyperion-webos. I tried some different settings- and ended up giving
+hyperHDR a try instead - and that works wonders - so i guess it might
+have been those settings regarding image decimation - that caused it. 
+April 18, 2025
+shaylaxotwod 04/18/2025 11:08 PM
+hii
+[astur3l]
+[] prydazo Can someone give me a hand and answer some questions about my
+setup I am about to do? Would be appre...
+astur3l 04/18/2025 8:34 PM
+avoid CP2102, it barely can do 1mbps baud rate, even ch341 can do
+better, also it requires extra module, if you want to stick to esp, go
+with lolin s2 (no extra driver requires, works with usb cdc acm, may
+other firmwares not /fully/ supports it like wled..) e.g., but if u dont
+want to use for anything else, best is rp2040 (edited)
+ 1
+[prydazo]
+[] satdx62 This is wrong. You need the WS 2812b 5 Volt with 60 LEDs/m
+IP30 and not the WS2815 12 Volt LEDs with...
+prydazo 04/18/2025 8:04 PM
+Can someone give me a hand and answer some questions about my setup I am
+about to do? Would be appreciated! Setup: TV: LG 65 inch TV LEDs:
+SK6812-RGB (IP30, 60 LEDs / meter) Controller: ESP32 CP2102 Power
+Supply: ?? Questions: - Do I need a level shifter for this setup? - Do I
+have to use the Mean Well LRS-100-5 Case 5 V/DC/0-18/90W or can I use
+one of the other two in the guide suggested power supplies, as I am
+below 75W? (According to the wled-calculator I do have the following
+power consumption: 65.70 W / 13.14 A) - Do you suggest Cold White, Warm
+White or Neutral White? - How thick do the Silicone Electric Wire have
+to be? Is 18 AWG 0.75 mm² fine for everything or do I need 1mm and 0.5mm
+as in the graphics suggested? Sources: -
+https://wled-calculator.github.io/ -
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS?tab=readme-ov-file#power-supply
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[satdx62]
+aalborgdoors_38945 Hi! I gave the hyperion webos / piccap a try. My TV
+model is OLED55B8PLA I have rooted it, and inst...
+satdx62 04/18/2025 10:51 AM
+Hi, to isolate the error, you should set the Hyperion.NG log to “Debug”
+and save a Hyperion.NG log as a text file and post it. The logs can be
+found under system settings. On my OLEDB7, which is a year older than
+yours, everything runs perfectly. Which version of Hyperion.NG have you
+installed? You said you have “PicCap” and “hyperion webos” installed.
+PicCap already contains “hyperion webos”. You only need to install
+PicCap and Hyperion.NG. HyperHDR can also be installed as an alternative
+to Hyperion.NG. You can see the CPU/memory usage by entering the command
+top in Terminal/SSH. Pay attention to hyperiond and hyperion-webos. If
+the image decimation in Hyperion.NG is set to 1 under network
+settings/flat buffer server, set it to 3 and see what CPU load hyperiond
+then causes. For webOS, it must not be set to 1, but to 2 or 3. (edited)
+aalborgdoors_38945 04/18/2025 5:45 AM
+Hi! I gave the hyperion webos / piccap a try. My TV model is OLED55B8PLA
+I have rooted it, and installation of piccap and hyperion webos as well
+as hyperion-ng was quick. I just did a quick connection to one of my
+zigbee light - via home-assistant - and hyperion-ng sees the light - and
+i can identify them - but once i start capturing - it takes approx. 4
+minutes - then LG starts restarting apps to free up memory - before the
+tv restarts itself. I have tried different quirks - but non with
+success. Has anyone in here made it work with a B8 OLED tv? or might
+that bee to old?
+April 16, 2025
+[jaybee82]
+jaybee82 04/16/2025 6:04 AM
+@satdx62 I just wanted to thank you for your tutorials and work on the
+LUTs for hyperhdr, HDR and DV ambilight never looked so good  
+ 1
+April 11, 2025
+[satdx62]
+satdx62 04/11/2025 7:07 PM
+I wanted to mention again at this point that those who don't care much
+about HDR and DV and want to avoid complex setups and LUT table
+calibrations and want to get there quickly and easily should give
+Hyperion.NG which also processes NV12 in the new version, a try. I have
+used it myself on one of my devices for testing purposes with three
+different instances such as HyperSerialPico on RP2040, WLED and Philips
+Hue Bulb. Furthermore, I have also successfully tested with SK6812RGBW
+on an FTDI LED controller. Everything runs very smoothly and the color
+rendering of the LEDs is very good after the simple calibration for all
+SDR content. With HDR and DV, you have to accept some deviations from
+the “WYSIWYG” on our LG devices. Hyperion.NG is extremely user-friendly
+and does not require complex calibrations or LUT tables. The
+documentation can be found at: https://docs.hyperion-project.org/ Some
+questions about calibration can be found at:
+https://hyperion-project.org/forum/index.php?thread/11860-hyperion-ng-color-calibration-steps-to-enhance-the-ledstrip-colours-almost-the-s/
+The calibration wizard here is very simple and works best if Kodi is
+installed on your LG or in your network environment, and you allow
+control via HTTP and remote control by applications on other systems in
+the Kodi settings/services. (edited)
+Hyperion documentation · Hyperion documentation
+Hyperion Ambient Light documentation
+Hyperion.NG color calibration steps to enhance the ledstrip colours...
+hello folks, This is for the people that are wondering: "how do I
+achieve nice colourfull palet of colours out of my ledstrip?" start with
+this from a basic point of view, this are the best results ( most
+accurate colours you can achieve) with a couple…
+[]
+[]
+[]
+[]
+[satdx62]
+rippmaster Is it piccap that is using most of the wifi then? Not wled or
+hyper hdr
+satdx62 04/11/2025 5:04 PM
+Hey, if you switch off PicCap via the app, there is no more
+communication between PicCap and HyperHDR/Hyperion.NG, so correctly
+understood, also no connection to WLED if someone uses WLED. So yes, no
+WLAN connection to WLED from the TV. But hey, that's the smallest case
+of big Wi-Fi consumption! Something else must be causing your Wi-Fi
+usage to skyrocket!
+ 1
+[] satdx62 You can install PicCap On/Off Remote from the Homebrew
+Channel to turn PicCap on and off when needed...
+rippmaster 04/11/2025 4:29 PM
+Is it piccap that is using most of the wifi then? Not wled or hyper hdr
+[satdx62]
+[] astur3l btw is there a "workaround" for low light "flickering" ? like
+its changing between very dark blue an...
+satdx62 04/11/2025 9:27 AM
+I have further reduced the flickering problem to a minimum with the
+alternative linear smoothing function by setting the anti-flickering
+threshold value = 32 and anti-flickering minimal step = 2. (you may need
+to increase it on your system) See
+Smothing:https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS?tab=readme-ov-file#smoothing
+See too:
+https://github.com/awawa-dev/HyperHDR/wiki/Quick-start#smoothing-anti-flickering-filter
+As for DV calibration, this is difficult to accomplish at the moment,
+especially since there is no real video calibration for DV content. Only
+the metadata of test_DV_yuv420_low_quality.mp4 video has been adjusted
+here so that it corresponds to Dolby Vision. The LUT created with the
+help of this video works quite well on my devices. You may need to
+recalibrate the LUT for your device to get better results. I also
+believe that we can never achieve perfect color rendering of the LEDs
+for every video content played. For comparison, install Hyperion.NG,
+which also processes NV12 in the new version. (edited)
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+Quick start
+Highly optimized open source ambient lighting implementation based on
+modern digital video and audio stream analysis for Windows, macOS and
+Linux (x86 and Raspberry Pi / ARM). - awawa-dev/HyperHDR
+[]
+[astur3l]
+astur3l 04/11/2025 1:06 AM
+btw is there a "workaround" for low light "flickering" ? like its
+changing between very dark blue and black (huge dark area "moving")
+which ends up with kinda flickering.. its not happening when the content
+is static (paused with continues output), i wasn't able to tune hyperhdr
+anti flickering to fix it without making bad the whole ambilight effect
+(delay, fast changing scenes "misses") , mostly dv content.. which have
+really shifted colors on my tv, at least with satdx62 test file (edited)
+April 10, 2025
+[yolofant]
+[] satdx62 <@195583665265311744>, are you planning to merge the library
+(bundle the library)?
+yolofant 04/10/2025 9:30 PM
+I haven't really looked into hyperion.ng
+[satdx62]
+[] astur3l just add the library filename in that line in build yaml (or
+copy from buildroot)
+satdx62 04/10/2025 7:32 PM
+Yes, I know, I can do that for myself for my builds, but I mean for the
+official hyperion.ng loader future versions that are backwards
+compatible.
+[astur3l]
+[] satdx62 <@195583665265311744>, are you planning to merge the library
+(bundle the library)?
+astur3l 04/10/2025 7:24 PM
+just add the library filename in that line in build yaml (or copy from
+buildroot) (edited)
+[satdx62]
+[] yolofant 5. bundle the library
+satdx62 04/10/2025 7:22 PM
+@Yolofant, are you planning to merge the library (bundle the library)?
+(edited)
+[satdx62]
+[] astur3l yeah, notice the "O" at the end crypt vs crypto , its not the
+same
+satdx62 04/10/2025 6:41 PM
+Yes, I didn't notice that in my haste.
+[astur3l]
+[] satdx62 libcrypto.so.1.1
+astur3l 04/10/2025 6:36 PM
+yeah, notice the "O" at the end crypt vs crypto , its not the same
+ 1
+[satdx62]
+[] astur3l the official hyperion.ng loader does **not** copy the
+libcrypt.so, only the **libcrypto**: see <http...
+satdx62 04/10/2025 6:32 PM
+libcrypto.so.1.1
+[astur3l]
+[] satdx62 At the moment, the libcrypt.so.1 is installed during the
+installation routine, so that webOS < than ...
+astur3l 04/10/2025 6:24 PM
+the official hyperion.ng loader does not copy the libcrypt.so, only the
+libcrypto: see
+https://github.com/webosbrew/hyperion.ng-webos-loader/blob/master/.github/workflows/build.yml#L152
+(edited)
+[yolofant]
+[] astur3l == 1?
+yolofant 04/10/2025 6:23 PM
+not statically
+[satdx62]
+satdx62 04/10/2025 6:22 PM
+At the moment, the libcrypt.so.1 is installed during the installation
+routine, so that webOS < than 7 works. For webOS 7 and you could build
+with the libcrypt.so.2, but then two versions would have to be provided
+in HBC or the suggestion 5. from @Yolofant (edited)
+[astur3l]
+[] yolofant 5. bundle the library
+astur3l 04/10/2025 6:21 PM
+== 1?
+[yolofant]
+yolofant 04/10/2025 6:19 PM
+5. bundle the library
+ 1
+[astur3l]
+[] satdx62 Yes, the “libcrypt issue” is actually the reason why
+Hyperion.NG does not start under > webOS 7. Thi...
+astur3l 04/10/2025 6:13 PM
+not sure if there's a proper way for it: 1, link statically (dunno how
+many deps it have, but even if you ship everything, there's chance it
+still wont work) 2, using `patchelf` after install (kinda same like the
+symlink, you just change the SONAME) 3, break < webos 7 compatibility
+(compile with newer libcrypt) 4, ship 2 (or more?) different builds
+(probably you cant pack into a single ipk..) so it would depend on
+useragent or something like that (requires HBC "support")
+[satdx62]
+[] astur3l webos 7.x or newer? probably missing lib (libcrypt) try run
+manually: ```PYTHONHOME=/media/developer...
+satdx62 04/10/2025 6:05 PM
+Yes, the “libcrypt issue” is actually the reason why Hyperion.NG does
+not start under > webOS 7. This needs to be fixed.
+[.jb68]
+.jb68 04/10/2025 5:51 PM
+wow that worked
+ 2
+[astur3l]
+[] .jb68 Deactivated the auto start and terminated the daemon on
+hyperhdr and turned off NV12 on piccap
+astur3l 04/10/2025 5:50 PM
+webos 7.x or newer? probably missing lib (libcrypt) try run manually:
+    PYTHONHOME=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/python OPENSSL_armcap=0 HOME=/home/root LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond
+    for libcrypt issue workaround:
+    ln -s /usr/lib/libcrypt.so.2 /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/libcrypt.so.1
+[.jb68]
+.jb68 04/10/2025 5:49 PM
+it wont start 
+[satdx62]
+[] .jb68 yeah its off
+satdx62 04/10/2025 5:40 PM
+Crazy, that must work. Disconnect your TV from the mains for 2 minutes.
+[.jb68]
+.jb68 04/10/2025 5:39 PM
+yeah its off
+04/10/2025 5:38 PM
+yeah ive always had that off, ill doublw check
+[satdx62]
+[] .jb68 still says no
+satdx62 04/10/2025 5:38 PM
+Have you switched off the Quick Start+ option?
+[.jb68]
+.jb68 04/10/2025 5:37 PM
+still says no
+[satdx62]
+[] .jb68 nope still no .hyperion folder
+satdx62 04/10/2025 5:36 PM
+Is the Hyperion.NG daemon starting now?
+[.jb68]
+.jb68 04/10/2025 5:35 PM
+nope still no .hyperion folder
+04/10/2025 5:30 PM
+okay
+[satdx62]
+[] .jb68 Click to see attachment
+satdx62 04/10/2025 5:29 PM
+Carry out a complete restart.
+[.jb68]
+.jb68 04/10/2025 5:19 PM
+(no content)
+[Screenshot_2025-04-10_at_16.19.32.png]
+ Screenshot_2025-04-10_at_16.19.32.png
+77.26 KB External
+04/10/2025 5:19 PM
+i only see .hyperdhr folder and not .hyperion
+[satdx62]
+[] .jb68 Click to see attachment
+satdx62 04/10/2025 5:14 PM
+Delete the hyperion.db file from /home/root/.hyperion/db/ Set the
+autostart of the HyperHDR Loader to on and reboot.
+[.jb68]
+.jb68 04/10/2025 4:34 PM
+(no content)
+.MOV preview not available — download to play
+ 76598843100__4450CCC9-3D70-415A-A7A9-83993B64B638.mov
+646.89 KB External
+04/10/2025 4:31 PM
+Deactivated the auto start and terminated the daemon on hyperhdr and
+turned off NV12 on piccap
+04/10/2025 4:31 PM
+Okay, I’ve tried that but when I try and start the daemon on
+Hyperion.ng. It runs for 2 secs and goes off
+[satdx62]
+[] .jb68 Hi, lights still going off and on every 3-5 mins 
+satdx62 04/10/2025 4:25 PM
+I think you have set everything up correctly. I myself have Philips Hue
+running as a second instance in addition to HyperSerialPico, and the Hue
+bulbs are not constantly switching on and off. Furthermore, I don't know
+if it's a connection problem or a timing problem with the Hue Bridge.
+You can rule out problems with HyperHDR by deactivating they autostart
+in the HyperHDR Loader and terminating the daemon. In the next step, you
+can install Hyperion.NG from Homebrew Channel, start it and set it up
+analogously to HyperHDR and observe whether it also has the same
+dropouts. You do not need to install any LUTs for Hyperion.NG, just
+switch off the NV12 in PicCap. If you have no more dropouts, I can
+provide you with a current Hyperion.NG version with NV12 support.
+[.jb68]
+[] satdx62 Okay, the “Power State Check” is not necessarily relevant for
+this, so it can remain deactivated. 
+.jb68 04/10/2025 11:39 AM
+Hi, lights still going off and on every 3-5 mins 
+[] l4stidi0t Where did i mess up that my colours are not correct?
+Hyperhdr + luts, wled, piccap nv12 Dolby visio...
+timcook4825 04/10/2025 10:39 AM
+good luck trying to find a way that works for every hdr/dv content. It‘s
+simply not possible with webOS grabbing to have a DV LUT that doesn‘t
+show mismatched colors on a lot of scenes. you tweak your LED settings
+so it looks good on one movie, you watch the next and you can tweak
+again. I really hope someone will find a solution for that, like Asturel
+and the dump loc thing that made things way better
+timcook4825 04/10/2025 10:33 AM
+Always calibrate the LUTs for yourself, you never know what input was
+used, what picture mode settings etc. you can heavily alter your LUT by
+just tweaking some settings in webOS. there is no such thing as „The One
+SDR LUT“ everyone can use
+April 9, 2025
+[] satdx62 The LUTs you installed from the HyperHDR version in my Guide
+are already calibrated for SDR, HDR and...
+footy1337 04/09/2025 3:18 PM
+Sweet, I guess I have to play around a bit with the Hue LED strip
+channel positioning I guess 
+April 8, 2025
+[l4stidi0t]
+l4stidi0t 04/08/2025 1:59 PM
+ah okay, thank you, guess ill use HA to automate it then (edited)
+[satdx62]
+[] l4stidi0t i guess you are right but it is not possible to make a
+curve so that lighter colors get more satur...
+satdx62 04/08/2025 1:58 PM
+This is achieved with gamma correction and has nothing to do with the
+LUT's tables. You can also create different profiles and automate them
+with an HA and load the profiles as required.
+[HA.png]
+ HA.png
+159.65 KB External
+ 1
+[l4stidi0t]
+l4stidi0t 04/08/2025 1:45 PM
+i guess you are right but it is not possible to make a curve so that
+lighter colors get more saturated and darker colors less saturated? and
+then preferably for each color channel
+[image.png]
+ image.png
+68.84 KB External
+[satdx62]
+[] l4stidi0t Is it the region that it uses to decide which color it
+should be? In the led config Or should i try...
+satdx62 04/08/2025 1:32 PM
+Firstly, if an extremely dark image has a high proportion of blue or
+green (this is very difficult to determine with the naked eye), the LED
+will reflect this. You can best judge this in the live preview of
+HyperHDR by examining it with the browser color pipette. See picture.
+You can enter the code in a color table and see what the actual color
+is. See:https://www.w3schools.com/colors/colors_picker.asp The image
+components are reproduced by the LEDs that you have defined in the
+advanced layout settings.
+See:https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#layout-advanced-settings
+Yes, you can fine-tune both gamma and saturation values. Please note
+that this has a global effect. SDR, HDR and DV content. And yes, I
+agree, some yellows are very pale.
+[Farbpippete.png]
+ Farbpippete.png
+511.77 KB External
+W3Schools offers free online tutorials, references and exercises in all
+the major languages of the web. Covering popular subjects like HTML,
+CSS, JavaScript, Python, SQL, Java, and many, many more.
+[]
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[l4stidi0t]
+l4stidi0t 04/08/2025 12:41 PM
+Is it the region that it uses to decide which color it should be? In the
+led config Or should i try the gamma? Or just the saturation? But bright
+colors especially yellow feels a bit unsaturated
+[l4stidi0t]
+l4stidi0t 04/08/2025 12:30 PM
+Where did i mess up that my colours are not correct? Hyperhdr + luts,
+wled, piccap nv12 Dolby vision movie
+[IMG_2430.jpg]
+ IMG_2430.jpg
+1.15 MB External
+[satdx62]
+footy1337 This contains HDR and SDR calibration right?
+satdx62 04/08/2025 9:24 AM
+The LUTs you installed from the HyperHDR version in my Guide are already
+calibrated for SDR, HDR and Dolby Vision.
+[satdx62]
+[] fpsusername What's considered little storage space as opposed to
+enough storage space for uncompressed LUTs? Sto...
+satdx62 04/08/2025 9:06 AM
+Hello, this is not about external USB storage or similar, but about the
+flash memory of the LG and this is limited. It is also divided into
+different partitions, which are not the same size. An uncompressed LUT
+has 150 MB, so you need an additional 450 MB in some partition of the
+flash memory. The compressed LUTs require less than 25 MB and the
+quality is the same as the uncompressed LUTs.
+ 1
+[fpsusername]
+[] satdx62 Compressed LUTs are preferred when there is little storage
+space available. It takes a little while ...
+fpsusername 04/08/2025 8:31 AM
+What's considered little storage space as opposed to enough storage
+space for uncompressed LUTs? Storage is dirt cheap these days. Recently
+bought a smagsun pro endurance 128GB SD card for €19 for my Ordroid N2+
+(home NAS and media server) (edited)
+footy1337 04/08/2025 1:26 AM
+This contains HDR and SDR calibration right?
+04/08/2025 1:25 AM
+I'm using the compressed LUT's at the moment, by going to the cog wheel
+04/08/2025 1:24 AM
+And I enabled HDR to SDR tone mapping
+04/08/2025 1:23 AM
+I'm running it on a LG WebOS tv, using PiCap and NV12 enabled
+04/08/2025 1:22 AM
+Thanks for the additions to make the whole process bit easier
+04/08/2025 1:22 AM
+Im using your version @satdx62
+04/08/2025 1:22 AM
+But very cool so far
+04/08/2025 1:22 AM
+It seems a bit off 
+04/08/2025 1:21 AM
+I think I just need to play around with the channel (light) positioning
+in HyperHDR
+04/08/2025 1:21 AM
+Sweet, I got it running
+April 7, 2025
+[satdx62]
+satdx62 04/07/2025 11:12 PM
+The compressed LUTs are installed to /home/root/.hyperhdr/ and the
+uncompressed LUTs are installed to
+/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/.
+[satdx62]
+footy1337 Click to see attachment
+satdx62 04/07/2025 10:53 PM
+You can test with the compressed version, and if it takes too long to
+decompress the LUT, you can install the uncompressed version over it.
+(edited)
+[satdx62]
+footy1337 Click to see attachment
+satdx62 04/07/2025 10:50 PM
+Compressed LUTs are preferred when there is little storage space
+available. It takes a little while for them to load, but it's not worth
+talking about.
+footy1337 04/07/2025 10:49 PM
+Anyone uses the version by @satdx62 ?
+04/07/2025 10:47 PM
+(no content)
+[rn_image_picker_lib_temp_3ff84eeb-8aea-4ed8-b4f5-c9b18265b698.jpg]
+ rn_image_picker_lib_temp_3ff84eeb-8aea-4ed8-b4f5-c9b18265b698.jpg
+3.77 MB External
+04/07/2025 10:47 PM
+What is in general the recommendation? Compressed LUT or Uncompressed?
+[] satdx62 If you install the HyperHDR version from my instructions, you
+can install the calibrated SDR, HDR an...
+footy1337 04/07/2025 10:46 PM
+Sweet work on the version you created!
+[satdx62]
+[] abbiedoobie Do you mean VSync?
+satdx62 04/07/2025 10:43 PM
+Yes, VSync,
+[abbiedoobie]
+abbiedoobie 04/07/2025 10:41 PM
+Do you mean VSync?
+[satdx62]
+[] abbiedoobie What is "maximal FPS" then? I thought if that was set to
+60, it would grab at 60fps at the very most...
+satdx62 04/07/2025 10:31 PM
+This question is easy to answer. Since I have deactivated UI Capture,
+but have left VSync on and not deactivated it, I theoretically have
+twice the fps available. Unfortunately, my device does not manage 120
+fps but only 100. With VSync deactivated, I only get the set 60 fps. It
+sounds paradoxical, and that's just my guess, but I don't have a better
+answer either. (edited)
+[abbiedoobie]
+[] satdx62 I have disabled the graphical capture backend. I also have
+adalight on HyperSerialPico (RP2040), but...
+abbiedoobie 04/07/2025 10:22 PM
+What is "maximal FPS" then? I thought if that was set to 60, it would
+grab at 60fps at the very most. How are you capturing at 100 in the
+bottom-right status bar, but this is set to 60. I think I'm mixed up on
+settings my apologies.
+[satdx62]
+rippmaster Any ideas what fps i should get with a slow lg a1?
+satdx62 04/07/2025 10:06 PM
+In the best case, 30 and more fps.
+[satdx62]
+satdx62 04/07/2025 10:04 PM
+(no content)
+[1.png]
+ 1.png
+124.52 KB External
+[satdx62]
+rippmaster Just want to temporary shut of hyperhdr-piccap-wled wifi
+usage when playing vr with the tv showing m...
+satdx62 04/07/2025 10:02 PM
+You can install PicCap On/Off Remote from the Homebrew Channel to turn
+PicCap on and off when needed. You must first uninstall Rauten App to be
+able to turn PicCap on and off with the Rakuten Button Remote.
+https://repo.webosbrew.org/apps/ui30/
+[] satdx62 Counter question: Which LED controller do you use for
+Ambilight? If you don't want to use Wi-Fi for...
+rippmaster 04/07/2025 8:57 PM
+Just want to temporary shut of hyperhdr-piccap-wled wifi usage when
+playing vr with the tv showing my screen.  if there is an option
+rippmaster 04/07/2025 8:56 PM
+Any ideas what fps i should get with a slow lg a1?
+[techwiz93]
+techwiz93 04/07/2025 5:54 PM
+Thanks for the tip. I had tried a number of resolutions and FPS, just
+not that one.
+04/07/2025 5:51 PM
+I think that did it. 
+ 2
+[astur3l]
+[] techwiz93 0.321s [INFO capture_init ] Capture start called. 0.321s
+[INFO capture_init ] [QU...
+astur3l 04/07/2025 5:38 PM
+try 256x144 30fps
+[techwiz93]
+techwiz93 04/07/2025 5:29 PM
+0.321s [INFO capture_init ] Capture start called. 0.321s [INFO
+capture_init ] [QUIRK_DILE_VT_CREATE_EX]: Attempting DILE_VT_CreateEx...
+ML mmap get by DS offset u32MLAddr[0x1e980000] u32MLSize[0x80000] 0.326s
+[ DBG capture_init ] Got DILE_VT context! 0.330s [ DBG capture_init ]
+supportScaleUp: 0; (0x0) 0.330s [ DBG capture_init ] supportScaleDown:
+1; (1x1) 0.330s [ DBG capture_init ] maxResolution: 1920x1080 0.330s [
+DBG capture_init ] input deinterlace: 0; display deinterlace: 1 0.439s
+[INFO capture_init ] [DILE_VT] framerate divider: 2 0.480s [INFO
+capture_init ] [DILE_VT] frametime: 20516; estimated fps before divider:
+48.74244 0.521s [INFO capture_init ] [DILE_VT] frametime: 20413;
+estimated fps after divider: 48.98839 0.522s [INFO capture_init ]
+[DILE_VT] vfbs: 1; planes: 2 0.522s [INFO capture_init ] [DILE_VT]
+pixelFormat: 4; width: 192; height: 108; stride: 192... 0.522s [ DBG
+capture_init ] [DILE_VT] vfb[0][0] = 0xdfc00000 0.522s [ DBG
+capture_init ] [DILE_VT] vfb[0][1] = 0xdfc05100 0.522s [ ERR
+capture_init ] [DILE_VT] mmap for vfb[0][1] failed! 0.523s [ ERR
+unicapture_init_backend] libdile_vt_backend.so: init failure, code: -7
+0.523s [ DBG main ] Going into main loop.. 0.523s [ DBG unicapture_run ]
+Attempting UI capture init... 0.523s [INFO unicapture_run ] UI capture
+started
+04/07/2025 5:29 PM
+That actually is what that test was run at.
+[satdx62]
+[] techwiz93 "board_type": "LM18A_ATSC", "hardware_id":
+"HE_DTV_W18A_AFADATAA", "product_id": "50UK6090PU...
+satdx62 04/07/2025 5:28 PM
+Test in PicCap with this resolution: 192x108.
+[techwiz93]
+techwiz93 04/07/2025 5:17 PM
+tried it on an older firmware, then updated to this one. Same results.
+04/07/2025 5:17 PM
+"board_type": "LM18A_ATSC", "hardware_id": "HE_DTV_W18A_AFADATAA",
+"product_id": "50UK6090PUA", "core_os_release": "4.1.3-5720",
+"webos_manufacturing_version": "05.10.10",
+04/07/2025 5:17 PM
+I've been trying to get piccap to capture video for a couple days, tried
+all the quirks, tried all the decoders. UI capture works fine. Looking
+at the error messages when I try to run it, this seems to be relevant
+but I can't get past it. 0.522s [ ERR capture_init ] [DILE_VT] mmap for
+vfb[0][1] failed! 0.523s [ ERR unicapture_init_backend]
+libdile_vt_backend.so: init failure, code: -7
+[wilderinder]
+[] satdx62 Yes, okay, that is normal that the menus are not recorded.
+Because I switched it off in my config.js...
+wilderinder 04/07/2025 5:12 PM
+Yes, 60 fps is probably more than enough. Even with smoothing, 120 fps
+would probably be too much, and I'd have an epileptic seizure. And
+thanks again for your great guides, which helped me so much. Now I'm
+afraid to buy a new monitor because I really don't want to be without
+Ambilight anymore.
+ 1
+[satdx62]
+[] wilderinder Since I use the C1 purely as a monitor, I don't watch TV.
+I don't have any lighting in the Pico app,...
+satdx62 04/07/2025 5:09 PM
+Yes, okay, that is normal that the menus are not recorded. Because I
+switched it off in my config.json. But the 60 fps is more than enough.
+The main thing is that you are satisfied. Otherwise, they have to live
+with their configuration and 20 fps.
+[wilderinder]
+[] satdx62 Yes, but at the bottom it says "Video:not capturing" and that
+is not ok. Do the LEDs light up when w...
+wilderinder 04/07/2025 5:05 PM
+Since I use the C1 purely as a monitor, I don't watch TV. I don't have
+any lighting in the Pico app, but as soon as I switch to HDMI, it works
+[satdx62]
+[] wilderinder ok my mistake, I had to wait a little longer
+satdx62 04/07/2025 5:03 PM
+Yes, but at the bottom it says "Video:not capturing" and that is not ok.
+Do the LEDs light up when watching TV?
+[wilderinder]
+wilderinder 04/07/2025 5:00 PM
+ok my mistake, I had to wait a little longer
+[image.png]
+ image.png
+226.7 KB External
+[satdx62]
+[] wilderinder But doesn't it make sense to have 0 fps if UI capturing
+is disabled?
+satdx62 04/07/2025 4:59 PM
+That worked earlier with my config.json,
+https://discord.com/channels/407937994037919756/931706504627773450/1358810963532578827.
+Have you restarted your device?
+[satdx62]
+[] wilderinder But doesn't it make sense to have 0 fps if UI capturing
+is disabled?
+satdx62 04/07/2025 4:54 PM
+I said that UI is only responsible for capturing the graphical user
+interface, i.e. the menus. You don't necessarily have to capture the
+menus. The video capture is important. It has to work.
+[wilderinder]
+[] satdx62 Simply reboot your device.
+wilderinder 04/07/2025 4:48 PM
+But doesn't it make sense to have 0 fps if UI capturing is disabled?
+[image.png]
+ image.png
+426.44 KB External
+[satdx62]
+[] wilderinder UI: Not capturing Video: Not capturing FPS: 0.00
+satdx62 04/07/2025 4:42 PM
+Simply reboot your device.
+[wilderinder]
+[] satdx62 This already looks much better. Start the PicCap app and go
+to Settings and press the Save button...
+wilderinder 04/07/2025 4:40 PM
+UI: Not capturing Video: Not capturing FPS: 0.00
+[satdx62]
+[] wilderinder ok now I have the following with your config
+satdx62 04/07/2025 4:39 PM
+This already looks much better. Start the PicCap app and go to
+Settings and press the Save button again. Look at the bottom right of
+the bar to see if the fps changes.
+[wilderinder]
+[] satdx62 Yes, but that is not the configuration I use and have
+suggested. They will never reach the set 120 f...
+wilderinder 04/07/2025 4:29 PM
+ok now I have the following with your config
+[image.png]
+ image.png
+43.92 KB External
+[satdx62]
+[] wilderinder Click to see attachment
+satdx62 04/07/2025 4:24 PM
+Yes, but that is not the configuration I use and have suggested. They
+will never reach the set 120 fps there. Test with my config.json.
+ config.json
+258 Bytes External
+[wilderinder]
+[] satdx62 Yes,
+`/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/`
+wilderinder 04/07/2025 4:17 PM
+(no content)
+ config.json
+259 Bytes External
+[satdx62]
+[] wilderinder Can you tell me under which path I can find the config?
+satdx62 04/07/2025 4:16 PM
+Yes,
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/
+[wilderinder]
+[] satdx62 Can you post your config.json from PicCap?
+wilderinder 04/07/2025 4:13 PM
+Can you tell me under which path I can find the config?
+[satdx62]
+[] wilderinder Same for me. 20 fps with LEDs and 120 fps with LED
+devices
+satdx62 04/07/2025 4:10 PM
+Can you post your config.json from PicCap?
+[wilderinder]
+[] ziyadovich 20 fps leds and 110 fps led device
+wilderinder 04/07/2025 3:46 PM
+Same for me. 20 fps with LEDs and 120 fps with LED devices
+[satdx62]
+satdx62 04/07/2025 12:13 PM
+I do not need to capture the graphical user interface. For me, capturing
+the videos is much more important.
+[satdx62]
+[] ziyadovich i have rp2040
+satdx62 04/07/2025 12:08 PM
+I have disabled the graphical capture backend. I also have adalight on
+HyperSerialPico (RP2040), but that is not relevant at all, it also works
+with WLED on ESP as well. Sometimes you have to confirm the save button
+twice. (edited)
+[Graphical_capture_backend_disabled.png]
+ Graphical_capture_backend_disabled.png
+145.4 KB External
+[ziyadovich]
+ziyadovich 04/07/2025 11:40 AM
+i have rp2040
+04/07/2025 11:39 AM
+20 fps leds and 110 fps led device
+04/07/2025 11:38 AM
+I tried everything QUIRK_DILE_VT_DUMP_LOCATION_2
+04/07/2025 11:38 AM
+how did you get 100 fps
+[satdx62]
+satdx62 04/07/2025 10:04 AM
+(no content)
+[fps2.png]
+ fps2.png
+66.84 KB External
+[satdx62]
+[] wilderinder I'll chime in. I've also installed LUTs and am very
+satisfied with the color reproduction. I just re...
+satdx62 04/07/2025 9:20 AM
+If you dispense with UI capture in the PicCap settings, you can even
+achieve 100.0 fps with the HyperHDR instance. However, only if the
+“QUIRK_DILE_VT_DUMP_LOCATION_2” option is activated in the advanced
+settings. The frame rate on the LED device results from the HyperHDR
+settings of the "Update frequency" set under smoothing. You can even set
+120 Hz there. Please note, however, that setting a higher refresh rate
+than that of the LED strip driver/controller can lead to delays and
+processing bottlenecks. (edited)
+[fps.png]
+ fps.png
+189.09 KB External
+[fps3.png]
+ fps3.png
+119.43 KB External
+[wilderinder]
+wilderinder 04/07/2025 3:03 AM
+My other question is, is 120fps even possible? Since I'm using my LG C1
+as a monitor with an RTX 5080?
+[wilderinder]
+[] satdx62 If you install the HyperHDR version from my instructions, you
+can install the calibrated SDR, HDR an...
+wilderinder 04/07/2025 3:01 AM
+I'll chime in. I've also installed LUTs and am very satisfied with the
+color reproduction. I just realized how inaccurate it was before. I have
+a question. Since I installed it, the HyperHDR page only shows 20 fps.
+The LED shows 58.8 fps. Is this normal? I selected 60 fps in the Pico
+app
+[image.png]
+ image.png
+37.68 KB External
+[abbiedoobie]
+abbiedoobie 04/07/2025 2:32 AM
+The guide mentions that this quirk reduces led delay, so I enabled it. I
+read the little writeup on quirks, but it went over my head. I have a C3
+on WebOS 23 based firmware, best I understand. Think that's 8.x
+[astur3l]
+[] abbiedoobie I see, apologies for my misunderstanding, when I
+initially read that it looked like calibration was ...
+astur3l 04/07/2025 2:18 AM
+dile vt is for older than webos 5 devices, however there's dumploc 1 for
+webos >=5, which depending on your soc (tv) it may improve color
+accuracy (e.g. on my tv dumploc2 affected by color settings), and less
+delay (between captured frame and display), or nothing at all, ehm also
+it may breaks hdmi tone mapping (dv?)
+April 6, 2025
+[abbiedoobie]
+abbiedoobie 04/06/2025 11:49 PM
+I see, apologies for my misunderstanding, when I initially read that it
+looked like calibration was a core part of fine-tuning. Question: Is it
+still recommended to keep "QUIRK_DILE_VT_DUMP_LOCATION_2" enabled in
+piccap? I noticed it is not checked in the fine-tuning guide. I enabled
+it after updating everything and re-reading your main ambilight guide.
+[satdx62]
+[] abbiedoobie I did not run any calibration before and everything
+looked relatively ok. The guide you linked seems...
+satdx62 04/06/2025 10:51 PM
+If you install the HyperHDR version from my instructions, you can
+install the calibrated SDR, HDR and Dolby Vision LUTs very conveniently
+via a menu. Simply follow the instructions. Your settings are retained.
+Nothing needs to be calibrated. The NV12 option in PicCap must be
+activated.https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#2-hyperhdr-installation-instructions
+If you don't want a new installation, you have to do it yourself and
+calibrate it. This is also described in my instructions.
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+[abbiedoobie]
+[] satdx62 Hello, the LUT from `/home/root/.hyperhdr/`lut_lin_tables.3d
+has the correct size, but is not a cal...
+abbiedoobie 04/06/2025 9:45 PM
+I did not run any calibration before and everything looked relatively
+ok. The guide you linked seems to require calibration. Is there anyway
+to just get an original "lut_lin_tables.3d" file to correct the index
+issue? I would rather not install a custom version of HyperHDR that
+requires calibration and manually updating.
+[satdx62]
+rippmaster Like im thinking if i turn off hyperhd piccap is still
+sending things that may affect wifi?
+satdx62 04/06/2025 9:04 PM
+Counter question: Which LED controller do you use for Ambilight? If you
+don't want to use Wi-Fi for Ambilight, then you need an LED controller
+that is connected to your TV via a USB connection such as HyperSerial,
+HyperSerialPico or via a LAN connection such as WLED based on LAN-ESP32.
+rippmaster 04/06/2025 8:54 PM
+Like im thinking if i turn off hyperhd piccap is still sending things
+that may affect wifi?
+04/06/2025 8:53 PM
+Wierd question. If i dont want the wifi to be used for the ambilight. Do
+i turn of piccap, or can i turn something off in hyperhdr?
+[satdx62]
+[] abbiedoobie I backed up the file and then deleted it. Things look
+better, but I am still seeing stronger colors ...
+satdx62 04/06/2025 8:51 PM
+Hello, the LUT from /home/root/.hyperhdr/lut_lin_tables.3d has the
+correct size, but is not a calibrated LUT and also has an incorrect
+index.
+     2025-04-06T11:10:04.611Z [FLATBUFSERVER] (LutLoader.cpp:73) LUT file found: /home/root/.hyperhdr/lut_lin_tables.3d (uncompressed) 2025-04-06T11:10:04.611Z [FLATBUFSERVER] (LutLoader.cpp:94) Index 0 for HDR RGB 
+It must have index 1 for YUV. The NV12 option must be activated in the
+new PicCap. You can easily get the required LUTs by installing the
+HyperHDR version from my installation guide and following the
+instructions. (edited)
+[abbiedoobie]
+abbiedoobie 04/06/2025 8:12 PM
+I backed up the file and then deleted it. Things look better, but I am
+still seeing stronger colors than I remember. I'll play with the
+settings a bit more.
+ message.txt
+17.28 KB External
+[abbiedoobie]
+abbiedoobie 04/06/2025 8:02 PM
+I do see the issue you are describing, I think. Invalid 50mb lut table
+referenced. I do not need hyper accurate colors, what I had before was
+good enough, I'd rather avoid fine tuning that might need updates later.
+If I delete the lut file here, should everything be relatively
+acceptable at that point without calibration?
+"/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/flat_lut_lin_tables.3d"
+[abbiedoobie]
+[] satdx62 Please post a HyperHDR log to see which LUTs are loaded. The
+new HyperHDR no longer supports the 50 ...
+abbiedoobie 04/06/2025 7:59 PM
+Log attached
+ message.txt
+49.05 KB External
+[satdx62]
+[] abbiedoobie I recently updated HyperHDR and Piccap after not updating
+for a few months on my main TV. The colors...
+satdx62 04/06/2025 7:47 AM
+Please post a HyperHDR log to see which LUTs are loaded. The new
+HyperHDR no longer supports the 50 MB “flat_lut_lin_tables.3d”
+from /media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/
+If available, remove the invalid LUT “flat_lut_lin_tables.3d” For
+correct color display, you need calibrated LUTs for SDR, HDR and DV.
+See:https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[abbiedoobie]
+abbiedoobie 04/06/2025 4:11 AM
+I recently updated HyperHDR and Piccap after not updating for a few
+months on my main TV. The colors on my LEDs are now horribly
+oversaturated or something. They just go extremely hard red/blue/green
+when even a very light color is shown. Is this because I manually
+overwrote some files on HyperHDR? At the time this was part of the
+instructions, due to an inaccuracy in calculation or something. If it
+is, how do I undo that without losing my HyperHDR config? (edited)
+April 5, 2025
+the.real.joe.biden 04/05/2025 10:32 PM
+both the tv and esp are <3ft from an access point though, so I doubt it
+would make much of a difference, certainly not noticable
+04/05/2025 10:31 PM
+will probably run some ethernet to the TV at some point, I use a shield
+for my playback so don't need to worry about the 10/100 port on the TV
+[l4stidi0t]
+l4stidi0t 04/05/2025 10:30 PM
+Cool, it would be the same for me
+the.real.joe.biden 04/05/2025 10:30 PM
+tv and esp are both on wifi, server is wired though
+04/05/2025 10:29 PM
+not noticable. I have smoothing turned off
+[l4stidi0t]
+the.real.joe.biden basically going piccap -> hypderhdr running in docker
+-> wled on an ESP32 controller
+l4stidi0t 04/05/2025 10:29 PM
+How much is your delay would you roughly say? It sounds interesting, i
+might try it as well
+the.real.joe.biden 04/05/2025 9:57 PM
+basically going piccap -> hypderhdr running in docker -> wled on an
+ESP32 controller
+04/05/2025 9:56 PM
+my setup is a bit different than your guide - but it works really well.
+Great if you have a server at home to take some of the load off the TV
+04/05/2025 9:55 PM
+Thank you!
+[] satdx62 Yes, 384x216 is reasonable.
+the.real.joe.biden 04/05/2025 9:55 PM
+ohh damn - you made the LUT calibrations I used hahaha
+[satdx62]
+the.real.joe.biden I have all the LUT calibrations done, so I will bump
+down to 1/10th 4k resolution
+satdx62 04/05/2025 9:03 PM
+Yes, 384x216 is reasonable.
+ 1
+[.jb68]
+.jb68 04/05/2025 8:59 PM
+I’ll report back
+04/05/2025 8:59 PM
+Okay 
+[satdx62]
+[] .jb68 When I use disable power state check, notice the leds stay on
+after I turn off tv
+satdx62 04/05/2025 8:59 PM
+Okay, the “Power State Check” is not necessarily relevant for this, so
+it can remain deactivated. 
+the.real.joe.biden 04/05/2025 8:48 PM
+I have all the LUT calibrations done, so I will bump down to 1/10th 4k
+resolution
+ 1
+[mumpitz_i]
+mumpitz_i 04/05/2025 8:48 PM
+Hihi that was the reason for me to disable the option disable power
+state check asap… (edited)
+[.jb68]
+.jb68 04/05/2025 8:34 PM
+When I use disable power state check, notice the leds stay on after I
+turn off tv
+[satdx62]
+the.real.joe.biden any reason to go above the built in resolutions in
+piccap?
+satdx62 04/05/2025 7:51 PM
+Yes, sometimes you simply need to change the resolution in PicCap, for
+example if you need to calibrate a LUT file yourself. Also, not all
+selectable resolutions in PicCap are proportional to the received
+content, and some devices require a minimum resolution and others a
+lower resolution to be able to grabb (capture) the image content at all.
+See:https://discord.com/channels/407937994037919756/931706504627773450/1346101262592114738
+(edited)
+ 1
+[satdx62]
+[] .jb68 Hi the file you requested
+satdx62 04/05/2025 7:35 PM
+Hello, test with activated options “QUIRK_DILE_VT_DUMP_LOCATION_2” and
+“Disable power state check” in PicCap Advanced Settings.
+[1.png]
+ 1.png
+152.9 KB External
+the.real.joe.biden 04/05/2025 4:59 PM
+any reason to go above the built in resolutions in piccap?
+[.jb68]
+.jb68 04/05/2025 3:14 PM
+Hi the file you requested
+ config.json
+258 Bytes External
+[.jb68]
+.jb68 04/05/2025 10:32 AM
+Yeah will do when I get home. I appreciate the help by all to try to
+resolve it
+[satdx62]
+[] .jb68 When the lights go off and on, nothing appears in the hyperhdr
+log, but the live view in hyperhdr go...
+satdx62 04/05/2025 10:31 AM
+The error already occurs during the capture and is therefore displayed
+in the live preview. The error could therefore be related to the
+configuration of PicCap. Can you post your “config.json” from
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/?
+[.jb68]
+.jb68 04/05/2025 7:29 AM
+yeah I’ll check the piccap logs when it happens. Do I need to setup
+logging ?
+April 4, 2025
+[astur3l]
+[] .jb68 Yeah, mine happens every 3-5 mins, but if i reboot, it wont
+happen again until the next time i turn ...
+astur3l 04/04/2025 11:32 PM
+try disable power state (in piccap), maybe screensaver tries to
+activate..? anyway check piccap logs (edited)
+[mumpitz_i]
+mumpitz_i 04/04/2025 10:50 PM
+Then it sounds like that it is something different…
+[.jb68]
+.jb68 04/04/2025 9:37 PM
+When the lights go off and on, nothing appears in the hyperhdr log, but
+the live view in hyperhdr goes black for a second
+[.jb68]
+.jb68 04/04/2025 9:28 PM
+Yeah, mine happens every 3-5 mins, but if i reboot, it wont happen again
+until the next time i turn on tv, its so random
+[mumpitz_i]
+mumpitz_i 04/04/2025 9:20 PM
+I had similar issues but only if i switched the channel or something. It
+was fixed by using a caching mechanism from here:
+https://discord.com/channels/407937994037919756/931706504627773450/1343240926537191474
+[.jb68]
+.jb68 04/04/2025 8:58 PM
+^ It's happening again, lights will go off and on randomly for a split
+second
+ hyperhdr_log.rtf
+79.77 KB External
+[h_ttu]
+[] satdx62 What do you mean by ELED and DLED? I thought you meant
+backlighting an LCD panel, a TV such as the ...
+h_ttu 04/04/2025 8:57 PM
+https://tailorpixels.com/common-concepts-in-backlight-solutions-ccfl-wled-dled-eled-mini-led-pwm/
+I read parts of this article without realising it’s talking about
+displays, not all LEDs. So I just misunderstood
+Tailor Pixels
+6 Common Concepts in Backlight Solutions -CCFL, WLED, DLED, ELED, M...
+The backlight solutions are directly related to the visual effect and
+power consumption of the display. It accounts for 15 of the entire cost
+of the LCD.
+[]
+[satdx62]
+satdx62 04/04/2025 8:25 PM
+SK6812RGBW are perfect for Ambilight regardless of whether your TV is an
+OLED, ELED or DLED. (edited)
+[satdx62]
+[] h_ttu Ahh, found some sk6812 led strips being sold that said ELED, so
+I thought there should be DLED ones...
+satdx62 04/04/2025 8:18 PM
+What do you mean by ELED and DLED? I thought you meant backlighting an
+LCD panel, a TV such as the Direct LED or full array with local dimming
+LEDs By dimming individual LEDs locally, or Edge LED consists of an
+array of LEDs mounted on the frame (or perimeter) of the panel.
+[h_ttu]
+[] satdx62 The way in which a TV's LCD panel is backlit is irrelevant
+when it comes to creating an Ambilight en...
+h_ttu 04/04/2025 8:02 PM
+Ahh, found some sk6812 led strips being sold that said ELED, so I
+thought there should be DLED ones too. Seems like I misunderstood
+[satdx62]
+[] h_ttu Is there a big difference between ELED and DLED when it comes
+to ambilight?
+satdx62 04/04/2025 7:59 PM
+The way in which a TV's LCD panel is backlit is irrelevant when it comes
+to creating an Ambilight environment. (edited)
+[h_ttu]
+h_ttu 04/04/2025 6:34 PM
+Is there a big difference between ELED and DLED when it comes to
+ambilight?
+[neeeeb]
+neeeeb 04/04/2025 2:02 PM
+also, here is a detailed tutorial :
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+ 1  1
+04/04/2025 2:00 PM
+go to http://ip-address-of-your-tv:8090
+fredeugine 04/04/2025 1:09 PM
+Hi, I want to set up ambient liging for my TV. My TV is rooted. I've got
+the piccap and hyper hdr on hombres channel. What next. I've got the esp
+32. When I opened the hyper hdr. It just says daemon is running. On
+piccap, it claims it has been connected. So at which point do I set the
+lights. And I learnt I got to flash the esp 32 with hyperserialesp32
+firmware right?. A bit confused. Any tutorial or YouTube vid or will be
+helpful (edited)
+April 3, 2025
+[.jb68]
+.jb68 04/03/2025 5:30 PM
+will keep you updated, thanks for help
+ 1
+[satdx62]
+[] .jb68 Click to see attachment
+satdx62 04/03/2025 5:28 PM
+Great, now the correct LUT is immediately found and loaded with the
+correct index, namely YUV INDEX 1 and not RGB with INDEX 0. See:
+    LUT file found: /media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/lut_lin_tables.3d (uncompressed)
+    2025-04-03T15:59:12.645Z [FLATBUFSERVER] (LutLoader.cpp:84) Index 1 for HDR YUV
+    2025-04-03T15:59:12.739Z [FLATBUFSERVER] Found and loaded LUT: '/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/lut_lin_tables.3d'
+Good that the posting of files worked. Now just keep watching and see
+if the error continues to occur. You could set the “Streamer handshake
+timeout minimum” to 150.
+[satdx62]
+[] wilderinder Is there a specific reason why you prefer 5V to 12V? I
+got everything today, connected it, and set i...
+satdx62 04/03/2025 5:17 PM
+I have nothing against the WS2815, except for the disadvantage that,
+like the WS2812b, it only has 3 channels (RGB), unlike the SK6812
+(RGB+W), which has an additional white channel and is now also available
+as a 12 volt version. The additional white channel ensures better color
+rendition. In addition, the SK6812RGBW 5/12 Volt are available in both
+NW (natural white) and CW (cold white) versions and depending on the LED
+controller used can be better adjusted to achieve the most natural color
+rendering. Speaks blue cast or red cast. At 7 W, the standby power
+consumption of the WS2815 (12 V) is higher than the standby power
+consumption of the SK6812RGBW (5 V) at 1,440 W when using 300 LEDs, for
+example. The only advantage of the WS2815 is that it has an additional
+backup data line and is therefore more fail-safe if it is mounted in an
+inaccessible place. PS: I am pleased that you are happy with the
+result. (edited)
+ 1
+[.jb68]
+.jb68 04/03/2025 5:01 PM
+(no content)
+ message.txt
+48.27 KB External
+[satdx62]
+[] .jb68 https://pastebin.com/CPphBgbm
+satdx62 04/03/2025 4:53 PM
+Okay, here's the big bad guy. First, remove the invalid LUT
+“flat_lut_lin_tables.3d” from
+/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/.
+These 50 MB LUTs are no longer supported. Then restart and log and post
+again. See:
+LUT file has invalid length: 50331648 vs 150994944 => /media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/flat_lut_lin_tables.3d.
+PS: You cannot insert such a large log text here, but you can as text
+files. Simply click on the + sign at the beginning and add a file.
+(edited)
+[.jb68]
+.jb68 04/03/2025 3:48 PM
+https://pastebin.com/CPphBgbm
+2025-04-03T14:44:06.783Z [IMAGETOLED_MNG0] (ImageToLedManager.cpp:1...
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+04/03/2025 3:47 PM
+Says log is too big to post, edit: pastebin (edited)
+[wilderinder]
+[] satdx62 This is wrong. You need the WS 2812b 5 Volt with 60 LEDs/m
+IP30 and not the WS2815 12 Volt LEDs with...
+wilderinder 04/03/2025 3:42 PM
+Is there a specific reason why you prefer 5V to 12V? I got everything
+today, connected it, and set it up. Now it works perfectly for me
+[satdx62]
+[] .jb68 2025-04-03T13:10:41.502Z [LEDDEVICE] (ProviderRestApi.cpp:174)
+GET begin: [https://192.168.0.11:443/...
+satdx62 04/03/2025 3:38 PM
+I still don't understand why people are afraid to post a complete
+HyperHDR log in text form here. There is an elegant solution to create a
+reasonable log with “Copy to clipboard”.  I didn't get any values from
+you for “GET begin”, and the values change after a specified time. So
+turn off the TV, turn it on again and let it run for about 3 to 5
+minutes. Only then create a log and post it. (edited)
+[.jb68]
+.jb68 04/03/2025 3:20 PM
+2025-04-03T13:10:41.502Z [LEDDEVICE] (ProviderRestApi.cpp:174) GET
+begin:
+[https://192.168.0.11:443/clip/v2/resource/entertainment_configuration/90c93539-1759-4dc7-813e-cdf711fcae6c]
+[] 2025-04-03T13:10:41.616Z [LEDDEVICE] (ProviderRestApi.cpp:198) GET
+end (115 ms):
+[https://192.168.0.11:443/clip/v2/resource/entertainment_configuration/90c93539-1759-4dc7-813e-cdf711fcae6c]
+[]
+[satdx62]
+[] .jb68 Click to see attachment
+satdx62 04/03/2025 2:07 PM
+Well, without HyperHDR Log, you will not find any help. The section with
+“GET begin” and “GET end” of (Switching ON Philips Hue device) as well
+as “PUT begin” and “PUT end” of (Philips Hue Entertaiment API
+successfully connected!) is important for You. You have to determine the
+average value of “Streamer-Handshake-Timeout-Minimum” and enter it in
+the settings.
+[.jb68]
+.jb68 04/03/2025 11:02 AM
+(no content)
+.MOV preview not available — download to play
+ IMG_0536.mov
+1.5 MB External
+04/03/2025 10:58 AM
+Nothing appears in the hyperhdr log when it happens
+[satdx62]
+[] l4stidi0t For the wifi, some devices have issues with wifi after
+being in standby mode, like my samsung tv or ...
+satdx62 04/03/2025 9:54 AM
+This may be the case if the DHCP server does not fulfill its task
+reliably. You can also assign fixed IP addresses to the affected
+devices. Incidentally, the WLED has a Wi-Fi energy-saving function that
+can be deactivated. However, the previous posts were about Philips Hue
+devices.
+[l4stidi0t]
+l4stidi0t 04/03/2025 9:39 AM
+For the wifi, some devices have issues with wifi after being in standby
+mode, like my samsung tv or some other devices with energy saving mode
+[satdx62]
+[] l4stidi0t Does some kind of energy saving mode get triggered in
+stand-by?
+satdx62 04/03/2025 9:30 AM
+In terms of what?
+[l4stidi0t]
+l4stidi0t 04/03/2025 8:56 AM
+Does some kind of energy saving mode get triggered in stand-by?
+April 2, 2025
+[.jb68]
+.jb68 04/02/2025 9:15 PM
+I was thinking that, but once I restart TV it doesn’t happen again until
+I turn it off and on again at a later time/date. Will post logs
+[satdx62]
+[] .jb68 The live view inside hyperhdr goes black for a quick second
+satdx62 04/02/2025 9:14 PM
+Okay, this could also be due to a timing problem or a malfunction in the
+Wi-Fi/LAN transmission in your network to which the Hue Bridge is
+connected.
+[.jb68]
+.jb68 04/02/2025 9:05 PM
+The live view inside hyperhdr goes black for a quick second
+04/02/2025 9:05 PM
+I use Phillips hue and yeah I will
+[satdx62]
+[] .jb68 Still getting the problems with the lights go off and on
+randomly. Using PicCap with HyperHdr and LG...
+satdx62 04/02/2025 9:04 PM
+With what LED controller, do the LEDs turn on and off randomly? Can you
+post a HyperHDR log after this happens?
+[.jb68]
+.jb68 04/02/2025 8:16 PM
+Still getting the problems with the lights go off and on randomly. Using
+PicCap with HyperHdr and LGC2
+March 31, 2025
+[satdx62]
+rippmaster Is there a lut included for reguar and none hdr also?
+satdx62 03/31/2025 10:53 PM
+This version includes the normal SDR as well as the HDR and Dolby Vision
+LUTs. You can easily install this via the menu. In principle, you do not
+need to calibrate any LUTs yourself. You can get started straight away.
+[l4stidi0t]
+l4stidi0t 03/31/2025 10:00 PM
+SDR is none HDR content so, yes
+[] satdx62 The HyperHDR version of my guide also includes the Dolby
+Vision LUT: https://github.com/satgit62/Ult...
+rippmaster 03/31/2025 9:15 PM
+Is there a lut included for reguar and none hdr also? (edited)
+[awawa_dev]
+footy1337 Do I need calibration for HDR and SDR per se?
+awawa_dev 03/31/2025 1:15 PM
+When webOS is capturing the SDR source input, there is no SDR at our
+output anymore. So you need to have calibrated LUT for so called "SDR"
+(input is SDR, webOS output is something else, it's a longer story).
+[l4stidi0t]
+l4stidi0t 03/31/2025 11:21 AM
+Let the journey begin
+ 1
+[satdx62]
+[] l4stidi0t Hyperhdr is more lightweight then hyperion?
+satdx62 03/31/2025 11:20 AM
+Thank you for testing the new Hyperion.NG build. Whether you use
+Hyperion.NG or HyperHDR for your Ambilight is up to you. Each of these
+versions has its justification and its advantages for special things.
+You can find out for yourself by testing both intensively.
+[l4stidi0t]
+[] satdx62 Click to see attachment
+l4stidi0t 03/31/2025 11:03 AM
+That is pretty cool
+[l4stidi0t]
+[] satdx62 The SK 6812 has a refresh rate of 400 Hz and a data rate of
+800 Hz. So I don't think there is a limi...
+l4stidi0t 03/31/2025 11:02 AM
+Hyperhdr is more lightweight then hyperion?
+[satdx62]
+satdx62 03/31/2025 11:02 AM
+(no content)
+[1.png]
+ 1.png
+124.33 KB External
+[2.png]
+ 2.png
+66.84 KB External
+[satdx62]
+[] l4stidi0t Is it correct that sk6812 has a max refresh rate of
+30hz/fps? < 1024 leds So why would i set screen...
+satdx62 03/31/2025 11:02 AM
+The SK 6812 has a refresh rate of 400 Hz and a data rate of 800 Hz. So I
+don't think there is a limit of 30 fps here. The more images arrive at
+the Hyperion instance, the more precise and finer the calculations for
+the LED device become. The transitions are also smoother. If I dispense
+with UI capture in the PicCap settings, I can even achieve 100.0 fps on
+the HyperHDR instance. The frame rate on the LED device results from the
+HyperHDR settings of the frame rate set under Smoothing.
+[l4stidi0t]
+l4stidi0t 03/31/2025 8:24 AM
+Is it correct that sk6812 has a max refresh rate of 30hz/fps? < 1024
+leds So why would i set screen capture to 60 fps?
+March 30, 2025
+[satdx62]
+mar.tnk I am now using the Homebrew default HyperHDR Version with nearly
+default settings. Unitl now I dont ...
+satdx62 03/30/2025 7:05 PM
+I am pleased that you have correctly flashed your ESP and that your
+device has recognised it. Now you can finally enjoy Ambilight. If you
+only watch SDR content and no HDR or Dolby Vision content, you won't
+notice any difference. This version of my guide contains custom LUTs for
+SDR, HDR and Dolby Vision content which, together with PicCap's NV12
+option, do not convert the video signal to RGB but accurately represent
+the unaltered YUV video signal using the custom LUT. Ultimately, this is
+about the true-to-life color reproduction of LEDs. (edited)
+ 1
+[satdx62]
+rippmaster Does that include luts for dolby vision? Bc i saw another
+post that did?
+satdx62 03/30/2025 6:38 PM
+The HyperHDR version of my guide also includes the Dolby Vision LUT:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#2-hyperhdr-installation-instructions
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+ 1
+mar.tnk 03/30/2025 3:54 PM
+I am now using the Homebrew default HyperHDR Version with nearly default
+settings. Unitl now I dont see any Problems. What Improvements will I
+get when using the version from satdx62 with LUT enabled anf follow his
+guide to fine tune?
+mar.tnk 03/30/2025 2:48 PM
+I tried that already and that worked ... Thanks for all the help 
+[astur3l]
+mar.tnk With Micropython I can see the ESP as dev/tty.usbmodem1301 on my
+Mac. With any HyperSerialEsp32 I c...
+astur3l 03/30/2025 2:24 PM
+didnt u tried the factory firmware to flash at 0x0 ? >>>
+Troubleshooting: ESP32-S2 Lolin mini recovery procedure if the board is
+not detected or is malfunctioning. Put the board into dfu mode using
+board buttons: press Rst + 0 buttons, then release Rst, next release 0
+Do not reset or disconnect the board until the end of the recovery
+procedure. Execute esptool.py erase_flash Flash 'factory' version of the
+firmware e.g. esptool.py write_flash 0x0
+firmware_esp32_s2_mini_SK6812_RGBW_COLD.factory.bin Reset the board
+manually with the Rst button. The board should be detected as a COM port
+in the system. via https://github.com/awawa-dev/HyperSerialESP32
+(edited)
+[] satdx62 To test, flash one from:
+https://github.com/awawa-dev/HyperSerialESP32/releases/tag/v9.0.0.0
+mar.tnk 03/30/2025 2:16 PM
+With Micropython I can see the ESP as dev/tty.usbmodem1301 on my Mac.
+With any HyperSerialEsp32 I cannot see it, only in flash mode Am I using
+the wrong Version or am I flashing it wrong, it seems like the
+HyperserialEsp32 is not activating the USB CDC connection
+[.jb68]
+.jb68 03/30/2025 2:03 PM
+Hey, recently rooted my LG C2 TV and use hyperhdr and piccap. I use
+Phillips hue with gradient lights and I notice randomly the lights will
+go off and on. the live feed from hyperhdr when it happens goes black
+for a split second and back on and unsure how to fix it. Tried
+reinstalling etc and no prevail.
+mar.tnk 03/30/2025 1:23 PM
+No ttyACM there
+[yolofant]
+yolofant 03/30/2025 1:09 PM
+did you check ls /dev/ttyACM*?
+mar.tnk 03/30/2025 1:08 PM
+I have now plugged it in with the usb cable I used for flashing and the
+default „hyperserialesp32 s2 mini „firmware directly to my tv and this
+is the output:
+[IMG_3610.jpg]
+ IMG_3610.jpg
+1.46 MB External
+[] yolofant have you enabled usb cdc when flashing?
+mar.tnk 03/30/2025 1:06 PM
+Isnt that enabled by default in the firmware?
+[yolofant]
+yolofant 03/30/2025 1:05 PM
+have you enabled usb cdc when flashing?
+03/30/2025 1:05 PM
+oh it's an esp with native usb
+03/30/2025 1:01 PM
+you should check which serial IC it has
+[] yolofant you might just need kernel modules for the serial chip
+mar.tnk 03/30/2025 1:00 PM
+I thought with esp32 s2 mini I don’t need any kernel modules
+mar.tnk 03/30/2025 1:00 PM
+(no content)
+[IMG_3609.jpg]
+ IMG_3609.jpg
+1.99 MB External
+[] satdx62 To test, flash one from:
+https://github.com/awawa-dev/HyperSerialESP32/releases/tag/v9.0.0.0
+mar.tnk 03/30/2025 1:00 PM
+I now tested my chip and flashed mycropython on it. After reset I get
+the following outputs with micropython insalled.
+[yolofant]
+mar.tnk Same problem, I can only see the esp with lsusb when in flash
+mode
+yolofant 03/30/2025 1:00 PM
+you might just need kernel modules for the serial chip
+[] satdx62 You are missing the valid LUTs. Reinstall everything
+according to my instructions: https://github.co...
+rippmaster 03/30/2025 12:57 PM
+Does that include luts for dolby vision? Bc i saw another post that did?
+mar.tnk 03/30/2025 12:51 PM
+I used this command for flashing: "esptool.py --port
+/dev/serial/by-id/usb-Espressif_ESP32-S2_0-if00 write_flash 0x10000
+firmware_esp32_s2_mini_SK6812_RGBW_COLD_default.bin "
+[] satdx62 To test, flash one from:
+https://github.com/awawa-dev/HyperSerialESP32/releases/tag/v9.0.0.0
+mar.tnk 03/30/2025 12:50 PM
+Same problem, I can only see the esp with lsusb when in flash mode
+[satdx62]
+mar.tnk That seems like the usb cdc diver is not active in my flashed
+binary?
+satdx62 03/30/2025 12:39 PM
+To test, flash one from:
+https://github.com/awawa-dev/HyperSerialESP32/releases/tag/v9.0.0.0
+Release v9.0.0.0 · awawa-dev/HyperSerialESP32
+Add true parallel output for HyperSerialESP32 based on development
+version of Neopixelbus library that already includes some of my changes
+(Makuna/NeoPixelBus#609 Makuna/NeoPixelBus#606). This feat...
+[]
+mar.tnk 03/30/2025 12:30 PM
+That seems like the usb cdc diver is not active in my flashed binary?
+03/30/2025 12:26 PM
+No difference in dmesg with or without the usb plugged in :/
+03/30/2025 12:25 PM
+(no content)
+[IMG_3608.jpg]
+ IMG_3608.jpg
+2.17 MB External
+[] satdx62 What is the output in Terminal/SSH when you enter `dmesg |
+grep tty` with the ESP plugged in?
+mar.tnk 03/30/2025 12:25 PM
+This should also work in my Linux pc I guess? There I get this Output (I
+flashed the new bin with 2000000 as baud rate and pressed reset ->
+device is now not more shown on lsusb)
+mar.tnk 03/30/2025 12:17 PM
+In my Linux pc it is only shown on Lsusb when I put it in the flash
+mode, is that normal?
+[satdx62]
+mar.tnk I will change it back to 2000000 and compile again, I changed it
+to 5000000 because of the Hyperhdr ...
+satdx62 03/30/2025 12:10 PM
+What is the output in Terminal/SSH when you enter dmesg | grep tty with
+the ESP plugged in? (edited)
+[] satdx62 If you connect the ESP to the USB port of the TV and it is
+not recognized in the dmesg, you are eith...
+mar.tnk 03/30/2025 12:07 PM
+I will change it back to 2000000 and compile again, I changed it to
+5000000 because of the Hyperhdr Guide under Multi segment configuration
+https://www.hyperhdr.eu/2023/02/ultimate-guide-on-how-to-build-led.html?m=1#chapter8
+The ultimate guide on how to build an LED system using HyperHDR (up...
+hyperhdr 4k ambilight hdr grabber leds linux raspberry raspbian rpi
+windows sk6812 ws2801 ws2812b ezcap hyperion.ng ms2109 rullz ms2130 hdr
+wled
+[]
+[l4stidi0t]
+[] satdx62 Hello, I have built the new Hyperion.NG and if you want, you
+can test it on WLED and give please you...
+l4stidi0t 03/30/2025 12:06 PM
+it works!, i do not see any issues that quick
+ 1
+[satdx62]
+mar.tnk Yes, it’s installed on the tv and the esp is plugged in into the
+tv usb 
+satdx62 03/30/2025 11:41 AM
+If you connect the ESP to the USB port of the TV and it is not
+recognized in the dmesg, you are either not using a USB data cable or
+the cable is defective or the ESP was not flashed correctly with
+HyperSerial. In addition, the actual maximum baud rate of the ESP must
+be entered under Baud rate. To avoid recognition errors, I would start
+with 2000000 and not 5000000. (edited)
+[satdx62]
+mar.tnk Yes, it’s installed on the tv and the esp is plugged in into the
+tv usb 
+satdx62 03/30/2025 11:32 AM
+Great, so what goes into the dmesg when you plug the ESP into the TV's
+USB? (edited)
+mar.tnk 03/30/2025 11:19 AM
+Yes, it’s installed on the tv and the esp is plugged in into the tv usb
+[satdx62]
+satdx62 03/30/2025 11:17 AM
+I assume that HyperHDR is installed on the TV. If not, it will not
+appear in the TV debug. The ESP must be connected to the USP port where
+HyperHDR is installed.
+[satdx62]
+mar.tnk I cannot find any message with USB, but many WARN Messages do
+appear
+satdx62 03/30/2025 11:03 AM
+Take out the ESP and plug it in again and immediately look in Debug-->
+dmesg. This must also be present and selected in the HyperHDR.
+[] satdx62 You can use the webOS Dev Manager under Debug--> dmesg to
+find out the name of the USB device and wh...
+mar.tnk 03/30/2025 10:57 AM
+I cannot find any message with USB, but many WARN Messages do appear
+[IMG_3607.jpg]
+ IMG_3607.jpg
+2.3 MB External
+[] satdx62 You must select "adalight", ** ttyACM0** or **ttyACM1** under
+LED controller and not AMA0 or AMA1. S...
+mar.tnk 03/30/2025 10:45 AM
+I
+[IMG_3606.jpg]
+ IMG_3606.jpg
+1.84 MB External
+March 29, 2025
+[satdx62]
+satdx62 03/29/2025 6:25 PM
+You can use the webOS Dev Manager under Debug--> dmesg to find out the
+name of the USB device and whether it has been recognized.
+[USB.png]
+ USB.png
+117.03 KB External
+[satdx62]
+mar.tnk Hello, I installed hyperserialesp32 on my esp32 s2 mini lolin
+and plugged it with usb to my LG 65NAN...
+satdx62 03/29/2025 6:13 PM
+You must select "adalight", ttyACM0 or ttyACM1 under LED controller and
+not AMA0 or AMA1. See
+link:https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#hyperhdr-led-controller-type-settings-for-rp2040-usb-controller-with-hyperserialpico-or-hyperserial-esp32-generics2-mini-firmware
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+mar.tnk 03/29/2025 5:58 PM
+Hello, I installed hyperserialesp32 on my esp32 s2 mini lolin and
+plugged it with usb to my LG 65NANO819PA, but hyperhdr cannot find the
+usb serial connection and with lsusb in the tv shell I cannot see it
+either. Has anyone maybe a idea?
+[l4stidi0t]
+[] satdx62 Hello, I have built the new Hyperion.NG and if you want, you
+can test it on WLED and give please you...
+l4stidi0t 03/29/2025 2:00 PM
+I will test it monday
+ 1
+[satdx62]
+[] l4stidi0t i have webos 24 / 9,2,2-1806 and it does not work either,
+just to say a more up to date version
+satdx62 03/29/2025 12:16 PM
+Hello, I have built the new Hyperion.NG and if you want, you can test it
+on WLED and give please your feedback. Here you can download the test
+build:https://github.com/satgit62/hyperion.ng-webos-loader/releases/download/latest/org.webosbrew.hyperion.ng.loader_0.1.12_all.ipk
+If the CPU load is too high (check this with the SSH command top),
+please set the “Image decimation” to 3 under Network services, Flat
+buffer server. (edited)
+[satdx62]
+[] exiladem Is there a different piccap? The one installed via homebrew
+does not start with autostart
+satdx62 03/29/2025 11:22 AM
+No, there is no PicCap other than the one published in the Homebrew
+Channel (v0.5.1). However, there is an additional HyperHDR version that
+I have provided that also installs the necessary LUT's for SDR, HDR and
+DV so that it also works with the NV12 option in PicCap. You can
+download this version from my guide and follow the installation
+instructions:https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#2-hyperhdr-installation-instructions
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[exiladem]
+exiladem 03/29/2025 11:14 AM
+Also no video capture again. Got it working yesterday no error in logs
+[exiladem]
+exiladem 03/29/2025 10:36 AM
+Is there a different piccap? The one installed via homebrew does not
+start with autostart
+March 28, 2025
+[satdx62]
+satdx62 03/28/2025 10:29 PM
+https://de.aliexpress.com/item/1005002823742141.html?src=google&pdp_npi=4%40dis!EUR!35.76!22.19!!!!!%40!12000022352776000!ppc!!!&src=google&albch=shopping&acnt=272-267-0231&isdl=y&slnk=&plac=&mtctp=&albbt=Google_7_shopping&aff_platform=google&aff_short_key=UneMJZVf&gclsrc=aw.ds&&albagn=888888&&ds_e_adid=&ds_e_matchtype=&ds_e_device=c&ds_e_network=x&ds_e_product_group_id=&ds_e_product_id=de1005002823742141&ds_e_product_merchant_id=109233876&ds_e_product_country=DE&ds_e_product_language=de&ds_e_product_channel=online&ds_e_product_store_id=&ds_url_v=2&albcp=20542169885&albag=&isSmbAutoCall=false&needSmbHouyi=false&gad_source=1&gclid=Cj0KCQjwkZm_BhDrARIsAAEbX1E1269bFPy-4ucTaZ6t0m_jKtV8fmYKP5BytD4XfugLwhyzOfwRQ38aAtuIEALw_wcB
+[satdx62]
+[] wilderinder <@917488160580182068> Sorry for the ping but I wanted to
+verify with you again whether I ordered eve...
+satdx62 03/28/2025 10:26 PM
+This is wrong. You need the WS 2812b 5 Volt with 60 LEDs/m IP30 and not
+the WS2815 12 Volt LEDs with 144 LEDs/m. Even better are the SK6812 RGBW
+CW 5 Volt with 60 LEDs/m IP30. The power supply must be 5 volts with at
+least 10A to 15A, depending on the number of LEDs you install. I have
+already recommended the correct power supply units and LEDs in my guide.
+An LED power calculator can also be found there. See:
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#power-supply
+LEDs:
+https://de.aliexpress.com/item/32476317187.html?spm=a2g0o.productlist.main.5.46fch4a1h4a12q&algo_pvid=c8151deb-3826-477e-9a65-31f354f91fc9&algo_exp_id=c8151deb-3826-477e-9a65-31f354f91fc9-2&pdp_ext_f=%7B%22order%22%3A%223895%22%2C%22eval%22%3A%221%22%7D&pdp_npi=4%40dis%21EUR%219.43%210.99%21%21%219.94%211.04%21%402103890917431960469235711ed43b%2110000015281489089%21sea%21DE%210%21ABX&curPageLogUid=Zz5IL9M7KFQe&utparam-url=scene%3Asearch%7Cquery_from%3A
+https://de.aliexpress.com/item/1005006047094128.html?spm=a2g0o.productlist.main.31.649c2e19F51yk4&aem_p4p_detail=2025032814083344492506273080001476206&algo_pvid=dbd0380d-0807-4b3f-8019-78c0e98282b1&algo_exp_id=dbd0380d-0807-4b3f-8019-78c0e98282b1-15&pdp_ext_f=%7B%22order%22%3A%222053%22%2C%22eval%22%3A%221%22%7D&pdp_npi=4%40dis%21EUR%213.55%210.99%21%21%2127.19%217.59%21%40210390c917431961129028103ed9a1%2112
+Power Supply: MEAN WELL 1439455 LRS-75-5 AC 5V 14A power supply or
+ALITOVE Power Supply 5V 15A Universal Adapter 5 Volt Power Supply 75W
+(edited)
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[wilderinder]
+wilderinder 03/28/2025 9:37 PM
+@satdx62 Sorry for the ping but I wanted to verify with you again
+whether I ordered everything correctly
+[image.png]
+ image.png
+212.91 KB External
+[satdx62]
+[] astur3l sry, but does hyperion.ng also supports rp2040 via
+hyperserial? (since it requires skipping board re...
+satdx62 03/28/2025 8:17 PM
+HyperSerialPico on RP2040 is supported without any problems on
+Hyperio.NG. At least, it runs perfectly with my last temperature build
+from @Lord-Grey . (edited)
+[Hyperion.NG_Temperature.webp]
+ Hyperion.NG_Temperature.webp
+223.53 KB External
+ Hyperion_System_Summary_Report_My1.txt
+46.27 KB External
+ 1
+[astur3l]
+[] satdx62 I have added libftdi1.so.2. Daemon is recognized and Hyperion
+finally starts.  I need to have a l...
+astur3l 03/28/2025 8:08 PM
+sry, but does hyperion.ng also supports rp2040 via hyperserial? (since
+it requires skipping board resetting -- so wont work oob)
+[satdx62]
+[] l4stidi0t i have webos 24 / 9,2,2-1806 and it does not work either,
+just to say a more up to date version
+satdx62 03/28/2025 8:05 PM
+Thanks for testing, I am in the process of creating a working build.
+ 1

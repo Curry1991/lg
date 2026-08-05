@@ -1,0 +1,2537 @@
+March 28, 2025
+[satdx62]
+[] yolofant Try
+`LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.servic...
+satdx62 03/28/2025 8:04 PM
+I have added libftdi1.so.2. Daemon is recognized and Hyperion finally
+starts.  I need to have a look at the settings. It looks like this.
+ Log1.txt
+10.14 KB External
+[l4stidi0t]
+[] satdx62 <@195583665265311744>, <@803885040827629628>, Since the
+‘libqt5websockets5-dev’ is needed to build ...
+l4stidi0t 03/28/2025 7:59 PM
+i have webos 24 / 9,2,2-1806 and it does not work either, just to say a
+more up to date version (edited)
+[satdx62]
+[] yolofant Try
+`LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.servic...
+satdx62 03/28/2025 7:50 PM
+Okay, it seems that the ‘libftdi1.so.2’ is missing. I will add it. Here
+is the output:
+    root@LGwebOSTV:~# LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng
+    .loader.service/hyperion/hyperiond
+    /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond: error while loading shared libraries: libftdi1.so.2: cannot open shared object file: No such file or directory
+    root@LGwebOSTV:~#
+[yolofant]
+yolofant 03/28/2025 7:37 PM
+Try
+LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond
+[satdx62]
+[] exiladem any idea why my hyperhdr has no information from piccap?
+satdx62 03/28/2025 7:28 PM
+No, without knowing what you have set in PicCap and without a HyperHDR
+log. Send your HyperHDR log after a new start.
+[satdx62]
+[] yolofant Try running the binary from the command line. Most likely
+it's missing some libraries
+satdx62 03/28/2025 7:20 PM
+Here is the output:
+    root@LGwebOSTV:~# /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond
+    /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond: error while loading shared libraries: libQt5WebSockets.so.5: cannot open shared object file: No such file or directory
+[Lib.png]
+ Lib.png
+49.22 KB External
+[exiladem]
+exiladem 03/28/2025 7:09 PM
+it only captures UI elements
+[image.png]
+ image.png
+36.97 KB External
+[yolofant]
+[] satdx62 When I call up the Hyperion Loader after the ipk
+installation, it says that a daemon is unknown inst...
+yolofant 03/28/2025 6:54 PM
+Try running the binary from the command line. Most likely it's missing
+some libraries
+[exiladem]
+exiladem 03/28/2025 6:49 PM
+any idea why my hyperhdr has no information from piccap?
+[satdx62]
+hellobox. What do you mean by "not recognized"? Do you know why it's not
+starting?
+satdx62 03/28/2025 6:46 PM
+When I call up the Hyperion Loader after the ipk installation, it says
+that a daemon is unknown instead of version, build date, GitHub and so
+on and therefore cannot be started manually.
+[satdx62]
+satdx62 03/28/2025 6:39 PM
+Sorry, no, I don't know. (edited)
+[] satdx62 <@195583665265311744>, <@803885040827629628>, Since the
+‘libqt5websockets5-dev’ is needed to build ...
+hellobox. 03/28/2025 6:39 PM
+What do you mean by "not recognized"? Do you know why it's not starting?
+[satdx62]
+satdx62 03/28/2025 6:38 PM
+@Yolofant, @hellobox, Since the ‘libqt5websockets5-dev’ is needed to
+build the new Hyperion.NG, I have activated it in ‘buildroot-nc4’ and
+recompiled ‘arm-webos-linux-gnueabi_sdk-buildroot’ and also assigned it
+as TOOLCHAIN_URL in build.yaml next to ‘apt_deps’ and ‘dependency_libs’
+when building the new ‘Refactor’ build of @Lord-Grey y. (I made a fork
+of @Lord-Grey myself.)
+See:https://github.com/satgit62/hyperion.ng-webos-loader/blob/master/.github/workflows/build.yml
+The build is created without errors and the IPK is generated. IPK can be
+downloaded and tested
+at:https://github.com/satgit62/hyperion.ng-webos-loader/actions/runs/14133604854/artifacts/2840374150.
+However, the daemon is not recognized on my old webOS and therefore does
+not start. I suspect that there is something wrong with the
+compatibility of the libraries with my webOS 3.9 system. When I manually
+replace the libs from the new Hyperion.NG loader with the libs from the
+old working Hyperion.NG on my webOS 3.9, the daemon is recognized and
+also starts. Do you have any idea why this is not working? Maybe the
+generated IPK works on newer webOS than 3.9, but I have no way to test
+it. It would be a pity if, for example, new Hyperion.NG versions with
+new features were no longer available on webOS due to the switch from
+Hyperion.NG to Websockets. This is the Hyperion.NG in question:
+https://github.com/Lord-Grey/hyperion.ng/tree/Refactor (edited)
+hyperion.ng-webos-loader/.github/workflows/build.yml at master · s...
+Contribute to satgit62/hyperion.ng-webos-loader development by creating
+an account on GitHub.
+[]
+GitHub - Lord-Grey/hyperion.ng at Refactor
+The successor to Hyperion aka Hyperion Next Generation - GitHub -
+Lord-Grey/hyperion.ng at Refactor
+[]
+[satdx62]
+[] yolofant In any case, it would be good to get `hyperion-webos` output
+so we can check what's going on
+satdx62 03/28/2025 5:28 PM
+All right, I will suggest the user to run ‘hyperion-webos’ from the
+command line and post the output.
+[yolofant]
+[] satdx62 Yes, you're right. I don't own a PlayStation5, either.
+However, the user also reported that he did n...
+yolofant 03/28/2025 5:21 PM
+In any case, it would be good to get hyperion-webos output so we can
+check what's going on
+[satdx62]
+[] yolofant Certainly possible, I don't own a PS5 but in general LUTs
+are handled by receiving certain luna mess...
+satdx62 03/28/2025 5:15 PM
+Yes, you're right. I don't own a PlayStation5, either. However, the user
+also reported that he did not notice any disadvantages by deactivating
+the option. My thought is whether I should perhaps mention this behavior
+in my guide with multiple LUTs in case it affects other users too.
+(edited)
+[yolofant]
+[] satdx62 <@195583665265311744>, a user, told me that the ‘Instant Game
+Response’ option on the LG prevents HD...
+yolofant 03/28/2025 4:56 PM
+Certainly possible, I don't own a PS5 but in general LUTs are handled by
+receiving certain luna messages. If hyperion-webos is started from the
+command line it shows the received luna messages on the command line
+[satdx62]
+satdx62 03/28/2025 4:41 PM
+@Yolofant, a user, told me that the ‘Instant Game Response’ option on
+the LG prevents HDR or DV LUTs from loading when playing HDR or Dolby
+Vision content over HDMI (in this case PlayStation5). Could this be a
+general bug? Internally, the LUTs are applied correctly based on the
+content displayed. If the user disables this option, the correct LUTs
+are also loaded from the PlayStation 5 via HDMI. Can anyone else confirm
+that when HyperHDR is running with the NV12 option and multiple LUT's
+and the Instant Game Response option is enabled, no HDR and DV LUT's are
+loaded?
+[satdx62]
+[] wilderinder Thanks for your detailed answer. I've already connected
+the WS2811 neon to my ESP 32 WLED controller...
+satdx62 03/28/2025 11:12 AM
+Yes, it is best to replace it with SK6812RGBW CW.
+[wilderinder]
+[] satdx62 The WS2811/Neon is not the ideal LED strip for Ambilight as
+it is not designed to control individual...
+wilderinder 03/28/2025 11:06 AM
+Thanks for your detailed answer. I've already connected the WS2811 neon
+to my ESP 32 WLED controller, and everything's working, but I'm having a
+lot of trouble adjusting the LEDs so that they have the right number
+vertically and horizontally. I'll probably just get a new strip that
+works better. I also wanted to thank you again for your great tutorial
+on GitHub, which helped me set up everything on my C1 so that the
+controller communicates with the TV without any prior knowledge.
+[satdx62]
+[] wilderinder I have a hard time figuring this out to match my led
+stripe to my tv. Anybody able to give me a hint...
+satdx62 03/28/2025 10:59 AM
+The WS2811/Neon is not the ideal LED strip for Ambilight as it is not
+designed to control individual LEDs. It controls groups of three LEDs.
+If you want to control fewer than three LEDs, this is not possible with
+the WS2811. This means that instead of 60LEDs/metre, only 20LEDs/metre
+are available. The SK6812RGBW or the WS2812B, on the other hand, are
+designed for controlling individual LEDs. For those who require precise
+control of a single LED, the SK6812RGBW or the WS2812B offer a better
+solution than the WS2811. There is a WS2811 for 12V and a WS2811Neon for
+24V. The WS2811 for 12V expects a level of at least 5V on the data line.
+Since most ESP's work with 3.3 volts, they must use a level converter
+between GPIO and data from LEDs input. ESP is supplied with power from a
+separate 5 volt power supply unit or via USB. The LEDs require a 12 or
+24 volt power supply. The GND of the power supply units must be
+connected to the GND of the ESP and the - pole of the LEDs. But since
+you bought a WS2811Neon with 24 volts, I doubt that they will harmonize
+with WLED. You can follow this WLED thread here and ask the author of
+WLED questions:https://github.com/wled/WLED/issues/963 (edited)
+WS2811 usage · Issue #963 · wled/WLED
+WLED is works fine with my NODEMCU board and 2812 stripe, but 2811
+doesnt. What i need to do for using 2811 strip? If i connect 2811 strip
+to power supply and controller it light up with white colo...
+zfa.discrd 03/28/2025 10:09 AM
+It's literally the number of LEDs you have on the strip around your TV.
+Just count them.
+March 27, 2025
+[wilderinder]
+wilderinder 03/27/2025 11:47 PM
+I have a hard time figuring this out to match my led stripe to my tv.
+Anybody able to give me a hint in what length I should use? It is the 3m
+version I have. Would really appricate it!
+[image.png]
+ image.png
+42.29 KB External
+[image.png]
+ image.png
+696.96 KB External
+March 26, 2025
+[satdx62]
+footy1337 Would that be as good as calibrating myself
+<@917488160580182068> ?
+satdx62 03/26/2025 8:36 AM
+In this guide, I have provided a HyperHDR version that also installs the
+necessary SDR, HDR and Dolby Vision calibrated LUTs via menu.
+See:https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#2-hyperhdr-installation-instructions
+You can recalibrate yourself at any time if you are not satisfied with
+the result.
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+footy1337 03/26/2025 7:57 AM
+Would that be as good as calibrating myself @satdx62 ?
+03/26/2025 7:56 AM
+To be honest, no
+March 25, 2025
+[satdx62]
+footy1337 Sweet guys, thanks so much!
+satdx62 03/25/2025 11:18 PM
+Have you already tested with my calibrated LUTs?
+footy1337 03/25/2025 10:53 PM
+I will be also watching SDR content
+03/25/2025 10:53 PM
+Do I need calibration for HDR and SDR per se?
+03/25/2025 10:52 PM
+Sweet guys, thanks so much!
+[satdx62]
+footy1337 Yes I was thinking the same. Is there a good guide on
+Calibration?
+satdx62 03/25/2025 9:53 AM
+There are no detailed instructions for LUT calibration, but you can read
+about what you need to consider here:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#lut
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+ 1
+[satdx62]
+footy1337 I have installed Kodi already but it doesn't find my USB stick
+satdx62 03/25/2025 9:24 AM
+If Kodi is installed, the USB stick is located under Root filesystem
+/tmp/usb/sda/sda1/. (edited)
+ 1
+footy1337 03/25/2025 9:03 AM
+Thanks for your reply @zfa
+03/25/2025 9:03 AM
+Yes I was thinking the same. Is there a good guide on Calibration?
+zfa.discrd 03/25/2025 2:52 AM
+Even over http(s).
+ 1
+footy1337 I have installed Kodi already but it doesn't find my USB stick
+zfa.discrd 03/25/2025 2:51 AM
+Play from a network share?
+ 1
+March 24, 2025
+footy1337 03/24/2025 10:40 PM
+I have installed Kodi already but it doesn't find my USB stick
+03/24/2025 10:40 PM
+It just says no signal in HyperHDR
+03/24/2025 10:39 PM
+The build-in LG player doesn't allow a capture
+03/24/2025 10:39 PM
+Hi guys, what video player can I use on LG WebOS to do a LUT capture the
+new way?
+March 23, 2025
+[l4stidi0t]
+l4stidi0t 03/23/2025 2:10 PM
+> Awawa only supports SK6812RGBW NW or CW and WS2812b I missed that,
+thanks!
+[satdx62]
+[] l4stidi0t that is definetely cheap
+satdx62 03/23/2025 2:10 PM
+You must configure length, LEDs/m IP and PCB and Length: RGBCW or NW.
+(edited)
+[l4stidi0t]
+l4stidi0t 03/23/2025 2:08 PM
+that is definetely cheap
+[satdx62]
+[] l4stidi0t i figured but i am still searching for a good source/strip
+that i want, ill get both the rp2040 and ...
+satdx62 03/23/2025 2:08 PM
+Awawa only supports SK6812RGBW NW or CW and WS2812b in its
+HyperSerial/HyperSerialPico firmware drivers. 60/m IP30 You can get
+cheap
+here:https://de.aliexpress.com/item/4000890862758.html?src=google&pdp_npi=4%40dis!EUR!4
+.84!2.79!!!!!%40!12000039054353667!ppc!!!&src=google&albch=shopping&acnt=272-267-0231&isdl=y&slnk=&plac=&mtctp=&albbt=Google_7_shopping&aff_platform=google&aff_short_key=UneMJZVf&gclsrc=aw.
+ds&&albagn=888888&&ds_e_adid=&ds_e_matchtype=&ds_e_device=c&ds_e_network=x&ds_e_product_group_id=&ds_e_product_id=de4000890862758&ds_e_product_merchant_id=107845856&ds_e_product_country=DE&ds_e_product_language=de&ds_e_product_channel=online&ds_e_product_store_id=&ds_url_v=2&albcp=20542208798&albag=&isSmbAutoCall=false&needSmbHouyi=false&gad_source=1&gclid=Cj0KCQjw4v6-
+BhDuARIsALprm32Uqb2yz0gaacNR890kInDJJE6C4b8i7dhV-96njyj3b6egb4XijbEaAg41EALw_wcB
+[l4stidi0t]
+l4stidi0t 03/23/2025 2:00 PM
+i figured but i am still searching for a good source/strip that i want,
+ill get both the rp2040 and esp32 recommended by awawa-dev to just try
+it out
+[satdx62]
+[] l4stidi0t That is really unfortunate
+satdx62 03/23/2025 1:57 PM
+You can also control 12-volt LEDs with WLED, but these are not suitable
+as dynamic Ambilight for Hyperion/HyperHDR.
+[l4stidi0t]
+l4stidi0t 03/23/2025 1:56 PM
+That is really unfortunate
+[satdx62]
+[] l4stidi0t may i ask why most use 5v leds? wouldnt make 12 or 24 kind
+of make more sense so you do not need cur...
+satdx62 03/23/2025 1:51 PM
+Unfortunately, the good Neopixel LEDs, which can each be controlled
+individually, such as SK6812RGBW or the WS2812b, are only available as
+5Volt.
+[l4stidi0t]
+l4stidi0t 03/23/2025 1:27 PM
+may i ask why most use 5v leds? wouldnt make 12 or 24 kind of make more
+sense so you do not need current injection?
+03/23/2025 1:24 PM
+ah okay, thank you, i guess i will order things and see how far i get
+and else i have nice room lighting
+[satdx62]
+[] l4stidi0t thank you for the guide, what do you consider a `low
+CPU/memory power` ? i got c4 oled do you also...
+satdx62 03/23/2025 1:21 PM
+C4 OLED has enough resources, so don't worry. The WLED itself is a
+firmware that needs to be flashed on ESP32, for example, or is flashed
+by default in some Ready LED controllers. However, communication does
+not take place internally on the local host/USB, but via Wi-Fi.
+Therefore, a poor Wi-Fi connection can lead to a longer delay. There is
+also a special HyperSerial WLED firmware for ESP controllers. There are
+also ESP32 with LAN interface to which WLED can be flashed. I therefore
+recommend the HyperSerial/HyperSerialPico firmware, which is controlled
+via USB, instead of the WLED firmware. HyperSerial can be flashed to
+certain ESP32 and HyperSerialPico to RP2040 controllers. Yes, you can
+control everything with Home Assistant
+[l4stidi0t]
+[] satdx62 All DRM-protected content does not work via the internal
+applications, the LEDs remain off. There ar...
+l4stidi0t 03/23/2025 1:03 PM
+thank you for the guide, what do you consider a low CPU/memory power ? i
+got c4 oled do you also quickly know if it is still possible to use it
+with wled? or how much wled has? I would then pick HyperSerialWLED So i
+can control it as room lighting when my tv is off with home assistant
+(edited)
+[satdx62]
+[] l4stidi0t Hey, i would like to get ambilight back(had philips before)
+is this possible if i watch through inte...
+satdx62 03/23/2025 12:21 PM
+All DRM-protected content does not work via the internal applications,
+the LEDs remain off. There are no restrictions via HDMI and everything
+works. The best results in terms of delay are achieved via
+HyperSerialPico on RP2040. See guide under hardware:
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[l4stidi0t]
+l4stidi0t 03/23/2025 7:41 AM
+Hey, i would like to get ambilight back(had philips before) is this
+possible if i watch through internal app like jellyfin, plex, emby? And
+what method/setup gives the least delay between the screen and leds?
+(edited)
+March 22, 2025
+[satdx62]
+centerturkhd Understood, wasn’t sure if anything carried over from
+forking, but gonna try Hyperion in that case t...
+satdx62 03/22/2025 9:32 PM
+If you don't need the HDR tone mapping feature, you're not missing
+anything else.
+centerturkhd 03/22/2025 8:23 PM
+Understood, wasn’t sure if anything carried over from forking, but gonna
+try Hyperion in that case then. Is there anything else I’d be missing
+out on besides the HDR tone mapping feature? I don’t really need that in
+my use
+[lord.grey]
+centerturkhd So is this default setup fine?
+lord.grey 03/22/2025 8:17 PM
+My comment was related to Hyperion not HyperHDR
+centerturkhd 03/22/2025 8:15 PM
+Nvm just gonna continue to tinker around these settings, thanks all
+centerturkhd 03/22/2025 7:58 PM
+Just wanted to make sure cause I thought the gradient light had 7 zones
+but I could be misinformed
+[] lord.grey In Hyperion the LED-Layout is automatically generated in
+line with your Entertainment position layo...
+centerturkhd 03/22/2025 7:57 PM
+So is this default setup fine?
+[image0.jpg]
+ image0.jpg
+309.99 KB External
+[lord.grey]
+centerturkhd For anyone using Philips gradient light strip, is it
+recommended to use the default LED layout? My e...
+lord.grey 03/22/2025 7:41 PM
+In Hyperion the LED-Layout is automatically generated in line with your
+Entertainment position layout for all Hue devices.incl. Gradient Strip
+ 1
+[satdx62]
+centerturkhd For anyone using Philips gradient light strip, is it
+recommended to use the default LED layout? My e...
+satdx62 03/22/2025 7:36 PM
+You should use the Philips Hue LED layout with the existing options for
+the entertainment area and not HyperHDR's own layout. No more LED
+surfaces/boxes are used than are available. I do not own Gradient
+Stripes, but HUE lamps and SK6812 RGBW LEDs. Perhaps someone will get in
+touch who has Gradient LED Stripes in use.
+centerturkhd 03/22/2025 6:49 PM
+For anyone using Philips gradient light strip, is it recommended to use
+the default LED layout? My entertainment space is just the tv and light
+strip, should I leave it at the default 3 LED boxes or add more?
+[satdx62]
+centerturkhd hey all- is this channel also used for HyperHDR too?
+satdx62 03/22/2025 4:21 PM
+Yes.
+centerturkhd 03/22/2025 3:43 PM
+hey all- is this channel also used for HyperHDR too?
+March 21, 2025
+[satdx62]
+rippmaster Click to see attachment
+satdx62 03/21/2025 11:01 PM
+You are missing the valid LUTs. Reinstall everything according to my
+instructions:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+rippmaster 03/21/2025 9:18 PM
+(no content)
+[image.png]
+ image.png
+129.04 KB External
+03/21/2025 9:18 PM
+thats not green when switching to hdr on my tv. and my logs get cramed
+with errors. :/ (edited)
+03/21/2025 9:14 PM
+ok since update it no longer does hdr to sdr conversion. plz help 
+03/21/2025 9:11 PM
+should i request some lut? What should i do? :/
+03/21/2025 9:11 PM
+(no content)
+[image.png]
+ image.png
+93.99 KB External
+03/21/2025 9:11 PM
+im guessing its related to this
+03/21/2025 9:08 PM
+(no content)
+[image.png]
+ image.png
+268.52 KB External
+03/21/2025 9:08 PM
+what can ai do?
+03/21/2025 9:08 PM
+2025-03-21T21:01:39.462Z [FLATBUFSERVER] The LUT file is not loaded. A
+new LUT was requested. It usually takes less than a minute
+03/21/2025 9:08 PM
+since reinstall i get this spamming in my logs. also the "turn on hdr
+conversion" or what its called is gone under networking
+rippmaster 03/21/2025 8:06 AM
+Mine stopped working yesterday, will try reinstall also. Thx 
+March 18, 2025
+[plasma_uk]
+[] astur3l did u tried reboot?:D
+plasma_uk 03/18/2025 8:18 AM
+Yes multiple times, only the uninstall / reinstall got it working.
+[astur3l]
+[] plasma_uk When I open HyperHDR in the bottom it says Service Elevated
+No Daemon Running No Daemon Version ...
+astur3l 03/18/2025 12:32 AM
+did u tried reboot?:D
+March 17, 2025
+[plasma_uk]
+plasma_uk 03/17/2025 11:27 PM
+An uninstall, and re-install of HyperHDR has me fixed ... phew.
+03/17/2025 11:24 PM
+When I open HyperHDR in the bottom it says Service Elevated No Daemon
+Running No Daemon Version unknown Result: Trying to elevate ... (edited)
+03/17/2025 11:22 PM
+Hmmmm ... so my excitement was short lived, I updated to the latest
+0.1.12 hyperhdr-webos-loader and now it doesn't work 
+[plasma_uk]
+plasma_uk 03/17/2025 10:58 PM
+Is there an update for PicCap as well?
+[plasma_uk]
+plasma_uk 03/17/2025 10:50 PM
+Ooooo interesting discussion, I assume I can just do an in place upgrade
+to HyperHDR v21 over my current HyperHDR v20?
+March 16, 2025
+[satdx62]
+united_hare_88621 Hello, I am using hyperhdr 21 beta and it's working
+great.... Is there any advantage in updating to ...
+satdx62 03/16/2025 11:33 PM
+In this release, the entire architecture was reworked, bugs were removed
+and a lot of ballast was shed.
+    The architecture has been reworked once again, this time focussing on further eliminating heavy dependencies from the past. Besides the reduced resource consumption, you will definitely notice how much the installers have been streamlined (they still contain all necessary dependent components) and the HyperHDR application itself.
+The entire
+changelog:https://github.com/awawa-dev/HyperHDR/releases/tag/v21.0.0.0
+Release HyperHDR 21.0.0.0 · awawa-dev/HyperHDR
+I am pleased to announce the latest release of HyperHDR v21, which
+concludes the year-long development and testing cycle of the
+application: The architecture has been rebuilt once again, this tim...
+[]
+ 1
+united_hare_88621 03/16/2025 10:23 PM
+Hello, I am using hyperhdr 21 beta and it's working great.... Is there
+any advantage in updating to 21? Thx
+[astur3l]
+[] manu1434 Hello <@917488160580182068> <@433352458694033428> ! Thank
+you for your anwsers ! I updated fps to 30...
+astur3l 03/16/2025 7:06 PM
+autostart is related to hbc, may u have issues on webos <= 3.5 (?),
+there was workarounds, see e.g.
+https://github.com/webosbrew/webos-homebrew-channel/issues/124#issuecomment-2495381157
+(edited)
+webOS <4.0 doesn't run startup.sh, hence no SSH or Telnet · Issue #...
+I had a working version of Homebrew until I decided to upgrade to 05.50
+system software, now webOS 4.4.2 (from 05.40). The initial symptoms
+after upgrading are that SSH server is not working, Telne...
+[manu1434]
+manu1434 03/16/2025 11:24 AM
+Hello @satdx62 @asturel ! Thank you for your anwsers ! I updated fps to
+30 and provided a -c config.json argument (didn't know it was not used
+by default), now it works again ! I have an hyperhdr 21.0.0.0 running on
+a remote server. ATM, I think the issue is that the autostart won't work
+anymore since I updated to piccac 0.51 (I need to call
+luna-send -n 1 -f luna://org.webosbrew.piccap.service/start '{}'
+manually after a reboot. I keep monitoring this and will keep you
+updated ! Thank you again !
+March 15, 2025
+[astur3l]
+[] manu1434 Click to see attachment
+astur3l 03/15/2025 3:06 PM
+you need to supply config file (-c config....json) or arguments (by def.
+it wont load the config) , atm the hyperion server address is missing (u
+didnt provided)
+[satdx62]
+[] manu1434
+```{priority":150,"nohdr":false,"nopowerstate":false,"backend":"auto","unix-socket":false,"address":...
+satdx62 03/15/2025 2:06 PM
+Hello, there are no FPS configured in your PicCap/hyperion-webos
+configuration (‘fps’:0). You will need to restart PicCap and add the
+configurations if necessary. A full HyperHDR or Hyperion.NG log would
+also be much more helpful, depending on what you have installed. I see
+that you have entered an IP address. Does that mean you are running
+HyperHDR or Hyperion.NG externally and not on your TV? If you upgraded
+to the new PicCap, did you also upgrade to a current NV12 capable
+HyperHDR/Hyperion.NG, and what instructions did you follow?
+[manu1434]
+manu1434 03/15/2025 9:59 AM
+If someone can help me, thank you very much by advance !
+03/15/2025 9:59 AM
+(no content)
+ hyperion.log
+6.15 KB External
+[wilderinder]
+wilderinder 03/15/2025 9:58 AM
+Will that controller work well for my rooted c1 to get ambilight?
+[IMG_3050.png]
+ IMG_3050.png
+1.13 MB External
+[manu1434]
+manu1434 03/15/2025 9:57 AM
+    {priority":150,"nohdr":false,"nopowerstate":false,"backend":"auto","unix-socket":false,"address":"192.168.1.253","port":19400,"width":192,"nv12":false,"height":108,"quirks":0,"fps":0,"vsync":false,"autostart":false,"nogui":false,"novideo":false,"uibackend":"auto"}
+03/15/2025 9:56 AM
+Hello all, I just updated from piccap 0.43 to 0.51 on my LG B6 (WebOs
+3.4). At first it was stuck on "getting root status", but eventually
+worked after a moment. Now it won't work at all. I tried to reinstall,
+reboot multiple times. Here is my config file and hyperion logs :
+March 12, 2025
+[keithahh]
+keithahh 03/12/2025 6:13 PM
+yup, that last option, haha
+[satdx62]
+satdx62 03/12/2025 6:13 PM
+(no content)
+[Screenshot_2025-03-12_180336.png]
+ Screenshot_2025-03-12_180336.png
+129.78 KB External
+[keithahh]
+keithahh 03/12/2025 6:08 PM
+oh i think i know why i had: Turn off LEDS on Startup enabled, woops
+ 1
+03/12/2025 6:04 PM
+i swear at one time, the instance turned on when i turned on the tv, but
+now i have to go into the hyperhdr web ui to click this everytime
+03/12/2025 6:00 PM
+so i have to click 'enable instance' here everytime after turning my tv
+on
+03/12/2025 5:58 PM
+(no content)
+[image.png]
+ image.png
+96.7 KB External
+03/12/2025 5:55 PM
+yup sec
+[satdx62]
+[] keithahh correct, when i turn on my tv, my leds are dark and i have
+go into here and do 'enable' to get them ...
+satdx62 03/12/2025 5:54 PM
+Can you post a screenshot of your menu where you activate it?
+[keithahh]
+keithahh 03/12/2025 5:51 PM
+correct, when i turn on my tv, my leds are dark and i have go into here
+and do 'enable' to get them to turn on every time
+[satdx62]
+[] keithahh no that is enabled, means I have to go into the web ui and
+click 'enable instance' to the wled insta...
+satdx62 03/12/2025 5:47 PM
+Oh, you mean LED Instance Management. Hm, if the instances are started,
+and they are not stopped, they must start automatically with the TV.
+[Instance_Management.png]
+ Instance_Management.png
+127.69 KB External
+[keithahh]
+keithahh 03/12/2025 5:05 PM
+no that is enabled, means I have to go into the web ui and click 'enable
+instance' to the wled instance i have there
+[satdx62]
+satdx62 03/12/2025 10:22 AM
+(no content)
+[v21.png]
+ v21.png
+158.76 KB External
+[satdx62]
+[] keithahh Hey so I got HyperHDR going on my tv and everything works
+great but every time I turn it on I have t...
+satdx62 03/12/2025 10:21 AM
+Does ‘Enable instance’ mean that you have to start the daemon in the
+HyperHDR loader manually? If the autostart is activated, it must be
+active after every restart and every time the TV is switched on for
+Ambilight to work. There was a problem with some older webOS versions
+where the autostart did not work. Make sure that the Quick Start+ option
+is deactivated. (edited)
+[keithahh]
+keithahh 03/12/2025 7:10 AM
+Hey so I got HyperHDR going on my tv and everything works great but
+every time I turn it on I have to load the web app and enable the
+instance. Any way to make it automatically come on when I turn the tv
+on?
+March 11, 2025
+[satdx62]
+yetiluzie Hello Guys i have a Question does HyperHDR on LGTV support
+light Effects from sound / can i capture ...
+satdx62 03/11/2025 4:43 PM
+Hi, the ESP32-based WLED controller supports reactive sound and of
+course you can make the lights dance. There is a whole range of FX
+effects that you can set or create yourself. All you need is a
+microphone connected to the ESP and the WLED firmware with reactive
+sound. https://kno.wled.ge/advanced/audio-reactive/ HyperHDR is not
+mandatory for the sound effects. WLED's reactive sound option can be
+controlled at will via the WLED app on the Android, IOS or PC browser.
+You can even automate the Ambilight to switch from PicCap/HyperHDR
+dynamic backlighting to the wild DJ music effects at the touch of a
+button. https://www.youtube.com/watch?v=oJSHDFETdV8 (edited)
+Chris Maher
+NO CODING! The ULTIMATE WLED Ambilight Setup!
+Amazon’s BEST Deals (updated daily): https://amzn.to/4aaLjCO  Check
+out my sponsor to begin your FREE 14 day trial to Aura:
+https://aura.com/chrismaher  Signal RGB:
+https://bit.ly/SignalRGB-ChrisMaherDIY Gledopto WLED controller:
+https://amzn.to/4jPp4XP Power for Gledopto controller:
+https://amzn.to/3CYsh6v MAGWLED Controller: https://amz...
+[] Watch video
+yetiluzie 03/11/2025 4:03 PM
+Hello Guys i have a Question does HyperHDR on LGTV support light Effects
+from sound / can i capture sound from for example twitch an let the
+lights dance ?
+[satdx62]
+footy1337 Wont the CPU be a bottleneck of some sort?
+satdx62 03/11/2025 12:49 PM
+No, don't worry about that. You can read how to do all this in one of my
+guides. See
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+footy1337 03/11/2025 12:46 PM
+Wont the CPU be a bottleneck of some sort?
+03/11/2025 12:46 PM
+Cool! The SOC of a 2022 LG G2 is sufficient?
+[satdx62]
+footy1337 If I would run HyperHDR on a raspberry pi, would it work for
+all sources including TV apps?
+satdx62 03/11/2025 12:44 PM
+I see no reason to install HyperHDR for the normal Ambilight on a
+Raspberry Pi. The communication between PicCap and HyperHDR is internal,
+so there are no network delays as everything runs on the local host. If
+you want to calibrate LUT's yourself, you could do this on a Windows
+HyperHDR server in the short term by redirecting the PicCap output to an
+external HyperHDR for calibration. Even if you install HyperHDR
+externally on a Raspberry Pi, the internal LG apps that are affected by
+the DRM restrictions will not work. It is therefore advisable to feed
+Netflix and the like via HDMI, as no restrictions apply here.
+Nevertheless, a fixed effect/background colour can be set and activated
+via prioritisation if required. For example, when using internal apps
+with DRM.
+ 1
+footy1337 03/11/2025 2:56 AM
+If I would run HyperHDR on a raspberry pi, would it work for all sources
+including TV apps?
+03/11/2025 2:55 AM
+Appreciate it
+03/11/2025 2:55 AM
+Definitely helpful, thanks so much!
+[astur3l]
+footy1337 Do you know? With Philips Hue, can I just position all the
+lights in the Hue app or do I also need t...
+astur3l 03/11/2025 2:32 AM
+idk maybe this helps
+https://github.com/awawa-dev/HyperHDR/discussions/512
+Philips Hue configuration (API v2) · awawa-dev HyperHDR · Discussio...
+HyperHDR v19 supports now Hue gradient light strips using new
+Entertainment API V2, which should also work with other types of Philips
+lamps. You will need Philips Hue app to configure your lights ...
+[]
+ 1
+footy1337 03/11/2025 2:28 AM
+Do you know? With Philips Hue, can I just position all the lights in the
+Hue app or do I also need to do it in HyperHDR interface
+03/11/2025 2:27 AM
+Ah yes that's a good advice!
+[astur3l]
+astur3l 03/11/2025 2:23 AM
+well rgb requires no user interaction and kinda works oob, so its easier
+to get it work first, you can switch to nv12 lately, since calibration
+is a massive cpu intensive task it tooks mins on tv.. if it doesnt crash
+ (run out of memory e.g.), so advised to use more computing power
+hyperhdr instance for it.. like a pc  (iirc on my tv just one
+calibration was like 8mins.. on my ryzen 5900x it was few secs :D)
+(edited)
+ 1
+footy1337 03/11/2025 2:20 AM
+So better to set PiCap to NV12 and set the HyperHDR setting to use NV12
+03/11/2025 2:19 AM
+Ohh ok! So results with LUT could be better, i.e more true to what the
+TV shows
+[astur3l]
+astur3l 03/11/2025 2:18 AM
+you'll get dull image frames :D, with lut calibration you'll have the
+'perfect' color mapping
+ 1
+footy1337 03/11/2025 2:17 AM
+Okay! But is that also good for HDR?
+[astur3l]
+footy1337 So I can better set capture mode to RGB then 
+astur3l 03/11/2025 2:17 AM
+not really, since captured frames colorspace is content dependent, so
+you'll get standard bt601 default tone mapping, which is good for sdr
+(maybe)
+footy1337 03/11/2025 2:16 AM
+Or is NV12 performance better?
+03/11/2025 2:15 AM
+So I can better set capture mode to RGB then 
+03/11/2025 2:15 AM
+Oooh cool I didn't know that!
+[astur3l]
+footy1337 The new HyperHDR version has improved calibration right? Could
+I just setup my Hue Entertainment Are...
+astur3l 03/11/2025 2:14 AM
+nv12 requires lut table, if u use rgb, piccap (hyperion-webos/piccap -
+libyuv) does the tone mapping stuff
+footy1337 03/11/2025 1:59 AM
+HyperHDR is a really amazing and well built piece of software! I'm truly
+amazed by all the effort that went in this and the quality of the
+application.
+[] satdx62 <@233967047074119680>, <@717152344013275226>,
+<@866923894321315872> I have made a mod version avail...
+footy1337 03/11/2025 1:57 AM
+The new HyperHDR version has improved calibration right? Could I just
+setup my Hue Entertainment Area, position my Hue lights and Hue TV strip
+in the Hue application, enable the V2 API and run the Hue wizard in
+HyperHDR and enable the V2 API. After this I can just run tje
+calibration wizard and I'm good to go? Or do I need to do some manual
+(LUT) stuff? (I also have PicCap running, mostly with default setting
+(enabled auto start)) (edited)
+footy1337 03/11/2025 1:53 AM
+Great stuff @satdx62 that is much appreciated!
+[satdx62]
+satdx62 03/11/2025 12:11 AM
+@pho, @footy1337, @zfa I have made a mod version available. The required
+LUTs can be installed directly from the HyperHDR loader menu. See my
+Guide:https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#2-hyperhdr-installation-instructions
+(edited)
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+ 3  1  1
+pho9574 has somebody graced us with a WebOS version of HyperHDR 21
+already (released yesterday)?
+zfa.discrd 03/11/2025 12:06 AM
+Just released.
+March 10, 2025
+footy1337 03/10/2025 11:20 PM
+Is it possible to do like a manual update?
+pho9574 has somebody graced us with a WebOS version of HyperHDR 21
+already (released yesterday)?
+footy1337 03/10/2025 11:20 PM
+I'm wondering the same! Also wondering how we could update, now when
+using HomeBrew the HyperHDR version is 21, not the Beta even
+[thegh0stface]
+thegh0stface 03/10/2025 5:04 PM
+Thanks for elaborating. I wasn't aware that hue does histograms of 16
+areas only - that's of limited use then. Btw. I have a 2024 G4 so if
+anyone wants me to test something I'd be happy too. (edited)
+pho9574 03/10/2025 2:33 PM
+has somebody graced us with a WebOS version of HyperHDR 21 already
+(released yesterday)?
+ 1
+March 9, 2025
+[satdx62]
+[] yolofant the histograms are also not easily mapped back into an image
+as it's really just a histogram over 16...
+satdx62 03/09/2025 1:50 PM
+Okay, that explains a lot, and can't be used with HyperHDR/
+hyperion-webos.
+[yolofant]
+yolofant 03/09/2025 1:33 PM
+the histograms are also not easily mapped back into an image as it's
+really just a histogram over 16 different areas so it cannot really be
+used within hyperHDR
+03/09/2025 1:32 PM
+only the new hue API is not DRM restricted, the normal capture remains
+DRM protected also on new TVs
+[satdx62]
+satdx62 03/09/2025 1:29 PM
+Yes, for this reason I have stopped looking for ways to use the Philips
+Hue Sync API with PicCap as the application is not available for my
+devices. Since my older devices currently support DRM capturing, it
+would be important for me to know if this will also be possible with
+newer devices without restrictions. Capturing histograms from 16
+different screen areas can of course be a problem. This is typical
+Philips area capturing.
+[yolofant]
+yolofant 03/09/2025 1:02 PM
+also it does not capture the screen but rather collects histograms from
+16 different areas on the screen
+03/09/2025 1:02 PM
+there is and it's (mostly) been reversed but my TV doesn't support it so
+it's unlikely that I can add support for it in hyperion-webos
+[] thegh0stface Now that there's a Philips hue app which works for DRM
+protected content there must be a way/API for...
+ww8543 03/09/2025 11:57 AM
+on the newer models that support the app, yes
+[thegh0stface]
+thegh0stface 03/09/2025 9:59 AM
+Now that there's a Philips hue app which works for DRM protected content
+there must be a way/API for Piccap to grab it too. Hmm
+March 8, 2025
+[lucinhoo]
+lucinhoo 03/08/2025 6:41 AM
+thank you
+[satdx62]
+[] lucinhoo heyy guys, how do i install Hyperion.NG 2.0.17-beta.2 on
+webos?
+satdx62 03/08/2025 12:11 AM
+You can use the webOS Dev Manager to install Hyperion.NG 2.0.17-beta.2.
+In case you need a webOS version, I have compiled one.
+https://github.com/satgit62/hyperion.ng-webos-loader/releases/download/latest/org.webosbrew.hyperion.ng.loader_0.1.12_all.ipk
+March 7, 2025
+[lucinhoo]
+lucinhoo 03/07/2025 9:12 PM
+heyy guys, how do i install Hyperion.NG 2.0.17-beta.2 on webos?
+[promis3s]
+[] satdx62 Hi, Thanks for the tip. I have already added it to the
+instructions. When I wrote this tutorial, the...
+promis3s 03/07/2025 10:21 AM
+Awesome, thank you
+[satdx62]
+[] promis3s Hey, I found your github tutorial which is great, thank you
+for that. Would it be possible to includ...
+satdx62 03/07/2025 9:44 AM
+Hi, Thanks for the tip. I have already added it to the instructions.
+When I wrote this tutorial, the NV12 option did not exist. I have
+described this feature in another tutorial of mine and provided a
+HyperHDR version that deletes this wrong LUT and installs the required
+LUTs for SDR, HDR and Dolby Vision.
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS/blob/main/README.md#warning
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+How-to-Install-and-set-up-Ambilight-on-LG-webOS/README.md at main ·...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[promis3s]
+[] satdx62 First, you should delete the **flat_lut_lin_tables.3d** LUT
+from `/media/developer/apps/usr/palm/ser...
+promis3s 03/07/2025 1:20 AM
+Hey, I found your github tutorial which is great, thank you for that.
+Would it be possible to include this part in there as well? I setup
+piccap according to your screenshot (enable NV12) that's why it didnt
+work for me as well, turning it off or removing this file worked for me
+March 6, 2025
+[mibix]
+mibix 03/06/2025 7:13 AM
+it must be DRM and looks like they arent trying to do a workaround
+https://github.com/TBSniller/piccap/issues/38
+Capture of DRM-protected content like Netflix/Amazon not working · ...
+Hi. Netflix is not working anymore after the netflix app was updated.
+Hyperion is receiving a black image. Any ideas how I can fix this?
+[]
+[mibix]
+united_hare_88621 It works perfectly with the ad free version of YouTube
+on the hbc
+mibix 03/06/2025 7:08 AM
+hmmm wish i could use that to watch live tv haha
+March 5, 2025
+united_hare_88621 03/05/2025 10:59 PM
+It works perfectly with the ad free version of YouTube on the hbc
+[mibix]
+mibix 03/05/2025 3:26 PM
+dunno if its DRM or what but its just black whenever live tv is playing
+03/05/2025 3:25 PM
+is there a way to get Piccap to work with YoutubeTV?
+March 4, 2025
+[satdx62]
+rippmaster Any ideas for mountin the tv against wooden acoustic panels
+and retaining ambilight true colors?
+satdx62 03/04/2025 8:08 PM
+If the acoustic panels on the back of the TV are light enough it will
+work, otherwise spray white.
+[images.jpg]
+ images.jpg
+7.07 KB External
+[neeeeb]
+rippmaster Any ideas for mountin the tv against wooden acoustic panels
+and retaining ambilight true colors?
+neeeeb 03/04/2025 8:01 PM
+paint it white ^^
+rippmaster 03/04/2025 3:47 PM
+Any ideas for mountin the tv against wooden acoustic panels and
+retaining ambilight true colors?
+March 3, 2025
+[] tbsniller but we can add further resolutions to the drop down, thats
+no problem if there is a demand for it
+timcook4825 03/03/2025 9:46 PM
+woah I would absolutely love a 1920x1080 preset for calibrating. would
+save a lot of time
+[nuttenjohnny]
+[] astur3l yeah, its our tv fault:
+https://github.com/webosbrew/hyperion-webos/pull/107
+nuttenjohnny 03/03/2025 7:35 PM
+Oh what a bummer, but thanks for the info anyway.
+[yolofant]
+yolofant 03/03/2025 7:05 PM
+I also suggest to only use resolutions that are multiples of 16 due to
+internal API limitations
+[yolofant]
+[] tbsniller the reason for that is that it was the least possible value
+for my tv and every higher pixel amount...
+yolofant 03/03/2025 7:03 PM
+still 360x180 is very weird as it is not the correct aspect ratio
+[tbsniller]
+tbsniller 03/03/2025 6:59 PM
+but we can add further resolutions to the drop down, thats no problem if
+there is a demand for it
+ 1
+[tbsniller]
+[] satdx62 The best solution is to divide the highest resolution. This
+has been suggested by previous speakers ...
+tbsniller 03/03/2025 6:57 PM
+the reason for that is that it was the least possible value for my tv
+and every higher pixel amount needs also bit more processing power which
+also means a small bit of more latency (edited)
+[astur3l]
+[] nuttenjohnny Hi, I have a question, I'm using an LG OLED55A19LA and
+have connected an Nvidia Shield via HDMI and ...
+astur3l 03/03/2025 6:11 PM
+yeah, its our tv fault:
+https://github.com/webosbrew/hyperion-webos/pull/107
+vtc: add dump loc 1 quirk by asturel · Pull Request #107 · webosbre...
+On some tv-s (including my A1/lm21u/mt5889) dumped frames from scaler
+output affected by picture settings. Dumping from scaler input gives
+perfect color for builtin apps, however it breaks hdmi ton...
+[nuttenjohnny]
+nuttenjohnny 03/03/2025 4:43 PM
+Hi, I have a question, I'm using an LG OLED55A19LA and have connected an
+Nvidia Shield via HDMI and so far everything is working fine. But the
+picture is a bit too dark in HyperHDR. However, if I activate
+Quirk_Dile_VT_Dump_Locatio_2 in Piccap, the picture brightness in
+HyperHDR looks normal. The problem is that the colors in Dolby Vision
+are unfortunately displayed incorrectly, everything is very purple and
+green. HDR and SDR both work normally.
+[Screenshot_2025-03-03_163249.png]
+ Screenshot_2025-03-03_163249.png
+753.75 KB External
+[satdx62]
+[] mibix what resolution do you guys use for piccap?
+satdx62 03/03/2025 1:45 PM
+The best solution is to divide the highest resolution. This has been
+suggested by previous speakers who divide 3840x2160 by 10 and use
+384x216. A resolution divided by 20, such as 192x108, should also work.
+Below this, it becomes critical because of the noise in the preview
+image. This also affects color reproduction. Unfortunately, some
+device/webOS combinations only work with certain resolutions. Even with
+a division by 15 (256x144) it works perfectly for me. I also wonder why
+PicCap is set to 360x180 by default and not 384x216. If you calibrate
+HyperHDR internally, 1280x720 is sufficient, but I recommend a
+calibration on an external HyperHDR for example on Windows/Raspberry Pi
+with 1920x1080 resolution. (edited)
+timcook4825 03/03/2025 12:45 PM
+1080p when calibrating
+03/03/2025 12:44 PM
+384x216
+[mibix]
+mibix 03/03/2025 12:09 PM
+what resolution do you guys use for piccap?
+[mibix]
+mibix 03/03/2025 11:46 AM
+I still use it if I need to keep quiet, have my home theater headphones
+attached to an hdmi splitter on there. Can't do the TV-Led DV with the
+splitter 
+03/03/2025 11:45 AM
+also the shield is a bit sluggish, heh
+03/03/2025 11:45 AM
+https://www.reddit.com/r/PleX/comments/1humssn/is_the_nvidia_shield_2019_now_just_as_good_as_the/m5mkck1/
+Grosi_1's comment on "Is the Nvidia shield 2019 now just as good as...
+Explore this conversation and more from the PleX community
+[]
+03/03/2025 11:42 AM
+they will still play they just wont use the extra info
+timcook4825 03/03/2025 11:29 AM
+ahh you are talking about those .ISO files right. because I never had
+any problem with shield pro 2019 + kodi + dolby vision remux files but
+they probably had MEL not FEL
+[mibix]
+mibix 03/03/2025 11:25 AM
+i dont think i ever got mine to work with TV-Led but probably because I
+wasn't using Piccap
+03/03/2025 11:24 AM
+it doesnt do all the DV profiles and layers like FEL
+timcook4825 03/03/2025 11:23 AM
+ah yeah was confused because shield pro 2019 can do both TV led and
+player led
+[mibix]
+mibix 03/03/2025 11:22 AM
+LLDV < TV-LED DV
+timcook4825 03/03/2025 11:22 AM
+shield pro (2019) can do LLDV, you have to enable that via debug
+settings
+[mibix]
+mibix 03/03/2025 11:21 AM
+I stopped using the Shield pro for a AM6b+ so I can do TV-Led DV
+(edited)
+[] mibix I wonder if i should do my own calibrations or if they are
+really the same across all LG TVs heh
+timcook4825 03/03/2025 11:19 AM
+If you use a media player like ATV 4K or shield you should calibrate
+yourself. You can finetune your LUT by altering some webOS picture
+settings, you will never know which settings were used on the premade
+LUT
+timcook4825 03/03/2025 11:17 AM
+I saw your thread at the hyperhdr github discussions, your HyperHDR
+instance is probably crashing while calibrating. even my RPI5 struggles
+a lot and one calibration needs like 8 minutes or so
+[mibix]
+mibix 03/03/2025 11:16 AM
+I wonder if i should do my own calibrations or if they are really the
+same across all LG TVs heh
+[mibix]
+timcook4825 Should be the case. I have used the HD60X for a long time
+and I just stick to PicCap. I need more th...
+mibix 03/03/2025 11:16 AM
+yeah no probems so far
+[] mibix trying to decide if piccap is good enough to just get rid of my
+grabber
+timcook4825 03/03/2025 11:15 AM
+Should be the case. I have used the HD60X for a long time and I just
+stick to PicCap. I need more than one source (ATV 4K + PS5) and DV is
+100% better than any USB grabber because you can calibrate DV (edited)
+[mibix]
+mibix 03/03/2025 10:42 AM
+trying to decide if piccap is good enough to just get rid of my grabber
+03/03/2025 10:42 AM
+yeah I was using an Elgato HD60 X USB Grabber on my HTPC running
+hyperhdr before. I only used piccap for DV content since i didn't want
+to use LLDV
+[satdx62]
+[] mibix heh actually trying to get your version working
+satdx62 03/03/2025 10:39 AM
+Hello, in my HyperHDR version, the three LUT's are included and can be
+installed via the menu when starting the HyperHDR Loader. Recalibration
+is therefore not necessary.
+[mibix]
+[] satdx62 Yes, the 1280x720 resolution is required for calibration,
+even if this reduces the frame rate to 10 ...
+mibix 03/03/2025 10:25 AM
+heh actually trying to get your version working
+[satdx62]
+[] mibix seems to want 1280x720p minimum and i think its just too slow
+at that resolution heh
+satdx62 03/03/2025 9:31 AM
+Yes, the 1280x720 resolution is required for calibration, even if this
+reduces the frame rate to 10 FPS. This is sufficient for calibration.
+The current version is PicCap 0.5.1.
+[mibix]
+mibix 03/03/2025 6:54 AM
+0.5.1?
+03/03/2025 6:53 AM
+what is the newest piccap version?
+[] yolofant from my research it just appears their algorithm is just
+using a very limited amount of areas (16)
+Deleted User 03/03/2025 5:40 AM
+that is the case for tizen too
+[mibix]
+mibix 03/03/2025 5:14 AM
+I start the calibration video but it just says Waiting for first
+captured test board
+03/03/2025 5:14 AM
+seems to want 1280x720p minimum and i think its just too slow at that
+resolution heh
+03/03/2025 5:14 AM
+how do i get hyperhdr to calibrate with piccap?
+March 2, 2025
+[astur3l]
+astur3l 03/02/2025 11:56 PM
+hyperion have dominant led algo, also hdr have weighted
+[yolofant]
+yolofant 03/02/2025 11:12 PM
+grouping in hyperhdr is doing something similar but the implementation
+details might be different
+[yolofant]
+yolofant 03/02/2025 10:58 PM
+I think this is happening on the secondary video processing chip which
+is why the real computational usage is hidden
+[:this:] 1
+pim_85 03/02/2025 10:55 PM
+cpu utilization is half of that of hyperhdr (even with quantization on +
+low resolution) (edited)
+03/02/2025 10:54 PM
+could be. I'm really curious how they achieve it
+[yolofant]
+yolofant 03/02/2025 10:54 PM
+tbh, I don't think it's going to be very advanced because it would take
+a lot of computation power to do so (edited)
+pim_85 03/02/2025 10:52 PM
+the underlying logic to actually determine it , seems to be pretty
+advanced
+03/02/2025 10:52 PM
+simplifying it, it all comes down to choosing the dominant color/hue per
+section indeed
+[yolofant]
+yolofant 03/02/2025 10:51 PM
+they probably just divide the image into sections and then extract the
+"dominant" colors from it
+pim_85 03/02/2025 10:51 PM
+Yes it seems that they limited the total amount of channels to prevent
+flooding of the zigbee protocol
+[yolofant]
+yolofant 03/02/2025 10:49 PM
+but it at least seems in the end it just returns 16 data points
+pim_85 03/02/2025 10:49 PM
+interesting stuff! i was not expecting that much of a difference as
+compared to hyperhdr
+[yolofant]
+yolofant 03/02/2025 10:49 PM
+that's certainly possible and also explains the internal naming of
+histogram mode
+pim_85 03/02/2025 10:46 PM
+As of now, i notice 3 things: -it adapts sections sometimes (deviating a
+bit from what is seen on the tv) to make the colors feel more as a
+"gradient" as compared to the adjecent sections -it deploys adaptive
+smoothing -it better understands what is in the background and what is
+in the foreground. It tries to adapt the lights as much as possible to
+the background. As an example: an actor walking in a green field is less
+likely to change the color of the lights; the lights just stay green.
+That feels very natural (edited)
+pim_85 03/02/2025 10:38 PM
+i'll try to explain it better in the coming weeks when i've more
+experience with it and being better able to understand it fully for
+myself (edited)
+03/02/2025 10:37 PM
+The amount of led sections are limited indeed (usually 3 on top, 3 at
+the bottom, 2 left, 2 right). But the underlying algorithm is doing much
+more than looking at those sections in isolation; it looks at the total
+composition. I don't know how or what exactly, but there is a LOT going
+on in the algorithm. It is way better as compared to setting up HyperHDR
+with just use a few sections (edited)
+[yolofant]
+yolofant 03/02/2025 10:35 PM
+if you want that, you can also achieve that using hyperHDR
+03/02/2025 10:35 PM
+well I can't say for certain because the kernel on my TV is missing
+support for it but using the test application it captures 16 areas only
+pim_85 03/02/2025 10:33 PM
+you have to experience it in person to fully grasp the differences
+[] yolofant from my research it just appears their algorithm is just
+using a very limited amount of areas (16)
+pim_85 03/02/2025 10:32 PM
+It's doing much more than that... but it's hard to explain.
+[yolofant]
+yolofant 03/02/2025 10:32 PM
+and I have bad news for < 2024 models that were upgraded to webOS 24.
+There is support in the capturing library for hue sync but the kernel is
+missing support for it
+03/02/2025 10:30 PM
+from my research it just appears their algorithm is just using a very
+limited amount of areas (16)
+pim_85 03/02/2025 10:27 PM
+ooh and i don't know how they do it, but the Hue App is completely
+insensitive for subtitles  Even the yellow text of star wars intro is
+not tripping the system (thereby preventing a distracting unwanted disco
+scene)
+03/02/2025 10:22 PM
+best ambilight experience ever
+03/02/2025 10:22 PM
+I'm using the Gradient ledstrip (not the Play variant) at the top + Hue
+Play Gradient Tube Large at the bottom + 2 x Signe table light at the
+sides + 2 x Bloom at the sides. Plus a Hue Ensis and a Hue Resonate
+pointing to the ceiling
+timcook4825 Could you please test dolby vision and hdr material?
+Especially dark scenes. Like you said, every am...
+pim_85 03/02/2025 10:17 PM
+Dolby Vision and HDR10 material looks very nice. Dark movies look better
+than ever before: the biggest drawback of the HyperHDR algorithm is the
+flicker/distraction factor with darker scenes (even with smoothing and
+minimum brighness enabled). With the Hue app, it looks very stable and
+it gives a soft dark tone. It's subtle and not in your face. Colors are
+of course not very vivd anymore and Iess pronounced (which makes sense,
+because it's displayed on a white wall instead of a black tv). I found
+out that dropping the max brightness a bit (to 60%) and setting the
+intensity to "mild" works the best for darker material. (edited)
+ 1
+[zarhkoh]
+zarhkoh 03/02/2025 12:58 PM
+(i'll still update my HyperHDR version according to @satdx62 to get the
+best experience possible !) (edited)
+03/02/2025 12:56 PM
+no more epilepctic crimes
+[image.png]
+ image.png
+602.64 KB External
+[zarhkoh]
+[] tbsniller try to enable `QUIRK_DILE_VT_CREATE_EX`in advanced settings
+https://github.com/webosbrew/hyperion-w...
+zarhkoh 03/02/2025 12:55 PM
+Okay, I didn’t dig enough.. it works like a charm !
+ 1
+[tbsniller]
+[] zarhkoh I’m on a OLED65B9SLA with webos 4.10
+tbsniller 03/02/2025 12:50 PM
+try to enable QUIRK_DILE_VT_CREATE_EXin advanced settings
+https://github.com/webosbrew/hyperion-webos/issues/111
+Glitches on top of screen when capturing from HDMI inputs · Issue #...
+I have an LG 49SM8600PLA rooted and running PiCap (calling
+hyperion-webos) with Hyperion-NG. The capturing works fine with Live TV
+and smart TV apps such as Netflix, but when capturing from any HDM...
+[]
+ 1
+[zarhkoh]
+[] satdx62 According to the last lines of your protocol, various LUTs
+are required. Have you also installed the...
+zarhkoh 03/02/2025 12:45 PM
+Thanks for the hint ! I downloaded HyperHDR directly from HbC, I’ll
+check your repo. Thanks 
+[zarhkoh]
+[] tbsniller which lg tv model do you have? we have observed this issue
+on webos4.5- tvs
+zarhkoh 03/02/2025 12:44 PM
+I’m on a OLED65B9SLA with webos 4.10
+[satdx62]
+[] zarhkoh Here you are !
+satdx62 03/02/2025 12:40 PM
+According to the last lines of your protocol, various LUTs are required.
+Have you also installed these LUTs? If not, switch off the NV12 option
+in PicCap. Apart from that, you are still using an old HyperHDR version.
+You can set and test everything according to these instructions. A new
+HyperHDR with the necessary LUTs is also available.
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+[LUT_Log.png]
+ LUT_Log.png
+18.19 KB External
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[tbsniller]
+[] zarhkoh I’m wondering if PicCap could be the responsible : when i’m
+starting the PicCap capturing, the HDMI ...
+tbsniller 03/02/2025 12:13 PM
+which lg tv model do you have? we have observed this issue on webos4.5-
+tvs
+[zarhkoh]
+zarhkoh 03/02/2025 11:41 AM
+I’m wondering if PicCap could be the responsible : when i’m starting the
+PicCap capturing, the HDMI render have some glitched lines on the top.
+Everything goes back to normal when I stop PicCap capturing
+.MOV preview not available — download to play
+ IMG_1712.mov
+747.58 KB External
+[zarhkoh]
+zarhkoh 03/02/2025 11:28 AM
+Here you are !
+ hyperlionLogsZarhkoh.txt
+26.75 KB External
+[zarhkoh]
+[] satdx62 If everything works as expected internally, it should also
+work via HDMI. According to the live prev...
+zarhkoh 03/02/2025 11:05 AM
+Well, something is probably wrong for sure. I had to reboot my TV 3 or 4
+times because at first, PicCap was stuck on « Calling PicCap-Service to
+get root-status » I’ll get you the logs asap. Thanks for help 
+[satdx62]
+[] zarhkoh Ho ! I’ll try. I tried the lower one but it wasn’t successful
+satdx62 03/02/2025 11:01 AM
+If everything works as expected internally, it should also work via
+HDMI. According to the live preview image, something seems to be wrong
+with the LUT RGB/YUV or the index 0/1/2. This is best checked in the
+HyperHDR log. Therefore, upload a .txt file with the log (copy to
+clipboard) here.
+[zarhkoh]
+[] bahoue Have you tried the 192x108 resolution in Piccap? This is the
+only one that seems to work on several ...
+zarhkoh 03/02/2025 10:09 AM
+Ho ! I’ll try. I tried the lower one but it wasn’t successful
+[bahoue]
+[] zarhkoh Hey, i finally reached to a working setup with PicCap and
+HyperHDR on my LG TV. Everything works fin...
+bahoue 03/02/2025 7:44 AM
+Have you tried the 192x108 resolution in Piccap? This is the only one
+that seems to work on several configurations.
+[zarhkoh]
+zarhkoh 03/02/2025 3:11 AM
+Hey, i finally reached to a working setup with PicCap and HyperHDR on my
+LG TV. Everything works fine until I start watching my AppleTV on HDMI.
+Here is what HyperHDR sees. I tried to change some video capture
+resolution or check/uncheck some settings but i can't find what's the
+problem.. Do you have any idea ? Thanks for your help 
+.MOV preview not available — download to play
+ aptv-PicCap.mov
+10.94 MB External
+[:madcatvibin:] 1
+February 28, 2025
+[arsteez]
+arsteez 02/28/2025 12:19 AM
+I hope it comes to C2 soon 
+[:lg:] 2 [:meep:] 1
+February 27, 2025
+pim_85 02/27/2025 11:26 PM
+i'll check some dark dv and hdr10 movies/series the coming days, i'll
+keep you posted
+ 1
+pim_85 i wanna compare in more in-depth over the coming weeks
+timcook4825 02/27/2025 11:16 PM
+Could you please test dolby vision and hdr material? Especially dark
+scenes. Like you said, every ambilight solution looks good when you play
+those demo videos but dark scenes or scenes with streets, walls, skin
+tones are very hard to get right.
+pim_85 02/27/2025 10:08 PM
+(and who knows what can be done with a rooted lg tv in the future with
+the alternative app store  ) (edited)
+02/27/2025 10:06 PM
+in all honesty: i've went to the 3 euro/month subscription to try it out
+first
+02/27/2025 10:05 PM
+but i love it
+02/27/2025 10:05 PM
+it's crazy expensive
+02/27/2025 10:05 PM
+just buy the Hue App for 130 euro and another 800 for the additional
+lights 
+[ogayylien]
+pim_85 how do you mean?
+ogayylien 02/27/2025 10:03 PM
+my gf loves ambilight and the lg doesnt have it
+Deleted User 02/27/2025 10:02 PM
+because it captures pixel by pixel on tizen with specific coords
+02/27/2025 10:02 PM
+btw hue sync should capture way less
+pim_85 02/27/2025 10:01 PM
+how do you mean?
+[ogayylien]
+ogayylien 02/27/2025 10:01 PM
+the only thing keeping the g4 out of my living room is the missing
+ambilight (edited)
+pim_85 02/27/2025 10:00 PM
+and i would also like to give feedback / explain what makes the hue
+experience so good. If i can explain this in a better/more accurate way,
+it could help in improving the hyperhdr algorithm (edited)
+[ogayylien]
+ogayylien 02/27/2025 10:00 PM
+alright please keep us updated
+ 1
+pim_85 02/27/2025 10:00 PM
+i wanna compare in more in-depth over the coming weeks
+02/27/2025 10:00 PM
+not sure yet
+[ogayylien]
+ogayylien 02/27/2025 9:59 PM
+only hue sync app from now on ?
+[ogayylien]
+pim_85 the algorithm also takes into account the different colors for
+the different lights/corners. If colo...
+ogayylien 02/27/2025 9:59 PM
+so you are done with hyperion ?
+pim_85 02/27/2025 9:55 PM
+the algorithm also takes into account the different colors for the
+different lights/corners. If colors are too much appart from each other,
+the algorithm decides that some of the lights will get a slightly
+different color (so it matches more with the other lights). It looks
+really really cool (edited)
+02/27/2025 9:54 PM
+i also notice that the latency is dependent on various factors. It seems
+that, depending on what is going on the movie scene, the
+latency/smoothing is adjusted in real-time
+02/27/2025 9:52 PM
+demo material is fun, but is not showing the normal day-to-day
+experience
+02/27/2025 9:51 PM
+you have to use it for a longer period to start appreciating what
+Philips has done
+02/27/2025 9:51 PM
+There is a little bit of latency, but after a while, i realized this is
+all for the good/better. It provides in a less distracting, more suiting
+experience
+Deleted User 02/27/2025 9:46 PM
+i love a very simple app costing fucking 130 euros because fuck you
+[ogayylien]
+pim_85 The first experiences are both very good and very bad (Philips
+Hue app for LG tv's). The good: the v...
+ogayylien 02/27/2025 9:45 PM
+how was the latency ?
+pim_85 02/27/2025 9:40 PM
+yup
+pim_85 The first experiences are both very good and very bad (Philips
+Hue app for LG tv's). The good: the v...
+Deleted User 02/27/2025 9:40 PM
+well it ofc depends on cloud because it checks if you have purchased the
+app or not
+Deleted User 02/27/2025 9:39 PM
+though you need the source code/minified package
+[] neeeeb Nothing related to pirating the app.
+Deleted User 02/27/2025 9:39 PM
+technically there is a flag that allows you to emulate purchasing the
+app (on tizen)
+pim_85 02/27/2025 9:37 PM
+The first experiences are both very good and very bad (Philips Hue app
+for LG tv's). The good: the visual effects are very, very good. Much
+better than i have ever experienced with HyperHDR and Hyperion NG (all
+tested with 2812b / sk6812+hyperserial / hue gradient). More natural
+feeling, more saturated, and less annoying (out-of-place) distracting
+changes of the lights. I've experimented a LOT with HyperHDR in regards
+to smoothing, gamma, algorithm, min-brightness, etc, but even after a
+lot of thinkering, it does not even come close to the Hue experience.
+The difference is small when you are playing demo material, but the
+difference is huge when playing normal movies / tv-shows. The bad: the
+LG servers are down since yesterday
+https://www.avforums.com/threads/lg-g4-4k-meta-2-0-oled-tv-discussion-help-experiences.2494223/page-85#post-32821898,
+because of this i cannot open and use the Hue Sync app. It seems to be
+cloud-dependent. (edited)
+ 1
+[] neeeeb Nothing related to pirating the app.
+p1ne4pple24 02/27/2025 9:34 PM
+But to bypass model checks?
+[neeeeb]
+p1ne4pple24 <@195583665265311744> whats the use of this bool property?
+neeeeb 02/27/2025 9:33 PM
+Nothing related to pirating the app.
+[ogayylien]
+pim_85 i'm in the process of installing the app on my LG G4, i'll let
+you know my experiences too
+ogayylien 02/27/2025 3:04 PM
+What is your experience so far ?
+Deleted User dont think piracy is allowed
+p1ne4pple24 02/27/2025 3:02 PM
+@Yolofant whats the use of this bool property?
+[pionir1]
+pionir1 02/27/2025 2:28 PM
+i doubt it uses so many resources that a 2021-2022 model wouldn’t be
+able to run the app (edited)
+02/27/2025 2:28 PM
+i‘d pay for the privilege to use the app but its limited to 2024 and
+newer models which is why i‘d think a spoof to fool the appstore or smth
+is a grey area
+Deleted User 02/27/2025 2:24 PM
+but it is possible to enable a single bool property
+[] pionir1 wondering if the HUE app is able to be installed via HB as a
+cracked version/spoofed version ( makin...
+Deleted User 02/27/2025 2:24 PM
+dont think piracy is allowed
+[pionir1]
+pionir1 02/27/2025 1:49 PM
+wondering if the HUE app is able to be installed via HB as a cracked
+version/spoofed version ( making it think its installed on a 2024
+Version)
+February 26, 2025
+timcook4825 Try this file
+https://www.file-upload.net/en/download-15459589/DV.mp4.html but make
+sure you are run...
+.snikcers 02/26/2025 6:02 AM
+I will try this today! Thx!
+February 25, 2025
+[yolofant]
+yolofant 02/25/2025 9:45 PM
+well, yeah
+ 1
+[neeeeb]
+neeeeb 02/25/2025 9:16 PM
+(no content)
+[image.png]
+ image.png
+89.07 KB External
+02/25/2025 9:16 PM
+is it what you're looking for ?
+[yolofant]
+yolofant 02/25/2025 9:15 PM
+there should be a button to connect, but I cannot make it work rn either
+[neeeeb]
+neeeeb 02/25/2025 9:10 PM
+connect to what, and where
+02/25/2025 9:10 PM
+you have to help me a little more lol
+02/25/2025 9:09 PM
+hmmmm
+[yolofant]
+yolofant 02/25/2025 9:09 PM
+it should be possible to connect now
+[neeeeb]
+neeeeb 02/25/2025 9:09 PM
+next ?
+02/25/2025 9:09 PM
+done, it's listed now
+02/25/2025 9:08 PM
+yep found it
+[yolofant]
+yolofant 02/25/2025 9:08 PM
+there should be a popup where you can add a custom device target
+02/25/2025 9:08 PM
+press configure
+[neeeeb]
+neeeeb 02/25/2025 9:04 PM
+(no content)
+[image.png]
+ image.png
+29.18 KB External
+02/25/2025 9:04 PM
+app is running but not sure how to add anything in there
+[yolofant]
+yolofant 02/25/2025 9:03 PM
+we would be interested in index.html and index.js
+02/25/2025 9:02 PM
+so you would need to launch the app, open up chrome on a computer and do
+the above
+02/25/2025 9:02 PM
+Adding TV_IP:9998 as a "Remote Target" in chrome://inspect in Chromium-based browsers.
+[neeeeb]
+neeeeb 02/25/2025 9:02 PM
+ok
+[yolofant]
+yolofant 02/25/2025 9:02 PM
+it allows to inspect the app using chrome dev tools
+02/25/2025 9:02 PM
+https://www.webosbrew.org/develop/guides/web-app/
+[neeeeb]
+neeeeb 02/25/2025 9:01 PM
+what was the point of doing this ? just curious
+02/25/2025 9:01 PM
+did it with devmanager
+[yolofant]
+yolofant 02/25/2025 9:01 PM
+vi /media/cryptofs/apps/usr/palm/applications/com.lighting.huesync/appinfo.json
+then press i to get into edit mode
+[neeeeb]
+neeeeb 02/25/2025 9:01 PM
+nvm
+[neeeeb]
+[] yolofant yes, or edit it on the device directly
+neeeeb 02/25/2025 8:59 PM
+any tip on how to do it directly on device ?
+[yolofant]
+yolofant 02/25/2025 8:59 PM
+yes, or edit it on the device directly
+[neeeeb]
+neeeeb 02/25/2025 8:59 PM
+PS: I definitely can't reboot the TV or so, wife is watching the TV ahah
+02/25/2025 8:58 PM
+can I download the file with DevManager, modify it, and reupload ?
+[yolofant]
+yolofant 02/25/2025 8:54 PM
+apparently the sync app is a web app
+[yolofant]
+[] neeeeb <@195583665265311744> back, and waiting for your instructions
+yolofant 02/25/2025 8:54 PM
+can you add "inspectable": true to
+/media/cryptofs/apps/usr/palm/applications/com.lighting.huesync/appinfo.json
+[neeeeb]
+timcook4825 do you have a Hue system? I really would like to know if
+this sync app can deliver better performanc...
+neeeeb 02/25/2025 8:50 PM
+I don't use that over expensive thing ^^
+[neeeeb]
+neeeeb 02/25/2025 8:50 PM
+@Yolofant back, and waiting for your instructions
+pim_85 02/25/2025 8:20 PM
+i'm in the process of installing the app on my LG G4, i'll let you know
+my experiences too
+timcook4825 02/25/2025 8:02 PM
+I do have great scores when I calibrate those modes with HyperHDR but
+the old problems are still there. Maximum luminance scenes in HDR and
+dark scenes are still a problem
+02/25/2025 8:01 PM
+do you have a Hue system? I really would like to know if this sync app
+can deliver better performance on DV and HDR
+[neeeeb]
+neeeeb 02/25/2025 7:59 PM
+oh I see
+timcook4825 02/25/2025 7:59 PM
+you need a subsciption
+[neeeeb]
+neeeeb 02/25/2025 7:59 PM
+Why everyone is talking about 130€ ? the app was free to install.
+02/25/2025 7:57 PM
+@Yolofant TV's updated, Hus Sync is installed and I still have root !!
+AFK for half an hour (diner time here) I'll poke you as soon as I'm back
+so you can tell me what to do to get the app for you  (edited)
+[arsteez]
+arsteez 02/25/2025 7:55 PM
+im hoping maybe the app will support older tvs later on... who knows atp
+[yolofant]
+yolofant 02/25/2025 7:53 PM
+I don't think so
+timcook4825 02/25/2025 7:52 PM
+Do you think LG will crack down on rooting now that the Hue app has been
+released? They’ve already proven their greed today by limiting the app
+to 2024 TV models instead of all webOS 24 models as originally
+announced. I can well imagine that Philips is pushing to close this
+loophole so they can sell their €130 app.
+[neeeeb]
+neeeeb 02/25/2025 7:50 PM
+that's so slow
+02/25/2025 7:50 PM
+70
+02/25/2025 7:47 PM
+30%
+[yolofant]
+yolofant 02/25/2025 7:47 PM
+which is only introduced after that particular firmware update
+02/25/2025 7:46 PM
+well it's possible that hue sync relies on a new library
+[neeeeb]
+neeeeb 02/25/2025 7:46 PM
+software version 03.11.20
+02/25/2025 7:46 PM
+talked about a 23.20.35 version I believe
+[yolofant]
+yolofant 02/25/2025 7:46 PM
+[neeeeb]
+neeeeb 02/25/2025 7:45 PM
+wish me luck
+02/25/2025 7:45 PM
+TV's updating right now
+02/25/2025 7:45 PM
+Ah !! that's ok, forgot to disable in HBC too ^^
+[yolofant]
+yolofant 02/25/2025 7:45 PM
+you probably need to restart the tv
+[neeeeb]
+neeeeb 02/25/2025 7:42 PM
+Ah well, it won't let me update, even though I've disabled my domain
+blocking.
+02/25/2025 7:39 PM
+Ok, well, so Imma install it.
+[yolofant]
+yolofant 02/25/2025 7:38 PM
+and right now faultmanager is still unpatched so you can always reroot
+it
+[yolofant]
+[] neeeeb <@195583665265311744> Damn...I'm torn I do have a C4, and Hue
+Sync is available to me in the app st...
+yolofant 02/25/2025 7:38 PM
+usually updating is safe
+ 1
+[neeeeb]
+neeeeb 02/25/2025 7:35 PM
+@Yolofant Damn...I'm torn I do have a C4, and Hue Sync is available to
+me in the app store. BUT, it says I need to update firmware before
+installing the app... lge.com domain is currently blocked on my router,
+I could disable it but I'm afraid of loosing root(even though I believe
+I won't, I'm not 100% confident...) (edited)
+[satdx62]
+[] yolofant I doubt they use something fundamentally different though
+satdx62 02/25/2025 6:30 PM
+We should first exercise patience and wait for the first reports from LG
+users. You can't expect much from the app at first. The Hue Sync app on
+the Samsung TV does not support VRR and has a noticeable latency. The
+latency is due to the implementation of Zigbee. Even changing the Zigbee
+channel and increasing the intensity to maximum, as recommended by
+Philips, did not bring any improvement. The light change was delayed by
+around a quarter of a second. I was able to see this for myself. The
+main advantage is that the internal apps with DRM content are also
+recorded here.
+[arsteez]
+arsteez 02/25/2025 6:26 PM
+Ahh. Looks like it only supports the Rakuten/Movies button.. don’t see
+that on my remote
+[yolofant]
+yolofant 02/25/2025 6:12 PM
+there's piccap on/off button I think it's called
+02/25/2025 6:12 PM
+not yet but you can use the older app
+[arsteez]
+arsteez 02/25/2025 6:11 PM
+I had a command mapped to a button on the remote to start/stop the
+piccap service to toggle the sync lights on/off but it broke after
+updating webOS 24, is there a new command im not aware of?
+[yolofant]
+yolofant 02/25/2025 6:04 PM
+yeah, same. I don't think spending the money on the subscription is
+necessary too
+[satdx62]
+[] yolofant I doubt they use something fundamentally different though
+satdx62 02/25/2025 6:03 PM
+Yes, if we can analyze the app, we'll see. I even wanted to buy the app
+to use it for development purposes. But I don't own a 24' webOS device.
+[yolofant]
+yolofant 02/25/2025 5:58 PM
+I doubt they use something fundamentally different though
+[satdx62]
+[] yolofant the best bet it to reverse engineer it and reimplement it in
+hyperion-webos
+satdx62 02/25/2025 5:58 PM
+Yes, exactly, implementation of the Philips DRM capture library via
+reverse engineering in hyperion-webos.
+[arsteez]
+arsteez 02/25/2025 5:54 PM
+Damn, well thanks for the info. I’ll be waiting for that then 
+[yolofant]
+yolofant 02/25/2025 5:53 PM
+the best bet it to reverse engineer it and reimplement it in
+hyperion-webos
+ 2
+02/25/2025 5:53 PM
+not to shatter your hopes, but running the application on a different
+device is probably not going to work
+[arsteez]
+[] satdx62 Yes, that's very cheeky of Philips. At first, they said it
+was available for all models with webOS 2...
+arsteez 02/25/2025 5:50 PM
+Yeah, super annoying. Hopefully someone can get us the app through root
+maybe.
+[yolofant]
+yolofant 02/25/2025 5:49 PM
+I'm sure we have rooted 2024 users among us here that can share the
+binaries [:Prayge:]
+[satdx62]
+[] arsteez I believe it’s only available for 2024 models only.
+satdx62 02/25/2025 5:49 PM
+Yes, that's very cheeky of Philips. At first, they said it was available
+for all models with webOS 24. Now they say: Availability is limited to
+LG TVs from model year 2024 onwards that are equipped with webOS24 or a
+newer version of the operating system.
+[arsteez]
+[] satdx62 Yes, webOS 24 is a prerequisite and is not available
+everywhere. Root is not required for installati...
+arsteez 02/25/2025 5:46 PM
+I believe it’s only available for 2024 models only.
+[image0.jpg]
+ image0.jpg
+175.86 KB External
+[yolofant]
+yolofant 02/25/2025 5:42 PM
+it would be interesting to see how they allow capturing of drm protected
+apps
+[satdx62]
+[] arsteez It’s not there on my C2 and I’m on webOS 24
+satdx62 02/25/2025 5:39 PM
+Yes, webOS 24 is a prerequisite and is not available everywhere. Root is
+not required for installation. (edited)
+[yolofant]
+yolofant 02/25/2025 5:37 PM
+if someone can install it from the app store and share the binaries with
+me, I am eager to see how they are doing capturing to improve
+hyperion-webos
+02/25/2025 5:37 PM
+well, I don't see it either in the app store
+[arsteez]
+arsteez 02/25/2025 5:35 PM
+It’s not there on my C2 and I’m on webOS 24
+[yolofant]
+yolofant 02/25/2025 5:33 PM
+I think webOS 24 is the requirement
+[arsteez]
+arsteez 02/25/2025 5:33 PM
+Any way to get the app through root?
+02/25/2025 5:33 PM
+Only on 2024 sadly
+[yolofant]
+yolofant 02/25/2025 5:32 PM
+apparently the hue sync app is now available according to some news
+articles
+[satdx62]
+lazyman3763 In in the middle of instaling ambilight to my rooted lgtv.
+Is is possible to hook 2x esp32 to work o...
+satdx62 02/25/2025 5:00 PM
+No disadvantages when using multiple instances in HyperHDR. In case you
+didn't know, you can also control two LED strips with just one ESP32 by
+configuring two segments. https://kno.wled.ge/features/multi-strip/
+(edited)
+[neeeeb]
+lazyman3763 In in the middle of instaling ambilight to my rooted lgtv.
+Is is possible to hook 2x esp32 to work o...
+neeeeb 02/25/2025 3:40 PM
+It is possible, juste create 2 instances in HyperHDR, one for each ESP.
+lazyman3763 02/25/2025 2:29 PM
+In in the middle of instaling ambilight to my rooted lgtv. Is is
+possible to hook 2x esp32 to work on 2 led strips in the livingroom? Or
+there will be drawbacks
+[stefanos1000]
+[] astur3l hyperion-webos/piccap sending empty frames -> capture isnt
+working
+stefanos1000 02/25/2025 1:55 PM
+Thank you for your reply asturel. Helpful as always!  So this is
+normal to happen when the TV first turns on until a "connection" with
+piccap is done (both hyperhdr and piccap services become active)?
+(edited)
+[astur3l]
+[] stefanos1000 Hello, I am getting the following error message many
+times in my log. The lights work fine but I do ...
+astur3l 02/25/2025 1:32 PM
+hyperion-webos/piccap sending empty frames -> capture isnt working
+ 1
+[stefanos1000]
+stefanos1000 02/25/2025 1:16 PM
+Hello, I am getting the following error message many times in my log.
+The lights work fine but I do not understand what it is reffering to.
+Could somebody elaborate please? [FLATBUFSERVER] The RGB image data size
+does not match the width and height or it's empty. Image size: 0 (0 x 0)
+.snikcers <@917488160580182068> I tried to use the Dolby Vision Video
+from your github to calibrate. However H...
+timcook4825 02/25/2025 1:06 PM
+Try this file
+https://www.file-upload.net/en/download-15459589/DV.mp4.html but make
+sure you are running HyperHDR on a PC or RPI or something to calibrate
+File-Upload.net - DV.mp4
+File: DV.mp4. Here is the opportunity the share your files and photos
+with friends or family. It’s easy with File-Upload
+ 1
+timcook4825 02/25/2025 12:56 PM
+Curious if there are better versions, I will upload my updated DV test
+file later. Calibrating with this test file gave a better calibration
+score than SDR calibration
+02/25/2025 12:55 PM
+What DV. test video? Is there any other besides the one I made?
+February 24, 2025
+[satdx62]
+.snikcers <@917488160580182068> I tried to use the Dolby Vision Video
+from your github to calibrate. However H...
+satdx62 02/24/2025 8:29 PM
+Hello, Yes, this video is indeed very difficult to calibrate. The
+minimum resolution in PicCap must be at least 1280x720, even if the
+frame rate then drops very sharply. If you want to calibrate HyperHDR
+internally, you should not switch on the LCH colour correction, as your
+TV will not be able to handle this. You need to test with different
+players, even if they are external. I also calibrated to the internal
+HyperHDR in the beginning, but you get the best results if you redirect
+the PicCap output to a Windows or Raspberry HyperHDR server.
+Unfortunately, there is no official DV test video for HyperHDR
+calibration yet, so you'll have to make do with this compiled footage
+for now.
+ 1
+.snikcers 02/24/2025 6:01 PM
+@satdx62 I tried to use the Dolby Vision Video from your github to
+calibrate. However Hyperion does not recognize any testframes. At least
+when I tried it 2 weeks ago.
+[satdx62]
+[] yolofant we do support different luna endpoints for detecting a
+dynamic range switch too and it might just de...
+satdx62 02/24/2025 1:38 PM
+That could be the cause. I think it would be a very good solution if
+@Awawa would actually build in a security mechanism to prevent the LUTs
+from reloading. Caching in hyperion-webos is also a good approach if the
+bug is fixed, as was the case with @Mumpitz I.
+[yolofant]
+yolofant 02/24/2025 12:37 PM
+we do support different luna endpoints for detecting a dynamic range
+switch too and it might just depend on which one is used
+02/24/2025 12:37 PM
+probably just a combination of different SoCs and webOS versions
+[satdx62]
+[] yolofant for instance, it would break if someone restarted hyperHDR
+satdx62 02/24/2025 12:35 PM
+@Yolofant Hello, I still don't understand why it works as it should for
+most users without LUT caching and not for some. For me, a new LUT is
+only searched for and loaded when I switch to a different content. For
+example, from HDR to SDR or vice versa. If I switch to channels or
+recordings from the same LUT range, the loaded LUT is retained and is
+not searched for again.
+February 23, 2025
+[astur3l]
+astur3l 02/23/2025 11:51 PM
+since i dont use ui capture, i just skip the api call when
+`luna://com.webos.service.videooutput/getStatus` have
+    {
+      video: {
+         connected: true // only true when there's video output (on my tv), so false with ui
+      ...
+      }
+    ...
+    }
+so i dont get constant switches e.g. when i press home  there's lot of
+sceneario where these callbacks invoked (like playing thumbnails in my
+browser :D)
+[astur3l]
+[] yolofant for instance, it would break if someone restarted hyperHDR
+astur3l 02/23/2025 11:48 PM
+i know, but it also does when there's no capture at all (service not
+running)
+[yolofant]
+yolofant 02/23/2025 11:43 PM
+for instance, it would break if someone restarted hyperHDR
+[yolofant]
+[] astur3l but Yolofant's patch should fix it, i kinda did the same few
+months ago
+yolofant 02/23/2025 11:42 PM
+I still am torn if this is the correct approach, as it relies that the
+cached version is also what hyperHDR is doing
+[mumpitz_i]
+[] yolofant I don't see a way to query the currently used LUT from the
+json-rpc API
+mumpitz_i 02/23/2025 10:15 PM
+You did it! Amazing. LUT is not reloaded anymore if I just switch
+between the tv channels. I only see such a message e.g. if I switch from
+tv to the fire tv stick because here I need a new LUT table to be
+loaded.
+[mumpitz_i]
+mumpitz_i 02/23/2025 9:59 PM
+Ah okay cool. I will try that as fast as possible and Report back.
+@satdx62 Nothing changed with your suggestions. The "found and loaded
+LUT file" line is visible 6 times for a single channel switch. (edited)
+[astur3l]
+astur3l 02/23/2025 9:56 PM
+but Yolofant's patch should fix it, i kinda did the same few months ago
+(edited)
+[astur3l]
+[] mumpitz_i
+https://drive.google.com/file/d/1kYL-VDDniOrKHaztTmctxQwHDYnNnpNW/view?usp=sharing
+I started both c...
+astur3l 02/23/2025 9:55 PM
+yeah, 2 videooutput + 1 picture event, so 3 api call for the same hdr
+type
+[mumpitz_i]
+[] satdx62 Have you ever tested with 192x108 and VSync switched on in
+PicCap? You should switch off ‘Quarter of...
+mumpitz_i 02/23/2025 9:48 PM
+The quarter frame was not activated. I will try the other two things you
+suggested.
+[mumpitz_i]
+[] astur3l sry, i mean keep running the luna query and try to switch
+channel to see how many times the callback...
+mumpitz_i 02/23/2025 9:47 PM
+https://drive.google.com/file/d/1kYL-VDDniOrKHaztTmctxQwHDYnNnpNW/view?usp=sharing
+I started both commands and switched the channel once for both cases
+from channel A to B (used same channels in both cases). Nothing more.
+[awawa_dev]
+[] astur3l what about including lut table filename in ``serverinfo`` (or
+as other command) in (json) rest api?
+awawa_dev 02/23/2025 8:52 PM
+custom luts are onfly for flatbuffers, this component is currently not
+asked by serverinfo creator, eventually must be read from flatbuffers
+setting from the different thread that creates serverinfo, serverinfo
+creation is already very heavy for the system due to necessary threads
+locking. (edited)
+ 2
+[astur3l]
+[] awawa_dev HyperHDR reloads the LUT only if it's directly asked to
+(for example via json api). Unfortunately fo...
+astur3l 02/23/2025 8:14 PM
+what about including lut table filename in `serverinfo` (or as other
+command) in (json) rest api?
+[awawa_dev]
+[] yolofant <@785543671021699092> what do you think, should we try
+caching the current LUT in hyperion-webos or ...
+awawa_dev 02/23/2025 7:40 PM
+HyperHDR reloads the LUT only if it's directly asked to (for example via
+json api). Unfortunately for next 1-2 weeks wont be able change anything
+in HyperHDR and add some "fuse" to prevent the reloads so the caching of
+requests is a good idea. In case of using HyperHDR via local unix
+sockets we can assume that each LUT reload command reached the json
+interface and was executed.
+[satdx62]
+[] mumpitz_i <@917488160580182068> Could it help to uninstall and
+reinstall everything again?
+satdx62 02/23/2025 5:58 PM
+Have you ever tested with 192x108 and VSync switched on in PicCap? You
+should switch off ‘Quarter of frame for NV12’ in HyperHDR under Network
+Services.
+[astur3l]
+[] mumpitz_i
+https://drive.google.com/file/d/1rCLfFL5_RVS6F9T6p9x7Wh9Rr7mIFV-Y/view?usp=sharing
+astur3l 02/23/2025 5:32 PM
+sry, i mean keep running the luna query and try to switch channel to see
+how many times the callback invoked and with which hdrtype -- for me
+caching sometimes kinda pointless because it switch to different hdrtype
+and switch back immediately
+[astur3l]
+[] yolofant I don't see a way to query the currently used LUT from the
+json-rpc API
+astur3l 02/23/2025 5:19 PM
+yeah, sadly even sysinfo doesnt include information about lut 
+[mumpitz_i]
+mumpitz_i 02/23/2025 5:02 PM
+@satdx62 Could it help to uninstall and reinstall everything again?
+[mumpitz_i]
+[] satdx62 The decompression and loading of the LUT only has to follow
+once per channel/area (SDR, HDR or DV). ...
+mumpitz_i 02/23/2025 5:00 PM
+(no content)
+[20250223_165958.jpg]
+ 20250223_165958.jpg
+5.59 MB External
+[20250223_165945.jpg]
+ 20250223_165945.jpg
+6.35 MB External
+[mumpitz_i]
+[] yolofant I don't see a way to query the currently used LUT from the
+json-rpc API
+mumpitz_i 02/23/2025 4:54 PM
+I will try to replace these files on my tv the next days and will give
+you an update.
+[mumpitz_i]
+[] astur3l check ```luna-send -i -f
+'luna://com.webos.service.videooutput/getStatus' '{"subscribe":true}'
+luna...
+mumpitz_i 02/23/2025 4:52 PM
+https://drive.google.com/file/d/1rCLfFL5_RVS6F9T6p9x7Wh9Rr7mIFV-Y/view?usp=sharing
+lg_log1.txt
+[yolofant]
+yolofant 02/23/2025 4:30 PM
+@Awawa what do you think, should we try caching the current LUT in
+hyperion-webos or is that better done in hyperHDR? Is the currently used
+LUT available from the json-rpc API so we don't have to rely on caching
+it inside a variable but rather querying the API instead?
+[yolofant]
+yolofant 02/23/2025 4:21 PM
+https://github.com/sundermann/hyperion-webos/actions/runs/13484339114/artifacts/2637387034
+here's a build with caching inside hyperion-webos
+02/23/2025 4:19 PM
+I don't see a way to query the currently used LUT from the json-rpc API
+[satdx62]
+[] yolofant hmm, so we could potentially cache it inside hyperion-webos
+satdx62 02/23/2025 3:54 PM
+I agree that caching in hyperion-webos is a good option.
+[astur3l]
+astur3l 02/23/2025 3:52 PM
+e.g. since i use internal player, if i just press home, it switch back
+to sdr.. or just the screensaver turns on 
+02/23/2025 3:50 PM
+sadly there's much more to handle in hyperion-webos if not.. like its
+pointless to do the switch if there's no capture running at all, but
+makes harder to keep tracking lut table..
+[yolofant]
+yolofant 02/23/2025 3:48 PM
+yeah, that is the other option
+[astur3l]
+astur3l 02/23/2025 3:47 PM
+would be nicer if hyperhdr just wont re-load if the filename is the same
+[yolofant]
+yolofant 02/23/2025 3:47 PM
+hmm, so we could potentially cache it inside hyperion-webos
+[astur3l]
+[] mumpitz_i But it seems that the uncompression of the compressed lut
+is done multiple times, which takes a lot ...
+astur3l 02/23/2025 3:46 PM
+check
+    luna-send -i -f 'luna://com.webos.service.videooutput/getStatus' '{"subscribe":true}'
+    luna-send -i -f 'luna://com.webos.settingsservice/getSystemSettings' '{"category":"picture", "subscribe":true}'
+(edited)
+[satdx62]
+[] mumpitz_i But it seems that the uncompression of the compressed lut
+is done multiple times, which takes a lot ...
+satdx62 02/23/2025 3:19 PM
+The decompression and loading of the LUT only has to follow once per
+channel/area (SDR, HDR or DV). Since decompression takes place in real
+time, it also takes time, and this is normal. However, as long as you do
+not switch to an HDR or Dolby DV channel and change a channel within the
+SDR range, HyperHDR should not repeat “Adding user LUT file for
+searching” and search, decompress and load the LUT again. Something is
+wrong with your setup. The behavior with “Adding user LUT file for
+searching” is the same if you use the uncompressed LUT and prove that
+something is wrong. What does the config.json in your PicCap look like?
+(edited)
+[mumpitz_i]
+mumpitz_i 02/23/2025 2:23 PM
+But it seems that the uncompression of the compressed lut is done
+multiple times, which takes a lot of time and waste a lot of cpu power
+(see the logfile on google drive). And i just talk about 1 channel
+switch which means i switch to the next channel and the compressed lut
+is decompressed 3-4 times. I would understand if it would be done once
+for each channel switch, but why multiple times?
+[astur3l]
+[] mumpitz_i I have some serious issues with the new piccap/HyperHDR and
+the compressed LUT tables which I have n...
+astur3l 02/23/2025 2:11 PM
+sadly, there's no way to retrieve the current user lut filename vis
+hyperhdr api, i just "cache" the latest filename and wont make api call
+if its the same
+[mumpitz_i]
+mumpitz_i 02/23/2025 1:56 AM
+I switched from compressed LUT to uncompressed but have similar
+problems:
+[IMG_1477.png]
+ IMG_1477.png
+1.82 MB External
+[mumpitz_i]
+mumpitz_i 02/23/2025 1:31 AM
+I have some serious issues with the new piccap/HyperHDR and the
+compressed LUT tables which I have never seen before. Every time I
+switch the channel on my tv, HyperHDR tries to load the compressed LUT
+multiple times. It looks like it crashes 2-3 times before it can be
+loaded. This means the ambilight goes off for 2-3s and on again after
+each channel switch. Does anybody know what I could do here?
+https://drive.google.com/file/d/1uGTrZg-H57gneO7ytz548VFYAUSyA2l-/view?usp=drive_link
+lg_log.txt
+February 21, 2025
+[tbsniller]
+tbsniller 02/21/2025 3:28 PM
+okay so very detailed. yeah, that you can access the tv shell is the
+only mandatory this worked in my attempt right now: open a shell session
+to your TV, so you can run commands open the autostart file with the
+command vi /var/lib/webosbrew/init.d/piccapautostart you should receive
+a text editor and the contents of this file in here you need to press a
+to go into edit mode of this text editor you can verify it if you see
+that - goes to I in the bottom line in the editor you can move with the
+arrow keys edit the contents of it so you have
+    #!/bin/bash
+    tail -F /var/log/messages | grep hyperion >> /tmp/hyperionwebos.log &
+    luna-send -n 1 -f luna://com.webos.service.config/setConfigs '{"configs": {"system.collectDevLogs": true}}' &
+    luna-send -n 1 -f luna://org.webosbrew.piccap.service/isRunning '{}'
+    PmLogCtl set '*' 'crit'
+    PmLogCtl set hyperion-webos 'debug'
+    exit 0
+when you have finished press one time ESC on your keyboard to exit edit
+mode. you will see that I goes back to - in bottom line. now you type
+:wq! to write the file to disk and quit the editor. you will also see
+the text in bottom line and then you hit enter. you can verify the file
+contents with the command cat /var/lib/webosbrew/init.d/piccapautostart
+after that reboot your tv with the command reboot and replicate your
+issue. your log file will lay at /tmp/hyperionwebos.log let me know if
+you do not know how to get this file on your computer. _____ its very
+important that you revert these changes when we are done with debugging
+your logs, otherwise the log file will get too big forcing you to
+restart the tv. simply do a
+cp /media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/piccapautostart /var/lib/webosbrew/init.d/piccapautostart
+to copy back the old autostart file
+[morphrnatus]
+morphrnatus 02/21/2025 1:52 PM
+And I don't know how about vi
+02/21/2025 1:52 PM
+Umm if you mean cli by shell then yes but I don't know specific commands
+[tbsniller]
+tbsniller 02/21/2025 1:37 PM
+do you know how to use the shell and vi?
+[morphrnatus]
+[] satdx62 1. you should also test with Quick Start+ deactivated. 2.
+activate ‘Disable powerstate check’ in th...
+morphrnatus 02/21/2025 1:35 PM
+Okay will try it But I like to keep QuickStart on as it allows me to
+access tv over network all the time without physically turning it on
+[morphrnatus]
+[] tbsniller think the real issue will be a bug but you may fix it with
+the delay. if you can gather the full ...
+morphrnatus 02/21/2025 1:34 PM
+Okay will share the full log Can you share the quick rundown on where to
+access the logs? Are they saved at a specific location?
+[tbsniller]
+[] morphrnatus Does that cause issues?
+tbsniller 02/21/2025 1:08 PM
+think the real issue will be a bug but you may fix it with the delay. if
+you can gather the full log output from the very start we should be able
+to fix it completly
+rippmaster 02/21/2025 12:31 PM
+(no content)
+[Screenshot_20250221_123030_Samsung_Internet.jpg]
+ Screenshot_20250221_123030_Samsung_Internet.jpg
+208.2 KB External
+02/21/2025 12:31 PM
+How do you combine acoustic panels with ambilight? Like this? Wer moving
+to a new homeg
+February 20, 2025
+[satdx62]
+[] morphrnatus Does that cause issues?
+satdx62 02/20/2025 4:36 PM
+1. you should also test with Quick Start+ deactivated. 2. activate
+‘Disable powerstate check’ in the PicCap Advanced Settings.
+[Disable_powerstate_check.png]
+ Disable_powerstate_check.png
+153.3 KB External
+[morphrnatus]
+morphrnatus 02/20/2025 4:07 PM
+Does that cause issues?
+[morphrnatus]
+[] tbsniller have you guys turned off QuickStart+? what is the first
+video source after you turn on your tv. or...
+morphrnatus 02/20/2025 4:07 PM
+No I have Always Ready & QuickStart+ on
+[tbsniller]
+tbsniller 02/20/2025 3:20 PM
+to delay start a bit you guys could try to add a delay to piccap startup
+sed -i 's/luna-send/sleep 20\nluna-send/g' /var/lib/webosbrew/init.d/piccapautostart
+this command will add a sleep 20 to the autostart file you can verify
+your file looks right with cat /var/lib/webosbrew/init.d/piccapautostart
+it should then look like
+    #!/bin/bash
+    sleep 20
+    luna-send -n 1 -f luna://org.webosbrew.piccap.service/isRunning '{}' &
+    exit 0
+[tbsniller]
+tbsniller 02/20/2025 3:08 PM
+have you guys turned off QuickStart+? what is the first video source
+after you turn on your tv. or is there none? seems like it is in a mixed
+state. video was for a short amount of time available but then
+disappeared. it normally happens directly after startup. usually we
+ignore this case as we do not come so far in vtCapture, when there is no
+video available. but in this mixed state we cannot and after some time
+it restarts the capture as it things video is available again would
+suspect if you start a yt video it will flicker once and then not again
+(edited)
+[morphrnatus]
+[] adg. Im having this issue, where when I start my TV, the leds like
+turn off and on every minute or so. If...
+morphrnatus 02/20/2025 1:43 PM
+Same issue for me
+[adg.]
+adg. 02/20/2025 12:39 PM
+Im having this issue, where when I start my TV, the leds like turn off
+and on every minute or so. If I disable the capture and reenable (using
+Piccap On/Off Remote) they work fine until next TV off. Any ideas?
+happens on 0.5.1 also (edited)
+[20250220_133652.jpg]
+ 20250220_133652.jpg
+4.49 MB External
+February 19, 2025
+[tbsniller]
+tbsniller 02/19/2025 10:49 PM
+alright set the latest tag to 0.5.1 there is a chance its available in
+homebrew store immediatly as the apps-repo action is running right now
+otherwise in around 3 hrs (edited)
+ 1  1
+[satdx62]
+[] tbsniller <@917488160580182068> is 0.5.1 tested and can be released
+to the store?
+satdx62 02/19/2025 8:01 PM
+Hello, Yes, I use it myself, and it has been successfully tested by
+several users and can be published in the homebrew channel without
+hesitation.
+ 1
+[tbsniller]
+tbsniller 02/19/2025 2:46 PM
+@satdx62 is 0.5.1 tested and can be released to the store?
+February 18, 2025
+[satdx62]
+rippmaster Good question. Well it works now atleast. What is force
+capture for?
+satdx62 02/18/2025 3:14 PM
+It is, although vaguely specified, but under certain circumstances you
+have to force the vtCapture to start video capture with the custom
+kernel module QUIRK_VTCAPTURE_FORCE_CAPTURE = 0x100 See:
+https://github.com/webosbrew/hyperion-webos#quirks
+GitHub - webosbrew/hyperion-webos: hyperion.ng video grabber for webOS
+hyperion.ng video grabber for webOS. Contribute to
+webosbrew/hyperion-webos development by creating an account on GitHub.
+[]
+ 1
+[] satdx62 Why should “Force Capture” be selected in the advanced
+settings? It has worked for them so far.
+rippmaster 02/18/2025 2:52 PM
+Good question. Well it works now atleast. What is force capture for?
+February 17, 2025
+[ogayylien]
+[] satdx62 Where does this information come from? This worked on older
+devices up to webOS 5.xx. On newer devic...
+ogayylien 02/17/2025 4:12 PM
+I think i must have read posts from users with old tvs then lol, thabks
+for the info
+[satdx62]
+[] ogayylien I was under the assumption i would need a external streamer
+like a fire tv stick
+satdx62 02/17/2025 3:56 PM
+Where does this information come from? This worked on older devices up
+to webOS 5.xx. On newer devices, it is no longer possible to capture
+DRM-protected apps. See instructions:
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#attention
+and: https://github.com/TBSniller/piccap#piccap
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+GitHub - TBSniller/piccap: PicCap - Hyperion Sender App | Ambilight...
+PicCap - Hyperion Sender App | Ambilight for LG WebOS TVs -
+TBSniller/piccap
+[]
+[ogayylien]
+ogayylien 02/17/2025 3:10 PM
+I was under the assumption i would need a external streamer like a fire
+tv stick
+02/17/2025 3:09 PM
+Does this version of ambilight work with built in Netflix ?
+02/17/2025 3:09 PM
+My friends I am reading different Infos it seems
+[satdx62]
+rippmaster My piccap wont capture if i dont tick "force capture" in
+advanced settings tho. Any tip on that?
+satdx62 02/17/2025 12:11 PM
+Why should “Force Capture” be selected in the advanced settings? It has
+worked for them so far.
+rippmaster 02/17/2025 12:06 PM
+My piccap wont capture if i dont tick "force capture" in advanced
+settings tho. Any tip on that?
+02/17/2025 12:05 PM
+Ok it worked after restart
+rippmaster 02/17/2025 11:57 AM
+My tv resets itself once half a year so i need to set it up often.
+Wanting the import file, to function
+02/17/2025 11:57 AM
+Trying to import a setup via hyperhdr and get thisw
+[20250217_115619.jpg]
+ 20250217_115619.jpg
+441.78 KB External
+February 16, 2025
+Deleted User 02/16/2025 7:33 PM
+Thank you both for all your help, I will try the new guide.
+[satdx62]
+Deleted User Got it, I must have followed the wrong guide then.
+satdx62 02/16/2025 7:18 PM
+Here is exactly what you need to
+do:https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[] satdx62 http://localhost:8090/#dashboard, is used when Hyperion is
+installed on your PC. You have said this ...
+Deleted User 02/16/2025 7:17 PM
+Got it, I must have followed the wrong guide then.
+[satdx62]
+Deleted User You're saying by entering http://localhost:8090/#dashboard
+on my PC browser I should be able to acce...
+satdx62 02/16/2025 7:16 PM
+http://localhost:8090/#dashboard, is used when Hyperion is installed on
+your PC. You have said this yourself, that only the system screen of the
+PC is recorded.
+https://discord.com/channels/407937994037919756/931706504627773450/1340720527689515130
+And yes, there are cases where Hyperion does not work on old webOS
+devices and therefore must be installed externally on PC / Raspberry Pi.
+(edited)
+[neeeeb]
+neeeeb 02/16/2025 7:15 PM
+to summarize : - put back 127.0.0.1 in Piccap as IP address - put back
+100 or 150 as priority in Piccap - check if HyperHDR is running, and
+autostart is enabled in the TV app - reboot the tv - go to your computer
+and enter http://x.x.x.x:8090 in your browser, where x.x.x.x must be
+replaced with your TV's IP address (edited)
+ 1
+[] neeeeb And, you also need to check if HyperHDR is running on the TV
+(by opening the app)
+Deleted User 02/16/2025 7:13 PM
+Yes, HyperHDR has been running on the TV at all times.
+[neeeeb]
+neeeeb 02/16/2025 7:13 PM
+otherwise you won't get anything
+02/16/2025 7:13 PM
+And, you also need to check if HyperHDR is running on the TV (by opening
+the app)
+02/16/2025 7:12 PM
+you have to put back 127.0.0.1 in Piccap also
+ 1
+Deleted User 02/16/2025 7:11 PM
+Ok, I will uninstall and try again because I swear I tried that before
+and got nothing so that's why I installed Hyperion. Standby.
+[neeeeb]
+neeeeb 02/16/2025 7:11 PM
+you'll get access to the HyperHDR configuration that is installed on the
+TV (edited)
+02/16/2025 7:11 PM
+but yes
+02/16/2025 7:11 PM
+"localhost"must be replaced by your TV's IP address
+Deleted User 02/16/2025 7:10 PM
+You're saying by entering http://localhost:8090/#dashboard on my PC
+browser I should be able to access settings, even without HyperHDR
+and/or Hyperion installed on the PC?
+02/16/2025 7:09 PM
+Yes, I have both PicCap and HyperHDR on the TV.
+[satdx62]
+Deleted User So I should uninstall Hyperion from the PC and install
+HyperHDR on the PC instead?
+satdx62 02/16/2025 7:09 PM
+This is a big misunderstanding here. PicCap and HyperHDR or Hyperion
+must run on the TV, and the configuration follows from the PC.
+[neeeeb]
+neeeeb 02/16/2025 7:08 PM
+you do not have to install anything on the computer (edited)
+Deleted User 02/16/2025 7:08 PM
+So I should uninstall Hyperion from the PC and install HyperHDR on the
+PC instead?
+ 1
+[neeeeb]
+neeeeb 02/16/2025 7:07 PM
+it is somekind of remote access
+02/16/2025 7:07 PM
+but no need to install hyperion on the computer
+02/16/2025 7:07 PM
+you access the HyperHDR configuration that is installed on your TV, from
+your web browser on your computer
+Deleted User 02/16/2025 7:07 PM
+To clarify I'm using a rooted LG C1, a Phillips Hue bridge and Phillips
+Hue Lighstrip, and using a shitty Surface tablet as a PC.
+02/16/2025 7:06 PM
+Isn't that how you configure everything? With Hyperion on the PC? Or can
+it be done on the TV only?
+[neeeeb]
+neeeeb 02/16/2025 7:06 PM
+what for ?
+ 1
+02/16/2025 7:06 PM
+but you said you installed hyperion on your PC (edited)
+[neeeeb]
+Deleted User Lol the tutorial I followed said to install both Piccap and
+HyperHDR on the TV. Is that incorrect ?
+neeeeb 02/16/2025 7:06 PM
+it is correct
+Deleted User 02/16/2025 7:05 PM
+Lol the tutorial I followed said to install both Piccap and HyperHDR on
+the TV. Is that incorrect ?
+[satdx62]
+Deleted User I do have HyperHDR installed on the TV.
+satdx62 02/16/2025 7:05 PM
+And why do they use their PC all the time?
+[neeeeb]
+neeeeb 02/16/2025 7:05 PM
+what the...
+[] neeeeb Also, why not installing HyperHDR directly on the TV
+Deleted User 02/16/2025 7:04 PM
+I do have HyperHDR installed on the TV.
+ 1
+[satdx62]
+[] neeeeb you should set back priority to 150 in Piccap for starter
+satdx62 02/16/2025 7:03 PM
+Yes, 150 or 100 must be entered.
+[neeeeb]
+neeeeb 02/16/2025 7:03 PM
+Also, why not installing HyperHDR directly on the TV
+02/16/2025 7:02 PM
+everything can go "over" it with that priority
+02/16/2025 7:02 PM
+250 is too high
+02/16/2025 7:02 PM
+you should set back priority to 150 in Piccap for starter
+[satdx62]
+Deleted User lol I'm paranoid
+satdx62 02/16/2025 7:02 PM
+Then you must post Hyperion log, in the form of .txt, after you have
+restarted the TV and 1 minute has been recorded in Hyperion.
+[grafik.png]
+ grafik.png
+157.08 KB External
+Deleted User 02/16/2025 7:00 PM
+lol I'm paranoid
+[neeeeb]
+neeeeb 02/16/2025 6:59 PM
+We won't do much with a local IP Address you know ^^
+Deleted User 02/16/2025 6:59 PM
+Resending with IP blacked out.
+[IMG_0874.jpg]
+ IMG_0874.jpg
+181.01 KB External
+[IMG_0873.jpg]
+ IMG_0873.jpg
+1.41 MB External
+[] satdx62 That's okay, did you save and restart/reboot after changing
+the IP address in PicCap?
+Deleted User 02/16/2025 6:57 PM
+Yes, a few times because it said "Video not capturing" but eventually it
+started capturing.
+[satdx62]
+Deleted User "State: Status info refreshed | Receiver: Connected | Ul:
+Capturing with libhalgal_backend.so | Vide...
+satdx62 02/16/2025 6:56 PM
+That's okay, did you save and restart/reboot after changing the IP
+address in PicCap?
+Deleted User 02/16/2025 6:55 PM
+"State: Status info refreshed | Receiver: Connected | Ul: Capturing with
+libhalgal_backend.so | Video: Capturing with libvtcapture_backend.so /
+FPS: 40.00"
+[satdx62]
+Deleted User Click to see attachment
+satdx62 02/16/2025 6:53 PM
+What does PicCap say in the bottom bar?
+[PicCap_Service_Settings.jpg]
+ PicCap_Service_Settings.jpg
+98.68 KB External
+Deleted User 02/16/2025 6:51 PM
+Sorry, I'll open Discord on my PC so screenshots are better.
+02/16/2025 6:51 PM
+(no content)
+[2A7E5A9E-572C-4B10-ACF4-78AB579E78F3.jpg]
+ 2A7E5A9E-572C-4B10-ACF4-78AB579E78F3.jpg
+968.75 KB External
+[] satdx62 Okay, what does it say under remote control in ‘Source
+selection’?
+Deleted User 02/16/2025 6:50 PM
+Nothing, totally blank.
+[satdx62]
+Deleted User Ok, my dashboard looks exactly like your screenshot except
+the USB capture stuff but in Remote Cont...
+satdx62 02/16/2025 6:50 PM
+Okay, what does it say under remote control in ‘Source selection’?
+Deleted User 02/16/2025 6:44 PM
+Ok, my dashboard looks exactly like your screenshot except the USB
+capture stuff but in Remote Control, there is not a "Capture Screen"
+option under Components Control.
+[satdx62]
+Deleted User On my PC then do I put 127.0.0.1:8090 or my
+TVIPaddress:8090 when configuring Hyperion?
+satdx62 02/16/2025 6:42 PM
+http://localhost:8090/#dashboard
+Deleted User 02/16/2025 6:40 PM
+On my PC then do I put 127.0.0.1:8090 or my TVIPaddress:8090 when
+configuring Hyperion?
+[] satdx62 I have assumed that you have entered the correct IP address
+for your PC. However, no system screen c...
+Deleted User 02/16/2025 6:39 PM
+Ok, I changed the IP address in Piccap to my PC's IP address.

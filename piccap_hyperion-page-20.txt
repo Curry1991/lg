@@ -1,0 +1,2099 @@
+March 12, 2023
+[] astur3l
+https://discord.com/channels/407937994037919756/931706504627773450/1084527982397378702
+i had the sam...
+joekri 03/12/2023 11:22 PM
+which workaround? Didn't happen to me on 0.4.2 (edited)
+[astur3l]
+joekri Click to see attachment
+astur3l 03/12/2023 10:35 PM
+https://discord.com/channels/407937994037919756/931706504627773450/1084527982397378702
+i had the same issue, using that "workaround" for months since i told
+here without issues (edited)
+joekri 03/12/2023 10:21 PM
+(no content)
+ hyplog.txt
+15.38 KB External
+[] tbsniller ah I see. 1. so actually hyperion-webos detects if HDR
+content is played or not and if, it will tell...
+joekri 03/12/2023 10:21 PM
+Thanks for answering: 1) Yep there is a setting for HyperHDR to activate
+see screenshot. Disabled the HDR content detection in piccap and it
+seems to work now for me. 2) Tried to reproduce it and found something:
+TV boots; is set to HDMI with a not switched on device; "No Signal
+Wallpapers" are shown; HyperHDR starts (seen on the bootup effect); LEDs
+render the Wallpapers correct; THEN i press the HomeButton --> Menu
+appears and is also rendered via LEDs but not anymore the Wallpaper; I
+captured all in the attached logfile including settings etc.
+[image.png]
+ image.png
+92.92 KB External
+[tbsniller]
+joekri I‘m pretty sure those a two different problems. 1) just wanted to
+ask how to configure hyperhdr/pic...
+tbsniller 03/12/2023 8:19 PM
+ah I see. 1. so actually hyperion-webos detects if HDR content is played
+or not and if, it will tell HyperHDR to activate HDR LUT. This detection
+can be disabled using the advanced option. currently on hyperion-webos
+side, there is no option to forcefully enable HDR LUT also if SDR
+content is played. Maybe there is a option in HyperHDR webinterface,
+which enables HDR LUT all the time? Idk, unfortunately I'm not very into
+HyperHDR to know that 2. Which capture backend are you using? Yes there
+are multiple ways to collect logs. Maybe start by hitting the setup logs
+button in piccap logs tab. then open hyperion-webos tab on this log
+page, then hit the load last 200 lines button and you should get some
+logs. you should do this if your black image problem is in place
+[m.ksy]
+m.ksy 03/12/2023 7:31 PM
+@TBSniller thanks for new release, it fixed my issue
+https://github.com/webosbrew/hyperion-webos/issues/81
+Broken image in captured stream after turn on · Issue #81 · webosbr...
+After turn on TV i&#39;m getting this dynamic captured pictures: PicCap
+0.3.0 quick start enabled this commands: luna-send -n 1
+&#39;luna://org.webosbrew.piccap.service/stop&#39; &#...
+[]
+ 2
+joekri 03/12/2023 7:31 PM
+Is it possible to capture the log via ssh for
+hyperhdr/hyperion-webos/piccap?
+[] tbsniller is it possible that you are talking about two different
+problems?
+joekri 03/12/2023 7:27 PM
+I‘m pretty sure those a two different problems. 1) just wanted to ask
+how to configure hyperhdr/piccap to force HDR LUT in HyperHDR 2) when
+testing with the new version, it happens that video capturing is
+sometimes not sending a picture after the tv restarts
+[tbsniller]
+joekri I don‘t get it. I always rebooted the tv after changing the
+settings. If i switch on „Disable SDR/HD...
+tbsniller 03/12/2023 7:05 PM
+is it possible that you are talking about two different problems?
+hellobox. 03/12/2023 7:03 PM
+don't worry about it; there are a bunch of headers i think i've seen
+somewhere that i can't find now
+ 1
+[tbsniller]
+hellobox. always interested in adding to my lg header collection
+tbsniller 03/12/2023 7:01 PM
+I'm really sorry I can't find them. I was pretty sure that there was
+something related to it. Only found libkadapter source which controls
+the interface and the parts of the source for v4l cap interface itself,
+but nothing really related to vtCapture lib. I was also pretty sure to
+have seen the source for the vtCaptureTestSuite, but idk, also don't
+have my old files anymore.. Maybe I also was misleading something and
+don't remember correctly @Yolofant you also had some source files, but
+these also only were the v4l ones, right?
+[astur3l]
+astur3l 03/12/2023 6:27 PM
+black frame = invalid frame captured , probably vtcapture throws some
+error, which you need to debug (check logs it probably flooded with
+vtCapture_currentCaptureBuffInfo() failed... some error code
+(hopefully), so it could be added to trigger restart video capture
+(edited)
+[] tbsniller can you try to hit the full service restart under logs tab
+and check again? or just reboot tv after ...
+joekri 03/12/2023 5:40 PM
+I don‘t get it. I always rebooted the tv after changing the settings. If
+i switch on „Disable SDR/HDR Switching in HyperHDR“ sometimes it will
+always stay on in HyperHDR sometimes it always stays off even if i
+switched it on in Flatbuffer Server in HyperHDR. If i switch off
+„Disable SDR/HDR …“ it switches depending on the Content. The other
+thing is. Very often after turning on the TV (which is set to HDMI but
+the device is switched off —> so Wallpaper Screensaver is shown) only
+the screengrabbing is working for the menues etc. If i open Youtube App
+(homebrew edition) and play a video, HyperHDR only receives a black
+picture for the video. Restarting Service in Piccap app or just
+switching via Piccap On/Off Remote app, it works. sometimes it works
+right after startup.
+[tbsniller]
+tbsniller 03/12/2023 5:35 PM
+you can cross compile v4l control to query, or build your "own"
+vtCapture, they are using the ioctls from here
+https://www.kernel.org/doc/html/v5.0/media/uapi/v4l/dev-capture.html
+[astur3l]
+astur3l 03/12/2023 5:32 PM
+yeah just i dont know its capabilities 
+[tbsniller]
+[] astur3l i thought its maybe possible to even apply tonemapping via
+capture proprties? or playing with the PQ...
+tbsniller 03/12/2023 5:31 PM
+at the end vtCapture just controls a created v4l interface, so you
+should be able to control everything the driver is capable of, think it
+was /dev/video60 or 70
+[astur3l]
+astur3l 03/12/2023 5:29 PM
+i thought its maybe possible to even apply tonemapping via capture
+proprties? or playing with the PQ filters (edited)
+[tbsniller]
+hellobox. always interested in adding to my lg header collection
+tbsniller 03/12/2023 5:28 PM
+will search it
+[tbsniller]
+[] astur3l btw <@430448040080572424> i found there's
+``vtCapture_createEx`` but on my tv it doesnt have differe...
+tbsniller 03/12/2023 5:28 PM
+there is some difference in permission handling and behaviour when it
+gets started again after TV suspension
+hellobox. 03/12/2023 5:26 PM
+always interested in adding to my lg header collection
+[tbsniller]
+hellobox. so you found lg's vtcapture headers?
+tbsniller 03/12/2023 5:26 PM
+not all but most of them yes
+[astur3l]
+astur3l 03/12/2023 5:26 PM
+i saw in my kernel sources that you can pass filters to vtc too like
+deinterlace etc.. (edited)
+[tbsniller]
+tbsniller 03/12/2023 5:26 PM
+I can search it if you are interested
+[] tbsniller at least the ones I needed in regards of vtCapture
+hellobox. 03/12/2023 5:26 PM
+so you found lg's vtcapture headers?
+[astur3l]
+astur3l 03/12/2023 5:26 PM
+btw @TBSniller i found there's
+`vtCapture_createEx but on my tv it doesnt have difference between vtCapture_create`
+[tbsniller]
+tbsniller 03/12/2023 5:25 PM
+they also not include it for every TV and in every version of them,
+feels like it was a mistake
+hellobox. 03/12/2023 5:25 PM
+i don't have vtcapture headers
+[tbsniller]
+tbsniller 03/12/2023 5:24 PM
+at least the ones I needed in regards of vtCapture
+[] tbsniller after investing hours and weeks of work in getting it
+running, I ve got the info that they upload th...
+hellobox. 03/12/2023 5:24 PM
+not all of them
+[tbsniller]
+tbsniller 03/12/2023 5:24 PM
+after investing hours and weeks of work in getting it running, I ve got
+the info that they upload their headers in their source code which is
+downloadable at lg
+[astur3l]
+astur3l 03/12/2023 5:24 PM
+https://github.com/webosbrew/tv-native-apis/tree/main/libvtcapture
+@hellobox
+tv-native-apis/libvtcapture at main · webosbrew/tv-native-apis
+Headers and API stubs not included in OSE. Contribute to
+webosbrew/tv-native-apis development by creating an account on GitHub.
+[]
+03/12/2023 5:23 PM
+its in the tv-apis-header or something like that repo
+hellobox. 03/12/2023 5:23 PM
+and does it actually throw exceptions that propagate back to the caller?
+[astur3l]
+astur3l 03/12/2023 5:23 PM
+infoswiki or tbsniller reverse engineered imho
+hellobox. 03/12/2023 5:22 PM
+where'd you get the header?
+[astur3l]
+astur3l 03/12/2023 5:22 PM
+yeah
+hellobox. 03/12/2023 5:22 PM
+looks like it
+03/12/2023 5:22 PM
+is vtcapture an lg thing?
+[astur3l]
+astur3l 03/12/2023 5:20 PM
+in theory yo could adjust any image processing value (according to
+picture mode), but i implemented only float type in hyperion-webos (it
+could be futher extend to more types /not sure if its ever needed.. /
+tho just im shit at pure c) (edited)
+[astur3l]
+[] tbsniller then I will add it, seems to be easier you might just make
+it pr ready and create a draft pr for tha...
+astur3l 03/12/2023 5:12 PM
+ty, just im not really good a c, so i did as i could  maybe there's a
+better way to do it, i dont mind refactoring suggestion tho  just i
+havent googled for hours how to do as best, i could give my react
+implementatio too , btw hyperion adjustmentst just basic rpc requesting
+according to current picture mode
+    export interface IHyperionConfig {
+        enabled: boolean;
+        adjustments: Record<string, Record<string, number>>
+    }
+    export interface IConfig {
+        backend: string;
+        uibackend: string;
+        novideo: boolean;
+        nogui: boolean;
+        address: string;
+        port: number;
+        priority: number;
+        fps: number;
+        width: number;
+        height: number;
+        quirks: number;
+        vsync: boolean;
+        autostart: boolean;
+        unix_socket?: boolean;
+        hyperion: IHyperionConfig;
+        "lut-table"?: string;
+        notifications?: boolean;
+        process_priority?: number;
+        included_apps: string[];
+        excluded_apps: string[];
+    }
+    export const defaultConfig: IConfig = {
+        backend: "auto",
+        uibackend: "auto",
+        novideo: false,
+        nogui: false,
+        address: "127.0.0.1",
+        port: 19400,
+        priority: 100,
+        fps: 60,
+        width: 320,
+        height: 180,
+        quirks: 0,
+        vsync: true,
+        autostart: true,
+        hyperion: {
+            enabled: false,
+            adjustments: {
+                "hdr": defaultHyperionAdjustment,
+                "sdr": defaultHyperionAdjustment,
+                //"DolbyVision": defaultHyperionAdjustment,
+                //"HDR10": defaultHyperionAdjustment,
+            }
+        },
+        included_apps: [], //["com.webos.app.mediadiscovery", "youtube.leanback.v4"],
+        excluded_apps: [],
+        process_priority: 0,
+        notifications: false,
+        "unix_socket": true
+    };
+    export const defaultHyperionAdjustment = {
+        brightnessGain: 1.0,
+        saturationGain: 1.0,
+    }
+[tbsniller]
+[] tbsniller then I will add it, seems to be easier you might just make
+it pr ready and create a draft pr for tha...
+tbsniller 03/12/2023 5:08 PM
+nvm you already created pr nice haha
+[tbsniller]
+joekri Tested now the Prerelese 0.4.3 on my LGOLEDCX3 Software Version
+04.40.70 WebOS 5.4.2-25. What i don‘...
+tbsniller 03/12/2023 5:06 PM
+can you try to hit the full service restart under logs tab and check
+again? or just reboot tv after disabling the setting I think a service
+restart is required to take affect of these two options
+[] tbsniller ive created a new release for version 0.4.3
+https://github.com/TBSniller/piccap/releases/tag/0.4.3 w...
+joekri 03/12/2023 5:05 PM
+Tested now the Prerelese 0.4.3 on my LGOLEDCX3 Software Version 04.40.70
+WebOS 5.4.2-25. What i don‘t get: if i disable automatic SDR/HDR
+switching hyperhdr then always stays at hdr off but i configured it
+under flatbuffer to enable HDR LUT?
+[tbsniller]
+[] astur3l im fine with both solution  which would you prefer?
+probably it would be faster if u push yourself...
+tbsniller 03/12/2023 5:05 PM
+then I will add it, seems to be easier you might just make it pr ready
+and create a draft pr for that, I think @infowski and @ztuxnet will also
+want to add their two cents - please also describe what exactly this is
+for, currently I'm not 100% sure 
+rembihnutur Hey <@430448040080572424> nice to see you back  Are there
+any plans to include the feature from t...
+pho9574 03/12/2023 2:44 PM
+thats cool wasnt aware this existed, we need this 
+[astur3l]
+[] tbsniller nice finding, I remember back that I have tested some
+values but none were working except for 2 whic...
+astur3l 03/12/2023 2:31 PM
+im fine with both solution  which would you prefer? probably it would
+be faster if u push yourself such a small change (my branches highly
+diverged from upstream atm) btw i have other changes what i would like
+to get merged into upstream
+https://github.com/asturel/hyperion-webos/blob/dev2/src/settings.h#L41
+(hyperion adjustments + excluded/included app -- without explicit
+configuration/setting it doesnt affect the current behaviour), but im
+not sure, would it accepted without the relevant ui additions? or would
+be kind and make the gui part?:D
+[tbsniller]
+rembihnutur Hey <@430448040080572424> nice to see you back  Are there
+any plans to include the feature from t...
+tbsniller 03/12/2023 2:01 PM
+nice finding, I remember back that I have tested some values but none
+were working except for 2 which also was defined in the capture routine
+if @asturel don't want to create a pr I will add this quirk later
+[infowski]
+infowski 03/12/2023 10:57 AM
+Fairly trivial though.
+[infowski]
+rembihnutur Hey <@430448040080572424> nice to see you back  Are there
+any plans to include the feature from t...
+infowski 03/12/2023 10:57 AM
+It's only up to @asturel to upstream these changes :p
+rembihnutur 03/12/2023 10:20 AM
+Hey @TBSniller nice to see you back  Are there any plans to include
+the feature from this alternative backend in the official release? It’s
+a small change discovered by yolofant. With this the video capture is a
+couple frames ahead of the output on the TV, So it’s possible to have 0
+delay and a 100% match of lights and tv image. I've been using this for
+about two months and it's great. Would be nice to have this feature
+included in piccap as a quirk or something you can turn on/off. I think
+this is huge and brings us much closer to the real ambilight.
+https://github.com/asturel/hyperion-webos/commit/868cbb36429aa855dc4cb9c2a4a56bae9bb6d2b7
+https://discord.com/channels/407937994037919756/931706504627773450/1040241556084510760
+(edited)
+vtc: add dump loc 1 quirk · asturel/hyperion-webos@868cbb3
+[]
+[satdx62]
+[] tbsniller ive created a new release for version 0.4.3
+https://github.com/TBSniller/piccap/releases/tag/0.4.3 w...
+satdx62 03/12/2023 9:39 AM
+Hello, on my WebOS version: 3.9.0, with firmware version: 06.00.25 runs
+the new PicCap version 0.4.3 perfectly. Also booting and after reboot
+everything is fine. The new functions “disable automatic HDR and
+powerstate switching” also work so far. Will test for a while and report
+back.
+ 1
+[tbsniller]
+tbsniller 03/12/2023 1:28 AM
+on mine too 
+[infowski]
+infowski 03/12/2023 1:27 AM
+it seemed to work pretty well on mine.
+03/12/2023 1:27 AM
+Yeah, wondering how many platforms will that change actually break in
+the end, lol.
+ 1
+[tbsniller]
+tbsniller 03/12/2023 1:27 AM
+ive created a new release for version 0.4.3
+https://github.com/TBSniller/piccap/releases/tag/0.4.3 would be nice if
+some others can test this, before releasing to hbchannel would also be
+nice to know how start/stop und rebooting on webos 3/4 tvs behaves after
+@infowski's changes
+Release org.webosbrew.piccap_0.4.3 · TBSniller/piccap
+PicCap Added GUI option for local socket support: #55 (@TBSniller) Added
+GUI option to disable powerstate checks (ex. no turn off on screensaver
+or TV suspension): #67 (@TBSniller) Added GUI optio...
+[]
+ 2
+March 11, 2023
+[satdx62]
+jvodan. My lights are no longer working with chromecast. It works on tv
+besides the drm content. Any ideas w...
+satdx62 03/11/2023 11:44 AM
+Can you test from another HDMI source, with DRM content? Normally the
+HDMI sources should work, like Apple TV or Nvidia Shield, FireTV set-top
+boxes and so on. I have no experience with Chromecast.
+jvodan. 03/11/2023 2:32 AM
+My lights are no longer working with chromecast. It works on tv besides
+the drm content. Any ideas what it could be?
+March 10, 2023
+_nurikk_ 03/10/2023 1:29 PM
+nope, it's powered from 3.3, so it's just shift register then)
+hellobox. from the ft4232h datasheet
+_nurikk_ 03/10/2023 1:28 PM
+yes  dedicated level shifter to drive status leds. fun fact is that
+all this leds are constantly ON  I guess there's also wiring mistake,
+but I don't care about this
+hellobox. 03/10/2023 1:22 PM
+from the ft4232h datasheet
+[image.png]
+ image.png
+47.04 KB External
+03/10/2023 1:22 PM
+lol is that a 74hc595?
+hellobox. 03/10/2023 1:11 PM
+or ft2232h
+hellobox. ft4232h?
+_nurikk_ 03/10/2023 1:11 PM
+ft2232h
+_nurikk_ What a piece of crap this breakout board! It doesn’t work until
+you short two resistors and it also ...
+hellobox. 03/10/2023 1:11 PM
+ft4232h?
+_nurikk_ 03/10/2023 1:05 PM
+What a piece of crap this breakout board! It doesn’t work until you
+short two resistors and it also needs wiring vcc and vio lines. But it
+works after modding
+[IMG_3823.jpg]
+ IMG_3823.jpg
+1.54 MB External
+March 9, 2023
+[astur3l]
+fietspomp86 Never seen that option, will play around with it thanks. Any
+recommendations for reduced pixel proce...
+astur3l 03/09/2023 10:39 PM
+Reduced pixel processing (like sparse process, but more levels. than
+yes/no) The number of pixel evaluated are reduced as input. So, if you
+have a huge LED area, you might want setting this to High. High will
+just consider every 4th pixel (low = 2, medium= 3). Reducing pixel which
+are anyway "equal" next to each other might be good in combination with
+a higher accuracy on dominant colors
+ 1
+fietspomp86 03/09/2023 10:39 PM
+Never seen that option, will play around with it thanks. Any
+recommendations for reduced pixel processing?
+[astur3l]
+fietspomp86 Where is that?
+astur3l 03/09/2023 10:36 PM
+image processing (edited)
+[] astur3l try dominant led color led area assignment for single led
+device
+fietspomp86 03/09/2023 10:36 PM
+Where is that?
+[astur3l]
+fietspomp86 Looks pretty good though
+astur3l 03/09/2023 10:34 PM
+try dominant led color led area assignment for single led device
+(edited)
+[] astur3l
+<https://github.com/asturel/hyperion.ng-webos-loader/actions/runs/4378077020>
+newer Hyperion
+fietspomp86 03/09/2023 10:27 PM
+Just installed, works fine as well. Thanks
+fietspomp86 03/09/2023 10:06 PM
+Looks pretty good though
+[rn_image_picker_lib_temp_aad2bed1-7551-4f24-b120-819edbb598ac.jpg]
+ rn_image_picker_lib_temp_aad2bed1-7551-4f24-b120-819edbb598ac.jpg
+542.65 KB External
+03/09/2023 10:04 PM
+Before I had connected the Lightberry directly to htpc, I do have a
+feeling there is some lag via the TV itself but I'm not sure
+[astur3l]
+fietspomp86 Yes and effects too
+astur3l 03/09/2023 10:04 PM
+https://github.com/asturel/hyperion.ng-webos-loader/actions/runs/4378077020
+newer Hyperion
+[] astur3l and works too?
+fietspomp86 03/09/2023 10:02 PM
+Yes and effects too
+ 1
+[astur3l]
+fietspomp86 Ok well anyway despite the error it still installed
+astur3l 03/09/2023 10:02 PM
+and works too?
+[] satdx62 There was a Device Manager version that made exactly these
+errors. With an older version like V1.8.2...
+fietspomp86 03/09/2023 8:18 PM
+Ok well anyway despite the error it still installed
+[satdx62]
+fietspomp86 OK uninstalled homebrew version, rebooted and installed your
+version. Showed "failed to install", ev...
+satdx62 03/09/2023 8:17 PM
+There was a Device Manager version that made exactly these errors. With
+an older version like V1.8.2 can be installed without problems. Have
+just tested.
+fietspomp86 03/09/2023 7:40 PM
+OK uninstalled homebrew version, rebooted and installed your version.
+Showed "failed to install", even so it does work 
+[] astur3l you can try my build which have enabled
+<https://github.com/asturel/hyperion.ng-webos-loader/release...
+fietspomp86 03/09/2023 7:08 PM
+I will, thanks! I can install from pc with web os manager thingy?
+[astur3l]
+fietspomp86 Hey Guus, started using piccap and Hyperion.ng on my rooted
+GX, works great with my lightberry conne...
+astur3l 03/09/2023 6:54 PM
+you can try my build which have enabled
+https://github.com/asturel/hyperion.ng-webos-loader/releases/download/latest/org.webosbrew.hyperion.ng.loader_0.1.8_all.ipk
+fietspomp86 03/09/2023 5:13 PM
+Hey Guus, started using piccap and Hyperion.ng on my rooted GX, works
+great with my lightberry connected directly to TV. Only thing I miss are
+the effects? They're not included in the homebrew build of Hyperion? Any
+way to add these?
+[satdx62]
+satdx62 03/09/2023 2:36 PM
+There is a discrepancy between the logic level of the data line of ESP,
+here 3.3 volts, and the operating voltage of the LEDs, which usually
+work with 5 volts.
+hellobox. i would be interested in finding out the relationship between
+temperature and threshold voltage
+_nurikk_ 03/09/2023 1:41 PM
+I highly doubt that it will be that much difference, my leds don’t heat
+up very much. But yes, it will be interesting research:)
+hellobox. 03/09/2023 1:39 PM
+i would be interested in finding out the relationship between
+temperature and threshold voltage
+[satdx62]
+_nurikk_ Don’t fall into curse of knowledge. If for you it takes a few
+minutes, doesn’t mean that others can ...
+satdx62 03/09/2023 1:37 PM
+Okay, you're right, you have to be able to work with a soldering iron,
+but if you take a closer look at the circuit and understand what should
+be connected to what, it's not that complicated. Maybe I will make a
+video in time and put it on YouTube.
+[] satdx62 Yeah, I think it's funny too. A level shifter can be put
+together in a few minutes without much elec...
+_nurikk_ 03/09/2023 1:31 PM
+Don’t fall into curse of knowledge. If for you it takes a few minutes,
+doesn’t mean that others can do that as well:)
+ 1
+[satdx62]
+hellobox. i just think it's funny that people who are willing to create
+a DIY lighting solution that involves ...
+satdx62 03/09/2023 1:27 PM
+Yeah, I think it's funny too. A level shifter can be put together in a
+few minutes without much electronic knowledge, and the cost is not worth
+the excuse.
+hellobox. 03/09/2023 1:22 PM
+i just think it's funny that people who are willing to create a DIY
+lighting solution that involves rooting their tv, installing and
+configuring a bunch of software, and assembling all the other hardware
+draw the line at a single <$1 IC that will substantially improve
+reliability (edited)
+ 1
+03/09/2023 1:20 PM
+like temperature
+03/09/2023 1:20 PM
+what about other factors?
+03/09/2023 1:20 PM
+you've already said that load affects the threshold
+03/09/2023 1:18 PM
+once it's set up, you don't need to do anything
+03/09/2023 1:18 PM
+and it's a single part
+03/09/2023 1:18 PM
+that's not proof
+hellobox. why do people try so hard to avoid using a level shifter?
+_nurikk_ 03/09/2023 1:17 PM
+Complexity:) if it’s mostly works, why overcomplicate things?)
+especially if you don’t have solid proof that you need level shifter
+(and now you have) 
+hellobox. 03/09/2023 1:14 PM
+why do people try so hard to avoid using a level shifter?
+_nurikk_ I developed an ultimate test, do you need a level shifter or
+not!  here's the test: 1) Go to hype...
+_nurikk_ 03/09/2023 1:13 PM
+Interesting how this test is working. When you have lights on then your
+vcc voltage drops to somewhere below 5v (depends on your psu quality)
+and logic level threshold drops from 3.5v to somewhere around 3.3 and
+led mostly work fine. Problem starts when you have dimmed scene and not
+all leds lit up and your vcc voltage stays around 5v and logic level
+threshold is 3.5v and you have glitches
+[] satdx62 May I recommend your how-to guide to other people who are not
+active here on board.
+_nurikk_ 03/09/2023 12:49 PM
+You can distribute all information, it’s applicable for all users
+[satdx62]
+_nurikk_ Wha do you mean “pass in your instructions”?
+satdx62 03/09/2023 12:33 PM
+May I recommend your how-to guide to other people who are not active
+here on board. (edited)
+[] satdx62 Seems to work, your test. Tested with my WT ETH01 board with
+level shifter and with a simple ESP32 w...
+_nurikk_ 03/09/2023 12:17 PM
+Wha do you mean “pass in your instructions”?
+[satdx62]
+_nurikk_ I developed an ultimate test, do you need a level shifter or
+not!  here's the test: 1) Go to hype...
+satdx62 03/09/2023 12:15 PM
+Seems to work, your test. Tested with my WT ETH01 board with level
+shifter and with a simple ESP32 without level shifter, and lo and
+behold, that ESP32 without level shifter flashed. Can I pass on your
+instructions?
+_nurikk_ 03/09/2023 2:15 AM
+I developed an ultimate test, do you need a level shifter or not! 
+here's the test: 1) Go to hyper**** web, remote control 2) Select black
+colour 0,0,0 (your ambilight will go off) 3) Start clicking on that
+spinny icon on the right (refresh colour) 4) If your led does blinky
+blinky with random colours I have bad news for you ¯\_(ツ)_/¯ let me
+know if test worked for you
+[Screenshot_2023-03-09_at_01.05.16.png]
+ Screenshot_2023-03-09_at_01.05.16.png
+32.54 KB External
+ 2
+hellobox. 03/09/2023 1:54 AM
+i should round up the drivers i've compiled and put them on github or
+something
+[] luxary Alright got, I'll look into it then. Gotta go for now, but
+thank you immensely for your time anyway....
+hellobox. 03/09/2023 1:53 AM
+check dmesg for any errors. if you do the loopback thing, you can rule
+out a bunch of potential problems (edited)
+[astur3l]
+astur3l 03/09/2023 1:52 AM
+i thought youre compiling from external src  i didnt know that it have
+official kernel support  (edited)
+hellobox. 03/09/2023 1:52 AM
+i think it does
+03/09/2023 1:51 AM
+i guess i should have checked whether it supports ch340g
+[] astur3l from which source did u compile this? seems not from
+https://github.com/WCHSoftGroup/ch341ser_linux ...
+hellobox. 03/09/2023 1:51 AM
+no, i used the built in kernel one
+[astur3l]
+hellobox. Click to see attachment
+astur3l 03/09/2023 1:51 AM
+from which source did u compile this? seems not from
+https://github.com/WCHSoftGroup/ch341ser_linux ?
+GitHub - WCHSoftGroup/ch341ser_linux: USB to serial driver for USB ...
+USB to serial driver for USB to serial chip ch340, ch341, etc. -
+GitHub - WCHSoftGroup/ch341ser_linux: USB to serial driver for USB to
+serial chip ch340, ch341, etc.
+[]
+[luxary]
+hellobox. using a loopback connection you can test transmit and receive
+at the same time
+luxary 03/09/2023 12:43 AM
+Alright got, I'll look into it then. Gotta go for now, but thank you
+immensely for your time anyway. I'll report back when I have some news.
+Thanks!
+ 1
+hellobox. 03/09/2023 12:33 AM
+using a loopback connection you can test transmit and receive at the
+same time
+03/09/2023 12:33 AM
+you can test it
+[luxary]
+luxary 03/09/2023 12:32 AM
+What would bridging those two pins achieve?
+03/09/2023 12:32 AM
+Mine is exactly like the one in the image
+03/09/2023 12:31 AM
+Oh yeah
+hellobox. 03/09/2023 12:31 AM
+i mean are the "RX" and "TX" pins sticking out the bottom connected to
+the rx and tx pins on the ch340 chip
+[luxary]
+luxary 03/09/2023 12:29 AM
+Do you mean like soldered pins like in the image? Or if the traces are
+related to the CH340 chip?
+hellobox. 03/09/2023 12:28 AM
+are those pins connected to the ch340 though?
+03/09/2023 12:27 AM
+tweezers
+[luxary]
+luxary 03/09/2023 12:27 AM
+It does have RX and TX though
+03/09/2023 12:27 AM
+(no content)
+[scheda-di-sviluppo-esp8266-nodemcu-lua-v3-wifi-con-ch340.jpg]
+ scheda-di-sviluppo-esp8266-nodemcu-lua-v3-wifi-con-ch340.jpg
+104.16 KB External
+03/09/2023 12:27 AM
+This is what I have
+03/09/2023 12:27 AM
+Oh no sorry for the misunderstanding
+hellobox. 03/09/2023 12:26 AM
+where it would be easy to connect rx/tx
+03/09/2023 12:26 AM
+like this
+[61Nfdfx9ZxL.png]
+ 61Nfdfx9ZxL.png
+137.42 KB External
+03/09/2023 12:26 AM
+i thought you were working with a usb-serial adapter for some reason
+[luxary]
+luxary 03/09/2023 12:25 AM
+The usb is just connected to the USB port on the TV
+[luxary]
+hellobox. i.e. directly connected to something
+luxary 03/09/2023 12:25 AM
+Oh no, I just meant the board as in the NodeMCU module
+hellobox. 03/09/2023 12:24 AM
+through the usb interface?
+[luxary]
+luxary 03/09/2023 12:24 AM
+If that's any relevant, earlier today I flashed WLED onto it and it run
+just fine it seemed like
+hellobox. 03/09/2023 12:24 AM
+i.e. directly connected to something
+03/09/2023 12:24 AM
+oh, it's built into a board?
+[luxary]
+luxary 03/09/2023 12:23 AM
+Would you suggest that the board may be defective? 
+hellobox. 03/09/2023 12:23 AM
+sure
+[luxary]
+hellobox. you could always hook rx to tx
+luxary 03/09/2023 12:23 AM
+Like bridge them with a jumper?
+hellobox. 03/09/2023 12:21 AM
+you could always hook rx to tx
+03/09/2023 12:21 AM
+so do you have something to test it with?
+[luxary]
+luxary 03/09/2023 12:20 AM
+Yep, it's gone
+[image.png]
+ image.png
+21.6 KB External
+03/09/2023 12:18 AM
+Yeah it should, I'll check right now
+hellobox. 03/09/2023 12:18 AM
+that goes away when you unplug it, right?
+03/09/2023 12:17 AM
+looks right
+[luxary]
+luxary 03/09/2023 12:17 AM
+(no content)
+[image.png]
+ image.png
+56.05 KB External
+hellobox. 03/09/2023 12:16 AM
+but who knows
+03/09/2023 12:16 AM
+because it's not an acm device
+03/09/2023 12:16 AM
+you shouldn't have to worry about other drivers binding to this
+[luxary]
+luxary 03/09/2023 12:16 AM
+I'll check
+03/09/2023 12:16 AM
+Yeah, that
+03/09/2023 12:16 AM
+Is there any place I can look into to troubleshoot this? I also read
+some messages about binding and unbinding devices-
+hellobox. 03/09/2023 12:16 AM
+ls -l /sys/bus/usb/drivers/ch341
+03/09/2023 12:15 AM
+check that it's bound to the right driver
+03/09/2023 12:15 AM
+do you have other stuff to test it with?
+03/09/2023 12:15 AM
+can you use it as a normal serial device?
+[luxary]
+luxary 03/09/2023 12:15 AM
+Still nothing apparently  USB0 shows up, but the device is still not
+detected according to HyperHDR
+[luxary]
+luxary 03/09/2023 12:02 AM
+Thank you so much  I'll try it and let you know!
+hellobox. 03/09/2023 12:01 AM
+(no content)
+ ch341.ko
+328.34 KB External
+ 1
+March 8, 2023
+[luxary]
+luxary 03/08/2023 11:54 PM
+Ah right
+hellobox. 03/08/2023 11:54 PM
+it won't support ch340
+03/08/2023 11:54 PM
+no
+[luxary]
+luxary 03/08/2023 11:54 PM
+So should I just try ch343.ko that you made a while back?
+https://discord.com/channels/407937994037919756/931706504627773450/1081906880546353222
+hellobox. 03/08/2023 11:52 PM
+that may not be true
+03/08/2023 11:52 PM
+well
+03/08/2023 11:52 PM
+i assume they put the same kernel source in both though
+03/08/2023 11:51 PM
+i built that ch343 module for c9 (o18 soc)
+[luxary]
+hellobox. send me `/proc/config.gz`
+luxary 03/08/2023 11:51 PM
+Here it is
+ config.gz
+20.35 KB External
+hellobox. 03/08/2023 11:47 PM
+(which i assume is the standard webos one... might not actually be the
+case)
+03/08/2023 11:46 PM
+it shouldn't be a problem, but i like to build kernel modules with the
+same compiler as the kernel
+03/08/2023 11:46 PM
+i'll have to use the webos 5 toolchain because the webos 4 one doesn't
+do aarch64
+03/08/2023 11:45 PM
+send me /proc/config.gz
+[luxary]
+luxary 03/08/2023 11:43 PM
+(no content)
+[image.png]
+ image.png
+185.94 KB External
+03/08/2023 11:41 PM
+I'll check real quick
+hellobox. 03/08/2023 11:39 PM
+also uname -a
+03/08/2023 11:39 PM
+run nyx-cmd DeviceInfo query device_name
+03/08/2023 11:39 PM
+what soc does your tv have?
+03/08/2023 11:39 PM
+kind of
+[luxary]
+luxary 03/08/2023 11:37 PM
+Is that an easy process? I admit I have no clue as to how to proceed 
+hellobox. 03/08/2023 11:34 PM
+yeah, just get the gpl package from opensource.lge.com, which should
+contain the kernel source and toolchain
+[luxary]
+hellobox. i don't think i ever built a driver specifically for webos 4.5
+luxary 03/08/2023 11:28 PM
+Is that something that could be done? Not too familiar with that
+unfortunately
+[luxary]
+luxary 03/08/2023 11:27 PM
+I must've gotten that wrong
+03/08/2023 11:26 PM
+Oh
+hellobox. 03/08/2023 11:26 PM
+i don't think i ever built a driver specifically for webos 4.5 (edited)
+[] luxary Hey guys, hopefully I can get some help here because I've ran
+out of options. I'm currently working...
+hellobox. 03/08/2023 11:26 PM
+you have webos 4.9.5
+[luxary]
+luxary 03/08/2023 11:25 PM
+I am not sure where to go from here. Does anybody have a clue as to why
+my NodeMCU is not getting picked up? I've read other people successfully
+installing drivers on their TVs, so I wonder why this isn't working for
+me.
+03/08/2023 11:25 PM
+(no content)
+[photo_2023-03-08_23-20-11.jpg]
+ photo_2023-03-08_23-20-11.jpg
+210.05 KB External
+[nomacs_2023-03-08_23-21-17.png]
+ nomacs_2023-03-08_23-21-17.png
+1.74 MB External
+03/08/2023 11:24 PM
+Hey guys, hopefully I can get some help here because I've ran out of
+options. I'm currently working with a rooted LG B9 OLED with webOS
+5.20.35, trying to set up a PicCap + HyperHDR environment. I'm using 4
+meters of 60led/m SK6812CW led strips controlled by a CH340G NodeMCU v3
+(ESP8266) flashed with HyperSerialEsp8266. Unfortunately found out a
+little late that there's no native support for CH340G usb drivers and,
+predictably, HyperHDR complains that
+[LEDDEVICE_ADALIGHT] Could not detect HyperSerialEsp8266/HyperSerialESP32 device
+. I tried installing both ch341.ko USB serial drivers provided by
+@hellobox
+(https://discord.com/channels/407937994037919756/413498235307425802/1038261780058755143)
+and made sure that the .ko file would go first, like
+/var/lib/webosbrew/init.d/01-ch341, but still get the same error. In the
+output path, HyperHDR just shows /dev/ttyAMA0, /dev/ttyAMA1 and
+/dev/ttyAMA2. Interestingly, with the 64-bit/AArch64 version of
+ch341.ko, a /dev/ttyUSB0 show up, but HyperHDR's log still tells me that
+no HyperSerialEsp8266 is detected.
+joekri 03/08/2023 10:46 PM
+hi, as there is no official (and i assume also no inofficial) way to
+capture drm content and i also don‘t want to start up my powerhungry PS5
+for streaming, is there a way to start the hyperhdr „backgroundeffect“
+for drm content? So that at last i get a nice mood effect for drm
+content? Thanks
+[astur3l]
+_nurikk_ out of curiosity measured how much time is needed to render 1
+frame with 231 leds using ftdi board �...
+astur3l 03/08/2023 10:20 PM
+could u measure the neopixel signal too? 
+_nurikk_ 03/08/2023 8:21 PM
+and oh boi, how stable is clock signal 
+03/08/2023 8:19 PM
+out of curiosity measured how much time is needed to render 1 frame with
+231 leds using ftdi board 
+[Screenshot_2023-03-08_at_19.18.04.png]
+ Screenshot_2023-03-08_at_19.18.04.png
+209.92 KB External
+[satdx62]
+_nurikk_ It will be recognised without any extra shenanigans. Just need
+to use updated hyperhdr version (I’ll...
+satdx62 03/08/2023 1:45 PM
+Alright, great, thanks already.
+[] satdx62 OK, thanks, I will also order a matching USB extension cable
+right away. Will the ftdi be recognized...
+_nurikk_ 03/08/2023 1:43 PM
+It will be recognised without any extra shenanigans. Just need to use
+updated hyperhdr version (I’ll give you webos.ipk)
+[satdx62]
+_nurikk_ Yes it will work. But make sure that you’re okay with usb
+connection, it might require usb extension...
+satdx62 03/08/2023 1:40 PM
+OK, thanks, I will also order a matching USB extension cable right away.
+Will the ftdi be recognized by my webOS via USB, or does it need to be
+compiled and installed ? Rockhopper release 3.9.0-62709
+(dreadlocks2-dudhwa) with kernel 4.4.3-119.drd4tv.5 #1 SMP PREEMPT Wed
+Aug 18 01:16:58 EDT 2021 a rmv7l GNU/Linux (edited)
+[] satdx62 Would this board work too?
+https://de.aliexpress.com/item/33052982174.html?spm=a2g0o.productlist.mai...
+_nurikk_ 03/08/2023 1:21 PM
+Yes it will work. But make sure that you’re okay with usb connection, it
+might require usb extension cable or long wires from board to the led
+strip
+[satdx62]
+_nurikk_ Hey, look what a fancy ftdi breakout board I’ve got 
+satdx62 03/08/2023 11:47 AM
+Would this board work too?
+https://de.aliexpress.com/item/33052982174.html?spm=a2g0o.productlist.main.43.40702fe5wq8LYv&algo_pvid=e9c88a6c-892b-4f31-b61c-95b14c4f7f89&algo_exp_id=e9c88a6c-892b-4f31-b61c-95b14c4f7f89-21&pdp_ext_f=%7B%22sku_id%22%3A%2267449093092%22%7D&pdp_npi=3%40dis%21EUR%2115.31%2111.48%21%21%21%21%21%40214528be16782719984023605d070d%2167449093092%21sea%21DE%210&curPageLogUid=SZIehwGRiz3L
+[sam.serif_]
+sam.serif_ 03/08/2023 2:05 AM
+MacOS btw.
+03/08/2023 2:05 AM
+Can i use those same commands in my local terminal?
+03/08/2023 2:04 AM
+Hyperion instance on my localhost is still password gating me
+03/08/2023 2:04 AM
+Thing is idk how hahaha
+[astur3l]
+astur3l 03/08/2023 2:00 AM
+so it worked? check it 
+[sam.serif_]
+sam.serif_ 03/08/2023 1:59 AM
+No response from that!
+[astur3l]
+astur3l 03/08/2023 1:57 AM
+try
+    OPENSSL_armcap=0 HOME=/home/root LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond --resetPassword
+[sam.serif_]
+sam.serif_ 03/08/2023 1:56 AM
+So im seeing '<ERROR> Hyperion aborted: /.hyperion can't be created or
+read/writeable'. Is that good or bad 
+[astur3l]
+astur3l 03/08/2023 1:54 AM
+yeah, or ssh
+[sam.serif_]
+sam.serif_ 03/08/2023 1:54 AM
+This is over telnet correct?
+[astur3l]
+astur3l 03/08/2023 1:54 AM
+as last resort delete /home/root/.hyperion /or whatever/ (all settings
+will lost) (edited)
+[sam.serif_]
+sam.serif_ 03/08/2023 1:53 AM
+Oh, nope
+[astur3l]
+[] sam.serif_ Thank you, tho I got `error while loading shared
+libraries: libQt5Widgets.so.5` No such file or dire...
+astur3l 03/08/2023 1:52 AM
+did u pasted the whole command in one line?
+[sam.serif_]
+[] astur3l ```OPENSSL_armcap=0
+LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.n...
+sam.serif_ 03/08/2023 1:44 AM
+Thank you, tho I got
+error while loading shared libraries: libQt5Widgets.so.5 No such file or
+directory
+[astur3l]
+[] sam.serif_ Whelp, safari didn't save my hyperion password so im
+locked out of the web server. any advice to get...
+astur3l 03/08/2023 12:02 AM
+    OPENSSL_armcap=0 LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond --resetPassword
+stop the service before
+March 7, 2023
+[sam.serif_]
+sam.serif_ 03/07/2023 9:41 PM
+Whelp, safari didn't save my hyperion password so im locked out of the
+web server. any advice to get past this screen?
+[Screenshot_2023-03-07_at_1.40.57_PM.png]
+ Screenshot_2023-03-07_at_1.40.57_PM.png
+129.54 KB External
+_nurikk_ 03/07/2023 8:28 PM
+I guess they cost that money for a reason
+[] astur3l wonder how stable is it (i mean the "timing"), cannot seem to
+find board+shipping under 15$ 
+_nurikk_ 03/07/2023 8:25 PM
+only you as a tester will tell how stable it is 
+[astur3l]
+_nurikk_ no, it's "pwm", just neat bit pushing over spi (in fact it's
+just copy/paste from existing hyperion ...
+astur3l 03/07/2023 8:25 PM
+wonder how stable is it (i mean the "timing"), cannot seem to find
+board+shipping under 15$ 
+[] astur3l can you throw me with a link?:D
+https://www.aliexpress.com/item/33047435425.html ?
+_nurikk_ 03/07/2023 8:18 PM
+it's correct link, I have both boards and tested with both of them, all
+works good. using type-c is more convenient though, no usb extender
+required 
+ 1
+[astur3l]
+_nurikk_ Hey, look what a fancy ftdi breakout board I’ve got 
+astur3l 03/07/2023 8:16 PM
+can you throw me with a link?:D
+https://www.aliexpress.com/item/33047435425.html ?
+[] astur3l nice, did u used some ext lib for it? i mean for pwm
+_nurikk_ 03/07/2023 8:13 PM
+no, it's "pwm", just neat bit pushing over spi (in fact it's just
+copy/paste from existing hyperion code)
+ 1
+[astur3l]
+_nurikk_ It turns out that my unknown leds are ws2812, I’ve managed to
+implement them on ftdi driver
+astur3l 03/07/2023 8:01 PM
+nice, did u used some ext lib for it? i mean for pwm (edited)
+_nurikk_ 03/07/2023 7:53 PM
+test ws2812 with ftdi board, anyone?))
+[satdx62]
+_nurikk_ It turns out that my unknown leds are ws2812, I’ve managed to
+implement them on ftdi driver
+satdx62 03/07/2023 7:49 PM
+Great, sounds good.  I'll still send the LEDs on their way tomorrow.
+(edited)
+[] satdx62 All right, I will do that, I can send SK6812RGBW and WS2812B
+from DE. We are almost neighbors. Which...
+_nurikk_ 03/07/2023 7:32 PM
+It turns out that my unknown leds are ws2812, I’ve managed to implement
+them on ftdi driver
+[IMG_3812.jpg]
+ IMG_3812.jpg
+1.26 MB External
+ 3
+[] satdx62 All right, I will do that, I can send SK6812RGBW and WS2812B
+from DE. We are almost neighbors. Which...
+_nurikk_ 03/07/2023 3:05 PM
+dropped you private message
+[satdx62]
+_nurikk_ feel free to royal mail me any cutouts (3-4 leds) from your led
+strip if you somewhere near the UK
+satdx62 03/07/2023 3:02 PM
+All right, I will do that, I can send SK6812RGBW and WS2812B from DE. We
+are almost neighbors. Which address should I send to?
+[LED.jpg]
+ LED.jpg
+346.36 KB External
+_nurikk_ 03/07/2023 1:16 PM
+feel free to royal mail me any cutouts (3-4 leds) from your led strip if
+you somewhere near the UK
+_nurikk_ currently it only works with APA102 (CLK+DATA), I do have plans
+to implement clock-less led, but cur...
+_nurikk_ 03/07/2023 1:14 PM
+(no content)
+[IMG_3811.jpg]
+ IMG_3811.jpg
+1.65 MB External
+[] satdx62 Tell me, does only the APA102 with CLK and Data work with it,
+or also the SK6812RGBW with only Data?
+_nurikk_ 03/07/2023 1:14 PM
+currently it only works with APA102 (CLK+DATA), I do have plans to
+implement clock-less led, but currently I have only 1 type clock-less
+led and have no clue what it is.
+[satdx62]
+_nurikk_ Hey, look what a fancy ftdi breakout board I’ve got 
+satdx62 03/07/2023 12:56 PM
+Tell me, does only the APA102 with CLK and Data work with it, or also
+the SK6812RGBW with only Data?
+_nurikk_ 03/07/2023 12:42 PM
+Hey, look what a fancy ftdi breakout board I’ve got 
+[IMG_3810.jpg]
+ IMG_3810.jpg
+1.2 MB External
+ 2
+March 6, 2023
+[astur3l]
+astur3l 03/06/2023 1:06 AM
+@hellobox
+https://github.com/WCHSoftGroup/ch343ser_linux/commit/382093abb1b1f5718b6dd1eb4502cef598451df8#diff-a7862dba8b072e3a4d4ae7434d8f70b236d95e22029bcd263e4a746b5a988c40L58
+seems like this is the culpit?
+March 5, 2023
+[] astur3l <@1021854854035013676> arent u bored ?:D
+<https://github.com/WCHSoftGroup/ch343ser_linux/blob/382093...
+_nurikk_ 03/05/2023 10:26 PM
+mildly entertaining, send me cat meme next time 
+[astur3l]
+astur3l 03/05/2023 7:34 PM
+@_nurikk_ arent u bored ?:D
+https://github.com/WCHSoftGroup/ch343ser_linux/blob/382093abb1b1f5718b6dd1eb4502cef598451df8/lib/ch343_lib.c#L124
+[astur3l]
+astur3l 03/05/2023 3:16 PM
+interesting, after 1.2V it used by another 2 kmods (edited)
+[astur3l]
+hellobox. or did i just have it wrong
+astur3l 03/05/2023 2:49 PM
+lol, the 1.5 doesnt really work for me.. hyperion freezes, leds wont do
+shit...  just replaced with my old 1.2V
+(`git checkout c87970c717a9837fc30c02fe2435e4e5463e6bf8`) kmod and works
+fine.... .D okay.. anything after 1.2V doesnt work for me.... 
+(edited)
+hellobox. 03/05/2023 1:47 PM
+i don't know
+ 1
+03/05/2023 1:47 PM
+eh
+[xlord59]
+xlord59 03/05/2023 1:45 PM
+No such device
+[xlord59]
+hellobox. so `rmmod ch343` and insmod it again
+xlord59 03/05/2023 1:42 PM
+same error after rmod - insmod
+[xlord59]
+xlord59 03/05/2023 1:41 PM
+I have my board connected to TV all the time btw, is it ok?
+hellobox. 03/05/2023 1:38 PM
+so rmmod ch343 and insmod it again
+03/05/2023 1:38 PM
+i suspect it might be this error
+        control_interface = usb_ifnum_to_if(usb_dev, union_header->bMasterInterface0);
+        data_interface = usb_ifnum_to_if(usb_dev, union_header->bSlaveInterface0);
+        if (intf != control_interface)
+            return -ENODEV;
+03/05/2023 1:37 PM
+looking at the code, i don't know if binding the interfaces individually
+will work
+03/05/2023 1:37 PM
+i was going to suggest that
+[astur3l]
+astur3l 03/05/2023 1:37 PM
+for me: unbind acm driver, then insmod 343 worked
+[xlord59]
+hellobox. anything on dmesg?
+xlord59 03/05/2023 1:36 PM
+can't find anything related to ch343
+hellobox. 03/05/2023 1:33 PM
+anything on dmesg?
+03/05/2023 1:32 PM
+maybe it doesn't like the vid/pid
+[xlord59]
+xlord59 03/05/2023 1:32 PM
+yep
+hellobox. 03/05/2023 1:31 PM
+for both of them?
+[xlord59]
+xlord59 03/05/2023 1:31 PM
+No such device
+hellobox. 03/05/2023 1:30 PM
+@Al
+    echo -n "1-1:1.0">/sys/bus/usb/drivers/usb_ch343/bind
+    echo -n "1-1:1.1">/sys/bus/usb/drivers/usb_ch343/bind
+[astur3l]
+astur3l 03/05/2023 1:29 PM
+oh i see, 1.5, mine is 1.2 
+[astur3l]
+hellobox. <@433352458694033428> were you using an old ch343 driver?
+astur3l 03/05/2023 1:29 PM
+is there newer? compiled from
+https://github.com/WCHSoftGroup/ch343ser_linux but it was in 2022.
+november 
+GitHub - WCHSoftGroup/ch343ser_linux: USB driver for USB to serial ...
+USB driver for USB to serial chip ch342, ch343, ch344, ch9101, ch9102,
+ch9103, etc - GitHub - WCHSoftGroup/ch343ser_linux: USB driver for USB
+to serial chip ch342, ch343, ch344, ch9101, ch9102, ch9...
+[]
+hellobox. 03/05/2023 1:29 PM
+or did i just have it wrong
+03/05/2023 1:28 PM
+@asturel were you using an old ch343 driver?
+03/05/2023 1:28 PM
+i guess it's usb_ch343
+03/05/2023 1:28 PM
+hmm
+[xlord59]
+hellobox. what's in `/sys/bus/usb/drivers`?
+xlord59 03/05/2023 1:27 PM
+(no content)
+[image.png]
+ image.png
+167.08 KB External
+hellobox. 03/05/2023 1:27 PM
+what's in /sys/bus/usb/drivers?
+03/05/2023 1:25 PM
+that's good
+[xlord59]
+xlord59 03/05/2023 1:25 PM
+that's all
+[ 56.297783] usbcore: registered new interface driver usb_ch343 [ 56.297795] ch343: USB serial driver for ch342/ch343/ch344/ch347/ch9101/ch9102/ch9103/ch9104, etc. [ 56.297798] ch343: V1.5 On 2022.12
+hellobox. 03/05/2023 1:23 PM
+or errors when inserting
+03/05/2023 1:23 PM
+anything related to ch343
+[xlord59]
+xlord59 03/05/2023 1:22 PM
+huge output, what should I look for? (edited)
+hellobox. 03/05/2023 1:20 PM
+run dmesg
+[xlord59]
+xlord59 03/05/2023 1:20 PM
+yep, no such folder
+hellobox. 03/05/2023 1:20 PM
+but /sys/bus/usb/drivers/ch343 doesn't?
+[xlord59]
+xlord59 03/05/2023 1:19 PM
+can't insmod it anymore - file exists
+hellobox. 03/05/2023 1:18 PM
+doesn't seem to have loaded properly
+03/05/2023 1:18 PM
+check dmesg
+03/05/2023 1:18 PM
+hmm
+[xlord59]
+xlord59 03/05/2023 1:17 PM
+Copied file to TV root, insmod
+[image.png]
+ image.png
+53.11 KB External
+[satdx62]
+satdx62 03/05/2023 1:14 PM
+insmod ch343.ko
+ 1
+[xlord59]
+hellobox. load it with `insmod`
+xlord59 03/05/2023 1:14 PM
+could you be more specific please? what console command should I
+execute?
+hellobox. 03/05/2023 1:13 PM
+load it with insmod
+[] xlord59 Should I put this file to TV home folder to bind it?
+hellobox. 03/05/2023 1:13 PM
+doesn't matter where you put it for now
+[e99.tuxuser]
+e99.tuxuser 03/05/2023 1:13 PM
+Sorry if I interrupted your debugging session, don't get distracted 
+[xlord59]
+hellobox. <@409476854123069450> `ch343.ko` for O18 (2019/webOS 4.5)
+webOS 4.9.5-10
+xlord59 03/05/2023 1:13 PM
+Should I put this file to TV home folder to bind it?
+[e99.tuxuser]
+e99.tuxuser 03/05/2023 1:12 PM
+That's with good old Arduino pro micro tho, not the new esp32 family
+03/05/2023 1:11 PM
+You could^^ I simply didn't care about the vid/pid thing cause it's just
+cosmetic anyway
+hellobox. 03/05/2023 1:10 PM
+since they're only a couple dollars
+[] e99.tuxuser Just fyi, can not provide any background or cause for it
+but, the vid/pid: 0 detection of USB ACM/CD...
+hellobox. 03/05/2023 1:10 PM
+maybe i should order one to investigate
+hellobox. 03/05/2023 1:10 PM
+you might only have to do the first one, and the other interface will
+unbind automatically
+03/05/2023 1:09 PM
+looks like it
+[xlord59]
+xlord59 03/05/2023 1:08 PM
+So it'll be the same?
+echo -n "1-1:1.0">/sys/bus/usb/drivers/cdc_acm/unbind echo -n "1-1:1.1">/sys/bus/usb/drivers/cdc_acm/unbind
+[image.png]
+ image.png
+74.17 KB External
+[e99.tuxuser]
+e99.tuxuser 03/05/2023 1:05 PM
+Just fyi, can not provide any background or cause for it but, the
+vid/pid: 0 detection of USB ACM/CDC devices via Qt is normal on WebOS
+ 1
+hellobox. 03/05/2023 1:04 PM
+find out with ls -l /sys/bus/usb/drivers/cdc_acm
+[xlord59]
+hellobox. like this, but with a different device:
+https://discord.com/channels/407937994037919756/931706504627...
+xlord59 03/05/2023 1:04 PM
+what device is in my case? 
+hellobox. 03/05/2023 12:59 PM
+like this, but with a different device:
+https://discord.com/channels/407937994037919756/931706504627773450/1081327487050580028
+[xlord59]
+hellobox. unbind `cdc_acm` and bind that
+xlord59 03/05/2023 12:58 PM
+how do I do unbind?
+hellobox. 03/05/2023 12:54 PM
+you can find what device to use with ls -l /sys/bus/usb/drivers/cdc_acm
+03/05/2023 12:53 PM
+unbind cdc_acm and bind that
+03/05/2023 12:51 PM
+@Al ch343.ko for O18 (2019/webOS 4.5) webOS 4.9.5-10 (edited)
+ ch343.ko
+517.65 KB External
+hellobox. 03/05/2023 12:33 PM
+toolchain's LDFLAGS
+03/05/2023 12:33 PM
+oh
+03/05/2023 12:31 PM
+where did that come from?
+03/05/2023 12:30 PM
+    aarch64-starfish-linux-ld: unrecognized option '-Wl,-O1'
+    aarch64-starfish-linux-ld: use the --help option for usage information
+03/05/2023 12:25 PM
+i guess i could use a newer toolchain
+[xlord59]
+hellobox. you have webos 4.[5-9] right?
+xlord59 03/05/2023 12:22 PM
+4.9.5-10, yep
+hellobox. 03/05/2023 12:20 PM
+the webos 4 toolchain doesn't seem to have aarch64 support
+03/05/2023 12:16 PM
+you have webos 4.[5-9] right? (edited)
+03/05/2023 12:16 PM
+it also built a 32-bit module
+03/05/2023 12:10 PM
+this config seems to not match the kernel source very well
+ 1
+[xlord59]
+hellobox. `/var/run/nyx/device_info.json`
+xlord59 03/05/2023 12:02 PM
+O18_DVB
+hellobox. 03/05/2023 12:00 PM
+/var/run/nyx/device_info.json
+[xlord59]
+xlord59 03/05/2023 11:57 AM
+idk, where can I check it? (edited)
+hellobox. 03/05/2023 11:54 AM
+what soc? o18?
+[xlord59]
+hellobox. need your `/proc/config.gz`
+xlord59 03/05/2023 11:53 AM
+(no content)
+ config.gz
+20.35 KB External
+[xlord59]
+xlord59 03/05/2023 11:53 AM
+yep
+hellobox. 03/05/2023 11:51 AM
+so it's the 1a86:55d4 one?
+[xlord59]
+hellobox. both, but particularly the tv
+xlord59 03/05/2023 11:50 AM
+Here you go. The first output - board connected, second - disconnected
+[image.png]
+ image.png
+73.91 KB External
+[] xlord59 Again, when the board is connected to TV or PC?
+hellobox. 03/05/2023 11:49 AM
+both, but particularly the tv
+[xlord59]
+hellobox. <@409476854123069450> did you ever check whether the correct
+vid/pid show up with `lsusb`?
+xlord59 03/05/2023 11:49 AM
+Again, when the board is connected to TV or PC?
+hellobox. 03/05/2023 11:49 AM
+yes
+[xlord59]
+hellobox. need your `/proc/config.gz`
+xlord59 03/05/2023 11:48 AM
+From my TV?
+[satdx62]
+satdx62 03/05/2023 11:08 AM
+This is an LG OLED65B7D "board_type": "M16P_DVB", "hardware_id":
+"HE_DTV_W17H_AFADABAA", "product_id": "OLED65B7D-Z", "core_os_release":
+"3.9.0-62709", "webos_manufacturing_version": "06.00.25" (edited)
+hellobox. 03/05/2023 11:06 AM
+what soc is that though?
+[satdx62]
+satdx62 03/05/2023 11:05 AM
+ok.
+hellobox. 03/05/2023 11:05 AM
+also aarch64
+03/05/2023 11:05 AM
+he has a different kernel
+[satdx62]
+hellobox. so i just need `/proc/config.gz`
+satdx62 03/05/2023 11:04 AM
+I have here webOS 3.9 with Linux LGwebOSTV 4.4.3-119.drd4tv.5 #1 SMP
+PREEMPT Wed Aug 18 01:16:58 EDT 2021 a rmv7l GNU/Linux. Would use my
+/proc/config.gz?
+ config.gz
+20.09 KB External
+grinningliar 03/05/2023 10:59 AM
+But once it worked (before I bought esp32 and Led))
+03/05/2023 10:58 AM
+Hi, guys. I cant do to work piccap on my tv( I have LG oled55A1rla(webos
+6.2.0-33), rooted (via Rootmy.tv). Sometimes, I got status "UI:
+capturing" and "Video: capturing", but preview in Hyperion interface
+shows me Black screen. P. S. Sorry for my English
+[IMG_20230305_125702.jpg]
+ IMG_20230305_125702.jpg
+823.83 KB External
+[Screenshot_20230305_125600_com.microsoft.emmx.jpg]
+ Screenshot_20230305_125600_com.microsoft.emmx.jpg
+94.65 KB External
+hellobox. 03/05/2023 10:46 AM
+so i just need /proc/config.gz
+03/05/2023 10:46 AM
+i think it might be the same source as all the other lx 4.4 kernels
+03/05/2023 10:45 AM
+downloaded it
+hellobox. 03/05/2023 1:35 AM
+hmm, i actually don't have the opensource package for webos 4.5 lx
+03/05/2023 1:32 AM
+they should, since the correct driver apparently binds
+03/05/2023 1:31 AM
+@Al did you ever check whether the correct vid/pid show up with lsusb?
+03/05/2023 1:30 AM
+this seems to be the guy who actually develops the drivers for them
+https://github.com/SoldierJazz/wchisp_linux
+03/05/2023 1:28 AM
+lol what is this? https://github.com/WCHSoftGroup/wchisp_linux
+hellobox. 03/05/2023 1:21 AM
+i don't think i have a config for that
+03/05/2023 1:20 AM
+so he has webos 4.5
+hellobox. 03/05/2023 12:56 AM
+he should probably test it on another OS
+03/05/2023 12:56 AM
+something's not working right
+[] astur3l he def. have ch9102x
+https://cdn.discordapp.com/attachments/974942819707924511/1080605706799034398/c...
+hellobox. 03/05/2023 12:56 AM
+i know, but why is he getting vid/pid 0?
+hellobox. 03/05/2023 12:55 AM
+because of their logo
+03/05/2023 12:55 AM
+i used to think WCH was HDM
+[astur3l]
+astur3l 03/05/2023 12:54 AM
+he def. have ch9102x
+https://cdn.discordapp.com/attachments/974942819707924511/1080605706799034398/c9666138-6113-46c0-b49b-1f3f5db4418b.png
+[]
+hellobox. 03/05/2023 12:47 AM
+even if it's resetting the esp32, the ch9102x should still be fine
+03/05/2023 12:47 AM
+but it should still be getting vid/pid
+03/05/2023 12:46 AM
+he was using ttyAMA0 earlier though
+[] awawa_dev I see that the experiment on the user has not stopped and
+is in full swing... if you didn't follow y...
+hellobox. 03/05/2023 12:46 AM
+i doubt ttyACM0 is an internal device
+[astur3l]
+hellobox. do you know what model he has?
+astur3l 03/05/2023 12:46 AM
+https://discord.com/channels/407937994037919756/931706504627773450/1080930552548425749
+[] astur3l the VP driver works, but i havent tried an esp without cap..
+and its not gonna happen too soon becau...
+hellobox. 03/05/2023 12:45 AM
+do you know what model he has?
+hellobox. 03/05/2023 12:45 AM
+or i can use one i already have; it may be similar/identical
+[] xlord59 So do I have to soler the capacitor? ;D
+hellobox. 03/05/2023 12:44 AM
+need your /proc/config.gz
+March 4, 2023
+[awawa_dev]
+[] xlord59 You must be kidding ;C
+awawa_dev 03/04/2023 3:08 PM
+I see that the experiment on the user has not stopped and is in full
+swing... if you didn't follow yesterday's earlier conversion before this
+cover-up started: BEFORE YOU DAMAGE SOMETHING YOU MUST KNOW THAT
+PID/VID=0 MEANS A CORRECTLY DETECTED BUT INTERNAL DEVICE OF THE TV WHICH
+DOESN'T NEED NO EXTERNAL DRIVERS, IT IS NOT ESP32. HyperHDR v19 can find
+the ESP32 board by itself as long as auto is selected in path and 'esp
+handshake' is enabled. The problem with this board is different
+(possible unstable operation and prone to failure depending on the
+revision) but should always be detected by webos if it has indeed
+ch9102x and it's not (yet) damaged. (edited)
+[xlord59]
+xlord59 03/04/2023 2:43 PM
+gotta go, I'll continue tommorrow
+[astur3l]
+astur3l 03/04/2023 2:39 PM
+what lsusb says?
+[astur3l]
+[] xlord59 exactly the same error with soldered cap. VID: 0x0, PID: 0x0
+astur3l 03/04/2023 2:39 PM
+yeah that's odd, imho it should be recognized anyway
+[xlord59]
+xlord59 03/04/2023 2:34 PM
+exactly the same error with soldered cap. VID: 0x0, PID: 0x0 (edited)
+03/04/2023 2:34 PM
+You must be kidding ;C
+ message.txt
+3.59 KB External
+[astur3l]
+astur3l 03/04/2023 1:57 PM
+or buy a six pack for hellobox 
+03/04/2023 1:56 PM
+the VP driver works, but i havent tried an esp without cap.. and its not
+gonna happen too soon because i need to pull out the tv to access to usb
+ so probably the cap is the fastest way, because you need /someone/ to
+compile the driver for your kernel too (since mine is armv7l)
+[xlord59]
+xlord59 03/04/2023 1:52 PM
+So do I have to soler the capacitor? ;D (edited)
+[astur3l]
+astur3l 03/04/2023 12:13 PM
+`ch343_driver.sh`
+    echo -n "1-1:1.0">/sys/bus/usb/drivers/cdc_acm/unbind
+    insmod /home/root/ch343.ko
+is enought to get VP driver working at boot
+[astur3l]
+astur3l 03/04/2023 11:30 AM
+btw after the first unbind the 1.1 didnt existed anymore :d
+[astur3l]
+hellobox. <@433352458694033428> ``` echo -n
+"1-1:1.0">/sys/bus/usb/drivers/cdc_acm/unbind echo -n "1-1:1.1">/s...
+astur3l 03/04/2023 11:21 AM
+works 
+    2023-03-04T10:20:10.902Z [LEDDEVICE|tv ambilight] (DEBUG) (ProviderRs232.cpp:172:tryOpen()) portName:          ttyCH343USB0
+    2023-03-04T10:20:10.903Z [LEDDEVICE|tv ambilight] (DEBUG) (ProviderRs232.cpp:173:tryOpen()) systemLocation:    /dev/ttyCH343USB0
+    2023-03-04T10:20:10.903Z [LEDDEVICE|tv ambilight] (DEBUG) (ProviderRs232.cpp:174:tryOpen()) description:       USB Single Serial
+    2023-03-04T10:20:10.903Z [LEDDEVICE|tv ambilight] (DEBUG) (ProviderRs232.cpp:175:tryOpen()) manufacturer:      1a86
+    2023-03-04T10:20:10.903Z [LEDDEVICE|tv ambilight] (DEBUG) (ProviderRs232.cpp:176:tryOpen()) vendorIdentifier:  0x1a86
+    2023-03-04T10:20:10.904Z [LEDDEVICE|tv ambilight] (DEBUG) (ProviderRs232.cpp:177:tryOpen()) productIdentifier: 0x55d4
+    2023-03-04T10:20:10.904Z [LEDDEVICE|tv ambilight] (DEBUG) (ProviderRs232.cpp:178:tryOpen()) serialNumber:      5468002185
+o.O
+ 1
+[astur3l]
+hellobox. <@433352458694033428> want my `lsusb` binary?
+astur3l 03/04/2023 1:45 AM
+yeah, sry, passed out, I'll check sometime just my nerves hurts when i
+touch anything and can't really use Google voice in ssh :d
+March 3, 2023
+hellobox. 03/03/2023 10:47 PM
+@asturel want my lsusb binary?
+03/03/2023 10:46 PM
+    root@LGwebOSTV[k8lp 7.1.0]:~# lsusb
+    Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+    Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+    Bus 004 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+    Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+hellobox. 03/03/2023 10:29 PM
+@asturel
+    echo -n "1-1:1.0">/sys/bus/usb/drivers/cdc_acm/unbind
+    echo -n "1-1:1.1">/sys/bus/usb/drivers/cdc_acm/unbind
+    echo -n "1-1:1.0">/sys/bus/usb/drivers/ch343/bind
+    echo -n "1-1:1.1">/sys/bus/usb/drivers/ch343/bind
+hellobox. 03/03/2023 10:19 PM
+not sure if that's used
+03/03/2023 10:18 PM
+https://lore.kernel.org/lkml/1414596640-28555-1-git-send-email-johan@kernel.org/
+03/03/2023 10:12 PM
+i don't know if you have to unbind both
+03/03/2023 10:12 PM
+it's two interfaces on the same device
+03/03/2023 10:12 PM
+hmm
+[astur3l]
+astur3l 03/03/2023 10:12 PM
+    root@LGwebOSTV:/sys/bus/usb/devices# readlink 1-1:1.0/driver
+    ../../../../../../bus/usb/drivers/cdc_acm
+    root@LGwebOSTV:/sys/bus/usb/devices# readlink 1-1:1.1/driver
+    ../../../../../../bus/usb/drivers/cdc_acm
+hellobox. 03/03/2023 10:11 PM
+you can check the driver to see which
+03/03/2023 10:11 PM
+it's probably one of 1-1:1.*
+[astur3l]
+astur3l 03/03/2023 10:10 PM
+and i have only 2 external usb ports  where only 1 used...  (edited)
+hellobox. 03/03/2023 10:10 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# readlink /sys/bus/usb/devices/usb3/3-1/3-1\:1.0/driver
+    ../../../../../../../bus/usb/drivers/btmtk_usb
+[astur3l]
+hellobox. did you figure out which one?
+astur3l 03/03/2023 10:09 PM
+nope  find -L give too much rec. links  and my nerves hurts more
+than i wanted to try out 
+[] astur3l ah ty, ```lrwxrwxrwx 1 root root 0 Jan 1 2021 1-0:1.0 ->
+../../../devices/platf...
+hellobox. 03/03/2023 10:08 PM
+did you figure out which one?
+[astur3l]
+hellobox. and/or install better lsusb i guess
+astur3l 03/03/2023 8:56 PM
+busybox applet 
+hellobox. 03/03/2023 8:55 PM
+and/or install better lsusb i guess
+03/03/2023 8:55 PM
+you can check vid/pid
+03/03/2023 8:55 PM
+i think this one
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 1-1:1.0 -> ../../../devices/platform/Mstar-ehci-2/usb1/1-1/1-1:1.0
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 1-1:1.1 -> ../../../devices/platform/Mstar-ehci-2/usb1/1-1/1-1:1.1
+[astur3l]
+astur3l 03/03/2023 8:52 PM
+ah ty,
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 1-0:1.0 -> ../../../devices/platform/Mstar-ehci-2/usb1/1-0:1.0
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 1-1 -> ../../../devices/platform/Mstar-ehci-2/usb1/1-1
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 1-1:1.0 -> ../../../devices/platform/Mstar-ehci-2/usb1/1-1/1-1:1.0
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 1-1:1.1 -> ../../../devices/platform/Mstar-ehci-2/usb1/1-1/1-1:1.1
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 2-0:1.0 -> ../../../devices/platform/Mstar-ehci-1/usb2/2-0:1.0
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 3-0:1.0 -> ../../../devices/platform/Mstar-ehci-3/usb3/3-0:1.0
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 3-1 -> ../../../devices/platform/Mstar-ehci-3/usb3/3-1
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 3-1:1.0 -> ../../../devices/platform/Mstar-ehci-3/usb3/3-1/3-1:1.0
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 3-1:1.1 -> ../../../devices/platform/Mstar-ehci-3/usb3/3-1/3-1:1.1
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 3-1:1.2 -> ../../../devices/platform/Mstar-ehci-3/usb3/3-1/3-1:1.2
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 4-0:1.0 -> ../../../devices/platform/Mstar-ehci-4/usb4/4-0:1.0
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 usb1 -> ../../../devices/platform/Mstar-ehci-2/usb1
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 usb2 -> ../../../devices/platform/Mstar-ehci-1/usb2
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 usb3 -> ../../../devices/platform/Mstar-ehci-3/usb3
+    lrwxrwxrwx    1 root     root             0 Jan  1  2021 usb4 -> ../../../devices/platform/Mstar-ehci-4/usb4
+but how do i know which one ?:D
+hellobox. 03/03/2023 8:51 PM
+ls -l /sys/bus/usb/devices
+[astur3l]
+hellobox. <https://lwn.net/Articles/143397/>
+astur3l 03/03/2023 8:49 PM
+yeah but sadly i dont have something like
+` |-- 1-1:1.0 -> ../../../../devices/pci0000:00/0000:00:1d.7/usb1/1-1/1-1:1.0`
+[astur3l]
+astur3l 03/03/2023 8:48 PM
+i mean under `/sys/bus/usb/drivers/usb` i kinda doesnt have busid.. 
+[] astur3l so how can i unbind the driver for? ``Bus 001 Device 002: ID
+1a86:55d4`` ?:/
+hellobox. 03/03/2023 8:48 PM
+https://lwn.net/Articles/143397/
+[astur3l]
+astur3l 03/03/2023 8:47 PM
+so how can i unbind the driver for? `Bus 001 Device 002: ID 1a86:55d4`
+?:/
+03/03/2023 8:47 PM
+     find /sys/bus/usb/drivers/usb
+    /sys/bus/usb/drivers/usb
+    /sys/bus/usb/drivers/usb/1-1
+    /sys/bus/usb/drivers/usb/3-1
+    /sys/bus/usb/drivers/usb/bind
+    /sys/bus/usb/drivers/usb/usb1
+    /sys/bus/usb/drivers/usb/usb2
+    /sys/bus/usb/drivers/usb/usb3
+    /sys/bus/usb/drivers/usb/usb4
+    /sys/bus/usb/drivers/usb/uevent
+    /sys/bus/usb/drivers/usb/unbind
+03/03/2023 8:46 PM
+`Fri Mar 3 20:45:59 2023] ch343: USB serial driver for ch342/ch343/ch344/ch347/ch9101/ch9102/ch9103/ch9143, etc. [Fri Mar 3 20:45:59 2023] ch343: V1.2 On 2022.01.07 `
+03/03/2023 8:45 PM
+does the driver unbind/bind works on webos? i could try my self compiled
+driver but i wasnt aware of that feature.. i ended up with linux desktop
+on 2.4.x kernel :d
+hellobox. 03/03/2023 8:29 PM
+which seems to be (part of?) the problem
+[] satdx62 Ah, right, mine also has cp2102
+https://de.aliexpress.com/item/1005005121038835.html?spm=a2g0o.detai...
+hellobox. 03/03/2023 8:29 PM
+so you're not using the cdc_acm driver
+[satdx62]
+hellobox. i mean the ones with ch9102
+satdx62 03/03/2023 8:29 PM
+Ah, right, mine also has cp2102
+https://de.aliexpress.com/item/1005005121038835.html?spm=a2g0o.detail.1000060.1.12432dacBfAgOm&gps-id=pcDetailBottomMoreThisSeller&scm=1007.13339.291025.0&scm_id=1007.13339.291025.0&scm-url=1007.13339.291025.0&pvid=ab855740-dbe1-4be0-b90f-9d20880b00d2&_t=gps-id%3ApcDetailBottomMoreThisSeller%2Cscm-url%3A1007.13339.291025.0%2Cpvid%3Aab855740-dbe1-4be0-b90f-9d20880b00d2%2Ctpp_buckets%3A668%232846%238107%231934&pdp_ext_f=%7B%22sku_id%22%3A%2212000031740686094%22%2C%22sceneId%22%3A%223339%22%7D&pdp_npi=3%40dis%21EUR%211.35%211.35%21%21%21%21%21%40211b600a16778712669734535e45c4%2112000031740686094%21rec%21DE%21&gatewayAdapt=glo2deu
+hellobox. 03/03/2023 8:25 PM
+pretty cheap
+03/03/2023 8:25 PM
+wow
+[astur3l]
+astur3l 03/03/2023 8:24 PM
+https://www.aliexpress.com/item/1005002410521023.html
+[astur3l]
+hellobox. how much do these boards cost?
+astur3l 03/03/2023 8:23 PM
+https://www.aliexpress.com/item/32797879940.html
+hellobox. 03/03/2023 8:22 PM
+i mean the ones with ch9102
+[satdx62]
+satdx62 03/03/2023 8:21 PM
+ja.
+hellobox. 03/03/2023 8:21 PM
+that has a cp2102
+[satdx62]
+satdx62 03/03/2023 8:20 PM
+Current €4,63
+https://de.aliexpress.com/item/1005005121456614.html?spm=a2g0o.productlist.main.39.193d17cfOft59Q&algo_pvid=cdc2bda4-90cc-4e88-b3cd-cd6052c959bc&aem_p4p_detail=202303031118433339449779391160012552677&algo_exp_id=cdc2bda4-90cc-4e88-b3cd-cd6052c959bc-19&pdp_ext_f=%7B%22sku_id%22%3A%2212000031742432439%22%7D&pdp_npi=3%40dis%21EUR%214.63%214.63%21%21%21%21%21%402100bbf516778711233493002d06f5%2112000031742432439%21sea%21DE%210&curPageLogUid=3sYNmmge82wC&ad_pvid=202303031118433339449779391160012552677_12&ad_pvid=202303031118433339449779391160012552677_12
+03/03/2023 8:17 PM
+8 €
+hellobox. 03/03/2023 8:16 PM
+how much do these boards cost?
+[satdx62]
+satdx62 03/03/2023 8:15 PM
+I think so.
+[] satdx62 I tested again HyperSerial on ESP32 Wroom with cp2102 and
+works fine without capacitor but with 150 ...
+hellobox. 03/03/2023 8:14 PM
+is it using DTR for reset?
+[satdx62]
+satdx62 03/03/2023 8:13 PM
+I tested again HyperSerial on ESP32 Wroom with cp2102 and works fine
+without capacitor but with 150 ms update time. (edited)
+[ESP32.jpg]
+ ESP32.jpg
+427.84 KB External
+[astur3l]
+astur3l 03/03/2023 6:34 PM
+accidently mine worked for few times when i kept replugging.. but most
+of the time stuck some state like when i press reset repeatedly for
+short time
+[] astur3l ch*, and i think so
+hellobox. 03/03/2023 6:34 PM
+sorry, just woke up
+[astur3l]
+astur3l 03/03/2023 6:33 PM
+ch*, and i think so
+hellobox. 03/03/2023 6:33 PM
+does anyone have actual schematics for these boards?
+03/03/2023 6:33 PM
+the ch9102 is powered even when the esp is in reset, right? (edited)
+03/03/2023 6:31 PM
+and shouldn't this be coming from the ch9102x itself?
+            Debug(_log, "portName:          %s", QSTRING_CSTR(serialPortInfo.portName()));
+            Debug(_log, "systemLocation:    %s", QSTRING_CSTR(serialPortInfo.systemLocation()));
+            Debug(_log, "description:       %s", QSTRING_CSTR(serialPortInfo.description()));
+            Debug(_log, "manufacturer:      %s", QSTRING_CSTR(serialPortInfo.manufacturer()));
+            Debug(_log, "productIdentifier: %s", QSTRING_CSTR(QString("0x%1").arg(serialPortInfo.productIdentifier(), 0, 16)));
+            Debug(_log, "vendorIdentifier:  %s", QSTRING_CSTR(QString("0x%1").arg(serialPortInfo.vendorIdentifier(), 0, 16)));
+            Debug(_log, "serialNumber:      %s", QSTRING_CSTR(serialPortInfo.serialNumber()));
+(edited)
+03/03/2023 6:30 PM
+shouldn't it come back up once DTR is low?
+03/03/2023 6:30 PM
+although
+03/03/2023 6:28 PM
+(reset is EN, i guess)
+03/03/2023 6:28 PM
+but the cap keeps reset above the threshold while DTR is on
+03/03/2023 6:27 PM
+what i think is happening is that DTR is connected to the reset line
+(using the S8050 as an inverter), and cdc_acm always sets DTR on open,
+and eventually this line
+https://github.com/awawa-dev/HyperHDR/blob/master/sources/leddevice/dev_serial/EspTools.h#L63
+is unsetting DTR
+[xlord59]
+[] astur3l can't u test it on a breadboard?
+xlord59 03/03/2023 5:57 PM
+don't have any ;D
+[astur3l]
+astur3l 03/03/2023 5:18 PM
+can't u test it on a breadboard?
+[astur3l]
+[] xlord59 Solder between GND and EN, the negative goes to GND?
+astur3l 03/03/2023 5:16 PM
+correct
+[xlord59]
+[] astur3l voltage is the "upper limit", so its ok, probably it work :d
+, just make sure about the correct pola...
+xlord59 03/03/2023 5:12 PM
+Solder between GND and EN, the negative goes to GND?
+[astur3l]
+astur3l 03/03/2023 5:11 PM
+(no content)
+[16778598975716549644929756984702.png]
+ 16778598975716549644929756984702.png
+51.61 KB External
+[astur3l]
+[] xlord59 Is it the right capacitor? I've asked the one for ESP32
+voltage, but it sas 50V on cap for some reas...
+astur3l 03/03/2023 5:09 PM
+voltage is the "upper limit", so its ok, probably it work :d , just make
+sure about the correct polarity
+[xlord59]
+[] astur3l yeah, add a 1-10uF (tantalum or electrolytic) cap between
+EN+GND
+xlord59 03/03/2023 5:07 PM
+Is it the right capacitor? I've asked the one for ESP32 voltage, but it
+sas 50V on cap for some reason
+[PXL_20230303_142428637.jpg]
+ PXL_20230303_142428637.jpg
+2.04 MB External
+_nurikk_ 03/03/2023 4:35 PM
+Generic esp32 works well btw, ftdi implementation is just for fun
+03/03/2023 4:33 PM
+And then comes ftdi :))
+03/03/2023 4:33 PM
+Using esp32-S2 was way to unstable, then I switched back to original
+esp32
+[] astur3l that time u said it works just not after turning off on the
+LEDs in hdr, what u fixed by increasing ...
+_nurikk_ 03/03/2023 4:32 PM
+That was false positive, only increased reset pulse worked for me
+[astur3l]
+astur3l 03/03/2023 4:30 PM
+https://discord.com/channels/407937994037919756/974942819707924511/1055648986884743228
+[astur3l]
+_nurikk_ I’ve tried capacitor solution(even with different caps), it
+didn’t work at all for me ¯\_(ツ)_/¯
+astur3l 03/03/2023 4:29 PM
+that time u said it works just not after turning off on the LEDs in hdr,
+what u fixed by increasing pulse time, wasn't like thid?
+_nurikk_ I’ve tried capacitor solution(even with different caps), it
+didn’t work at all for me ¯\_(ツ)_/¯
+_nurikk_ 03/03/2023 4:27 PM
+That’s why I implemented ftdi driver:) it just works
+[] astur3l and sure, doing software hacks which works only in one
+application, truly better than a hardware sol...
+_nurikk_ 03/03/2023 4:25 PM
+I’ve tried capacitor solution(even with different caps), it didn’t work
+at all for me ¯\_(ツ)_/¯
+[astur3l]
+astur3l 03/03/2023 4:20 PM
+you also did the same with hyperserial, nice to see you take my advices
+after all :p but that time you also tried to make fun of me
+[astur3l]
+astur3l 03/03/2023 3:58 PM
+and sure, doing software hacks which works only in one application,
+truly better than a hardware solution which works everywhere and causes
+no issues, meanwhile the software mambojambo isnt works reliable at all,
+so dont push hyperhdr soo much please  also you wont help ppl with
+keep telling them its defective board.. that's not a solution, sure ,
+buy what you suggest, instead of a .001$ capacitor (edited)
+03/03/2023 3:57 PM
+why esp docs isnt good enought for you? meanwhile you cannot give a
+simple answer, all what can do is insulting 
+03/03/2023 3:56 PM
+you cant just accept the facts?
+03/03/2023 3:56 PM
+youre talking complety nonense, who injectes drivers into webos
+system?::DDDD
+[awawa_dev]
+awawa_dev 03/03/2023 3:55 PM
+These were not my ideas: injecting unnecessary driver into webos
+system..capacitor soldering when user tries to connect to system device
+an not esp32. you're right ... actually, it's rather not experiments,
+but blind blunder.
+[astur3l]
+astur3l 03/03/2023 3:54 PM
+i write again once, it works fine with VP drivers, instead of usb cdc
+acm
+03/03/2023 3:52 PM
+this is what you try fo fix via software workarounds with less success
+(edited)
+03/03/2023 3:51 PM
+here's your experiement
+03/03/2023 3:51 PM
+Some OS and/or drivers may activate RTS and or DTR automatically when
+opening the serial port (true only for some serial terminal programs,
+not esptool.py), pulling them low together and holding the ESP in reset.
+If RTS is wired directly to EN then RTS/CTS “hardware flow control”
+needs to be disabled in the serial program to avoid this. An additional
+circuitry is implemented in order to avoid this problem - if both RTS
+and DTR are asserted together, this doesn’t reset the chip. The
+schematic shows this specific circuit with two transistors and its truth
+table.
+https://docs.espressif.com/projects/esptool/en/latest/esp32/advanced-topics/boot-mode-selection.html
+If this circuitry is implemented (all Espressif boards have it), adding
+a capacitor between the EN pin and GND (in the 1uF-10uF range) is
+necessary for the reset circuitry to work reliably. This is shown in the
+ESP32 Module section of the schematic.
+03/03/2023 3:50 PM
+who experimenting on users?:DDD its only you
+[awawa_dev]
+awawa_dev 03/03/2023 3:50 PM
+Simply you cant reset esp32-s2 in the same way as esp32, that's why the
+reset is skipped. You learn new things every day, don't you? but why
+experiment on users?
+[astur3l]
+astur3l 03/03/2023 3:49 PM
+but if insulting is what u can do instead of answering, dont bother 
+03/03/2023 3:48 PM
+so all board are defective except s2!!!!, thank you master (edited)
+[awawa_dev]
+awawa_dev 03/03/2023 3:46 PM
+fear for users here with such an expert
+03/03/2023 3:46 PM
+esp32-s2 doesnt use a reset 
+[astur3l]
+astur3l 03/03/2023 3:46 PM
+"all board had reset issue with 100ms pulse and works fine with 150ms
+pulse"
+03/03/2023 3:46 PM
+https://github.com/awawa-dev/HyperSerialESP32/issues/13#issuecomment-1364565581
+Can't run on webOS 7 LG OLED C2 · Issue #13 · awawa-dev/HyperSerial...
+Hello! Thanks for a great project! :) I&#39;m trying to make it work on
+my rooted lg tv using esp32 dev kit with CH9102F usb2uart chip, which is
+supported natively by tv os. But it doesn&#3...
+[]
+[awawa_dev]
+awawa_dev 03/03/2023 3:44 PM
+"Detected ESP32-S2 lolin mini type board. HyperHDR skips the reset."
+that's your reset @asturel
+[astur3l]
+astur3l 03/03/2023 3:44 PM
+as esp docs states.
+03/03/2023 3:44 PM
+but seems like you cant answer why it works perfectly with VP drivers
+[astur3l]
+[] awawa_dev > thats why he added esp handshake its doing a manually
+longer reset.....) Wrong again. No, I didnt...
+astur3l 03/03/2023 3:43 PM
+". I have one issue with resetting ESP32 S2 Lolin Mini (refuses to reset
+itself) so maybe I'll experiment with that pulse time in future. PR can
+be merged now. Thank you."
+[astur3l]
+astur3l 03/03/2023 3:42 PM
+https://github.com/awawa-dev/HyperSerialESP32/issues/13#issuecomment-1364568809
+Can't run on webOS 7 LG OLED C2 · Issue #13 · awawa-dev/HyperSerial...
+Hello! Thanks for a great project! :) I&#39;m trying to make it work on
+my rooted lg tv using esp32 dev kit with CH9102F usb2uart chip, which is
+supported natively by tv os. But it doesn&#3...
+[]
+03/03/2023 3:41 PM
+so if it works without it, why he needed to increase it
+[awawa_dev]
+awawa_dev 03/03/2023 3:41 PM
+@asturel you are talking complete nonsense. lolil mini doesnt reset at
+all. It's even in the HyperHDR logs when it detects esp32-s2. (edited)
+[astur3l]
+astur3l 03/03/2023 3:41 PM
+https://github.com/awawa-dev/HyperHDR/pull/468
+Use longer reset pulse by nurikk · Pull Request #468 · awawa-dev/Hy...
+Use longer reset pulse to make sure that esp is completely reseted Fixes
+awawa-dev/HyperSerialESP32#13 What kind of change does this PR
+introduce? (check at least one) Bugfix Feature Code style...
+[]
+[astur3l]
+[] awawa_dev > so why lolin mini needed the same workaround? again
+wrong, lolin mini doesnt need a reset at all.
+astur3l 03/03/2023 3:40 PM
+u don't remember @nurikk pr where the reset time increased? :p
+[awawa_dev]
+[] astur3l so why lolin mini needed the same workaround?
+awawa_dev 03/03/2023 3:39 PM
+> so why lolin mini needed the same workaround? again wrong, lolin mini
+doesnt need a reset at all.
+[awawa_dev]
+[] astur3l <@409476854123069450> awawa says its a 'badly designed board'
+awawa_dev 03/03/2023 3:38 PM
+> thats why he added esp handshake its doing a manually longer
+reset.....) Wrong again. No, I didnt added. It works for my boards
+without any problems with default timing for reset. This change was
+provided by a user as PR and included in HyperHDR later as a workaround
+for such poor boards.
+[astur3l]
+astur3l 03/03/2023 3:36 PM
+btw the "defective" board works just fine on windows with vp drivers
+03/03/2023 3:36 PM
+or any uart what uses usb cdc acm driver
+[astur3l]
+[] awawa_dev I'm tired of this, this board design is simply defective,
+other users have similar experience, it's ...
+astur3l 03/03/2023 3:35 PM
+so why lolin mini needed the same workaround?
+[awawa_dev]
+[] astur3l <@409476854123069450> awawa says its a 'badly designed board'
+awawa_dev 03/03/2023 3:35 PM
+I'm tired of this, this board design is simply defective, other users
+have similar experience, it's explained in the links that are provided
+in my latest post in the blog.
+[awawa_dev]
+hellobox. why is he getting vid/pid of 0?
+https://discord.com/channels/407937994037919756/931706504627773450/1...
+awawa_dev 03/03/2023 3:30 PM
+> why is he getting vid/pid of 0? > Exactly, you are right. A lot of
+effort has gone into this thread to hack some poor LG component that has
+done nothing wrong, including providing the driver that is completely
+unnecessary for this UART on webos. Hope he didn't break anything. For
+future reference: there is 'auto' feature for path selection that with
+'esp handshake' does the magic. Checking logs when the path is
+discovered is also helpful. It's in the v19 changelog. (edited)
+March 2, 2023
+[astur3l]
+[] xlord59 btw, is it possible to disable X LEDs at the begginnng of the
+strip and Y LEDs at the end with Hyper...
+astur3l 03/02/2023 8:23 PM
+check led layout 
+[astur3l]
+[] xlord59 Linux LGwebOSTV 4.4.84-169.gld4tv.4 #1 SMP PREEMPT Tue Jan 25
+15:13:01 KST 2022 aarch64 GNU/Linux
+astur3l 03/02/2023 8:20 PM
+so my compiled driver wont work for you :/
+ 1
+[xlord59]
+xlord59 03/02/2023 8:18 PM
+btw, is it possible to disable X LEDs at the begginnng of the strip and
+Y LEDs at the end with HyperHDR?
+[astur3l]
+astur3l 03/02/2023 8:18 PM
+should the kernel driver implement something for this unbind/bind
+@hellobox ?:D or it just some lower level thing
+[xlord59]
+xlord59 03/02/2023 8:17 PM
+Linux LGwebOSTV 4.4.84-169.gld4tv.4 #1 SMP PREEMPT Tue Jan 25 15:13:01
+KST 2022 aarch64 GNU/Linux
+[astur3l]
+astur3l 03/02/2023 8:12 PM
+type `uname -a`
+[xlord59]
+[] astur3l i just turned off my tv to grab from it.. (not sure that i
+still have it tho :D)  not sure what is...
+xlord59 03/02/2023 8:12 PM
+its oled55c9
+[astur3l]
+astur3l 03/02/2023 8:11 PM
+i couldnt really test tho otherwise that its loaded  (edited)
+ ch343.ko
+207.38 KB External
+03/02/2023 8:10 PM
+i just turned off my tv to grab from it.. (not sure that i still have it
+tho :D)  not sure what is @Al 's tv model tho (edited)
+hellobox. 03/02/2023 8:09 PM
+but i'm a bit busy atm
+ 1
+03/02/2023 8:09 PM
+sure
+[astur3l]
+hellobox. <@409476854123069450> your best option (other than adding a
+cap) is probably trying to unbind the `c...
+astur3l 03/02/2023 8:08 PM
+will you compile vp driver?:D
+[satdx62]
+[] xlord59 Could you please tell me how can I do it?
+satdx62 03/02/2023 7:43 PM
+I think that does not work for you, because you operate your ESP without
+level shifter and capacitor. I thought that you had. The recommendation
+of asturel with capacitor between EN and GND of the ESP and +3,3V and
+GND is correct. (edited)
+[level_shifter.jpg]
+ level_shifter.jpg
+30.38 KB External
+ 1
+[xlord59]
+hellobox. <@409476854123069450> your best option (other than adding a
+cap) is probably trying to unbind the `c...
+xlord59 03/02/2023 7:33 PM
+Could you please tell me how can I do it?
+hellobox. 03/02/2023 7:12 PM
+the flow control stuff won't help because they seem to be using DTR
+03/02/2023 7:11 PM
+@Al your best option (other than adding a cap) is probably trying to
+unbind the cdc_acm driver and use the VCP one
+[satdx62]
+hellobox. and it's set up the same way?
+satdx62 03/02/2023 7:07 PM
+No, not at the moment, but I wanted to help further because I tested
+this, and it worked on the first try. But I also have like asturel
+capacitor between EN and ground.
+hellobox. 03/02/2023 7:03 PM
+see if you can reverse engineer the reset circuitry
+03/02/2023 7:02 PM
+and it's set up the same way?
+[satdx62]
+hellobox. do you have one of these boards?
+satdx62 03/02/2023 7:02 PM
+No, but ESP32 as well.
+[ESP32.jpg]
+ ESP32.jpg
+427.84 KB External
+hellobox. 03/02/2023 6:55 PM
+it could be going under the transistor to pin 1
+[] satdx62 Sorry it goes into PIN 2 and that is emitter on a SOT-23
+hellobox. 03/02/2023 6:54 PM
+do you have one of these boards?
+hellobox. 03/02/2023 6:54 PM
+it does look like it's going to pin 2...
+03/02/2023 6:52 PM
+J3Y seems to be a commonly used marking for S8050s
+[satdx62]
+hellobox. shouldn't it be going to the base?
+satdx62 03/02/2023 6:50 PM
+Sorry it goes into PIN 2 and that is emitter on a SOT-23
+hellobox. 03/02/2023 6:47 PM
+and then, presumably, to the mcu
+03/02/2023 6:47 PM
+which go to 1k resistors
+03/02/2023 6:46 PM
+it looks like the only other signals they use are rx and tx
+[astur3l]
+astur3l 03/02/2023 6:46 PM
+first i thought its burnout 
+[] astur3l i never verified my theory that its actually the dst/rst 
+just esp stuck in some weird boot/loop s...
+hellobox. 03/02/2023 6:46 PM
+i mean, the only reason i can think of that they'd have one of the
+signals going to a transistor like that is for reset
+[astur3l]
+hellobox. is that DTR going to a transistor?
+astur3l 03/02/2023 6:45 PM
+i never verified my theory that its actually the dst/rst  just esp
+stuck in some weird boot/loop state
+hellobox. 03/02/2023 6:44 PM
+shouldn't it be going to the base?
+[satdx62]
+hellobox. is that DTR going to a transistor?
+satdx62 03/02/2023 6:43 PM
+that DTR going to a transistor Colector
+hellobox. 03/02/2023 6:38 PM
+NPN
+03/02/2023 6:38 PM
+not really important exactly what it is
+03/02/2023 6:38 PM
+maybe this
+https://datasheet.lcsc.com/szlcsc/Changjiang-Electronics-Tech-CJ-S8050_C2146.pdf
+[xlord59]
+hellobox. what does it say on those transistors? 3Y?
+xlord59 03/02/2023 6:37 PM
+J3Y
+hellobox. 03/02/2023 6:37 PM
+https://unix.stackexchange.com/questions/446088/how-to-prevent-dtr-on-open-for-cdc-acm

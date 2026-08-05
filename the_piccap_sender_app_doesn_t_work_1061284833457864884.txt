@@ -1,0 +1,129 @@
+February 1, 2023
+Deleted User 02/01/2023 10:00 PM
+Hello everybody. can you help me please, i have piccap which says
+receiver:disconnected but it is catching. when i go to hyperion i start
+the service but nothing works. I don't even see the tv in live video
+January 8, 2023
+[t_u_x_]
+t_u_x_ 01/08/2023 5:45 PM
+Thanks for your help! It seems to be working
+[astur3l]
+astur3l 01/08/2023 2:26 PM
+service started via
+`luna-send -n 1 -f luna://org.webosbrew.piccap.service/status '{}'`
+01/08/2023 2:26 PM
+you can archieve autostart by symlinking
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/piccapautostart
+to /var/lib/webosbrew/init.d/ , but dunno if that webos supports it
+ 1
+[t_u_x_]
+t_u_x_ 01/08/2023 1:20 PM
+Only 12 fps and still can't navigate on the frontend app but hey, it
+seems to "work"
+[P_20230108_131904.jpg]
+ P_20230108_131904.jpg
+1.44 MB External
+[t_u_x_]
+t_u_x_ 01/08/2023 12:15 PM
+I changed the scaledown limit so no warning but still didn't work.
+However, I found this thread:
+https://hyperion-project.org/forum/index.php?thread/12347-piccap-hyperion-sender-app-ambilight-for-lg-webos-tvs/&postID=45434#post45434
+and after setting "nogui":true it started to work! (edited)
+[astur3l]
+astur3l 01/08/2023 11:09 AM
+maybe its just because you got "invalid" reply from luna reply..
+probably you would need gdb to figure it out... you can get from
+buildroot https://github.com/openlgtv/buildroot-nc4 if u want to play
+with it.. or just because
+` 0.151s [WARN capture_init ] scaledown is limited to 320x240 while 192x96 has been chosen - there's a chance this will crash! `
+?:D
+01/08/2023 11:04 AM
+"Segmentation fault" 
+[t_u_x_]
+t_u_x_ 01/08/2023 10:59 AM
+"hyperion-client connected!"
+01/08/2023 10:58 AM
+Seems to gone a bit further now
+ message.txt
+6.4 KB External
+[astur3l]
+[] t_u_x_ So I tried again after adding a config.json there. This is the
+full output
+astur3l 01/08/2023 10:55 AM
+you need `-c config.json` to load the cfg
+ 1
+[t_u_x_]
+t_u_x_ 01/08/2023 10:02 AM
+    root@LGwebOSTV:/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service# cat config.json 
+    {"priority":150,"backend":"auto","address":"127.0.0.1","port":19400,"width":192,"height":96,"fps":25,"vsync":false,"autostart":true,"nogui":false,"novideo":false,"uibackend":"auto"}
+01/08/2023 9:56 AM
+So I tried again after adding a config.json there. This is the full
+output (edited)
+ message.txt
+6.55 KB External
+January 7, 2023
+[astur3l]
+astur3l 01/07/2023 6:30 PM
+there's no indication that the capture wont work (at this stage), the
+opposite:
+` 0.737s [ DBG unicapture_init_backend] libdile_vt_backend.so: success`
+01/07/2023 6:29 PM
+the issue is the address is empty, so it failes to connect:
+       0.761s [WARN hyperion_client     ] inet_pton error occured (hostname: ): Success
+         0.762s [ ERR connection_loop     ] Error! hyperion_client.
+01/07/2023 6:28 PM
+or try run via cli args (edited)
+01/07/2023 6:27 PM
+https://discord.com/channels/407937994037919756/931706504627773450/1015950980069732402
+https://cdn.discordapp.com/attachments/931706504627773450/1015950979897770044/config.json
+place config.json into
+`/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service`
+(edited)
+[astur3l]
+[] t_u_x_ Alright, thanks for the reply. When I try to run
+hyperion-webos it throws *"Unknown method getPower...
+astur3l 01/07/2023 6:26 PM
+it ~~crashed~~ errored ->exited due to missing config, which would
+created by the gui (edited)
+ 1
+[t_u_x_]
+t_u_x_ 01/07/2023 4:39 PM
+Alright, thanks for the reply. When I try to run hyperion-webos it
+throws *"Unknown method getPowerState", probably due to not having
+support for this version as you say,
+      0.737s [ DBG unicapture_init_backend] libdile_vt_backend.so: success
+         0.737s [ DBG unicapture_try_backends] try_backends: libdile_vt_backend.so succeeded
+         0.737s [ DBG service_register    ] Try register on LSRegister
+         0.742s [ DBG service_register    ] Try legacy register on LSRegisterPubPriv
+         0.749s [ DBG main                ] Going into main loop..
+         0.754s [ DBG connection_loop     ] Starting connection loop
+         0.755s [INFO connection_loop     ] Connecting hyperion-client..
+         0.756s [INFO power_callback      ] Power status callback message: {"returnValue":false,"errorCode":-1,"errorText":"Unknown method \"getPowerState\" for category \"/power\""}
+         0.757s [ DBG power_callback      ] power_callback: luna-reply does not contain 'state'
+         0.759s [INFO power_callback      ] Power status callback message: { "subscribed": true, "returnValue": true, "state": "Active" }
+         0.761s [WARN hyperion_client     ] inet_pton error occured (hostname: ): Success
+         0.762s [ ERR connection_loop     ] Error! hyperion_client.
+         0.763s [INFO connection_loop     ] Connection destroyed, waiting...
+         0.762s [ DBG unicapture_run      ] Attempting UI capture init...
+         0.763s [INFO unicapture_run      ] UI capture started
+         0.763s [ DBG unicapture_run      ] Attempting video capture init...
+         0.764s [INFO unicapture_run      ] Video capture started
+         0.765s [INFO unicapture_vsync_handler] vsync thread starting...
+    root@LGwebOSTV:/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service# 
+[astur3l]
+astur3l 01/07/2023 4:23 PM
+WebOS 2.2 isn't supported, probably the capture won't work either, not
+just the gui
+[t_u_x_]
+t_u_x_ 01/07/2023 4:12 PM
+    "board_type": "M14_DVB",
+    "hardware_id": "HE_DTV_W15M_AFAAABAA",
+    "product_id": "49LF632V-ZC",
+    "core_os_release": "2.2.3-178",
+    "webos_manufacturing_version": "04.06.75"
+(edited)
+[t_u_x_]
+t_u_x_ 01/07/2023 4:11 PM
+The PicCap sender app doesn't work correctly on my LG 49LF632V. The
+buttons are being shown outside of the TV display and nothing happens
+when I try to navigate.

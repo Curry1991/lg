@@ -1,0 +1,2677 @@
+September 2, 2025
+[awawa_dev]
+[] satdx62 Hello <@785543671021699092>, I have currently configured it
+so that in build.yml under "dependency_l...
+awawa_dev 09/02/2025 2:55 PM
+Hi @satdx62 I've managed to compile Qt6.8.3 alone on webos, now I'm
+testing app cross-compiling: have some host cpp flags leaking so I'm
+hardening the build now. BTW while working with ChatGPT, a funny thing
+came up: regarding Qt 5.15 it turns out that a commercial license is
+required for Qt 5.15.3 and higher :-] The last free version from the Qt
+5.15 branch is Qt 5.15.2, and Debians get around this by using 5.15.2 +
+adding patches instead of using the Qt sources. I want and need to be on
+the safe side, so for me the situation is clear: Qt 5.15.2 or Qt 6.8 for
+HyperHDR.
+ 1  2
+[awawa_dev]
+[] yolofant I don't really understand why hyperHDR uses qt in the first
+place
+awawa_dev 09/02/2025 2:48 PM
+It's HyperHDR. You'd be surprised: for many, many reasons: QStrings,
+threads and slot&signal communication, SSL & network communication
+handling. try to do it in pure C++/STL and you will understand.
+[yolofant]
+yolofant 09/02/2025 1:23 PM
+and pulling in that massive framework just for networking / serial seems
+excessive
+09/02/2025 1:23 PM
+after all it's not really a gui application
+09/02/2025 1:22 PM
+I don't really understand why hyperHDR uses qt in the first place
+09/02/2025 1:22 PM
+yeah openssl is also libcrypto
+[satdx62]
+[] yolofant you need libssl.so.3
+satdx62 09/02/2025 11:17 AM
+@Yolofant, it only worked once I added “libcrypto.so.3” as well. So
+“libcrypto.so.3” and “libssl.so.3” are necessary for this.
+ 1
+[satdx62]
+satdx62 09/02/2025 10:56 AM
+Hello @Awawa, I have currently configured it so that in build.yml under
+"dependency_libs," instead of "libcrypto.so.1.1" and "libssl.so.1.1," I
+have used the versions "libcrypto.so.3" and "libssl.so.3." This added
+the dependencies to the releases, and now the Hue lamps are working
+too.
+https://github.com/satgit62/hyperhdr-webos-loader/blob/infinite_color_engine/.github/workflows/build.yml#L105
+I would like to take your recommendation and try to integrate a minimal
+Qt 6.8 separately. (edited)
+ 1
+[o1ep]
+o1ep 09/02/2025 9:48 AM
+Did have it set to auto, manually selected the correct device and will
+see if that helps with the issue
+[satdx62]
+[] o1ep Im not using "wled" but having the controller directly connected
+to TV and using adalight usb
+satdx62 09/02/2025 9:26 AM
+Have you set it up like this?:
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#hyperhdr-led-controller-type-settings-for-rp2040-usb-controller-with-hyperserialpico-or-hyperserial-esp32-generics2-mini-firmware
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[satdx62]
+[] o1ep Im not using "wled" but having the controller directly connected
+to TV and using adalight usb
+satdx62 09/02/2025 9:22 AM
+Oh! Sorry, I overlooked that you are using “HyperSerial” on esp32 and
+not WLED. (edited)
+[o1ep]
+[] satdx62 Hi, under **LED Controller**, you can also use the controller
+type “**udpraw**” Protocol instead of ...
+o1ep 09/02/2025 9:20 AM
+Im not using "wled" but having the controller directly connected to TV
+and using adalight usb
+[image.png]
+ image.png
+83.95 KB External
+[satdx62]
+[] o1ep Hi. It’s already disabled.
+satdx62 09/02/2025 9:13 AM
+Hi, under LED Controller, you can also use the controller type “udpraw”
+Protocol instead of wled. You must enter the IP address of your WLED
+under Target IP and port:19446.
+See:https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#controller-udpraw-protocol-for-wled
+(edited)
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[o1ep]
+[] satdx62 Yes, you should disable the “Disable powerstate check” option
+in PicCap's advanced settings.
+o1ep 09/02/2025 8:42 AM
+Hi. It’s already disabled.
+[IMG_6543.jpg]
+ IMG_6543.jpg
+583.17 KB External
+[satdx62]
+[] yolofant and also LD_LIBRARY_PATH must have the folder first before
+system openssl
+satdx62 09/02/2025 12:43 AM
+Thanks, I have now also installed libssl.so.3, but it still doesn't
+work, even though it was compiled during the build. I'll continue
+working on it tomorrow. Good night! (edited)
+[libssl.png]
+ libssl.png
+48.51 KB External
+[yolofant]
+yolofant 09/02/2025 12:12 AM
+and also LD_LIBRARY_PATH must have the folder first before system
+openssl
+[yolofant]
+[] satdx62 <@195583665265311744> Hi, I added libssl.so.1.1 and
+libcrypto.so.1.1 but it still doesn't work. Does...
+yolofant 09/02/2025 12:11 AM
+you need libssl.so.3
+September 1, 2025
+[satdx62]
+[] o1ep Hi, using HyperHDR and Piccap with a hyperserialesp32, but often
+when I turn off my TV the leds rema...
+satdx62 09/01/2025 11:20 PM
+Yes, you should disable the “Disable powerstate check” option in
+PicCap's advanced settings.
+[o1ep]
+o1ep 09/01/2025 10:40 PM
+Hi, using HyperHDR and Piccap with a hyperserialesp32, but often when I
+turn off my TV the leds remain on. And solution for this? (edited)
+[satdx62]
+satdx62 09/01/2025 10:02 PM
+(no content)
+[libssl_libcrypt.png]
+ libssl_libcrypt.png
+45.94 KB External
+[satdx62]
+[] yolofant You have to make sure those are in ld library path first
+satdx62 09/01/2025 8:58 PM
+@Yolofant Hi, I added libssl.so.1.1 and libcrypto.so.1.1 but it still
+doesn't work. Does it work for you with the Hue lamp? (edited)
+[awawa_dev]
+[] satdx62 Thank you in advance, <@785543671021699092>. I can't wait to
+find a way to fix it and make it work o...
+awawa_dev 09/01/2025 8:52 PM
+II think that tomorrow at the latest, I will let you know how it went
+with Qt6.8 LTS
+ 1
+[yolofant]
+yolofant 09/01/2025 8:44 PM
+You have to make sure those are in ld library path first
+[satdx62]
+[] yolofant It just need to load the right library
+satdx62 09/01/2025 8:35 PM
+I manually copied libssl.so.1.0.0 from /usr/lib/ to the directory
+/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/.
+However, the error remained. libssl.so.1.1 is in dependency_libs, but
+for some reason it is not compiled. (edited)
+[yolofant]
+yolofant 09/01/2025 8:29 PM
+It just need to load the right library
+09/01/2025 8:29 PM
+Why
+[satdx62]
+[] yolofant Webos 3 has openssl 1.0.2
+satdx62 09/01/2025 8:28 PM
+That still wouldn't be enough, because it is pointed out that: Please
+install OpenSSL 1.1.1 or higher (3.x)
+[satdx62]
+[] yolofant You might need to change ld library path
+satdx62 09/01/2025 8:17 PM
+I got this output with this command on webOS 3.9.
+    root@LGwebOSTV:~# find /usr/lib /lib /usr/local/lib -name ‘libssl*.so*’
+    /usr/lib/libssl.so.1.0.0
+    root@LGwebOSTV:~#
+[yolofant]
+yolofant 09/01/2025 8:14 PM
+You might need to change ld library path
+[satdx62]
+[] awawa_dev Well, it's a proper mess  it doesnt work with the system
+libssl either, unfortunately I doubt Qt5....
+satdx62 09/01/2025 8:14 PM
+Thank you in advance, @Awawa. I can't wait to find a way to fix it and
+make it work on webOS. Users of the Philips Hue in particular are very
+interested in using these new features. (edited)
+ 1
+[yolofant]
+yolofant 09/01/2025 8:13 PM
+Webos 3 has openssl 1.0.2
+[awawa_dev]
+awawa_dev 09/01/2025 8:05 PM
+Well, it's a proper mess  it doesnt work with the system libssl
+either, unfortunately I doubt Qt5.15 supports plugin debugging
+(QT_DEBUG_PLUGINS) since I think OpenSSl was added as a plugin in Qt6.
+But you already have libssl 1.1.1 dependency here:
+https://github.com/satgit62/hyperhdr-webos-loader/commit/5cd2b85484a21da8642891992a1b7eca5ae9990e
+since webos SDK move from OpenSSL 1.1 to OpenSSL it cannot find it and
+pack it...probably changing there libssl.so.1.1.1 to libssl.so.3 will do
+nothing (will be found but wont work with QNetwork but who knows?)...
+typical story for outdated system. I will try to compile minimal Qt6.8
+and will git you feedback
+[satdx62]
+satdx62 09/01/2025 8:01 PM
+@Awawa, I think your suggestion that we compile our own Qt 6.8 without
+the GUI components for HyperHDR is the better option.
+[satdx62]
+[] awawa_dev I think the easiest would be to copy libssl (you should
+find it on your webos somewhere in the lib f...
+satdx62 09/01/2025 7:48 PM
+Hi @Awawa , I already did that, but it's an hour-old library and the
+error still exists: Please install OpenSSL 1.1.1 or higher (3.x)
+    root@LGwebOSTV:~# find /usr/lib /lib /usr/local/lib -name 'libssl*.so*'
+    /usr/lib/libssl.so.1.0.0
+    root@LGwebOSTV:~#
+(edited)
+[awawa_dev]
+awawa_dev 09/01/2025 7:28 PM
+I think the easiest would be to copy libssl (you should find it on your
+webos somewhere in the lib folder) to HyperHDR folder and restart
+HyperHDR. If QNetwork still refuses to work with current libssl that
+means current Qt5.15 runtime SDK is broken and needs to be fixed. Or we
+can try to compile our own Qt6.8 (without GUI junk) for HyperHDR 
+(edited)
+[satdx62]
+[] yolofant 5.15.3 added support
+satdx62 09/01/2025 6:52 PM
+Great! Where exactly can I find 5.15.3 support @Yolofant ? (edited)
+[awawa_dev]
+awawa_dev 09/01/2025 6:47 PM
+You can also copy it manually to current HyperHDR folder on webOS
+ 1
+[satdx62]
+[] awawa_dev if compiled properly. <@917488160580182068> could you add
+libssl like other libraries to the package...
+satdx62 09/01/2025 6:46 PM
+Yes, I will do that.
+[awawa_dev]
+awawa_dev 09/01/2025 6:44 PM
+if compiled properly. @satdx62 could you add libssl like other libraries
+to the package and see if that helps?
+[yolofant]
+yolofant 09/01/2025 6:38 PM
+5.15.3 added support
+09/01/2025 6:37 PM
+It is supported
+[satdx62]
+satdx62 09/01/2025 6:29 PM
+In order to take full advantage of current and future HyperHDR versions,
+I believe that we will have no choice but to use Qt6. Or is there still
+a way around this in terms of compatibility, @Yolofant?
+[satdx62]
+[] awawa_dev it's not about OpenSSL: Qt5.15 is simply not compatible
+with OpenSSL 3.x
+satdx62 09/01/2025 6:15 PM
+That's exactly what I meant. I would like to know how to fix this so
+that everything works. “BR2_PACKAGE_LIBOPENSSL_ENABLE_SSL3=y is enabled
+in buildroot-nc4, but I think it's more about the compatibility modes
+between Qt 5.15.2 and the OpenSSL 3.x .” (edited)
+[awawa_dev]
+awawa_dev 09/01/2025 5:57 PM
+it's not about OpenSSL: Qt5.15 is simply not compatible with OpenSSL 3.x
+ 1
+[yolofant]
+yolofant 09/01/2025 5:45 PM
+So I would assume it to work
+09/01/2025 5:45 PM
+It's from the default buildroot recipe
+09/01/2025 5:45 PM
+I wouldn't worry. OpenSSL is mostly forwards compatible and it probably
+works
+[awawa_dev]
+awawa_dev 09/01/2025 5:33 PM
+hmm.. this escalates quickly  In the current webos SDK in the path
+arm-webos-linux-gnueabi_sdk-buildroot\arm-webos-linux-gnueabi\sysroot\usr\lib\
+there is libssl.so.3, which is OpenSSL version 3.x. So this SDK broke
+the homebrew Qt5.15 framework, which requires OpenSSL 1.1 (while this
+one:
+https://github.com/openlgtv/buildroot-nc4/releases/tag/webos-2974f83 has
+OpenSSL 1.1.1: libssl.so.1.1). So maybe you want Qt6.8 to be an LTS with
+10 years of support and numerous changes/fixes for cross-platform, since
+Qt5.15 no longer works properly on webos?  Over time, other things
+will probably bite in the ass since Qt5.15 is not supported and as you
+can see, other components on which it is based are moving forward.
+(edited)
+[satdx62]
+[] awawa_dev Wait...I think Qt6 is not used here? If it's still Qt5.15
+then it's a clear runtime bundle issue: Qt...
+satdx62 09/01/2025 4:49 PM
+Yes, we are still using Qt5.15; they have re-enabled support. As already
+mentioned, the app works smoothly with all other LED controllers. Only
+Hue still causes problems. (edited)
+[awawa_dev]
+[] satdx62 Hello <@785543671021699092> , thank you for the quick tip.
+I will check everything and then get b...
+awawa_dev 09/01/2025 4:46 PM
+Wait...I think Qt6 is not used here? If it's still Qt5.15 then it's a
+clear runtime bundle issue: QtNetwork is trying to load OpenSSL library
+and it fails so no https instance (all HyperHDR versions) and no Philips
+Hue support (HyperHDR v21 and newer, earlier mbedtls handled it). It's
+not a fatal error, otherwise the app works fine so it's easy to overlook
+it.
+[satdx62]
+[] awawa_dev <@917488160580182068> this has not changed since HyperHDR
+v21 (migration from mbedtls to openssl via...
+satdx62 09/01/2025 4:25 PM
+Hello @Awawa , thank you for the quick tip. I will check everything
+and then get back to you. I was just wondering why Philips Hue worked
+perfectly before this switch to Qt6 without any changes to our HyperHDR
+loader build. I will follow your recommendation and get rid of this
+“heavy junk.” (edited)
+[awawa_dev]
+awawa_dev 09/01/2025 4:15 PM
+@satdx62 this has not changed since HyperHDR v21 (migration from mbedtls
+to openssl via qt): you must bundle the OpenSSL library, it's missing in
+your package script or at least HyperHDR->QtNetwork cant find it later
+during runtime. There should be an info related to OpenSSL in HyperHDR's
+about page so you can verify it. I think Qt5.15 is using OpenSSL 1.1.1
+and Qt6.x is using OpenSLL 3.x: it's a must. On the other hand you
+should remove this heavy junk from the installer: imageformats
+sqldrivers libQt5Widgets libQt5Gui libQt5Sql. we'are not Hyperion.ng
+[satdx62]
+satdx62 09/01/2025 3:44 PM
+I also noticed this error message at the beginning of the log:
+    2025-09-01T15:24:19.146Z [WEBSERVER] No valid SSL certificate has been found (‘:/hyperhdrcrt.pem’). Did you install OpenSSL? 2025-09-01T15:24:19.146Z [WEBSERVER] The provided SSL key is invalid or not supported use RSA encrypt and PEM format (‘:/hyperhdrkey.pem>’) 2025-09-01T15:24:19.146Z [WEBSERVER] The provided SSL key is invalid or not supported use RSA encrypt
+However, it works despite this error message.
+[satdx62]
+satdx62 09/01/2025 3:23 PM
+@Yolofant Hi, I'm having problems connecting to HUE with the new
+HyperHDR "Infinite Color Engine" from Awawa. It requires at least
+OpenSSL 1.1.1 or higher. See log:
+    2025-09-01T10:40:23.291Z [LEDDEVICE1_PHILIPSHUE] You system is missing support for PSK-AES128-GCM-SHA256 cipher. Please install OpenSSL 1.1.1 or higher (3.x).
+    2025-09-01T10:40:23.291Z [LEDDEVICE1_PHILIPSHUE] Device 'philipshue' is disabled due to an error: 'Cannot initialize the neccesery ciphers. Please install OpenSSL 1.1.1 or higher (3.x)'
+    2025-09-01T10:40:23.292Z [LEDDEVICE1_PHILIPSHUE] Philips Hue Entertaiment API not connected!
+BR2_PACKAGE_LIBOPENSSL_ENABLE_SSL3=y is enabled in buildroot-nc4, but I
+think it's more about the compatibility mode between Qt 5.15.2 and the
+openssl we use. @Awawa switched to Qt6 but added back support for Qt
+5.15.2 so we can compile without integrating Qt6. I'm not yet sure
+whether OpenSSL compatibility is only not guaranteed under the old WebOS
+3.9. Everything else works great! Do you have any idea how to fix this?
+https://github.com/satgit62/buildroot-nc4/blob/master/configs/webos_tv_defconfig#L2323
+(edited)
+August 31, 2025
+[satdx62]
+[] pavel.mojito I've been testing this build since yesterday on my C4,
+works flawlessly good ! Thanks for dev and th...
+satdx62 08/31/2025 4:28 PM
+Good to hear. Thank you for your feedback.
+ 1
+[pavel.mojito]
+[] satdx62 Hi, The new '**Infinite Color Engine**' branch of the
+<@785543671021699092> webOS **HyperHDR** is n...
+pavel.mojito 08/31/2025 4:08 PM
+I've been testing this build since yesterday on my C4, works flawlessly
+good ! Thanks for dev and the build. (edited)
+[satdx62]
+satdx62 08/31/2025 3:01 PM
+Hi, The new 'Infinite Color Engine' branch of the @Awawa webOS HyperHDR
+is now available under 'My Guide' :
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+(edited)
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+ 1
+August 30, 2025
+[satdx62]
+satdx62 08/30/2025 6:49 PM
+@asturel Hi, The “smoothing factor” only applies to the “RGB Infinite
+Interpolator” (one of the new smoothing algorithms). See image. Further
+information on the algorithms can be found
+here:https://github.com/awawa-dev/HyperHDR/pull/1261#issuecomment-3239352517
+[4.png]
+ 4.png
+313.66 KB External
+Infinite Color Engine by awawa-dev · Pull Request #1261 · awawa-d...
+Infinite Color Engine &amp;amp; New Smoothing Algorithms I’m pleased to
+present a feature I’ve been looking forward to for a long time and have
+worked hard to bring to life: the Infinite Color Engi...
+[]
+ 1
+[satdx62]
+timcook4825 It‘s cool to adjust for that, Awawa recommends the cold
+version I think
+satdx62 08/30/2025 9:58 AM
+Yes, the cold version of the SK6812RGBW LEDs is recommended, but if you
+have the warm version, set it to “warm.” (edited)
+timcook4825 08/30/2025 9:57 AM
+It‘s cool to adjust for that, Awawa recommends the cold version I think
+ 1
+08/30/2025 9:56 AM
+I think I got the warm white version of the SK6812 lights
+08/30/2025 9:55 AM
+Yeah I‘ve seen those new options too, some new things to play around
+with 
+[satdx62]
+satdx62 08/30/2025 9:54 AM
+@Tim Cook ,However, I can already see an improvement in the color
+reproduction of my SK6812 in the image processing under “Infinite Color
+Engine,” especially when you set the right type (NW, CW, and WW) under
+temperature. (edited)
+[Infinite_Color_Engine.png]
+ Infinite_Color_Engine.png
+140.61 KB External
+[satdx62]
+timcook4825 I have tried the new color engine, do we need to have HD108
+strips to see any changes? Smoothing is ...
+satdx62 08/30/2025 9:42 AM
+Hi, According to @Awawa , extended color support is initially available
+in drivers for the following devices: "All Philips Hue bulbs that use
+the Entertainment API (v1 & v2). HD108 This includes a wide range of
+popular devices. With my own Philips Hue bulbs, the first noticeable
+improvement was the significantly smoother color changes— where
+previously there were noticeable “steps” in the color change, the
+transition now appears more continuous." I am also busy testing. You
+have to be patient because Awawa is still working on this feature. The
+smoothing function works on every LED controller and offers the right
+option for everyone. That's amazing! (edited)
+timcook4825 08/30/2025 9:24 AM
+My ambilight is still on a 6812 strip
+08/30/2025 9:23 AM
+I have tried the new color engine, do we need to have HD108 strips to
+see any changes? Smoothing is immediately noticeable
+[satdx62]
+[] astur3l <@785543671021699092> is "Smoothing factor" missing from ui?
+satdx62 08/30/2025 12:07 AM
+I checked it in the Windows version: the “smoothing factor” is missing
+there too.
+ 1
+August 29, 2025
+[astur3l]
+astur3l 08/29/2025 11:58 PM
+@Awawa is "Smoothing factor" missing from ui?
+[image.png]
+ image.png
+192.4 KB External
+[satdx62]
+satdx62 08/29/2025 10:27 PM
+@asturel , Qt6 is no longer required to compile the new branch. Thanks
+to @Awawa and his change (“Infinite Color Engine: Compatibility with
+Qt5.15”), I was able to compile the webOS version after all. The
+smoothing function alone, with its three options, is fantastic. Users of
+Full Color Range HD108 LED strips and Philips Hue lamps will certainly
+be delighted with the expanded color space. As always, Awawa has done a
+great job. You can test my build if you want. (edited)
+[1.png]
+ 1.png
+56.33 KB External
+ 1
+[satdx62]
+satdx62 08/29/2025 8:17 PM
+I will check again why the Q6 is not displayed, as no errors occurred
+during creation, or I will start from the beginning.
+[satdx62]
+[] astur3l
+https://github.com/satgit62/buildroot-nc4/releases/download/webOS.0.4/arm-webos-linux-gnueabi_sdk-bu...
+satdx62 08/29/2025 8:10 PM
+Yes, I saw it too.
+[astur3l]
+[] satdx62 Oh, yes, I see now that's strange because I've already
+activated Qt6 and built a release. Maybe I us...
+astur3l 08/29/2025 8:04 PM
+https://github.com/satgit62/buildroot-nc4/releases/download/webOS.0.4/arm-webos-linux-gnueabi_sdk-buildroot.tar.gz
+contains only qt5 libs + headers
+[satdx62]
+[] astur3l ```-- QT version 6 not found. Searching for QT version 5
+instead. -- Found Qt Version: 5.15.14``` so...
+satdx62 08/29/2025 7:38 PM
+Oh, yes, I see now that's strange because I've already activated Qt6 and
+built a release. Maybe I used the wrong release, I'll have to check
+again.
+[astur3l]
+[] satdx62
+https://github.com/satgit62/hyperhdr-webos-loader/actions/runs/17330248699/job/49204330042#step:8:69...
+astur3l 08/29/2025 7:35 PM
+    -- QT version 6 not found. Searching for QT version 5 instead.
+    -- Found Qt Version: 5.15.14
+so youre not using qt6
+[satdx62]
+[] astur3l what was the error? is the compiled buildroot available
+somewhere ?
+satdx62 08/29/2025 7:34 PM
+https://github.com/satgit62/hyperhdr-webos-loader/actions/runs/17330248699/job/49204330042#step:8:695
+Update build.yml · satgit62/hyperhdr-webos-loader@90c9ecd
+Contribute to satgit62/hyperhdr-webos-loader development by creating an
+account on GitHub.
+[]
+[astur3l]
+[] satdx62 I set the options to y today and compiled, but there are
+still errors: “infinite_color_engine” branc...
+astur3l 08/29/2025 7:34 PM
+what was the error? is the compiled buildroot available somewhere ?
+[satdx62]
+[] astur3l eh, in webos config only ```BR2_PACKAGE_QT6_ARCH_SUPPORTS=y
+BR2_PACKAGE_QT6_GL_SUPPORTS=y``` meanwh...
+satdx62 08/29/2025 7:20 PM
+I set the options to y today and compiled, but there are still errors:
+“infinite_color_engine” branch was not built successfully. (edited)
+[astur3l]
+[] yolofant there is a recipe
+astur3l 08/29/2025 7:15 PM
+eh, in webos config only
+    BR2_PACKAGE_QT6_ARCH_SUPPORTS=y
+    BR2_PACKAGE_QT6_GL_SUPPORTS=y
+meanwhile lgtv indeed have `BR2_PACKAGE_QT6 is not set` but the webos
+config was used for building hyperhdr (edited)
+[yolofant]
+yolofant 08/29/2025 7:12 PM
+but it shouldn't be enabled by default
+08/29/2025 7:12 PM
+there is a recipe
+[astur3l]
+[] awawa_dev And I remember the efforts that took place here a few years
+ago to finally manage to compile Qt5.15 ...
+astur3l 08/29/2025 7:10 PM
+yeah tuxuser + others (ww + infoswiki smx? :d) patched openlgtv-s
+buildroot for making qt5 compile, now its part of buildroot does qt6
+compiles with buildroot? anyone tried? :d
+[awawa_dev]
+awawa_dev 08/29/2025 6:57 PM
+And I remember the efforts that took place here a few years ago to
+finally manage to compile Qt5.15 for webos, but of course my memory may
+be playing tricks on me  (edited)
+[yolofant]
+yolofant 08/29/2025 6:50 PM
+I think there is some qt version by default
+[awawa_dev]
+[] yolofant no, we should only include what's available by default on
+webos
+awawa_dev 08/29/2025 6:35 PM
+If I'm not mistaken, Qt5.15 is also not part of the core WebOS toolchain
+and needed to be pre-compiled and included in the cross-compilation
+toolchain that is used here. (edited)
+[satdx62]
+[] awawa_dev Hi Are there any plans for Qt6 for webOS SDK to get this
+candy? https://github.com/awawa-dev/HyperHD...
+satdx62 08/29/2025 5:04 PM
+Hello @Awawa , That's great news! "Infinite Color Engine" is brilliant
+because many users use Philips Hue bulbs with an extended color
+spectrum. The new smoothing method is ingenious! Finally, there are
+smooth transitions, just like those familiar from Philips Ambilight.
+That's great, thank you very much! (edited)
+[Smoothing.png]
+ Smoothing.png
+266.65 KB External
+ 1
+[satdx62]
+[] jesusbarrio I have installed the version of your page
+(org.webosbrew.hyperhdr.loader_0.2.6_all (1)) and it still...
+satdx62 08/29/2025 4:14 PM
+Then you definitely did not download and install the version of the
+“Source” section below. Please uninstall the old version before
+installing the new one. Here is the link:
+https://discord.com/channels/407937994037919756/931706504627773450/1407106790482645202.
+(edited)
+[satdx62]
+[] yolofant the toolchain is already large and it takes over an hour to
+build on ci
+satdx62 08/29/2025 3:53 PM
+OK, I understand. So, are you suggesting that we compile QT6 as part of
+the build process?
+[yolofant]
+yolofant 08/29/2025 3:28 PM
+the toolchain is already large and it takes over an hour to build on ci
+08/29/2025 3:27 PM
+any additional packages can always be built separetely
+08/29/2025 3:27 PM
+no, we should only include what's available by default on webos
+[satdx62]
+[] yolofant yeah I don't think we will have qt6 as a default for a long
+time but qt can always be built as part ...
+satdx62 08/29/2025 3:25 PM
+Since these new features are very promising, we should consider using Qt
+6.8.3.
+[yolofant]
+[] awawa_dev I see. Anyway Qt6.8.3 should compile quite nicely
+https://github.com/awawa-dev/HyperDockerBuilder/bl...
+yolofant 08/29/2025 3:18 PM
+yeah I don't think we will have qt6 as a default for a long time but qt
+can always be built as part of the build process
+[jesusbarrio]
+[] satdx62 Hi, I have compiled version 22.0.0.0beta0. It includes the
+LUT installation, some bug fixes, and ful...
+jesusbarrio 08/29/2025 3:11 PM
+I have installed the version of your page
+(org.webosbrew.hyperhdr.loader_0.2.6_all (1)) and it still tells me that
+I am on version 21.0.0.0beta2
+[awawa_dev]
+awawa_dev 08/29/2025 3:09 PM
+I see. Anyway Qt6.8.3 should compile quite nicely
+https://github.com/awawa-dev/HyperDockerBuilder/blob/master/build.sh as
+HyperHDR does not need heavy Qt GUI stuff
+[yolofant]
+yolofant 08/29/2025 2:49 PM
+I don't think so
+[awawa_dev]
+awawa_dev 08/29/2025 1:28 PM
+Hi Are there any plans for Qt6 for webOS SDK to get this candy?
+https://github.com/awawa-dev/HyperHDR/pull/1261
+Infinite Color Engine by awawa-dev · Pull Request #1261 · awawa-d...
+Infinite Color Engine &amp;amp; New Smoothing Algorithms I’m excited to
+introduce a feature I’ve been dreaming about for a long time— the
+Infinite Color Engine, along with completely new smoothing ...
+[]
+ 1  1
+[satdx62]
+0oospikeoo0 18 more tests done with a few non-default combos. Each
+repeated 3 times for different quirk combos: ...
+satdx62 08/29/2025 8:39 AM
+@0oOSpikeOo0 I can't understand why your device isn't working, but upon
+closer inspection of your logs, I noticed that you have “Quarter of
+frame for NV12” enabled. While this reduces resource consumption, there
+are also exceptional cases where this option should be disabled, as a
+minimum resolution is required to display the frames. I mentioned this
+in one of my guides. Disable it in HyperHDR under “Network Settings,”
+“Flatbuffer Server,” and test it again.
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#attention-2
+(edited)
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[]
+0oospikeoo0 08/29/2025 1:05 AM
+18 more tests done with a few non-default combos. Each repeated 3 times
+for different quirk combos: 180x90|0 180x90|30 180x90|60 320x160|0
+320x160|30 320x160|60 Unfortunately no luck and similar behavior as in
+previous message. Thank you for the help. I give up  (edited)
+[satdx62]
+0oospikeoo0 With the new resolution + 0 fps: - 1st try no quircks: no
+image - 2nd try quirk create ex: single fr...
+satdx62 08/29/2025 12:29 AM
+Strange, you can still test it here and hope that it works.
+[2.png]
+ 2.png
+38.81 KB External
+0oospikeoo0 08/29/2025 12:25 AM
+With the new resolution + 0 fps: - 1st try no quircks: no image - 2nd
+try quirk create ex: single frame - 3rd try quirk create ex + no freeze:
+single frame
+[satdx62]
+0oospikeoo0 enable some quirks again as well?
+satdx62 08/29/2025 12:18 AM
+First try it without, then with.
+0oospikeoo0 08/29/2025 12:16 AM
+enable some quirks again as well?
+[satdx62]
+0oospikeoo0 This resulted in no image
+satdx62 08/29/2025 12:14 AM
+Yes, I saw in log. The NV12 image data size (0) does not match the width
+and height (0) or it's empty If you are testing with the libdile_vt
+backend, enter 0 FPS in PicCap and test 360x180. This works for my
+friends with these settings. OLED55B9D HE_DTV_W19H_AFADABAA
+0oospikeoo0 08/29/2025 12:09 AM
+This resulted in no image
+ hpr.txt
+17.26 KB External
+08/29/2025 12:05 AM
+When I disable all the quirks, video capturing stops working. At least
+quirk_dile_vt_create_ex needs to be enabled to get something there and
+the no_freeze_capture also has no negative effect impact. Will give it a
+quick try anyway (edited)
+[satdx62]
+0oospikeoo0 this is what i currently have in the browser. Do you want me
+to do specific actions?
+satdx62 08/29/2025 12:00 AM
+Hi, The NV12 implementation works and the correct LUT table is also
+found and loaded with YUV index 1, which is fine. You should also try
+the libvt backend with 30 FPS and 192 x 108. Switch off the quirks for
+testing purposes.
+August 28, 2025
+[] satdx62 Can you post a HyperHDR log?
+0oospikeoo0 08/28/2025 11:49 PM
+this is what i currently have in the browser. Do you want me to do
+specific actions?
+ hpr.txt
+14.5 KB External
+[satdx62]
+0oospikeoo0 Same result
+satdx62 08/28/2025 11:45 PM
+Can you post a HyperHDR log?
+[] astur3l try 192x96 with 12 fps
+0oospikeoo0 08/28/2025 11:36 PM
+Same result
+[astur3l]
+0oospikeoo0 After some time, i did another attempt to get stuff running
+but no more ideas how to continue. All h...
+astur3l 08/28/2025 11:30 PM
+try 192x96 with 12 fps
+0oospikeoo0 08/28/2025 10:53 PM
+After some time, i did another attempt to get stuff running but no more
+ideas how to continue. All hints are welcome. I will just dump some
+random info. If more specifics are needed, let me know. Let's start from
+this: Observations: - best thing i can get in Live View in Hyper HDR is
+a single frame after restart of the tv. - changing settings in piccap
+just results in an empty black frame Versions and some current
+settings: - TV: "board_type": "K5LP_DVB", "hardware_id":
+"HE_DTV_W19P_AFADABAA", "product_id": "WEBOS4.5",
+"webos_manufacturing_version": "02.10.01", - Piccap: 0.5.1 - HyperHDR:
+0.2.6 Piccap settings: - Resolution: 192x108 - Max fps: 30 - VC backend:
+libdile_vt - GC backend: disabled - Vsync: off - NV12: on Advanced
+settings ON: - QUIRK_DILE_VT_NO_FREEZE_CAPTURE -
+QUIRK_DIL_VT_CREATE_EX - Disable power state check (edited)
+[satdx62]
+0oospikeoo0 What is the meaning of "USB capture" on the overview page of
+Hyperhdr? It is turned 'On' while I am ...
+satdx62 08/28/2025 10:30 PM
+Hi, You can ignore the USB capture, as this feature is not available in
+the webOS version. This is more of a cosmetic error in the creation of
+the packages to be compiled.
+ 1
+0oospikeoo0 08/28/2025 9:18 PM
+What is the meaning of "USB capture" on the overview page of Hyperhdr?
+It is turned 'On' while I am not using any USB devices. So I am a bit
+confused where it comes from
+[satdx62]
+morozaw Not sure what's possible, maybe change TV model number to one of
+newer ones? Is there any way to dow...
+satdx62 08/28/2025 7:55 PM
+Hi, Unfortunately, there is no IPK available for download. It is only
+available in the LG Content Store for eligible devices to rent or
+purchase. This complicates matters.
+morozaw 08/28/2025 7:47 PM
+Not sure what's possible, maybe change TV model number to one of newer
+ones? Is there any way to download somewhere package that's installed to
+take a look at it? Just guessing.
+[satdx62]
+morozaw Yeah, that's why I am asking if someone tried to omit this
+restriction.
+satdx62 08/28/2025 7:43 PM
+How exactly do you think that would work? Even if the device had root
+privileges, a way would first have to be found to bypass Philips'
+certification. That's impossible if the device doesn't even have root
+privileges.
+morozaw 08/28/2025 7:35 PM
+Yeah, that's why I am asking if someone tried to omit this restriction.
+[satdx62]
+morozaw Hey, did someone tried to somehow install hue app on 2023
+models? Not sure if I should ask here.
+satdx62 08/28/2025 7:34 PM
+As far as I know, the app is limited to models built from 2024 onwards.
+It is not available for all WebOS 24 models, which also include the 2023
+models.
+morozaw 08/28/2025 7:09 PM
+Hey, did someone tried to somehow install hue app on 2023 models? Not
+sure if I should ask here.
+August 27, 2025
+[r4z0r_97]
+[] satdx62 Yes, but still, I wouldn't continue to overuse this device.
+There are inexpensive external power sup...
+r4z0r_97 08/27/2025 12:10 AM
+ok thanks again bye
+[satdx62]
+[] r4z0r_97 it says this in wled
+satdx62 08/27/2025 12:09 AM
+Yes, but still, I wouldn't continue to overuse this device. There are
+inexpensive external power supplies available. But it's your choice, at
+your own risk. You haven't read my guide on GitHub yet, have you? It
+contains everything you need to know about software and hardware.
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+Right, I'm off now!
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[r4z0r_97]
+r4z0r_97 08/27/2025 12:04 AM
+it says this in wled
+[image.png]
+ image.png
+51.25 KB External
+[r4z0r_97]
+[] satdx62 Yes, I already told them.
+r4z0r_97 08/27/2025 12:00 AM
+but if i keep the leds in wled under 1 A i can still plug it in my tv
+right?
+August 26, 2025
+[satdx62]
+[] r4z0r_97 oh ok it means that i need to add a power supply to my leds?
+satdx62 08/26/2025 11:58 PM
+Yes, I already told them.
+[r4z0r_97]
+[] satdx62 Yes, that's the current limiter in your WLED, I already said
+that from your LOG.
+r4z0r_97 08/26/2025 11:57 PM
+oh ok it means that i need to add a power supply to my leds? (edited)
+[satdx62]
+[] r4z0r_97 ok i even get this message when starting hyperhdr on pc is
+it normal?
+satdx62 08/26/2025 11:54 PM
+Yes, that's the current limiter in your WLED, I already said that from
+your LOG.
+[r4z0r_97]
+[] satdx62 Yes, I think so. Think about how you can achieve better
+cooling.
+r4z0r_97 08/26/2025 11:51 PM
+ok i even get this message when starting hyperhdr on pc is it normal?
+[image.png]
+ image.png
+39.68 KB External
+[satdx62]
+[] r4z0r_97 ok so i can still use ambientlight now on my tv?
+satdx62 08/26/2025 11:43 PM
+Yes, I think so. Think about how you can achieve better cooling.
+(edited)
+[r4z0r_97]
+[] satdx62 So it's not the combination of PicCap and HyperHDR, but
+actually a weak SoC. Even without Ambilight,...
+r4z0r_97 08/26/2025 11:42 PM
+ok so i can still use ambientlight now on my tv?
+[satdx62]
+[] r4z0r_97 i still have pic cap turned off
+satdx62 08/26/2025 11:41 PM
+So it's not the combination of PicCap and HyperHDR, but actually a weak
+SoC. Even without Ambilight, the CPU and temperature are high. So better
+cooling could probably reduce the temperature significantly.
+[r4z0r_97]
+r4z0r_97 08/26/2025 11:38 PM
+i still have pic cap turned off
+[r4z0r_97]
+[] satdx62 What output does “top” generate in the terminal?
+r4z0r_97 08/26/2025 11:36 PM
+(no content)
+[image.png]
+ image.png
+100.33 KB External
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 11:32 PM
+What output does “top” generate in the terminal? (edited)
+[r4z0r_97]
+r4z0r_97 08/26/2025 11:31 PM
+(no content)
+[Screenshot_2025-08-26-23-31-24-92_40deb401b9ffe8e1df2f1cc5ba480b12.jpg]
+Screenshot_2025-08-26-23-31-24-92_40deb401b9ffe8e1df2f1cc5ba480b12.jpg
+45.94 KB External
+08/26/2025 11:29 PM
+Temperature are still quite high even if piccap is turned off
+08/26/2025 11:29 PM
+(no content)
+[Screenshot_2025-08-26-23-29-06-34_40deb401b9ffe8e1df2f1cc5ba480b12.jpg]
+Screenshot_2025-08-26-23-29-06-34_40deb401b9ffe8e1df2f1cc5ba480b12.jpg
+44.42 KB External
+[r4z0r_97]
+[] satdx62 What you have done so far. Check whether it is on, and if so,
+turn it off. Otherwise, HyperHDR will ...
+r4z0r_97 08/26/2025 11:28 PM
+Okok i've done It
+[satdx62]
+[] r4z0r_97 When you say check failsafe mode you mean that I should
+activate It or check if is activated and tur...
+satdx62 08/26/2025 11:22 PM
+What you have done so far. Check whether it is on, and if so, turn it
+off. Otherwise, HyperHDR will not work.
+[r4z0r_97]
+[] satdx62 I think so, if I find the time. First, turn off the autostart
+function in PicCap and save your setti...
+r4z0r_97 08/26/2025 11:19 PM
+When you say check failsafe mode you mean that I should activate It or
+check if is activated and turn it off? (edited)
+[satdx62]
+[] r4z0r_97 so we can continue the conversation tomorrow?
+satdx62 08/26/2025 10:58 PM
+I think so, if I find the time. First, turn off the autostart function
+in PicCap and save your settings. Then turn off the TV with the remote
+control, disconnect it from the power supply, and turn it back on after
+about a minute. Next, check Failsafe without turning on PicCap. Finally,
+check in HyperHDR whether the temperature is just as high when watching
+TV. Then you will know whether that was the normal temperature before.
+If so, everything is fine and you can activate PicCap. If not, only
+activate it after you have tested other things and the temperature has
+dropped.
+[r4z0r_97]
+r4z0r_97 08/26/2025 10:48 PM
+and for now i can still use the tv right?
+08/26/2025 10:47 PM
+so we can continue the conversation tomorrow?
+[r4z0r_97]
+[] satdx62 Okay, I think we can try something else, but not today.
+Regarding CPU cooling: I have no idea if the...
+r4z0r_97 08/26/2025 10:47 PM
+ok well good night and thanks again for everything
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 10:46 PM
+Okay, I think we can try something else, but not today. Regarding CPU
+cooling: I have no idea if they are qualified for that. Only if they are
+familiar with such tuning matters.
+[r4z0r_97]
+[] satdx62 Show me which files are located in `/home/root/.hyperhdr/`
+and in `/media/developer/apps/usr/palm/s...
+r4z0r_97 08/26/2025 10:40 PM
+(no content)
+[image.png]
+ image.png
+16.83 KB External
+[image.png]
+ image.png
+94.78 KB External
+[image.png]
+ image.png
+18 KB External
+[satdx62]
+[] r4z0r_97 so i should open my tv and install a new cpu cooler?
+satdx62 08/26/2025 10:37 PM
+Show me which files are located in /home/root/.hyperhdr/ and in
+/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/
+[r4z0r_97]
+[] satdx62 Okay, I can't change anything here through settings. You need
+good cooling, either passive or active...
+r4z0r_97 08/26/2025 10:36 PM
+so i should open my tv and install a new cpu cooler?
+[satdx62]
+[] r4z0r_97 now it's 80*
+satdx62 08/26/2025 10:30 PM
+Okay, I can't change anything here through settings. You need good
+cooling, either passive or active, for your SoC.
+[r4z0r_97]
+r4z0r_97 08/26/2025 10:28 PM
+now it's 80*
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 10:27 PM
+Yes, hyperhdr and hyperion-webos consume virtually no resources. But
+other tasks are much higher.
+[r4z0r_97]
+r4z0r_97 08/26/2025 10:26 PM
+now i'm watching normal tv programs and temp is rysing (edited)
+[image.png]
+ image.png
+30.89 KB External
+[r4z0r_97]
+[] satdx62 Yes, CPU load is okay now. CPU temp. is at the normal limit.
+It may need better cooling.
+r4z0r_97 08/26/2025 10:24 PM
+(no content)
+[image.png]
+ image.png
+99.57 KB External
+[satdx62]
+satdx62 08/26/2025 10:22 PM
+What does top do in terminal?
+[satdx62]
+[] r4z0r_97 cpu temp must be below 74?
+satdx62 08/26/2025 10:22 PM
+Yes, CPU load is okay now. CPU temp. is at the normal limit. It may need
+better cooling.
+[r4z0r_97]
+r4z0r_97 08/26/2025 10:19 PM
+cpu temp must be below 74?
+[r4z0r_97]
+[] satdx62 save
+r4z0r_97 08/26/2025 10:18 PM
+(no content)
+[image.png]
+ image.png
+30.48 KB External
+[r4z0r_97]
+[] satdx62 save
+r4z0r_97 08/26/2025 10:18 PM
+yes i saved (edited)
+[satdx62]
+satdx62 08/26/2025 10:18 PM
+save
+[r4z0r_97]
+[] satdx62 Set the smoothing in HyperHDR image processing and also enter
+30 under “Update frequency.”
+r4z0r_97 08/26/2025 10:17 PM
+done
+[image.png]
+ image.png
+54.38 KB External
+[satdx62]
+[] r4z0r_97 30
+satdx62 08/26/2025 10:16 PM
+Set the smoothing in HyperHDR image processing and also enter 30 under
+“Update frequency.”
+[r4z0r_97]
+r4z0r_97 08/26/2025 10:14 PM
+30
+[satdx62]
+[] r4z0r_97 sometimes when i start a movie on disney plus or primevideo
+the tv crashes
+satdx62 08/26/2025 10:13 PM
+How many FPS are set in PicCap?
+[r4z0r_97]
+r4z0r_97 08/26/2025 10:12 PM
+sometimes when i start a movie on disney plus or primevideo the tv
+crashes
+08/26/2025 10:11 PM
+no
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 10:11 PM
+Is smoothing enabled in HyperHDR image processing?
+[r4z0r_97]
+r4z0r_97 08/26/2025 10:09 PM
+(no content)
+[image.png]
+ image.png
+29.63 KB External
+08/26/2025 10:08 PM
+but temperature is slowly rysing i think (edited)
+08/26/2025 10:07 PM
+now is lowering
+[image.png]
+ image.png
+29.31 KB External
+[r4z0r_97]
+[] satdx62 Yeah.
+r4z0r_97 08/26/2025 10:06 PM
+(no content)
+[image.png]
+ image.png
+27.79 KB External
+[satdx62]
+satdx62 08/26/2025 10:02 PM
+Yeah.
+[r4z0r_97]
+r4z0r_97 08/26/2025 10:02 PM
+ok i'm replugging it back on then i turn off failsafe if is turned on
+and check right?
+[satdx62]
+[] r4z0r_97 for 2 minutes?
+satdx62 08/26/2025 10:02 PM
+One minute should be enough.
+[r4z0r_97]
+r4z0r_97 08/26/2025 10:00 PM
+for 2 minutes?
+08/26/2025 9:59 PM
+okok
+[satdx62]
+[] r4z0r_97 unplug the tv?
+satdx62 08/26/2025 9:58 PM
+First switch it off with the remote control and then unplug it.
+[r4z0r_97]
+[] satdx62 Okay, start over. Unplug it from the power supply and check
+again.
+r4z0r_97 08/26/2025 9:58 PM
+unplug the tv?
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 9:57 PM
+Okay, start over. Unplug it from the power supply and check again.
+[r4z0r_97]
+r4z0r_97 08/26/2025 9:55 PM
+(no content)
+[image.png]
+ image.png
+53.15 KB External
+[r4z0r_97]
+[] satdx62 That didn't help. The only thing left for me to do is to
+disable smoothing in HyperHDR Image Process...
+r4z0r_97 08/26/2025 9:54 PM
+but still
+[image.png]
+ image.png
+30.17 KB External
+[r4z0r_97]
+r4z0r_97 08/26/2025 9:54 PM
+ok i disabled smoothing
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 9:53 PM
+That didn't help. The only thing left for me to do is to disable
+smoothing in HyperHDR Image Processing to reduce the load.
+[r4z0r_97]
+[] satdx62 No, first check in HyperHDR.
+r4z0r_97 08/26/2025 9:49 PM
+(no content)
+[image.png]
+ image.png
+30.84 KB External
+[satdx62]
+[] r4z0r_97 ok
+satdx62 08/26/2025 9:45 PM
+No, first check in HyperHDR. (edited)
+[r4z0r_97]
+r4z0r_97 08/26/2025 9:42 PM
+after saving i need to reboot with power supply off?
+[r4z0r_97]
+[] satdx62 Of course you can use the services; the CPU has 4 cores.
+Switch off VSync in PicCap and check again.
+r4z0r_97 08/26/2025 9:40 PM
+ok
+[r4z0r_97]
+r4z0r_97 08/26/2025 9:40 PM
+the movie is in 4k hdr by the way
+[r4z0r_97]
+[] satdx62 Of course you can use the services; the CPU has 4 cores.
+Switch off VSync in PicCap and check again.
+r4z0r_97 08/26/2025 9:40 PM
+now i'm watching a movie on prime video and is higher is normal?
+[image.png]
+ image.png
+29.39 KB External
+[satdx62]
+[] r4z0r_97 by the way during this process what should i do with my tv?
+can i go on prime video or disney plus o...
+satdx62 08/26/2025 9:39 PM
+Of course you can use the services; the CPU has 4 cores. Switch off
+VSync in PicCap and check again.
+[r4z0r_97]
+r4z0r_97 08/26/2025 9:36 PM
+by the way during this process what should i do with my tv? can i go on
+prime video or disney plus or it will use cpu %? (edited)
+[r4z0r_97]
+[] satdx62 Turn off “HDR to SDR tone mapping” and check again.
+r4z0r_97 08/26/2025 9:35 PM
+ok as if now with Quarter of frame for NV12 and HDR to SDR tone mapping
+enabled the percentage is lower
+[image.png]
+ image.png
+29.17 KB External
+[r4z0r_97]
+r4z0r_97 08/26/2025 9:34 PM
+ok
+[satdx62]
+[] r4z0r_97 i hope my tv will survive by the end
+satdx62 08/26/2025 9:33 PM
+Turn off “HDR to SDR tone mapping” and check again.
+[r4z0r_97]
+r4z0r_97 08/26/2025 9:33 PM
+i hope my tv will survive by the end (edited)
+[reisxd]
+[] satdx62 Wait a while for the temperature to go down. As my colleague
+said, this is due to a weak CPU and you...
+reisxd 08/26/2025 9:32 PM
+-# it takes that much toll on the cpu? 
+[r4z0r_97]
+[] satdx62 Wait a while for the temperature to go down. As my colleague
+said, this is due to a weak CPU and you...
+r4z0r_97 08/26/2025 9:31 PM
+ok so i just need to check Quarter of frame for NV12 and HDR to SDR tone
+mapping and whait? (edited)
+[satdx62]
+[] r4z0r_97 don't think is working
+satdx62 08/26/2025 9:30 PM
+Wait a while for the temperature to go down. As my colleague said, this
+is due to a weak CPU and you need to reduce everything.
+[r4z0r_97]
+[] satdx62 Switch on “Quarter of frame for NV12” and “HDR to SDR tone
+mapping,” save, and check the temperature...
+r4z0r_97 08/26/2025 9:30 PM
+don't think is working
+[image.png]
+ image.png
+29.37 KB External
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 9:28 PM
+Switch on “Quarter of frame for NV12” and “HDR to SDR tone mapping,”
+save, and check the temperature again.
+[r4z0r_97]
+[] satdx62 Go to HyperHDR, Network Settings, and show me a screenshot of
+Flatbuffer Server.
+r4z0r_97 08/26/2025 9:26 PM
+(no content)
+[image.png]
+ image.png
+29.99 KB External
+[satdx62]
+[] r4z0r_97 whats next?
+satdx62 08/26/2025 9:26 PM
+Go to HyperHDR, Network Settings, and show me a screenshot of Flatbuffer
+Server.
+[reisxd]
+reisxd 08/26/2025 9:25 PM
+poor cpu
+[r4z0r_97]
+[] satdx62 We're not done yet.
+r4z0r_97 08/26/2025 9:25 PM
+whats next?
+[r4z0r_97]
+[] satdx62 We're not done yet.
+r4z0r_97 08/26/2025 9:23 PM
+ok
+[satdx62]
+[] r4z0r_97 is it good now? it will not go over 75?
+satdx62 08/26/2025 9:23 PM
+We're not done yet.
+[r4z0r_97]
+[] satdx62 Perfect, see now in HyperHDR
+r4z0r_97 08/26/2025 9:22 PM
+is it good now? it will not go over 75?
+[r4z0r_97]
+[] satdx62 Perfect, see now in HyperHDR
+r4z0r_97 08/26/2025 9:22 PM
+(no content)
+[image.png]
+ image.png
+29.9 KB External
+ 1
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 9:21 PM
+Perfect, see now in HyperHDR
+[r4z0r_97]
+[] satdx62 Yeah,
+r4z0r_97 08/26/2025 9:20 PM
+(no content)
+[image.png]
+ image.png
+102.3 KB External
+[satdx62]
+satdx62 08/26/2025 9:20 PM
+Yeah,
+[r4z0r_97]
+[] satdx62 In PicCap, reduce the FPS from 60 to 30 and check it again.
+r4z0r_97 08/26/2025 9:18 PM
+ok i set to 30 now i need to write top again in the terminal?
+[satdx62]
+[] r4z0r_97 this?
+satdx62 08/26/2025 9:16 PM
+In PicCap, reduce the FPS from 60 to 30 and check it again.
+[r4z0r_97]
+[] satdx62 What does the command “top” output in the terminal?
+r4z0r_97 08/26/2025 9:15 PM
+this?
+[image.png]
+ image.png
+98.88 KB External
+[satdx62]
+[] r4z0r_97 yes the only thing is that on hyper hdr the cpu temperature
+is very high
+satdx62 08/26/2025 9:10 PM
+What does the command “top” output in the terminal? (edited)
+[r4z0r_97]
+r4z0r_97 08/26/2025 9:08 PM
+yes the only thing is that on hyper hdr the cpu temperature is very high
+(edited)
+[image.png]
+ image.png
+29.4 KB External
+[satdx62]
+[] r4z0r_97 now i need to do other adjustments?
+satdx62 08/26/2025 9:07 PM
+First, check whether the LEDs are working.
+[r4z0r_97]
+r4z0r_97 08/26/2025 9:06 PM
+now i need to do other adjustments?
+08/26/2025 9:05 PM
+thank you very much
+[r4z0r_97]
+[] satdx62 Then you should also test the 256 x 144 resolution in PicCap.
+r4z0r_97 08/26/2025 9:05 PM
+ok perfect that fixed it now i have both ui and video captured
+ 1
+[satdx62]
+[] r4z0r_97 If you mean VSync i have It on
+satdx62 08/26/2025 9:00 PM
+Then you should also test the 256 x 144 resolution in PicCap.
+[r4z0r_97]
+[] satdx62 I repeat, did you read my EDIT from
+https://discord.com/channels/407937994037919756/9317065046277734...
+r4z0r_97 08/26/2025 8:58 PM
+If you mean VSync i have It on
+[satdx62]
+[] r4z0r_97 Oh i'm sorry so i need to turn vsync on?
+satdx62 08/26/2025 8:58 PM
+Yes, test it.
+[r4z0r_97]
+r4z0r_97 08/26/2025 8:57 PM
+Oh i'm sorry so i need to turn vsync on?
+[satdx62]
+[] r4z0r_97 ok so i did everything but still doesn't shows the ui
+satdx62 08/26/2025 8:53 PM
+I repeat, did you read my EDIT from
+https://discord.com/channels/407937994037919756/931706504627773450/1409955056362590280?
+There you would have seen that sync must also be activated. (edited)
+[r4z0r_97]
+[] satdx62 Yes, I understand that. For each change, you must disconnect
+your TV from the power supply, wait, tu...
+r4z0r_97 08/26/2025 8:32 PM
+ok so i did everything but still doesn't shows the ui
+[r4z0r_97]
+[] satdx62 Yes, I understand that. For each change, you must disconnect
+your TV from the power supply, wait, tu...
+r4z0r_97 08/26/2025 8:22 PM
+ok so now i need to disconnect the tv from the power supply and turn
+back on with the graphical capture backend set on libgm WebOS 3.x right?
+[satdx62]
+[] r4z0r_97 on the bottom right of pic cap now it says State: status
+info refreshed/ Receiver: connected/ UI: Ca...
+satdx62 08/26/2025 8:17 PM
+Yes, I understand that. For each change, you must disconnect your TV
+from the power supply, wait, turn it back on, disable Failsafe, and
+enjoy. But you're not done yet! We still have a few more things to look
+at. Did you see my EDIT from the previous post
+https://discord.com/channels/407937994037919756/931706504627773450/1409955056362590280?
+(edited)
+[r4z0r_97]
+r4z0r_97 08/26/2025 8:08 PM
+on the bottom right of pic cap now it says State: status info refreshed/
+Receiver: connected/ UI: Capturing with libgm_backend.so/ Video:
+capturing with libdile_vt_backend.so/ FPS: 49.86
+[r4z0r_97]
+[] satdx62 You must select the correct UI for libgm WebOS 3.x and not
+automatically.
+r4z0r_97 08/26/2025 8:06 PM
+ok so i set graphical capture backend on libgm WebOS 3.x but still
+doesn't show the ui of youtube and stuff
+[r4z0r_97]
+r4z0r_97 08/26/2025 7:38 PM
+Now i check the ui
+08/26/2025 7:38 PM
+For your help
+08/26/2025 7:38 PM
+Ok Thanks you so much
+[satdx62]
+[] r4z0r_97 Oh ok so the video capturing backend Is for the TV programs
+or YouTube videos and the graphic captur...
+satdx62 08/26/2025 7:38 PM
+Yeah EDIT:This applies to content played on your TV. Video and UI/Apps
+UI are separate. Therefore, both captures must be turned on. In this
+case, sync must also be enabled. However, if you are feeding a player
+via HDMI, the video capture backend is sufficient, as both video and UI
+are mixed via HDMI. Your TV has no DRM restrictions for either internal
+apps or HDMI. (edited)
+[r4z0r_97]
+r4z0r_97 08/26/2025 7:37 PM
+Right?
+[r4z0r_97]
+[] satdx62 Yes, you must select the correct UI for libgm WebOS 3.x and
+not automatically.
+r4z0r_97 08/26/2025 7:37 PM
+Oh ok so the video capturing backend Is for the TV programs or YouTube
+videos and the graphic capture backend Is for the YouTube homescreen or
+TV info and general UI?
+[satdx62]
+[] r4z0r_97 Ok perfect so now i Need to go to the Pic cap settings and
+turn back on graphic capture backend?
+satdx62 08/26/2025 7:34 PM
+Yes, you must select the correct UI for libgm WebOS 3.x and not
+automatically.
+[r4z0r_97]
+[] satdx62 You must select the correct UI for libgm WebOS 3.x and not
+automatically.
+r4z0r_97 08/26/2025 7:32 PM
+Ok perfect so now i Need to go to the Pic cap settings and turn back on
+graphic capture backend? (edited)
+[satdx62]
+[] r4z0r_97 by the way i've seen that now pic cap is recording the
+videos on my tv but not the homescreen of you...
+satdx62 08/26/2025 7:19 PM
+You must select the correct UI for libgm WebOS 3.x and not
+automatically. (edited)
+[satdx62]
+[] r4z0r_97 by the way i've seen that now pic cap is recording the
+videos on my tv but not the homescreen of you...
+satdx62 08/26/2025 7:17 PM
+Yes, that's fantastic. We disabled the UI test and now we can turn it
+back on in PicCap and Save.
+[r4z0r_97]
+r4z0r_97 08/26/2025 7:14 PM
+by the way i've seen that now pic cap is recording the videos on my tv
+but not the homescreen of youtube ecc...
+[r4z0r_97]
+[] satdx62 However, it is dangerous for your TV. With 187 LEDs, you need
+at least 9 A (9000 mA) or 6A (6000mA),...
+r4z0r_97 08/26/2025 7:13 PM
+ok these are the logs
+ message.txt
+17.49 KB External
+[satdx62]
+[] r4z0r_97 do you think it is ok?
+satdx62 08/26/2025 7:12 PM
+However, it is dangerous for your TV. With 187 LEDs, you need at least 9
+A (9000 mA) or 6A (6000mA), depending on which LEDs are in use. Okay,
+you can limit it to 6000 mA and set it to 120 out of 255.
+See:https://wled-calculator.github.io/ (edited)
+[4.png]
+ 4.png
+172.96 KB External
+[r4z0r_97]
+r4z0r_97 08/26/2025 7:07 PM
+do you think it is ok?
+08/26/2025 7:05 PM
+and i have only 187 leds connected to the esp32
+08/26/2025 7:04 PM
+i have set the brightness of wled and hyperion on 100 and the maximum is
+255 cause i don't really need them to be more bright
+08/26/2025 7:03 PM
+i mean as i use this tv in my bedroom i only need the ambilight to work
+at night and i don't really need a huge level of brightness
+[r4z0r_97]
+[] satdx62 However, you can only use them for testing on the TV because
+they will not work with the number of L...
+r4z0r_97 08/26/2025 7:01 PM
+oh thanks i didn't know about that but if i still use the tv usb will be
+a problem in the future?
+[satdx62]
+[] r4z0r_97 oh yea is beacuse i connected the esp32 directly on the tv
+with the usb cable
+satdx62 08/26/2025 6:58 PM
+However, you can only use them for testing on the TV because they will
+not work with the number of LEDs. You need an adequate power supply for
+your LEDs.
+[r4z0r_97]
+[] satdx62 I noticed something else in the log file. The brightness
+limiter is set to 850 mA. This is not relat...
+r4z0r_97 08/26/2025 6:56 PM
+oh yea is beacuse i connected the esp32 directly on the tv with the usb
+cable (edited)
+ 1
+[satdx62]
+[] r4z0r_97 thanks perfect
+satdx62 08/26/2025 6:54 PM
+I noticed something else in the log file. The brightness limiter is set
+to 850 mA. This is not related to the current error, but you need to
+adjust your LED power supply accordingly, otherwise you will hardly
+achieve any brightness on the LEDs. For example: If your power supply
+delivers 9 A, set it to 9,000 mA. See image.
+[WLED_Automatic_brightness_limiter.jpg]
+ WLED_Automatic_brightness_limiter.jpg
+368.02 KB External
+[r4z0r_97]
+[] satdx62 We need a usable log. Then disconnect the TV from the power
+supply, wait 1 minute, plug it back in, ...
+r4z0r_97 08/26/2025 6:53 PM
+thanks perfect
+[satdx62]
+[] r4z0r_97 i think is the seme as before
+satdx62 08/26/2025 6:51 PM
+We need a usable log. Then disconnect the TV from the power supply, wait
+1 minute, plug it back in, set Failsafe to off, go to HyperHDR under
+Logs and wait a good minute, then post the log.
+[r4z0r_97]
+r4z0r_97 08/26/2025 6:48 PM
+i think is the seme as before
+08/26/2025 6:48 PM
+i saved again with debug log level and copied to clipboard
+ message.txt
+26.36 KB External
+08/26/2025 6:45 PM
+i didn't change anything
+08/26/2025 6:44 PM
+(no content)
+[image.png]
+ image.png
+10.97 KB External
+08/26/2025 6:44 PM
+it was in debug before (edited)
+[r4z0r_97]
+[] satdx62 <@387977892014850048> , have you set the log level to debug?
+r4z0r_97 08/26/2025 6:41 PM
+Yeah Sorry i was having issues with my wifi (edited)
+[satdx62]
+[] r4z0r_97 Ok
+satdx62 08/26/2025 6:38 PM
+@𝕃𝕠𝕣𝕖𝕟𝕫𝕠 , have you set the log level to debug?
+[r4z0r_97]
+r4z0r_97 08/26/2025 6:27 PM
+Ok
+[satdx62]
+[] r4z0r_97 it even says this
+satdx62 08/26/2025 6:18 PM
+(no content)
+[2.png]
+ 2.png
+202.4 KB External
+[r4z0r_97]
+r4z0r_97 08/26/2025 6:16 PM
+maybe is for this
+08/26/2025 6:15 PM
+it even says this
+[image.png]
+ image.png
+9.17 KB External
+08/26/2025 6:12 PM
+i only have this log i checked
+08/26/2025 6:11 PM
+i think its the same size (edited)
+08/26/2025 6:11 PM
+like this?
+ message_1.txt
+17.7 KB External
+[satdx62]
+[] r4z0r_97 i pressed copy to clipboard how do i copy more?
+satdx62 08/26/2025 6:10 PM
+The log must now be longer/bigger. Just copy and send.
+[r4z0r_97]
+[] satdx62 The log was too short to see everything. Please send me one
+now.
+r4z0r_97 08/26/2025 6:08 PM
+i pressed copy to clipboard how do i copy more?
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 6:06 PM
+The log was too short to see everything. Please send me one now.
+[r4z0r_97]
+[] satdx62 Now you need to paste a complete log from HyperHDR into a
+text editor using Copy to Clipboard and po...
+r4z0r_97 08/26/2025 6:01 PM
+(no content)
+ message.txt
+17.7 KB External
+[satdx62]
+[] r4z0r_97 pic cap status are still: State: status info refreshed/
+Receiver: connected/ UI: not capturing/ Vide...
+satdx62 08/26/2025 6:00 PM
+Now you need to paste a complete log from HyperHDR into a text editor
+using Copy to Clipboard and post it here.
+[1.png]
+ 1.png
+198.03 KB External
+[r4z0r_97]
+r4z0r_97 08/26/2025 5:59 PM
+pic cap status are still: State: status info refreshed/ Receiver:
+connected/ UI: not capturing/ Video: capturing with
+libdile_vt_backend.so/ FPS: 49.86
+ 1
+[r4z0r_97]
+[] satdx62 Okay, then reboot, turn off Falilsave, and check Hyper HDR
+and PicCap again.
+r4z0r_97 08/26/2025 5:57 PM
+ok i rebooted and checked hyperhdr on pc but still balck screen
+[image.png]
+ image.png
+31.64 KB External
+[satdx62]
+[] r4z0r_97 nope
+satdx62 08/26/2025 5:50 PM
+Okay, then reboot, turn off Falilsave, and check Hyper HDR and PicCap
+again.
+[r4z0r_97]
+[] satdx62 Do you now have an image in HyperHDR?
+r4z0r_97 08/26/2025 5:48 PM
+nope
+[satdx62]
+[] r4z0r_97 it says: State: status info refreshed/ Receiver: connected/
+UI: not capturing/ Video: capturing with...
+satdx62 08/26/2025 5:48 PM
+Do you now have an image in HyperHDR?
+[r4z0r_97]
+r4z0r_97 08/26/2025 5:47 PM
+it says: State: status info refreshed/ Receiver: connected/ UI: not
+capturing/ Video: capturing with libdile_vt_backend.so/ FPS: 49.86
+(edited)
+[satdx62]
+[] r4z0r_97 okok perfect now?
+satdx62 08/26/2025 5:42 PM
+What does the status say?
+[r4z0r_97]
+[] satdx62 The video capture backend must be set to libdile_vt (WebOS
+3.x+) because your TV is running webOS 3....
+r4z0r_97 08/26/2025 5:42 PM
+okok perfect now? (edited)
+[satdx62]
+[] r4z0r_97 should i change it?
+satdx62 08/26/2025 5:40 PM
+The video capture backend must be set to libdile_vt (WebOS 3.x+) because
+your TV is running webOS 3.x.
+[r4z0r_97]
+r4z0r_97 08/26/2025 5:38 PM
+should i change it?
+[r4z0r_97]
+[] satdx62 Change the backend for video backend to libdile_vt and save.
+r4z0r_97 08/26/2025 5:38 PM
+the video capture beckend is on libdile_vt (WebOS 3.x+)
+ 1
+[satdx62]
+[] r4z0r_97 ok now it say UI: not capturing
+satdx62 08/26/2025 5:34 PM
+Change the backend for video backend to libdile_vt and save. (edited)
+[r4z0r_97]
+[] satdx62 Great! Turn off the Graphical Capture backend and save. We
+don't need the UI. Just video.
+r4z0r_97 08/26/2025 5:32 PM
+ok now it say UI: not capturing (edited)
+[satdx62]
+[] r4z0r_97 ok it says: State: status info refreshed/ Receiver:
+connected/ UI: Capturing with libgm_backend.so/ ...
+satdx62 08/26/2025 5:31 PM
+Great! Turn off the Graphical Capture backend and save. We don't need
+the UI. Just video.
+[r4z0r_97]
+[] satdx62 That doesn't matter right now. What's important is that you
+check the bottom bar in PicCap to see wh...
+r4z0r_97 08/26/2025 5:29 PM
+ok it says: State: status info refreshed/ Receiver: connected/ UI:
+Capturing with libgm_backend.so/ Video: capturing with
+libdile_vt_backend.so/ FPS: 49.86
+[satdx62]
+[] r4z0r_97 or the resolution that is still 192x108?
+satdx62 08/26/2025 5:26 PM
+That doesn't matter right now. What's important is that you check the
+bottom bar in PicCap to see what it says: UI, VIDEO, and FPS, and then
+tell me.
+[r4z0r_97]
+r4z0r_97 08/26/2025 5:26 PM
+or the resolution that is still 192x108?
+08/26/2025 5:25 PM
+now is set to automatic detection
+08/26/2025 5:25 PM
+should i change the graphical capture backend?
+[r4z0r_97]
+[] satdx62 This means that video capture is now working and you should
+see an image in HyperHDR.
+r4z0r_97 08/26/2025 5:23 PM
+i've checked but it still shows black screen (edited)
+[3.PNG]
+ 3.PNG
+24.85 KB External
+[satdx62]
+[] r4z0r_97 ok i turned off the quirk but now webos dev manager doesn't
+allow me to take screenshots
+satdx62 08/26/2025 5:22 PM
+This means that video capture is now working and you should see an image
+in HyperHDR. (edited)
+[r4z0r_97]
+[] satdx62 Yes, and when you click on “Save,” you can see the status at
+the bottom of the same page; you don't ...
+r4z0r_97 08/26/2025 5:21 PM
+ok i turned off the quirk but now webos dev manager doesn't allow me to
+take screenshots (edited)
+[2.PNG]
+ 2.PNG
+6.56 KB External
+ 1
+[satdx62]
+[] r4z0r_97 this?
+satdx62 08/26/2025 5:16 PM
+Yes, and when you click on “Save,” you can see the status at the bottom
+of the same page; you don't have to switch to the overview page.
+[r4z0r_97]
+[] satdx62 Damn! Turn off the Quirk in advance and save.
+r4z0r_97 08/26/2025 5:14 PM
+this?
+[1.png]
+ 1.png
+81.59 KB External
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 5:11 PM
+Damn! Turn off the Quirk in advance and save.
+[r4z0r_97]
+[] satdx62 What does it say now in picap under status UI, Video Frame?
+r4z0r_97 08/26/2025 5:09 PM
+(no content)
+[webos-dev-tmp-79fd058b-754c-46f6-a65b-37204a279cdc.png]
+ webos-dev-tmp-79fd058b-754c-46f6-a65b-37204a279cdc.png
+73.17 KB External
+[satdx62]
+[] r4z0r_97 ok did it
+satdx62 08/26/2025 5:08 PM
+What does it say now in picap under status UI, Video Frame?
+[r4z0r_97]
+r4z0r_97 08/26/2025 5:07 PM
+ok did it
+[satdx62]
+[] r4z0r_97 i've noticed that now it shows the fps and says UI:
+capturing.... but on my pc the tv screen is not ...
+satdx62 08/26/2025 5:07 PM
+Simply press save in Advanced without changing anything.
+[r4z0r_97]
+r4z0r_97 08/26/2025 5:06 PM
+(no content)
+[1.PNG]
+ 1.PNG
+26.61 KB External
+08/26/2025 5:05 PM
+i've noticed that now it shows the fps and says UI: capturing.... but on
+my pc the tv screen is not shown
+[r4z0r_97]
+[] satdx62 What is enabled under Advanced?
+r4z0r_97 08/26/2025 5:04 PM
+ok this are my advanced settings
+[webos-dev-tmp-cf7e0ba6-e850-48df-a148-1110398a093f.png]
+ webos-dev-tmp-cf7e0ba6-e850-48df-a148-1110398a093f.png
+90.51 KB External
+[satdx62]
+[] r4z0r_97 did it still nothing
+satdx62 08/26/2025 4:58 PM
+What is enabled under Advanced?
+[r4z0r_97]
+[] satdx62 Turn on VSync and save.
+r4z0r_97 08/26/2025 4:57 PM
+did it still nothing
+[webos-dev-tmp-8772474f-b012-4ec2-9665-29536c6a32fc.png]
+ webos-dev-tmp-8772474f-b012-4ec2-9665-29536c6a32fc.png
+90.39 KB External
+[satdx62]
+[] r4z0r_97 i thing that is not capturing anymore
+satdx62 08/26/2025 4:56 PM
+Turn on VSync and save.
+[r4z0r_97]
+r4z0r_97 08/26/2025 4:55 PM
+(no content)
+[webos-dev-tmp-2c38b1e4-5417-4ad7-8a5f-bfa344d2cac1.png]
+ webos-dev-tmp-2c38b1e4-5417-4ad7-8a5f-bfa344d2cac1.png
+90.1 KB External
+[r4z0r_97]
+[] satdx62 Yes, and turn off Graphic Backend, save, and take a
+screenshot.
+r4z0r_97 08/26/2025 4:54 PM
+i thing that is not capturing anymore
+[satdx62]
+satdx62 08/26/2025 4:53 PM
+Yes, and turn off Graphic Backend, save, and take a screenshot.
+[r4z0r_97]
+r4z0r_97 08/26/2025 4:52 PM
+i need to change only the video capturing backend?
+[r4z0r_97]
+[] satdx62 In PicCap, set the FPS to **60** and the video bacend to
+**libdile_vt**, save, and take a screenshot...
+r4z0r_97 08/26/2025 4:50 PM
+like this?
+[webos-dev-tmp-6ad93835-1901-4b23-942b-2e2388eae6f9.png]
+ webos-dev-tmp-6ad93835-1901-4b23-942b-2e2388eae6f9.png
+91.96 KB External
+[satdx62]
+[] r4z0r_97 pic cap still in 192x108
+satdx62 08/26/2025 4:48 PM
+In PicCap, set the FPS to 60 and the video bacend to libdile_vt, save,
+and take a screenshot.
+[r4z0r_97]
+r4z0r_97 08/26/2025 4:47 PM
+pic cap still in 192x108
+ 1
+08/26/2025 4:47 PM
+(no content)
+[webos-dev-tmp-ee7be200-c0c4-4cc9-87ad-255e48db28ba.png]
+ webos-dev-tmp-ee7be200-c0c4-4cc9-87ad-255e48db28ba.png
+90.01 KB External
+[r4z0r_97]
+[] satdx62 Okay, disable failsave and check whether PicCap and HyperHDR
+have root access to Services Elevated.
+r4z0r_97 08/26/2025 4:46 PM
+i think they are right?
+[webos-dev-tmp-b8f51da8-4b1a-47b9-9d46-4e4c2a4e9635.png]
+ webos-dev-tmp-b8f51da8-4b1a-47b9-9d46-4e4c2a4e9635.png
+73.07 KB External
+[webos-dev-tmp-669f49c5-7226-4738-82a4-fcef22db6d41.png]
+ webos-dev-tmp-669f49c5-7226-4738-82a4-fcef22db6d41.png
+118.8 KB External
+[webos-dev-tmp-6720a708-f03b-4e43-a7ed-0ff52d3429d8.png]
+ webos-dev-tmp-6720a708-f03b-4e43-a7ed-0ff52d3429d8.png
+87.14 KB External
+ 1
+[satdx62]
+[] r4z0r_97 i rebooted disconnecting the power supply but nothing
+failsafe still on
+satdx62 08/26/2025 4:43 PM
+Okay, disable failsave and check whether PicCap and HyperHDR have root
+access to Services Elevated.
+[r4z0r_97]
+[] satdx62 Yeah.
+r4z0r_97 08/26/2025 4:39 PM
+i rebooted disconnecting the power supply but nothing failsafe still on
+(edited)
+[satdx62]
+[] r4z0r_97 should i turn the tv off with the remote and then disconnect
+the power supply for 2 minutes?
+satdx62 08/26/2025 4:35 PM
+Yeah.
+[r4z0r_97]
+r4z0r_97 08/26/2025 4:35 PM
+should i turn the tv off with the remote and then disconnect the power
+supply for 2 minutes?
+[satdx62]
+[] r4z0r_97 when i reboot it automatically switch on but everytime i
+uncheck it
+satdx62 08/26/2025 4:34 PM
+Failsafe must not switch on during bootup. It must remain off.
+Disconnect your TV from the power supply for 2 minutes and check
+failsafe.
+[r4z0r_97]
+[] satdx62 Failsafe is off?
+r4z0r_97 08/26/2025 4:32 PM
+when i reboot it automatically switch on but everytime i uncheck it
+[satdx62]
+[] r4z0r_97 ok did it but still nothing the captured screen is black
+satdx62 08/26/2025 4:31 PM
+Failsafe is off?
+[r4z0r_97]
+[] satdx62 Yes.
+r4z0r_97 08/26/2025 4:29 PM
+ok did it but still nothing the captured screen is black (edited)
+[satdx62]
+[] r4z0r_97 from the homebrew settings?
+satdx62 08/26/2025 4:28 PM
+Yes.
+[r4z0r_97]
+[] satdx62 Yes.
+r4z0r_97 08/26/2025 4:27 PM
+from the homebrew settings?
+[satdx62]
+[] r4z0r_97 should i reboot?
+satdx62 08/26/2025 4:27 PM
+Yes.
+[r4z0r_97]
+r4z0r_97 08/26/2025 4:25 PM
+should i reboot?
+[r4z0r_97]
+[] satdx62 Great! First, set the resolution in PicCap to 192 x 108
+pixels and save the setting. Then check in H...
+r4z0r_97 08/26/2025 4:25 PM
+i did it but now the screen is not capturing anything
+[2.PNG]
+ 2.PNG
+27.57 KB External
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/26/2025 4:13 PM
+Great! First, set the resolution in PicCap to 192 x 108 pixels and save
+the setting. Then check in HyperHDR under “LED visualization” whether
+video or TV content is displayed and let me know if the image is
+visible. If so, the LEDs should also light up. Further fine adjustments
+are necessary until everything works as desired.
+[1.png]
+ 1.png
+490.43 KB External
+[r4z0r_97]
+[] satdx62 ``` grep -h -E
+'"(hardware_id|core_os_release|product_id|webos_manufacturing_version|board_type)"'
+/...
+r4z0r_97 08/26/2025 4:12 PM
+(no content)
+[1.PNG]
+ 1.PNG
+11.48 KB External
+ 1
+[satdx62]
+[] r4z0r_97 it says this
+satdx62 08/26/2025 4:10 PM
+    grep -h -E '"(hardware_id|core_os_release|product_id|webos_manufacturing_version|board_type)"' /var/run/nyx/*
+[r4z0r_97]
+[] satdx62 Hi, we can find a solution for that too! I need specific
+information for which I need the output of ...
+r4z0r_97 08/26/2025 4:07 PM
+it says this
+[0808.PNG]
+ 0808.PNG
+6.65 KB External
+[satdx62]
+[] r4z0r_97 Hi, thanks again for yesterday, sorry to bother you again
+but I have another problem; after doing th...
+satdx62 08/26/2025 3:51 PM
+Hi, we can find a solution for that too! I need specific information for
+which I need the output of this command. Just run it in the terminal:
+    grep -h -E '"(hardware_id|core_os_release|product_id|webos_manufacturing_version|board_type)"' /var/run/nyx/*
+(edited)
+[r4z0r_97]
+[] satdx62 You should follow my guide on GitHub starting from this
+section:https://github.com/satgit62/How-to-I...
+r4z0r_97 08/26/2025 3:27 PM
+Hi, thanks again for yesterday, sorry to bother you again but I have
+another problem; after doing the whole hyperHDR setup from the PC I
+noticed that when I go to the normal television channels Pic cap does
+not record the program but only the icons like the mute one or the
+program info and even going to YouTube it does not record the video that
+I put but only the YouTube home page and among other things I also tried
+to use my PC via HDMI and it does not record that either. I don't know
+if is a DRM problem or something else. Do you have any solution by
+chance? (edited)
+August 25, 2025
+[r4z0r_97]
+r4z0r_97 08/25/2025 11:13 PM
+thousand thanks again and good night (edited)
+[satdx62]
+[] r4z0r_97 thank you so much by the way you really saved my day i've
+been trying to get this to work for years
+satdx62 08/25/2025 11:13 PM
+You should follow my guide on GitHub starting from this
+section:https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#settings-hyperhdrhyperionng
+I wish you every success.  We can clarify further details tomorrow
+afternoon. Good night,
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[r4z0r_97]
+r4z0r_97 08/25/2025 11:11 PM
+thank you so much by the way you really saved my day i've been trying to
+get this to work for years (edited)
+08/25/2025 11:08 PM
+ok now what should i do?
+[r4z0r_97]
+[] satdx62 Set the graphical and video capture backend to automatic and
+click save.
+r4z0r_97 08/25/2025 11:07 PM
+oh my god i think it actually worked
+[002.png]
+ 002.png
+91.03 KB External
+ 1  1
+[satdx62]
+[] r4z0r_97 should i disconnect the power supply for 2 minutes or
+something?
+satdx62 08/25/2025 11:05 PM
+Set the graphical and video capture backend to automatic and click save.
+[r4z0r_97]
+r4z0r_97 08/25/2025 11:04 PM
+should i disconnect the power supply for 2 minutes or something?
+08/25/2025 11:03 PM
+the settings are saved but the fps are still 0
+[r4z0r_97]
+[] satdx62 Yes, click on reboot and check again.
+r4z0r_97 08/25/2025 11:03 PM
+i rebooted it but nothing happened
+[001.png]
+ 001.png
+89.36 KB External
+[satdx62]
+[] r4z0r_97 ok i did it but still nothing, i don't need to reboot after
+these changes right?
+satdx62 08/25/2025 10:53 PM
+Yes, click on reboot and check again.
+[r4z0r_97]
+[] satdx62 Deselect VSync and save.
+r4z0r_97 08/25/2025 10:52 PM
+ok i did it but still nothing, i don't need to reboot after these
+changes right?
+[satdx62]
+[] r4z0r_97 still says fps 00
+satdx62 08/25/2025 10:49 PM
+Deselect VSync and save.
+[r4z0r_97]
+[] satdx62 Okay, set it to Maximal FPS 30 FPS, save it, and see what the
+status is.
+r4z0r_97 08/25/2025 10:47 PM
+still says fps 00
+[r4z0r_97]
+r4z0r_97 08/25/2025 10:47 PM
+ok i did it and saved it but nothing changed
+[000.png]
+ 000.png
+90.45 KB External
+[satdx62]
+[] r4z0r_97 these ones?
+satdx62 08/25/2025 10:42 PM
+Okay, set it to Maximal FPS 30 FPS, save it, and see what the status is.
+[r4z0r_97]
+[] satdx62 Don't worry, it'll work out. Now you need to find the right
+settings for your webOS version. I need ...
+r4z0r_97 08/25/2025 10:40 PM
+these ones?
+[111.png]
+ 111.png
+88.5 KB External
+[222.png]
+ 222.png
+89.47 KB External
+[satdx62]
+[] r4z0r_97 should i do something here?
+satdx62 08/25/2025 10:39 PM
+Don't worry, it'll work out. Now you need to find the right settings for
+your webOS version. I need to think about it again. Show me the settings
+page for PicCap.
+[r4z0r_97]
+r4z0r_97 08/25/2025 10:37 PM
+should i do something here?
+[222.png]
+ 222.png
+89.47 KB External
+08/25/2025 10:35 PM
+cause it says video not capturing
+[333.png]
+ 333.png
+71.06 KB External
+08/25/2025 10:35 PM
+ok now on pic cap what should i do?
+[satdx62]
+[] r4z0r_97 i pressed start and now it says daemon running:: yes
+satdx62 08/25/2025 10:34 PM
+Haleluja!
+[r4z0r_97]
+r4z0r_97 08/25/2025 10:33 PM
+i pressed start and now it says daemon running:: yes (edited)
+[r4z0r_97]
+[] satdx62 Yeah.
+r4z0r_97 08/25/2025 10:32 PM
+ok now it says this
+[965.png]
+ 965.png
+86.6 KB External
+ 1
+[satdx62]
+satdx62 08/25/2025 10:25 PM
+Yeah.
+[r4z0r_97]
+r4z0r_97 08/25/2025 10:25 PM
+i need to uncheck failsafe mode first?
+[satdx62]
+[] r4z0r_97 i rebooted with the terminal but now it starts in failsafe
+mode 
+satdx62 08/25/2025 10:25 PM
+Disconnect from the power supply for 2 minutes.
+[r4z0r_97]
+r4z0r_97 08/25/2025 10:24 PM
+i rebooted with the terminal but now it starts in failsafe mode 
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/25/2025 10:22 PM
+Okay, first just reboot in terminal and check. If it's still not
+working, disconnect from the power supply for 2 minutes.
+[r4z0r_97]
+r4z0r_97 08/25/2025 10:22 PM
+08/25/2025 10:22 PM
+(no content)
+[11.png]
+ 11.png
+69.33 KB External
+08/25/2025 10:21 PM
+it still says no service elevated and no daemon running
+08/25/2025 10:20 PM
+nothing happened
+[satdx62]
+[] r4z0r_97 without rebooting the tv?
+satdx62 08/25/2025 10:20 PM
+Without it for now. Then we'll see.
+[r4z0r_97]
+r4z0r_97 08/25/2025 10:19 PM
+without rebooting the tv?
+[satdx62]
+[] r4z0r_97 is it good?
+satdx62 08/25/2025 10:19 PM
+Start HyperHDR now and see what's going on there.
+[r4z0r_97]
+r4z0r_97 08/25/2025 10:19 PM
+is it good?
+[r4z0r_97]
+[] satdx62 Enter the following command in Terminal: ```
+/media/developer/apps/usr/palm/services/org.webosbrew.h...
+r4z0r_97 08/25/2025 10:16 PM
+it says this
+[987.PNG]
+ 987.PNG
+142.75 KB External
+ 1
+[satdx62]
+[] r4z0r_97 oh ok thanks for now i wish i had your knowledge 
+satdx62 08/25/2025 10:14 PM
+Enter the following command in Terminal:
+    /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service org.webosbrew.hyperhdr.loader.service
+And tell me what the output is.
+[r4z0r_97]
+r4z0r_97 08/25/2025 10:08 PM
+oh ok thanks for now i wish i had your knowledge  (edited)
+[satdx62]
+[] r4z0r_97 ok so what should i do next?
+satdx62 08/25/2025 10:07 PM
+Nothing at the moment, I need to find a solution for HyperHDR Daemon. I
+need to think.  
+[r4z0r_97]
+[] satdx62 Yes, that's okay. PicCap definitely works, but as long as
+HyperHDR Daemon doesn't start, it also rep...
+r4z0r_97 08/25/2025 10:06 PM
+ok so what should i do next?
+[satdx62]
+[] r4z0r_97 these ones?
+satdx62 08/25/2025 10:05 PM
+Yes, that's okay. PicCap definitely works, but as long as HyperHDR
+Daemon doesn't start, it also reports that the receiver is disconnected.
+[r4z0r_97]
+[] satdx62 What does PicCap say?
+r4z0r_97 08/25/2025 10:02 PM
+these ones?
+[666.png]
+ 666.png
+116.9 KB External
+[777.png]
+ 777.png
+79.98 KB External
+[888.png]
+ 888.png
+71.21 KB External
+[satdx62]
+[] r4z0r_97 you mean the hyperion logs on the pic cap app?
+satdx62 08/25/2025 10:01 PM
+Only PicCap Log and PicCap Status. (edited)
+[r4z0r_97]
+[] satdx62 What does PicCap say?
+r4z0r_97 08/25/2025 9:59 PM
+you mean the hyperion logs on the pic cap app?
+[satdx62]
+[] r4z0r_97 is still showing me this
+satdx62 08/25/2025 9:56 PM
+What does PicCap say?
+[r4z0r_97]
+[] satdx62 You always have to check the status of both apps.
+r4z0r_97 08/25/2025 9:48 PM
+is still showing me this
+[100.png]
+ 100.png
+69.33 KB External
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:43 PM
+ok
+[satdx62]
+[] r4z0r_97 ok after this i just need to go in the hyperhdr app or open
+the piccap app before that?
+satdx62 08/25/2025 9:43 PM
+You always have to check the status of both apps.
+[r4z0r_97]
+[] satdx62 Yes.
+r4z0r_97 08/25/2025 9:43 PM
+ok after this i just need to go in the hyperhdr app or open the piccap
+app before that?
+[satdx62]
+satdx62 08/25/2025 9:41 PM
+Yes.
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:41 PM
+system reboot?
+[r4z0r_97]
+[] satdx62 Okay, now we just need to get this. Open the Homebrew Channel
+settings, then exit and restart the Hy...
+r4z0r_97 08/25/2025 9:40 PM
+ok i'm here now?
+[5454.png]
+ 5454.png
+100.96 KB External
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/25/2025 9:36 PM
+Okay, now we just need to get this. Open the Homebrew Channel settings,
+then exit and restart the HyperHDR app and check the status again.
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:33 PM
+(no content)
+[100.png]
+ 100.png
+69.33 KB External
+[r4z0r_97]
+[] satdx62 Now start HyperHDR and wait for root, then start the daemon
+and reboot. Please include a screenshot.
+r4z0r_97 08/25/2025 9:32 PM
+hyperhdr still says this
+[satdx62]
+[] r4z0r_97 now i need to run the app?
+satdx62 08/25/2025 9:31 PM
+Now start HyperHDR and wait for root, then start the daemon and reboot.
+Please include a screenshot.
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:30 PM
+now i need to run the app?
+08/25/2025 9:29 PM
+logs are these is all good?
+[99.png]
+ 99.png
+167.34 KB External
+ 1  1
+[satdx62]
+[] r4z0r_97 should i change something here?
+satdx62 08/25/2025 9:29 PM
+No, go to the logs and tell me what the output says.
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:28 PM
+should i change something here?
+08/25/2025 9:28 PM
+now it gives me the service settings that didn't gave me previously
+[89.png]
+ 89.png
+89.62 KB External
+08/25/2025 9:27 PM
+(no content)
+[78.png]
+ 78.png
+71.21 KB External
+ 1
+[r4z0r_97]
+[] satdx62 Launch.
+r4z0r_97 08/25/2025 9:26 PM
+ok i think something is going on because it says status info refreshed
+in the bottom right
+[satdx62]
+[] r4z0r_97 now?
+satdx62 08/25/2025 9:25 PM
+Launch.
+ 1
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:24 PM
+now?
+08/25/2025 9:24 PM
+ok i did it
+[satdx62]
+satdx62 08/25/2025 9:23 PM
+Yes.
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:23 PM
+so is the second one?
+[satdx62]
+[] r4z0r_97 or this one?
+satdx62 08/25/2025 9:22 PM
+Yes, they should take the latter.
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:17 PM
+or this one?
+[67.png]
+ 67.png
+180.55 KB External
+ 1
+[r4z0r_97]
+[] satdx62 After restarting, check the root and failsafe mode status.
+r4z0r_97 08/25/2025 9:16 PM
+them app to update homebrew is this one?
+[34.png]
+ 34.png
+192.17 KB External
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:14 PM
+thanks
+08/25/2025 9:14 PM
+ok
+[satdx62]
+[] r4z0r_97 ok
+satdx62 08/25/2025 9:13 PM
+After restarting, check the root and failsafe mode status.
+[r4z0r_97]
+r4z0r_97 08/25/2025 9:11 PM
+ok
+[satdx62]
+[] r4z0r_97 ok so i need to update from the webos dev manager?
+satdx62 08/25/2025 9:11 PM
+This time, it is better to do it via the Homebrew menu on your TV and
+then restart it.
+[r4z0r_97]
+[] satdx62 You should update Homebrew Channel. This is very important
+because of the autostarts elevations. I d...
+r4z0r_97 08/25/2025 9:09 PM
+ok so i need to update from the webos dev manager?
+[satdx62]
+[] r4z0r_97 i re-downloaded hyperhdr but it still says this
+satdx62 08/25/2025 9:07 PM
+You should update Homebrew Channel. This is very important because of
+the autostarts elevations. I didn't even notice that you still had the
+old Homebrew Channels.
+[r4z0r_97]
+[] satdx62 No, no logs are being loaded. I recommend that you uninstall
+Hyperion.NG using the webOS Dev Manager...
+r4z0r_97 08/25/2025 9:05 PM
+i re-downloaded hyperhdr but it still says this
+[24.png]
+ 24.png
+69.33 KB External
+[r4z0r_97]
+[] satdx62 Yes, you should definitely update Homebrew Channel.
+r4z0r_97 08/25/2025 9:03 PM
+ok but update homebrew will not resolve the problem right?
+[satdx62]
+[] r4z0r_97 so is the same if i download apps from homebrew directly
+from the tv? by the way on webos dev manage...
+satdx62 08/25/2025 8:57 PM
+Yes, you should definitely update Homebrew Channel.
+[r4z0r_97]
+[] satdx62 No, but start it to see if the services are elevated and the
+daemon starts. You can start WebOS Dev ...
+r4z0r_97 08/25/2025 8:54 PM
+so is the same if i download apps from homebrew directly from the tv? by
+the way on webos dev manager says that i can update homebrew to 0.7.2
+version should i do it?
+[satdx62]
+[] r4z0r_97 i actually unistalled hyperion.ng when you suggested me to
+use hyperhdr in fact now i have hyperhdr ...
+satdx62 08/25/2025 8:51 PM
+No, but start it to see if the services are elevated and the daemon
+starts. You can start WebOS Dev Manager directly.
+[r4z0r_97]
+[] satdx62 No, no logs are being loaded. I recommend that you uninstall
+Hyperion.NG using the webOS Dev Manager...
+r4z0r_97 08/25/2025 8:48 PM
+i actually unistalled hyperion.ng when you suggested me to use hyperhdr
+in fact now i have hyperhdr which i downloaded previously from homebrew
+(on the tv not on the webos dev manager). should i unistall hyperhdr and
+install it from webos dev manager? (edited)
+[satdx62]
+[] r4z0r_97 it is good? 
+satdx62 08/25/2025 8:45 PM
+No, no logs are being loaded. I recommend that you uninstall Hyperion.NG
+using the webOS Dev Manager and install HyperHDR instead, then start it
+from there. Wait a moment to see if it gets elevation, then activate the
+daemon with start, take a screenshot for me, and then reboot.
+[r4z0r_97]
+[] satdx62 Yeah!
+r4z0r_97 08/25/2025 8:42 PM
+it is good? 
+ 1
+[satdx62]
+satdx62 08/25/2025 8:40 PM
+Yeah!
+[r4z0r_97]
+[] satdx62 Okay, if fail safe is not active, that's a good sign. What do
+the logs from PicCap say about Hyperio...
+r4z0r_97 08/25/2025 8:37 PM
+this?
+[10.png]
+ 10.png
+79 KB External
+[satdx62]
+[] r4z0r_97 and i'm not in failsafe mode
+satdx62 08/25/2025 8:37 PM
+Okay, if fail safe is not active, that's a good sign. What do the logs
+from PicCap say about Hyperion-webos?
+[r4z0r_97]
+r4z0r_97 08/25/2025 8:35 PM
+and i'm not in failsafe mode
+08/25/2025 8:34 PM
+it still says server status failed
+[r4z0r_97]
+[] satdx62 Yes.
+r4z0r_97 08/25/2025 8:33 PM
+ok dont know if something changed
+[9.png]
+ 9.png
+169.6 KB External
+[satdx62]
+satdx62 08/25/2025 8:32 PM
+Yes.
+[r4z0r_97]
+r4z0r_97 08/25/2025 8:31 PM
+now what should i do on my tv? check the piccap logs?
+ 1
+[r4z0r_97]
+[] satdx62 Simply install over it.
+r4z0r_97 08/25/2025 8:30 PM
+perfect i did it and now on the drive icon there are all of the files
+that where previousely hidden
+[satdx62]
+[] r4z0r_97 is the x64en-US.msi right?
+satdx62 08/25/2025 8:28 PM
+Simply install over it.
+[r4z0r_97]
+r4z0r_97 08/25/2025 8:27 PM
+ok
+[r4z0r_97]
+[] satdx62 Yes, This one:
+https://github.com/webosbrew/dev-manager-desktop/releases/tag/v1.13.3 is
+from April 2...
+r4z0r_97 08/25/2025 8:27 PM
+is the x64en-US.msi right?
+ 1
+[satdx62]
+[] r4z0r_97 oh ok so i had the new one and i need to download the old
+one right?
+satdx62 08/25/2025 8:27 PM
+Yes, This one:
+https://github.com/webosbrew/dev-manager-desktop/releases/tag/v1.13.3 is
+from April 2024.
+Release v1.13.3 · webosbrew/dev-manager-desktop
+What&#39;s Changed Updated Developer Mode Help Links to Use Web Archive
+by @mariotaku in #205 Focus on Input After Execution for Dumb Shell by
+@mariotaku in #207 App Details &amp; Compatibility Ch...
+[]
+[r4z0r_97]
+[] satdx62 You misunderstood; you need this old webOS Dev Manager
+version for your 2016 TV webOS 3.x.
+r4z0r_97 08/25/2025 8:26 PM
+oh ok so i had the new one and i need to download the old one right?
+[satdx62]
+[] r4z0r_97 oh thanks i didn't know i had the old version 
+satdx62 08/25/2025 8:24 PM
+You misunderstood; you need this old webOS Dev Manager version for your
+2016 TV webOS 3.x.
+[r4z0r_97]
+[] satdx62 Yes, Quick Start should be enabled. By the way, I think I
+know why you can't navigate back in your w...
+r4z0r_97 08/25/2025 8:22 PM
+oh thanks i didn't know i had the old version 
+[satdx62]
+[] r4z0r_97 ok so i don't need to unplug the cable or anything? cause i
+still have the quick start options enabl...
+satdx62 08/25/2025 8:20 PM
+Yes, Quick Start should be enabled. By the way, I think I know why you
+can't navigate back in your webOS Dev Manager. It's the wrong version
+for your old device. You need to install this one.
+https://github.com/webosbrew/dev-manager-desktop/releases/tag/v1.13.3
+Release v1.13.3 · webosbrew/dev-manager-desktop
+What&#39;s Changed Updated Developer Mode Help Links to Use Web Archive
+by @mariotaku in #205 Focus on Input After Execution for Dumb Shell by
+@mariotaku in #207 App Details &amp; Compatibility Ch...
+[]
+[r4z0r_97]
+[] satdx62 You can also turn off the TV with the remote control, but
+wait 1 to 2 minutes before turning it back...
+r4z0r_97 08/25/2025 8:18 PM
+ok so i don't need to unplug the cable or anything? cause i still have
+the quick start options enabled (edited)
+[satdx62]
+[] r4z0r_97 i need to unplug the cable or just turn off the tv with the
+remote? or pressing system reboot?
+satdx62 08/25/2025 8:16 PM
+You can also turn off the TV with the remote control, but wait 1 to 2
+minutes before turning it back on.
+[r4z0r_97]
+[] satdx62 No problem, disable the failsafe and reboot.
+r4z0r_97 08/25/2025 8:15 PM
+i need to unplug the cable or just turn off the tv with the remote? or
+pressing system reboot? (edited)
+[satdx62]
+[] r4z0r_97 ok thanks i rebooted but it restarted in failsafe mode
+satdx62 08/25/2025 8:14 PM
+No problem, disable the failsafe and reboot.
+[r4z0r_97]
+[] satdx62 yes.
+r4z0r_97 08/25/2025 8:12 PM
+ok thanks i rebooted but it restarted in failsafe mode (edited)
+ 1
+[satdx62]
+satdx62 08/25/2025 8:10 PM
+yes.
+[r4z0r_97]
+r4z0r_97 08/25/2025 8:09 PM
+can i reboot by writing rebbot in the terminal with webos dev manager?
+[satdx62]
+[] r4z0r_97 Click to see attachment
+satdx62 08/25/2025 8:07 PM
+Yes, that's right. Just reboot and see what status PicCap achieves.
+[r4z0r_97]
+r4z0r_97 08/25/2025 8:07 PM
+perfect thanks now what should i do?
+08/25/2025 8:06 PM
+(no content)
+[8.PNG]
+ 8.PNG
+29.78 KB External
+ 1
+[r4z0r_97]
+[] satdx62 The login details are your TV's IP address, user root, port
+22, and password alpine.
+r4z0r_97 08/25/2025 8:05 PM
+ok i think i did it right?
+[r4z0r_97]
+[] satdx62 The login details are your TV's IP address, user root, port
+22, and password alpine.
+r4z0r_97 08/25/2025 8:01 PM
+ok perfect i have this how can i copy the config,json file? (edited)
+[6.PNG]
+ 6.PNG
+28.42 KB External
+ 1
+[satdx62]
+[] r4z0r_97 ok i've launched it now?
+satdx62 08/25/2025 7:51 PM
+The login details are your TV's IP address, user root, port 22, and
+password alpine.
+[r4z0r_97]
+[] satdx62 FileZilla must be installed on your PC.
+r4z0r_97 08/25/2025 7:49 PM
+ok i've launched it now?
+[satdx62]
+[] r4z0r_97 ok so i'm installing filezilla next?
+satdx62 08/25/2025 7:43 PM
+FileZilla must be installed on your PC.
+[r4z0r_97]
+[] satdx62 Crazy! I don't know why this isn't working, but you can set
+up FileZilla with the same login details...
+r4z0r_97 08/25/2025 7:42 PM
+ok so i'm installing filezilla next?
+[satdx62]
+[] r4z0r_97 it only shows me this files
+satdx62 08/25/2025 7:39 PM
+Crazy! I don't know why this isn't working, but you can set up FileZilla
+with the same login details and use FTP/SFTP.
+[2.png]
+ 2.png
+98.82 KB External
+[r4z0r_97]
+r4z0r_97 08/25/2025 7:35 PM
+it only shows me this files
+[r4z0r_97]
+[] satdx62 Yes, that is the `/home/root` directory. You need to go one
+level deeper by clicking on the drive ic...
+r4z0r_97 08/25/2025 7:34 PM
+ok thanks but if i click on the drive icon nothing happens
+[satdx62]
+[] r4z0r_97 i only have this files
+satdx62 08/25/2025 7:31 PM
+Yes, that is the /home/root directory. You need to go one level deeper
+by clicking on the drive icon, see image, and then click through all the
+directories until you reach PicCap. And use the reply button for
+messages to me so that I am notified when you reply. (edited)
+[2.png]
+ 2.png
+18.5 KB External
+[r4z0r_97]
+r4z0r_97 08/25/2025 7:26 PM
+i only have this files (edited)
+[4.PNG]
+ 4.PNG
+18.55 KB External
+[r4z0r_97]
+r4z0r_97 08/25/2025 7:14 PM
+Ok
+[satdx62]
+[] r4z0r_97 ok thanks
+satdx62 08/25/2025 7:10 PM
+Hi, forget about waiting. Next, copy the config.json file to
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/
+using the webOS Dev Manager on your TV and restart it. You can use the
+reboot command in Terminal. Then start PicCap and check the status.
+(edited)
+[1.png]
+ 1.png
+102.78 KB External
+ config.json
+264 Bytes External
+[r4z0r_97]
+r4z0r_97 08/25/2025 7:10 PM
+ok thanks
+[satdx62]
+[] r4z0r_97 this is what it says, shoud i wait?
+satdx62 08/25/2025 7:07 PM
+Yes, wait a little longer and see if anything else comes up in the next
+5 minutes. If not, let me know.
+[r4z0r_97]
+r4z0r_97 08/25/2025 7:03 PM
+this is what it says, shoud i wait? (edited)
+[3.png]
+ 3.png
+169.83 KB External
+08/25/2025 7:01 PM
+Ok failsafe mode is still disabled
+08/25/2025 6:58 PM
+ok I'm checking now thank you so much for everything
+[satdx62]
+[] r4z0r_97 Now that i'm home i Need to turn off the TV with the remote
+and unplug the cable for 2 minutes?
+satdx62 08/25/2025 6:52 PM
+Yes, do that and see if the failsafe function is still disabled. Then
+check under Piccap Logs to see if the service root is being received.
+Wait a while, as this may take some time. If it is still not successful,
+you will need to take further action. I will let you know what else
+needs to be done.
+[r4z0r_97]
+r4z0r_97 08/25/2025 6:48 PM
+Now that i'm home i Need to turn off the TV with the remote and unplug
+the cable for 2 minutes?
+08/25/2025 6:46 PM
+Thanks for your time i apologize but i was kinda warried about the
+testing (edited)
+[satdx62]
+[] r4z0r_97 Cause i need to do an urgent thing
+satdx62 08/25/2025 6:33 PM
+Yes, test it; it should work after 15 minutes. I apologize, but since
+I am not a support employee, but only a user like you, and my time is
+limited, we will have to postpone the testing until another time when I
+have more time. However, you can keep me informed about the progress so
+that I can give you further instructions. Furthermore, in the last three
+hours, I have not received a single “thank you”..... (edited)
+[r4z0r_97]
+r4z0r_97 08/25/2025 6:25 PM
+Cause i need to do an urgent thing (edited)
+08/25/2025 6:24 PM
+Ok It Will still work if i unplug the cable in 15 minutes?
+[satdx62]
+[] r4z0r_97 it says this
+satdx62 08/25/2025 6:12 PM
+Unplug the TV from the power supply for 2 minutes and then try again.
+The evaluation of the PicCap services takes a while, so you will have to
+wait under Logs until it is finished.
+[r4z0r_97]
+r4z0r_97 08/25/2025 6:07 PM
+it says this
+[2.png]
+ 2.png
+169.84 KB External
+[satdx62]
+[] r4z0r_97 ok failsafe mode is disabled
+satdx62 08/25/2025 6:04 PM
+Open the PicCap app and check under “Logs” to see if root privileges
+have been granted.
+[r4z0r_97]
+r4z0r_97 08/25/2025 6:03 PM
+ok failsafe mode is disabled
+ 1  1
+[satdx62]
+[] r4z0r_97 ok i turned off failsafe mode and turned on quick start now
+i can restart the tv by pressing the tur...
+satdx62 08/25/2025 6:02 PM
+Yes, simply switch it off, wait 30 seconds, and switch it back on again.
+[r4z0r_97]
+r4z0r_97 08/25/2025 6:01 PM
+ok i turned off failsafe mode and turned on quick start now i can
+restart the tv by pressing the turn on/off button on the remote or by
+system reboot?
+[satdx62]
+[] r4z0r_97 ok i restarted it but failsafemode is still active
+satdx62 08/25/2025 5:59 PM
+If it is still enabled, disable it. Now go to the menu and activate
+Quick Start+. Then restart your TV. Check again to see if Failsafe
+remains disabled. If so, open the PicCap app and check under “Logs” to
+see if root privileges have been granted.
+[r4z0r_97]
+r4z0r_97 08/25/2025 5:58 PM
+ok i restarted it but failsafemode is still active
+[satdx62]
+satdx62 08/25/2025 5:57 PM
+Yes!
+[r4z0r_97]
+r4z0r_97 08/25/2025 5:57 PM
+ok I started it and the Apple logo came up permanently, should I turn
+off the TV?
+[satdx62]
+satdx62 08/25/2025 5:55 PM
+Yes!
+[r4z0r_97]
+r4z0r_97 08/25/2025 5:55 PM
+i need to run the autorun app on the tv right?
+[satdx62]
+[] r4z0r_97 now what should i do?
+satdx62 08/25/2025 5:49 PM
+Next, you need to unzip the file “org.webosbrew.autostart_0.0.2_all.zip”
+and install it on your TV using the webOS Dev Manager. Then open or run
+the app. Restart your device and check whether Failsafe is disabled. If
+it is still enabled, disable it. Now go to the menu and activate Quick
+Start+. Then restart your TV. Check again to see if Failsafe remains
+disabled. If so, open the PicCap app and check under “Logs” to see if
+root privileges have been granted.
+[Install.png]
+ Install.png
+46.2 KB External
+ org.webosbrew.autostart_0.0.2_all.zip
+30.92 KB External
+[r4z0r_97]
+r4z0r_97 08/25/2025 5:48 PM
+now what should i do?
+08/25/2025 5:47 PM
+it says this
+[Cattura.PNG2.PNG]
+ Cattura.PNG2.PNG
+11.38 KB External
+[satdx62]
+[] r4z0r_97 i've done it correctly?
+satdx62 08/25/2025 5:46 PM
+Yes, that's correct. Sorry, the second code is
+    /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service
+Run the code and tell me what comes up in the output.
+[r4z0r_97]
+r4z0r_97 08/25/2025 5:45 PM
+i've done it correctly?
+[Cattura.PNG]
+ Cattura.PNG
+15.64 KB External
+08/25/2025 5:43 PM
+1 should be the pic cap and the other one the hyper hdr one right?
+08/25/2025 5:41 PM
+the two codes are the same no?
+[satdx62]
+[] r4z0r_97 all of this without rebboting after uncheck the failsafe
+mode
+satdx62 08/25/2025 5:41 PM
+Yes.
+[r4z0r_97]
+r4z0r_97 08/25/2025 5:41 PM
+i think that the two codes that you give me are the same
+08/25/2025 5:38 PM
+right?
+08/25/2025 5:38 PM
+all of this without rebboting after uncheck the failsafe mode
+08/25/2025 5:36 PM
+ok so i just need to copy and paste the two codes and press enter right?
+[satdx62]
+[] r4z0r_97 here?
+satdx62 08/25/2025 5:35 PM
+Yes, right there.
+[r4z0r_97]
+r4z0r_97 08/25/2025 5:34 PM
+here?
+[Cattura.PNG]
+ Cattura.PNG
+15.98 KB External
+08/25/2025 5:29 PM
+But where can i write the codes that you give me to elevate the service?
+(edited)
+08/25/2025 5:27 PM
+Ok Thanks i have webos Dev manager installed end configured on my PC
+[satdx62]
+satdx62 08/25/2025 5:24 PM
+(no content)
+[webOS_Dev_Manager.jpg]
+ webOS_Dev_Manager.jpg
+134.82 KB External

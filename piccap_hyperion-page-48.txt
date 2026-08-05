@@ -1,0 +1,2226 @@
+January 24, 2022
+[e99.tuxuser]
+e99.tuxuser 01/24/2022 7:49 AM
+And it's quite slow... Can do some more testing later today
+[e99.tuxuser]
+[] raffibaffi I will order one and give it a shot!!! Any limitations?
+e99.tuxuser 01/24/2022 7:49 AM
+Yeah, it's just a PoC, for now all the LEDs are lighting up in same
+color
+[raffibaffi]
+raffibaffi 01/24/2022 7:49 AM
+I tried to pm you…
+[raffibaffi]
+[] e99.tuxuser If somebody has a USB-CDC compatible Arduino (Pro Micro /
+Leonardo) and you are controlling the LED ...
+raffibaffi 01/24/2022 7:40 AM
+I will order one and give it a shot!!! Any limitations?
+[aabytt]
+[] dsl444 <@560254018933227561> How did you get 636 LEDs behind your TV?
+Im using the Same SK6812 60Leds/m and...
+aabytt 01/24/2022 6:33 AM
+He has 144 LED/m
+[retr0id]
+retr0id 01/24/2022 6:30 AM
+I guess you can double them up?
+[dsl444]
+dsl444 01/24/2022 6:25 AM
+@RaffiBaffi How did you get 636 LEDs behind your TV? Im using the Same
+SK6812 60Leds/m and come around my TV on 266. Or did i count them wrong?
+[e99.tuxuser]
+e99.tuxuser 01/24/2022 2:58 AM
+If somebody has a USB-CDC compatible Arduino (Pro Micro / Leonardo) and
+you are controlling the LED stripes via Adalight, you can give it a
+try... Config:
+https://github.com/tuxuser/hyperion.rs/blob/feature/adalight_device/config.toml
+Binary:
+https://github.com/tuxuser/hyperion.rs/suites/5034832551/artifacts/148681817
+hyperion.rs/config.toml at feature/adalight_device · tuxuser/hyperi...
+Rust implementation of the Hyperion Ambient Lighting software -
+hyperion.rs/config.toml at feature/adalight_device · tuxuser/hyperion.rs
+[]
+01/24/2022 2:56 AM
+heureka! hyperion.rs is working locally on the TV
+ 5  2  1
+[raffibaffi]
+raffibaffi 01/24/2022 1:17 AM
+so i changed the latch time to 0ms, calibrated the position of the leds
+in the software and reduced the smoothing to an comfortable value. Now
+its veeeeery smooth and nice to watch… so the next soldering action will
+come in a couple month  not weeks/days… maybe until then, the DRM shit
+on newer tvs will be solved… 
+[raffibaffi]
+raffibaffi 01/24/2022 12:52 AM
+https://youtu.be/wqFH-NZUfQ4
+Mike Sannikov
+Lightpack RGB test sequence
+Test video for Lightpack LEDs arrangement test. Just loop it if
+necessary. This video is also part of Prismatik Android app.
+[] Watch video
+01/24/2022 12:52 AM
+https://youtu.be/T7tVbvoAAJk
+Michael Letsch
+Ambilight color test demo video clip for led strip test
+Ambilight color test demo video clip for led strip test Music: Babylon -
+Disco Ultralounge By: Kevin MacLeod
+[] Watch video
+01/24/2022 12:52 AM
+BTW: i found two very good Testvideos for lag/color checks….
+ 1 [:meep:] 1 [:nb:] 1 [:lg:] 1
+01/24/2022 12:45 AM
+Hmmm… i reduced it again to 0ms and no flickering.. but i have absolutly
+no idea what this parameter change… trial & error for me…
+[raffibaffi]
+raffibaffi 01/24/2022 12:35 AM
+Latch time = 0ms -then it flickers….
+01/24/2022 12:34 AM
+(no content)
+[IMG_2344.png]
+ IMG_2344.png
+220.95 KB External
+01/24/2022 12:34 AM
+Splitting in packets… so i count my leds and add +6 (extra data) for the
+new packet size. So i reach 25-30fps in WLED….
+[raffibaffi]
+[] infowski I think you can push out bigger packets but then it's going
+to split it up into multiple ones over t...
+raffibaffi 01/24/2022 12:32 AM
+That it, what tmp2net is doing…
+[infowski]
+infowski 01/24/2022 12:31 AM
+I wouldn't be surprised if lwip didn't support reassembly there.
+[raffibaffi]
+raffibaffi 01/24/2022 12:31 AM
+I talked with the wled guy about a possibility of grouping leds, that 2
+leds receive the same data… but until today i saw no solution for live
+streaming…
+[infowski]
+infowski 01/24/2022 12:31 AM
+https://stackoverflow.com/a/45144569
+What happens if my udp package is larger than mtu
+What would happen if my udp package is larger than mtu? Say my package
+is 512 bytes, after encapsulated, the package is 572 bytes. In
+transporting, some intermediate node fix it mtu size to 512 byt...
+[]
+01/24/2022 12:31 AM
+I think you can push out bigger packets but then it's going to split it
+up into multiple ones over the wire? I am not sure at this point.
+[raffibaffi]
+[] e99.tuxuser sounds like it, yea, (490 led count * 3 byte of rgb data)
+== 1470 bytes... and UDP is likely 1500, i...
+raffibaffi 01/24/2022 12:30 AM
+Jupp
+[e99.tuxuser]
+[] infowski These all just sounds like buffer limitation? 490 on wled is
+just max UDP packet size, raspi - proba...
+e99.tuxuser 01/24/2022 12:30 AM
+sounds like it, yea, (490 led count * 3 byte of rgb data) == 1470
+bytes... and UDP is likely 1500, isnt it
+[raffibaffi]
+raffibaffi 01/24/2022 12:30 AM
+Maybe after a little distance, i try a second shot… but after my slow-mo
+video and nearly zero lag i got hungry 
+[e99.tuxuser]
+e99.tuxuser 01/24/2022 12:27 AM
+*fingers crossed*: https://github.com/vtavernier/hyperion.rs/issues/3
+Flatbuffer / JSON servers report: not enough LED data for device: ...
+Hey again. Maybe you have an idea about this or it&#39;s my setup being
+at fault: The problem hyperion.rs logs show that only the first LED
+(index: 0) contains valuable data. Error message: not...
+[]
+01/24/2022 12:27 AM
+very understandable, yea 
+[raffibaffi]
+[] e99.tuxuser I see... its not due to low signal on the SPI line? I saw
+people boosting the signal with a capacito...
+raffibaffi 01/24/2022 12:26 AM
+I tried it a whole weekend… im very patient, but after that weekend of
+fail & error i could through my solder station against the wall 
+ 1
+[infowski]
+[] e99.tuxuser I see... its not due to low signal on the SPI line? I saw
+people boosting the signal with a capacito...
+infowski 01/24/2022 12:26 AM
+These all just sounds like buffer limitation? 490 on wled is just max
+UDP packet size, raspi - probably just DMA (or whatever they use with
+SPI to make it consistent) output buffer size limitation.
+[raffibaffi]
+raffibaffi 01/24/2022 12:25 AM
+Maybe i install a second wled…. or i try any kind of usb connection to
+the esp32… or i disable some leds… or try any kind of binding/grouping
+if its possible…
+[e99.tuxuser]
+e99.tuxuser 01/24/2022 12:25 AM
+I see... its not due to low signal on the SPI line? I saw people
+boosting the signal with a capacitor
+[raffibaffi]
+[] e99.tuxuser SK6812 are too slow?
+raffibaffi 01/24/2022 12:20 AM
+Not the Sk6812 itself. I had a lot of trouble connecting them to my RPi
+. I wanted to use the SPI Outputs of the GPIO. But with more then round
+about 350 LEDs all the trouble started. I tried then a level shifter,
+but it dont solve the problem. Then i switched from a Pi Zero to a Pi3
+and from the Pi3 to a Pi4 and nothing helped (damn, i have to many RPis
+at home ). I also changed the SPI Bus size - still Problems. PWM
+Connection dont work at any Time. I thought i went Crazy!!! The SK9822
+never had any Problems. Then i switched to WLED and the SK6812 worked
+without any Problems. But then i run into the UDP Packet size Problem
+with the default WLED Protocol in Hyperion. Thats why you can only
+address max. 490 LEDs (hardware limit). So im forced to switch to the
+tmp2net protocol.
+January 23, 2022
+[e99.tuxuser]
+[] raffibaffi I wish, i would order SK9822 instead of SK6812… the SK9822
+are better to control over SPI of RPi. Th...
+e99.tuxuser 01/23/2022 11:41 PM
+SK6812 are too slow?
+[m.ksy]
+[] infowski Yeah, should work fine if your backend supports "ui layer" -
+if you use libdile_vt then not yet, one...
+m.ksy 01/23/2022 10:25 PM
+libdile_vt) ok, thanks!
+[infowski]
+[] m.ksy <@!501722020434673674> is it possible to capture games in
+retroarch (sega/nes/snes)?
+infowski 01/23/2022 10:24 PM
+Yeah, should work fine if your backend supports "ui layer" - if you use
+libdile_vt then not yet, one day, soon... libvtcapture should work fine.
+(edited)
+ 1
+[m.ksy]
+m.ksy 01/23/2022 10:23 PM
+@infowski is it possible to capture games in retroarch (sega/nes/snes)?
+[raffibaffi]
+raffibaffi 01/23/2022 10:23 PM
+BTW. So far no problems on PicCap 0.2.3 …
+01/23/2022 10:22 PM
+I wish, i would order SK9822 instead of SK6812… the SK9822 are better to
+control over SPI of RPi. The SK6812 make only problems. Yeah, RGBW is
+nice, but connection speed is more important….
+01/23/2022 10:19 PM
+When the TV hang an the wall, the bottom is visible, too. Then i will
+show the difference between wled protocoll with max. 490 LEDs and
+tmp2net protocoll with more then 490 leds.
+[raffibaffi]
+raffibaffi 01/23/2022 10:01 PM
+https://youtu.be/A08r_FGT8Yw
+Rafael
+Ambilight - PicCap - Hyperion - WLED - LG CX
+PicCap 0.2.3 (240x90x30 & libvtcapture) LG 65CX Sk6812 144 leds/m (636
+LEDs) HyperHDR & WLED (tmp2net - slower protocol) WLED support just 490
+leds in live mode (hardware upd limit), thats why i have to go on slower
+tmp2net protocol. Everythin is connected to ethernet (even the esp32).
+With less the. 490 leds the lag is nearly at zero lag! He...
+[] Watch video
+ 4
+01/23/2022 10:01 PM
+Im build up my new this weekend (TV still not hanging on the wall) but i
+wanted to show my PicCap setup… LG 65CX - PicCap 0.2.3 - All Ethernet -
+636LEDs - WLED (have to run in slower tmp2net protocol because 490+
+LEDs). Under 490 LEDs there is no lag, with more LEDs i have a minimal
+Lag. ESP32 is connected to Ethernet… https://youtu.be/vyA4P4KZcd4
+Rafael
+Ambilight-Piccap-144LEDs/m (LG CX)
+PicCap 0.2.3 (240x90x30 & libvtcapture) LG 65CX Sk6812 144 leds/m (636
+LEDs) HyperHDR & WLED (tmp2net - slower protocol) WLED support just 490
+leds in live mode (hardware upd limit), thats why i have to go on slower
+tmp2net protocol. Everythin is connected to ethernet (even the esp32).
+With less the. 490 leds the lag is nearly at zero lag! He...
+[] Watch video
+ 3
+[penne_best_noodles]
+penne_best_noodles 01/23/2022 9:55 PM
+its possible to do much more damage with the loophole additionaly I
+guess
+[funky7603]
+funky7603 01/23/2022 9:55 PM
+yeah
+[infowski]
+infowski 01/23/2022 9:55 PM
+maybe a little bit of bad PR
+[infowski]
+[] funky7603 what would they get out of it? there are no disadvantages
+for them
+infowski 01/23/2022 9:55 PM
+except for some potential contract breaches with other service
+providers, yeah
+[funky7603]
+funky7603 01/23/2022 9:54 PM
+what would they get out of it? there are no disadvantages for them
+[funky7603]
+[] infowski That is great to hear. Check if reboots work properly and
+such - and then report in https://github.c...
+funky7603 01/23/2022 9:53 PM
+To be honest, I don't even believe that LG is so committed to closing
+the exploding gaps?
+[m.ksy]
+[] infowski So... I just got a report from <@!234570333905092610>...
+Anyone remembers cursed K5LP? Sounds like L...
+m.ksy 01/23/2022 9:38 PM
+yeah, works good)
+ 1
+[dsl444]
+dsl444 01/23/2022 9:02 PM
+Only WLED can be a slowly.
+[dsl444]
+dsl444 01/23/2022 8:36 PM
+And libtvcapture doesnt play a netflix movie - still DRM. 
+01/23/2022 8:34 PM
+Everything over ethernet cable to the HomeNetwork. (edited)
+01/23/2022 8:34 PM
+With lower resolution (128x72) and 60 or lower fps is my lg 65CX8LB a
+bit laggy. Only libtvcapture seens to work on my TV. Libdile_vt doesnt
+want to Start. :/
+chrischan9190 Nice find!! Checking addresses with
+`vtCapture_currentCaptureBuffInfo()` did the trick. Just returni...
+chrischan9190 01/23/2022 8:00 PM
+Was wrong about the max. frame rate. With lower resolution it goes up to
+60.
+[] infowski so tl;dr - I want to extract that delay handling into a
+separate module I mentioned before
+chrischan9190 01/23/2022 7:48 PM
+Got that.  Certainly a good idea. If i can help somehow just say it 
+[infowski]
+infowski 01/23/2022 7:41 PM
+ie sleep for (1/fps) seconds
+01/23/2022 7:41 PM
+that'll be the part that actually cares about how to handle this - if
+someone disabled video we'll probably just do our own fake vsync
+mangling
+[infowski]
+chrischan9190 Already put a `usleep(10000)` when addresses didn't change
+because CPU was running way to high other...
+infowski 01/23/2022 7:40 PM
+so tl;dr - I want to extract that delay handling into a separate module
+I mentioned before
+[] infowski now, the useful feature would be to actually sleep until it
+is about time we should do the capture, ...
+chrischan9190 01/23/2022 7:39 PM
+Already put a usleep(10000) when addresses didn't change because CPU was
+running way to high otherwise  But all this is just a hack for now.
+Could be done nicer. Also this approach doesn't work at all for the "GUI
+only" case. But is there need for this case anyway?
+[infowski]
+chrischan9190 Nice find!! Checking addresses with
+`vtCapture_currentCaptureBuffInfo()` did the trick. Just returni...
+infowski 01/23/2022 7:32 PM
+now, the useful feature would be to actually sleep until it is about
+time we should do the capture, but besides that - sounds like we can
+fairly easily expose what we need via a single interface from dile_vt
+and vtcapture
+[] infowski and... it seems to count fps correctly on a TV I am looking
+at right now
+chrischan9190 01/23/2022 7:30 PM
+Nice find!! Checking addresses with vtCapture_currentCaptureBuffInfo()
+did the trick. Just returning capture_frame() if addresses didn't change
+leads to correct frame rate. Everything from 1 to 30 works on my TV. But
+even if I can start hyperion-webos with fps up to 60 it seems like 30
+fps output is the max.
+chrischan9190 01/23/2022 5:44 PM
+Oh yeah, the important one would be libdilevt.so.
+[daimudda]
+daimudda 01/23/2022 5:38 PM
+so i think it is installed on the TV and maybe i try if it is workin
+01/23/2022 5:37 PM
+this lists a lot output like/usr/lib/libdile_......so
+01/23/2022 5:35 PM
+ok thanks
+[] daimudda can i check if libdile is installed on my ( new 2020 TV )
+chrischan9190 01/23/2022 5:34 PM
+ls /usr/lib/libdile* But this doens't mean that it will work (for now).
+It doesn't on my TV 
+[daimudda]
+daimudda 01/23/2022 5:32 PM
+can i check if libdile is installed on my ( new 2020 TV )
+[] infowski I basically don't read assembly anymore with ghidra. Which
+is good, since... I wasn't ever really go...
+chrischan9190 01/23/2022 5:31 PM
+I only touched assembly once during my studiums. I know it exists but
+that's basically it 
+[] infowski Ghidra - I highly recommend that if you only know C 
+chrischan9190 01/23/2022 5:30 PM
+That sounds fun  Will look into it
+[infowski]
+infowski 01/23/2022 5:27 PM
+inb4 git gud - i don't have time to learn assembly for every
+architecture I touch, and I don't do it professionally anyway 
+[infowski]
+[] infowski there are goto's there which essentially make it a loop that
+Ghidra is unable to parse
+infowski 01/23/2022 5:26 PM
+like that one  so basically it seemed like some infinite loop with ifs
+inside was turned into a bunch of goto's which were not so easy to
+follow, but still better than reading plain assembly most of the time.
+[infowski]
+infowski 01/23/2022 5:25 PM
+That one is actually a fairly good decompilation, some parts are worse.
+[infowski]
+[] tbsniller they are just waiting to get things ready
+infowski 01/23/2022 5:25 PM
+Thi sis how ghidra's output looks like.
+[infowski]
+infowski 01/23/2022 5:24 PM
+I basically don't read assembly anymore with ghidra. Which is good,
+since... I wasn't ever really good at reading assembly.
+01/23/2022 5:24 PM
+it's a great open source disassembler/decompiler (made by NSA btw :^))
+[infowski]
+chrischan9190 OK, I just found that binary on my TV but how on earth
+have you got the source code? Sorry if this i...
+infowski 01/23/2022 5:23 PM
+Ghidra - I highly recommend that if you only know C 
+[] infowski <@!430448040080572424> <@!697212663251468288> looking at
+vtCaptureTestSuite... It is so stupid. They...
+chrischan9190 01/23/2022 5:23 PM
+OK, I just found that binary on my TV but how on earth have you got the
+source code? Sorry if this is obvious - if never reversed anything
+before and I thought you could only reverse into assembler code?!
+[tbsniller]
+[] infowski Release notes: "Stability fixes"
+tbsniller 01/23/2022 4:30 PM
+lets send them flowers haha
+ 1
+[tbsniller]
+tbsniller 01/23/2022 4:28 PM
+but it could also be a bit of advertisment philipps has this stuff under
+patent so other manufactors aren't allowed to do stuff like this if lgs
+community makes it possible it will be a huge plus for people who want
+both a good tv and ambilight
+[infowski]
+infowski 01/23/2022 4:28 PM
+Release notes: "Stability fixes"
+[tbsniller]
+tbsniller 01/23/2022 4:27 PM
+that would be really cool
+[infowski]
+infowski 01/23/2022 4:25 PM
+I mean, mostly kidding, but... It can't be a coincidence, can it? 
+[tbsniller]
+tbsniller 01/23/2022 4:25 PM
+wuaaat
+[infowski]
+infowski 01/23/2022 4:25 PM
+:^)
+01/23/2022 4:25 PM
+They... May be helping us.
+[tbsniller]
+[] infowski So... I just got a report from <@!234570333905092610>...
+Anyone remembers cursed K5LP? Sounds like L...
+tbsniller 01/23/2022 4:25 PM
+wait one moment have I missunderstood that? are they supporting? 
+[tbsniller]
+tbsniller 01/23/2022 4:23 PM
+I rather think that the boss sat like this after netflix called them 
+[unknown.png]
+ unknown.png
+144.74 KB External
+[e99.tuxuser]
+e99.tuxuser 01/23/2022 4:20 PM
+Guess how LG HQ looks by now - they all use Piccap :D
+[tbsniller]
+tbsniller 01/23/2022 4:20 PM
+they just could create a capture device without the mid of the video for
+us..
+[infowski]
+infowski 01/23/2022 4:19 PM
+I can't believe it.
+ 1
+01/23/2022 4:19 PM
+So... I just got a report from @Bahoué... Anyone remembers cursed K5LP?
+Sounds like LG is rolling out an update that fixes libdile_vt for us
+x---------D
+[infowski]
+[] hyperdomi every settings works
+infowski 01/23/2022 4:14 PM
+That is great to hear. Check if reboots work properly and such - and
+then report in https://github.com/webosbrew/hyperion-webos/issues/16
+Version Support Tracker · Issue #16 · webosbrew/hyperion-webos
+System info: grep -h -E
+&#39;&quot;(hardware_id|core_os_release|product_id|webos_manufacturing_version|board_type)&quot;&#39;
+/var/run/nyx/* Template: | **hyperion-webos commit** | ...
+[]
+[infowski]
+infowski 01/23/2022 4:14 PM
+libvtcapture generally works on newer TVs but is a little buggy 
+[hyperdomi]
+hyperdomi 01/23/2022 4:14 PM
+every settings works
+[infowski]
+[] hyperdomi I installed Hyperion on my PC and it works. I can see video
+in every app in the live view. which is ...
+infowski 01/23/2022 4:14 PM
+If libdile_vt works then that is preferable one.
+[hyperdomi]
+[] hyperdomi Hey guys, first of all thanks for the great work you put in
+the piccap app. I heared that DRM contec...
+hyperdomi 01/23/2022 4:13 PM
+I installed Hyperion on my PC and it works. I can see video in every app
+in the live view. which is the best setting for the resolution and is
+libvtcapture + libhalgal the best setting to chose?
+[infowski]
+infowski 01/23/2022 4:13 PM
+You can set up hyperion.ng temporarily on your PC/raspi without LEDs and
+use "preview" window there
+[infowski]
+[] hyperdomi Hey guys, first of all thanks for the great work you put in
+the piccap app. I heared that DRM contec...
+infowski 01/23/2022 4:11 PM
+wild guess: it's probably not going to work, but worth a try.
+[infowski]
+infowski 01/23/2022 4:04 PM
+sure.
+[tbsniller]
+tbsniller 01/23/2022 4:03 PM
+from what I can tell it looks much smoother than 20 fps, but could also
+be some placebo idk (edited)
+[infowski]
+infowski 01/23/2022 4:02 PM
+so they dump frames to buffers in rotation, so... in buffer 1 you get
+every third frame.
+01/23/2022 4:02 PM
+since that would explain it - there are only 3 present on the TV I look
+at
+01/23/2022 4:02 PM
+Don't we get like 20fps instead of 60?
+01/23/2022 4:02 PM
+I am now wondering how so we actually get frames when we always read the
+same buffer
+[tbsniller]
+tbsniller 01/23/2022 4:02 PM
+okay I'm out haha, you must be right 
+[infowski]
+infowski 01/23/2022 3:58 PM
+and... it seems to count fps correctly on a TV I am looking at right now
+01/23/2022 3:58 PM
+and only then will it do _getFPS which increases local_44 which is frame
+counter, and if _getFPS returns 1, they show a log message (once every
+second basically, whenever _getFPS resets the frame counter) (edited)
+01/23/2022 3:57 PM
+so local_38 != iVar1 is checking if the buffer address has changed
+01/23/2022 3:57 PM
+      if ((local_38 != iVar1) && (iVar3 = _getFPS(&local_40,&local_44), iVar1 = iVar2, iVar3 == 1)) {
+        dbgLog("vtCaptureTestSuite.c","_vtCaptureThreadStartRoutine",0x12f,
+               "start addr[0]: %#x, addr[1]: %#x",local_38,local_34);
+(not sure if we are looking at the same binary, but yours probably have
+a similar thing)
+01/23/2022 3:56 PM
+there are goto's there which essentially make it a loop that Ghidra is
+unable to parse (edited)
+01/23/2022 3:56 PM
+Yeah, but look further
+[tbsniller]
+tbsniller 01/23/2022 3:55 PM
+they are just waiting to get things ready
+[unknown.png]
+ unknown.png
+22.73 KB External
+[infowski]
+infowski 01/23/2022 3:55 PM
+_vtCaptureThreadStartRoutine - yeah
+[tbsniller]
+tbsniller 01/23/2022 3:55 PM
+and i think you have got something wrong, you are talking about
+vtCaptureThreadStartRoutine there, right?
+01/23/2022 3:53 PM
+that would explain why the adresses change^^
+01/23/2022 3:52 PM
+for each picture a "new instance"
+01/23/2022 3:52 PM
+no they don't
+[infowski]
+infowski 01/23/2022 3:52 PM
+I don't think they do in "continuous capture" mode?
+[tbsniller]
+tbsniller 01/23/2022 3:52 PM
+they make really much test pictures. for every picture vtcapture gets
+fully loaded and unloaded
+[infowski]
+[] tbsniller how can you explain that ours won't change?
+infowski 01/23/2022 3:51 PM
+Ours doesn't change because we never call currentCaptureBuffInfo after
+initialization 
+[infowski]
+infowski 01/23/2022 3:51 PM
+Not sure what you mean by "makes screenshots"
+[tbsniller]
+tbsniller 01/23/2022 3:51 PM
+i think vtcapturetestsuite also just makes screenshots, not fully
+captureing
+01/23/2022 3:51 PM
+how can you explain that ours won't change?
+[infowski]
+infowski 01/23/2022 3:50 PM
+and it seems somewhat correct
+01/23/2022 3:50 PM
+yes
+[tbsniller]
+tbsniller 01/23/2022 3:50 PM
+wait, if a buffer adress changed? 
+[infowski]
+infowski 01/23/2022 3:49 PM
+@TBSniller @chrischan9190 looking at vtCaptureTestSuite... It is so
+stupid. They just do a busyloop of currentCaptureBuffInfo and say the
+frame has been received when a buffer address changes
+ 1
+[penne_best_noodles]
+penne_best_noodles 01/23/2022 3:43 PM
+some users call it a gui 
+[infowski]
+infowski 01/23/2022 3:43 PM
+piccap is just hyperion-webos packaged in an app.
+01/23/2022 3:43 PM
+piccap == hyperion-webos
+[penne_best_noodles]
+penne_best_noodles 01/23/2022 3:42 PM
+seems the second
+01/23/2022 3:42 PM
+is it a bug with piccap only or webos-hyperion?
+[infowski]
+infowski 01/23/2022 3:42 PM
+thanks @marahin for lending a tv btw
+[:PES_Ok:] 1
+01/23/2022 3:42 PM
+yeah, that's definitely a bug, okay
+[marahin]
+marahin 01/23/2022 3:41 PM
+hardly an expert here but additional 50 Mbps doesn't sound too wild haha
+[marahin]
+[] penne_best_noodles default res uses 150mbit? doubt.
+marahin 01/23/2022 3:41 PM
+when debugging with @infowski we actually saw peaks in around 100 Mbps
+(which was the h/w limit of raspberry pi that was receiving the data)
+[infowski]
+infowski 01/23/2022 3:14 PM
+[infowski]
+[] willscottuk Will do - thanks very much for your help! Means I can
+pull the trigger on purchasing those LEDs I gu...
+infowski 01/23/2022 3:14 PM
+of course - if you want - you can also make a PR that fixes this - I was
+just thinking of attempting setting these with DISPLAY and if it fails
+going with SCALER
+[willscottuk]
+[] infowski OK, great. I'll try to make a workaround for that at some
+point. If you could create an issue in hyp...
+willscottuk 01/23/2022 3:11 PM
+Will do - thanks very much for your help! Means I can pull the trigger
+on purchasing those LEDs I guess... 
+[infowski]
+[] willscottuk That works!
+infowski 01/23/2022 3:10 PM
+OK, great. I'll try to make a workaround for that at some point. If you
+could create an issue in hyperion-webos with these previous log
+messages, version info, and note that changing capture target helps, it
+would be amazing.
+[willscottuk]
+[] infowski Does not help much, but if you are comfortable with
+rebuilding the software yourself I would suggest...
+willscottuk 01/23/2022 3:09 PM
+That works!
+[jaybee82]
+jaybee82 01/23/2022 2:49 PM
+I'm just stating what is happening in our end with libvtcapture, nothing
+less, nothing more
+01/23/2022 2:48 PM
+But I kept being told I'm wrong lol
+[jaybee82]
+[] infowski And I've mentioned several times that it's because of a bug
+I am trying to fix now 
+jaybee82 01/23/2022 2:48 PM
+Yeah I understand that, no issue 
+[infowski]
+[] jaybee82 As I mentioned several time now, the default res at 60fps is
+using around 150Mbps 
+infowski 01/23/2022 2:43 PM
+And I've mentioned several times that it's because of a bug I am trying
+to fix now 
+[penne_best_noodles]
+penne_best_noodles 01/23/2022 2:43 PM
+default res uses 150mbit? doubt.
+[jaybee82]
+jaybee82 01/23/2022 2:42 PM
+So not working well with the 10/100 Ethernet connection
+[penne_best_noodles]
+penne_best_noodles 01/23/2022 2:42 PM
+while my cx55 runs the startup fine it fails to send video, I only get
+the UI. if i stop and start the service via ui everything is back to
+normal. is this known?
+[jaybee82]
+jaybee82 01/23/2022 2:42 PM
+As I mentioned several time now, the default res at 60fps is using
+around 150Mbps 
+[tbsniller]
+[] jaybee82 Bandwidth available without piccap
+tbsniller 01/23/2022 2:41 PM
+but you are receiving more than the needed?
+[jaybee82]
+jaybee82 01/23/2022 2:41 PM
+Well, it's already amazing as it is, not complaining
+[tbsniller]
+[] jaybee82 That'd honestly be awesome if we were able to limit the
+bandwidth under 100Mbps somehow, so that I c...
+tbsniller 01/23/2022 2:41 PM
+wut?
+[jaybee82]
+jaybee82 01/23/2022 2:41 PM
+That'd honestly be awesome if we were able to limit the bandwidth under
+100Mbps somehow, so that I could use Ethernet and not use my wifi
+bandwidth 
+[infowski]
+infowski 01/23/2022 2:32 PM
+I am getting a root shell on a friends tv to play with vtcapture now 
+[jaybee82]
+jaybee82 01/23/2022 2:31 PM
+That makes sense
+[infowski]
+infowski 01/23/2022 2:31 PM
+regardless - we are perfectly aware that fps limitation on libvtcapture
+is just broken, so it pushes out basically as much data as it can
+process.
+ 1
+[jaybee82]
+jaybee82 01/23/2022 2:30 PM
+I can also measure it from my router I think
+01/23/2022 2:30 PM
+And as a matter of fact, we all see that it works terribly with the
+10/100 Ethernet port because it can't keep up 
+[infowski]
+infowski 01/23/2022 2:30 PM
+proper method would be to just build and use iftop (I heard even iftop
+is shipped with some software versions)
+[infowski]
+[] jaybee82 And with piccap running
+infowski 01/23/2022 2:30 PM
+cpu load is definitely going to make this worse, but this sounds ~ok
+[jaybee82]
+jaybee82 01/23/2022 2:29 PM
+Guys over at the ambilight server also measured exactly the same
+[tbsniller]
+tbsniller 01/23/2022 2:29 PM
+interesting method to measure bandwith 
+[jaybee82]
+jaybee82 01/23/2022 2:29 PM
+Did the test mutliple times, with different means
+01/23/2022 2:29 PM
+And with piccap running
+[PXL_20220119_093237937.jpg]
+ PXL_20220119_093237937.jpg
+272.65 KB External
+01/23/2022 2:28 PM
+Bandwidth available without piccap
+[PXL_20220119_092758871.jpg]
+ PXL_20220119_092758871.jpg
+310.78 KB External
+[tbsniller]
+tbsniller 01/23/2022 2:28 PM
+at least 
+[jaybee82]
+jaybee82 01/23/2022 2:27 PM
+Lol
+[infowski]
+infowski 01/23/2022 2:27 PM
+correction, only 2x 
+[tbsniller]
+tbsniller 01/23/2022 2:27 PM
+hoooopppss  5-times more network use hm (edited)
+[infowski]
+infowski 01/23/2022 2:27 PM
+I am stupid.
+01/23/2022 2:27 PM
+ah nvm
+[infowski]
+[] jaybee82 Ok, so I confirm libvtcapture at 60fps and default res is
+using around 150Mbps 
+infowski 01/23/2022 2:26 PM
+And that definitely shows a bug here, since it should be about:
+    >>> (360 * 180 * 60 * 3 * 8) / 1024.0 / 1024.0
+    88.9892578125
+ (edited)
+[jaybee82]
+jaybee82 01/23/2022 2:24 PM
+Ok, so I confirm libvtcapture at 60fps and default res is using around
+150Mbps 
+[tbsniller]
+tbsniller 01/23/2022 2:16 PM
+because libvtcapture can't handle 0
+[tbsniller]
+[] jaybee82 I'll try putting 60 instead of leaving 0
+tbsniller 01/23/2022 2:16 PM
+it does 1:1 the same if we see 0 fps in libvtcapture we just set it to
+60
+[tbsniller]
+[] infowski if we had "wait for next frame" call there it'd be awesome
+and we would be able to have exactly the ...
+tbsniller 01/23/2022 2:08 PM
+should be vtCaptureStartRoutine which does everything otherwise doing it
+on your own with dequeueBuffer I think
+ 1
+sinergetikus 01/23/2022 2:07 PM
+Here is mine. Also you can go deeper and search for all compatible
+chipsets in each module
+ modules.txt
+281 Bytes External
+[] infowski So I was generally planning to expose a single universal
+interface from libvtcapture and libdile_vt,...
+chrischan9190 01/23/2022 2:07 PM
+Sounds good!!
+[infowski]
+[] infowski So I was generally planning to expose a single universal
+interface from libvtcapture and libdile_vt,...
+infowski 01/23/2022 2:07 PM
+if we had "wait for next frame" call there it'd be awesome and we would
+be able to have exactly the same behaviour as we have now in
+libdile_vt - we could then spawn a pthread in that "blending" submodule
+that would wait for frames, and send a condition to main
+capture+processing thread - or, if a user sets so, like is needed on
+some platforms - instead of calling video capture backend for vsync
+(that is broken on some platforms), we can just use plain usleep with
+some configurable timing (edited)
+[infowski]
+chrischan9190 I've seen the vsync stuff but haven't look too much into
+it. Thought it would be something libdile s...
+infowski 01/23/2022 2:07 PM
+So I was generally planning to expose a single universal interface from
+libvtcapture and libdile_vt, next to a similar interface for
+libgm/libhalgal, and extract all conversion/blending into a separate
+library/submodule
+[] jaybee82 Yeah except the USB adapters sadly don't work on the nano
+TVs like mine 
+sinergetikus 01/23/2022 2:06 PM
+You probably haven't found a compatible one exec
+cat /lib/modules/$(uname -r)/modules.builtin and search for adaptor with
+one of those
+[tbsniller]
+tbsniller 01/23/2022 2:06 PM
+but nothing exposed I think (only getBufferInfo)
+[] infowski That's *exactly* what we do in libdile_vt.
+chrischan9190 01/23/2022 2:06 PM
+I've seen the vsync stuff but haven't look too much into it. Thought it
+would be something libdile specific. So this could also be used for
+vtcapture? This would be great!
+[infowski]
+infowski 01/23/2022 2:05 PM
+dropping a binary into ghidra, hang on. 
+[tbsniller]
+tbsniller 01/23/2022 2:05 PM
+they have, give me one sec
+[infowski]
+infowski 01/23/2022 2:05 PM
+interesting they don't have any built-in call to wait for next frame.
+01/23/2022 2:05 PM
+:>
+01/23/2022 2:05 PM
+OK then I am wrong/
+[tbsniller]
+tbsniller 01/23/2022 2:05 PM
+_process starts lib intern a sub process which does the frame getting
+and in buffer putting thing
+[infowski]
+[] tbsniller what do you mean by that?
+infowski 01/23/2022 2:05 PM
+from the name it sounds like "process one frame and return when it's
+ready"
+[tbsniller]
+[] infowski `vtCapture_process` kinda sounds like what we are looking
+for
+tbsniller 01/23/2022 2:04 PM
+what do you mean by that?
+[infowski]
+[] infowski `vtCapture_process` kinda sounds like what we are looking
+for
+infowski 01/23/2022 2:04 PM
+but that's a wild guess
+[infowski]
+infowski 01/23/2022 2:02 PM
+and it just works by accident now  (edited)
+01/23/2022 2:02 PM
+vtCapture_process kinda sounds like what we are looking for
+01/23/2022 2:01 PM
+I need to check how they do this.
+[infowski]
+chrischan9190 Funny thing: I'm also currently wrapping my head around
+how fps work in vtcapture.  I guess it wou...
+infowski 01/23/2022 2:01 PM
+That's exactly what we do in libdile_vt.
+chrischan9190 01/23/2022 2:00 PM
+Funny thing: I'm also currently wrapping my head around how fps work in
+vtcapture.  I guess it would be better to introduce something like
+pthread conditions. Could we get the information when a new frame was
+actually written from somewhere? Then this could be used to signal the
+condition
+[tbsniller]
+[] infowski Sure. To limit this you'd probably just take a `last_us =
+getticks_us()` before running `capture_fra...
+tbsniller 01/23/2022 2:00 PM
+also used something like this from the vt library to measure them but
+the calculated fps were -6 to -10 frames then ffmpeg displayed so I just
+gave up (edited)
+[infowski]
+[] willscottuk Does it help that ```luna-send -n 1 -f
+'luna://com.webos.service.tv.capture/executeOneShot' ' {"path...
+infowski 01/23/2022 1:59 PM
+Does not help much, but if you are comfortable with rebuilding the
+software yourself I would suggest trying replacing
+https://github.com/webosbrew/hyperion-webos/blob/main/src/backends/libdile_vt.c#L123
+DISPLAY_OUTPUT with SCALER_OUTPUT here (and a couple of lines later)
+hyperion-webos/libdile_vt.c at main · webosbrew/hyperion-webos
+Contribute to webosbrew/hyperion-webos development by creating an
+account on GitHub.
+[]
+[willscottuk]
+[] infowski Just to clarify - is this a regression - as in - did you use
+any older version that happened to work...
+willscottuk 01/23/2022 1:57 PM
+Does it help that
+    luna-send -n 1 -f 'luna://com.webos.service.tv.capture/executeOneShot' '
+    {"path":"/tmp/capture.png","method":"DISPLAY","format":"PNG"}'
+works (including on DRM content)? I saw it mentioned on one of the
+github threads. Have tried a few older builds at random from github
+actions too, but none have yet worked.
+[hyperdomi]
+hyperdomi 01/23/2022 1:56 PM
+Hey guys, first of all thanks for the great work you put in the piccap
+app. I heared that DRM contect (e.g. Netflix app, Amazon app) is
+sometimes working, depending on the release date of the TV. My LG TV is
+from 2019. Can you say if its working? or I have to test it myself? I
+currently have no Hyperion setup so I would need to buy one to test it.
+Thanks for the help 
+[infowski]
+infowski 01/23/2022 1:55 PM
+but of course better to find a call that will just wait for next
+frame...
+[jaybee82]
+jaybee82 01/23/2022 1:54 PM
+For me with 5Ghz wifi I get around 180Mbps without piccap, 27 with it
+[infowski]
+[] tbsniller i tried to measure the FPS, but my maths is so incredibly
+bad I haven't figured out how to calculate...
+infowski 01/23/2022 1:54 PM
+Sure. To limit this you'd probably just take a last_us = getticks_us()
+before running capture_frame(), and then just
+usleep((1000000 / fps) - (getticks_us() - last_us)); after running
+capture_frame()
+sinergetikus 01/23/2022 1:52 PM
+unfortunately my hyperiond device has only 100mb/s ethernet Probably I
+should decrease piccap resolution a bit
+[tbsniller]
+tbsniller 01/23/2022 1:52 PM
+but yeah times changed, we have smooth 60 and casn go higher
+01/23/2022 1:51 PM
+as we had a max of 17 fps...
+01/23/2022 1:51 PM
+so I decided to just let it as is to make the smoothes not bader than it
+already was in the past
+sinergetikus 01/23/2022 1:51 PM
+With and without piccap running
+[2022-01-23_15-48-42.png]
+ 2022-01-23_15-48-42.png
+16.91 KB External
+[2022-01-23_15-49-32.png]
+ 2022-01-23_15-49-32.png
+16.3 KB External
+[jaybee82]
+jaybee82 01/23/2022 1:50 PM
+Thanks!
+[tbsniller]
+tbsniller 01/23/2022 1:50 PM
+i tried to measure the FPS, but my maths is so incredibly bad I haven't
+figured out how to calculate them, so I dont even know how to limit them
+asked a few times here a time ago but nobody could help..
+[infowski]
+infowski 01/23/2022 1:50 PM
+I'll look though that vtcapture test app in a minute...
+[jaybee82]
+jaybee82 01/23/2022 1:50 PM
+Is that even working?
+01/23/2022 1:50 PM
+I'll try putting 60 instead of leaving 0
+01/23/2022 1:50 PM
+So yeah that'd explain the issue haha
+[infowski]
+[] tbsniller yeah and if no frames are generated we kill them too 
+infowski 01/23/2022 1:49 PM
+I think we should be able to just usleep apropriately for now, or find a
+proper call that'll wait for us. (edited)
+[jaybee82]
+[] infowski so... it sounds like even if we set framerate limit for
+libvtcapture, we still can saturate ethernet...
+jaybee82 01/23/2022 1:49 PM
+Ok. Well, so not 60fps with 0 then 
+[tbsniller]
+[] infowski and possibly the reason we kill raspis on reboot? 
+tbsniller 01/23/2022 1:49 PM
+yeah and if no frames are generated we kill them too 
+[infowski]
+infowski 01/23/2022 1:48 PM
+Too bad I don't have vtcapture-capable devices on hand 
+[infowski]
+[] tbsniller hm dont know if I already mentioned it, but I'm not mainly
+in this coding thing  
+infowski 01/23/2022 1:48 PM
+That's fine 
+[tbsniller]
+tbsniller 01/23/2022 1:48 PM
+hm dont know if I already mentioned it, but I'm not mainly in this
+coding thing  
+[jaybee82]
+[] tbsniller seems like it is  ¯\_(ツ)_/¯
+jaybee82 01/23/2022 1:48 PM
+It's not for 60fps default res, unless you are ok with super awful
+latency 
+[infowski]
+infowski 01/23/2022 1:47 PM
+and possibly the reason we kill raspis on reboot? 
+01/23/2022 1:47 PM
+So - visually you get limited framerate, but still cap out the network
+interface
+[tbsniller]
+tbsniller 01/23/2022 1:47 PM
+oops
+[infowski]
+infowski 01/23/2022 1:47 PM
+That may be the issue here.
+[jaybee82]
+sinergetikus 2.4GHz<Ethernet<5GHz<USB Ethernet 1Gb/s
+jaybee82 01/23/2022 1:47 PM
+Yeah except the USB adapters sadly don't work on the nano TVs like mine
+[tbsniller]
+tbsniller 01/23/2022 1:47 PM
+01/23/2022 1:47 PM
+well
+01/23/2022 1:47 PM
+oh
+[infowski]
+infowski 01/23/2022 1:47 PM
+since we'll just be pushing out a single frame constantly that would
+change once every second...
+01/23/2022 1:47 PM
+so... it sounds like even if we set framerate limit for libvtcapture, we
+still can saturate ethernet with like 1 fps limit
+01/23/2022 1:46 PM
+without any waits inbetween
+01/23/2022 1:46 PM
+wait, but... what. we are still sending out frames in an infinite loop
+[tbsniller]
+tbsniller 01/23/2022 1:46 PM
+but halgal isn't limited
+[infowski]
+infowski 01/23/2022 1:46 PM
+Oh, I didn't notice that.
+01/23/2022 1:46 PM
+so... we just don't limit framerate on libvtcapture???
+[tbsniller]
+tbsniller 01/23/2022 1:46 PM
+we give this to the lib and it happens there (edited)
+[infowski]
+infowski 01/23/2022 1:45 PM
+but that value is never used anywhere
+01/23/2022 1:45 PM
+The only mention of 60 i see is internal config building
+[tbsniller]
+tbsniller 01/23/2022 1:45 PM
+no
+01/23/2022 1:45 PM
+0=60 
+[infowski]
+infowski 01/23/2022 1:45 PM
+No - i mean... Do we actually wait between frames anywhere?
+01/23/2022 1:45 PM
+I don't think we do 
+[tbsniller]
+tbsniller 01/23/2022 1:45 PM
+max of 60
+[infowski]
+infowski 01/23/2022 1:44 PM
+@TBSniller do we limit framerate on libvtcapture now?
+[bob69740]
+sinergetikus 2.4GHz<Ethernet<5GHz<USB Ethernet 1Gb/s
+bob69740 01/23/2022 1:44 PM
+When the usb Ethernet give 1gbits :/ On my c1 an adaptor give me only
+120mbits/s (only usb2 ports) when on the computer the same adapter give
+me 950mbits/s (on usb3 port) and 300mbits/s on usb 2 port
+[tbsniller]
+[] jaybee82 Ethernet is only 10/100 on those TVs and isn't enough for
+piccap 
+tbsniller 01/23/2022 1:43 PM
+seems like it is  ¯\_(ツ)_/¯
+[] jaybee82 Pretty much: 2.4GHz<Ethernet<5GHz
+sinergetikus 01/23/2022 1:38 PM
+2.4GHz<Ethernet<5GHz<USB Ethernet 1Gb/s
+[infowski]
+infowski 01/23/2022 1:35 PM
+unless I am missing something.
+[infowski]
+[] jaybee82 Sure, I meant for the full res. Default resolution for me
+with 60fps takes 150+Mbps, and obviously w...
+infowski 01/23/2022 1:34 PM
+The more I think at libvtcapture the less I think there is any framerate
+limiting there x-D
+[dsl444]
+dsl444 01/23/2022 1:33 PM
+i have just fine out whats my best resolution in piccap settings now.
+ 1
+[jaybee82]
+jaybee82 01/23/2022 1:31 PM
+Pretty much: 2.4GHz<Ethernet<5GHz
+01/23/2022 1:31 PM
+Yeah 2.4 just isn't good
+[dsl444]
+dsl444 01/23/2022 1:30 PM
+wooho, ethernet runs much "smoother" as my damn wifi.
+[jaybee82]
+[] infowski 192x108@60 here (since dile_vt on my platform is capable to
+scale down to that properl) is just ~28m...
+jaybee82 01/23/2022 1:30 PM
+Yeah dile just doesn't work on my tv, and reducing res either makes the
+grabbing stop working or glitch/freeze.
+[jaybee82]
+[] infowski Not really? 320x240@30fps is just 52mbps, and you are
+definitely going to have a better time to have...
+jaybee82 01/23/2022 1:28 PM
+Sure, I meant for the full res. Default resolution for me with 60fps
+takes 150+Mbps, and obviously works like crap on the Ethernet. 30fps
+also has super high latency, so there is not perfect solution there.
+[infowski]
+infowski 01/23/2022 1:27 PM
+192x108@60 here (since dile_vt on my platform is capable to scale down
+to that properl) is just ~28mbps
+[infowski]
+[] jaybee82 Ethernet is only 10/100 on those TVs and isn't enough for
+piccap 
+infowski 01/23/2022 1:26 PM
+Not really? 320x240@30fps is just 52mbps, and you are definitely going
+to have a better time to have steady 52mbps over 100mbps ethernet than
+steady 52mbps over 2.4ghz wifi.
+[jaybee82]
+[] tbsniller can you connect to ethernet? then this might already be the
+reason^^ you can try to reduce fps
+jaybee82 01/23/2022 1:24 PM
+Ethernet is only 10/100 on those TVs and isn't enough for piccap 
+(edited)
+[jaybee82]
+chrischan9190 Did some testing on that topic. For the YUV->RGB
+conversion in libvtcapture there are some libyuv fu...
+jaybee82 01/23/2022 1:22 PM
+That sounds exactly what we need. I also have those darker colors in HDR
+[dsl444]
+dsl444 01/23/2022 1:15 PM
+mmhhhh..
+01/23/2022 1:15 PM
+or i need a 5ghz router..
+01/23/2022 1:15 PM
+i will try it before with a better connection. (Ethernet Cable) .. wow
+.. 2022 and im still working with ethernet .. LOL
+[tbsniller]
+tbsniller 01/23/2022 1:14 PM
+yeah thats not nice, you can also tweak a bit more with interpoling
+settings, but that wouldn't help much at 1 sec
+[dsl444]
+dsl444 01/23/2022 1:13 PM
+Ok, let me play around to get this fixed, it makes me crazy with 1 sec.
+delay.
+[tbsniller]
+tbsniller 01/23/2022 1:12 PM
+okay then your next attempt should be to get a proper connection 
+[dsl444]
+[] tbsniller pi also?
+dsl444 01/23/2022 1:12 PM
+i can try this, have to find a ethernet switch before.. loL
+ 1
+[dsl444]
+[] tbsniller its called smoothing, black border detection, ...
+dsl444 01/23/2022 1:12 PM
+Both are Disabled.
+[tbsniller]
+tbsniller 01/23/2022 1:11 PM
+pi also?
+01/23/2022 1:11 PM
+yeah
+[dsl444]
+dsl444 01/23/2022 1:11 PM
+i can try to put an ethernet cable into my Tv. Can this maybe work?
+[tbsniller]
+[] dsl444 Where can I set this in Hyperion? I have an old router without
+5Ghz :/
+tbsniller 01/23/2022 1:11 PM
+its called smoothing, black border detection, ...
+sinergetikus 01/23/2022 1:10 PM
+No chance to run it at 2.4Ghz (edited)
+[tbsniller]
+tbsniller 01/23/2022 1:10 PM
+can you connect to ethernet? then this might already be the reason^^ you
+can try to reduce fps
+[dsl444]
+dsl444 01/23/2022 1:09 PM
+Where can I set this in Hyperion? I have an old router without 5Ghz :/
+[tbsniller]
+tbsniller 01/23/2022 1:08 PM
+you should first disable post processing stuff in hyperiond and also
+make sure you are connected to 5ghz wlan//ethernet
+[dsl444]
+dsl444 01/23/2022 1:06 PM
+i need an idea or help .. again. I have a difference of about 1 second
+in the live video view between my LG TV and Hyperion.ng. As a result,
+the LEDs also light up 1 second later than the picture. I already tried
+different resolutions and FPS. Anyone got an idea to get this under
+control? PicCap and the TV have been restarted several times.
+[] infowski We would need to detect HDR content and apply some transform
+accordingly (or switch some options to ...
+chrischan9190 01/23/2022 12:47 PM
+Did some testing on that topic. For the YUV->RGB conversion in
+libvtcapture there are some libyuv functions in place which let you
+choose a conversion matrix constant for the color space. Currently this
+is set to BT.709 (limited). Just set this to BT.2020 (limited) and this
+already gives a great improvement on HDR content. (There are also
+constants for full (not limited) color spaces but these lead to limited
+range in the output. So true black would become [16, 16, 16] instead of
+[0, 0, 0].)
+[kYuvH709Constants.png]
+ kYuvH709Constants.png
+879.23 KB External
+[kYuv2020Constants.png]
+ kYuv2020Constants.png
+1004.28 KB External
+ 3
+[willscottuk]
+[] infowski Just to clarify - is this a regression - as in - did you use
+any older version that happened to work...
+willscottuk 01/23/2022 2:45 AM
+This was my first attempt I’m afraid so I don’t know whether any older
+versions work. Happy to try anything which would help!
+[tbsniller]
+tbsniller 01/23/2022 12:51 AM
+Com.webos.media really seems to be promising Had this special sauce
+played on my tv and tried to start capture after that, to get the
+"capture can't be start denied permission" in logs I then played with
+the exported methods from this service, one called "exit" and called it,
+who expected it, it just kills itself lol - but in the same process our
+whole libvtcapture client got killed to Took another look at the media
+service, there are also some methods called "record" "aquire", .. but
+all of them state "no method to call" after calling, they are only
+exposed. Maybe they were in there in the past and got replaced by the
+webos.captureservice which has similar capture methods Btw making the
+capture service permission client unavailable after a successful capture
+doesn't make any difference to our file descriptor, so it must be
+something away from this captureservice, eg the media one Maybe it helps
+others while researching
+[:meep:] 1  1
+[nuttenjohnny]
+nuttenjohnny 01/23/2022 12:15 AM
+i have tried 0.2.3. It worked until I restarted the TV. Now when I start
+Piccap Hyperion becomes unresposive on the pi. And I have to restart it
+completely.
+January 22, 2022
+[infowski]
+infowski 01/22/2022 11:46 PM
+We can launch that from the UI as well, regardless of the state of the
+service and expose a bundle for download over HTTP
+01/22/2022 11:45 PM
+@TBSniller idea: troubleshoot script - oneliner that will extract all
+the info that would be potentially useful for us, including startup /
+run logs, user config (with IP removed) and things like a bunch of
+sample frames... And lets just redirect people to run that script and
+send us "debugging bundle" which can be just a zip/tar with all the
+info/images...
+ 1
+[tbsniller]
+tbsniller 01/22/2022 11:26 PM
+also some info would be pretty helpful (library, tv, ..)
+[dsl444]
+dsl444 01/22/2022 11:26 PM
+[tbsniller]
+tbsniller 01/22/2022 11:25 PM
+then do it if you arent sure 
+[dsl444]
+dsl444 01/22/2022 11:25 PM
+Glaube ja
+[tbsniller]
+tbsniller 01/22/2022 11:24 PM
+already rebooted?
+[dsl444]
+dsl444 01/22/2022 11:24 PM
+I currently didnt change any setting in piccap.
+01/22/2022 11:23 PM
+Hey together, piccap works good, but the lights are a bit laggy. 1-2
+Sec. late. :(
+[tbsniller]
+tbsniller 01/22/2022 10:55 PM
+Rest well 
+[infowski]
+infowski 01/22/2022 10:52 PM
+Sure, will do tomorrow. I am very exhausted today 
+[tbsniller]
+tbsniller 01/22/2022 10:52 PM
+just tell if there is something to help
+[infowski]
+infowski 01/22/2022 10:51 PM
+I know how libhalgal/libgm work just fine already, no idea about
+libvtcapture yet. I am trying to figure out if we can have some better
+interface than callbacks we use right now.
+[infowski]
+[] infowski Because form what I can see in vtcapture backend right now
+is that we do vtCapture_preprocess, vtCap...
+infowski 01/22/2022 10:50 PM
+fyi just asking these things to wrap my head around how libvtcapture
+works to be able to make a sensible generic video capture interface for
+handling before blending (edited)
+[tbsniller]
+tbsniller 01/22/2022 10:50 PM
+vtCaptureTestSuite is it called (edited)
+01/22/2022 10:49 PM
+but havent tested for drm
+01/22/2022 10:49 PM
+there was some lg intern test binary which uses libvtcapture and
+produces test images in all different possible ways
+ 1
+[infowski]
+infowski 01/22/2022 10:48 PM
+I'll take a look at acr2 binary tomorrow - that uses vtcapture (unless
+you have some better target I could look at use of libvtcapture of)
+[tbsniller]
+tbsniller 01/22/2022 10:48 PM
+yeah, this way we would also fix the problem "after viewing drm content
+other videos arent captured anymore" its because the adresses of the
+buffers change
+[infowski]
+[] tbsniller we would have to call currentFrameBuffer each frame capture
+(what btw the right way is then now)
+infowski 01/22/2022 10:47 PM
+Ah, that's what I expected.
+[tbsniller]
+tbsniller 01/22/2022 10:47 PM
+we would have to call currentFrameBuffer each frame capture (what btw
+the right way is then now)
+[infowski]
+infowski 01/22/2022 10:47 PM
+btw shouldn't we also call something likevtCapture_process before every
+frame? I have not looked into that library yet, but this sounds like
+"wait for next frame"
+[tbsniller]
+tbsniller 01/22/2022 10:47 PM
+with return values^^
+01/22/2022 10:47 PM
+but we could see it
+01/22/2022 10:46 PM
+yeah
+[infowski]
+infowski 01/22/2022 10:46 PM
+OK, so "permission denied" you are talking about is just some internal
+log we get in libvtcapture, but we don't actually see it in our capture
+backend? Since we don't call anything in libvtcapture in our hot path
+(edited)
+01/22/2022 10:45 PM
+OK.
+[tbsniller]
+[] infowski Unless you are talking about libvtcapture internals
+tbsniller 01/22/2022 10:45 PM
+yeah talking about internals
+[infowski]
+infowski 01/22/2022 10:45 PM
+Unless you are talking about libvtcapture internals
+01/22/2022 10:44 PM
+But where permission denied? I don't see any vtcapture calls in
+capture_frame there 
+[tbsniller]
+tbsniller 01/22/2022 10:44 PM
+take a look at dequeBuffer or similar function (dont know right now)
+[infowski]
+infowski 01/22/2022 10:44 PM
+Because form what I can see in vtcapture backend right now is that we do
+vtCapture_preprocess, vtCapture_process, and then always use the same
+"current buffer info" (which contains a memory pointer) in a continuous
+loop
+[tbsniller]
+[] infowski But which file descriptor are we talking about? Some
+internal one in vtcapture? So... This just caus...
+tbsniller 01/22/2022 10:44 PM
+yeah internal, at it won't crash, we receive a permission denied
+[infowski]
+[] tbsniller in dilevt frames didnt got updated anymore, so latest
+possible frame is shown, I assume same behavoi...
+infowski 01/22/2022 10:43 PM
+But which file descriptor are we talking about? Some internal one in
+vtcapture? So... This just causes a process crash?
+[infowski]
+[] tbsniller my next attempts will be, trying to figure out the
+difference between calls from normal and secure v...
+infowski 01/22/2022 10:42 PM
+While I am not entirely sure this will be so simple (since there's the
+whole "secure video path" thing, which I didn't research at all yet), if
+this is a matter of just changing some JSON value in calls to
+com.webos.media, this would be doable in ~30 lines of C shared library
+that would need to be LD_PRELOADED/added to LD_LIBRARY_PATH.
+[tbsniller]
+[] infowski dile_vt is fairly simple - you can always open a context,
+you always get some sensible vsync wait ti...
+tbsniller 01/22/2022 10:40 PM
+in dilevt frames didnt got updated anymore, so latest possible frame is
+shown, I assume same behavoir like libvtcapture (libvtcapture just sends
+one black image) but file descriptor is locked so no new images are put
+into our knowing buffers its also possible that if we open the fd on our
+side its working again, because we are going as root, but puhh reverse
+libvtcapture already was really hard (edited)
+[tbsniller]
+tbsniller 01/22/2022 10:40 PM
+my next attempts will be, trying to figure out the difference between
+calls from normal and secure videos, maybe its possible to just push a
+call to the media service
+[infowski]
+infowski 01/22/2022 10:38 PM
+dile_vt is fairly simple - you can always open a context, you always get
+some sensible vsync wait times if you ask for them (which may change
+dependent on content framerate), and if DRM content comes up our calls
+to pause/resume capture (which are required to properly sync up with the
+vpu, or whatever writes to these memory regions) are returning errors
+(we don't actually handle right now, but this makes no difference since
+our buffer is just no longer changing)
+[tbsniller]
+tbsniller 01/22/2022 10:37 PM
+loosing permission to the opened file descriptor, so the libvtcapture
+library hasn't any permission to read the newest image frame i have
+already looked a bit into it today. seems like the DRM info comes from a
+drm application to com.webos.media, which then handles the blocking of
+this it also seems like special application can "overwrite" this
+behavior, putting our application or * into forced permission whitelist
+doesn't give it permission to set the permission in the capture
+permission service
+[infowski]
+infowski 01/22/2022 10:33 PM
+Hmmm... I am trying to figure out what is the flow of vtcapture. Does it
+fail to initialize until a video is available on screen? What happens
+when it gets initialized when non-DRM content is running, then you
+switch to a DRMed content? Do we just get black frames?
+[infowski]
+infowski 01/22/2022 10:17 PM
+I will try to start work on video capture / ui capture / blending split
+tomorrow to fix these things...
+[infowski]
+infowski 01/22/2022 10:09 PM
+I think I see an issue here:
+https://github.com/webosbrew/hyperion-webos/blob/main/src/backends/libvtcapture.c#L260 -
+this is wrong, this mixes up stride/width from UI layer with stride of
+Video layer. I am not entirely sure how was that even supposed to
+work... libvtcapture needs a major rework/cleanup it seems. :/
+hyperion-webos/libvtcapture.c at main · webosbrew/hyperion-webos
+Contribute to webosbrew/hyperion-webos development by creating an
+account on GitHub.
+[infowski]
+jojo1411 Hello, I just upgraded to the new Picap version 0.2.3. updated.
+Unfortunately, the image grabber no ...
+infowski 01/22/2022 10:03 PM
+What happens if you disable GUI capture?
+[infowski]
+[] willscottuk ```
+root@LGwebOSTV:/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service#
+/media/deve...
+infowski 01/22/2022 9:59 PM
+Just to clarify - is this a regression - as in - did you use any older
+version that happened to work? I have an idea for (an attempt for) a fix
+for your case.
+[dsl444]
+dsl444 01/22/2022 9:53 PM
+I should Update first Homebrew channel before i Update piccap 
+01/22/2022 9:49 PM
+Aaaaahhh! THANKS!
+[infowski]
+infowski 01/22/2022 9:48 PM
+If you just did it, uninstall piccap, install it again, try again.
+[dsl444]
+dsl444 01/22/2022 9:48 PM
+Update is done
+[infowski]
+[] dsl444 Hey there, i just try the New Version of piccap. On "Root
+Status" is since 10min "loading status" .....
+infowski 01/22/2022 9:46 PM
+Check if you have Homebrew Channel update available. You need at least
+0.4.0 as is said on PicCap configuration screen 
+[dsl444]
+dsl444 01/22/2022 9:46 PM
+Hey there, i just try the New Version of piccap. On "Root Status" is
+since 10min "loading status" .. is that normal?
+[maryjohanna42069]
+maryjohanna42069 01/22/2022 8:59 PM
+Interesting choice of time to have a good bbq
+[retr0id]
+retr0id 01/22/2022 5:08 PM
+lolwat
+[infowski]
+infowski 01/22/2022 5:07 PM
+Oh god discord. John Paul is now busy freezing in -5°C doing bbq in snow
+01/22/2022 5:07 PM
+.
+jojo1411 01/22/2022 5:04 PM
+Many thanks for your effort on this piece of software. keep it up!
+01/22/2022 5:03 PM
+Ok, thanks for clarification and the support @infowski and @TBSniller !
+Then i have to wait...
+[infowski]
+infowski 01/22/2022 5:01 PM
+Yeah, thats because drm content capture is broken/unsupported which we
+are aware of.
+jojo1411 01/22/2022 5:00 PM
+Version 0.2.2 worked after config and reboot on webos menu perfectly.
+Saw undistorted picture on hyperion live view. Then i started prime
+video app, selected a movie and directly on start, the flatbuffer
+disconnected and hyperion switched to default swirl effect  Had to
+reboot the TV to get it back. (edited)
+jojo1411 Yes but don't know how to push to tv 
+ww8543 01/22/2022 4:53 PM
+if in doubt you can start a python web server in the current directory
+with python -m http.server
+ 1
+[willscottuk]
+[] tbsniller Sadly not more than we already know through `-2`. I'm
+sorry, I'm out, you will most likley have to w...
+willscottuk 01/22/2022 4:35 PM
+Thanks for your help! Fingers crossed @infowski has some ideas later 
+jojo1411 01/22/2022 4:35 PM
+Yes but don't know how to push to tv 
+[] tbsniller here you go if you dont want to debug it
+jojo1411 01/22/2022 4:34 PM
+Thanks. I will check with this version. Can you post the url? It's not
+possible to copy from discord chat 
+[infowski]
+infowski 01/22/2022 4:32 PM
+There were zero changes in regards to config management, then that is
+likely an accident that it works/is broken 
+jojo1411 01/22/2022 4:31 PM
+I had problems to store the config in 0.2.3 and hdmi picture was
+distorted (see my message above). HDMI worked with 0.2.2. In Version
+0.2.3 the service seems to be stopped (fail) when on HDMI. Webos Menu
+runs after reboot.
+[infowski]
+infowski 01/22/2022 4:31 PM
+I will be back in 2-3h probably. Can look into it then.
+01/22/2022 4:28 PM
+I think the only change that would affect libvtcapture between 0.2.2 and
+0.2.3 were the libyuv changes? Odd. Maybe we miscalculate
+width/height/stride there somewhere.
+[tbsniller]
+tbsniller 01/22/2022 4:27 PM
+just compiled it again, you will have to check it out - not tested
+[tbsniller]
+jojo1411 I have big problems with 0.2.3 version - can't save configs
+after reboot etc. Is it possible to rech...
+tbsniller 01/22/2022 4:27 PM
+here you go if you dont want to debug it
+ org.webosbrew.piccap_0.2.2_all.ipk
+1.7 MB External
+[infowski]
+infowski 01/22/2022 4:27 PM
+Or rather - was
+01/22/2022 4:26 PM
+Is 0.2.2 working for you?
+jojo1411 01/22/2022 4:20 PM
+I have big problems with 0.2.3 version - can't save configs after reboot
+etc. Is it possible to recheck with version 0.2.2? Can someone upload
+plz?
+[tbsniller]
+tbsniller 01/22/2022 4:19 PM
+Sadly not more than we already know through -2. I'm sorry, I'm out, you
+will most likley have to wait for JohnPaul, as he already stated he has
+to dig for it. I were hoping we already get some more information
+(edited)
+[willscottuk]
+willscottuk 01/22/2022 4:16 PM
+Looks like there's at least something additional about the function in
+dile that's failing
+[willscottuk]
+[] tbsniller just run everything again from above just with `true` in
+this command
+willscottuk 01/22/2022 4:15 PM
+(no content)
+ message.txt
+3.94 KB External
+[willscottuk]
+willscottuk 01/22/2022 4:14 PM
+Haha - no worries at all!
+[tbsniller]
+tbsniller 01/22/2022 4:14 PM
+just run everything again from above just with true in this command
+01/22/2022 4:14 PM
+sorry
+01/22/2022 4:13 PM
+its
+luna-send -n 1 -f 'luna://com.webos.pmlogd/setdevlogstatus' '{"recordDevLogs":true}'
+(edited)
+01/22/2022 4:13 PM
+oh yeah, I'm a stupid copy paste idiot lol 
+[willscottuk]
+[] tbsniller <@!338974279393738752> Maybe we get some more dile logs
+with this: First run: `luna-send -n 1 -f '...
+willscottuk 01/22/2022 4:13 PM
+Nothing appearing in the second (tail) session at all
+jojo1411 01/22/2022 4:09 PM
+Resolution is 360x180
+ 1
+[tbsniller]
+tbsniller 01/22/2022 4:08 PM
+okay interesting, at which resolution are capturing? have you also tried
+to only use only GUI / only Video / Both, just to see a difference, if
+not, can you do it please (if you use video make sure to go to a youtube
+video or like that before looking at hyperion)
+jojo1411 01/22/2022 4:06 PM
+I use New TV (libvtcapture)
+[tbsniller]
+tbsniller 01/22/2022 4:04 PM
+its a setting in the gui
+01/22/2022 4:04 PM
+its called libvt, libdilevt or libvtcapture
+jojo1411 01/22/2022 4:03 PM
+TV is LG NANO919PA. How can i get the lib version from ssh?
+[tbsniller]
+jojo1411 Hello, I just upgraded to the new Picap version 0.2.3. updated.
+Unfortunately, the image grabber no ...
+tbsniller 01/22/2022 4:00 PM
+which library on which tv are you using?
+[tbsniller]
+tbsniller 01/22/2022 4:00 PM
+@willscottuk Maybe we get some more dile logs with this: First run:
+luna-send -n 1 -f 'luna://com.webos.pmlogd/setdevlogstatus' '{"recordDevLogs":false}'
+After that run PmLogCtl set 'hyperion-webos' debug After that go into
+another secound terminal session and run
+tail -F /var/log/messages | grep hyperion In your first terminal run
+again:
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/hyperion-webos --no-service --verbose -a YOURTVIP -b libdile_vt -x 360 -y 180
+After that post the output of the secound terminalwindow (edited)
+jojo1411 01/22/2022 3:58 PM
+Hello, I just upgraded to the new Picap version 0.2.3. updated.
+Unfortunately, the image grabber no longer seems to work properly for
+me. With HDMI as the data source, a destroyed image then appears (see
+attached picture) Sometimes the Piccap Config interface is transferred
+cleanly to hyperion via framebuffer after the restart. Mostly it stays
+black... Do you have an idea what could be the problem? It still worked
+with 0.2.2. Unfortunately, this version is no longer available. Can you
+make them available for download again? (edited)
+[unknown.png]
+ unknown.png
+357.62 KB External
+[willscottuk]
+willscottuk 01/22/2022 3:52 PM
+    root@LGwebOSTV:/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service# /media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/hyperion-webos --no-service --verbose -a 10.10.10.100 -b libdile_vt -x 360 -y 180
+         0.001s [INFO main                ] Starting up...
+         0.001s [ DBG parse_options       ] Finished parsing arguments
+         0.001s [ DBG capture_main        ] Using these values: Address: 10.10.10.100 | Port: 19400 | Width: 360 | Height: 180 | FPS: 0 | Backend: libdile_vt | NoVideo: 0 | NoGUI: 0 | Autostart: 0
+         0.001s [ DBG capture_main        ] Detecting backend...
+         0.001s [ DBG import_backend_library] Full library path: /media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/libdile_vt_backend.so
+         0.009s [ DBG capture_main        ] Backend preinit...
+         0.009s [INFO capture_preinit     ] Preinit called. Copying config..
+         0.009s [ DBG capture_main        ] Initiating capture...
+         0.009s [INFO capture_init        ] Init called
+         0.009s [ DBG capture_main        ] Starting capture..
+         0.009s [INFO capture_start       ] Capture start called.
+    KADP_DE_SetDHDRInit : Done. 
+         0.072s [ DBG capture_start       ] Got DILE_VT context!
+         0.072s [ DBG capture_start       ] supportScaleUp: 1; (1920x1080)
+         0.072s [ DBG capture_start       ] supportScaleDown: 1; (320x240)
+         0.072s [ DBG capture_start       ] maxResolution: 1920x1080
+         0.072s [ DBG capture_start       ] input deinterlace: 0; display deinterlace: 1
+         0.073s [ ERR capture_main        ] Error! capture_start. Code: -2
+         0.073s [ DBG cleanup             ] Starting cleanup... isRunning: 0
+         0.073s [ DBG cleanup             ] Destroying hyperion-client...
+         0.073s [ DBG cleanup             ] Cleanup capture within library...
+         0.074s [ DBG cleanup             ] Cleanup finished.
+         0.074s [ ERR main                ] ERROR: Capture main init failed!
+[tbsniller]
+tbsniller 01/22/2022 3:49 PM
+Hm okay, I sadly have no idea why this is You have told that you already
+have tried to start it over CLI? Could you please provide some logs? You
+can just call it like the following (make sure the running path is
+right, dont know how it is on older webOS versions)
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/hyperion-webos --no-service --verbose -a YOURTVIP -b libdile_vt -x 360 -y 180
+You can exit with CTRL+C if needed, put the starting logs in here please
+Maybe I can see something on the first view, otherwise JohnPaul would
+need them anyways I think, so they are already here (edited)
+[willscottuk]
+willscottuk 01/22/2022 3:33 PM
+Unfortunately even with Chromium 68.0.3440.0 I'm seeing nothing in the
+console
+[tbsniller]
+tbsniller 01/22/2022 3:08 PM
+keep in mind if you downgrade to not use this downgraded one for daily
+use - security risks, just FYI 
+01/22/2022 3:07 PM
+It was in # unknown-channel Here it is:
+@JohnPaul — 18.12.2021 I use midori here, heh. Console exectution works, but logs scrolling is broken lol
+So its up to you what you want to use, I believe there is also a
+portable version for chrome 68
+01/22/2022 3:05 PM
+no problem  seems like Version 68.0.3440.0 give me another secound,
+I'm also remebering he was stating another browser for which you dont
+have to downgrade
+[willscottuk]
+willscottuk 01/22/2022 3:03 PM
+Thanks - and thanks for your help!
+[tbsniller]
+tbsniller 01/22/2022 3:03 PM
+one moment i will check which version is shipped with the webos sdk
+tools
+[willscottuk]
+willscottuk 01/22/2022 3:02 PM
+Happy to downgrade my Chrome - is there a version known to work better?
+01/22/2022 3:01 PM
+Force closing and re-opening piccap (while leaving the developer session
+open) still hasn't given me anything in the console I'm afraid.
+[tbsniller]
+tbsniller 01/22/2022 2:59 PM
+hu thats interesting, normally there already should be something in
+there, but idk how this is on older webos tvs, also @infowski called
+that newer chromeversion doesnt work well with this developer stuff..
+before using a older chrome version, please try to forceclose piccap,
+just hold down backbutton on your remote until it exists. After that
+just start it again. But make sure you let the developer session open in
+your chrome
+[willscottuk]
+[] tbsniller Yeah 0.4.0 or higher is needed If you are on this minimum
+version can you do the following open goog...
+willscottuk 01/22/2022 2:56 PM
+Doesn't seem to be anything showing in the console
+[Screenshot_2022-01-22_at_13.55.21.png]
+ Screenshot_2022-01-22_at_13.55.21.png
+1.26 MB External
+[tbsniller]
+[] willscottuk version is 0.4.0 which I think is the latest?
+tbsniller 01/22/2022 2:52 PM
+Yeah 0.4.0 or higher is needed If you are on this minimum version can
+you do the following open google chrome and go to url: chrome://inspect
+enable discover network targets, click configure and add your TVIP +
+9998 as port, so it looks like 192.168.168.2:9998 click done run PicCap
+App on your TV wait a few secounds and you should see a target in chrome
+called PicCap - Hyperion Sender App, hit inspect next to this entry you
+will get a chrome browser session with developer tools on the right, you
+will have a tab called Console, put the log from there in discord here
+(edited)
+[willscottuk]
+[] infowski Also... Hmmm... I dont think w ever got -2 in there. Need to
+debug this.
+willscottuk 01/22/2022 2:30 PM
+Happy to assist however I can!
+[willscottuk]
+[] infowski Make sure you have newest version of Homebrew Channel
+installed first.
+willscottuk 01/22/2022 2:29 PM
+version is 0.4.0 which I think is the latest?
+[infowski]
+infowski 01/22/2022 2:29 PM
+Also... Hmmm... I dont think w ever got -2 in there. Need to debug this.
+[infowski]
+[] willscottuk Hello - I've recently rooted my TV ("board_type":
+"M16_DVB", "hardware_id": "HE_DTV_W16N_AFADABAA", ...
+infowski 01/22/2022 2:27 PM
+Make sure you have newest version of Homebrew Channel installed first.
+[willscottuk]
+willscottuk 01/22/2022 2:25 PM
+Hello - I've recently rooted my TV ("board_type": "M16_DVB",
+"hardware_id": "HE_DTV_W16N_AFADABAA", "product_id": "49UH750V-ZA",
+"core_os_release": "3.4.0-5908", "webos_manufacturing_version":
+"05.60.25") but having issues getting either PicCap (2.3) or
+HyperionWebOS (via ssh) to work. PicCap seems to be stuck on "Loading
+status" (including for root) and when running hyperion using the
+libdile_vt bundle I get "Error! capture_start. Code: -2". Are there any
+useful troubleshooting steps I could run?
+sinergetikus 01/22/2022 12:49 PM
+Looks like it just a few steps from ideal Thanks for your hard work
+01/22/2022 12:46 PM
+Piccap 2.3 not only works better with libvtcapture but also consume less
+CPU. ~5-7% decrease in CPU usage on TV with the same settings
+[infowski]
+infowski 01/22/2022 9:54 AM
+I dont know 
+ 1
+[tbsniller]
+[] infowski Note: add a BIG note about upgrade to homebrew channel 0.4.0
+in app description/troubleshooting guid...
+tbsniller 01/22/2022 9:45 AM
+Are you kidding me? :D This info about HBChannel version is straight
+under the start button loool :'D how this even can be overseen :D
+[infowski]
+infowski 01/22/2022 8:52 AM
+Just had someone complain about broken 0.2.3 and it was just too old
+homebrew channel.
+01/22/2022 8:52 AM
+Note: add a BIG note about upgrade to homebrew channel 0.4.0 in app
+description/troubleshooting guide/root failed error message 
+01/22/2022 8:50 AM
+We would need to detect HDR content and apply some transform accordingly
+(or switch some options to apply HDR colormapping - there is seemingly
+suvh an option libdile_vt, probably in vtcapture as well? Havent
+used/researched that though)
+ 2
+[jaybee82]
+jaybee82 01/22/2022 8:17 AM
+Glad to report the version 2.3 works even better on my TV, now I don't
+have to increase the blackbars detector threshold anymore for it to
+work, 1~5% is more than enough to detect anything. Only issue I have is
+that HDR and DV content are a bit too dark, bright colors are very pale,
+but I guess that's expected?
+[e99.tuxuser]
+e99.tuxuser 01/22/2022 4:34 AM
+Remember kids, always solder the correct Arduino... if you want
+/dev/ttyACM0 you have to use the 32u4 one! if you instead use the
+arduino nano you will have a bad time!
+[sojhinn]
+sojhinn 01/22/2022 1:52 AM
+Smooth as butter
+01/22/2022 1:52 AM
+Even updated to more LEDs
+01/22/2022 1:52 AM
+Running great here
+[infowski]
+infowski 01/22/2022 12:33 AM
+No problem 
+[tbsniller]
+tbsniller 01/22/2022 12:21 AM
+sorry for the confusion^^ it should be right now
+01/22/2022 12:21 AM
+okay finally..
+[infowski]
+infowski 01/22/2022 12:12 AM
+Yeah, because the tag is still on the old commit.
+[tbsniller]
+tbsniller 01/22/2022 12:11 AM
+soo this time it doesnt got replaced
+[tbsniller]
+[] infowski Step 1 done.
+tbsniller 01/22/2022 12:03 AM
+action is running
+January 21, 2022
+[infowski]
+[] infowski <@!430448040080572424> What a mess. The same case we had in
+$dayjob for a while when using submodule...
+infowski 01/21/2022 11:53 PM
+Step 1 done.
+[tbsniller]
+[] sojhinn we can just update from webos now?
+tbsniller 01/21/2022 11:50 PM
+you can right now
+[infowski]
+infowski 01/21/2022 11:49 PM
+@TBSniller What a mess. The same case we had in $dayjob for a while when
+using submodules... So to do this properly now we need to: 1. Merge
+CreateEx branch into hyperion-webos main; 2. Update hyperion-webos
+submodule in piccap, make a commit of that, and move over v0.2.3 tag to
+that; 3. let CI build v0.2.3 based on that (essentially the same code,
+but the checksum will change); 4. reupload new manifest with corrected
+checksum (edited)
+[tbsniller]
+tbsniller 01/21/2022 11:49 PM
+because your PR isnt merged, I have build it from this branch and the
+rest from main ^^
+[infowski]
+infowski 01/21/2022 11:46 PM
+"Release" should be based on a tag after everything has been merged,
+which will generate a proper ipk at that point
+01/21/2022 11:46 PM
+I am lost now.
+[infowski]
+[] tbsniller Because I have build dileex branch manually the ipk created
+from ci isn't correct I have replaced ...
+infowski 01/21/2022 11:45 PM
+Wait, hang on, what? Releases should go directly from specific commits
+in the repo.
+[tbsniller]
+tbsniller 01/21/2022 11:45 PM
+wait a few moments, after a rerun from @infowski
+[sojhinn]
+sojhinn 01/21/2022 11:44 PM
+we can just update from webos now?
+[tbsniller]
+tbsniller 01/21/2022 11:39 PM
+after you rerun
+01/21/2022 11:39 PM
+Because I have build dileex branch manually the ipk created from ci
+isn't correct I have replaced the ipk again with the manually build one
+and checked the hash in the manifest again for this file It should work
+now right?
+[infowski]
+infowski 01/21/2022 11:34 PM
+we need to add manifest building there later, to prevent these issues
+next time  (edited)
+01/21/2022 11:33 PM
+Ah yeah - exactly.
+[tbsniller]
+[] infowski
+https://github.com/TBSniller/piccap/blob/main/.github/workflows/build_hyperion.yml#L107-L111
+guessin...
+tbsniller 01/21/2022 11:33 PM
+No that
+[tbsniller]
+[] infowski Interesting repo linter didn't pick it up, though it
+probably ran before you pushed out a new releas...
+tbsniller 01/21/2022 11:33 PM
+Puhh bad memory
+[infowski]
+[] infowski Hmmm, we probably need to add manifest building to piccap ci
+setup... Can you fix up the `sha256` in...
+infowski 01/21/2022 11:33 PM
+that part? 
+[tbsniller]
+tbsniller 01/21/2022 11:32 PM
+Oh wow I see what happens, that's the part you mentioned earlier?
+[infowski]
+infowski 01/21/2022 11:32 PM
+Interesting repo linter didn't pick it up, though it probably ran before
+you pushed out a new release to github?
+01/21/2022 11:32 PM
+That's why manifest needs to be built from the same binary that's
+published.
+[infowski]
+[] tbsniller Also getting Missmatch wut I don't get it, it's the same as
+used in the oneliner
+infowski 01/21/2022 11:31 PM
+Yeah, but CI built something different - let it even just be file
+timestamps
+[tbsniller]
+tbsniller 01/21/2022 11:31 PM
+Arrg
+01/21/2022 11:31 PM
+Also getting Missmatch wut I don't get it, it's the same as used in the
+oneliner
+[infowski]
+infowski 01/21/2022 11:31 PM
+I can then rerun repo.webosbrew.org CI job to regenerate it. (edited)
+[infowski]
+[] tbsniller Ahhh
+infowski 01/21/2022 11:31 PM
+Hmmm, we probably need to add manifest building to piccap ci setup...
+Can you fix up the sha256 in the manifest?
+[infowski]
+[] penne_best_noodles installs fine though apparently
+infowski 01/21/2022 11:30 PM
+By Installs fine you mean when you install it manually? Yeah.
+[tbsniller]
+[] infowski hbchannel repo updates itself every 4 hours, unless a change
+is made to the repo, let meerge in your...
+tbsniller 01/21/2022 11:30 PM
+Ahhh
+[penne_best_noodles]
+penne_best_noodles 01/21/2022 11:29 PM
+just needs a reboot
+01/21/2022 11:29 PM
+installs fine though apparently
+[infowski]
+infowski 01/21/2022 11:28 PM
+Indeed, that is odd.
+[penne_best_noodles]
+penne_best_noodles 01/21/2022 11:26 PM
+got invalid file checksum on update
+[infowski]
+infowski 01/21/2022 11:21 PM
+https://repo.webosbrew.org/apps/org.webosbrew.piccap up.
+01/21/2022 11:19 PM
+should be up in a couple of minutes when CI goes through.
+[infowski]
+[] tbsniller Is there something more todo to release the app? Just put
+PicCap as normal release so manifest is a...
+infowski 01/21/2022 11:18 PM
+hbchannel repo updates itself every 4 hours, unless a change is made to
+the repo, let meerge in your change to bump that 
+[tbsniller]
+tbsniller 01/21/2022 11:06 PM
+Is there something more todo to release the app? Just put PicCap as
+normal release so manifest is available under /latest, but hbchannel
+repo still points to 0.1.0
+[tbsniller]
+tbsniller 01/21/2022 10:28 PM
+Ah I see your point. Have stated it to not getting hyperion-webos
+specific issues in this repo From this side it really sounds confusing,
+will correct it, thx for info
+[infowski]
+infowski 01/21/2022 10:26 PM
+@TBSniller one final question - what did you mean by "This is only the
+frontend for the backend service!"?  I think of PicCap as
+"distribution" of hyperion-webos with its own configuration GUI. (which
+hyperion-webos just doesn't have) Just asking, since if I weren't
+already involved in this project, I would assume I need to somehow
+install hyperion-webos myself, outside of piccap, and that is not the
+case.
+[tbsniller]
+[] sojhinn do i need to uninstall before installing?
+tbsniller 01/21/2022 10:19 PM
+it shouldnt be necessary
+[funky7603]
+funky7603 01/21/2022 10:17 PM
+0.2.3 works still great.thx webOS TV 4.4.0 LGwebOSTV / # grep -h -E
+'"(hardware_id|core_os_release|product_id|webos_manufacturing_ver
+sion|boardtype)"' /var/run/nyx/ "board_type": "M16P_DVB", "hardware_id":
+"HE_DTV_W18H_AFADABAA", "product_id": "OLED65B87LC", "core_os_release":
+"4.4.0-9", "webos_manufacturing_version": "05.40.09", /
+ 1
+[sojhinn]
+sojhinn 01/21/2022 10:17 PM
+do i need to uninstall before installing?
+[dsl444]
+dsl444 01/21/2022 10:16 PM
+Cool ! Will test 0.2.3 tomorrow 
+[tbsniller]
+tbsniller 01/21/2022 10:15 PM
+but it should also work with just installing it over
+[tbsniller]
+[] dsl444 Short question; if i want to Update PicCap (first Version) to
+PicCap 0.2.3, did i have to delete the...
+tbsniller 01/21/2022 10:15 PM
+yeah you should
+[tbsniller]
+tbsniller 01/21/2022 10:13 PM
+wanted to merge it to main when tests are final and we really release,
+or isnt that the way to go?
+01/21/2022 10:13 PM
+before it was on main
+01/21/2022 10:13 PM
+yeah on the PR
+[e99.tuxuser]
+e99.tuxuser 01/21/2022 10:12 PM
+@TBSniller Its still all based on the branch, not main yet
+[tbsniller]
+tbsniller 01/21/2022 10:11 PM
+at least for our latest one
+01/21/2022 10:10 PM
+now it should be right...
+[dsl444]
+dsl444 01/21/2022 10:10 PM
+Short question; if i want to Update PicCap (first Version) to PicCap
+0.2.3, did i have to delete the first Version?
+[e99.tuxuser]
+e99.tuxuser 01/21/2022 10:08 PM
+PS: Deleted my two stale branches, just for more clarity
+[tbsniller]
+tbsniller 01/21/2022 10:07 PM
+I see thanks for info, yeah pushed to main the last times.. havent
+pushed to our PR
+[e99.tuxuser]
+e99.tuxuser 01/21/2022 10:07 PM
+0.2.1 is nearer to the top than 0.2.2
+01/21/2022 10:06 PM
+wondered about that, why is releases page not chronological?
+[infowski]
+infowski 01/21/2022 10:01 PM
+https://github.com/TBSniller/piccap/blob/main/.github/workflows/build_hyperion.yml#L107-L111
+guessing from this.
+piccap/build_hyperion.yml at main · TBSniller/piccap
+PicCap. Contribute to TBSniller/piccap development by creating an
+account on GitHub.
+[]
+01/21/2022 10:01 PM
+And with having this on master it'd be probably easier to push out
+prereleases, though I am not sure how are you handling this so far - I
+think even just creating and pushing a tag on any branch to "main" repo
+now should create a prerelease.
+01/21/2022 9:59 PM
+And I think it's fine to just push stuff to master, if we are using
+Releases properly anyways. If this was about something that needs extra
+discussion (like some specific frontend changes), then using branches +
+PRs makes sense of course. (edited)
+01/21/2022 9:58 PM
+@TBSniller btw, just a heads up - you should create releases by pushing
+tags probably - the issue is that in PicCap we now have two releases
+that point at the same commit (one in master), while they should
+probably point at a commit off which a binary was built? (edited)
+01/21/2022 9:53 PM
+Even just adding "On some setups/platforms" at the beginning, or
+something similar.
+ 1
+[infowski]
+[] tbsniller Giving this info since v0.2 on the frontend page of piccap
+and never heard that. Last time we wrote ...
+infowski 01/21/2022 9:52 PM
+Nah, totally fine with releasing as is - just rewording that sentence is
+fine with me 
+[tbsniller]
+[] aabytt Works same as 0.2.2 for me CX webos 5.3, Libvtcapture Best
+performance with video+gui, but 65-70 cpu...
+tbsniller 01/21/2022 9:52 PM
+we have much lower fps on 0.1, I think the native service just gets more
+resources to use, so it just uses them
+[tbsniller]
+[] infowski and would really rather figure out why is it failing
+(sometimes?) than tell people to use that worka...
+tbsniller 01/21/2022 9:50 PM
+Giving this info since v0.2 on the frontend page of piccap and never
+heard that. Last time we wrote about autostart it also was your info
+that signals won't arrive to the application on your tv but anyways, I'm
+willing to find and fix it yeah, also already put some time into into
+it, but not finished. its stated as known issue and we have a workaround
+for that right now - so do you want to shift the release because of that
+and want to find the issue, or just release it as is (early stage and so
+on) to make people happy who are waiting on a new "official" release
+[aabytt]
+[] tbsniller Hey there, we are finally near to release to the newest
+PicCap-Version. We have already tested the ...
+aabytt 01/21/2022 9:48 PM
+Works same as 0.2.2 for me CX webos 5.3, Libvtcapture Best performance
+with video+gui, but 65-70 cpu load. Weird that on 0.1.0 video+gui cpu is
+14-15% (edited)
+[infowski]
+infowski 01/21/2022 9:40 PM
+we can fork off some monitoring subprocess to restart hyperion-webos
+when it crashes, or something, for example.
+01/21/2022 9:40 PM
+and would really rather figure out why is it failing (sometimes?) than
+tell people to use that workaround.
+01/21/2022 9:39 PM
+I am just concerned about conflicting info about QuickStart+, since we
+recommend to have it enabled in RootMyTV FAQ 
+01/21/2022 9:39 PM
+Yeah.
+[tbsniller]
+tbsniller 01/21/2022 9:38 PM
+okay then let me edit it to libvt and libvtcapture could have that
+problem, is that fine for you? 
+[infowski]
+[] tbsniller also after more than a few hours? its working on mine too,
+but sometimes not^^
+infowski 01/21/2022 9:37 PM
+yes.
+[tbsniller]
+tbsniller 01/21/2022 9:36 PM
+also after more than a few hours? its working on mine too, but sometimes
+not^^
+[infowski]
+infowski 01/21/2022 9:34 PM
+It reconnects properly after ~1-2 seconds of turning on the screen since
+it takes a while for network to come back, but there's nothing
+inherently broken in hyperion-webos / native services themselves for
+suspend not to work.
+01/21/2022 9:34 PM
+Let me clarify my findings  dile_vt works on my TV perfectly fine with
+quickstart+ enabled
+[tbsniller]
+tbsniller 01/21/2022 9:33 PM
+or do you mean I should include that there is a bug with the running
+binary, because we can't detect the stop/cont signals at the moment?
+01/21/2022 9:31 PM
+but at the moment we don't have an autostart after tv suspension, or I'm
+missing something? (edited)
+[infowski]
+[] infowski `Autostart only works after a complete TV-restart. If your
+TV goes to suspension after shutting it d...
+infowski 01/21/2022 9:29 PM
+actually, we used to have a bug that just stopped capture when network
+went down, but that is already fixed since early ~0.2.x
+[infowski]
+infowski 01/21/2022 9:29 PM
+plus restart-on-suspend worked for some people that used my rewritten
+nodejs service that did restarts on itself.
+[tbsniller]
+tbsniller 01/21/2022 9:28 PM
+Thats right
+[infowski]
+infowski 01/21/2022 9:28 PM
+Autostart only works after a complete TV-restart. If your TV goes to suspension after shutting it down, our startup scripts doesn't get fired when the TV gets waked up again.
+I don't think that part is correct. Services/Processes are not killed on
+my TV with quickstart+ - this sounds more like a bug in some of our
+capture backends that causes a crash on suspend/resume.
+[tbsniller]
+tbsniller 01/21/2022 9:22 PM
+Hey there, we are finally near to release to the newest PicCap-Version.
+We have already tested the latest changes made, but want to make sure
+its working anywhere before releasing it to all in HBChannel Would be
+nice if some of you could test it out:
+https://github.com/TBSniller/piccap/releases/tag/0.2.3 One-line-install:
+luna-send -i 'luna://org.webosbrew.hbchannel.service/install' '{"ipkUrl":"https://github.com/TBSniller/piccap/releases/download/0.2.3/org.webosbrew.piccap_0.2.3_all.ipk","ipkHash":"4bfd262421f27fd33b66062e117f97c5a3f3b8d24cd4583645878bd0cc3c6cc2"}'
+If you see {"returnValue":true,"statusText":"Finished.","finished":true}
+in console it got installed successfully. Just hit CTRL+C and open the
+app on TV. Short feedback if its working like 0.2.2 or not would be
+nice. Thanks!
+Release org.webosbrew.piccap_0.2.3 · TBSniller/piccap
+This is only the frontend for the backend service! v0.2.3 -wider
+libdile_vt TV compatibility (webosbrew/hyperion-webos#34) -much better
+color conversation in libvtcapture (webosbrew/hyperion-webos#...
+[]
+ 2
+[] e99.tuxuser Cheers
+Deleted User 01/21/2022 5:09 PM
+If i had known that you are looking for ino adalight for sk6812rgbw
+using neopixel library, i will have share it earlier. Nevermind. 
+(edited)
+[IMG_1800.png]
+ IMG_1800.png
+679.26 KB External
+[e99.tuxuser]
+e99.tuxuser 01/21/2022 4:59 PM
+Cheers
+[] e99.tuxuser
+https://gist.github.com/tuxuser/45d06bfc2eb8b92de2f8c6fe0dded28d
+Deleted User 01/21/2022 4:15 PM
+Alternative https://pastebin.com/raw/yT4eBmbM
+[raffibaffi]
+[] bob69740 Also, with the last binaries
+(https://discord.com/channels/407937994037919756/931706504627773450/933...
+raffibaffi 01/21/2022 3:35 PM
+For me its 400x180, then its right… but i use 220x90…. The optimal thing
+for me 
+[e99.tuxuser]
+e99.tuxuser 01/21/2022 2:06 PM
+https://gist.github.com/tuxuser/45d06bfc2eb8b92de2f8c6fe0dded28d
+Adalight Neopixel implementation (SK6812 RGBW works)
+Adalight Neopixel implementation (SK6812 RGBW works) -
+adalight_neopixel.ino
+[]
+[e99.tuxuser]
+e99.tuxuser 01/21/2022 1:59 PM
+Success, Adalight + NeoPixel lib instead of FastLED works properly for
+SK6812 RGBW and looks awesome (TV not yet mounted tho) (edited)
+ 1
+luchow3cu 01/21/2022 1:09 PM
+I decided to pull the trigger and installed v 0.2.2 on my LG C1. After
+the first initial setup, everything seems to be working fine. Here how i
+set up my system: LG C1 running Sofware Version 03.21.05 rooted with V2
+and connected to LAN with Ethernet Cable. RPi 3 running Hyperion with
+fresh install, no changes to the parameters connected to LAN with
+Ethernet Cable. ESP8266 running WLED with wifi, but connected via USB to
+RPi3 (Hyperion Setting Adalight, not WLED). Piccap Settings
+libtvcapture+libhalgal checked, video and GUI capture checked,
+Resolution 128x72 (lowest 16:9 resolution divisible by 8), fps 60. WebOS
+streaming apps with DRM don´t work (known Issue), but content from my
+Xbox Series X is working fine. With the used resolution I was able to
+get rid of the pink bar at the right side of the captured image. Used
+Led Strip SK6812 with 30Led/m. (edited)
+[satdx62]
+satdx62 01/21/2022 1:07 PM
+@TBSniller Software V 0.2.2 works perfectly too, on my LG65B7D Model
+2017 WebOs 3.9.0-62709 and Software version 06.00.25. Thanks to everyone
+working on this project.
+jojo1411 Thanks <@!560254018933227561> for your reply! To be on the safe
+side, I will look for a new Pi4. Not...
+Deleted User 01/21/2022 12:11 PM
+If you set this parameter you’ll increase the buffer size not reduce (
+default is 4096 ). I saw that info few months ago and put it on my last
+Ambilight tutorial too btw. (edited)
+ 2
+[] raffibaffi Pi 3 is enough….
+jojo1411 01/21/2022 9:42 AM
+Thanks @RaffiBaffi for your reply! To be on the safe side, I will look
+for a new Pi4. Not much difference in prices.... Is it on Pi4 still
+needed to reduce buffer size an a fixed core frequency in config.txt to
+use spi? spidev.bufsiz=32768 core_freq=500 core_freq_min=500
+[raffibaffi]
+raffibaffi 01/21/2022 8:29 AM
+This Verision dont work on an CX TV - On "CX" choose 0.2.1 or 0.2.2 with
+"Modern TV 2020+"
+01/21/2022 8:28 AM
+LG C8 -> Choose the Option "EXPERIMENTAL - ALL TVs" and enjoy even
+Netflix etc...
+[raffibaffi]
+raffibaffi 01/21/2022 8:21 AM
+@infowski Here is the "PicCap 0.2.0" Version from my report yesterday.
+It seems to be an unofficial/experimental Version. I dont know where i
+found them here - but someone (TBSniller?) posted this Link to the 0.2.0
+mVersion. This is the only Version, that runs on an LG C8 TV (+DRM).
+https://cdn.discordapp.com/attachments/835489130967859251/926817343433232384/org.webosbrew.piccap_0.2.0_all.ipk
+[bob69740]
+bob69740 01/21/2022 8:12 AM
+And with the previous binaries, it was pink.
+01/21/2022 8:12 AM
+Also, with the last binaries
+(https://discord.com/channels/407937994037919756/931706504627773450/933120566213369896),
+the right bar was black like that (with a resolution of 360 x 180 by
+example) (edited)
+[unknown.png]
+ unknown.png
+221.86 KB External
+Discord - A New Way to Chat with Friends & Communities
+Discord is the easiest way to communicate over voice, video, and text.
+Chat, hang out, and stay close with your friends and communities.
+freaknet 01/21/2022 8:06 AM
+Glad it works now
+ 1

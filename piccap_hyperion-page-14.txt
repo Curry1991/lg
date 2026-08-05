@@ -1,0 +1,2785 @@
+April 2, 2024
+[yolofant]
+yolofant 04/02/2024 8:42 PM
+in /proc
+04/02/2024 8:42 PM
+it might be in a different folder
+04/02/2024 8:41 PM
+[astur3l]
+[] yolofant ```bash root@LGwebOSTV:~# cat
+/proc/lgtv-driver/vpq/pq-status chip_name=o22
+INPUT_SRC_INFO={input_sr...
+astur3l 04/02/2024 8:41 PM
+thanks  sadly i dont even have vpq "folder" 
+[yolofant]
+[] astur3l i have ``/dev/vd`` ``cat: can't open '/dev/vd': No such
+device or address`` :/
+yolofant 04/02/2024 8:40 PM
+    root@LGwebOSTV:~# cat /proc/lgtv-driver/vpq/pq-status
+    chip_name=o22
+    INPUT_SRC_INFO={input_src_color_space:ycbcr,colorimetry:601,input_hdr_type:sdr}
+    INPUT_CSC=bypass
+    LED_DEMOMODE={onoff:0, type:line}
+    LED_EN=0
+    LED_DB_IDX=0
+    LED_CONTROL_SPI=0x0
+    MEMC_LOWDELAY_MODE=0
+    MEMC_MOTION_COMP={memc_type:4,blur_level:10,judder_level:0}
+    FILM_DETECTION={enable:true,detected_film_freq:50,cadence:original}
+    MEMC_MOTION_PRO=0
+    HDR_COLOR_CORRECTION={uHueBlend:512,uSatBlend:512,uLgainx:{0,9362,18724,28086,37449,46811,56173,65535},uLgainy:{255,255,255,255,255,255,255,255},uSgainx:{0,9362,18724,28086,37449,46811,56173,65535},uSgainy:{0,64,128,192,255,255,255,255}}
+    HLG_Y_GAIN_TBL={0}
+    DOLBY_PICTURE_MODE={bOnOff:0, uPictureMode:vivid}
+    DOLBY_PICTURE_MENU={backlight:80, brightness:0, color:0, contrast:0}
+    DOLBY_PWM_RATIO=0
+    VPQ_PICTURE_CTRL={picture_ui_value:{85,50,50,0},chipData_contrast:471,chipData_brightness:512,chipData_saturation:128,chipData_hue:128}
+    VPQ_BYPASS_BLOCK={bypassMask:0x00000000,bOnOff:0}
+    VPQ_BLACK_LEVEL={ui_value:2,curr_input:dtv,color_space:0,black_level_type:1}
+    VPQ_LOW_DELAY_MODE=0
+    VPQ_DYNAMIC_CONTRAST_COLOR_GAIN=100
+    VPQ_TESTPATTERN=0
+    VPQ_COLORTEMP_DATA={gain:{192, 192, 192}, offset:{64, 64, 64}}
+    VPQ_REAL_CINEMA=1
+    VPQ_GAMUT_MATRIX_POST={gamma:1, degamma:1, matrix:{10000, 0, 0, 0, 10000, 0, 0, 0, 10000}}
+    VPQ_PQ_MODE_INFO={hdrStatus:sdr,colorimetry:bt601,peakLuminance:1000,supportPrime:0,reserved:255}
+    `
+[yolofant]
+yolofant 04/02/2024 2:28 AM
+I guess it was lxvo/last_created or something along that
+[astur3l]
+astur3l 04/02/2024 2:27 AM
+i have `/dev/vd cat: can't open '/dev/vd': No such device or address` :/
+[yolofant]
+yolofant 04/02/2024 2:24 AM
+or vo
+04/02/2024 2:24 AM
+I believe vdo might be it
+04/02/2024 2:24 AM
+/proc or /dev
+[astur3l]
+astur3l 04/02/2024 2:23 AM
+in /tmp or /proc?
+[yolofant]
+yolofant 04/02/2024 2:22 AM
+I don't remember right now but it's easy to grep for
+04/02/2024 2:22 AM
+it's in some file
+[astur3l]
+astur3l 04/02/2024 2:21 AM
+where's the colorspace information?:D
+[yolofant]
+yolofant 04/02/2024 2:21 AM
+it's also not available on LX
+[yolofant]
+[] astur3l btw iirc vtdriver also have that info, just not implemented
+in "piccap"
+yolofant 04/02/2024 2:20 AM
+no, the library we use doesn't have any of this
+[astur3l]
+astur3l 04/02/2024 2:00 AM
+so its 12bit? not 8...
+04/02/2024 1:59 AM
+    static const struct mlp_vt_fmt mlp_vt_formats[] = {
+        {
+            .name        = "YUV 4:2:0 planar, Y/Cb/Cr",
+            .fourcc      = V4L2_PIX_FMT_NV12,
+            .depth       = 12,
+            .ybpp        = 1,
+            .color       = IMG_FMT_YCBCR420,
+            .colplanes    = 2,
+            .flags        = FMT_MTK_M7622_DIP,
+        },
+        {
+            .name        = "YUYV 4:2:2",
+            .fourcc      = V4L2_PIX_FMT_YUYV,
+            .depth       = 16,
+            .ybpp        = 1,
+            .color       = IMG_FMT_YCBYCR422,
+            .colplanes    = 1,
+            .flags        = FMT_MTK_M7622_DIP,
+        },
+        {
+            .name        = "32-bit A/XRGB 8-8-8-8",
+            .fourcc      = V4L2_PIX_FMT_RGB32,
+            .depth       = 32,
+            .ybpp        = 1,
+            .color       = IMG_FMT_ARGB8888,
+            .colplanes    = 1,
+            .flags        = FMT_MTK_M7622_DIP,
+        },
+        {
+            .name        = "32-bit  ARGB-8-8-8-8",
+            .fourcc      = V4L2_PIX_FMT_ARGB32,
+            .depth       = 32,
+            .ybpp        = 1,
+            .color       = IMG_FMT_ARGB8888,
+            .colplanes    = 1,
+            .flags        = FMT_MTK_M7622_DIP,
+        }
+    }; 
+04/02/2024 1:53 AM
+    static ms_EN_XC_DIP_DATA_FMT v4l2_fmt_2_ms_fmt(u32 v4l2_fmt)
+    {
+        ms_EN_XC_DIP_DATA_FMT ms_fmt;
+        switch(v4l2_fmt)
+        {
+        case V4L2_PIX_FMT_NV12:
+            ms_fmt = MS_DIP_DATA_FMT_YUV420_SEMI_PLANER;
+            break;
+        case V4L2_PIX_FMT_YUYV:
+            ms_fmt = MS_DIP_DATA_FMT_YUV422;
+            break;
+        case V4L2_PIX_FMT_RGB32:
+            ms_fmt = MS_DIP_DATA_FMT_ARGB8888;
+            break;
+        default:
+            MLP_VT_TRACE("v4l2_fmt 0x%x", v4l2_fmt);
+            ms_fmt = MS_DIP_DATA_FMT_MAX;
+            break;
+        }
+        return ms_fmt;
+    }
+    const struct mlp_vt_fmt *mlp_vt_find_format(struct mlp_vt_priv *vp,
+                              const u32 *pixelformat,
+                              int index)
+    {
+        const struct mlp_vt_fmt *fmt, *def_fmt = NULL;
+        unsigned int i;
+        int id = 0;
+        if (index >= (int)ARRAY_SIZE(mlp_vt_formats))
+            return NULL;
+        for (i = 0; i < ARRAY_SIZE(mlp_vt_formats); ++i) {
+            fmt = &mlp_vt_formats[i];
+            if (vp && !(vp->fmt_flags & fmt->flags))
+                continue;
+            if (pixelformat && fmt->fourcc == *pixelformat)
+                return fmt;
+            if (index == id)
+                def_fmt = fmt;
+            id++;
+        }
+        return def_fmt;
+    }
+(edited)
+[astur3l]
+astur3l 04/02/2024 1:44 AM
+btw iirc vtdriver also have that info, just not implemented in "piccap"
+[astur3l]
+[] yolofant there's a file though which tells the current used
+colorspace
+astur3l 04/02/2024 1:37 AM
+which?
+[yolofant]
+yolofant 04/02/2024 1:09 AM
+maybe that could be used to switch in sdr/hdr
+04/02/2024 1:09 AM
+there's a file though which tells the current used colorspace
+04/02/2024 1:08 AM
+nvm 601 is the default
+04/02/2024 1:05 AM
+709 is the default
+[astur3l]
+astur3l 04/02/2024 12:57 AM
+what's the default? :d u mean 601? (edited)
+[yolofant]
+yolofant 04/02/2024 12:52 AM
+wasn't the default the best anyway?
+[astur3l]
+astur3l 04/02/2024 12:43 AM
+anyway, would be nice if others could benefit from this.. but you
+couldnt put the yuv constants as quirks.. 
+[astur3l]
+astur3l 04/02/2024 12:17 AM
+btw even if i have perfect red, white, black, the gradients aren't
+exactly "matches"
+[yolofant]
+yolofant 04/02/2024 12:17 AM
+thus it was kind of working
+04/02/2024 12:17 AM
+nv21 kind of reverses b and r
+04/02/2024 12:17 AM
+no
+[astur3l]
+astur3l 04/02/2024 12:14 AM
+also nv21 ? :d
+04/02/2024 12:13 AM
+same for some toargb function
+[yolofant]
+yolofant 04/02/2024 12:07 AM
+the weird thing though is that in libyuv RGB24 means bgr
+[astur3l]
+astur3l 04/02/2024 12:02 AM
+oh right, lol 
+04/02/2024 12:01 AM
+should be fine :d
+[yolofant]
+yolofant 04/02/2024 12:01 AM
+in the code it can be either rgb, yuv420 or yuv422
+[astur3l]
+astur3l 04/02/2024 12:01 AM
+different conversion
+04/02/2024 12:01 AM
+it uses 422 sp
+[yolofant]
+yolofant 04/02/2024 12:01 AM
+if dile_vt infact is nv21
+04/02/2024 12:00 AM
+it might break dile_vt 
+04/02/2024 12:00 AM
+not sure what happens though if we fix this
+April 1, 2024
+[astur3l]
+astur3l 04/01/2024 11:52 PM
+i dont know anyone who got great colors with libvtcapture  afaik i was
+the closest to with dumploc1  (but i also have smaller colorspace :D)
+but my red was like 254,26,0  almost unnoticable when compared the
+images, (edited)
+[yolofant]
+yolofant 04/01/2024 11:48 PM
+for LX it's most likely always been NV12
+04/01/2024 11:48 PM
+possible
+[astur3l]
+astur3l 04/01/2024 11:45 PM
+i wonder is the nv12 color matrix varies only by soc?
+[yolofant]
+yolofant 04/01/2024 11:44 PM
+and get 60fps
+04/01/2024 11:44 PM
+I capture ui all the time
+[astur3l]
+astur3l 04/01/2024 11:44 PM
+ i had like 7-14 fps and constantly "freezing" because some service
+tried to use..
+[yolofant]
+yolofant 04/01/2024 11:44 PM
+at least the channels aren't swapped anymore now 
+04/01/2024 11:44 PM
+who cares about color correctness for the ui anyway
+04/01/2024 11:44 PM
+no idea
+[astur3l]
+astur3l 04/01/2024 11:43 PM
+i mean the ui  not the video (edited)
+[yolofant]
+yolofant 04/01/2024 11:43 PM
+not as good as yours but still far better than default
+04/01/2024 11:43 PM
+yes the values I posted above
+04/01/2024 11:43 PM
+but it also needs adding some code in converter.c because we can't
+currently convert from ARGB to ARGB lol
+[astur3l]
+astur3l 04/01/2024 11:43 PM
+i mean colorspace*
+04/01/2024 11:42 PM
+but then ui capture was color correct?
+[yolofant]
+yolofant 04/01/2024 11:42 PM
+yeah it works then
+ 1
+[yolofant]
+yolofant 04/01/2024 11:34 PM
+yes it should be ARGB
+[astur3l]
+[] yolofant I guess r and b are swapped
+astur3l 04/01/2024 11:28 PM
+yeah
+        frame->pixel_format = PIXFMT_ABGR;
+[astur3l]
+astur3l 04/01/2024 11:22 PM
+- kYuvH709Constants : rgb(1, 204, 1) - kYuv2020Constants: rgb(0, 213,
+0) - kYuvI601Constants: rgb(0, 245, 0) rgb(0, 0, 254) rgb(254, 0, 0)
+(edited)
+[yolofant]
+yolofant 04/01/2024 11:18 PM
+so that's also the best one for me
+04/01/2024 11:18 PM
+kYuvH709Constants oh
+[astur3l]
+astur3l 04/01/2024 11:15 PM
+yeah but "which" because i tried all 
+[yolofant]
+yolofant 04/01/2024 11:15 PM
+should be the bt601 one (edited)
+04/01/2024 11:15 PM
+matrixless does also use a matrix 
+[astur3l]
+[] yolofant I did use `kYuvH709Constants` though which gave me the best
+results
+astur3l 04/01/2024 11:14 PM
+odd that bt2020 the "most" accurate for me , but none of matrix gave me
+so correct result like the "matrixless"
+[yolofant]
+yolofant 04/01/2024 11:14 PM
+I guess r and b are swapped
+04/01/2024 11:14 PM
+no those will need fixing too
+[astur3l]
+astur3l 04/01/2024 11:11 PM
+btw the ui capture colors are correct? i never used it and some service
+locks the libgalhal or whatever is that :d
+[yolofant]
+yolofant 04/01/2024 10:56 PM
+I did use kYuvH709Constants though which gave me the best results
+04/01/2024 10:56 PM
+rgb(1, 0, 244), rgb(0, 255, 11), rgb(255, 1, 3) is what I'm getting
+which is pretty close to being correct
+ 1
+[yolofant]
+yolofant 04/01/2024 10:05 PM
+I'll build it once my br-nc4 build finishes
+[astur3l]
+astur3l 04/01/2024 10:02 PM
+but i vote for bt709 too 
+04/01/2024 9:59 PM
+feels like that the captured frames are bt2020 no matter if the content
+is sdr or hdr
+04/01/2024 9:58 PM
+and another interesting thing.. if i forcing hdr mode.. the captured
+image also becomes brigther.. also the generated lut table gives lowered
+"brightness" too  (edited)
+[astur3l]
+astur3l 04/01/2024 9:48 PM
+yeah, otherwise picture settings affects the captured frames  (edited)
+[yolofant]
+yolofant 04/01/2024 9:27 PM
+did you still use the other dump location?
+04/01/2024 9:27 PM
+yeah, going to try it as well
+[astur3l]
+astur3l 04/01/2024 9:03 PM
+anyway is there a chance that you look at it sometime?:D you're way more
+skilled than me, and i just "blindly" trying things..  (without
+knowing much about color models like how the chrome components sampled
+besides the chrome resolution is halved both horizontally and
+vertically)
+[astur3l]
+astur3l 04/01/2024 8:43 PM
+or just the colors arent properly clamped
+04/01/2024 8:43 PM
+maybe its already in hdr format..? and the uint8 just flips over after
+255?
+[astur3l]
+astur3l 04/01/2024 8:26 PM
+red kinda same with the old nv21 way 
+04/01/2024 8:21 PM
+oh thanks.. i thought i need to supply my own  anyway, i tried all,
+green becomes worser with every...  the best is kYuv2020Constants
+(BT.2020 limited): rgb(0, 213, 0) meanwhile simple nv12 gives rgb(0,
+245, 0) (edited)
+[yolofant]
+yolofant 04/01/2024 8:14 PM
+kYuvH709Constants
+[astur3l]
+astur3l 04/01/2024 8:14 PM
+with what yuv constants ?:D
+[yolofant]
+yolofant 04/01/2024 8:13 PM
+just use NV12ToARGBMatrix instead?
+[astur3l]
+[] yolofant probably better to use the bt709 instead of the default
+bt601
+astur3l 04/01/2024 8:05 PM
+i thought for but i was unable to get it to work  i'm not really
+familiar with color models either, but in theory i should split the UV
+planes into U,V (`SplitUVPlane) for I420ToARGB or H420ToARGB` or
+whatever..
+                this->buffers[1] = realloc(this->buffers[1], input->width / 2 * input->height / 2);
+                this->buffers[2] = realloc(this->buffers[2], input->width / 2 * input->height / 2);
+                SplitUVPlane(
+                    input->planes[1].buffer,
+                    input->planes[1].stride,
+                    this->buffers[1],
+                    input->width / 2,
+                    this->buffers[2],
+                    input->width / 2,
+                    input->width / 2,
+                    input->height / 2);
+                I420ToARGB(
+                    input->planes[0].buffer,
+                    input->planes[0].stride,
+                    this->buffers[2],
+                    input->width / 2,
+                    this->buffers[1],
+                    input->width / 2,
+                    output->planes[0].buffer,
+                    output->planes[0].stride,
+                    output->width,
+                    output->height);
+the best result (closest to full red) gives me I420ToARGB: rgb(208, 12,
+0), i tried J,H,U but better colorspace gives worser result , anyway its
+not even close to nv12 :/ im not sure if my code is ok either 
+[yolofant]
+yolofant 04/01/2024 6:38 PM
+probably better to use the bt709 instead of the default bt601
+[yolofant]
+[] astur3l but now kinda almost perfect: red: rgb(254, 0, 0) blue:
+rgb(0, 0, 254) green: rgb(0, 245, 0) 
+yolofant 04/01/2024 6:34 PM
+this could very well just be a color matrix issue
+March 31, 2024
+[tbsniller]
+morozaw And I guess that's not totally necessary  BTW did someone from
+here tried to cooperate with LG in...
+tbsniller 03/31/2024 1:25 AM
+i did, answer was "currently not planned"
+March 30, 2024
+[astur3l]
+astur3l 03/30/2024 4:26 PM
+but now kinda almost perfect: red: rgb(254, 0, 0) blue: rgb(0, 0, 254)
+green: rgb(0, 245, 0) 
+[yolofant]
+yolofant 03/30/2024 4:25 PM
+I'll test it on Monday but maybe someone else can confirm that it's also
+working on their end
+03/30/2024 4:24 PM
+I guess do a PR and maybe ask others to test
+03/30/2024 4:23 PM
+oh right
+[astur3l]
+astur3l 03/30/2024 4:23 PM
+if i just change one, the captued pic was really "cold" - bluish a bit
+03/30/2024 4:22 PM
+original
+                NV21ToARGB(
+                    input->planes[0].buffer,
+                    input->planes[0].stride,
+                    input->planes[1].buffer,
+                    input->planes[1].stride,
+                    output->planes[0].buffer,
+                    output->planes[0].stride,
+                    output->width,
+                    output->height);
+    ...
+                ARGBToRGB24(
+                    video_frame_converted.planes[0].buffer,
+                    video_frame_converted.planes[0].stride,
+                    final_frame,
+                    3 * width,
+                    width,
+                    height);
+    new:
+    cpp
+    converter.c
+                NV12ToARGB(
+                    input->planes[0].buffer,
+                    input->planes[0].stride,
+                    input->planes[1].buffer,
+                    input->planes[1].stride,
+                    output->planes[0].buffer,
+                    output->planes[0].stride,
+                    output->width,
+                    output->height);
+    ...
+    unicapture.c
+                ARGBToRAW(
+                    video_frame_converted.planes[0].buffer,
+                    video_frame_converted.planes[0].stride,
+                    final_frame,
+                    3 * width,
+                    width,
+                    height);
+(edited)
+03/30/2024 4:21 PM
+thats what i changed + then the final ARGB frames to RAW
+03/30/2024 4:21 PM
+yeah but hypern-webos uses nv21, not nv12
+[yolofant]
+yolofant 03/30/2024 4:20 PM
+but I guess it might as well just be a wrong comment lol
+03/30/2024 4:20 PM
+in the o22 kernel it literally says
+/*Only YCbCr4:2:0 [NV12] is supported */
+03/30/2024 4:19 PM
+I'm pretty sure the format is defined in there
+03/30/2024 4:19 PM
+I guess to confirm you can take a look at the kernel source for your SoC
+[astur3l]
+astur3l 03/30/2024 4:17 PM
+https://chromium.googlesource.com/libyuv/libyuv/+/HEAD/docs/formats.md#planar-yuv >
+I420, NV12 and NV21 are half width, half height 
+03/30/2024 4:16 PM
+https://chromium.googlesource.com/libyuv/libyuv/+/HEAD/docs/formats.md#nv12-and-nv21 >
+NV12 is a biplanar format with a full sized Y plane followed by a single
+chroma plane with weaved U and V values. NV21 is the same but with
+weaved V and U values. The 12 in NV12 refers to 12 bits per pixel. NV12
+has a half width and half height chroma channel, and therefore is a 420
+subsampling. NV16 is 16 bits per pixel, with half width and full height.
+aka 422. NV24 is 24 bits per pixel with full sized chroma channel. aka
+444. Most NV12 functions allow the destination Y pointer to be NULL.
+03/30/2024 4:14 PM
+yeah, RGB24 is B,G,R in memory, RAW is R G B
+[yolofant]
+yolofant 03/30/2024 4:12 PM
+so difference between ARGBToRGB24 (bgr) and ARGBToRAW (rgb) is just byte
+order
+03/30/2024 4:06 PM
+but I guess it still depends on the SOC anyway
+[astur3l]
+astur3l 03/30/2024 4:05 PM
+tested with this 
+ red.mp4
+39.95 KB External
+[yolofant]
+yolofant 03/30/2024 4:05 PM
+don't have access to my TV this weekend
+03/30/2024 4:05 PM
+afaik nv12 and nv21 are the same but byte order reversed
+[astur3l]
+astur3l 03/30/2024 4:05 PM
+could you test? the paramters are the same
+03/30/2024 4:04 PM
+nv21 imo is mostly for yuv422p
+[yolofant]
+yolofant 03/30/2024 4:04 PM
+[astur3l]
+astur3l 03/30/2024 4:03 PM
+@Yolofant i found something interesting in hyperion-webos, if i convert
+to libvtcapture frames with
+`NV12ToARGB (isntead of NV21ToARGB) then lately ARGBToRAW (isntead of ARGBToRGB24 ), i get perfect colors ... before red was: rgb(254, 22, 2) after rgb(254, 0, 0)`
+March 29, 2024
+asvictory 03/29/2024 5:04 AM
+Thanks. I’ll use the dev manager till there’s an update.
+03/29/2024 5:03 AM
+Root status is ok and I did a system reboot already
+asvictory Trying to update my hyperhdr via homebrew channel to v20.00
+(version 0.1.9 homebrew app). I’m gettin...
+hellobox. 03/29/2024 5:03 AM
+https://github.com/webosbrew/webos-homebrew-channel/issues/179
+ 1
+asvictory 03/29/2024 5:03 AM
+Trying to update my hyperhdr via homebrew channel to v20.00 (version
+0.1.9 homebrew app). I’m getting a “unable to get local issuer
+certificate” error in the homebrew channel when I update. I have since
+uninstalled and get the same error on install. Any advice? Thanks
+March 26, 2024
+pho9574 is anybody here running Piccap latest version on a C9 ?
+pho9574 03/26/2024 2:15 PM
+...or maybe a B9? :/
+March 23, 2024
+pho9574 03/23/2024 2:48 PM
+is anybody here running Piccap latest version on a C9 ?
+black6spdz 03/23/2024 7:49 AM
+so I take it unless I have a rootable WebOS version this will never work
+even if I can install it with dev-manager-desktop?
+March 22, 2024
+pho9574 03/22/2024 8:39 PM
+hi guys, i have a bit of a weird problem: piccap running on tv ->eth->
+Hyperion running rpi5 ->wifi-> wled APA102 everything works just fine
+when playing movies w kodi from a FireTV4kmax. When i switch to PC
+(4k/HDR/VRR/120hz) the WLEDs seem to reset sporadically (i.e. LEDs turn
+off then turn orange like when WLED is booting, and then everything is
+back to normal --this all happens within seconds). what's weird is that
+i have not yet found a way to reproduce the error. sometimes it does not
+happen at all sometimes it happens multiple times within an hour. But
+only w PC , never w FireTV any ideas would be much appreciated cheers
+March 19, 2024
+[albertron]
+[] satdx62
+https://discord.com/channels/407937994037919756/931706504627773450/1208839716787593386
+albertron 03/19/2024 10:06 PM
+Thanks
+[satdx62]
+[] albertron Hello. Does it work with webos apps (netflix, hbo, prime
+video, etc) or is it only for use with the ...
+satdx62 03/19/2024 9:48 PM
+https://discord.com/channels/407937994037919756/931706504627773450/1208839716787593386
+[albertron]
+albertron 03/19/2024 8:17 PM
+Hello. Does it work with webos apps (netflix, hbo, prime video, etc) or
+is it only for use with the HDMI inputs?
+March 18, 2024
+[astur3l]
+[] luka6496 Hello! I appologize if it's a stupid question, but I have
+spent quite some time researching already,...
+astur3l 03/18/2024 6:16 PM
+i bought everything from aliexpress for cheap so idk
+(https://discord.com/channels/407937994037919756/974942819707924511/1000560473109962756) >
+I realize 5 meter is a bit short for 83", but I can just install it 10cm
+(4 inch) more inside of the TV on all 4 sides, and it should come just
+right by my calculations. Colors should still look fine with LED strip
+installed this way I hope? it wont affect colors, but why not just buy
+5+1 meter?  esp32 can/works also with hyperserial, btw check also
+https://github.com/awawa-dev/HyperSerialPico depends on the led
+controller, may u need a level shifter too
+https://kno.wled.ge/basics/compatible-hardware/#levelshifters there are
+already preassembled esp32 based led controllers (wled based ->
+https://kno.wled.ge/basics/compatible-controllers/) > Btw can all these
+parts be connected without soldering? I would highly prefer it this way.
+i dont recommend  probably you could do it somehow , but do you really
+want to use those thin cables/connectors for like 10+A?  in best case
+it have 20AWG wire (?)
+[led-strip-pigtail-connector-3-pin-1_1024x.png]
+ led-strip-pigtail-connector-3-pin-1_1024x.png
+583.42 KB External
+[luka6496]
+luka6496 03/18/2024 5:33 PM
+4.) Anything else on HW side? If not, than I only need some really cool
+instructions, if they are even close to those to Root, it would be
+insane. Do they exist? Thank you for reading 
+03/18/2024 5:33 PM
+Hello! I appologize if it's a stupid question, but I have spent quite
+some time researching already, and still don't find definite walktrough,
+so any help would be greatly appreciated  Coming from Philips TV, I
+really want to have Ambilight on my new C3 OLED (83") and things I have
+done so far: -Did not update it, and blocked all incoming traffic on
+Router (as per instructions), so I also don't get update prompts
+anymore. -Successfully rooted following these really superb
+instructions:
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#introduction
+-Now I can install PicCap and HyperHDR. OK so far, so good, but that was
+the easy part, and now I am a bit lost tbh. So many instructions show
+some extra HDMI boxes, which by my understanding we don't need, since
+PicCap captures image from TV right? Also so many different parts
+mentioned all over, that I just don't know anymore what exactly I need.
+I would appreciate any links from Amazon.de (I am in Europe). So
+important parts: 1.) Obv first I need some quallity LEDs  I read these
+should one of the best, since they also have white subpixel:
+-https://www.amazon.de/-/en/gp/product/B079ZW1265/ref=ox_sc_saved_title_5?smid=A29559WHI6ZTR8&psc=1
+Would you recommend them as being the best ones? I realize 5 meter is a
+bit short for 83", but I can just install it 10cm (4 inch) more inside
+of the TV on all 4 sides, and it should come just right by my
+calculations. Colors should still look fine with LED strip installed
+this way I hope? 2.) LED Power supply. Please recommend me some
+appropriate one for these LEDs from Amazon.de. 3.) Some LED controller I
+assume. So many different information about this. I saw ESP32 mentioned
+multiple times, but than also that HyperSerial works even better. I have
+no idea how either even look lol. So I would appreciate some help here.
+Also links wouldn't hurt  Btw can all these parts be connected without
+soldering? I would highly prefer it this way.
+BTF-LIGHTING RGBW RGBNW Natürliches Weiß SK6812 (ähnlich WS2812B) 5...
+Details: Model: SK6812 Strips 5050rgbnw Chips Input voltage: DC5V.
+Quantity: 60 x RGBNW SMD 5050 per metre. Colour: RGBNW = RGB + natural
+white (4000-5000K) Wavelength (NM): R, 650mcd; G, 520mcd; B, 460mcd
+Power: 18 W/m. Length: 5 metres. Signal: SK6812 IC (similar to ws2812b)
+SK6812 chip built-i...
+[]
+crashd instructions
+crashd instructions. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+March 16, 2024
+[satdx62]
+[] asdfghjkloa how would i "switch off"/on hyperion/piccap(on LG TV) /
+leds-via-hyperserialpico via e.g. homeassist...
+satdx62 03/16/2024 8:48 AM
+Hi, you need to create new integrations in Home assistant under Settings
+Devices/Integrations either HyperHDR or Hyperion. See pictures.
+https://www.home-assistant.io/integrations/hyperion/ (edited)
+[Homeassistant.jpg]
+ Homeassistant.jpg
+125.78 KB External
+[Homeassistant1.jpg]
+ Homeassistant1.jpg
+98.78 KB External
+[Homeassistant2.jpg]
+ Homeassistant2.jpg
+91.85 KB External
+Hyperion
+Instructions on how to integrate Hyperion into Home Assistant.
+[]
+March 15, 2024
+[asdfghjkloa]
+asdfghjkloa 03/15/2024 3:50 PM
+how would i "switch off"/on hyperion/piccap(on LG TV) /
+leds-via-hyperserialpico via e.g. homeassistant? (edited)
+March 13, 2024
+morozaw I have seen some of Yours messages about trying to capture data
+sent into screen panel on hardware s...
+hellobox. 03/13/2024 11:52 PM
+i've actually never thought about capturing video that's also being sent
+to a panel. no idea if it's possible passively (i don't think two-way
+communication is strictly required, but it could be difficult to control
+impedance), but there may be active LVDS/Vx1 splitter chips that
+something could be designed around. update: TI app note that mentions
+effects of stubs on LVDS https://www.ti.com/lit/an/slla054a/slla054a.pdf
+(edited)
+[satdx62]
+morozaw For the moment I was hoping that would be possible to use
+hyperhdr for internal content of TV, but i...
+satdx62 03/13/2024 2:35 PM
+It's not the same. With an active PicCap HyperHDR on your device, you
+don't need a Raspberry Pi or a splitter + USB grabber. And you can have
+Ambilight for all devices connected to your AVR and watching via HDMI of
+the TV. Also, since both Grabber and Hyperion/HyperHDR are on the same
+local host, there is no noticeable lag. As an LED controller, there are
+very better and cheaper alternatives than the slower SPI interface of
+the Raspberry Pi Classic. Someone has already tried to contact some
+people at LG about this, but they don't want to deal with this issue.
+Here:
+https://github.com/TBSniller/piccap/issues/38#issuecomment-1257178829
+(edited)
+Capture of DRM-protected content like Netflix/Amazon not working · ...
+Hi. Netflix is not working anymore after the netflix app was updated.
+Hyperion is receiving a black image. Any ideas how I can fix this?
+[]
+morozaw And I guess that's not totally necessary  BTW did someone from
+here tried to cooperate with LG in...
+ww8543 03/13/2024 2:21 PM
+lg does not like to work with the community
+hellobox. pretty much everyone here already has root, so nobody really
+has a need to make ambilight stuff work...
+morozaw 03/13/2024 2:11 PM
+I have seen some of Yours messages about trying to capture data sent
+into screen panel on hardware side. Any progress in that topic of
+research? Is it doable? I'm also electronic engineer by hobby. Any help
+needed in that directions?
+morozaw 03/13/2024 2:06 PM
+For the moment I was hoping that would be possible to use hyperhdr for
+internal content of TV, but if it works only on HDMI content for me it's
+kind of same solution as rpi with hdmi grabber over usb.
+hellobox. the linked conversation was just speculation (i.e., it may or
+may not be technically possible, but a...
+morozaw 03/13/2024 2:03 PM
+Thanks, yeah, I was expecting more technical explanation, I would also
+like to contribute sure!
+[] astur3l sadly even hyperion.ng/hyperhdr runs as root 
+morozaw 03/13/2024 2:02 PM
+And I guess that's not totally necessary  BTW did someone from here
+tried to cooperate with LG in topic of some very limited but supported
+by them access to content of screen even it it bout would be one avarage
+color for section?
+[astur3l]
+hellobox. pretty much everyone here already has root, so nobody really
+has a need to make ambilight stuff work...
+astur3l 03/13/2024 1:54 PM
+sadly even hyperion.ng/hyperhdr runs as root 
+hellobox. 03/13/2024 1:33 PM
+pretty much everyone here already has root, so nobody really has a need
+to make ambilight stuff work without root. but perhaps someone who is
+sufficiently motivated could find a way (or could at least document
+conclusively why it is not possible) (edited)
+hellobox. 03/13/2024 1:24 PM
+as in: the stuff that doesn't require root
+03/13/2024 1:24 PM
+i think maybe what you're not understanding is that it's possible to
+install certain homebrew with dev mode
+03/13/2024 1:18 PM
+it lets you ssh into a jail
+03/13/2024 1:18 PM
+and no, developer mode does not give you any kind of root access
+morozaw Ok, thanks. Unfortunately I can't find anywhere sources or doc's
+to BackendsHDR, I just found few in...
+hellobox. 03/13/2024 1:18 PM
+the linked conversation was just speculation (i.e., it may or may not be
+technically possible, but afaik there is nothing currently available
+that can do screen capture at a reasonable rate without root). you could
+take a look at libvtcapture or the kernel source yourself and see what
+the permission checks are if you would like to contribute. you can get
+libvtcapture.so.1 from your TV or from a firmware image (using
+epk2extract). the kernel source is available on
+https://opensource.lge.com/ (edited)
+[] satdx62 As I said before, “hyperion-webos grabber” is PicCap and to
+work with HyperHDR (“BackendsHDR”), your...
+morozaw 03/13/2024 1:15 PM
+Ok, thanks. Unfortunately I can't find anywhere sources or doc's to
+BackendsHDR, I just found few instructions using and installing it from
+some Dropbox ipk file but nothing about it in piccap or hyperion-webos,
+hyper hdr github. I thought and hoped that maybe there is alternative
+Backends than hyperion-webos. In linked discussion somebody mentioned
+that maybe it could work without permanent root but no evidence. Does
+developers mode give some additional privileges or temporary root access
+?
+[satdx62]
+morozaw Thanks, I have seen those informations, I am not total newbie, I
+am aware of crashd method. I was as...
+satdx62 03/13/2024 10:49 AM
+As I said before, “hyperion-webos grabber” is PicCap and to work with
+HyperHDR (“BackendsHDR”), your device needs to be rooted. PicCap can
+only process DRM protected content via HDMI.
+hellobox. 03/13/2024 12:34 AM
+and no, nobody is working on grabbing DRM-protected content
+morozaw Thanks, I have seen those informations, I am not total newbie, I
+am aware of crashd method. I was as...
+hellobox. 03/13/2024 12:34 AM
+https://www.webosbrew.org/rooting/ some hints for technical details you
+can look into to see if it's possible without root:
+https://discord.com/channels/407937994037919756/408006551656333312/1217205548445991063
+[] satdx62 Hi, PicCap and Hyperion/HyperHDR will only work if you have
+root rights to your TV. Therefore, you a...
+morozaw 03/13/2024 12:31 AM
+Thanks, I have seen those informations, I am not total newbie, I am
+aware of crashd method. I was asking about some more details about
+BackendsHDR and also if grabber still can work with internal apps. Is it
+possible to install hyperion-webos grabber using just developer mode?
+Homebrew instruction mention that it is possible to install Homebrew
+without permanent root just using developer mode. Is anybody working on
+possibilities to grab of drm content?
+March 12, 2024
+[] satdx62 Hi, PicCap and Hyperion/HyperHDR will only work if you have
+root rights to your TV. Therefore, you a...
+hellobox. 03/12/2024 11:10 PM
+link to
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#block-update-domains
+ 1
+[satdx62]
+morozaw Hi, I am new owner of oled g3, I would like to ask if it still
+works and is possible to be installed...
+satdx62 03/12/2024 11:09 PM
+Hi, PicCap and Hyperion/HyperHDR will only work if you have root rights
+to your TV. Therefore, you are not allowed to update the firmware and
+blacklist the LG update domains in your router. See:
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#after-rooting-1.
+You can use this table to check if your firmware is patched: (edited)
+crashd instructions
+crashd instructions. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+morozaw 03/12/2024 6:54 PM
+Hi, I am new owner of oled g3, I would like to ask if it still works and
+is possible to be installed? On github I can't find any updates, some
+sources say it works, some of them don't. What is current status? Can I
+find somewhere info about BackendsHDR package? Can't find any details if
+I need to use it or not and any docs. I'm also software engineer who is
+interested how it works, not only install ipk from some random Dropbox.
+March 7, 2024
+[zumfax]
+[] satdx62 This is how it is normally connected, with a level shifter.
+See picture.
+zumfax 03/07/2024 11:14 AM
+Hei, i connected my esp32 with leds power supply and now everything
+works as it should, first tv shutoff leds was still green, but second
+and few days now everything works, Thanks  (edited)
+ 1
+March 3, 2024
+[zumfax]
+zumfax 03/03/2024 7:14 PM
+thanks
+03/03/2024 7:14 PM
+oho, ookei, thanks i will try
+[satdx62]
+[] zumfax mabye its because i have esp connected via usb into tv, do
+power it or? or some settings are wrong,(...
+satdx62 03/03/2024 7:05 PM
+This is how it is normally connected, with a level shifter. See picture.
+[WLEDNetztteil_und_Level_Shifter.jpg]
+ WLEDNetztteil_und_Level_Shifter.jpg
+188.17 KB External
+[satdx62]
+[] zumfax mabye its because i have esp connected via usb into tv, do
+power it or? or some settings are wrong,(...
+satdx62 03/03/2024 6:54 PM
+Oh, no, no! That must not happen. The ESP may only be supplied with
+power via the LED strip power supply unit and not via the TV USB. So
+that's where the error lies. Otherwise, your TV will also break.
+(edited)
+[zumfax]
+zumfax 03/03/2024 6:48 PM
+mabye its because i have esp connected via usb into tv, do power it or?
+or some settings are wrong,(wled or hyperhdr) because i tried a lots of
+things do get it working
+03/03/2024 6:45 PM
+i wish i know what i am doing, so i could also think something, but no
+[zumfax]
+zumfax 03/03/2024 6:29 PM
+This command turn leds off for 1-2 sec and then turns green, and second
+time leds working again
+March 2, 2024
+[satdx62]
+satdx62 03/02/2024 10:37 PM
+In this example, I have placed PicCap on/Off on the red button.
+ ID_Keycodes_on_LG.txt
+497 Bytes External
+[LG_Input_Hook_Key_binds.jpg]
+ LG_Input_Hook_Key_binds.jpg
+140.76 KB External
+[LG_input_Hook.jpg]
+ LG_input_Hook.jpg
+16.33 KB External
+ 1
+[satdx62]
+[] zumfax Esp32 and all newest version, wled and hyperhdr
+satdx62 03/02/2024 9:48 PM
+Hi, can you please test what happens if you run the following command in
+SSH/Terminal and repeat it twice (once and enter, second time and enter)
+while Ambilight is on:
+if luna-send -n 1 'luna://org.webosbrew.piccap.service/status' '{}' | grep '"isRunning":true'; then luna-send -n 1 'luna://org.webosbrew.piccap.service/stop' '{}' ; else luna-send -n 1 'luna://org.webosbrew.piccap.service/start' '{}' ; fi
+If this command turns the LEDs off and on, you can use the “LG Imput
+Hooch” app from Homebrew Channel to assign this script to a remote
+control button of your choice. So that you can switch your Ambilight on
+and off as required. Alternatively, there is also a ready-made “Piccap
+On/Off Remote” app in Homebrew Channel for the Movies or Rakuten button.
+https://repo.webosbrew.org/apps/org.webosbrew.inputhook
+https://repo.webosbrew.org/apps/ui30 (edited)
+[zumfax]
+[] satdx62 Hi, What hardware is WLED installed on and what version is
+it?
+zumfax 03/02/2024 7:39 PM
+Esp32 and all newest version, wled and hyperhdr
+[satdx62]
+[] asdfghjkloa hi! switching prevent updates to on, didn’t prevent the
+update popup from appearing, so i guessed I ...
+satdx62 03/02/2024 6:00 PM
+You must also block the LG update server in your router, see crashd
+instructions, then the message will no longer appear, and you are on the
+safe side.
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#block-update-domains
+crashd instructions
+crashd instructions. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+ 1
+[asdfghjkloa]
+asdfghjkloa 03/02/2024 5:56 PM
+(no content)
+[IMG_7189.jpg]
+ IMG_7189.jpg
+999.46 KB External
+03/02/2024 5:56 PM
+oh wow now after 12-13 min it seems to have worked
+ 1
+[asdfghjkloa]
+[] satdx62 Hi, First, I would switch on the block system updates to yes
+in Homebrew settings, reboot, and call ...
+asdfghjkloa 03/02/2024 5:56 PM
+hi! switching prevent updates to on, didn’t prevent the update popup
+from appearing, so i guessed I could as well switch it off  These are
+the logs after uninstalling and installing again, without changing any
+settings or doing anything except clicking „logs“.
+[satdx62]
+[] asdfghjkloa Click to see attachment
+satdx62 03/02/2024 5:45 PM
+Hi, First, I would switch on the block system updates to yes in Homebrew
+settings, reboot, and call PicCap, go to Logs and wait until PicCap
+reports that the service is elevated. Only then start again and make the
+settings.
+[PicCap-log3.jpg]
+ PicCap-log3.jpg
+155.89 KB External
+[asdfghjkloa]
+asdfghjkloa 03/02/2024 5:29 PM
+(no content)
+[IMG_7186.jpeg]
+ IMG_7186.jpeg
+1.74 MB External
+[image.png]
+ image.png
+201.88 KB External
+[image2.png]
+ image2.png
+178.76 KB External
+03/02/2024 5:26 PM
+any idea why piccap keeps hanging on checking for root-status? (edited)
+[image.png]
+ image.png
+140.03 KB External
+[satdx62]
+[] zumfax Deactivated those, but still same :/
+satdx62 03/02/2024 10:00 AM
+Hi, What hardware is WLED installed on and what version is it?
+[zumfax]
+[] satdx62 Hi, you need to deactivate the boot effect and the background
+effect. You can find these in HyperHDR...
+zumfax 03/02/2024 9:54 AM
+Deactivated those, but still same :/
+March 1, 2024
+[] satdx62 Hi, basically you have done everything right. I would
+download the archive Pimoroni_Plasma_2040.zip ...
+nemot_ 03/01/2024 6:41 PM
+Still no luck unfortunately, so I will open an issue, thanks!
+[mumpitz_i]
+[] satdx62 Yes, you can set this in HyperHDR/Hyperion under LED Layout
+Advanced Settings.
+mumpitz_i 03/01/2024 2:06 PM
+Cool. Thank you very much!
+[satdx62]
+[] mumpitz_i Is there any way to configure the number of pixel which are
+taken into account to calculate the led ...
+satdx62 03/01/2024 9:59 AM
+Yes, you can set this in HyperHDR/Hyperion under LED Layout Advanced
+Settings.
+[LED-Layout_Advanced_Settings.jpg]
+ LED-Layout_Advanced_Settings.jpg
+227.59 KB External
+[mumpitz_i]
+mumpitz_i 03/01/2024 8:01 AM
+Is there any way to configure the number of pixel which are taken into
+account to calculate the led color? How many pixel are used atm? All
+pixel from the center to the border of the screen?
+February 29, 2024
+[satdx62]
+nemot_ I was using 20.0.0.0beta1 and just updated to 20.0.0.0beta2 but
+still the same result I have a Pimor...
+satdx62 02/29/2024 1:14 PM
+Hi, basically you have done everything right. I would download the
+archive Pimoroni_Plasma_2040.zip as a test and simply test whether it
+switches off the LEDs, even if you only connect one segment to the
+GPIO15 DA connector. This way, you can rule out a faulty compilation.
+You can also open an issue at
+https://github.com/awawa-dev/HyperSerialPico/issues, or
+https://github.com/awawa-dev/HyperHDR/discussions/561 with your problem
+at @awawa-dev. For me with the old HyperHDR v20.0.0.0beta1 the LEDs
+stayed on after switching off the TV. So I compiled the HyperHDR beta2
+and the bug was fixed. Check
+https://discord.com/channels/407937994037919756/931706504627773450/1210651668740440114
+(edited)
+HyperSerialPico for Raspberry Pi Pico (Rp2040) · awawa-dev HyperHDR...
+I created a new project HyperSerialPico that introduces Adalight AWA
+HyperHDR protocol for Raspberry Pi Pico (Rp2040) as an alternative to
+ESP based solutions (HyperSerialEsp8266/ESP32). What is un...
+[] satdx62 Hi, Which HyperHDR version are you using? And the important
+question, which HyperSerialPico firmware...
+nemot_ 02/29/2024 9:34 AM
+I was using 20.0.0.0beta1 and just updated to 20.0.0.0beta2 but still
+the same result I have a Pimoroni Plasma 2040 board (multi-segment
+setup) with a custom firmware and the following changes in the
+CMakeLists.txt file
+    set(OUTPUT_DATA_PIN 14)
+    set(SECOND_SEGMENT_INDEX 104)
+    set(SECOND_SEGMENT_REVERSED ON)
+Thanks!
+February 28, 2024
+[satdx62]
+nemot_ Hi, I have a similar problem, even after deactivating those
+effects. Do you happen to know the probl...
+satdx62 02/28/2024 11:58 PM
+Hi, Which HyperHDR version are you using? And the important question,
+which HyperSerialPico firmware have you installed on which board?
+(edited)
+[] satdx62 Hi, you need to deactivate the boot effect and the background
+effect. You can find these in HyperHDR...
+nemot_ 02/28/2024 11:08 PM
+Hi, I have a similar problem, even after deactivating those effects. Do
+you happen to know the problem there?
+https://discord.com/channels/407937994037919756/1206239811032059944
+[satdx62]
+[] zumfax Hello, can someone help me? i have exacly same problem, led
+stay on when i turn off my tv, bright gr...
+satdx62 02/28/2024 8:16 PM
+Hi, you need to deactivate the boot effect and the background effect.
+You can find these in HyperHDR/Hyperion under Effects. See picture. The
+effects can prevent the daemon from switching off. A missing level
+shifter on the data line can also lead to this malfunction. (edited)
+[Effects.jpg]
+ Effects.jpg
+195.49 KB External
+[zumfax]
+[] stuoningur I've been using piccap/hyperhdr for a few days now with
+just the default settings and it runs great ...
+zumfax 02/28/2024 7:42 PM
+Hello, can someone help me? i have exacly same problem, led stay on when
+i turn off my tv, bright green and need to manually turn off leds from
+WLED, i have udpraw and port 19446, but still.. (edited)
+[satdx62]
+[] freakzz22 Hmm strange! But it does work now?
+satdx62 02/28/2024 12:55 PM
+Hi, I can report success, I have recompiled HyperSerialPico with changed
+pin in push-master.yml, CMakeLists.txt, and it actually runs on GPIO16
+as it should. Here is my fork: ZIP unpack and test:
+https://github.com/satgit62/HyperSerialPico/actions/runs/8079518172/artifacts/1282062398
+I also compiled the HyperHDR 20.0.0.0beta2, and it also runs perfectly.
+Check :
+https://discord.com/channels/407937994037919756/931706504627773450/1210651668740440114
+(edited)
+ 1
+[satdx62]
+[] freakzz22 Hmm strange! But it does work now?
+satdx62 02/28/2024 11:31 AM
+Yes, that's how it works, but it's not normal. This must also work on
+the GPIO16 level shifter side. I will compile myself and set the GPIO16.
+I use usual ESP with level shifter and Ethernet connection and I have no
+lag, dropouts or similar problems at all. Hyperserial has also been
+tested on ESP, and now I just wanted to try this Adafruit Feather
+Scorpio because awawa-dev said that it delivers an absolutely clean and
+constant signal. I would like to test whether the difference can be
+perceived with the naked eye, without a measuring device.
+[freakzz22]
+[] satdx62 I have uninstalled HyperHDR, deleted my old settings and
+installed it again. When I flash HyperSeria...
+freakzz22 02/28/2024 11:25 AM
+Hmm strange! But it does work now?
+[satdx62]
+[] freakzz22 Yep! That's the one!
+satdx62 02/28/2024 10:59 AM
+I have uninstalled HyperHDR, deleted my old settings and installed it
+again. When I flash HyperSerialPico, it is now also recognized by me,
+but the DATA output is on pin D GPIO2 and with this wiring my LEDs also
+light up. (So not pin 0 GPIO16 like yours).
+[freakzz22]
+[] freakzz22 Yep! That's the one!
+freakzz22 02/28/2024 9:41 AM
+With the serial connection I've no outages as with wled. It works like a
+charm!
+[freakzz22]
+freakzz22 02/28/2024 9:23 AM
+Together with the HyperHDR version you've send me earlier
+[freakzz22]
+[] satdx62 Do you mean this one marked on the picture? With GPIO16 (0)
+and GND
+freakzz22 02/28/2024 9:23 AM
+Yep! That's the one!
+[satdx62]
+[] freakzz22 Flashed the HyperSerialPico firmware not the classic
+adalight
+satdx62 02/28/2024 9:04 AM
+Do you mean this one marked on the picture? With GPIO16 (0) and GND
+[HyperSerialPico.jpg]
+ HyperSerialPico.jpg
+218.77 KB External
+[freakzz22]
+freakzz22 02/28/2024 8:58 AM
+Flashed the HyperSerialPico firmware not the classic adalight
+[satdx62]
+[] freakzz22 So it was not pin D but the one above GND. Now i think it
+works!
+satdx62 02/28/2024 8:42 AM
+Hi, Which firmware did you flash on your Adafruit Feather Scorpio? And
+how did you manage it in HyperHDR? I also got this board because of
+Level Shifter, but it doesn't work on the LG despite “Force ttyACM
+detection (for webOS: if serial port info returns empty)” being switched
+on. But it does on the Windows PC and Raspberry Pi.
+[satdx62]
+[] asdfghjkloa 65SM9010PLA on 05.40.10 here, piccap and hyperhdr running
+on rooted tv what I’m I doing wrong? :3
+satdx62 02/28/2024 8:08 AM
+You probably still need to set the correct QUIRK (VTCAPTURE) in PicCap
+Service advanced settings. https://github.com/webosbrew/hyperion-webos
+(edited)
+[Servuce_Advanced_settings.jpg]
+ Servuce_Advanced_settings.jpg
+118.61 KB External
+GitHub - webosbrew/hyperion-webos: hyperion.ng video grabber for webOS
+hyperion.ng video grabber for webOS. Contribute to
+webosbrew/hyperion-webos development by creating an account on GitHub.
+[]
+February 27, 2024
+[asdfghjkloa]
+asdfghjkloa 02/27/2024 10:46 PM
+65SM9010PLA on 05.40.10 here, piccap and hyperhdr running on rooted tv
+what I’m I doing wrong? :3
+02/27/2024 10:42 PM
+(no content)
+.MOV preview not available — download to play
+ IMG_7143.mov
+1009.91 KB External
+ green rows →
+February 26, 2024
+[satdx62]
+[] ._biowolf_. I saw in the description of HyperHDR V.20 that several
+improvements have been made for LUT calibrati...
+satdx62 02/26/2024 6:15 PM
+Hi, I have no major problems with green/yellow tones with the SK6812RGBW
+NW LEDs. I was able to adjust fairly accurately so that the basic colors
+(RGB) were exactly right on a white wall. The yellow is also displayed
+correctly. LUT calibration on an externally hosted HyperHDR, e.g., on a
+Raspberry Pi, is not a difficulty as the function was primarily
+developed for external USB grabbers and not for flat buffers. Here on
+the LG, however, it is very difficult to achieve higher accuracy due to
+the lack of memory resources. In my opinion, you can only perform a live
+calibration with the correct image material. A distinction must be made
+between the classic HyperHDR calibration and the advanced calibration.
+And it's best to first go to Remote control > Live calibration and then,
+if everything is correct, enter everything under Image processing and
+save everything in any case. Especially @Tim Cook User has a lot of
+experience with LUT calibration. Maybe he has some tips/instructions for
+you. Otherwise, you can contact @awawa-dev at
+https://github.com/awawa-dev/HyperHDR/issues. (edited)
+[._biowolf_.]
+._biowolf_. 02/26/2024 3:42 PM
+I saw in the description of HyperHDR V.20 that several improvements have
+been made for LUT calibration. Is there any interesting news for us
+flatbuffer users (especially related to green/yellow "tint")?
+February 25, 2024
+[.epicwin]
+.epicwin 02/25/2024 12:53 PM
+Oh shiiii that's sick! Haven't used my LEDs in a long time might be time
+to set it up again
+February 23, 2024
+[satdx62]
+satdx62 02/23/2024 7:17 PM
+Hi, HyperHDR v20.0.0.0beta2 has been released by @awawa-dev on GitHub
+https://github.com/awawa-dev/HyperHDR. In addition to various new
+features and fixes, forced detection (patch by @alex-013) for
+HyperSerialPico “adalight” controllers for RP2040 boards has been
+implemented, so you no longer need to trick to be recognized by
+HyperHDR.
+(https://github.com/awawa-dev/HyperHDR/pull/732/commits/1943f28b4ef4aa22d281fb04a663c8833465a78f)
+I did manage to compile it myself. With my webOS version 3.9.2, the
+daemon only started after I entered it in the terminal:
+ln -s /lib/libudev.so.0.13.1 /media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/libudev.so.1
+ Download Link:
+https://github.com/satgit62/hyperhdr-webos-loader/actions/runs/8023489367/artifacts/1270620864
+(edited)
+[Force_HyperSerial_detection.jpg]
+ Force_HyperSerial_detection.jpg
+144.84 KB External
+[HyperHDR_20_beta2.jpg]
+ HyperHDR_20_beta2.jpg
+180.12 KB External
+ 4
+February 22, 2024
+[satdx62]
+lafrila97 GPIO 2 is not using level shifter on Adafruit Feather 2040
+board according to its specification. It ...
+satdx62 02/22/2024 4:42 PM
+That was known. This was about something else. The current webOS
+HyperHDR Loader does not recognize the board and awawa-dev has mentioned
+two possibilities: 1. “use classic version of HyperSerialPico firmware
+(must compile for custom Pimoroni pinout) and disable Awa protocol in
+Adalight driver (you wont see statistics as a side effect)” 2. “compile
+latest version of HyperHDR that has forced detection (patch provided by
+@alex-013) or wait a bit for v20beta2”
+https://github.com/awawa-dev/HyperHDR/discussions/561#discussioncomment-8386811
+Both suggestions work.
+HyperSerialPico for Raspberry Pi Pico (Rp2040) · awawa-dev HyperHDR...
+I created a new project HyperSerialPico that introduces Adalight AWA
+HyperHDR protocol for Raspberry Pi Pico (Rp2040) as an alternative to
+ESP based solutions (HyperSerialEsp8266/ESP32). What is un...
+[]
+ 1
+lafrila97 02/22/2024 3:41 PM
+GPIO 2 is not using level shifter on Adafruit Feather 2040 board
+according to its specification. It is 3.3V pin.
+[satdx62]
+[] freakzz22 Click to see attachment
+satdx62 02/22/2024 2:06 PM
+Yes, this is the assignment if you are not flashing the Classic, but the
+Adafruit Feather 2040 Scorpio. However, it only works with this HyperHDR
+version. I went all the time that they have flashed the Classic
+firmware. Therefore, pin D GPIO2. (edited)
+[freakzz22]
+freakzz22 02/22/2024 1:58 PM
+(no content)
+[Pinout.jpg]
+ Pinout.jpg
+222.66 KB External
+[satdx62]
+[] freakzz22 <@917488160580182068> Thanks for all your help!
+satdx62 02/22/2024 1:56 PM
+I am pleased that you have made it. Can you tick/mark on the diagram,
+that will help other users too?
+[Pinout.jpg]
+ Pinout.jpg
+221.21 KB External
+[freakzz22]
+freakzz22 02/22/2024 1:50 PM
+(no content)
+Scream
+02/22/2024 1:50 PM
+@satdx62 Thanks for all your help!
+02/22/2024 1:48 PM
+So it was not pin D but the one above GND. Now i think it works!
+(edited)
+ 1
+02/22/2024 1:47 PM
+almost there... now no errors in the log and Hyperserialpico found... No
+LED output tho... but that could be because of wiring
+[image.png]
+ image.png
+82.43 KB External
+[satdx62]
+[] freakzz22 Click to see attachment
+satdx62 02/22/2024 1:45 PM
+Restart the TV.
+[freakzz22]
+freakzz22 02/22/2024 1:43 PM
+(no content)
+[image.png]
+ image.png
+91.79 KB External
+[freakzz22]
+[] freakzz22 Seems the HyperHDR you linked can't elevate root
+permissions
+freakzz22 02/22/2024 1:42 PM
+Nevermind that, got that working
+ 1
+[freakzz22]
+freakzz22 02/22/2024 1:38 PM
+Seems the HyperHDR you linked can't elevate root permissions
+[rn_image_picker_lib_temp_686b0b66-914b-4a7e-9f94-9e87d8369a65.jpg]
+ rn_image_picker_lib_temp_686b0b66-914b-4a7e-9f94-9e87d8369a65.jpg
+1.89 MB External
+[satdx62]
+satdx62 02/22/2024 1:37 PM
+Ok.
+[freakzz22]
+[] satdx62 I have another question for you, do your LEDs get enough
+power from an external power supply unit?
+freakzz22 02/22/2024 1:37 PM
+Absolutely, The LEDS work fine with WLED but wanted the faster serial
+connection
+[satdx62]
+[] freakzz22 trying now
+satdx62 02/22/2024 1:36 PM
+I have another question for you, do your LEDs get enough power from an
+external power supply unit?
+[freakzz22]
+[] satdx62 Why don't you install the modified HyperHDR as I told you in
+https://discord.com/channels/4079379940...
+freakzz22 02/22/2024 1:34 PM
+trying now
+[satdx62]
+[] freakzz22 When selecting ACM0 in LED Hardware tab in HyperHDR I
+receive a different error; The LED device is n...
+satdx62 02/22/2024 1:33 PM
+Why don't you install the modified HyperHDR as I told you in
+https://discord.com/channels/407937994037919756/931706504627773450/1210170812506574848
+and make the settings from
+https://discord.com/channels/407937994037919756/931706504627773450/1210173322856239135?
+Discord - A New Way to Chat with Friends & Communities
+Discord is the easiest way to communicate over voice, video, and text.
+Chat, hang out, and stay close with your friends and communities.
+[freakzz22]
+freakzz22 02/22/2024 1:30 PM
+2024-02-22T13:28:30.331Z [COMPONENTCTRL0] LED device: enabled
+2024-02-22T13:28:31.373Z [LEDDEVICE0_ADALIGHT] (ProviderSerial.cpp:290)
+Timeout after 1000ms: 0 frames already dropped 2024-02-22T13:28:32.373Z
+[LEDDEVICE0_ADALIGHT] (ProviderSerial.cpp:290) Timeout after 1000ms: 0
+frames already dropped 2024-02-22T13:28:33.375Z [LEDDEVICE0_ADALIGHT]
+(ProviderSerial.cpp:290) Timeout after 1000ms: 0 frames already dropped
+2024-02-22T13:28:34.376Z [LEDDEVICE0_ADALIGHT] (ProviderSerial.cpp:290)
+Timeout after 1000ms: 0 frames already dropped 2024-02-22T13:28:35.377Z
+[LEDDEVICE0_ADALIGHT] (ProviderSerial.cpp:290) Timeout after 1000ms: 0
+frames already dropped 2024-02-22T13:28:36.379Z [LEDDEVICE0_ADALIGHT]
+(ProviderSerial.cpp:290) Timeout after 1000ms: 0 frames already dropped
+2024-02-22T13:28:36.379Z [LEDDEVICE0_ADALIGHT] (ProviderSerial.cpp:143)
+Flush was successful 2024-02-22T13:28:48.570Z [WEBSOCKET]
+(HyperAPI.cpp:966) log streaming deactivated for client
+::ffff:192.168.2.157 2024-02-22T13:28:48.814Z [WEBSOCKET]
+(HyperAPI.cpp:1109) message:
+[{"command":"leddevice","ledDeviceType":"adalight","subcommand":"discover","tan":159}]
+2024-02-22T13:28:48.837Z [WEBSOCKET] (HyperAPI.cpp:1133) response:
+[{"devices":[{"name":"Auto","value":"auto"},{"name":"
+(/dev/ttyAMA0)","value":"ttyAMA0"},{"name":"
+(/dev/ttyAMA1)","value":"ttyAMA1"},{"name":"
+(/dev/ttyAMA2)","value":"ttyAMA2"},{"name":"
+(/dev/ttyACM0)","value":"ttyACM0"}],"ledDeviceType":"adalight"}]
+2024-02-22T13:29:06.995Z [LEDDEVICE0_ADALIGHT] (ProviderSerial.cpp:161)
+Serial port is closed: ttyACM0 2024-02-22T13:29:06.995Z
+[LEDDEVICE0_ADALIGHT] (LedDevice.cpp:354) Stopping refresh timer
+2024-02-22T13:29:06.995Z [LEDDEVICE0_ADALIGHT] Device 'adalight' is
+disabled due to an error: 'Timeout writing data to ttyACM0'
+2024-02-22T13:29:06.995Z [COMPONENTCTRL0] LED device: disabled
+02/22/2024 1:26 PM
+When selecting ACM0 in LED Hardware tab in HyperHDR I receive a
+different error; The LED device is not ready... give up.
+[freakzz22]
+[] satdx62 No, The correct device is found, what is the log until the
+end?
+freakzz22 02/22/2024 1:25 PM
+(no content)
+ message.txt
+20.84 KB External
+[satdx62]
+[] freakzz22 This seems wrong, correct?
+satdx62 02/22/2024 1:23 PM
+No, The correct device is found, what is the log until the end?
+[freakzz22]
+[] licu97 Hi, like <@917488160580182068> replied you're HyperHDR config
+looks different than mine, so I have "...
+freakzz22 02/22/2024 1:12 PM
+Yeah Piccap and HyperHDR do work... I made it work with WLED but want
+the faster serial connection...
+[freakzz22]
+freakzz22 02/22/2024 1:12 PM
+This seems wrong, correct?
+[image.png]
+ image.png
+66.28 KB External
+[freakzz22]
+[] satdx62 Hmm, I think that's wrong, it needs to find ttyACM Device.
+What if you press update under adalight C...
+freakzz22 02/22/2024 1:10 PM
+there's a ACM device
+[image.png]
+ image.png
+54.15 KB External
+[satdx62]
+[] licu97 Hi, like <@917488160580182068> replied you're HyperHDR config
+looks different than mine, so I have "...
+satdx62 02/22/2024 12:30 PM
+Hi, Which device is found in your HyperHDR log? ttyACM or ttyAMA1
+device?
+[freakzz22]
+[] licu97 Hi, like <@917488160580182068> replied you're HyperHDR config
+looks different than mine, so I have "...
+freakzz22 02/22/2024 12:24 PM
+The handshake option doesn't appear when AWA Protocol is disabled.
+[licu97]
+[] freakzz22 This is HyperHDR config
+licu97 02/22/2024 12:22 PM
+Hi, like @satdx62 replied you're HyperHDR config looks different than
+mine, so I have "AWA protocol" option unchecked, but I have
+Esp8266/ESP32/Rp2040 handshake option checked in my HyperHDR. While
+installing HyperHDR and Piccap I was following this tutorial
+https://www.youtube.com/watch?v=0eLbMd8IVwM except I downloaded latest
+Piccap and HyperHDR straight from homebrew app.
+[satdx62]
+satdx62 02/22/2024 11:36 AM
+(no content)
+[HyperHDR_Force_ttyACM_detection.jpg]
+ HyperHDR_Force_ttyACM_detection.jpg
+135.6 KB External
+[satdx62]
+[] freakzz22 Also tried the other GND next to 3v
+satdx62 02/22/2024 11:26 AM
+Hmm, I think that's wrong, it needs to find ttyACM Device. What if you
+press update under adalight Controller Output path “auto”, a new device
+is found? You can install the HyperHDR version that I have linked to
+you. Their auto Discovery works with High speed serial AWA protocol and
+Rp2040
+handshake.https://discord.com/channels/407937994037919756/931706504627773450/1209897140021624942
+(edited)
+[satdx62]
+[] freakzz22 Click to see attachment
+satdx62 02/22/2024 11:10 AM
+Hi, according to the log your controller is found: (Found serial port
+device: (/dev/ttyAMA1 => ttyAMA1)), and is also initialized, it looks
+good. Yes, use a different GND.
+[Log.jpg]
+ Log.jpg
+344.67 KB External
+[freakzz22]
+[] freakzz22 This is how I wired it up
+freakzz22 02/22/2024 11:03 AM
+Also tried the other GND next to 3v
+[freakzz22]
+freakzz22 02/22/2024 10:50 AM
+dmesg log: [ 427.818379] usb 6-1: new full-speed USB device number 2
+using ohci-platform [ 428.047378] usb 6-1: New USB device found,
+idVendor=2e8a, idProduct=000a [ 428.047395] usb 6-1: New USB device
+strings: Mfr=1, Product=2, SerialNumber=3 [ 428.053756] cdc_acm 6-1:1.0:
+ttyACM0: USB ACM device
+[freakzz22]
+[] satdx62 You mean this:
+“`classic_adalight_HyperSerialPico_ws2812.uf2`” and you have connected
+the data line ...
+freakzz22 02/22/2024 10:35 AM
+This is HyperHDR config
+[image.png]
+ image.png
+57.56 KB External
+[freakzz22]
+[] satdx62 You mean this:
+“`classic_adalight_HyperSerialPico_ws2812.uf2`” and you have connected
+the data line ...
+freakzz22 02/22/2024 10:32 AM
+This is how I wired it up
+[5650-08-400x267h.jpg]
+ 5650-08-400x267h.jpg
+59.21 KB External
+[freakzz22]
+[] satdx62 You mean this:
+“`classic_adalight_HyperSerialPico_ws2812.uf2`” and you have connected
+the data line ...
+freakzz22 02/22/2024 10:29 AM
+(no content)
+ message.txt
+15.2 KB External
+[astur3l]
+astur3l 02/22/2024 1:57 AM
+ch340 not suitable for 60+ fps :d because of the 1m baud rate :d
+February 21, 2024
+[cantiiii]
+cantiiii 02/21/2024 10:52 PM
+Goddamm!!! Just chiming in to say that I just changed from WLED to
+HyperSerial and the difference is insane! It's so much smoother like
+this (I used WLED with an Ethernet ESP32 so that should have been
+reliable already), this improved the quality of my Ambilight x10! I'm
+amazed man. I also tried using a Raspberry Pico first and it didn't work
+for me either, no matter what firmware - I was using an original Pico
+board for this. Literally just no output. Works perfectly fine with my
+1€ ESP8266 D1 Mini Clone tho which has a CH340 chip (with the kernel
+module loaded on the TV to make that chip work)
+[satdx62]
+[] freakzz22 This one
+https://github.com/awawa-dev/HyperSerialPico/releases/download/v4.0.0.0/classic_adalight.zi...
+satdx62 02/21/2024 8:50 PM
+You mean this: “classic_adalight_HyperSerialPico_ws2812.uf2” and you
+have connected the data line from the LEDs to GPIO2 pin D and -5Volt
+from the LEDs to GND? That should work. Can you post the HyperHDR logs
+here? (edited)
+[freakzz22]
+freakzz22 02/21/2024 8:12 PM
+This one
+https://github.com/awawa-dev/HyperSerialPico/releases/download/v4.0.0.0/classic_adalight.zip
+for WS218X connected rp2040 via USB cable to the tv and data + gnd of
+LED strip to the rp2040
+[satdx62]
+[] freakzz22 Flashed the firmware classic-adalight as you've mentioned
+earlier on a rp2040 scorpio feather
+satdx62 02/21/2024 5:51 PM
+Which of them, for which LEDs? And how did you connect it? (edited)
+[freakzz22]
+[] satdx62 Which RPI2040 exactly do you have and which firmware did you
+flash on it? Otherwise, you can install...
+freakzz22 02/21/2024 5:41 PM
+Flashed the firmware classic-adalight as you've mentioned earlier on a
+rp2040 scorpio feather
+[satdx62]
+[] freakzz22 It's not giving me any output on my LED Strip. The TV
+recognizes the 'unknown device' being plugged ...
+satdx62 02/21/2024 5:19 PM
+Which RPI2040 exactly do you have and which firmware did you flash on
+it? Otherwise, you can install a modified/compiled HyperHDR that has
+been specially adapted for this. Here is the download link. You have to
+uninstall HyperHDR and install the new one. The settings will be
+retained:
+https://github.com/alex-013/hyperhdr-webos-loader/releases/download/latest/org.webosbrew.hyperhdr.loader_0.1.6_all.ipk
+[freakzz22]
+freakzz22 02/21/2024 4:33 PM
+I was hoping to receive some better latency with the RP2040 :/
+02/21/2024 4:33 PM
+It's not giving me any output on my LED Strip. The TV recognizes the
+'unknown device' being plugged in.
+[freakzz22]
+[] satdx62 Download Classic version and flash the appropriate version
+for your LEDs and connect to GPIO2 pin D ...
+freakzz22 02/21/2024 4:22 PM
+This doesn't seem to work for me. 
+[satdx62]
+[] freakzz22 Cool! I'll try today and let you know. In the meantime
+using wled on a D1 mini which works as well
+satdx62 02/21/2024 1:18 PM
+Good luck with that, but you will miss the extensive amenities of WLED.
+ 1
+[freakzz22]
+[] licu97 Yes, exactly this method helped me 
+freakzz22 02/21/2024 12:27 PM
+Cool! I'll try today and let you know. In the meantime using wled on a
+D1 mini which works as well
+[licu97]
+[] freakzz22 This should do it? I'll try tomorrow!
+licu97 02/21/2024 12:13 PM
+Yes, exactly this method helped me 
+February 20, 2024
+[astur3l]
+astur3l 02/20/2024 8:21 PM
+https://github.com/alex-013/HyperHDR/commit/1943f28b4ef4aa22d281fb04a663c8833465a78f
+@Marnix https://github.com/alex-013/hyperhdr-webos-loader/releases
+(edited)
+Add ttyACM detection · alex-013/HyperHDR@1943f28
+[]
+ 1
+[astur3l]
+[] freakzz22 Yeah! I've read the discussion there and it seems I suffer
+from the udev bug... I've wired up as you...
+astur3l 02/20/2024 8:18 PM
+somebody here made hyperhdr build without vendor/product id check here
+or # unknown-channel
+[satdx62]
+[] freakzz22 This should do it? I'll try tomorrow!
+satdx62 02/20/2024 7:51 PM
+@licu97 has managed to do so.
+[freakzz22]
+[] satdx62 Download Classic version and flash the appropriate version
+for your LEDs and connect to GPIO2 pin D ...
+freakzz22 02/20/2024 7:49 PM
+This should do it? I'll try tomorrow!
+[satdx62]
+[] freakzz22 Yeah! I've read the discussion there and it seems I suffer
+from the udev bug... I've wired up as you...
+satdx62 02/20/2024 7:48 PM
+Download Classic version and flash the appropriate version for your LEDs
+and connect to GPIO2 pin D +GND. In HyperHDR LED-controller, adalight
+hardware detection auto and Awawa protocol off.
+https://github.com/awawa-dev/HyperSerialPico/releases/download/v4.0.0.0/classic_adalight.zip
+(edited)
+[freakzz22]
+[] satdx62
+https://github.com/awawa-dev/HyperHDR/discussions/561#discussioncomment-8376671
+freakzz22 02/20/2024 7:46 PM
+Yeah! I've read the discussion there and it seems I suffer from the udev
+bug... I've wired up as you showed in your screenshot a little bit
+above. The logs seem to find a serial device but no output whatsoever
+and later on the logs state that no hyper pico device could be found:(
+[satdx62]
+[] freakzz22 You managed to make it work? I've just received my RP2040
+scorpio and was wondering about the wiring...
+satdx62 02/20/2024 7:32 PM
+https://github.com/awawa-dev/HyperHDR/discussions/561#discussioncomment-8376671
+HyperSerialPico for Raspberry Pi Pico (Rp2040) · awawa-dev HyperHDR...
+I created a new project HyperSerialPico that introduces Adalight AWA
+HyperHDR protocol for Raspberry Pi Pico (Rp2040) as an alternative to
+ESP based solutions (HyperSerialEsp8266/ESP32). What is un...
+[]
+[freakzz22]
+[] licu97 Okay than I will also change the pins and give you update
+later 
+freakzz22 02/20/2024 6:30 PM
+You managed to make it work? I've just received my RP2040 scorpio and
+was wondering about the wiring.
+February 19, 2024
+lutris. 02/19/2024 10:28 PM
+Hello, is hyperion creator for webos available on this channel?
+[licu97]
+[] satdx62 You were right that OUTPUT DATA is 0 = GPIO16 Just found out
+in AWAWA description. Kind of confusing...
+licu97 02/19/2024 10:10 AM
+Okay than I will also change the pins and give you update later 
+[satdx62]
+[] licu97 I'm at work now, I'll be back at home after 7h I will send you
+private message with log screen then ...
+satdx62 02/19/2024 9:32 AM
+You were right that OUTPUT DATA is 0 = GPIO16 Just found out in AWAWA
+description. Kind of confusing because under Default Pin out in
+description it says GPIO2. I have not used this board for my purposes.
+[DATA_OUTPUT_0.jpg]
+ DATA_OUTPUT_0.jpg
+100.83 KB External
+ 1
+[licu97]
+licu97 02/19/2024 8:52 AM
+I'm at work now, I'll be back at home after 7h I will send you private
+message with log screen then 
+[satdx62]
+[] licu97 Yes TV is on, I can see live image on web page of hyperHDR but
+where I can check the logs?
+satdx62 02/19/2024 8:48 AM
+On the left side, go to the Logs button and select Debug. You can scroll
+into the window, copy the entire text and post it as TEXT files. See
+picture. First restart the device, open HyperHDR, go to Logs and wait 2
+to 3 minutes. It must also state whether the HyperSerial interface is
+found. (edited)
+[Logs.jpg]
+ Logs.jpg
+339.47 KB External
+[licu97]
+[] satdx62 Have you restarted your TV? And see the logs.
+licu97 02/19/2024 7:33 AM
+Yes TV is on, I can see live image on web page of hyperHDR but where I
+can check the logs?
+hellobox. not at the moment
+yunior_fc 02/19/2024 2:08 AM
+Thanks
+February 18, 2024
+[satdx62]
+[] licu97 ok I've wired everything up
+satdx62 02/18/2024 11:55 PM
+Have you restarted your TV? And see the logs.
+[licu97]
+licu97 02/18/2024 11:51 PM
+now leds don't glow at all and I have still the same prompt on hyperHDR
+[licu97]
+[] satdx62 Data from LED-Stripe to GPIO2 and GND(-5Volt) from LED-Stripe
+to GND of RP2040. Power supply unit +...
+licu97 02/18/2024 11:51 PM
+ok I've wired everything up
+[satdx62]
+[] licu97 one more question regarding the wiring. I only need to connect
+data cable form led strip to scropio ...
+satdx62 02/18/2024 11:45 PM
+Data from LED-Stripe to GPIO2 and GND(-5Volt) from LED-Stripe to GND of
+RP2040. Power supply unit +5 volts and - 5 volts to LED-Stripe. Of
+course, the TV via USB with the RP2040. (edited)
+[licu97]
+licu97 02/18/2024 11:41 PM
+(no content)
+[Zrzut_ekranu_2024-02-18_234120.png]
+ Zrzut_ekranu_2024-02-18_234120.png
+99.47 KB External
+[Zrzut_ekranu_2024-02-18_234126.png]
+ Zrzut_ekranu_2024-02-18_234126.png
+39.52 KB External
+02/18/2024 11:39 PM
+(no content)
+[image.png]
+ image.png
+89.18 KB External
+[licu97]
+[] satdx62 Okay, looks good, leave it on Auto and save the setup. See if
+HyperSerial is recognized in logs.
+licu97 02/18/2024 11:39 PM
+one more question regarding the wiring. I only need to connect data
+cable form led strip to scropio "D" pin right? and power to led strip
+[satdx62]
+[] licu97 Click to see attachment
+satdx62 02/18/2024 11:36 PM
+Okay, looks good, leave it on Auto and save the setup. See if
+HyperSerial is recognized in logs. (edited)
+[licu97]
+licu97 02/18/2024 11:10 PM
+(no content)
+[image.png]
+ image.png
+79.66 KB External
+02/18/2024 11:10 PM
+and this is what hyperHDR shows
+02/18/2024 11:10 PM
+okay I've flashed it once again and I'm using pin D
+[satdx62]
+[] licu97 and than as I understand I need to connect led data cable with
+pin 0 (GPIO 16) on my board right?
+satdx62 02/18/2024 10:38 PM
+According to the AWAWA description, the default pinout for SK6812/WS281x
+is GPIO2
+[Defaultpinout.jpg]
+ Defaultpinout.jpg
+183.9 KB External
+[satdx62]
+[] licu97 and than as I understand I need to connect led data cable with
+pin 0 (GPIO 16) on my board right?
+satdx62 02/18/2024 10:17 PM
+I don't know exactly, but in the data sheet LED Data is Pin D SDA GPIO 2
+see picture. I'll have to check that. (edited)
+[Pinout.jpg]
+ Pinout.jpg
+221.21 KB External
+yunior_fc Any other way without opening the tv?
+hellobox. 02/18/2024 9:39 PM
+not at the moment
+hellobox.
+<https://gist.github.com/throwaway96/827ff726981cc2cbc46a22a2ad7337a1>
+yunior_fc 02/18/2024 9:39 PM
+Any other way without opening the tv?
+[brug4643]
+brug4643 02/18/2024 9:14 PM
+I run a 4k 120hz HDR setup so the splitters and capture cards can be a
+bit expensive and inconsistent.
+02/18/2024 9:14 PM
+I am unable to root my TV since I upgraded. I want to run
+Hyperion/HyperHDR on my home server. Any other clever ways of capturing
+the video signal without HDMI splitters and capture cards?
+[licu97]
+[] satdx62 Then, something wrong happened during flashing. The DEVICE
+definitely cannot find HyperHDR. You need...
+licu97 02/18/2024 9:08 PM
+and than as I understand I need to connect led data cable with pin 0
+(GPIO 16) on my board right?
+yunior_fc Hi new here. Can someone point on the right direction. I have
+a LG C7 on webOS 3.9.2 , im what to r...
+hellobox. 02/18/2024 8:58 PM
+https://gist.github.com/throwaway96/827ff726981cc2cbc46a22a2ad7337a1
+yunior_fc 02/18/2024 8:54 PM
+Hi new here. Can someone point on the right direction. I have a LG C7 on
+webOS 3.9.2 , im what to rooted to install piccap. I already have a
+esp32 with wled working on a shield tv sending it to a laptop then to
+the esp. so I want to eliminate the shield and laptop. And use piccap on
+the tv. (edited)
+[asdfghjkloa]
+[] satdx62 Yes, with Apple TV, definitely. It also works with a FireTV.
+asdfghjkloa 02/18/2024 8:41 PM
+perfect, just wanted to make sure i dont need extra hardware (hdmi
+splitter / hdmiToUSB ) in between and can still use the already
+installed piccap&hyperhdr on the tv (edited)
+[satdx62]
+[] licu97 I've chosen the only device I had there and saved setting
+satdx62 02/18/2024 8:14 PM
+Then, something wrong happened during flashing. The DEVICE definitely
+cannot find HyperHDR. You need to do this again correctly.
+https://github.com/awawa-dev/HyperSerialPico. You need to download and
+unzip Adafruit_Feather_RP2040_Scorpio.zip and flash the
+HyperSerialPico_ws2812.uf2. (edited)
+[licu97]
+licu97 02/18/2024 8:11 PM
+still nothig
+02/18/2024 8:11 PM
+I've chosen the only device I had there and saved setting
+[satdx62]
+[] asdfghjkloa So just to make sure, if I’d switch to let’s say an Apple
+TV instead of using webOS Netflix/Prime/.....
+satdx62 02/18/2024 8:10 PM
+Yes, with Apple TV, definitely. It also works with a FireTV.
+[satdx62]
+[] licu97 how to fix that?
+satdx62 02/18/2024 8:07 PM
+Under LED Controller under Output path, select the controller instead of
+Auto.
+[LED_Controller.jpg]
+ LED_Controller.jpg
+86.83 KB External
+[asdfghjkloa]
+[] satdx62 DRM-protected video content can only be processed by PicCap
+via HDMI. It does not work via internal ...
+asdfghjkloa 02/18/2024 8:05 PM
+So just to make sure, if I’d switch to let’s say an Apple TV instead of
+using webOS Netflix/Prime/.. apps, connect it via hdmi to the TV, the
+piccap on the TV would work for netflix etc ?
+[licu97]
+[] satdx62 The error indicates that the LED controller cannot be found.
+licu97 02/18/2024 8:03 PM
+how to fix that?
+[satdx62]
+[] licu97 Click to see attachment
+satdx62 02/18/2024 7:55 PM
+The error indicates that the LED controller cannot be found. (edited)
+[licu97]
+licu97 02/18/2024 7:49 PM
+(no content)
+[Zrzut_ekranu_2024-02-18_192929.png]
+ Zrzut_ekranu_2024-02-18_192929.png
+46.69 KB External
+[licu97]
+[] satdx62 If you have flashed your Raspberry Pi RP2040 with
+HyperSerial, you must connect your LED controller ...
+licu97 02/18/2024 7:45 PM
+I've done that I have piccap and hyperhdr configured on my tv and I can
+see livescreen on my web page of hyperhdr web page, but leds are glowing
+on white and don't pick colors from screen. My guess is that I've done
+something wrong with flashing my Adafruit Feather RP2040 SCORPIO I've
+opened it in flash mode and copied and paste this file
+"HyperSerialPico_ws2812" because I have WS2812B leds. but then I'm
+having this error in hyperhdr web page (edited)
+[satdx62]
+[] licu97 okay I've done that. Now what's next?
+satdx62 02/18/2024 7:43 PM
+If you have flashed your Raspberry Pi RP2040 with HyperSerial, you must
+connect your LED controller with LEDs to your TV via USB cable. You need
+to install, configure and start PicCap and HyperHDR from the Homebrew
+Channel on your TV. After that, HyperHDR must be configured in a browser
+(Edge or Chrome) under the IP address of your TV with port 8090. (Like
+for example 192.168.x.x:8090) First, the LED controller and LED layout
+must be set, then the other color calibration must be performed. See
+pictures, under LED layout you must select the correct number of LEDs
+left, right top and bottom as well as the feed point. (LED no. 1) After
+these settings, restart the Hyperion daemon and it will be bright.
+[LED_Controller.jpg]
+ LED_Controller.jpg
+51.2 KB External
+[LED_Layout.jpg]
+ LED_Layout.jpg
+242.38 KB External
+ 1
+[satdx62]
+[] asdfghjkloa Click to see attachment
+satdx62 02/18/2024 7:17 PM
+DRM-protected video content can only be processed by PicCap via HDMI. It
+does not work via internal apps. So connect external players via HDMI
+that can play Netflix, Prime, and cable.
+[licu97]
+[] satdx62 Hi, follow this link :
+https://github.com/awawa-dev/HyperSerialPico
+licu97 02/18/2024 6:07 PM
+okay I've done that. Now what's next?
+[asdfghjkloa]
+asdfghjkloa 02/18/2024 5:57 PM
+(no content)
+[Screenshot_2024-02-18_at_17.56.37.png]
+ Screenshot_2024-02-18_at_17.56.37.png
+321.38 KB External
+02/18/2024 5:56 PM
+sooo if i installed piccap and hyperHDR and I'm able to see menus and on
+screen things in the live video via http://theIPofMyTV:8090 , but only
+black instead of content (cable, netflix, prime), im out of luck, or is
+there anything else i can try ?
+February 17, 2024
+[satdx62]
+[] licu97 also how to instal needed software on RP2040 SCORPIO
+satdx62 02/17/2024 10:28 PM
+Hi, follow this link : https://github.com/awawa-dev/HyperSerialPico
+GitHub - awawa-dev/HyperSerialPico: High-speed Adalight serial LED ...
+High-speed Adalight serial LED driver implementation for Raspberry Pi
+Pico RP2040. Support for sk6812/ws2812b/apa102 and others using Rpi
+multi-core, DMA, PIO, SPI and parallel output. - awawa-dev/...
+[]
+[licu97]
+[] licu97 Hi guys, I've rooted my tv and now I wan't to connect it with
+my Adafruit Feather RP2040 SCORPIO any...
+licu97 02/17/2024 8:37 PM
+also how to instal needed software on RP2040 SCORPIO
+[licu97]
+licu97 02/17/2024 8:36 PM
+Hi guys, I've rooted my tv and now I wan't to connect it with my
+Adafruit Feather RP2040 SCORPIO any help on how to do this?
+February 11, 2024
+[jclsn]
+jclsn 02/11/2024 2:51 PM
+Well, I gues I'll just have to live with orange being red then. Better
+than yellow being green
+02/11/2024 2:45 PM
+Anyway, I just want the green tint to disappear ^^
+02/11/2024 2:43 PM
+So it is LG, I almost started believing in my TV there 
+[astur3l]
+[] jclsn M16P_DVB, not listed
+astur3l 02/11/2024 2:42 PM
+https://discord.com/channels/407937994037919756/713852484170547222/1155936379772092437
+[jclsn]
+jclsn 02/11/2024 2:37 PM
+Ah no W18H
+02/11/2024 2:37 PM
+M16P_DVB, not listed
+[astur3l]
+[] jclsn Mine was high-end back in 2018 ^^
+astur3l 02/11/2024 2:31 PM
+https://discord.com/channels/407937994037919756/926881570512572456/930628589068640277
+[jclsn]
+[] astur3l only high end models got LX soc, others mediatek, realtek
+jclsn 02/11/2024 2:31 PM
+Mine was high-end back in 2018 ^^
+[jclsn]
+jclsn 02/11/2024 2:30 PM
+Both the LUT you provided are of invalid length according to HyperHDR
+[astur3l]
+astur3l 02/11/2024 2:29 PM
+only high end models got LX soc, others mediatek, realtek
+02/11/2024 2:29 PM
+so all lg tv with realtek/mediatek soc is counterfreit or what?:P
+[jclsn]
+jclsn 02/11/2024 2:28 PM
+It should be
+[astur3l]
+[] jclsn What does soc is not lx mean?
+astur3l 02/11/2024 2:28 PM
+not LG SOC
+[jclsn]
+[] astur3l btw check this <@709254971199062047> if your soc is not lx
+may it also works for you https://github....
+jclsn 02/11/2024 2:25 PM
+What does soc is not lx mean?
+[astur3l]
+astur3l 02/11/2024 2:23 PM
+btw check this @jclsn if your soc is not lx may it also works for you
+https://github.com/webosbrew/hyperion-webos/pull/107
+vtc: add dump loc 1 quirk by asturel · Pull Request #107 · webosbre...
+On some tv-s (including my A1/lm21u/mt5889) dumped frames from scaler
+output affected by picture settings. Dumping from scaler input gives
+perfect color for builtin apps, however it breaks hdmi ton...
+[]
+ 1
+02/11/2024 2:21 PM
+or https://we.tl/t-SPmB0ikqpZ 
+flat_lut_lin_tables.3d
+1 file sent via WeTransfer, the simplest way to send your files around
+the world
+[astur3l]
+[] jclsn Thanks, unfortunately the LUT download link is dead
+astur3l 02/11/2024 2:20 PM
+i think this was https://we.tl/t-i1g2l1BSN5
+flat_lut_lin_tables_webos.3d
+1 file sent via WeTransfer, the simplest way to send your files around
+the world
+[jclsn]
+jclsn 02/11/2024 2:11 PM
+Tried generating a LUT myself with another HyperHDR instance on my
+desktop, but it did not fix the colors unfortunately
+[jclsn]
+[] astur3l https://github.com/webosbrew/hyperion-webos/pull/100
+jclsn 02/11/2024 1:26 PM
+Thanks, unfortunately the LUT download link is dead
+[astur3l]
+[] jclsn Awawa said the LUT generation is working for SDR in the current
+version. Unfornately it is crashing ...
+astur3l 02/11/2024 1:24 PM
+https://github.com/webosbrew/hyperion-webos/pull/100
+LUT mapping by sundermann · Pull Request #100 · webosbrew/hyperion-...
+This PR aims at solving the color accuracy issues seen with the LG
+capture APIs. Essentially, this is like HyperHDR's HDR tone mapping
+feature but integrated into hyperion-webos itself. The dat...
+[]
+ 1
+[jclsn]
+jclsn 02/11/2024 1:22 PM
+Awawa said the LUT generation is working for SDR in the current version.
+Unfornately it is crashing HyperHDR, but it would be worth a try to fix
+color issues of Piccap. A working table could then be made available for
+download.
+[jclsn]
+jclsn 02/11/2024 7:33 AM
+Doesn’t look like it from the latest changelog though 
+02/11/2024 7:28 AM
+Is there a way to turn that off? I also think HyperHDR will support LUT
+generation for SDR at some point. @awawa was not in a hurry to merge the
+branch. That was a year ago. No idea if he has by now
+February 10, 2024
+[yolofant]
+yolofant 02/10/2024 11:02 PM
+it's not only yellow though (edited)
+02/10/2024 11:02 PM
+yes, there's some image processing in place that fucks up the colors
+[jclsn]
+jclsn 02/10/2024 10:52 PM
+I think Piccap is not grabbing the color yellow right on my TV. I've had
+this problem for some time now. Yellow has a green tint. All other
+colors are okay. I looked in WLED and it is displaying yellow correctly.
+Also in Hyperion, when I set the effect to just rgb(255, 255, 0) the
+yellow is fine. When playing back this video on YouTube thoug, it is
+green
+https://www.youtube.com/watch?v=sW10W0Wcwpw&t=60s&pp=ygUMeWVsbG93IGNvbG9y
+Does this work for you?
+Yukari Onosaki
+Yellow Screen 10 Hours
+Screen Test
+[] Watch video
+[frank.af]
+frank.af 02/10/2024 2:33 AM
+Darn. I could get some sort of physical loopback going, but that just
+seems so... Low tech?
+[] frank.af I was going to dig into the pulse audio config and see if I
+could just add a loopback, but I wasn't ...
+hellobox. 02/10/2024 2:32 AM
+i have looked into the pulse stuff a bit. i'm fairly sure audio from
+media playback does not go through pulse
+[frank.af]
+frank.af 02/10/2024 2:32 AM
+I was going to dig into the pulse audio config and see if I could just
+add a loopback, but I wasn't sure if audio actually goes through Linux
+February 9, 2024
+[frank.af]
+frank.af 02/09/2024 9:17 PM
+Any easy way to capture audio when running HyperHDR on webos (I've got a
+receiver over eARC if it matters) (edited)
+February 8, 2024
+[] astur3l btw do u have Linux to test it? does libusb works through
+wsl? 
+hellobox. 02/08/2024 11:51 PM
+Rpi?
+ 1
+[astur3l]
+astur3l 02/08/2024 11:51 PM
+btw do u have Linux to test it? does libusb works through wsl? 
+hellobox. 02/08/2024 11:21 PM
+and all of the ports (including the 2 non-MPSSE ones) on the FT4232H can
+be set up as UARTs
+02/08/2024 11:19 PM
+but only one is officially supported on FT232H
+02/08/2024 11:19 PM
+you might be able to bitbang multiple interfaces
+02/08/2024 11:19 PM
+yeah, i think so
+[astur3l]
+astur3l 02/08/2024 11:19 PM
+just connect the pins & go?
+[] astur3l btw can you use ft232 as rs232 ttl?:D
+hellobox. 02/08/2024 11:18 PM
+yes
+[astur3l]
+astur3l 02/08/2024 11:18 PM
+btw can you use ft232 as rs232 ttl?:D
+hellobox. 02/08/2024 11:17 PM
+it gives me an excuse to get my logic analyzer set up
+[astur3l]
+astur3l 02/08/2024 11:17 PM
+ anyway i dont wanna talk you down from it  i also have 2 ft232 for
+ambilight  but probably this is not top1 on the users wishes 
+hellobox. 02/08/2024 11:15 PM
+i never said it was practical/useful
+[astur3l]
+astur3l 02/08/2024 11:13 PM
+also atm it requires root to able to use on linux :D, using on windows
+is a nightmare.. so its not even a proper cross platform solution
+02/08/2024 11:12 PM
+and its not a simple solution imho, okay, you dont have to flash ONCE,
+but there are complete esp32 led drivers, or rpi with level shifters..
+ftdi have no benefit againts them imho 
+[astur3l]
+hellobox. that applies to probably most of what goes on here though
+astur3l 02/08/2024 11:10 PM
+yeah but i can count on my half arm how many ppl have ft232 here  "it
+never made to widely available/public" so it just wont add +1 expensive
+alternative to led drivers 
+[astur3l]
+astur3l 02/08/2024 11:07 PM
+because with huge latch time it fixed me (adding many many LOW PACKETS
+which probalby caused blocking the hyperion send() for enought time...
+ because writing to msse is blocking in that way )
+[] astur3l anyway i dont really see why it "worths" putting time effort
+into it, since you can buy just an rpi ...
+hellobox. 02/08/2024 11:07 PM
+that applies to probably most of what goes on here though
+[astur3l]
+hellobox. i'm not sure what's causing the flickering though. a reset
+being sent before all the data for the pr...
+astur3l 02/08/2024 11:06 PM
+i THINK its because it starts sending the next frame meanwhile the
+current frame being updated on the leds
+[astur3l]
+astur3l 02/08/2024 11:05 PM
+anyway i dont really see why it "worths" putting time effort into it,
+since you can buy just an rpi zero for 1/4 the price 
+hellobox. 02/08/2024 11:05 PM
+i'm not sure what's causing the flickering though. a reset being sent
+before all the data for the previous frame has been transmitted?
+[astur3l]
+astur3l 02/08/2024 11:03 PM
+oh, probably 
+[] astur3l you can, but but then you wont know if its flickering or not
+hellobox. 02/08/2024 11:03 PM
+i was hoping to be able to determine that based on the waveforms
+[astur3l]
+astur3l 02/08/2024 11:02 PM
+since usually the latest leds tends to misbehaviour 
+02/08/2024 11:02 PM
+you can, but but then you wont know if its flickering or not 
+[] astur3l yeah but led counts matters in the led strip "total update
+time" sadly 
+hellobox. 02/08/2024 11:01 PM
+but can't i just say there are more LEDs then there actually are?
+[astur3l]
+astur3l 02/08/2024 11:00 PM
+yeah but led counts matters in the led strip "total update time" sadly
+hellobox. 02/08/2024 11:00 PM
+but hopefully i can get the logic analyzer set up
+02/08/2024 11:00 PM
+i only have a relatively short strip of LEDs
+[astur3l]
+astur3l 02/08/2024 10:59 PM
+with adjusting baud rate you could "lower"/"higher" those "rates" too
+obviosly 
+02/08/2024 10:58 PM
+the thing is, may it works fine with your led strip, but led strips
+varies a lot (refresh times, etc.. i mean between same models too)
+hellobox. 02/08/2024 10:57 PM
+and take a look at the MPSSE docs
+02/08/2024 10:57 PM
+i have to find my FT232H board
+[astur3l]
+astur3l 02/08/2024 10:55 PM
+the neopixel was just a "could work" thing..  but afaik satdx62 tested
+for him with proper system (nurrik had just 1led strip ?)  also i
+wasnt skilled enought to code it myself  still not to able to write
+something like this  (edited)
+[] astur3l for actually SPI leds its probably great (nurikk used spi led
+on his TV)
+hellobox. 02/08/2024 10:53 PM
+oh, i see
+[astur3l]
+astur3l 02/08/2024 10:52 PM
+for actually SPI leds its probably great (nurikk used spi led on his TV)
+(edited)
+02/08/2024 10:51 PM
+but if im right
+https://github.com/nurikk/HyperHDR/blob/ftdi/sources/leddevice/dev_ftdi/ProviderFtdi.cpp#L164
+ftdi_write_data is blocking, but JUST sending the led dat to the ftdi is
+not enought to guarantee the proper led strip is done, thats why it adds
+some "LATCH BYTES" (3) on sk6812.. i tried to increase, but doesnt make
+much difference.. it get a bit better but random flickering still
+occured :/ so my conclusion was that the actual neopixel generation is
+not "enought stable"  (edited)
+[astur3l]
+astur3l 02/08/2024 10:44 PM
+https://github.com/nurikk/HyperHDR/blob/ftdi/sources/leddevice/dev_ftdi/ProviderFtdi.cpp#L102
+you can fine tune the baudrate in webui also (edited)
+hellobox. 02/08/2024 10:44 PM
+hmm
+[astur3l]
+astur3l 02/08/2024 10:44 PM
+yeah!
+hellobox. 02/08/2024 10:44 PM
+so it's using SPI on the MPSSE, but the LEDs aren't actually using SPI
+[astur3l]
+astur3l 02/08/2024 10:43 PM
+by setting the spi clock, etc..
+02/08/2024 10:43 PM
+i mean it uses spi to generate neopixel signal 
+02/08/2024 10:42 PM
+yeah
+[] astur3l anyway these things way out of my skills  iirc the "update
+delay" solved by adding "fake leds" h...
+hellobox. 02/08/2024 10:42 PM
+is the protocol actually SPI?
+[astur3l]
+astur3l 02/08/2024 10:41 PM
+anyway these things way out of my skills  iirc the "update delay"
+solved by adding "fake leds"
+https://github.com/nurikk/HyperHDR/blob/ftdi/sources/leddevice/dev_ftdi/ProviderFtdi.cpp#L145
+https://github.com/nurikk/HyperHDR/blob/ftdi/sources/leddevice/dev_ftdi/LedDeviceSk6812_ftdi.cpp#L79
+[astur3l]
+astur3l 02/08/2024 10:01 PM
+anyway its against the Hyperion led driver conception (the led driver
+takes care of updating the leds properly etc..) IMHO
+02/08/2024 10:00 PM
+also idk why, but sometimes thr msse hangs and needs to be restarted if
+im not wrong 
+02/08/2024 10:00 PM
+dunno :d maybe im completely wrong.. i tried to limit refresh rate but
+couldn't come out with reasonable limit (after 10ms Hyperion.ng start to
+acting weird)
+hellobox. 02/08/2024 9:54 PM
+do you know roughly how long it takes to transmit the data for a frame
+via FT232? (compared to the time between frames) (edited)
+[] astur3l really? but e.g. qtimer isn't too precise, and you dont
+really wanna blocking code in Hyperion led d...
+hellobox. 02/08/2024 9:53 PM
+what would happen if you kept a buffer of the latest frame and just
+started sending it as soon as the last one was finished?
+[astur3l]
+astur3l 02/08/2024 9:51 PM
+and Hyperion.ng cannot really produce steady fps, (fluctuate with like
+15fps) , hyperhdr have some new high res timer, which damn steady tho
+02/08/2024 9:49 PM
+really? but e.g. qtimer isn't too precise, and you dont really wanna
+blocking code in Hyperion led driver (i mean it "delayes the fps") so
+you would need a separate "thread" with precise high res timer to
+correctly control the msse? :d
+[] astur3l well, when there's new frame on hyperhdr side, it just start
+to generate the signal, doesn't care ab...
+hellobox. 02/08/2024 9:44 PM
+that should be relatively easy to prevent
+[astur3l]
+hellobox. is buffering the primary issue?
+astur3l 02/08/2024 9:42 PM
+well, when there's new frame on hyperhdr side, it just start to generate
+the signal, doesn't care about that is there a "ongoing" signal, or
+whatever, it just tells to the msse to generate "new signal ", not
+respecting anything (updating all the leds costs time, and if you're
+start to update before it, you'll get random flickering etc..)
+[satdx62]
+[] astur3l it highly depends on the fps, with 263 leds, you could do
+like ~80fps, with ftdi, you would have pro...
+satdx62 02/08/2024 9:35 PM
+Yes, that's also true, I come from the Enigma2 community and there we
+have on VU+ xxx satellite receiver, “enigmalight” running, with 20 fps
+on ESP via “udpraw” and it was also fine. 
+[] astur3l it highly depends on the fps, with 263 leds, you could do
+like ~80fps, with ftdi, you would have pro...
+hellobox. 02/08/2024 9:34 PM
+is buffering the primary issue?
+hellobox. 02/08/2024 9:33 PM
+oh, are the sigrok windows build downloads not broken anymore?
+02/08/2024 9:32 PM
+i should finally figure out how to use this cheap "logic analyzer" thing
+i bought for like $10 (edited)
+[astur3l]
+[] satdx62 You are right of course, and from a technical point of view
+this makes sense between the buffering o...
+astur3l 02/08/2024 9:23 PM
+it highly depends on the fps, with 263 leds, you could do like ~80fps,
+with ftdi, you would have problem at this update rate  but e.g. 40 fps
+would be totally fine, anyway , it took too much work imho, and the ftdi
+is like 4-5 times more expensinve than an rpi, which is a dedicated
+hardware solution -- with perfect clock rate  againts a sw side
+implemented "sync" (where cpu does 1024 million task :P) (edited)
+ 1
+[satdx62]
+[] astur3l and its worser with hyperion.ng, since hyperhdr have new high
+resolution clock, hyperion still isnt ...
+satdx62 02/08/2024 9:20 PM
+You are right of course, and from a technical point of view this makes
+sense between the buffering of the ESP/RPI. I realize that with FTDI
+there can be no buffering, but with 263 LEDs watching a normal TV show,
+I have not noticed any delay. You might notice this when playing action
+games, but I honestly haven't tested. But as I understood nurikk he just
+took the parameters from the LED manufacturer without any further
+adjustments and nobody but him has seriously addressed this issue.
+Perhaps as a developer, you have to dig deeper into the magic box and
+leave the buffering task to Hyperion/HyperHDR on the software side. Of
+course, this takes a lot of time, which is very precious these days.
+[astur3l]
+astur3l 02/08/2024 9:13 PM
+and its worser with hyperion.ng, since hyperhdr have new high resolution
+clock, hyperion still isnt too precise : the fps is not constant,
+sometimes you get more, sometimes not, which makes ftdi worser (since
+some frame "arrives" earlier than the ftdi have a chance to send it to
+the leds.. also late frames arent good either.. and implementing proper
+"sync" would be difficult :D)
+[astur3l]
+astur3l 02/08/2024 8:43 PM
+meanwhile esp/rpi keeps the frames its internal buffer, and process
+sequentially each frames and wait for drawing completion..
+02/08/2024 8:42 PM
+like screen tearing just led tearing 
+[astur3l]
+[] satdx62 I also tend to believe that there would be no real desire to
+establish a hardware solution as simple...
+astur3l 02/08/2024 8:42 PM
+i have doubt before i tried and trying it just confirmed it, imho the
+main issue is, that "there's no buffer between hyperhdr and ftdi device"
+what does that mean? hyperhdr keep sending the frames and doesnt wait
+the MSSE to complete the neopixel generating task, so it may already
+send new frames to the ftdi, meanwhile the "drawing" to leds didnt
+happened yet, there will be a huge "desync"
+[satdx62]
+hellobox. you can try just deleting `libudev*` from
+`br-nc4/arm-webos-linux-gnueabi/sysroot/usr/lib` plus `arm...
+satdx62 02/08/2024 8:42 PM
+I will do this and report whether it works and is enough.
+[satdx62]
+[] astur3l do u know whats with him? he kinda gone after made the ftdi
+pr, btw calling it buggy is a bit harsh ...
+satdx62 02/08/2024 8:36 PM
+I also tend to believe that there would be no real desire to establish a
+hardware solution as simple as FTDI. The whole HyperSerial interface of
+HyperHDR for ESPs RPIs and all other hardware would then be obsolete. I
+have a device with FTDI in use and can't see any difference to other
+solutions with WLED on ESP or HyperSerial. Of course, you have to make
+the right settings in HyperHDR or Hyperion, but then it works fine. I
+know people who also say that WLED with static ambience and effects
+behind the TV is nonsense because you can achieve the same thing with
+Hyperion/HyperHDR itself. However, as a passionate electronics engineer,
+I believe that I have realized and tested almost all Ambilight hardware
+solutions. Each of these solutions has advantages and disadvantages, but
+more importantly I find the wide variety of solutions and think that
+there is something for every user and every requirement that will make
+you happy. (edited)
+[] satdx62 Yes, thanks, that would be a possibility if I knew how to
+exclude **libudev** to test this without. ...
+hellobox. 02/08/2024 8:36 PM
+you can try just deleting libudev* from
+br-nc4/arm-webos-linux-gnueabi/sysroot/usr/lib plus
+arm-webos-linux-gnueabi/sysroot/usr/lib/pkgconfig/libudev.pc (edited)
+ 1
+[satdx62]
+hellobox. it would be possible to remove libudev from the toolchain
+during the build process. i'm honestly not...
+satdx62 02/08/2024 8:29 PM
+Yes, thanks, that would be a possibility if I knew how to exclude
+libudev to test this without. Or do you think I should just remove them?
+[] satdx62 Ok, now I understand, it's because I compiled with a newer
+toolchain and not the old one. This leads...
+hellobox. 02/08/2024 7:33 PM
+it would be possible to remove libudev from the toolchain during the
+build process. i'm honestly not sure it adds any functionality
+whatsoever
+[satdx62]
+[] astur3l do u know whats with him? he kinda gone after made the ftdi
+pr, btw calling it buggy is a bit harsh ...
+satdx62 02/08/2024 7:32 PM
+Ok, now I understand, it's because I compiled with a newer toolchain and
+not the old one. This leads to the fact that I have to link the libudev.
+But that is not a big problem.
+hellobox. 02/08/2024 6:54 PM
+we would have to like ship a copy that forwards to whichever one it
+finds
+02/08/2024 6:53 PM
+i don't know if there's a general solution for the problem of different
+sonames across webOS versions. they usually seem mostly compatible
+02/08/2024 6:51 PM
+i don't know what it's actually used for
+02/08/2024 6:50 PM
+i just decided to ship the eudev lib for hyperion
+02/08/2024 6:50 PM
+i'd have to check the webOS version where libudev goes 0 -> 1
+[astur3l]
+astur3l 02/08/2024 6:50 PM
+ah 
+hellobox. 02/08/2024 6:49 PM
+and it has libudev.so.1
+[] astur3l do u know whats with him? he kinda gone after made the ftdi
+pr, btw calling it buggy is a bit harsh ...
+hellobox. 02/08/2024 6:49 PM
+eudev was enabled in br-nc4 ~recently
+[astur3l]
+[] satdx62 I followed the development and deployment of nurikk for the
+FTDI implementation on GitHub and know t...
+astur3l 02/08/2024 6:48 PM
+do u know whats with him? he kinda gone after made the ftdi pr, btw
+calling it buggy is a bit harsh  its really odd that older
+hyperhdr/hyperion works , do you compile it with the same toolchain? so
+older binaries doesnt pull libudev or what..?:D
+[satdx62]
+satdx62 02/08/2024 6:34 PM
+I followed the development and deployment of nurikk for the FTDI
+implementation on GitHub and know that it wasn't perfect yet and
+therefore didn't make it into awawa's master repository. He bought more
+expensive equipment and was able to take measurements, and they didn't
+turn out well. @hellobox also thinks that FTDI is still too buggy, and
+he had to test before taking further steps. I would be happy if the
+tests turn out positive, and he gets a chance after all.
+[satdx62]
+[] astur3l its because the project (webos loader) npm dependencies are
+just too old, "you can ignore until it w...
+satdx62 02/08/2024 3:56 PM
+Yes, you're right, I don't have to worry about “npm” anymore because the
+HyperHDR loader works after compilation. The only strange thing is that
+I have to run
+ln -s /lib/libudev.so.0.13.1 /media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/libudev.so.1
+afterward, otherwise the daemon will not be recognized and will not
+start. But if I install via homebrew feed or an old version of nurikk I
+don't need to make a symlink to libudev. But that doesn't matter, the
+main thing works. (edited)
+[astur3l]
+[] satdx62 It was about having a single version for all my devices and
+keeping HyperHDR up to date. And yes, I ...
+astur3l 02/08/2024 2:55 PM
+its because the project (webos loader) npm dependencies are just too
+old, "you can ignore until it works"  updating dependencies are not
+always straightforward /just bumping the package version/ (e.g. there
+was breaking change in the next version and your project wont "compile"
+anymore), anyway its not your fault btw this is "normal" in npm
+community.. if u wont touch (keep updating) your project for a half-one
+year, half of your packages will be outdated...  (edited)
+[satdx62]
+[] astur3l it will be a long journey  because the pull request needs
+to updated to the latest hyperhdr source...
+satdx62 02/08/2024 2:19 PM
+It was about having a single version for all my devices and keeping
+HyperHDR up to date. And yes, I changed the version number so that the
+Homebrew Channel no longer shows me an update. The whole thing has been
+very interesting and educational for me. At my age, that is no longer
+a matter of course. Thanks again for that. I also noticed that I get a
+lot of errors/warnings when I run npm i. Is that just because of my npm
+version? Or can I ignore it? I have already updated my Ubuntu and run
+npm audit fix.
+ npm_output.txt
+17.9 KB External
+February 7, 2024
+[astur3l]
+[] satdx62 Hi, I first had to familiarize myself with the GitHub
+process. Among other things, I had to set the ...
+astur3l 02/07/2024 11:03 PM
+it will be a long journey  because the pull request needs to updated
+to the latest hyperhdr sourcecode, which also changed, meanwhile, so you
+will face with a few (if not a lot) conflicts (same file , same line
+edited on both sides) which needs to be resolved manually -- but if
+youre not familiar with programming it would be really hard to do it,
+but hey, you can always change the version number  btw whats so
+tempting in beta1?:D or just its the "newest"?:D (edited)
+[satdx62]
+[] astur3l yeah, fastest way is just fork the loader and edit
+<https://github.com/webosbrew/hyperhdr-webos-load...
+satdx62 02/07/2024 7:43 PM
+Hi, I first had to familiarize myself with the GitHub process. Among
+other things, I had to set the “actions” in build.yml to v4. Now it
+worked with creating the ipk. However, this is 20.0.0.0beta0. I have to
+see how I can get the v20.0.0.0beta1 with FTDI because I do not have
+access to the sources of the LED device from the repo.  (edited)
+February 6, 2024
+[astur3l]
+[] satdx62 I'm trying to clone your repo.
+astur3l 02/06/2024 9:20 PM
+yeah, fastest way is just fork the loader and edit
+https://github.com/webosbrew/hyperhdr-webos-loader/blob/master/.github/workflows/build.yml#L29
+(ref = branch) see:
+https://github.com/asturel/hyperhdr-webos-loader/blob/dev/.github/workflows/build.yml#L29
+(edited)
+ 1
+[yolofant]
+yolofant 02/06/2024 7:15 PM
+you can just fork it, enable github actions, push some random commit and
+github actions builds it for you
+ 1  1
+[satdx62]
+[] astur3l you can use my repo
+<https://github.com/asturel/HyperHDR/commits/dev2/> (rebased 4 mo. ago)
+-> <http...
+satdx62 02/06/2024 7:07 PM
+I'm trying to clone your repo.
+[satdx62]
+[] astur3l you can use my repo
+<https://github.com/asturel/HyperHDR/commits/dev2/> (rebased 4 mo. ago)
+-> <http...
+satdx62 02/06/2024 7:06 PM
+Thank you, I will test it. I would be happy if I could build the ipk
+myself.
+[astur3l]
+[] satdx62 I already use the latest HyperHDR, and it works great on my
+main TV. But on another small device the...
+astur3l 02/06/2024 6:50 PM
+you can use my repo https://github.com/asturel/HyperHDR/commits/dev2/
+(rebased 4 mo. ago) -> https://we.tl/t-TOPONUUJhk (edited)
+ 1
+[satdx62]
+[] astur3l but why do u need never hyperhdr? i didnt see webos relevant
+changes
+satdx62 02/06/2024 6:35 PM
+I already use the latest HyperHDR, and it works great on my main TV. But
+on another small device the LEDs are connected to a FTDI for testing and
+the version of @nurikk is very old, and I wanted to bring it up to date.
+I can also learn something on the side. So I will wait until @hellobox
+implements this in Hyperion NG.
+[astur3l]
+astur3l 02/06/2024 6:25 PM
+but why do u need never hyperhdr? i didnt see webos relevant changes
+[astur3l]
+[] satdx62 I did this, but it won't work. I think I have to admit
+defeat. It's a bit too big for my knowledge. ...
+astur3l 02/06/2024 6:25 PM
+you need to undo all changes (like git reset --hard + git clean -fdx ..
+or just clone into a different folder :D) but im pretty sure youre hit a
+merge conflict which needs to be resolved manually
+[satdx62]
+[] astur3l nope, you need to set what it says .. git config ...
+user.name 
+satdx62 02/06/2024 5:54 PM
+I did this, but it won't work. I think I have to admit defeat. It's a
+bit too big for my knowledge. If you can think of anything else, I would
+test it.
+[git1.png]
+ git1.png
+106.97 KB External
+[astur3l]
+[] satdx62 Very funny, apparently I have to log in there, right?
+astur3l 02/06/2024 4:08 PM
+nope, you need to set what it says .. git config ... user.name 
+ 1
+[satdx62]
+[] astur3l or ``` git remote add upstream
+https://github.com/nurikk/HyperHDR.git git fetch --all git merge upst...
+satdx62 02/06/2024 4:07 PM
+Very funny, apparently I have to log in there, right?
+[git.png]
+ git.png
+101.01 KB External
+[astur3l]
+astur3l 02/06/2024 3:01 PM
+or
+    git remote add upstream https://github.com/nurikk/HyperHDR.git
+    git fetch --all
+    git merge upstream/ftdi
+or something like that.. but then you have to solve all the conflicts 
+(edited)
+02/06/2024 2:59 PM
+btw you can also use `git am xxxx.patch` (edited)
+02/06/2024 2:58 PM
+but i dont garantuee that it will successfully patch.. it was a year
+ago, since then there was lot of changes in hyperhdr
+02/06/2024 2:57 PM
+just press enter on the action.yml 
+[satdx62]
+[] astur3l ```fm@LAPTOP-DG0QB50H:~/hyperhdr-webos-loader$ bash
+build_hyperhdr.sh :: Cloning HyperHDR from repo ...
+satdx62 02/06/2024 2:56 PM
+No, not really, because I don't know how to apply the patch.
+[astur3l]
+[] satdx62 Click to see attachment
+astur3l 02/06/2024 2:53 PM
+    fm@LAPTOP-DG0QB50H:~/hyperhdr-webos-loader$ bash build_hyperhdr.sh
+    :: Cloning HyperHDR from repo 'https://github.com/awawa-dev/HyperHDR', branch: 'master'
+    Cloning into '/home/fm/hyperhdr-webos-loader/hyperhdr-repo'...
+youre overriding the patched files...?:D
+[satdx62]
+satdx62 02/06/2024 2:48 PM
+(no content)
+ Build.txt
+65.83 KB External
+02/06/2024 2:47 PM
+Yes, I have installed libftdi1-DEV, but apparently that is not enough.
+The Skxxx, APAxxx and Wsxxx parameters are missing under LED devices.
+Take a look at my build history, maybe you are missing something.
+(edited)
+[astur3l]
+[] satdx62 Yes, I have done that, but which file should be patched?
+astur3l 02/06/2024 2:10 PM
+btw i already said that just skip that file (not relevant -- maybe it
+doesnt get downloaded because you didnt used git clone ?:D) (edited)
+[image.png]
+ image.png
+6.02 KB External
+[satdx62]
+[] astur3l
+https://discord.com/channels/407937994037919756/931706504627773450/1204105762348204052
+satdx62 02/06/2024 2:09 PM
+Yes, I have done that, but which file should be patched?
+[patch.png]
+ patch.png
+104.94 KB External
+[astur3l]
+[] satdx62 I have the change you suggested in build.yml, but the
+libftdi1.so.2 was still not built and installe...
+astur3l 02/06/2024 1:53 PM
+https://discord.com/channels/407937994037919756/931706504627773450/1204105762348204052
+[satdx62]
+[] astur3l also i already see that libftdi library is missing.. 
+satdx62 02/06/2024 1:39 PM
+I have the change you suggested in build.yml, but the libftdi1.so.2 was
+still not built and installed. Something is still missing to build this.
+[satdx62]
+[] astur3l
+https://discord.com/channels/407937994037919756/835489130967859251/1199097634460287049
+satdx62 02/06/2024 12:06 PM
+Thanks, that helped, the service is now starting. Now I will install
+FTDI.
+[astur3l]
+[] satdx62 root@LGwebOSTV:~# OPENSSL_armcap=0 HOME=/home/root
+LD_LIBRARY_PATH=/media/developer/apps/usr/palm/se...
+astur3l 02/06/2024 12:01 PM
+https://discord.com/channels/407937994037919756/835489130967859251/1199097634460287049
+[satdx62]
+[] astur3l ```OPENSSL_armcap=0 HOME=/home/root
+LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webo...
+satdx62 02/06/2024 12:00 PM
+root@LGwebOSTV:~# OPENSSL_armcap=0 HOME=/home/root
+LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr
+/media/developer/apps/usr/palm/serv
+ices/org.webosbrew.hyperhdr.loader.service/hyperhdr/hyperhdr
+/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/hyperhdr:
+error while loading shared libraries: libudev.so.1: cannot open shared
+object file: No such file or directory root@LGwebOSTV:~#
+[astur3l]
+astur3l 02/06/2024 11:59 AM
+also i already see that libftdi library is missing.. 
+[astur3l]
+[] satdx62 I have recompiled and reinstalled HyperHDR, the services have
+been elevated, but the daemon does not...
+astur3l 02/06/2024 11:58 AM
+    OPENSSL_armcap=0 HOME=/home/root LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr /media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/hyperhdr
+[satdx62]
+satdx62 02/06/2024 11:42 AM
+But, libQt5SerialPort.so.5 is available. See picture.
+[hyperhdr1.png]
+ hyperhdr1.png
+66.07 KB External
+[satdx62]
+satdx62 02/06/2024 11:34 AM
+(no content)
+[hyperhdr.png]
+ hyperhdr.png
+27.21 KB External
+[satdx62]
+satdx62 02/06/2024 11:16 AM
+I have recompiled and reinstalled HyperHDR, the services have been
+elevated, but the daemon does not start and when I start it from the
+menu it freezes after 2 seconds. When I start from console, I get the
+error:
+/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/hyperhdr:
+error while loading shared libraries: libQt5SerialPort.so.5: cannot open
+shared object file: No such file or directory (edited)
+February 5, 2024
+hellobox. 02/05/2024 11:12 PM
+i'm going to order this FT4232 board at some point
+https://www.aliexpress.us/item/3256803588138714.html
+[astur3l]
+astur3l 02/05/2024 10:44 PM
+anyway its more stable than esp32
+[] astur3l is the ft232 original? :d
+hellobox. 02/05/2024 10:43 PM
+unlikely
+[astur3l]
+astur3l 02/05/2024 10:43 PM
+is the ft232 original? :d
+hellobox. 02/05/2024 10:43 PM
+counterfeit RP2040? lol
+[astur3l]
+astur3l 02/05/2024 10:42 PM
+and damn stable neopixel signal, what cannot say about ft
+[satdx62]
+[] astur3l https://a.aliexpress.com/_EzT7S4H just 4 times cheaper :p
+satdx62 02/05/2024 10:42 PM
+Yes, that's really cheap.
+[astur3l]
+[] satdx62
+https://www.aliexpress.us/item/3256805926133909.html?spm=a2g0o.productlist.main.23.73775e00XGViAk&al...
+astur3l 02/05/2024 10:40 PM
+https://a.aliexpress.com/_EzT7S4H just 4 times cheaper :p (edited)
+hellobox. 02/05/2024 10:40 PM
+yeah, it's CH348 though. so support is probably not as good as FTDI or
+prolific
+[satdx62]
+hellobox. but 8 UARTs for ~$12:
+<https://www.aliexpress.us/item/3256805014276589.html>
+satdx62 02/05/2024 10:39 PM
+I don't think that's too expensive for 8 UART.
+hellobox. 02/05/2024 10:37 PM
+but 8 UARTs for ~$12:
+https://www.aliexpress.us/item/3256805014276589.html
+[] satdx62
+https://www.aliexpress.us/item/3256805926133909.html?spm=a2g0o.productlist.main.23.73775e00XGViAk&al...
+hellobox. 02/05/2024 10:36 PM
+yeah, i was looking at that i think
+[satdx62]
+[] astur3l yeah, but "works" (kinda)  anyway ft232 is really expensive
+(comparing to rpi 2040 or esp) and not...
+satdx62 02/05/2024 10:36 PM
+https://www.aliexpress.us/item/3256805926133909.html?spm=a2g0o.productlist.main.23.73775e00XGViAk&algo_pvid=302eba00-c526-424e-aa25-daad47a9d92b&algo_exp_id=302eba00-c526-424e-aa25-daad47a9d92b-11&pdp_npi=4%40dis%21EUR%217.16%212.41%21%21%217.54%212.54%21%40211b801617071688279426303ed9c0%2112000035803460979%21sea%21DE%210%21AB&curPageLogUid=ij65geUkkeP1&utparam-url=scene%3Asearch%7Cquery_from%3A&gatewayAdapt=glo2usa4itemAdapt
+hellobox. 02/05/2024 9:56 PM
+but FT2232H may be the better choice in certain situations (beyond like
+only needing 2 channels, i mean) (edited)
+02/05/2024 9:55 PM
+i had thought it was just like: FT232H has one channel, FT2232H has two,
+and FT4232H has four. with all being the same
+[astur3l]
+astur3l 02/05/2024 9:55 PM
+hellobox. 02/05/2024 9:55 PM
+and FT2232H has basically 4 channels anyway
+02/05/2024 9:55 PM
+i learned recently that two of the channels on the FT4232H lack MPSSE
+[astur3l]
+astur3l 02/05/2024 9:55 PM
+yeah but not really the best solution for led driver
+hellobox. 02/05/2024 9:54 PM
+but they're useful specifically for JTAG
+02/05/2024 9:54 PM
+well, so are picos
+[] astur3l yeah, but "works" (kinda)  anyway ft232 is really expensive
+(comparing to rpi 2040 or esp) and not...
+hellobox. 02/05/2024 9:54 PM
+but they're useful for other things
+[astur3l]
+hellobox. seems too buggy/incomplete
+astur3l 02/05/2024 9:54 PM
+yeah, but "works" (kinda)  anyway ft232 is really expensive (comparing
+to rpi 2040 or esp) and not much "advantage" (you don't have to flash
+firmware.. )
+hellobox. 02/05/2024 9:29 PM
+i do have a bunch of random 74-series chips though
+[] satdx62 N 74AHCT125 works very well.
+hellobox. 02/05/2024 9:28 PM
+yep. but i doubt i have any
+[satdx62]
+hellobox. although i need a level shifter. i have to see if i already
+have something that will work...
+satdx62 02/05/2024 9:28 PM
+N 74AHCT125 works very well.
+hellobox. 02/05/2024 9:25 PM
+although i need a level shifter. i have to see if i already have
+something that will work...
+02/05/2024 9:24 PM
+btw i ordered some rpi picos to finally test that LED strip
+[] satdx62 With the new --recurse-submodules has worked. I would like to
+integrate the FTDI into HyperHDR here ...
+hellobox. 02/05/2024 9:24 PM
+i could take a look at it.
+[] satdx62 yes
+hellobox. 02/05/2024 9:22 PM
+wow. machine translation is pretty amazing. i couldn't tell
+[satdx62]
+hellobox. are you translating everything to/from german?
+satdx62 02/05/2024 9:22 PM
+With the new --recurse-submodules has worked. I would like to integrate
+the FTDI into HyperHDR here as well in order to test it.
+[satdx62]
+satdx62 02/05/2024 9:21 PM
+yes
+[] satdx62 I also have and works but with the HyperHDR old build from
+<@1055599786352451594>. Mit der neuen --...
+hellobox. 02/05/2024 9:21 PM
+are you translating everything to/from german?
+[satdx62]
+hellobox. i have an FT232H, uh... somewhere?
+satdx62 02/05/2024 9:20 PM
+I also have and works but with the HyperHDR old build from @nurikk. Mit
+der neuen --recurse-submodules hat funktioniert. Ich möchte gerne die
+FTDI auch hier in HyperHDR integrieren, um zu testen.
+[HyperHDR_loader.png]
+ HyperHDR_loader.png
+136.99 KB External
+hellobox. 02/05/2024 9:08 PM
+i have an FT232H, uh... somewhere?
+02/05/2024 9:07 PM
+although i could test it myself...
+02/05/2024 9:07 PM
+seems too buggy/incomplete
+02/05/2024 9:07 PM
+btw i don't think the FTDI stuff is ready to be integrated into release
+versions of hyperion.ng
+[satdx62]
+hellobox. clone it with `git clone --recurse-submodules
+https://github.com/webosbrew/hyperhdr-webos-loader.git...
+satdx62 02/05/2024 9:06 PM
+Thanks, I'm testing now.
+hellobox. 02/05/2024 9:01 PM
+clone it with
+git clone --recurse-submodules https://github.com/webosbrew/hyperhdr-webos-loader.git new_dir_name
+[] satdx62
+https://github.com/webosbrew/hyperhdr-webos-loader/tree/master
+hellobox. 02/05/2024 9:00 PM
+yeah but how did you get it on your computer?
+[satdx62]
+hellobox. huh? so where did you get it from?
+satdx62 02/05/2024 9:00 PM
+https://github.com/webosbrew/hyperhdr-webos-loader/tree/master
+GitHub - webosbrew/hyperhdr-webos-loader
+Contribute to webosbrew/hyperhdr-webos-loader development by creating an
+account on GitHub.
+[] satdx62 Click to see attachment
+hellobox. 02/05/2024 8:59 PM
+huh? so where did you get it from?
+[satdx62]
+hellobox. the dir you're in in the screenshot: `hyperhdr-webos-loader`.
+isn't that a git repo?
+satdx62 02/05/2024 8:59 PM
+(no content)
+[git_update.png]
+ git_update.png
+16.06 KB External
+[] satdx62 Ah, HyperHDR.
+hellobox. 02/05/2024 8:57 PM
+the dir you're in in the screenshot: hyperhdr-webos-loader. isn't that a
+git repo? (edited)
+[astur3l]
+astur3l 02/05/2024 8:57 PM
+btw i dont see submodules.. its in the npm package.json (?)
+` "enyo-dev": "^1.0.0",`
+[astur3l]
+[] satdx62 From which git repo should I update this?
+astur3l 02/05/2024 8:51 PM
+in the loader's
+[satdx62]
+hellobox. what do you mean? the one you're trying to build
+satdx62 02/05/2024 8:51 PM
+Ah, HyperHDR.
+[] satdx62 From which git repo should I update this?
+hellobox. 02/05/2024 8:50 PM
+what do you mean? the one you're trying to build

@@ -1,0 +1,2709 @@
+September 29, 2022
+[yolofant]
+yolofant 09/29/2022 6:27 PM
+I made some progress regarding this matter but so far nothing released
+(edited)
+09/29/2022 6:27 PM
+unfortunately not (yet)
+[awawa_dev]
+awawa_dev 09/29/2022 6:26 PM
+So there is no access to the raw screen without downscaling (video mode,
+no ui)? I wonder which downscale algorithm is used for it...if it's
+something used for RGB/YUV then it's a mess for bt2020.
+[yolofant]
+[] satdx62 You mean you will soon build a new HyperHDR build that can
+support it?
+yolofant 09/29/2022 6:23 PM
+There is no benefit because you can only access the data after it has
+been scaled very poorly to 8 bit.
+[awawa_dev]
+awawa_dev 09/29/2022 6:23 PM
+It will be an extension to local socket protocol. But it must be used
+properly by the client.
+[satdx62]
+[] awawa_dev HyperHDR can do yuv to rgb using its full LUT table, so
+theoretically there is no need for libyuv an...
+satdx62 09/29/2022 6:22 PM
+You mean you will soon build a new HyperHDR build that can support it?
+[yolofant]
+[] awawa_dev HyperHDR can do yuv to rgb using its full LUT table, so
+theoretically there is no need for libyuv an...
+yolofant 09/29/2022 6:20 PM
+There is a need for libyuv anyway as hyperion-webos still needs to blend
+ui and video capture. I can see the need for sending yuv 10 bit data
+directly - but in case of hyperion-webos the data captured is only 8 bit
+and in case of hdr content is downscaled very badly anyway (edited)
+[awawa_dev]
+[] yolofant I don't think hyperion has some NEON optimized code
+awawa_dev 09/29/2022 6:17 PM
+HyperHDR can do yuv to rgb using its full LUT table, so theoretically
+there is no need for libyuv and using NEON. And it's much faster with
+lower CPU usage. But there is a limitation of current flatbuffer
+protocol implementation which support only RGB colorspace. HyperHDR
+local socket implementation will accept different video formats later.
+[krispykutz]
+krispykutz 09/29/2022 6:13 PM
+Audiomenus work again too. Nice! 
+09/29/2022 6:13 PM
+Even the livevideo preview in HyperHDR is stutterfree!
+09/29/2022 6:10 PM
+Awesome work!
+09/29/2022 6:10 PM
+also upgraded to the new version and its perfect now. 320 resolution +
+vsync, perfectly smooth and lagfree from what i can see atm.
+Hyperion-webos at 32% and hyperhdr at 11%! (edited)
+vrvrvrvrvr. 09/29/2022 6:07 PM
+Thanks for 0.4.2. I got performance boost from 20FPS to 60FPS
+[yolofant]
+yolofant 09/29/2022 5:58 PM
+cool 
+[satdx62]
+satdx62 09/29/2022 5:50 PM
+@TBSniller I also installed version 0.4.2. After extensive tests, one
+can say that everything runs perfectly on my TV WebOS 3.9. Great!
+Thank you very much.
+sinergetikus 09/29/2022 2:15 PM
+https://discord.com/channels/407937994037919756/931706504627773450/945977042611093545
+ 1
+09/29/2022 2:15 PM
+No I failed with vlc, you need ffplay
+09/29/2022 2:13 PM
+I previously was able to pipe video to VLC, but it wasn't something
+easy
+[astur3l]
+astur3l 09/29/2022 2:03 PM
+maybe dumping frames could help debugging?:D but i cant assemble the
+dumped frames into atleast image or video 
+[astur3l]
+astur3l 09/29/2022 1:55 PM
+maybe a little, i couldnt really tell without side by side compare, but
+for me it felt like it still capturing at 47 fps meanwhile its reports
+60, and those frames like duplicated or whatever (edited)
+sinergetikus 09/29/2022 1:53 PM
+and what about preview? Any differences?
+[astur3l]
+[] m.ksy for me without vsync I have some delay in the output of the LED
+compared to the picture on the TV
+astur3l 09/29/2022 1:45 PM
+exactly the same, w/o vsync it feels like frame dropping or skipping,
+not so fluid, a bit choppy
+[m.ksy]
+m.ksy 09/29/2022 1:18 PM
+with vsync everything is perfect, except fps limit and accordingly the
+CPU load
+[m.ksy]
+[] tbsniller ive checked this vsync thing on yesterday and also got a
+bit suspicious of things going on vtc alrea...
+m.ksy 09/29/2022 1:17 PM
+for me without vsync I have some delay in the output of the LED compared
+to the picture on the TV
+[tbsniller]
+[] m.ksy for 0.2.3 vsync not affect fps limit
+tbsniller 09/29/2022 1:14 PM
+0.2.3 has broken fps limit for vtcapture
+[tbsniller]
+tbsniller 09/29/2022 1:14 PM
+ive checked this vsync thing on yesterday and also got a bit suspicious
+of things going on vtc already does vsync on itself, so there isn't
+really a need to do it two times also when "waiting" we just hammering
+getcurrentframebuffer until new frame arrives I will take a look at this
+in future
+ 1
+[m.ksy]
+m.ksy 09/29/2022 1:13 PM
+for 0.2.3 vsync not affect fps limit
+[astur3l]
+[] m.ksy FPS limit not working while vsync enabled. Is it normal?
+libdile_vt
+astur3l 09/29/2022 12:21 PM
+i felt the same with vtc, no matter what do i enter, i'm getting 46-48
+fps, also vsync on (47 fps):
+`74.735s [ DBG unicapture_run ] Framerate: 46.817795 FPS; timings - wait: 20869us, acquire: 187us, convert: 87us, process; 389us, send: 132us, release: 1us vsync off (47 fps): 17.304s [ DBG unicapture_run ] Framerate: 46.712273 FPS; timings - wait: 20972us, acquire: 175us, convert: 69us, process; 18us, send: 137us, release: 1us vsync off + set to 60 fps 57.822s [ DBG unicapture_run ] Framerate: 59.606833 FPS; timings - wait: 16333us, acquire: 165us, convert: 64us, process; 17us, send: 135us, release: 1us`
+with vsync i got like 50% cpu usage, w/o vsnyc <10% why is the process
+much faster without vsync?
+[m.ksy]
+m.ksy 09/29/2022 12:19 PM
+i got 480 fps with vsync enabled  and 120% cpu usage (edited)
+[astur3l]
+astur3l 09/29/2022 12:18 PM
+oh 
+[m.ksy]
+m.ksy 09/29/2022 12:18 PM
+FPS limit not working while vsync enabled. Is it normal? libdile_vt
+[tbsniller]
+[] astur3l https://github.com/webosbrew/meta-lg-webos-ndk#cmake
+``-DCMAKE_TOOLCHAIN_FILE=/opt/webos-sdk-x86_64/...
+tbsniller 09/29/2022 12:18 PM
+i think we are fine?
+    tbsniller@stuff:/home/webos-sdk-x86_64/1.0.g/sysroots/x86_64-webossdk-linux/environment-setup.d$ ls
+    cmake.sh  qt5.sh  restore-path.sh
+    tbsniller@stuff:/home/webos-sdk-x86_64/1.0.g/sysroots/x86_64-webossdk-linux/environment-setup.d$ cat cmake.sh | grep OETo
+    alias cmake="cmake -DCMAKE_TOOLCHAIN_FILE=$OECORE_NATIVE_SYSROOT/usr/share/cmake/OEToolchainConfig.cmake"
+[astur3l]
+[] tbsniller what do you mean? isn't it loaded through env vars? i
+thought otherwise for example cross-compile wo...
+astur3l 09/29/2022 12:13 PM
+https://github.com/webosbrew/meta-lg-webos-ndk#cmake
+`-DCMAKE_TOOLCHAIN_FILE=/opt/webos-sdk-x86_64/1.0.g/sysroots/x86_64-webossdk-linux/usr/share/cmake/OEToolchainConfig.cmake`
+GitHub - webosbrew/meta-lg-webos-ndk: Most important tool to brew s...
+Most important tool to brew some native app for webOS TV - GitHub -
+webosbrew/meta-lg-webos-ndk: Most important tool to brew some native app
+for webOS TV
+[]
+[tbsniller]
+[] astur3l <@430448040080572424> that toolchain also have cmake
+buildset/toolchain, is there a reason for not ...
+tbsniller 09/29/2022 12:12 PM
+what do you mean? isn't it loaded through env vars? i thought otherwise
+for example cross-compile wouldn't be possible
+[astur3l]
+astur3l 09/29/2022 1:36 AM
+btw the hyperion-webos binary is a lot bigger 1.2M vs 333k (edited)
+[yolofant]
+yolofant 09/29/2022 1:30 AM
+I don't think hyperion has some NEON optimized code
+09/29/2022 1:30 AM
+probably not as the performance difference was likely caused by a
+misconfigured? libyuv build
+[astur3l]
+astur3l 09/29/2022 1:28 AM
+wonder if hyperion/hdr affects too?:D
+sinergetikus 09/29/2022 1:17 AM
+if [ ! -d "/opt" ] ; then echo 'Unable to install entware: /opt directory not found' exit 1 fi ## First run of Entware integration ENTWARE="/media/entware" if [ ! -d "$ENTWARE" ] ; then mkdir -p "$ENTWARE/opt" mount -o bind "$ENTWARE/opt" /opt cd /opt wget http://bin.entware.net/armv7sf-k3.2/installer/generic.sh sh generic.sh mount -o bind /opt/etc/opkg.conf /etc/opkg/opkg.conf grep tmp_dir /etc/opkg/opkg.conf || echo option tmp_dir /opt/tmp >> /etc/opkg/opkg.conf grep 'PATH=$PATH:/opt/sbin:/opt/bin' /home/root/.profile || echo 'PATH=$PATH:/opt/sbin:/opt/bin' >> /home/root/.profile /opt/bin/opkg update # Replace the original opkg grep 'alias opkg="/opt/bin/opkg "' /home/root/.profile || echo 'alias opkg="/opt/bin/opkg "' >> /home/root/.profile # Add a particular alias grep 'alias epkg="/opt/bin/opkg "' /home/root/.profile || echo 'alias epkg="/opt/bin/opkg "' >> /home/root/.profile fi # Normal mount for installed Entware if [ -d "$ENTWARE" ] ; then mount -o bind $ENTWARE/opt /opt mount -o bind /opt/etc/opkg.conf /etc/opkg/opkg.conf fi
+ 1
+[] astur3l where did u get htop (or whatever is this)? :p
+sinergetikus 09/29/2022 12:45 AM
+From entware repository. There are lot of linux apps and utils there
+[astur3l]
+astur3l 09/29/2022 12:39 AM
+@TBSniller that toolchain also have cmake buildset/toolchain, is there a
+reason for not to use it ? (the ndk doc suggesting using it with qt
+projects) (edited)
+[astur3l]
+sinergetikus vsync off
+astur3l 09/29/2022 12:32 AM
+where did u get htop (or whatever is this)? :p
+September 28, 2022
+[tbsniller]
+tbsniller 09/28/2022 11:58 PM
+Wow amazing! Thanks for testing 
+ 1
+[satdx62]
+[] tbsniller This one will be the right one:
+https://github.com/TBSniller/piccap/actions/runs/3147071994 I'm sor...
+satdx62 09/28/2022 11:57 PM
+Hello, With the last build it works right away and also without lag with
+the standard settings. Thanks for that.
+[top.jpg]
+ top.jpg
+187.32 KB External
+[satdx62]
+[] tbsniller This one will be the right one:
+https://github.com/TBSniller/piccap/actions/runs/3147071994 I'm sor...
+satdx62 09/28/2022 11:47 PM
+No problem, will test the new build.
+ 1
+[tbsniller]
+[] satdx62 I installed the new build, got root privileges, but doesn't
+work. See screenshots.
+tbsniller 09/28/2022 11:43 PM
+This one will be the right one:
+https://github.com/TBSniller/piccap/actions/runs/3147071994 I'm sorry
+should have double checked before comitting
+CI: Update NDK to rev5 · TBSniller/piccap@e4f82b1
+PicCap - Hyperion Sender App | Ambilight for LG WebOS TVs - CI: Update
+NDK to rev5 · TBSniller/piccap@e4f82b1
+[]
+ 1
+[tbsniller]
+[] satdx62 I installed the new build, got root privileges, but doesn't
+work. See screenshots.
+tbsniller 09/28/2022 11:41 PM
+I've just seen I have messed up building process. Please give me a sec
+[satdx62]
+[] tbsniller Hey <@917488160580182068>, can you please check if this
+version https://github.com/TBSniller/piccap/...
+satdx62 09/28/2022 11:40 PM
+I installed the new build, got root privileges, but doesn't work. See
+screenshots.
+[piccap_log1.jpg]
+ piccap_log1.jpg
+49.6 KB External
+[piccap-log.jpg]
+ piccap-log.jpg
+151.19 KB External
+sinergetikus 09/28/2022 11:38 PM
+What is this extra thread?
+09/28/2022 11:38 PM
+vsync on
+[unknown.png]
+ unknown.png
+316.34 KB External
+09/28/2022 11:37 PM
+vsync off
+[unknown.png]
+ unknown.png
+247.51 KB External
+09/28/2022 11:34 PM
+I'll keep it with vsync on, even though it consumes 2x cpu
+09/28/2022 11:32 PM
+Thanks for the build. It's working fine let's see how it will work in
+the long run
+[astur3l]
+astur3l 09/28/2022 11:28 PM
+ehm.. when i tested, i couldnt run as service, now i see 10-15% less cpu
+usage (or its just measurement error....:D) (edited)
+09/28/2022 11:26 PM
+yeah me too, just gave another shot and solution come within few mins 
+btw it fixed
+sinergetikus 09/28/2022 11:23 PM
+I gave up too soon
+[] astur3l <@336517132319719425> yo gonna laught
+https://github.com/asturel/hyperion-webos/commit/13bd8e8f239ad...
+sinergetikus 09/28/2022 11:22 PM
+I was looking to that line, but then thought that must be something
+else, because it's working fine in original master
+ 1
+[tbsniller]
+tbsniller 09/28/2022 11:22 PM
+Hey @satdx62, can you please check if this version
+https://github.com/TBSniller/piccap/actions/runs/3146923322 is still
+working for your 3.4 TV?
+CI: Bring back NDK toolchain · TBSniller/piccap@0dcb870
+PicCap - Hyperion Sender App | Ambilight for LG WebOS TVs - CI: Bring
+back NDK toolchain · TBSniller/piccap@0dcb870
+[]
+[astur3l]
+astur3l 09/28/2022 11:18 PM
+i was about to add rpath 
+09/28/2022 11:17 PM
+@Sinergetikus yo gonna laught
+https://github.com/asturel/hyperion-webos/commit/13bd8e8f239adffc59824dcac0548670f67998f8
+build: cmake: fix link flags · asturel/hyperion-webos@13bd8e8
+[]
+[yolofant]
+hellobox. it depends what you're using from glibc
+yolofant 09/28/2022 11:17 PM
+probably hyperion-webos only uses the g_main_loop stuff
+hellobox. 09/28/2022 11:14 PM
+what version of glibc is on webos 1.x?
+09/28/2022 11:14 PM
+could you build the ndk with the oldest glibc version you want to
+support?
+09/28/2022 11:13 PM
+it depends what you're using from glibc
+09/28/2022 11:12 PM
+you can try patchelf to remove the version dependencies, although it's
+not the best idea
+[yolofant]
+yolofant 09/28/2022 11:12 PM
+maybe others
+09/28/2022 11:12 PM
+seems glibc is too new with the ndk
+09/28/2022 11:11 PM
+https://github.com/webosbrew/hyperion-webos/issues/51
+GLIBC_2.17 not found // WebOS 1.x not supported · Issue #51 · webos...
+On my LG I run into this error ./hyperion-webos --help ./hyperion-webos:
+/lib/libc.so.6: version `GLIBC_2.17&#39; not found (required by
+./hyperion-webos) It seems that the device is unfortunat...
+[]
+hellobox. 09/28/2022 11:11 PM
+and what breaks on old webos? glibc versioned symbol stuff?
+[yolofant]
+yolofant 09/28/2022 11:11 PM
+as part of hyperion-webos we compile libyuv
+09/28/2022 11:11 PM
+And the performance difference can only really come from either the NEON
+path not being enabled with buildroot or somehow optimization is really
+bad with the bundled gcc in buildroot
+[tbsniller]
+tbsniller 09/28/2022 11:09 PM
+I've asked tuxuser and he mentioned that he used the buildroot one,
+because while compiling hyperhdr he had some missing modules on webos3.4
+with ndk It's worth a try to let a webOS 3.4 user try a NDK builded one
+and see if its still able to run (edited)
+[yolofant]
+yolofant 09/28/2022 11:09 PM
+The observation is with ndk chain it's fast and with buildroot it's slow
+hellobox. 09/28/2022 11:08 PM
+so what are you trying to do? build your own libyuv with neon support?
+[yolofant]
+yolofant 09/28/2022 11:07 PM
+the heavy lifting part of the convert part is nv21 decoding and argb
+blending (edited)
+hellobox. 09/28/2022 11:06 PM
+oh
+[yolofant]
+yolofant 09/28/2022 11:06 PM
+and they implemented it using assembly
+09/28/2022 11:06 PM
+the neon optimized stuff is inside libyuv
+09/28/2022 11:05 PM
+yes
+09/28/2022 11:05 PM
+the performance difference was in the convert part
+hellobox. 09/28/2022 11:05 PM
+shouldn't gcc be able to emit neon instructions anyway?
+[yolofant]
+yolofant 09/28/2022 11:03 PM
+maybe?
+[tbsniller]
+tbsniller 09/28/2022 11:01 PM
+But isn't it already enabled?
+https://github.com/openlgtv/buildroot-nc4/blob/5a8d7abe193476105385fc946b965a92533a9c1b/configs/lgtv_defconfig#L144
+buildroot-nc4/lgtv_defconfig at 5a8d7abe193476105385fc946b965a92533...
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+09/28/2022 10:58 PM
+You mean cloning https://github.com/openlgtv/buildroot-nc4, doing the
+menuconfig thing, find+enable NEON, compile it and use this toolchain
+for buildprocess?
+[yolofant]
+yolofant 09/28/2022 10:56 PM
+maybe the buildroot gcc could be rebuild with NEON enabled?
+[tbsniller]
+tbsniller 09/28/2022 10:56 PM
+It was somewhere mentioned when tuxuser fixed hyperion-webos for 3.4 tvs
+09/28/2022 10:56 PM
+No, I know it also from 3.4
+[yolofant]
+yolofant 09/28/2022 10:55 PM
+only 1.x affected?
+[tbsniller]
+[] yolofant but it seems that we cannot use the ndk toolchain for
+whatever reason on older tvs?
+tbsniller 09/28/2022 10:54 PM
+I think this was the reason. Specific glibc not found:
+https://github.com/webosbrew/hyperion-webos/issues/51
+GLIBC_2.17 not found // WebOS 1.x not supported · Issue #51 · webos...
+On my LG I run into this error ./hyperion-webos --help ./hyperion-webos:
+/lib/libc.so.6: version `GLIBC_2.17&#39; not found (required by
+./hyperion-webos) It seems that the device is unfortunat...
+[]
+[yolofant]
+yolofant 09/28/2022 10:52 PM
+and ndk having support for NEON instructions as it seems as opposed to
+the buildroot one
+09/28/2022 10:52 PM
+but it seems that we cannot use the ndk toolchain for whatever reason on
+older tvs?
+09/28/2022 10:51 PM
+yes
+hellobox. 09/28/2022 10:51 PM
+i think gcc has a way to call different implementations based on cpu
+features
+[yolofant]
+yolofant 09/28/2022 10:48 PM
+I don't know why the other toolchain cannot work on older tvs but afaik
+libyuv already includes NEON checks at runtime
+[tbsniller]
+tbsniller 09/28/2022 10:45 PM
+Ahh okay I see, thanks. I thought there would be something with more
+sweetness As far I have followed, yeah, NEON related.
+[yolofant]
+yolofant 09/28/2022 10:41 PM
+In this case mostly NEON related I guess?
+09/28/2022 10:41 PM
+Then you would start the proper binary by some version check or you can
+also test for the presence of certain hardware instructions
+09/28/2022 10:41 PM
+I think the easiest is to have 2 separate binaries from each toolchain
+[tbsniller]
+[] yolofant you compile it with each toolchain and then just query the
+webos version and install the appropriate...
+tbsniller 09/28/2022 10:35 PM
+can you please be a bit more specific? I'm sorry I can't really follow.
+So do you mean compiling it together, so at the end, to get a what I've
+googled so called "fat binary"? Or do you mean at installation process
+of IPK file? Or do you mean having a wrapper for hyperion-webos, which
+afterwards calls one of two stubs? (edited)
+[yolofant]
+yolofant 09/28/2022 10:24 PM
+you compile it with each toolchain and then just query the webos version
+and install the appropriate binary
+[tbsniller]
+[] yolofant you can bundle both binaries and select the correct one at
+runtime
+tbsniller 09/28/2022 10:04 PM
+do you maybe have something for me to read about that?
+[yolofant]
+yolofant 09/28/2022 9:54 PM
+you can bundle both binaries and select the correct one at runtime
+[tbsniller]
+tbsniller 09/28/2022 9:53 PM
+So does somebody know if there is a smart way to handle this, or do we
+need two compiled versions with different toolchains?
+[krispykutz]
+[] yolofant don't judge fps from the live video feed
+krispykutz 09/28/2022 8:50 PM
+ok
+[yolofant]
+yolofant 09/28/2022 8:49 PM
+don't judge fps from the live video feed
+[krispykutz]
+krispykutz 09/28/2022 8:48 PM
+i see on the hyperhdr preview that it's not 24fps(more like 10) like i
+set it in the settings. Is the preview generally reduced in fps or does
+that mean its just not 24fps? Light still seems laggy (edited)
+[krispykutz]
+sinergetikus quick start+ is just simple linux sleep mode
+krispykutz 09/28/2022 8:44 PM
+huh, learned something new
+sinergetikus 09/28/2022 8:44 PM
+when you turn off your TV with remote, it goes into sleep mode
+09/28/2022 8:43 PM
+quick start+ is just simple linux sleep mode
+[krispykutz]
+sinergetikus or you just have quick start+ enabled
+krispykutz 09/28/2022 8:42 PM
+i do actually. i thought it's supposed to be left on. Guess i
+missunderstood it
+sinergetikus 09/28/2022 8:41 PM
+or you just have quick start+ enabled
+[krispykutz]
+sinergetikus TV usually does its own thing for a few minutes after
+turning it off, but reboot from console forces...
+krispykutz 09/28/2022 8:41 PM
+i see. makes sense
+[] krispykutz it worked! thank you! How come the console reboot helps,
+but not the menu induced reboot?
+sinergetikus 09/28/2022 8:40 PM
+TV usually does its own thing for a few minutes after turning it off,
+but reboot from console forces it to terminate any tasks and just reboot
+[astur3l]
+sinergetikus I changed whole pipeline but I just tried your build, and
+it's working exactly as my So it confirm t...
+astur3l 09/28/2022 8:38 PM
+thanks for trying out  so it must be in the toolchain file...  too
+bad there's no 'portable'
+[krispykutz]
+sinergetikus reboot your TV, ideally from ssh console
+krispykutz 09/28/2022 8:37 PM
+it worked! thank you! How come the console reboot helps, but not the
+menu induced reboot?
+[satdx62]
+[] krispykutz How come Piccap captures the TV's menu, but not the HDMI
+anymore(just black screen)? Worked fine a f...
+satdx62 09/28/2022 8:36 PM
+Maybe it's because of the changed resolution.
+sinergetikus 09/28/2022 8:35 PM
+reboot your TV, ideally from ssh console
+[krispykutz]
+krispykutz 09/28/2022 8:34 PM
+How come Piccap captures the TV's menu, but not the HDMI anymore(just
+black screen)? Worked fine a few hours ago. Piccap says "capturing" but
+in the lower right its says"video not capturing". Been restarting
+several times already.
+sinergetikus 09/28/2022 8:32 PM
+I changed whole pipeline but I just tried your build, and it's working
+exactly as my So it confirm that the reason somewhere in toolchain
+[astur3l]
+astur3l 09/28/2022 8:28 PM
+my bet is some gcc flag.. but i didnt changed a simple thing except the
+toolchain 
+sinergetikus 09/28/2022 8:24 PM
+No idea, I was going to ask the same thing
+[astur3l]
+astur3l 09/28/2022 8:23 PM
+how can i fix the service's ld lib path?:D
+[yolofant]
+yolofant 09/28/2022 8:21 PM
+ah nevermind it's build as part of hyperion-webos
+09/28/2022 8:18 PM
+but it's linked dynamically
+09/28/2022 8:18 PM
+libyuv can use neon instructions
+09/28/2022 8:18 PM
+in that case your neon explanation sounds reasonable
+sinergetikus 09/28/2022 8:18 PM
+yes, it's from conversion
+[yolofant]
+yolofant 09/28/2022 8:17 PM
+can you check if the difference comes from the convert part? (edited)
+sinergetikus 09/28/2022 8:17 PM
+https://github.com/Sinergetikus/hyperion-webos/actions/runs/3145624984
+09/28/2022 8:15 PM
+my settings
+09/28/2022 8:14 PM
+LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service ./hyperion-webos -x 288 -y 162 -f 60 -a 192.168.100.17 -v
+09/28/2022 8:13 PM
+only ui capture was affected for me
+[astur3l]
+astur3l 09/28/2022 8:12 PM
+i checked only the video capture fps, gui was like 14 fps so i turned it
+off, but the video also tops at 47 fps
+sinergetikus 09/28/2022 8:12 PM
+and what's you fps with ui capture?
+[astur3l]
+astur3l 09/28/2022 8:11 PM
+nope, A1, also vtcapture
+sinergetikus 09/28/2022 8:11 PM
+do you have CX ?
+09/28/2022 8:11 PM
+strange
+09/28/2022 8:11 PM
+that's it
+[astur3l]
+astur3l 09/28/2022 8:08 PM
+i just checked (
+https://github.com/asturel/hyperion-webos/commit/53a552f5821c619685687158fbc31fd3f35b5da2
+) but no difference , except that i need to set LD_LIBRARY_PATH
+otherwise libs wont load or isnt
+https://github.com/webosbrew/meta-lg-webos-ndk/releases/download/1.0.g-rev.4/webos-sdk-x86_64-armv7a-neon-toolchain-1.0.g.sh
+the mentioned toolchain? (edited)
+use old toolchain · asturel/hyperion-webos@53a552f
+[]
+sinergetikus 09/28/2022 8:01 PM
+So the issue with low fps/ slow conversion related to the toolchain And
+some completely different issue - 2x cpu usage with vsync enabled
+09/28/2022 7:59 PM
+looks like old version have fake vsync, and that's why it consume 2x
+less cpu new hyperion-webos with old toolchain and vsync disabled,
+behave exactly as my build from old branch
+[tbsniller]
+rembihnutur I do not think so. Someone would have to bypass DRM
+protection measures for this. But you can use ex...
+tbsniller 09/28/2022 7:55 PM
+@Rembihnutur @Lobo Andaluz please see this post
+https://github.com/TBSniller/piccap/issues/38#issuecomment-1257178829
+Capture of DRM-protected content like Netflix/Amazon not working · ...
+Hi. Netflix is not working anymore after the netflix app was updated.
+Hyperion is receiving a black image. Any ideas how I can fix this?
+[]
+sinergetikus 09/28/2022 7:55 PM
+No, vsync and cpu usage is completely different thing
+[tbsniller]
+tbsniller 09/28/2022 7:54 PM
+so do I understand it correctly? it seams like vsync isn't supported
+with buildroot toolchain?
+sinergetikus 09/28/2022 7:50 PM
+Ahh, that's vsync. Without vsync, cpu usage identical to my old build
+(edited)
+sinergetikus 09/28/2022 7:29 PM
+maybe some other flags/optimisations/functions are missing, as CPU usage
+x2 if compare to my old brunch
+09/28/2022 7:27 PM
+My guess that it does not use neon in the new toolchain
+[tbsniller]
+tbsniller 09/28/2022 7:26 PM
+We are using this other toolchain to support lower webOS versions..
+sinergetikus 09/28/2022 7:26 PM
+I copied actions pipeline from mentioned brunch
+09/28/2022 7:25 PM
+but it doesn't matter much now, as seems it's not the code, but
+toolchain
+09/28/2022 7:24 PM
+by patchead I mean this one
+https://github.com/Sinergetikus/hyperion-webos/tree/vtcapture-double-thread-fix
+GitHub - Sinergetikus/hyperion-webos at vtcapture-double-thread-fix
+hyperion.ng video grabber for webOS. Contribute to
+Sinergetikus/hyperion-webos development by creating an account on
+GitHub.
+[]
+[tbsniller]
+sinergetikus I found the source of the issue. Somewhat... I built recent
+main branch of hyperion-webos but with o...
+tbsniller 09/28/2022 7:24 PM
+Oh wow, thats interesting
+[tbsniller]
+sinergetikus I've updated to the latest piccap and hyperion-webos,
+unfortunately, still very slow on my CX with U...
+tbsniller 09/28/2022 7:23 PM
+Do you have UI capture enabled? And which one was the patched one?
+sinergetikus I've updated to the latest piccap and hyperion-webos,
+unfortunately, still very slow on my CX with U...
+sinergetikus 09/28/2022 7:23 PM
+I found the source of the issue. Somewhat... I built recent main branch
+of hyperion-webos but with old toolchain steady 60fps
+[unknown.png]
+ unknown.png
+208.43 KB External
+[krispykutz]
+[] satdx62 Yes, you can with Device Manager for WebOS. To test,
+uninstall PicCap 4.1 and simply install the 0.2...
+krispykutz 09/28/2022 7:14 PM
+Guess since satdx62 has the same tv and resolution i'll stay with the
+recent one (edited)
+ 1
+[satdx62]
+[] krispykutz oh older piccap i see. can i downgrade? 
+satdx62 09/28/2022 7:12 PM
+Yes, you can with Device Manager for WebOS. To test, uninstall PicCap
+4.1 and simply install the 0.2.3_all.ipk file from GitHub. But if you're
+happy with 4.1 then leave it at that. “Never change a running system”
+https://github.com/TBSniller/piccap/releases/tag/0.2.3
+[Device_manager_webos.install.jpg]
+ Device_manager_webos.install.jpg
+108.83 KB External
+[Device_Manager_-webOS.png]
+ Device_Manager_-webOS.png
+46.99 KB External
+Release org.webosbrew.piccap_0.2.3 · TBSniller/piccap
+This is only the frontend for the shipped hyperion-webos backend
+service! Find hyperion-webos repository for more information here:
+https://github.com/webosbrew/hyperion-webos v0.2.3 -wider libdile...
+[]
+[satdx62]
+satdx62 09/28/2022 6:57 PM
+Hello, some time ago there was htop and nano for webOS. Seems to be that
+this pack is no longer available. Anyone else have this?
+[krispykutz]
+krispykutz 09/28/2022 6:51 PM
+well guess i gotta live with this. thanks for the help
+[krispykutz]
+[] satdx62 Yes, but with PicCap 0.2.3 and HyperHDR I have 27% with
+hyperion-webos and almost 3% with hyperhdr. ...
+krispykutz 09/28/2022 6:50 PM
+oh older piccap i see. can i downgrade? 
+[satdx62]
+[] krispykutz So since we have the same model why can you use other
+settings?
+satdx62 09/28/2022 6:50 PM
+I can use other settings, but I'm happiest with 192 x96. No delay.
+Everything is smooth and no flickering on the LEDs, everything is
+perfect.
+[krispykutz]
+[] satdx62 My OLED65B7D is also an older 2017 model and doesn't have as
+powerful a CPU/GPU as the newer devices...
+krispykutz 09/28/2022 6:45 PM
+So since we have the same model why can you use other settings?
+[satdx62]
+[] krispykutz yeah but with just 192x108 and reduced settings where
+others do not seem to have this problem. I'm n...
+satdx62 09/28/2022 6:43 PM
+My OLED65B7D is also an older 2017 model and doesn't have as powerful a
+CPU/GPU as the newer devices from 2020-2022, so I also selected a
+smaller resolution in PicCap and everything is fine.
+[krispykutz]
+[] satdx62 I mean, with 45% CPU load on hyperion-webos, PicCap had to
+work well and the LEDs had to be in sync ...
+krispykutz 09/28/2022 6:38 PM
+yeah but with just 192x108 and reduced settings where others do not seem
+to have this problem. I'm new to this so i don't have a clue
+[satdx62]
+[] krispykutz Not sure if i understand why you say that.
+satdx62 09/28/2022 6:35 PM
+I mean, with 45% CPU load on hyperion-webos, PicCap had to work well and
+the LEDs had to be in sync with the image. So without delays.
+[krispykutz]
+[] awawa_dev Weird... you have just lost CPU2 and that broken CPU3  If
+it's LG power saving mechanism I've neve...
+krispykutz 09/28/2022 6:31 PM
+i have a LG OLED B7 if that is some help
+[awawa_dev]
+[] krispykutz both HyperHDR and Picap stopped
+awawa_dev 09/28/2022 6:30 PM
+Weird... you have just lost CPU2 and that broken CPU3  If it's LG
+power saving mechanism I've never seen anything like it.
+[krispykutz]
+[] satdx62 Now, you should be running fine with no delays.
+krispykutz 09/28/2022 6:28 PM
+Not sure if i understand why you say that.
+[satdx62]
+[] krispykutz CPU3 is weird, but i have no clue. this is with everything
+running. I'll test now without it running...
+satdx62 09/28/2022 6:26 PM
+Now, you should be running fine with no delays.
+[krispykutz]
+krispykutz 09/28/2022 6:19 PM
+both HyperHDR and Picap stopped
+[Screenshot_TV2_.png]
+ Screenshot_TV2_.png
+34.56 KB External
+09/28/2022 6:16 PM
+CPU3 is weird, but i have no clue. this is with everything running. I'll
+test now without it running... (edited)
+[Screenshot_TV_.png]
+ Screenshot_TV_.png
+44.78 KB External
+[satdx62]
+[] awawa_dev As I understand the mechanism of running newest Piccap was
+also changed in that version. Maybe it's ...
+satdx62 09/28/2022 5:44 PM
+Yes, this is a four core CPU. And yes, @TBSniller indicated that the
+routines for PicCap 4.1 have changed and are using more resources. For
+me, that's okay. I no longer have any problems with my current settings
+under PicCap 4.1. But some users have a very high level (delay)and that
+is annoying. (edited)
+[top.jpg]
+ top.jpg
+148.65 KB External
+[awawa_dev]
+awawa_dev 09/28/2022 5:33 PM
+As I understand the mechanism of running newest Piccap was also changed
+in that version. Maybe it's related? Resources were not reported for the
+right owner? But look again on you latest screenshot: average
+short/mid-term load is also very high > 8 , but the longest period of
+average load looks quite nice around 5. It may indicate that TV worked
+for some time without a load (capturing?) before it got load at some
+point. BTW please press '1' in 'top' to check number of cores you have
+ (edited)
+ 1
+[satdx62]
+[] awawa_dev Average load is usually also related to the CPU. On the
+other hand 70% for the application on 4 core...
+satdx62 09/28/2022 5:28 PM
+Yes, but with PicCap 0.2.3 and HyperHDR I have 27% with hyperion-webos
+and almost 3% with hyperhdr. The high load only comes with PicCap4.1
+[CPU_auslastung-hyperion-webos-.jpg]
+ CPU_auslastung-hyperion-webos-.jpg
+151.52 KB External
+[awawa_dev]
+awawa_dev 09/28/2022 5:20 PM
+Average load is usually also related to the CPU. On the other hand 70%
+for the application on 4 core CPU should be read as 70/400. Not high at
+all. But the average load shows something can be not quite right in both
+examples. (edited)
+[satdx62]
+[] awawa_dev If it's typical 4 core ARM then it's 2.25 per core. Very
+high.
+satdx62 09/28/2022 5:16 PM
+It's about the CPU load. And at @ķʀïżρy ķύŧʐ  the CPU retention
+is 70% for hyperion-webos.
+[awawa_dev]
+awawa_dev 09/28/2022 5:13 PM
+If it's typical 4 core ARM then it's 2.25 per core. Very high.
+[satdx62]
+[] awawa_dev <@917488160580182068> on your screenshot you also have
+short-term and long-term average load near 9
+satdx62 09/28/2022 5:12 PM
+Yes, but I have no lag. Everything is going perfectly for me.
+[awawa_dev]
+awawa_dev 09/28/2022 5:07 PM
+@satdx62 on your screenshot you also have short-term and long-term
+average load near 9
+[satdx62]
+[] krispykutz i posted what you marked in the picture. here again: PID
+USER PR NI VIRT RES SHR S %CPU %...
+satdx62 09/28/2022 5:04 PM
+I would try to stop the service in PicCap first and then go to manual in
+Settings under Resolution and then choose 192 × 96, set Max 20 fps and
+priority to 100, then press Save and then restart (reboot). Check CPU
+load again under SSH.
+[krispykutz]
+[] awawa_dev The plain text is also clear for me. The very high average
+load of OS (global statistic) is disturbi...
+krispykutz 09/28/2022 4:56 PM
+i'm gonna see and post again...
+[awawa_dev]
+awawa_dev 09/28/2022 4:55 PM
+The plain text is also clear for me. The very high average load of OS
+(global statistic) is disturbing, even if we consider multi-core
+processing in both of your cases. Unless you both have TVs equipped with
+an octa-core ARM CPU inside  Did you check it without capturing
+running? Running 192x108 (or similar low resolution don't remember
+exactly) was causing "pixelize" effect when some object on the video was
+moving on my LED strip, but I have a high density LED.
+[krispykutz]
+krispykutz 09/28/2022 4:54 PM
+i posted what you marked in the picture. here again: PID USER PR NI VIRT
+RES SHR S %CPU %MEM TIME+ COMMAND 2653 root 20 0 165m 3664 2580 S 46 0.2
+23:59.10 hyperion-webos 1372 root 20 0 1340m 47m 24m S 7 2.4 3:14.74
+tvservice 2654 root 20 0 203m 67m 10m S 2 3.4 1:23.30 hyperhdr
+[satdx62]
+[] krispykutz top - 16:26:58 up 46 min, 1 user, load average: 8.92,
+8.79, 8.29 top - 16:26:59 up 46 min, 1 user...
+satdx62 09/28/2022 4:36 PM
+You misunderstood me, I wanted to show how high the CPU load is under
+Hyperion and HyperHDR. you can find out in PuTTY. Hey, I meant a
+screenshot like that.
+[top.jpg]
+ top.jpg
+204.21 KB External
+[krispykutz]
+krispykutz 09/28/2022 4:31 PM
+cpu goes up to like 70% for hyperion-webos
+[krispykutz]
+[] satdx62 Please give the command in PuTTy SSH: top. And post the
+output here. It's about the CPU load.
+krispykutz 09/28/2022 4:29 PM
+top - 16:26:58 up 46 min, 1 user, load average: 8.92, 8.79, 8.29 top -
+16:26:59 up 46 min, 1 user, load average: 8.92, 8.79, 8.29 Tasks: 215
+total, 1 running, 214 sleeping, 0 stopped, 0 zombie Cpu(s): 14.3%us,
+5.7%sy, 0.0%ni, 77.1%id, 0.0%wa, 0.0%hi, 2.9%si, 0.0%st Mem: 2031864k
+total, 1967468k used, 64396k free, 100596k buffers Swap: 614396k total,
+68268k used, 546128k free, 261900k cached PID USER PR NI VIRT RES SHR S
+%CPU %MEM TIME+ COMMAND top - 16:27:58 up 47 min, 1 user, load average:
+8.83, 8.79, 8.32 Tasks: 215 total, 1 running, 214 sleeping, 0 stopped, 0
+zombie Cpu(s): 14.1%us, 1.5%sy, 0.1%ni, 84.2%id, 0.0%wa, 0.0%hi, 0.0%si,
+0.0%st Mem: 2031864k total, 1967736k used, 64128k free, 100596k buffers
+Swap: 614396k total, 68268k used, 546128k free, 261908k cached PID USER
+PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND 2653 root 20 0 165m 3664
+2580 S 46 0.2 23:59.10 hyperion-webos 1372 root 20 0 1340m 47m 24m S 7
+2.4 3:14.74 tvservice 2654 root 20 0 203m 67m 10m S 2 3.4 1:23.30
+hyperhdr 1281 root 20 0 33268 2456 2216 S 1 0.1 0:33.58 gm
+[satdx62]
+[] krispykutz i tried it with 256x144 and lowered priority, but
+stuttering again. Gotta keep it at 192x108 for now...
+satdx62 09/28/2022 3:48 PM
+Please give the command in PuTTy SSH: top. And post the output here.
+It's about the CPU load.
+[krispykutz]
+krispykutz 09/28/2022 3:42 PM
+i tried it with 256x144 and lowered priority, but stuttering again.
+Gotta keep it at 192x108 for now.
+[krispykutz]
+krispykutz 09/28/2022 3:33 PM
+this is for 192x108
+[krispykutz]
+[] satdx62 What is the output of top in SSH? CPU load “hyperion-webos”
+and “hyperhdr”. If the CPU load is too h...
+krispykutz 09/28/2022 3:33 PM
+hyperion-webos says: Framerate 30FPS; timings - wait: 16609us, acquire:
+3379us, convert: 12504us, process: 178us, send: 210us, release: 1us
+[krispykutz]
+[] satdx62 What is the output of top in SSH? CPU load “hyperion-webos”
+and “hyperhdr”. If the CPU load is too h...
+krispykutz 09/28/2022 3:24 PM
+thanks, i will try that
+[] yolofant That is because hyperion-webos controls the HDR switch
+vrvrvrvrvr. 09/28/2022 2:47 PM
+Any workaround ?
+[satdx62]
+[] krispykutz Solution: Seems i had to go down to the 192x108 resolution
+to get rid of the stuttering
+satdx62 09/28/2022 1:22 PM
+What is the output of top in SSH? CPU load “hyperion-webos” and
+“hyperhdr”. If the CPU load is too high, lower the priority from 150 to
+100 in PicCap.
+[yolofant]
+yolofant 09/28/2022 10:56 AM
+That is because hyperion-webos controls the HDR switch
+vrvrvrvrvr. Hi! Any ideas why when i restart TV, HDR to SD tone mapping
+is not working? I have checkbox saved, b...
+vrvrvrvrvr. 09/28/2022 10:50 AM
+Hello, no ideas? HyperHDR bug ?
+September 27, 2022
+[krispykutz]
+krispykutz 09/27/2022 11:59 PM
+Solution: Seems i had to go down to the 192x108 resolution to get rid of
+the stuttering
+[krispykutz]
+krispykutz 09/27/2022 11:24 PM
+live video is very laggy
+[krispykutz]
+[] yolofant what resolution do you use?
+krispykutz 09/27/2022 11:23 PM
+i rebooted and lights are up again, but even with the 256 resolution
+there still is latency (edited)
+[krispykutz]
+krispykutz 09/27/2022 11:15 PM
+with highest i had 12fps, now it says 30fps, but the light won't go on
+on yt, jsut in menus
+09/27/2022 11:14 PM
+highest, now changed it to 256
+[yolofant]
+yolofant 09/27/2022 11:06 PM
+what resolution do you use?
+[krispykutz]
+krispykutz 09/27/2022 11:01 PM
+i got high latency with hyperhdr. Light reacts like 200ms later. Any
+ideas?
+sorteds 09/27/2022 8:28 PM
+do i still need to disable Quick Start+ to get Autostart of PicCCap and
+HyperHDR working? My wife often uses the LG Apps. And there is a certain
+delay recognisable
+[] astur3l same, just updated (newer version), just grab the ipk from
+assets (iirc needs GitHub login), and ins...
+sorteds 09/27/2022 8:26 PM
+works! thank you 
+ 1
+vrvrvrvrvr. 09/27/2022 8:12 PM
+Hi! Any ideas why when i restart TV, HDR to SD tone mapping is not
+working? I have checkbox saved, but after restart in preview I see low
+saturation output. When I uncheck, save and check again -> it returns
+back to normal -> with saturated output., and therefore have drastic
+effect on led output. Any ideas? (edited)
+[Screenshot_2022-09-27_at_21.09.45.png]
+ Screenshot_2022-09-27_at_21.09.45.png
+670.97 KB External
+[Screenshot_2022-09-27_at_21.09.36.png]
+ Screenshot_2022-09-27_at_21.09.36.png
+713.1 KB External
+[loboandaluz]
+rembihnutur I do not think so. Someone would have to bypass DRM
+protection measures for this. But you can use ex...
+loboandaluz 09/27/2022 7:20 PM
+A pity not being able to use it directly from LG, but I'll keep it in
+mind. Thanks
+[] loboandaluz Looks like that's the reason  Is there any chance that
+it will be fixed?
+rembihnutur 09/27/2022 7:12 PM
+I do not think so. Someone would have to bypass DRM protection measures
+for this. But you can use external devices. An AppleTV or a FireTV stick
+for example.
+[loboandaluz]
+rembihnutur Which TV? It does not work with newer TVs in internal Apps.
+Because of DRM.
+loboandaluz 09/27/2022 7:09 PM
+Looks like that's the reason  Is there any chance that it will be
+fixed?
+[] loboandaluz I recently root my LG and config hyperhdr. But it only
+works for TV Channels and YouTube.... Neither...
+rembihnutur 09/27/2022 6:16 PM
+Which TV? It does not work with newer TVs in internal Apps. Because of
+DRM.
+[loboandaluz]
+loboandaluz 09/27/2022 5:55 PM
+I recently root my LG and config hyperhdr. But it only works for TV
+Channels and YouTube.... Neither Netflix, Amazon, or other. Is this
+normal? Maybe I forgetting some config?
+[finipiniricardocosta]
+finipiniricardocosta 09/27/2022 2:27 PM
+Oops, or maybe is just enable autostart in picCap settings  (edited)
+[finipiniricardocosta]
+finipiniricardocosta 09/27/2022 1:57 PM
+I have to do this ?
+https://discord.com/channels/407937994037919756/822443030761046017/1011835466783395870
+[finipiniricardocosta]
+finipiniricardocosta 09/27/2022 1:43 PM
+Hi. How to do to start picapp auto like Hyperion-webos does ? (edited)
+[raffibaffi]
+sinergetikus I've updated to the latest piccap and hyperion-webos,
+unfortunately, still very slow on my CX with U...
+raffibaffi 09/27/2022 1:10 PM
+same here with CX! Old Piccap 60+ fps, new one around 20fps....
+[sonic8x]
+[] astur3l you have to uninstall the original app first
+sonic8x 09/27/2022 11:16 AM
+I can't find Movies app and uninstall it, it's like search build in
+tools, it's not app
+[astur3l]
+[] sonic8x My remote have a Movies button, when i press it can't turn on
+or off piccap, it just open movies
+astur3l 09/27/2022 11:11 AM
+you have to uninstall the original app first
+[sonic8x]
+sonic8x 09/27/2022 10:12 AM
+My remote have a Movies button, when i press it can't turn on or off
+piccap, it just open movies (edited)
+[] astur3l same, just updated (newer version), just grab the ipk from
+assets (iirc needs GitHub login), and ins...
+sorteds 09/27/2022 8:08 AM
+Will test it today. Thank you so much 
+sinergetikus 09/27/2022 1:03 AM
+I've updated to the latest piccap and hyperion-webos, unfortunately,
+still very slow on my CX with UI capture reverting back to the old
+patched version
+[unknown.png]
+ unknown.png
+250.74 KB External
+[astur3l]
+sorteds Is it the one shown in homebrew? Somehow it says this is already
+installed. But I didn't do that  ...
+astur3l 09/27/2022 12:32 AM
+same, just updated (newer version), just grab the ipk from assets (iirc
+needs GitHub login), and install in the way that you just described
+above or from releases https://github.com/asturel/OnOff-Remote/releases
+i didn't bothered to update to readme to, at some point its gets
+officially updated too , so its just a temp solution until that (edited)
+Releases · asturel/OnOff-Remote
+Remaps the Movies or Rakuten button to Pause/play PicCap -
+asturel/OnOff-Remote
+[]
+sorteds 09/27/2022 12:02 AM
+Is it the one shown in homebrew? Somehow it says this is already
+installed. But I didn't do that  Or do I need to type the code of your
+Readme into putty? (sorry, not the biggest expert)
+September 26, 2022
+[astur3l]
+sorteds Hey guys! back since some time. Updated to newest version of
+PicCap and installed HyperHDR loader. T...
+astur3l 09/26/2022 11:58 PM
+piccap service "api" has changed, requires onoff app to update for it,
+dunno if there's official build somewhere, you can use mine if u like
+https://github.com/asturel/OnOff-Remote/actions/runs/2852689554
+update to latest piccap ('isRunning' method deprecated in favor of ...
+Remaps the Movies or Rakuten button to Pause/play PicCap - update to
+latest piccap ('isRunning' method deprecated in favor of 's… ·
+asturel/OnOff-Remote@cd35780
+[]
+ 1  1
+sorteds 09/26/2022 11:52 PM
+Hey guys! back since some time. Updated to newest version of PicCap and
+installed HyperHDR loader. Thank you so much guys. Works like a charm! A
+small downside. My PicCap on/off button isn't working anymore after the
+update. I have the "Movie" Button instead of the "Rakuten" button. i
+followed the old instructions of @Bahoué. But without success... Can
+someone help me? > To use the movies or rakuten button to turn on/off
+the piccap capture: > > - Delete the rakuten application if it is
+present and not used. > - Via sftp put the ipk ui30.ipk in the tmp
+folder of the tv. > - In ssh > luna-send -i -f
+luna://com.webos.appInstallService/dev/install
+'{"id":"com.ares.defaultName","ipkUrl":"/tmp/ui30.ipk","subscribe":true}'
+[awawa_dev]
+[] astur3l <@785543671021699092> is the lut compensation applied after
+the blackbar detection?
+awawa_dev 09/26/2022 11:43 PM
+LUT is before the blackbar detection
+ 1
+[finipiniricardocosta]
+finipiniricardocosta 09/26/2022 11:18 PM
+I have it in a Raspberry Pi but i thought that webos would work hás
+grabber and server for Hyperion.
+09/26/2022 11:17 PM
+What else do i need to run the software hyperion.ng ?
+09/26/2022 11:16 PM
+From what i,m seeing picCap is just the UI for the hyperion-webos witch
+works has the grabber .... (edited)
+09/26/2022 11:15 PM
+Hello. Sorry i,m a little confused with One thing ..... I have instaled
+hyperion-webos APP and picCap APP.
+[astur3l]
+astur3l 09/26/2022 10:20 PM
+@Awawa is the lut compensation applied after the blackbar detection?
+[tbsniller]
+tbsniller 09/26/2022 10:05 PM
+Yeah, return value 17 means cant capture now -> reasons can be: No video
+playing, Protected content playing -> In this case capture will be
+restartet after short time until video playback is playing (edited)
+ 1
+[kitty_of_asklepios]
+kitty_of_asklepios 09/26/2022 9:25 PM
+Ok, forget last messages... it works dropping down resolution, but I
+didn't realize because I used Prime-Video to check and there's no video
+because of DRM (black screen) there   Sorry!
+[kitty_of_asklepios]
+kitty_of_asklepios 09/26/2022 8:48 PM
+scrolling through the Log there are sporadical Errors "user.warning
+hyperion-webos [] capture WARN {} vtDriver.cpp.vtV4l2loctl():30 vt v4l2
+ioctl was failed {fd[37], request[-1069263343]" and "user.crit
+hyperion-webos [] capture CRIT {} vtDriver.cpp.dequeueBuffer():1093
+dequeueBuffer failed [37][Permission denied]" between the other Error
+[IMG_20220926_203442_e1.jpg]
+ IMG_20220926_203442_e1.jpg
+70.55 KB External
+[kitty_of_asklepios]
+kitty_of_asklepios 09/26/2022 8:32 PM
+Googling unfortunately didn't return anything, so has anyone here an
+idea?
+09/26/2022 8:31 PM
+SystemInfo is "board_type": "O20_DVB", "hardware_id":
+"HE_DTV_W21O_AFABATAA", "product_id": "OLED65C17LB", "core_os_release":
+"6.3.1-411", "webos_manufacturing_version": "03.33.11",
+09/26/2022 8:31 PM
+Hi, I recently rooted and today installed v4.1 but I'm having Problems
+getting video capturing to work. UI-Capturing worked out of the Box, but
+I don't get any Video with Error "vtCapture_currentCaptureBuffInfo()
+failed". Attached a Screenshot of Error and Settings. Tried different
+Resolutions but it works in neither.
+[IMG_20220926_202027.jpg]
+ IMG_20220926_202027.jpg
+2.67 MB External
+[IMG_20220926_202053.jpg]
+ IMG_20220926_202053.jpg
+1.8 MB External
+[buster4568]
+[] satdx62
+https://discord.com/channels/407937994037919756/931706504627773450/1019909704484388874
+buster4568 09/26/2022 9:45 AM
+Yes, with this attitude I have it going.
+[buster4568]
+rembihnutur TBSniller explained here why.
+https://discord.com/channels/407937994037919756/931706504627773450/10...
+buster4568 09/26/2022 9:41 AM
+Yes, I've already done that, otherwise the utilization would be around
+60%. just interested me. It's running as it should.
+[satdx62]
+[] buster4568 Hello, Now PicCap V0.4.1 has been released in channel, but
+the CPU is still higher than V0.2.3, why?...
+satdx62 09/26/2022 9:38 AM
+https://discord.com/channels/407937994037919756/931706504627773450/1019909704484388874
+[] buster4568 Hello, Now PicCap V0.4.1 has been released in channel, but
+the CPU is still higher than V0.2.3, why?...
+rembihnutur 09/26/2022 9:09 AM
+TBSniller explained here why.
+https://discord.com/channels/407937994037919756/931706504627773450/1019604722505744454
+[buster4568]
+buster4568 09/26/2022 8:44 AM
+Hello, Now PicCap V0.4.1 has been released in channel, but the CPU is
+still higher than V0.2.3, why? V 0.4.1 I have a utilization of about 18%
+and with V 0.2.3 I have about 4%
+[astur3l]
+astur3l 09/26/2022 1:22 AM
+@TBSniller
+https://discord.com/channels/407937994037919756/931706504627773450/1001449919879585832
+searching back for hdcp comes up with few issues (edited)
+September 25, 2022
+[tbsniller]
+[] satdx62 <@430448040080572424> also many thanks from my side for the
+quick implementation of the 4.1 version....
+tbsniller 09/25/2022 11:41 PM
+thank you too!  if you hadn't tested we wouldn't have support for
+lower webOS versions yet 
+[satdx62]
+satdx62 09/25/2022 10:40 PM
+@TBSniller also many thanks from my side for the quick implementation of
+the 4.1 version. It works error free. Excellent! 
+[astur3l]
+[] tbsniller Never heard that it isn't working when you use HDMI as
+input device
+astur3l 09/25/2022 8:54 PM
+maybe when tv used as HDCP compatible display?
+[tbsniller]
+[] funky7603 Thanks <@430448040080572424> The new release fixed the
+screensaver problem. Homescreen capture work...
+tbsniller 09/25/2022 8:42 PM
+Nice to hear   yeah also thanks to all others involved which were
+responsibly for this  (edited)
+[seiks]
+[] the_pants Looks like for the LG I can use just a WLED controller and
+the LED strip, but the for the bedroom I'...
+seiks 09/25/2022 8:21 PM
+might as well just buy a new LG instead 
+[funky7603]
+funky7603 09/25/2022 8:14 PM
+Thanks @TBSniller The new release fixed the screensaver problem.
+Homescreen capture works as well. The new UI is very nice too
+[tbsniller]
+[] the_pants Looks like for the LG I can use just a WLED controller and
+the LED strip, but the for the bedroom I'...
+tbsniller 09/25/2022 7:49 PM
+Keep in mind you may also need a power source for WLED^^
+[tbsniller]
+[] the_pants I think I might have been reading about the Android app as
+well. I have 2 TVs I'm trying to set up, ...
+tbsniller 09/25/2022 7:48 PM
+Ahh I see that would make sense
+[the_pants]
+the_pants 09/25/2022 7:35 PM
+Looks like for the LG I can use just a WLED controller and the LED
+strip, but the for the bedroom I'll need power for, capture with loop,
+Linux box, WLED box, and LEDs. Plus adding a chromecast instead of using
+the built in streaming. That's 5 additional power plugs  probably just
+going to wait for RPi prices to come back down.
+09/25/2022 7:30 PM
+I think I might have been reading about the Android app as well. I have
+2 TVs I'm trying to set up, my main TV is a LG with WebOS, and the
+bedroom is Hisense with android. Trying to minimize the wires and plugs.
+[tbsniller]
+[] the_pants I keep seeing conflicting answers. Does PicCap work with
+Netflix, HBO, etc, if it is coming from an ...
+tbsniller 09/25/2022 7:21 PM
+Where did you get your answer?
+[tbsniller]
+[] the_pants I keep seeing conflicting answers. Does PicCap work with
+Netflix, HBO, etc, if it is coming from an ...
+tbsniller 09/25/2022 7:20 PM
+Never heard that it isn't working when you use HDMI as input device
+[the_pants]
+the_pants 09/25/2022 7:12 PM
+I keep seeing conflicting answers. Does PicCap work with Netflix, HBO,
+etc, if it is coming from an external device like a Chromecast or PS5?
+[den3545]
+[] buster4568
+https://github.com/erolatex/hyperhdr-webos-loader/actions/runs/3093361076
+den3545 09/25/2022 10:48 AM
+Thanks, I looked in the wrong repo.
+[buster4568]
+[] den3545 Where can in find the 19 beta of HyperHDR? I looked in Github
+Action Page (logged in), but I couldnt...
+buster4568 09/25/2022 10:46 AM
+https://github.com/erolatex/hyperhdr-webos-loader/actions/runs/3093361076
+Update package.json · erolatex/hyperhdr-webos-loader@df8ab80
+Contribute to erolatex/hyperhdr-webos-loader development by creating an
+account on GitHub.
+[]
+[den3545]
+den3545 09/25/2022 10:43 AM
+Where can in find the 19 beta of HyperHDR? I looked in Github Action
+Page (logged in), but I couldnt find it.
+[buster4568]
+[] astur3l if you grabbed my build thats not because of the hyperhdr
+update, its because the service wont stop ...
+buster4568 09/25/2022 3:47 AM
+With your version I have the problem when I set the background lighting
+for dark areas and turn off the TV, the LEDs all light up (as if the
+area were dark). Is it wanted like that ?
+September 24, 2022
+[] astur3l (also now hyperhdr consumes cpu in power saving state too,
+there's way to suspend image processing a...
+ei187 09/24/2022 8:43 PM
+I have 19 beta to work good 
+[astur3l]
+astur3l 09/24/2022 8:19 PM
+(also now hyperhdr consumes cpu in power saving state too, there's way
+to suspend image processing and leds, but then you wont have idle
+colors/effect... what i want to have :D)
+[astur3l]
+[] buster4568 Yes, with the HyperHDR V 1.8.0.0 beta it's the same for
+me, but it's fixed with the 19 beta.
+astur3l 09/24/2022 8:16 PM
+if you grabbed my build thats not because of the hyperhdr update, its
+because the service wont stop the hyperhdr daemon on screen saver, but
+maybe the shutdown process is now broken for you (leds wont turn off
+when tv shut downs)
+[buster4568]
+[] den3545 Is it normal that I have to restart piccap after the
+screensaver was active?
+buster4568 09/24/2022 4:50 PM
+Yes, with the HyperHDR V 1.8.0.0 beta it's the same for me, but it's
+fixed with the 19 beta.
+[den3545]
+den3545 09/24/2022 3:28 PM
+Is it normal that I have to restart piccap after the screensaver was
+active?
+[den3545]
+luchow3cu Can you share your settings?
+den3545 09/24/2022 2:21 PM
+All gamma values on 1.9 I diasbled the classic hyperhdr calibration and
+changes yellow to (255, 190, 0) My yellow is still a bit greenish
+September 23, 2022
+[buster4568]
+[] astur3l seems like
+https://github.com/erolatex/hyperhdr-webos-loader/actions/runs/3093361076
+(you need to si...
+buster4568 09/23/2022 1:27 PM
+And where can I get the version from you (what small
+improvements/changes compared to the official one does your version
+have)?
+[buster4568]
+[] astur3l seems like
+https://github.com/erolatex/hyperhdr-webos-loader/actions/runs/3093361076
+(you need to si...
+buster4568 09/23/2022 10:36 AM
+Thanks
+[astur3l]
+[] buster4568 Thank you for the link, could you please tell me which
+version is the current one?  Sorry I'm not ...
+astur3l 09/23/2022 9:11 AM
+seems like
+https://github.com/erolatex/hyperhdr-webos-loader/actions/runs/3093361076
+(you need to sign in to github to see/download the artifacts (ipk))
+p.s.: its not my repo (mine has little tweaks/changes comparing the
+official) (edited)
+Update package.json · erolatex/hyperhdr-webos-loader@df8ab80
+Contribute to erolatex/hyperhdr-webos-loader development by creating an
+account on GitHub.
+[]
+[buster4568]
+[] astur3l https://github.com/erolatex/hyperhdr-webos-loader/actions
+seems like he forked to build a new relea...
+buster4568 09/23/2022 7:46 AM
+Thank you for the link, could you please tell me which version is the
+current one?  Sorry I'm not that fit yet. Also sorry for the stupid
+question
+September 22, 2022
+[] den3545 Thanks, I have tried a little around and in now happy with
+the result.
+luchow3cu 09/22/2022 9:51 PM
+Can you share your settings?
+[den3545]
+[] satdx62 With 4-channel Sk6812 LEDs (RGBW), it makes sense to select
+White Managements, White Balance Correct...
+den3545 09/22/2022 5:15 PM
+Thanks, I have tried a little around and in now happy with the result.
+ 1
+[astur3l]
+[] stefanos1000 Great! Maybe I ll test it too and see how it goes!
+Congrats for solving this annoying problem with t...
+astur3l 09/22/2022 2:50 PM
+sadly not all webos version behave like ours/mine, i'm pretty sure it
+would break things for some tv-s
+[stefanos1000]
+stefanos1000 09/22/2022 2:11 PM
+Great! Maybe I ll test it too and see how it goes! Congrats for solving
+this annoying problem with the resuming , the official build should
+integrate this 
+[astur3l]
+[] stefanos1000 Hey there <@433352458694033428> . I am using one of your
+releases for HyperHDR which is also not bet...
+astur3l 09/22/2022 2:08 PM
+"working perfectly after screensaver or standby resume " that's the only
+change comparing to the official, otherwise it just newer/latest
+hyperhdr (v19 beta) -- it includes support for different lut tables (one
+for sdr -- one for hdr -- for example ) -- but it requires modification
+on piccap/hyperion-client side to utilize - i wanna try it out but didnt
+enought time to do everything  but the build works just fine (edited)
+[stefanos1000]
+stefanos1000 09/22/2022 1:59 PM
+Hey there @asturel . I am using one of your releases for HyperHDR which
+is also not beta but final 18.0.0.0 It is the build #7 which was
+released 22 days ago. I see now that you have a newer one. Could you
+elaborate a bit on what have you updated and if it is worth using it ,
+considering that the previous version I got from you is the only one I
+have used so far and is working perfectly after screensaver or standby
+resume (At least for me with a B7 oled).
+[astur3l]
+[] buster4568 Hi, You mean the V 19 beta right? I would also be
+interested in where you got that from.
+astur3l 09/22/2022 10:11 AM
+https://github.com/erolatex/hyperhdr-webos-loader/actions seems like he
+forked to build a new release
+https://github.com/webosbrew/hyperhdr-webos-loader/network/members
+(edited)
+Actions · erolatex/hyperhdr-webos-loader
+Contribute to erolatex/hyperhdr-webos-loader development by creating an
+account on GitHub.
+[]
+Forks · webosbrew/hyperhdr-webos-loader
+Contribute to webosbrew/hyperhdr-webos-loader development by creating an
+account on GitHub.
+[]
+[buster4568]
+[] bananajoechris hyperhdr 18.0.0.0 non beta has been released. Does
+anyone have the IPK file or can tell me where I c...
+buster4568 09/22/2022 6:55 AM
+Hi, You mean the V 19 beta right? I would also be interested in where
+you got that from.
+September 21, 2022
+[.pclin]
+.pclin 09/21/2022 8:08 PM
+WLED - White Balance correction If enabled in LED settings, WB
+correction allows either making all pixels colder or warmer on a
+per-segment basis using a slider in the main user interface. This is
+applied to the RGB color only, after the auto white channel calculation.
+White handling https://kno.wled.ge/features/cct/#auto-white-handling
+(edited)
+[bananajoechris]
+bananajoechris 09/21/2022 8:00 PM
+hyperhdr 18.0.0.0 non beta has been released. Does anyone have the IPK
+file or can tell me where I can download it ?
+September 20, 2022
+[satdx62]
+[] den3545 Hi guys, I have a problem with my displayed colors.
+Unfortunately all colors have a high white con...
+satdx62 09/20/2022 8:08 PM
+With 4-channel Sk6812 LEDs (RGBW), it makes sense to select White
+Managements, White Balance Correction: on and “Dual”. Then, with the
+white background, images are not converted from RGB, but the white
+channel is used. The basic colors remain untouched. So green is really
+green, and so are red and blue. The rest is calibrated in
+Hyperion/HyperHDR, under gamma correction. Value 1 is neutral, more than
+1 color is removed and below 1 color is added. In this way, you get some
+dimensions adjusted for each wall color in the background. (edited)
+[White_management.jpg]
+ White_management.jpg
+36.6 KB External
+[den3545]
+den3545 09/20/2022 6:34 PM
+Ok thanks
+[yolofant]
+yolofant 09/20/2022 6:31 PM
+Not really
+[den3545]
+[] yolofant That's a limitation in the API
+den3545 09/20/2022 6:25 PM
+Is there a keyword or something similar that I can use to search for the
+problem. Just for interest.
+[den3545]
+den3545 09/20/2022 6:16 PM
+Thanks guys, I will try it
+luchow3cu 09/20/2022 6:15 PM
+I use the following config in wled. Changing it to accurate helped
+reducing the white content. In Hyperhdr I use Saturation 1.7 and
+Luminance 0.9.
+[IMG_2474.png]
+ IMG_2474.png
+93.17 KB External
+[yolofant]
+yolofant 09/20/2022 6:11 PM
+But you can confirm by downloading a screenshot and checking the colors
+09/20/2022 6:11 PM
+Not really
+[den3545]
+den3545 09/20/2022 6:10 PM
+Oh ok, I thought it is maybe a Problem with the White LED channel. So
+there is no workaoround for the Problem?
+[yolofant]
+yolofant 09/20/2022 6:09 PM
+That's a limitation in the API
+09/20/2022 6:09 PM
+Yes
+[den3545]
+den3545 09/20/2022 6:09 PM
+Hope you can see the differences. Its not just with Green, its the same
+with All colors
+09/20/2022 6:08 PM
+One of the pictures is the whitish one. And the other is with manual
+Green setting in wled
+[20220920_175459.jpg]
+ 20220920_175459.jpg
+1006.18 KB External
+[20220920_175423.jpg]
+ 20220920_175423.jpg
+766.33 KB External
+09/20/2022 6:06 PM
+Hi guys, I have a problem with my displayed colors. Unfortunately all
+colors have a high white content. I have already tried unsuccessfully to
+change something in the image settings of Hyperion. Auto-calculate White
+channel in wled is off. My setup: LG oled c17, HyperHDR, piccap, esp32
+(wled), 88x Sk6812 LEDs (RGBW). Can anyone help me with this?
+September 19, 2022
+iammattm 09/19/2022 4:14 PM
+@asturel @satdx62 Thanks for your help both.. I'll settle on those
+settings and keep an eye out for any issues..
+{"priority":100,"backend":"auto","address":"127.0.0.1","port":19400,"width":192,"height":108,"quirks":4,"fps":20,"vsync":false,"autostart":false,"nogui":false,"novideo":false,"uibackend":"auto"}
+(edited)
+[astur3l]
+astur3l 09/19/2022 4:09 PM
+yeah i linked you that what TBSniller said that 0.2.x was slowed down
+thats why , but in theory with vsync off + limiting fps you can achieve
+the same
+https://discord.com/channels/407937994037919756/931706504627773450/1019604722505744454
+btw satdx62 have the same setup/issue  (edited)
+iammattm 09/19/2022 4:08 PM
+My TV is OLED55C6 (2016) for which platform details reported are:
+"board_type": "M16_DVB", "hardware_id": "HE_DTV_W16M_AFADABAA",
+"product_id": "OLED55C6V-Z", "core_os_release": "3.4.0-6107",
+"webos_manufacturing_version": "05.60.15", Maybe that is as low a CPU
+usage as I can have for whatever CPU is on this platform. It is just
+that I have read that piccap 0.2.3 was easier of the CPU loading but
+unfortunately I have not been able to make the 0.2.3 run of my TV.
+Luckily this latest version 0.4.0 seems to run well (albeit for what
+might be more CPU loading vs. what I might have had for 0.2.3 if I had
+managed to make it run)
+09/19/2022 4:01 PM
+Well, dropping the hyperion-webos capture down to 192x108 reduced the
+CPU loading quite a bit down to now 48% which I would be more
+confortable in using long term (without knowing the actual CPU temp)
+[unknown.png]
+ unknown.png
+309.74 KB External
+ 1
+[satdx62]
+iammattm Doing it now. Is there typically a recommended width/height
+setting in relation to the number of LED...
+satdx62 09/19/2022 3:56 PM
+Yes, but also 192×96 or 192×108 resolution Is enough for a beautiful
+effect and transition. (edited)
+[astur3l]
+astur3l 09/19/2022 3:55 PM
+tbh i didnt noticed any difference from resolution changing/decreasing
+iammattm 09/19/2022 3:53 PM
+Doing it now. Is there typically a recommended width/height setting in
+relation to the number of LEDs att he back of the TV ?
+[satdx62]
+iammattm Changing priority down from default=150 to 100 does not appear
+to have brought any CPU load benefits...
+satdx62 09/19/2022 3:52 PM
+Try again with "width":192,"height":96.
+[astur3l]
+astur3l 09/19/2022 3:51 PM
+you can try to lower the resolution too like 192x108 (but it maybe
+breaks hdmi capture)
+iammattm 09/19/2022 3:51 PM
+(no content)
+ hyperion-os_serviceCPUload65_webOS34_.log
+24.88 KB External
+09/19/2022 3:45 PM
+Changing priority down from default=150 to 100 does not appear to have
+brought any CPU load benefits - Still reading 65-66% New config.json is:
+{"priority":100,"backend":"auto","address":"127.0.0.1","port":19400,"width":320,"height":180,"quirks":4,"fps":20,"vsync":false,"autostart":false,"nogui":false,"novideo":false,"uibackend":"auto"}
+[unknown.png]
+ unknown.png
+308.08 KB External
+09/19/2022 3:39 PM
+Will do now.
+[satdx62]
+iammattm <@433352458694033428> After changing piccap v0.4.0 config.json
+with vsync=false and fps=20 , CPU us...
+satdx62 09/19/2022 3:38 PM
+Set the priority in PicCap Hyperion from 150 to 100 and the CPU load
+will decrease. There is also less heat on the TV. Then post a screenshot
+again.
+iammattm 09/19/2022 3:22 PM
+@asturel After changing piccap v0.4.0 config.json with vsync=false and
+fps=20 , CPU usage went from 80% to 65% on my OLED55C6 root@LGwebOSTV:~#
+grep -h -E
+'"(hardware_id|core_os_release|product_id|webos_manufacturing_version|boardtype)"'
+/var/run/nyx/ "board_type": "M16_DVB", "hardware_id":
+"HE_DTV_W16M_AFADABAA", "product_id": "OLED55C6V-Z", "core_os_release":
+"3.4.0-6107", "webos_manufacturing_version": "05.60.15",
+root@LGwebOSTV:~# (edited)
+[unknown.png]
+ unknown.png
+36.01 KB External
+[satdx62]
+satdx62 09/19/2022 9:53 AM
+Could one, in a future version of HyperHDR for LG WebOS (PicCap), also
+determine the brightness of the “WLED” LEDs when starting from 0 to 255?
+September 17, 2022
+[fart_robot]
+fart_robot 09/17/2022 11:41 PM
+Otherwise working great, just need to calibrate colors. Seriously cool
+effect
+[fart_robot]
+[] satdx62 In HyperHDR under Effects, the Boot Effect and Background
+Effect must be deactivated and saved as sh...
+fart_robot 09/17/2022 11:40 PM
+Turned it off but still not working after reboot. It works if I stop and
+restart the piccap though
+[fisch123]
+fisch123 09/17/2022 11:11 PM
+thanks to this discord and the github page, everything is working
+flawlessly now! 
+[satdx62]
+[] fart_robot Scratching my head, everything was working great but now
+it’s not working. Hyperhdr does the rainbow...
+satdx62 09/17/2022 10:21 PM
+In HyperHDR under Effects, the Boot Effect and Background Effect must be
+deactivated and saved as shown in the picture. (edited)
+[Boot_effect.jpg]
+ Boot_effect.jpg
+186.34 KB External
+ 1
+[fart_robot]
+fart_robot 09/17/2022 9:45 PM
+Lol nevermind, stopping and starting the piccap service fixed it
+09/17/2022 9:44 PM
+I can send effects to it from hyperhdr. Piccap says it’s capturing and
+sending.
+[fart_robot]
+fart_robot 09/17/2022 9:34 PM
+[HYPERHDR0] No source left -> switch LED-Device off is the error I see
+in the log
+09/17/2022 9:30 PM
+Only thing I did was reboot tv + wled
+09/17/2022 9:29 PM
+Scratching my head, everything was working great but now it’s not
+working. Hyperhdr does the rainbow when it starts up but then it has a
+red light for led device although wled says it’s receiving Hyperion
+data? Additionally I can’t use the live view within hyperhdr
+[satdx62]
+[] fisch123 god I'm super sorry, setting resolution to 320x180 did in
+fact work!
+satdx62 09/17/2022 9:08 PM
+No idea if the PC does a real handshake with the TV and information
+about HDCP is exchanged. But an Apple TV, FireTV, or set-top box should
+work.
+[fisch123]
+fisch123 09/17/2022 8:58 PM
+god I'm super sorry, setting resolution to 320x180 did in fact work!
+ 2
+[fisch123]
+[] satdx62 Unfortunately, DRM-protected content does not work on every
+WebOS version via the TV's internal apps...
+fisch123 09/17/2022 8:56 PM
+Should normal HDMI content work? UI is working perfectly, but I don't
+get anything from youtube or my Computer connected via HDMI (no DRM,
+just Windows Desktop)
+[penne_best_noodles]
+penne_best_noodles 09/17/2022 1:38 PM
+here's the app I run to read the named pipe "/tmp/fifo" which gets fed
+by hyperion
+ huesync.ts
+906 Bytes External
+[penne_best_noodles]
+[] yolofant hue is supported, however I believe the new gradient
+lightstrips are not
+penne_best_noodles 09/17/2022 1:35 PM
+The Hue Gradient can now be controlled with
+https://github.com/jdmg94/Hue-Sync and Hyperion or HyperHDR
+Deleted User 09/17/2022 12:34 AM
+My fault for not searching properly. I can see others with the same
+problem so I have to test some more.
+Deleted User 09/17/2022 12:15 AM
+I have an esp8266 with WLED and ws2812b. It doesn't matter how many LEDs
+I test with, it's always at about 8 fps in the HyperHDR performance
+section. Anyone have an idea why?
+September 16, 2022
+[.epicwin]
+.epicwin 09/16/2022 1:14 PM
+Is the HyperHDR on the Homebrew channel the most up to date? Or does
+someone have the IPK for the most recent 
+[fart_robot]
+fart_robot 09/16/2022 9:21 AM
+Sounds like I gotta get my plex server back up and running. Thanks!
+ 1
+[satdx62]
+[] fart_robot Piccap/Hyperion not working with apps like
+Hulu/Disney+/Netflix/etc is a known limitation right? Ass...
+satdx62 09/16/2022 9:12 AM
+Unfortunately, DRM-protected content does not work on every WebOS
+version via the TV's internal apps. DRM content like on Hulu, Disney+,
+Netflix works on newer devices via HDMI. In GitHub, you could see which
+devices work with which software/webOS, with DRM content and at which
+resolution. https://github.com/webosbrew/hyperion-webos/issues/16
+Version Support Tracker · Issue #16 · webosbrew/hyperion-webos
+System info: grep -h -E
+&#39;&quot;(hardware_id|core_os_release|product_id|webos_manufacturing_version|board_type)&quot;&#39;
+/var/run/nyx/* Template: | **hyperion-webos commit** | ...
+[]
+[raffibaffi]
+[] fart_robot Piccap/Hyperion not working with apps like
+Hulu/Disney+/Netflix/etc is a known limitation right? Ass...
+raffibaffi 09/16/2022 9:06 AM
+Nope, because this is DRM protected content. It works only on B/C/G 9
+(or 8) and older.....
+Deleted User 09/16/2022 8:47 AM
+for me, Netflix and Prime are working with PiacCap/HyperHDR... (edited)
+[fart_robot]
+fart_robot 09/16/2022 5:10 AM
+Piccap/Hyperion not working with apps like Hulu/Disney+/Netflix/etc is a
+known limitation right? Assuming there’s no way around this? Just final
+testing my setup and everything’s working but that
+[astur3l]
+astur3l 09/16/2022 12:25 AM
+btw is there a reason why not the Hyperion WebOS client does itself the
+elevation process?
+[tbsniller]
+[] astur3l is it possible then that with vsync off im getting false fps
+? because it feels like with vsync off ...
+tbsniller 09/16/2022 12:10 AM
+sorry thats something I dont know
+September 15, 2022
+[astur3l]
+[] tbsniller yes
+astur3l 09/15/2022 10:09 PM
+is it possible then that with vsync off im getting false fps ? because
+it feels like with vsync off the stream is choppy a bit, but with vsync
+on, it is super smooth, but why does vsync on uses 5-6x times more CPU?
+[astur3l]
+astur3l 09/15/2022 10:03 PM
+btw comparing to other tv-s, my WebOS is pretty slow, so i wont be
+surprised if my device is just too slow :d
+[tbsniller]
+[] astur3l ah i see, with vsnyc on it relayes on libvtcapture.. kinda
+'hardware', if i turn off vsync it uses u...
+tbsniller 09/15/2022 10:01 PM
+yes (edited)
+[tbsniller]
+[] satdx62 Thanks for the priority tip. I reduced them from 150 to 100
+in PicCap 4.0 and indeed the CPU load of...
+tbsniller 09/15/2022 10:00 PM
+Nice! But I think it wasn't permanent, so you would need to do it at
+every reboot. You may place it (after start command) into piccaps
+autostart file -> /var/lib/webosbrew/init.d/piccapautostart (think this
+was the path) But this would be also a nice idea to handle from
+hyperion-webos. I also have some decent tv lag, others I think too.
+ 1
+[astur3l]
+astur3l 09/15/2022 9:57 PM
+well this is a budget a1 tv with WebOS 6.3 but 2 years old soc (like
+c9), a7 gen2 or something like that, so its not a common setup I think,
+afaik i was the first with this soc :d (edited)
+[tbsniller]
+[] astur3l yeah but that doesn't solve my problem, i think the running
+vtcapture causes issues.. because it sta...
+tbsniller 09/15/2022 9:55 PM
+I can't really follow. Sounds like a really specific problem. Regardless
+I was planning to implement something like if video is running, stop UI
+capture, to get faster video processing. this may suite for you
+[astur3l]
+astur3l 09/15/2022 8:57 PM
+ah i see, with vsnyc on it relayes on libvtcapture.. kinda 'hardware',
+if i turn off vsync it uses unicapture implemented 'fake vsync', so its
+better to keep vsync on (?)
+[astur3l]
+astur3l 09/15/2022 1:02 PM
+@TBSniller the gui capture (libhalgal) works (well occasionally the
+captured image "flickers" like what i experienced in the browser when
+playing video) if i turn on vsync, but this results in huge cpu usage --
+both on ui both on video (50% with 30 fps, 70-80% with 60 fps)... also
+fps limit is odd (seems like not working): if i set 30, in the logs i
+see 47-50 fps.. same with 60 fps
+`Framerate: 47.955497 FPS; timings - wait: 18968us, acquire: 273us, convert: 1082us, process; 119us, send: 192us, release: 1us the ui captire is about 15-17 fps   but generally, with vsync it feels much "smoother" but without vsync libhalgal throws 2022-09-15T10:56:29.674506Z [272.155302794] user.err hyperion-webos [] hyperion-webos ERR {} capture_acquire_frame: HAL_GAL_CaptureFrameBuffer failed: ffffffff or just.. 2022-09-15T10:56:29.674953Z [272.155745128] user.err hyperion-webos [] hyperion-webos ERR {} capture_start: vtCapture_init not ready yet return: 17`
+but i guess the last one is because of the capture restarts (?) (edited)
+[satdx62]
+[] tbsniller You can also try to play with renice (process priority
+change in linux) and Set it to a lower one
+satdx62 09/15/2022 11:57 AM
+Thanks for the priority tip. I reduced them from 150 to 100 in PicCap
+4.0 and indeed the CPU load of hyperion-webos went down from 73% to 27%
+and hyperhdr from 12% to 3%. I set the frame rate to 20. So now there is
+no more lag and the transitions are smooth. (edited)
+[hyperion-webos-prio100.jpg]
+ hyperion-webos-prio100.jpg
+151.52 KB External
+[astur3l]
+astur3l 09/15/2022 12:53 AM
+but sadly stopping, killing Hyperion-webos doesn't solve the flickering
+on video start in browser.. :d sometimes it doesn't even start, only
+reboot fixes it :d but if the capture auto starts it starting over.. :d
+but it also causes hang when it tries to generate thumbnail from video
+in media browser (it fetches ranges from the video) (edited)
+[astur3l]
+[] tbsniller as mentioned I think already 3 times, this applies..
+astur3l 09/15/2022 12:36 AM
+yeah but that doesn't solve my problem, i think the running vtcapture
+causes issues.. because it starts on thumbnails too.. also i think it
+uses something for generating thumbnails which conflicts with vtcapture,
+or the actual frame acquire.. but i thought the best would be to
+release/stop (not just not acquire) the video capture when there's "no
+video to capture", but obviously that wouldn't be nice constantly.. so
+for my solution the best would be some luna "event" , idk ifs there's..
+since the video output already monitored (edited)
+September 14, 2022
+[tbsniller]
+[] jclsn Yes, works really well. I just wonder if it is possible to
+change settings without a reboot with thi...
+tbsniller 09/14/2022 10:34 PM
+Here we go:https://github.com/TBSniller/piccap/actions/runs/3055964657
+This might be the most final one if nobody else has problems (edited)
+Correctly log config · TBSniller/piccap@c922a0e
+PicCap. Contribute to TBSniller/piccap development by creating an
+account on GitHub.
+[]
+[tbsniller]
+[] tbsniller yeah but vtcapture isn't in the state of trying to capture
+anymore, its in state of waiting to captu...
+tbsniller 09/14/2022 9:28 PM
+as mentioned I think already 3 times, this applies..
+[astur3l]
+astur3l 09/14/2022 9:09 PM
+i dont really know howto solve when 'theres no video to capture' 
+without re-trying in N seconds
+[astur3l]
+astur3l 09/14/2022 8:19 PM
+ah, since hyperion_read() returns <0, it assumes connection timed out,
+https://github.com/webosbrew/hyperion-webos/blob/unicapture/src/service.c#L37
+hyperion-webos/service.c at unicapture · webosbrew/hyperion-webos
+hyperion.ng video grabber for webOS. Contribute to
+webosbrew/hyperion-webos development by creating an account on GitHub.
+[]
+[astur3l]
+astur3l 09/14/2022 8:06 PM
+guess thats why hyperion eats a lot cpu in idle state  (keep switching
+between idle color -- flatbuffer) (edited)
+09/14/2022 8:04 PM
+yeah, libtvtcapture, gui capture is disabled, but i couldnt take a
+screen because it doing for like a sec ah,, i just found out the
+cause.... hyperion client keeps
+reconnecting.....``2022-09-14T17:49:01.317Z [FLATBUFSERVER] (DEBUG) (FlatBufferClient.cpp:70:disconnected()) Socket Closed 2022-09-14T17:49:02.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferServer.cpp:76:newConnection()) New connection from ::ffff:127.0.0.1 2022-09-14T17:49:03.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferClient.cpp:70:disconnected()) Socket Closed 2022-09-14T17:49:04.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferServer.cpp:76:newConnection()) New connection from ::ffff:127.0.0.1 2022-09-14T17:49:05.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferClient.cpp:70:disconnected()) Socket Closed 2022-09-14T17:49:06.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferServer.cpp:76:newConnection()) New connection from ::ffff:127.0.0.1 2022-09-14T17:49:07.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferClient.cpp:70:disconnected()) Socket Closed 2022-09-14T17:49:08.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferServer.cpp:76:newConnection()) New connection from ::ffff:127.0.0.1 2022-09-14T17:49:09.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferClient.cpp:70:disconnected()) Socket Closed 2022-09-14T17:49:10.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferServer.cpp:76:newConnection()) New connection from ::ffff:127.0.0.1 2022-09-14T17:49:11.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferClient.cpp:70:disconnected()) Socket Closed 2022-09-14T17:49:12.316Z [FLATBUFSERVER] (DEBUG) (FlatBufferServer.cpp:76:newConnection()) New connection from ::ffff:127.0.0.1 `
+[tbsniller]
+[] astur3l i suspect this causes when it tries to restart the libvt
+capture  but then i have no idea why stop...
+tbsniller 09/14/2022 8:01 PM
+You mean libvtcapture? Its Something else than libvt (Just to make sure,
+we are talking about the same) Which one do you use to capture GUI?
+Libgm? Do you also have a screenshot?
+[astur3l]
+[] tbsniller Which Backend do you use? Libgm i suspect? I don't really
+know Something about it. We only have see...
+astur3l 09/14/2022 7:21 PM
+i suspect this causes when it tries to restart the libvt capture  but
+then i have no idea why stopping the service doesn't fix it, must be
+some unreleased thing when i just return -99 to restart the capture in
+frame acquiring.. or something like that (edited)
+[satdx62]
+[] tbsniller You can also try to play with renice (process priority
+change in linux) and Set it to a lower one
+satdx62 09/14/2022 5:27 PM
+Ok, I will do it. Thanks. 
+[wynn_storm]
+wynn_storm 09/14/2022 5:05 PM
+anyone have all the install directories from piccap? trying to flush all
+remnants.
+[astur3l]
+[] tbsniller Which Backend do you use? Libgm i suspect? I don't really
+know Something about it. We only have see...
+astur3l 09/14/2022 3:57 PM
+no, i have gui capture disabled, the sad is that i cannot really
+'reproduce', it doesnt happen "always" (iirc last time when i tried to
+reproduce straight after boot, it didnt happened.... but usually after
+using the tv for a while, it becomes 'slow', even the scrolling in
+mediaplayer file list and starting having problems all around :D) , so
+thats why i thought that some resources didnt get freed or something
+like that.. sometimes it just flickering when it starts playing video in
+the browser, sometimes it wont start at all,,, sometimes just 'stuck'
+somewhere  ofc reboot solves it, but i dont have any idea how
+could/should i process futher btw these flickering happens only that
+"area" which hardware rendered , but not constantly, like a bad
+display/GPU (edited)
+[tbsniller]
+[] astur3l i dont have working ui capture, but the flickering/glitching
+happens in ui, mostly in browser, somet...
+tbsniller 09/14/2022 3:51 PM
+Which Backend do you use? Libgm i suspect? I don't really know Something
+about it. We only have seen that capturing with libvt can cause HDMI
+flickering, but never looked in it further
+[tbsniller]
+[] satdx62 Yes baby you did something great, after less than a minute
+the service got root and everything works...
+tbsniller 09/14/2022 3:49 PM
+Really glad to hear that its finally working aß expected  I think the
+settings not load bug is left and then we are ready
+ 1
+[astur3l]
+astur3l 09/14/2022 3:48 PM
+i dont have working ui capture, but the flickering/glitching happens in
+ui, mostly in browser, sometimes it wasnt even ablle to play the video
+(edited)
+[tbsniller]
+[] astur3l <@430448040080572424> any idea what can cause glitching,
+flickering, etc.. in gui even if i stop th...
+tbsniller 09/14/2022 3:48 PM
+Do you mean PicCap, or ui capture?
+[tbsniller]
+tbsniller 09/14/2022 3:46 PM
+You can also try to play with renice (process priority change in linux)
+and Set it to a lower one
+ 2
+[tbsniller]
+[] satdx62 Thanks, I'm using backend OldTV (libvt + libhalgal). But it's
+not that bad, everything works, but I ...
+tbsniller 09/14/2022 3:45 PM
+The reason for this is, that now the hyperion-webos proccess can use a
+lot of more CPU time than it could in Version 0.2.3. so in old version
+it Just was slowed down, because it wasn't registered at Luna bus (our
+suggestion). You might Turn of vsync and Set FPS to alike 20 (or maybe
+lower, don't know what libvt was able to do), I think you should then
+have the same Like before
+[satdx62]
+[] astur3l sorry, i remembered wrong :/ no idea what could you try,
+since even piccap 3.x is kinda the same (un...
+satdx62 09/14/2022 3:18 PM
+Thanks, I'm using backend OldTV (libvt + libhalgal). But it's not that
+bad, everything works, but I was concerned that the CPU has to do a lot
+of work under PicCap 4.0. Also, PicCap 0.2.3 works perfectly without
+bringing the TV to its knees. So, without a large CPU load. Maybe my TV
+is not as capable as the new generation in terms of memory and CPU.(I
+"board_type": "M16P_DVB", I "hardware_id": "HE_DTV_W17H_AFADABAA", I
+"product_id": "OLED65B7D-Z", I "core_os_release": "3.9.0-62709", I
+"webos_manufacturing_version": "06.00.25",. I Backend OldTV (libvt +
+libhalgal) I Framerate 20/30/60 I Resolution 192x108/360x180 I Protected
+content work Netflix, Prime Video, SKY Ticket, all on HDMI.) (edited)
+[astur3l]
+[] satdx62 Okay, this is default, and I've only tried the different
+resolutions and frame rates so far, how do ...
+astur3l 09/14/2022 2:32 PM
+sorry, i remembered wrong :/ no idea what could you try, since even
+piccap 3.x is kinda the same (unicapture branch and there wasnt libdile
+vt changes in 4.x)
+[satdx62]
+[] astur3l ~~libdile_vt? may you can try QUIRK_DILE_VT_NO_FREEZE_CAPTURE
+quirk, iirc that was "default (hardco...
+satdx62 09/14/2022 2:30 PM
+Okay, this is default, and I've only tried the different resolutions and
+frame rates so far, how do I implement your suggestion?
+[astur3l]
+[] satdx62 Hi, I want to report here that with the latest build of
+<@430448040080572424> PicCap version 4.0 wor...
+astur3l 09/14/2022 2:02 PM
+~~libdile_vt? may you can try QUIRK_DILE_VT_NO_FREEZE_CAPTURE quirk,
+iirc that was "default (hardcoded)" in "legacy" versions~~ ah, its still
+default, you just can disable
+https://github.com/webosbrew/hyperion-webos/blob/unicapture/src/backends/libdile_vt.c#L236
+(edited)
+[satdx62]
+satdx62 09/14/2022 12:07 PM
+Hi, I want to report here that with the latest build of @TBSniller
+PicCap version 4.0 works fine on my WebOS 3.9. However, the CPU load is
+much higher lately than with PicCap version 0.2.3. See pictures, and
+gives a little lag. Also, the transitions from dark to light scenes are
+calmer and smoother under PicCap version 0.2.3 and there is no
+noticeable delay. (edited)
+[PicCap0.2.3Hyperion-webos.jpg]
+ PicCap0.2.3Hyperion-webos.jpg
+165.25 KB External
+[PicCap4.0Hyperion-webos.jpg]
+ PicCap4.0Hyperion-webos.jpg
+135.02 KB External
+[astur3l]
+astur3l 09/14/2022 12:14 AM
+@TBSniller any idea what can cause glitching, flickering, etc.. in gui
+even if i stop the service? i cheched the unicapture run and as i see it
+releases everything well, maybe something around vtcapture..? could e.g.
+return something else than 0 (e.g. -99 restart capture) in frame acquire
+results something didn't gets released (so it just starts the capture
+again without releasing the previously acquired ..)? also over time it
+feels like resources eatin up.. (didn't cheched just tv becomes slow,
+but previously usually i stopped the capture, or it just "stopped
+itself") (edited)
+September 13, 2022
+[jclsn]
+jclsn 09/13/2022 10:59 PM
+Love the dark mode 
+[jclsn]
+[] tbsniller Can you please checkout this one please:
+https://github.com/TBSniller/piccap/actions/runs/3040468398...
+jclsn 09/13/2022 10:57 PM
+Yes, works really well. I just wonder if it is possible to change
+settings without a reboot with this version?
+[astur3l]
+vrvrvrvrvr. did calibration without HDR (built in video adapter didn't
+support this), no errors received. not su...
+astur3l 09/13/2022 10:30 PM
+but you should do it when hdr enabled 
+ 1
+[jclsn]
+jclsn 09/13/2022 10:19 PM
+Ah luna-send
+Deleted User 09/13/2022 10:15 PM
+How do I edit the created LUT (.3d file) after auto-calibration in
+HyperHDR? I want to raise the thresholds ONLY for SDR
+[jclsn]
+jclsn 09/13/2022 10:10 PM
+I already copied it over with scp
+[jclsn]
+[] tbsniller Can you please check this build if you have time? 
+https://github.com/TBSniller/piccap/actions/run...
+jclsn 09/13/2022 10:10 PM
+How to install the ipk again?
+vrvrvrvrvr. 09/13/2022 9:34 PM
+did calibration without HDR (built in video adapter didn't support
+this), no errors received. not sure about the result  (edited)
+[astur3l]
+astur3l 09/13/2022 9:29 PM
+does Radeon + Windows 10 hdr works over HDMI? for calibration :d once i
+tried to enable hdr got pinkish desktop :d games works through.. so i
+didn't get
+vrvrvrvrvr. 09/13/2022 8:17 PM
+ok. it was resolution in piccap which required reset for TV. (edited)
+[astur3l]
+vrvrvrvrvr. yes. LG C1
+astur3l 09/13/2022 8:07 PM
+i had kinda the 'same' issue on A1, but not sure what fixed exactly (i
+did a few changes to libvtcapture code /TBSniller: probably that return
+code 13 fix did the trick too.. but not sure about it..../), because i
+couldnt test either, it just didnt happened for long time  but its
+hard to debug.. because with verbose logging you get like 100 lines in 1
+sec......  running it for hours.... btw some ppl had issues with video
+capture if gui capture wasnt disabled... (on my tv gui capture doesnt
+work :D) (edited)
+vrvrvrvrvr. 09/13/2022 8:04 PM
+i did that
+[astur3l]
+vrvrvrvrvr. 2nd day for LUT calibration... What I do wrong when I run on
+4k display in full screen?
+astur3l 09/13/2022 8:02 PM
+thats your piccap resolution  you need to change it for the
+calibration
+vrvrvrvrvr. 09/13/2022 8:00 PM
+2nd day for LUT calibration... What I do wrong when I run on 4k display
+in full screen? (edited)
+[unknown.png]
+ unknown.png
+354.75 KB External
+[] astur3l do you use vtcapture backend?
+vrvrvrvrvr. 09/13/2022 4:34 PM
+yes. LG C1
+[astur3l]
+vrvrvrvrvr. I am thinking that it is piccap due to live video is not
+existing for hyperhdr
+astur3l 09/13/2022 4:32 PM
+do you use vtcapture backend?
+[the_pants]
+the_pants 09/13/2022 4:12 PM
+Question before I set all this up. Does PicCap work with DRM content,
+Netflix, Disney+, etc. If I am running them all on an external device
+(Chromecast, PS5, etc.) through HDMI. I want to make sure it will work
+with everything before I go this route instead of a HDMI splitter and
+HDMI>USB. Thanks.
+vrvrvrvrvr. 09/13/2022 12:24 PM
+Okay. So in-menu picture grabbing still works. Stop working in app. for
+some reason after a while.
+vrvrvrvrvr. 09/13/2022 11:38 AM
+And piccap restart helps
+09/13/2022 11:37 AM
+I am thinking that it is piccap due to live video is not existing for
+hyperhdr
+[unknown.png]
+ unknown.png
+84.76 KB External
+[buster4568]
+vrvrvrvrvr. Hi! This is known bug that piccap just suddently stops after
+n-hours or I should look for issues els...
+buster4568 09/13/2022 11:36 AM
+I haven't had that problem. I think the problem lies elsewhere.
+vrvrvrvrvr. 09/13/2022 11:31 AM
+Hi! This is known bug that piccap just suddently stops after n-hours or
+I should look for issues elsewhere ?
+[buster4568]
+[] tbsniller haha alright, thanks for testing out and letting me know
+made some big changes on yesterday and have...
+buster4568 09/13/2022 5:43 AM
+Hello, I'll still keep testing, but not as often because of my wife 
+ 1  1
+[buster4568]
+[] tbsniller would be nice if you could share `grep -h -E
+'"(hardware_id|core_os_release|product_id|webos_manufac...
+buster4568 09/13/2022 5:41 AM
+"board_type": "O18_DVB", "hardware_id": "HE_DTV_W18O_AFABABAA",
+"product_id": "OLED65C8LLA", "core_os_release": "4.4.0-12",
+"webos_manufacturing_version": "05.40.26", (edited)
+September 12, 2022
+[satdx62]
+[] tbsniller Can you please checkout this one please:
+https://github.com/TBSniller/piccap/actions/runs/3040468398...
+satdx62 09/12/2022 11:20 PM
+Yes baby you did something great, after less than a minute the service
+got root and everything works perfectly. Thank you very much. If you
+need more logs, I'll do them tomorrow.   
+[PicCap-log1.jpg]
+ PicCap-log1.jpg
+188.73 KB External
+[PicCap-log2.jpg]
+ PicCap-log2.jpg
+212.08 KB External
+[PicCap-log3.jpg]
+ PicCap-log3.jpg
+155.89 KB External
+[tbsniller]
+[] satdx62 Hello, thanks for the new build. When starting, status
+checking remains root. Here is the log.
+tbsniller 09/12/2022 10:50 PM
+Can you please checkout this one please:
+https://github.com/TBSniller/piccap/actions/runs/3040468398 This time
+please wait ~1 minute and do another screenshot from logs then do a
+(full) reboot please, after that check if piccap is rooted or not and
+maybe do another screenshot of logs tab Currently I suspect PicCap can
+make calls, but never receives an answer so we can't process it. This
+would makes it clear, as it should just push root commands to hbchannels
+exec method (edited)
+makeServiceRoot(), if no root check answer · TBSniller/piccap@af9035c
+PicCap. Contribute to TBSniller/piccap development by creating an
+account on GitHub.
+[]
+ 1
+[tbsniller]
+[] buster4568 The dark surface is now working again. But it doesn't save
+my settings. Everything is back to defaul...
+tbsniller 09/12/2022 10:05 PM
+would be nice if you could share
+grep -h -E '"(hardware_id|core_os_release|product_id|webos_manufacturing_version|board_type)"' /var/run/nyx/*
+if you find some time connecting to your tv via ssh again
+[tbsniller]
+[] buster4568 The dark surface is now working again. But it doesn't save
+my settings. Everything is back to defaul...
+tbsniller 09/12/2022 10:03 PM
+haha alright, thanks for testing out and letting me know made some big
+changes on yesterday and haven't checked them out - thats possible
+vrvrvrvrvr. 09/12/2022 10:03 PM
+file generated, but settings are still not reflecting here I have
+tried. 1. Changed settings. Press save upload. 2. Changed settings.
+Press generate. Save. Upload both options doesnt work. 
+[unknown.png]
+ unknown.png
+861.32 KB External
+[astur3l]
+vrvrvrvrvr. `2022-09-12T19:51:34.871Z [FLATBUFSERVER] Found and loaded
+LUT: '/media/developer/apps/usr/palm/serv...
+astur3l 09/12/2022 9:59 PM
+    head -c 50331648 ./lut_lin_tables.3d > flat_lut_lin_tables.3d
+seems like it wants flat lut lin table (edited)
+vrvrvrvrvr. 09/12/2022 9:55 PM
+2022-09-12T19:51:34.871Z [FLATBUFSERVER] Found and loaded LUT: '/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/flat_lut_lin_tables.3d' 2022-09-12T19:51:34.872Z [FLATBUFSERVER] LUT file is not found here: /home/root/.hyperhdr/flat_lut_lin_tables.3d 2022-09-12T19:51:34.872Z [FLATBUFSERVER] (FlatBufferServer.cpp:254) LUT file found: /media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/flat_lut_lin_tables.3d 2022-09-12T19:51:34.922Z [FLATBUFSERVER] Found and loaded LUT: '/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/flat_lut_lin_tables.3d'
+[buster4568]
+[] tbsniller Can you try this please:
+https://github.com/TBSniller/piccap/actions/runs/3039880083 Think I have
+mi...
+buster4568 09/12/2022 9:55 PM
+The dark surface is now working again. But it doesn't save my settings.
+Everything is back to default after restart. I'm now back to V 0.2.3,
+this one works best for me (my wife is getting mad because I screw
+around on the TV every evening  )
+[3.jpg]
+ 3.jpg
+74.47 KB External
+[4.jpg]
+ 4.jpg
+83.69 KB External
+vrvrvrvrvr. 09/12/2022 9:44 PM
+how to check that setting exported to file?
+[astur3l]
+vrvrvrvrvr. guys. may I ask dumb question in regards of hyperhdr lut
+editor? I do changes in #lut_generator, sav...
+astur3l 09/12/2022 9:34 PM
+hyperhdr restart would be enought, if you set the log level to debug in
+hyperhdr you will see when it loads the lut table
+vrvrvrvrvr. 09/12/2022 9:33 PM
+(no content)
+[unknown.png]
+ unknown.png
+68.52 KB External
+09/12/2022 9:32 PM
+guys. may I ask dumb question in regards of hyperhdr lut editor? I do
+changes in #lut_generator, save lut file. upload to the .config folder,
+restart tv, but no changes are saved. what I am doing wrong ? when to
+apply generate button?
+[tbsniller]
+[] buster4568 Click to see attachment
+tbsniller 09/12/2022 9:10 PM
+Can you try this please:
+https://github.com/TBSniller/piccap/actions/runs/3039880083 Think I have
+missed logging function and script just crashes before finishing startup
+add logIt-func to ui.js · TBSniller/piccap@d155e21
+PicCap. Contribute to TBSniller/piccap development by creating an
+account on GitHub.
+[]
+[buster4568]
+[] tbsniller Can you please also Share a screenshot from piccaps logs
+Like satdx62?
+buster4568 09/12/2022 6:50 PM
+(no content)
+[1.jpg]
+ 1.jpg
+89.09 KB External
+[2.jpg]
+ 2.jpg
+91.6 KB External
+[astur3l]
+[] tbsniller If you want to. But whats the reason If it wouldnt even
+work on older TVs?
+astur3l 09/12/2022 6:21 PM
+i was curious that how bad/good a react app on my tv -- also how
+bootstrap works, but didnt have any good idea for a (small) starter
+project , atleast i become somehow familiar with webos app dev in theory
+it works on chrome 38 too (according to their github issue).. but its
+just for my pleasure (didnt plan to release to homebrew or something
+like that /i wont even have time since my spine injured/, only at github
+if u dont mind -- so there's a little chance that ppl would use :D) tbh
+i get used too much to modern js/frameworks and with react i can reduce
+the coding lines/time to 1/10 atleast  and i can easily add what/how i
+like :D, it took only like 2 hours at top
+[tbsniller]
+[] satdx62 Hello, thanks for the new build. When starting, status
+checking remains root. Here is the log.
+tbsniller 09/12/2022 5:32 PM
+Hmm, so we dont even get an answer from Servicecalls. Will make some
+changes today evening
+[tbsniller]
+[] astur3l <@430448040080572424> would you mind if create a react app
+gui for webos-hyperion?:D dont wanna comp...
+tbsniller 09/12/2022 5:28 PM
+If you want to. But whats the reason If it wouldnt even work on older
+TVs?
+[tbsniller]
+[] buster4568 With this piccap version you cannot darken the surface.
+After a restart it is blue again.
+tbsniller 09/12/2022 5:26 PM
+Can you please also Share a screenshot from piccaps logs Like satdx62?
+[buster4568]
+[] tbsniller Can you please check this build if you have time? 
+https://github.com/TBSniller/piccap/actions/run...
+buster4568 09/12/2022 4:29 PM
+With this piccap version you cannot darken the surface. After a restart
+it is blue again.
+[xbourner]
+xbourner 09/12/2022 2:33 PM
+only takes some time when it goes from full screen to screen with black
+borders
+[xbourner]
+[] satdx62 Okay, but that's not the fault of PicCap, it's Hyperion
+itself. Does Hyperion run on LG or on an ext...
+xbourner 09/12/2022 2:33 PM
+on the same LG. and it only happens when the scene switches from 16:9 to
+21:9 or something like that.
+[satdx62]
+[] xbourner thank you for your answer. it works well. only blackbar
+recognition in hyperion is a bit slow for me
+satdx62 09/12/2022 1:53 PM
+Okay, but that's not the fault of PicCap, it's Hyperion itself. Does
+Hyperion run on LG or on an external server like Raspberry PI?
+[xbourner]
+[] satdx62 If your installed PicCap works well, there is no reason to
+install 4.0. It's not finished yet, so no...
+xbourner 09/12/2022 1:45 PM
+thank you for your answer. it works well. only blackbar recognition in
+hyperion is a bit slow for me
+[satdx62]
+[] xbourner have not been active the last weeks and i see some
+screenshots of piccap which looks very different....
+satdx62 09/12/2022 1:40 PM
+If your installed PicCap works well, there is no reason to install 4.0.
+It's not finished yet, so not as a release. If all bugs are fixed and
+works on all WebOS versions, think this will also be offered in Homebrew
+Channel. Of course, everyone is free to test this build as well.
+(edited)
+[] akdm_ > Update April 2022: > As already described in the original
+post, what was to be expected occurred: ...
+vrvrvrvrvr. 09/12/2022 10:08 AM
+maybe this applies for non-rooted downgrade only ??
+[astur3l]
+astur3l 09/12/2022 10:03 AM
+@TBSniller would you mind if create a react app gui for
+webos-hyperion?:D dont wanna compete, probably wont work on older tv-s
+either
+ 1
+[akdm_]
+vrvrvrvrvr. Continuing this thread - did anyone tested this on
+downgraded version as per this guide https://gith...
+akdm_ 09/12/2022 10:02 AM
+> Update April 2022: > As already described in the original post, what
+was to be expected occurred: > LG has fixed the underlying issues of the
+2019 models with firmware v05.20.15. As of this version, the method
+described here no longer works.
+[akdm_]
+vrvrvrvrvr. Continuing this thread - did anyone tested this on
+downgraded version as per this guide https://gith...
+akdm_ 09/12/2022 10:02 AM
+From AVS forums:
+[xbourner]
+xbourner 09/12/2022 8:57 AM
+have not been active the last weeks and i see some screenshots of piccap
+which looks very different. is it worth to upgrade from "stable version"
+from hbchannel?
+[satdx62]
+[] tbsniller Can you please check this build if you have time? 
+https://github.com/TBSniller/piccap/actions/run...
+satdx62 09/12/2022 8:48 AM
+Hello, thanks for the new build. When starting, status checking remains
+root. Here is the log.
+ msg.log
+2.41 MB External
+[Checking_root_status.jpg]
+ Checking_root_status.jpg
+173.72 KB External
+whoami1337 Oh  hope someone knows a fix, otherwise, totally unlucky
+vrvrvrvrvr. 09/12/2022 8:27 AM
+Continuing this thread - did anyone tested this on downgraded version as
+per this guide https://github.com/reprodev/LGTV-Firmware-Downgrade ?
+@whoami1337 what f/w version you have currently ?
+GitHub - reprodev/LGTV-Firmware-Downgrade: A guide on downgrading t...
+A guide on downgrading the firmware on LG TVs containing webOS so that
+you can root the TV - GitHub - reprodev/LGTV-Firmware-Downgrade: A guide
+on downgrading the firmware on LG TVs containing webO...
+[]
+[tbsniller]
+[] satdx62 Ah, wrong files sorry.
+tbsniller 09/12/2022 12:55 AM
+Can you please check this build if you have time? 
+https://github.com/TBSniller/piccap/actions/runs/3033632213
+Use callbacks instead of promises or async funcs · TBSniller/piccap...
+PicCap. Contribute to TBSniller/piccap development by creating an
+account on GitHub.
+[]
+September 11, 2022
+[mobius7106]
+mobius7106 09/11/2022 11:21 PM
+Nevermind, fixed the issue. Changed the smart start to OFF. Think some
+service was hanging and not shutting down. ~~I'm having an issue with my
+ambilight setup. When I'm viewing a still image like youtube homepage or
+plex GUI, the ambilight has no issues and HyperHDR shows the correct
+live video snapshot. The issue appears whenever I have a video playing,
+the ambilight only shows white and the HyperHDR shows a black-and-white
+static. Any fix for this? My setup was running fine before, I don't know
+what has changed to have caused this issue. Any help?~~ (edited)
+vrvrvrvrvr. hi, afaik this is due to api in lg software itself. not sure
+how it was before 03.33.11, but I have ...
+whoami1337 09/11/2022 11:04 PM
+Oh  hope someone knows a fix, otherwise, totally unlucky
+whoami1337 How can I fix colours tone? Some white colors make leds look
+like yellow, also for black lights as w...
+vrvrvrvrvr. 09/11/2022 10:51 PM
+hi, afaik this is due to api in lg software itself. not sure how it was
+before 03.33.11, but I have the same issues with colour mappings and
+there is no options currently. you can check this by taking screens from
+live view and by use colour picker tool..
+whoami1337 09/11/2022 9:17 PM
+How can I fix colours tone? Some white colors make leds look like
+yellow, also for black lights as white but with less brightness
+09/11/2022 9:16 PM
+Hello guys!
+[paolotk]
+paolotk 09/11/2022 8:40 PM
+thank you 
+[xkuyax]
+[] paolotk do you happen to know if it's possible to set the data out
+pin or do I need to custom compile?
+xkuyax 09/11/2022 8:37 PM
+i think youd need to customc ompile
+[paolotk]
+paolotk 09/11/2022 8:36 PM
+do you happen to know if it's possible to set the data out pin or do I
+need to custom compile?
+09/11/2022 8:35 PM
+cheers (edited)
+[xkuyax]
+[] paolotk I remember reading about serial output for led data, is that
+possible?
+xkuyax 09/11/2022 8:33 PM
+https://github.com/awawa-dev/HyperSerialEsp8266
+GitHub - awawa-dev/HyperSerialEsp8266: High speed 2Mb USB serial po...
+High speed 2Mb USB serial port LED strip driver using Esp8266 device. -
+GitHub - awawa-dev/HyperSerialEsp8266: High speed 2Mb USB serial port
+LED strip driver using Esp8266 device.
+[]
+[paolotk]
+paolotk 09/11/2022 8:32 PM
+or should I do it over the network?
+09/11/2022 8:32 PM
+I remember reading about serial output for led data, is that possible?
+09/11/2022 8:32 PM
+thank you
+[xkuyax]
+[] paolotk I'm looking to install software for diy ambilight with an
+esp32 based digital controlled (quinled-di...
+xkuyax 09/11/2022 8:30 PM
+hyperhdr and piccap
+[paolotk]
+paolotk 09/11/2022 8:28 PM
+I'm looking to install software for diy ambilight with an esp32 based
+digital controlled (quinled-dig-uno). I would like HDR support. On the
+Homebrew channel I see Hyperion.NG, HyperHDR and PicCap. What should I
+install?
+[astur3l]
+astur3l 09/11/2022 8:21 PM
+who's the maintainer of Hyperion WebOS repo?
+[tbsniller]
+[] satdx62 Ah, wrong files sorry.
+tbsniller 09/11/2022 7:11 PM
+Oh ah yeah, that looks like the right one. Sadly there isn't more log
+output.. Will move the call right now, maybe we can get more information
+from that
+[satdx62]
+[] tbsniller I don't get it.. Now startup logs are missing, which are
+logged in first one.. Sadly. I would try t...
+satdx62 09/11/2022 2:25 PM
+Ah, wrong files sorry.
+ msg.log
+1.47 MB External
+[tbsniller]
+[] satdx62 Click to see attachment
+tbsniller 09/11/2022 2:21 PM
+I don't get it.. Now startup logs are missing, which are logged in first
+one.. Sadly. I would try to move the evaluation calls to hyperion-webos,
+maybe we have some more luck with that. Think will have time for that
+today evening. Already thanks for testing things!
+ 1
+[satdx62]
+[] tbsniller thats also not that much speaking maybe it helps to set
+logging contexes to debug mode. I have edite...
+satdx62 09/11/2022 2:11 PM
+(no content)
+ msg.log.debug.txt
+356.4 KB External
+[tbsniller]
+[] satdx62 Click to see attachment
+tbsniller 09/11/2022 1:52 PM
+thats also not that much speaking maybe it helps to set logging contexes
+to debug mode. I have edited instruction above, can you please do again?
+[satdx62]
+[] tbsniller Woow.. just wow thats nothing  One last try please... Soo
+uninstall PicCap Install PicCap again (...
+satdx62 09/11/2022 1:45 PM
+(no content)
+ msg.log
+117.55 KB External
+[tbsniller]
+[] satdx62 Click to see attachment
+tbsniller 09/11/2022 1:37 PM
+Woow.. just wow thats nothing  One last try please... Soo uninstall
+PicCap Install PicCap again (but don't open yet) Open another TV Shell
+Run
+luna-send -n 1 -f 'luna://com.webos.pmlogd/setdevlogstatus' '{"recordDevLogs":true}'
+//Edit: Run PmLogCtl set '*' debug Run
+tail -F /var/log/messages > /tmp/msg.log Open PicCap on TV Wait a few
+seconds and hit CTRL+C in terminal to stop tail command Copy file
+/tmp/msg.log from tv to pc and then share it in here, I think you know
+how to copy files from tv, if not just say something (edited)
+[satdx62]
+[] tbsniller or stop
+satdx62 09/11/2022 1:28 PM
+(no content)
+[Settings.jpg]
+ Settings.jpg
+133.64 KB External
+[Start.jpg]
+ Start.jpg
+109.15 KB External
+[Stop.jpg]
+ Stop.jpg
+106.24 KB External
+[tbsniller]
+[] satdx62 Click to see attachment
+tbsniller 09/11/2022 1:21 PM
+or stop
+[tbsniller]
+tbsniller 09/11/2022 1:21 PM
+okay that sucks  does something happen when you press start while its
+opened?
+[satdx62]
+[] tbsniller You should also have a Tab called "console" in this one
+there should be some logging Output (if open...
+satdx62 09/11/2022 1:20 PM
+(no content)
+[console-empty.jpg]
+ console-empty.jpg
+111.13 KB External
+[tbsniller]
+[] satdx62 Click to see attachment
+tbsniller 09/11/2022 1:14 PM
+You should also have a Tab called "console" in this one there should be
+some logging Output (if opened right after Installation), do you mind
+checking this too, please?
+[satdx62]
+[] tbsniller Thanks that was what I meant Sadly js errors will not be
+logged.. Had you already managed to conne...
+satdx62 09/11/2022 1:09 PM
+(no content)
+ Services-JS.txt
+638.23 KB External
+[tbsniller]
+[] satdx62 Click to see attachment
+tbsniller 09/11/2022 12:57 PM
+Thanks that was what I meant Sadly js errors will not be logged.. Had
+you already managed to connect to Chrome console, to inspect PicCap?
+Would be interesting which js errors occour
+[satdx62]
+[] tbsniller Oh I meant PicCap log, you can get it in the logs tab in
+PicCap There should something in there Lik...
+satdx62 09/11/2022 12:25 PM
+(no content)
+[PicCap-log.png]
+ PicCap-log.png
+185.26 KB External
+[PicCap-log1.png]
+ PicCap-log1.png
+864.29 KB External
+[PicCap-log2.png]
+ PicCap-log2.png
+980.98 KB External
+[tbsniller]
+[] satdx62 Of course, here is my log right after the installation.
+tbsniller 09/11/2022 12:12 PM
+Oh I meant PicCap log, you can get it in the logs tab in PicCap There
+should something in there Like "trying to evaluate using hbchannel"
+[satdx62]
+[] tbsniller Could you please do an installation again?  after that
+would be cool if you can share the logging ...
+satdx62 09/11/2022 11:54 AM
+Of course, here is my log right after the installation.
+ log.txt
+3.19 KB External
+[mobius7106]
+mobius7106 09/11/2022 8:06 AM
+I'm having an issue with my ambilight setup. When I'm viewing a still
+image like youtube homepage or plex GUI, the ambilight has no issues and
+HyperHDR shows the correct live video snapshot. The issue appears
+whenever I have a video playing, the ambilight only shows white and the
+HyperHDR shows a black-and-white static. Any fix for this? My setup was
+running fine before, I don't know what has changed to have caused this
+issue. Any help?
+September 10, 2022
+[astur3l]
+astur3l 09/10/2022 8:43 PM
+@Yolofant how did u measured that 20-30% performance gain?
+https://github.com/webosbrew/hyperion-webos/pull/86/commits nice
+implementation btw (edited)
+Add local unix socket support by sundermann · Pull Request #86 · we...
+Local unix socket support was added in HyperHDR in
+awawa-dev/HyperHDR@1100093 Local unix sockets are automatically used
+when the hostname is set to "/tmp/hyperhdr-domain" which is hardcod...
+[]
+[tbsniller]
+[] astur3l if you choose e.g. libvtcapture, add disabled/readonly
+attribute to that select/ option, but some hi...
+tbsniller 09/10/2022 3:30 PM
+ahh okay I see, but I think for its now less needed, because almost
+anyone uses automatic detection. Explainations are planned for some
+future releases (edited)
+ 1
+[tbsniller]
+[] satdx62 Hi, I did a clean installation today and noticed that PicCap
+didn't automatically ask for the rights...
+tbsniller 09/10/2022 3:29 PM
+Could you please do an installation again?  after that would be cool
+if you can share the logging tab
+[astur3l]
+astur3l 09/10/2022 3:19 PM
+even later supply preconfigured settings for various modell, so ppl can
+have a base working setting :d
+09/10/2022 3:17 PM
+so handle on gui side too, dont let users to check mix everything,
+little form validation (edited)
+09/10/2022 3:14 PM
+if you choose e.g. libvtcapture, add disabled/readonly attribute to that
+select/ option, but some hint/explain also could be handy for quirks :d
+(edited)
+[tbsniller]
+[] astur3l maybe disabling that quirk select option which isnt for the
+capture driver would be nice , because...
+tbsniller 09/10/2022 2:47 PM
+What do you mean by that?
+[tbsniller]
+[] astur3l i think its his fault.. he checked kinda everything..  also
+force_vtcapture or something like for ...
+tbsniller 09/10/2022 2:47 PM
+Yeah thats why I am asking - everything is checked haha But I'm also not
+sure about my math skills, so it really might be wrong
+[astur3l]
+astur3l 09/10/2022 2:35 PM
+maybe disabling that quirk select option which isnt for the capture
+driver would be nice , because seems like avarage user doesnt have a
+clue about which belongs to which (edited)
+[astur3l]
+[] tbsniller Do mind telling me also which checkbox really was supposed
+to be enabled?
+astur3l 09/10/2022 2:33 PM
+i think its his fault.. he checked kinda everything..  also
+force_vtcapture or something like for dilevt (0x100 which explains the
+256.. :D) (edited)
+[] buster4568 That's the point. Why do I need a higher resolution when
+the same can be done with the lower one? Th...
+biggles3117 09/10/2022 2:20 PM
+There's no advantage at all, even the lowest res is almost certainly
+much higher than the number of LEDs you're using.
+[sonic8x]
+[] tbsniller As far we know yes, never heard something else
+sonic8x 09/10/2022 2:15 PM
+Thank you
+[tbsniller]
+[] sonic8x Does piccap work with netflix playing from android box via
+hdmi?
+tbsniller 09/10/2022 2:14 PM
+As far we know yes, never heard something else
+[tbsniller]
+Deleted User here you go..
+tbsniller 09/10/2022 2:13 PM
+Do mind telling me also which checkbox really was supposed to be
+enabled? (edited)
+[sonic8x]
+sonic8x 09/10/2022 2:13 PM
+Does piccap work with netflix playing from android box via hdmi?
+[tbsniller]
+[] astur3l wow, thanks for clarifying that running it as service
+actually gives performance , <@233967047074119...
+tbsniller 09/10/2022 2:02 PM
+I think its more a thing to try out - never checked this with our native
+service bin, if it makes a difference running from cli because
+hyperion-webos is now also installed in a correct way, the performance
+may depends on some other settings (edited)
+[astur3l]
+[] tbsniller thats also a bit true. in our first builds we havn't
+registered a service at luna bus and we only ha...
+astur3l 09/10/2022 1:58 PM
+wow, thanks for clarifying that running it as service actually gives
+performance , @pho
+[tbsniller]
+[] astur3l somewhere in the code i saw that if u run as service it gives
+better performance (it was just some c...
+tbsniller 09/10/2022 1:58 PM
+thats also a bit true. in our first builds we havn't registered a
+service at luna bus and we only had a executeable which was shipped like
+a normal file and a nodeJS service, which simply calls ./hyperion-webos
+-a $IP -p $PORT ... we then moved to a native service (registering our
+application at luna bus and install in a correct way) and saw a huge
+performance gain (vtcapture from ~15 fps to expected 30 or 60)
+[astur3l]
+astur3l 09/10/2022 1:57 PM
+btw i didn't saw sign stop handled, only keyboard interrupt
+[tbsniller]
+[] astur3l well if you just kill it, it maybe (?) wont free the
+resources (what allocated), its like plugging o...
+tbsniller 09/10/2022 1:54 PM
+Thats true, if you kill it too often you can't start capture again,
+because tv can't initialize another capture interface (have seen it in
+halgal)
+September 9, 2022
+pho9574 09/09/2022 4:34 PM
+now we're talking! okay guess i will check it out at some point.. thanks
+[astur3l]
+astur3l 09/09/2022 4:34 PM
+somewhere in the code i saw that if u run as service it gives better
+performance (it was just some comment -- also i didnt checked) (edited)
+[] astur3l do you start it via cli like ./hyperion-webos ....?
+pho9574 09/09/2022 4:33 PM
+yup. again i could run it as service i am just not to keen on changing
+something that's working  especially w its dependency w home assistant
+(edited)
+[astur3l]
+astur3l 09/09/2022 4:31 PM
+just pass -c config.json or something like that
+09/09/2022 4:31 PM
+but you can also start the service (if its elevated) via /start
+09/09/2022 4:31 PM
+do you start it via cli like ./hyperion-webos ....?
+pho9574 09/09/2022 4:31 PM
+but will that work in my case? as i said i only use the backend
+[astur3l]
+astur3l 09/09/2022 4:30 PM
+i just use luna://org.webosbrew.piccap.service/stop
+09/09/2022 4:28 PM
+well if you just kill it, it maybe (?) wont free the resources (what
+allocated), its like plugging out the washing machine while its
+running...  but maybe (?) nothing bad happen, but these kind of
+situations leds to WTF errors  (edited)
+[] astur3l well if youre sure that it have SIGTERM handler, and shuts
+down gracefully.. otherwise you just kill...
+pho9574 09/09/2022 4:27 PM
+no obviously i dont, can you elaborate?  what's the worst case
+scenario here and what to do instead? (i am not running piccap frontend
+anyway just start hyperion-webos via ssh command line)
+[astur3l]
+astur3l 09/09/2022 4:27 PM
+as far as i can see hyperion-webos registers only SIGINT handler
+[astur3l]
+pho9574 sure why not; as i said this was my DIY solution to work with
+home assistant. haven't touched it sin...
+astur3l 09/09/2022 4:25 PM
+well if youre sure that it have SIGTERM handler, and shuts down
+gracefully.. otherwise you just kill it without letting it shut down
+gracefully
+[] astur3l whats wrong with stopping service via luna call?: /
+pho9574 09/09/2022 4:14 PM
+sure why not; as i said this was my DIY solution to work with home
+assistant. haven't touched it since i got it working 
+[astur3l]
+pho9574 you have to (ssh) killall the hyperion webos process and then
+restart it with the parameters you req...
+astur3l 09/09/2022 3:51 PM
+whats wrong with stopping service via luna call?: /
+whoami1337 09/09/2022 3:23 PM
+perfect @pho, thank you a lot!
+pho9574 09/09/2022 2:57 PM
+you have to (ssh) killall the hyperion webos process and then restart it
+with the parameters you require for your setup, works like a charm.
+don't have the exact commands at hand right now sorry --then again there
+might be a more elegant solution by now. have been living under a rock
+for the past month in terms of following development here (edited)
+whoami1337 09/09/2022 2:49 PM
+*hello guys*, is there any fix to no need to reboot tv to make leds
+work?  like restart piccap someone in background through ssh
+[satdx62]
+[] buster4568 That's the point. Why do I need a higher resolution when
+the same can be done with the lower one? Th...
+satdx62 09/09/2022 1:52 PM
+My DEVICES are also running fine, but only the plugin developer can
+answer your question. As an enthusiastic technology freak, I test all
+possible builds, even if the release version works well for me.
+[buster4568]
+[] satdx62 I believe that the CPU is too weak to calculate higher
+resolutions under PicCap 4.0 and that is whe...
+buster4568 09/09/2022 1:29 PM
+That's the point. Why do I need a higher resolution when the same can be
+done with the lower one? Then there must be an advantage with the high
+resolution, but which one? That's my question. Mine is going well but
+I'm curious.
+[satdx62]
+[] buster4568 I understood that, but what does the higher resolution do
+and where is the difference. My television...
+satdx62 09/09/2022 1:23 PM
+I believe that the CPU is too weak to calculate higher resolutions under
+PicCap 4.0 and that is where the lag comes from. However, I have
+observed that PicCap 0.2.3 also works well with higher resolutions
+without lag. (edited)
+[buster4568]
+[] satdx62 I've tested all of these resolutions (128x72, 160x90,
+192x108, 256x144, 360x180), and haven't notice...
+buster4568 09/09/2022 1:18 PM
+I understood that, but what does the higher resolution do and where is
+the difference. My television runs with all resolutions, but as you
+already wrote, if the resolution is too large, the colors lag behind the
+picture.
+[buster4568]
+[] astur3l at which resolution have you the best color match?
+buster4568 09/09/2022 1:09 PM
+No, that was just a question of whether it makes a difference whether
+the resolution is high or low. Whether there is a limitation in lower
+resolution versus higher resolution.
+[satdx62]
+Deleted User SK6812 RGBW (but my color order is GRB in WLED - otherwise
+the colors are totally wrong). The LEDs a...
+satdx62 09/09/2022 12:40 PM
+SK6812 RGBW with color order GRB in WLED is correct and in Hyperion
+under LED Controller, RGB color order must be set to RGB and not the
+same as in WLED.
+[satdx62]
+[] buster4568 Hi, It would be interesting to know what the different
+resolutions mean and what the negative or pos...
+satdx62 09/09/2022 12:29 PM
+I've tested all of these resolutions (128x72, 160x90, 192x108, 256x144,
+360x180), and haven't noticed any differences in color representation.
+It's about the fact that some WebOS versions only work with certain
+resolutions. With higher resolutions, however, I have a "delay" compared
+to the television picture. (edited)
+[] satdx62 Which LEDs are you using? And are they connected directly to
+Raspberry?
+Deleted User 09/09/2022 12:22 PM
+SK6812 RGBW (but my color order is GRB in WLED - otherwise the colors
+are totally wrong). The LEDs are controlled by an ESP8266 WLAN module -
+so no raspberry at all
+[astur3l]
+[] buster4568 Hi, It would be interesting to know what the different
+resolutions mean and what the negative or pos...
+astur3l 09/09/2022 12:22 PM
+at which resolution have you the best color match?

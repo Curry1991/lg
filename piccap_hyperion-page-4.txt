@@ -1,0 +1,3635 @@
+January 9, 2026
+erdal_79740 01/09/2026 11:34 AM
+The LEDs stay on. Yes, I already tried that; at startup, I set a black
+preset so the LEDs don't light up immediately.
+[satdx62]
+erdal_79740 These options are not enabled.
+satdx62 01/09/2026 10:17 AM
+Turn off your TV. Then turn off the WLED using the WLED app. Only then
+turn on the TV and turn it off again to see if the LEDs go out. In WLED,
+you can also set whether “Turn on after power up Y/N, Whether the lights
+should turn on after a reset,” as well as whether Apply preset 0..16
+Preset to load at boot (0 = none)
+See:https://kno.wled.ge/features/settings/
+[LED_Preference.png]
+ LED_Preference.png
+4.2 KB External
+erdal_79740 01/09/2026 10:04 AM
+These options are not enabled.
+[satdx62]
+erdal_79740 I set in Hyperion led controller in custom my ip adress:
+192.168.x.x
+satdx62 01/09/2026 9:48 AM
+Yes, okay, but I mean the other options there, such as “Restore lights
+state” and “Stay on after streaming”? You should not enable those
+options. Restart your TV and try again.
+erdal_79740 01/09/2026 9:43 AM
+I set in Hyperion led controller in custom my ip adress: 192.168.x.x
+[satdx62]
+erdal_79740 Hi, it worked twice and it no longer turns off
+automatically.
+satdx62 01/09/2026 9:29 AM
+How did you set “wled” in Hyperion LED-Controller? (edited)
+[] satdx62 Oh! Uninstall this version and install this
+one:https://github.com/satgit62/satgit62.github.io/relea...
+erdal_79740 01/09/2026 9:12 AM
+Hi, it worked twice and it no longer turns off automatically.
+January 8, 2026
+[] satdx62 Oh! Uninstall this version and install this
+one:https://github.com/satgit62/satgit62.github.io/relea...
+erdal_79740 01/08/2026 11:40 PM
+Hi, Thanks Sat, it works, the leds turn off automatically 
+ 1
+[satdx62]
+satdx62 01/08/2026 5:49 PM
+Attention HyperHDR and Philips Hue users! HyperHDR has been released in
+v22.0.0.0beta1. In addition to various bug fixes, a new Philips Hue
+driver has been added that allows linear or non-linear RGB colors to be
+output. This option can be found under the “Philips Hue” LED controller
+as “Convert to linear RGB.” The “Hybrid Physics Infinite Interpolator
+(RGB)” smoothing algorithm has also been added. The default smoothing
+algorithm is currently the “Hybrid Physics Infinite Interpolator (RGB)”.
+This was chosen instead of the YUV version because the latter is much
+more resource-intensive. In addition, RGB is always predictable. If you
+decide to disable the linear output for the Hue lamps, you can choose to
+increase the gamma in the processing tab, for example, to 2.2. You can
+view the new commits at
+(https://github.com/awawa-dev/HyperHDR/commit/bd66547076c261d15aa32409b607993fde335741).
+A compiled version for webOS can be found at:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-/blob/main/README.md#to-avoid-errors-please-use-only-this-version-for-these-instructions
+(edited)
+[Convert_to_linear_RGB.png]
+ Convert_to_linear_RGB.png
+57.92 KB External
+[Hybrid_Physics_Infinite_Interpolator_RGB.png]
+ Hybrid_Physics_Infinite_Interpolator_RGB.png
+43.18 KB External
+January 7, 2026
+[explay]
+Original message was deleted
+explay 01/07/2026 10:16 PM
+From what I've read it only takes like a second to decompress it once
+and it's pretty much the same as uncompressed but smaller
+[explay]
+[] satdx62 So if you want to run HyperHDR with only one LUT, you have to
+disable the NV12 option in PicCap. The...
+explay 01/07/2026 10:16 PM
+If I understood it correctly, the method I used produced only the HDR
+LUT, so I've compressed and renamed it accordingly and used the
+compressed DV and SDR from the github. SDR and DV are now working
+perfectly and HDR is still a bit dark but brighter than it was before.
+I've also tried HDR LUT from the github but it was worse than mine.
+Thank you for all the help!
+[satdx62]
+[] explay Click to see attachment
+satdx62 01/07/2026 10:06 PM
+So if you want to run HyperHDR with only one LUT, you have to disable
+the NV12 option in PicCap. The LUT must then be named
+“lut_lin_tables.3d.” This is also the standard name after calibration.
+However, HyperHDR should actually be used with three different LUTs due
+to different video content such as SDR, HDR and DV. See also:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration.
+SDR to HDR tone mapping must be enabled in both cases.
+[explay]
+explay 01/07/2026 9:47 PM
+(no content)
+[image.png]
+ image.png
+20.41 KB External
+[explay]
+[] satdx62 Your log shows that both compressed LUT tables and a standard
+uncompressed LUT are present in /home/...
+explay 01/07/2026 9:47 PM
+Just one question - I've used the browser method of calibrating LUT. If
+it created only one file, is it suitable for all content (SDR, HDR, DV)?
+If so, should I just copy the file and rename it for HDR etc before
+compressing?
+[satdx62]
+[] explay Hi, I've encountered some issues with hyperhdr and since webos
+is not supported on their github I'll...
+satdx62 01/07/2026 9:15 PM
+Your log shows that both compressed LUT tables and a standard
+uncompressed LUT are present in /home/root/.hyperhdr/, which causes your
+HyperHDR to malfunction. When you calibrate a LUT yourself, it is saved
+by default in the /home/root/.hyperhdr/ directory as “lut_lin_tables.3d”
+and loaded by default instead of the correct LUT. After calibration, it
+must be isolated and renamed to the correct name according to the
+calibrated value (SDR, HDR, or DV) and replaced. However, if you use the
+compressed tables, it is not enough to simply rename them; you must also
+convert them to the correct .zst format.
+See:https://github.com/satgit62/How-to-compress-the-LUT-table-and-use-it-in-HyperHDR
+I couldn't tell from your log that you were playing DV video content. If
+so, lut_lin_tables_dv.3d/.zst must be loaded.
+GitHub - satgit62/How-to-compress-the-LUT-table-and-use-it-in-HyperHDR
+Contribute to
+satgit62/How-to-compress-the-LUT-table-and-use-it-in-HyperHDR
+development by creating an account on GitHub.
+[]
+[satdx62]
+erdal_79740 Should I delete the current configuration?
+satdx62 01/07/2026 9:14 PM
+No. (edited)
+erdal_79740 01/07/2026 9:02 PM
+Should I delete the current configuration?
+01/07/2026 8:59 PM
+Okay, I'll do that as soon as I can.
+[satdx62]
+erdal_79740 And it reappears:wled-0a5b84._wled._tcp.local
+satdx62 01/07/2026 8:56 PM
+Oh! Uninstall this version and install this
+one:https://github.com/satgit62/satgit62.github.io/releases/download/v0.2.0-alpha/org.webosbrew.hyperion.ng.loader_0.2.2_all.ipk
+erdal_79740 01/07/2026 8:46 PM
+And it reappears:wled-0a5b84._wled._tcp.local
+01/07/2026 8:45 PM
+It doesn't save. It displays this message when I enter my IP address:
+"Error retrieving device properties. Please check the configuration
+settings."
+[satdx62]
+erdal_79740 Hello, In Hyperion WLED Controller, I selected customization
+but it doesn't save my IP address, it ...
+satdx62 01/07/2026 8:35 PM
+However, instead of wled-0a5b84._wled._tcp.local, enter the IP address
+of your WLED and save it. Then restart your TV.
+[wled.png]
+ wled.png
+36.31 KB External
+[] satdx62 <@1328076254779277399> Hello, Can you please select the
+“Custom” option under “LED Controller” in “D...
+erdal_79740 01/07/2026 8:24 PM
+Hello, In Hyperion WLED Controller, I selected customization but it
+doesn't save my IP address, it displays: wled-0a5b84._wled._tcp.local.
+The LEDs are on when i turn off tv
+[explay]
+explay 01/07/2026 6:53 PM
+Here's how live preview from hyperhdr looks for SDR and HDR content:
+[HDR.png]
+ HDR.png
+617.14 KB External
+[SDR.png]
+ SDR.png
+902.16 KB External
+01/07/2026 6:52 PM
+Hi, I've encountered some issues with hyperhdr and since webos is not
+supported on their github I'll just paste my description from there:
+Context: I am running HyperHDR v22.0.0beta0 on a rooted LG TV (webOS
+9.2.1) using PicCap as the grabber via Flatbuffer Server. Steps to
+reproduce Start HyperHDR and PicCap (Flatbuffer priority 150). Play
+standard SDR content. Result: Live Preview looks correct, LEDs match
+colors perfectly. Play HDR or Dolby Vision content. Result: The Live
+Preview becomes extremely dark. LEDs turn off or light up very faintly.
+I have confirmed that lut_lin_tables_hdr.3d.zst is installed and loaded
+by the logs. What is expected? With "HDR to SDR tone mapping" enabled
+and the correct LUTs loaded, the Live Preview should be bright enough to
+drive the LEDs, similar to how it behaves in SDR mode. What is actually
+happening? The incoming HDR video stream via Flatbuffer seems to be
+processed incorrectly or the Tone Mapping is not lifting the brightness
+levels sufficienty. The preview is nearly pitch black. The logs confirm
+that the HDR LUT is found and loaded when the content switches to HDR,
+but the visual result is not correct. System Version: 22.0.0beta0
+HyperHDR Server OS: - Distribution: webOS TV 9.2.1 - Architecture:
+arm64 - Kernel: linux (5.4.268-320 (WS: 32)) - Qt Version: 6.8.3 -
+OpenSSL: OpenSSL 1.1.1q 5 Jul 2022 - Browser: Mozilla/5.0 (Windows NT
+10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
+Chrome/141.0.0.0 Safari/537.36 OPR/125.0.0.0 Grabber: Flatbuffer Server
+(PicCap) LED Hardware: WLED (ESP32) via DDP LUT Status: Compressed LUTs
+installed. I have also tried calibrating LUTs via windows browser. Logs:
+https://pastebin.com/1eWBxews
+2026-01-07T16:35:41.703Z [CALIBRATOR] (LutCalibrator.cpp:1343) Sele...
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[satdx62]
+satdx62 01/07/2026 11:58 AM
+@Erdal Hello, Can you please select the “Custom” option under “LED
+Controller” in “Devices Discovered” and enter the IP address of WLED in
+“Hostname/IP Address”? Then save the settings and turn off the TV to see
+if the LEDs go out.
+[satdx62]
+Original message was deleted
+satdx62 01/07/2026 11:34 AM
+I don't know if native RGBW support for WLED will be available in
+HyperHDR, as HyperHDR already allows native control when using
+HyperSerial or HyperSerialPico for RGBW LEDs. Depending on the LEDs used
+(RGB or RGBW-CW, NW), you can explicitly flash your own differentiated
+firmware onto the controller. The dedicated “Adalight” LED controller
+offers separate settings for both “White channel limit” and “RGB-White
+channel aspect,” allowing you to achieve a perfect balance between the
+white channel and the RGB channels. When using the “wled” LED
+controller, HyperHDR leaves the white handling control to the white
+management in the WLED LED preference under Global override for
+Auto-calculate white. For this reason, you should test all the options
+offered there. You can find out more about “White Handling” at:
+https://kno.wled.ge/features/cct/. (edited)
+January 6, 2026
+[satdx62]
+erdal_79740 Yes, the wiring is Awawa's because initially I wanted to
+install Hyperserialesp32, but that's not po...
+satdx62 01/06/2026 10:57 PM
+Okay, now I understand. But I don't see any reason why the LEDs
+shouldn't turn off when you turn off the TV, unless you have enabled the
+“Stay on after streaming” option in Hyperion under the LED controller
+“wled”. Otherwise, I agree that some ESPs actually don't turn off with
+the LED controller “wled” and you would have to use the LED controller
+“udpraw” see
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#controller-udpraw-protocol-for-wled
+erdal_79740 01/06/2026 9:04 PM
+Yes, the wiring is Awawa's because initially I wanted to install
+Hyperserialesp32, but that's not possible, as you told me i need an
+ESP32 S2. So I simply installed WLED on my ESP32, and everything works
+fine except that the LEDs don't turn off automatically.
+[satdx62]
+erdal_79740 I tried connecting the USB to the socket, but it didn't
+change anything.
+satdx62 01/06/2026 8:26 PM
+Your wiring diagrams look like HyperSerial with two segments. So no
+WLED. What now?
+erdal_79740 01/06/2026 8:16 PM
+I tried connecting the USB to the socket, but it didn't change anything.
+[222923979-f344349a-1f8b-4195-94ca-51721923359e.png]
+ 222923979-f344349a-1f8b-4195-94ca-51721923359e.png
+1.2 MB External
+[satdx62]
+erdal_79740 The power state in piccap is already disable. The leds still
+don't turn off automatically when i tu...
+satdx62 01/06/2026 7:52 PM
+Why is the ESP32 connected to the TV's USB port when WLED is installed?
+It must not be connected to a power supply and the TV's USB port at the
+same time. What does the wiring look like?
+[satdx62]
+[] theboy08018 is anyone elses whites and greys really brright compared
+to other colours? even with gamma on 2.2
+satdx62 01/06/2026 7:48 PM
+In what context and with which app was this determined? Was HyperHDR or
+Hyperion.NG (or which version) used for this? The LED controller used
+also plays a major role here.
+erdal_79740 01/06/2026 7:37 PM
+The power state in piccap is already disable. The leds still don't turn
+off automatically when i turn off the tv.
+[satdx62]
+erdal_79740 Hello, I'm using WLED and Hyperion. The LEDs don't turn off
+automatically when I turn off the TV. E...
+satdx62 01/06/2026 7:24 PM
+If you have enabled the “Disable power state check” option in the
+advanced Piccap settings, you should disable it and test the process
+again.
+erdal_79740 01/06/2026 7:05 PM
+Hello, I'm using WLED and Hyperion. The LEDs don't turn off
+automatically when I turn off the TV. ESP32 is connected to the TV's USB
+port.
+[theboy08018]
+theboy08018 01/06/2026 1:42 PM
+is anyone elses whites and greys really brright compared to other
+colours? even with gamma on 2.2
+[amazegummier]
+hellobox. No.
+amazegummier 01/06/2026 8:28 AM
+Ok.
+[yolofant]
+yolofant 01/06/2026 6:05 AM
+it only gives a histogram of 6? screen regions
+01/06/2026 6:05 AM
+your conclusion is wrong though
+[yolofant]
+[] amazegummier How do you know?
+yolofant 01/06/2026 6:05 AM
+because I reversed it last year when it came out
+[] amazegummier Can’t we use that library then in an app that doesn’t
+need root rights? then I can simply load it wi...
+hellobox. 01/06/2026 12:31 AM
+No.
+January 5, 2026
+[amazegummier]
+amazegummier 01/05/2026 11:56 PM
+Someone already looking into this? Is /dev/forcecapture missing or
+something?
+01/05/2026 11:54 PM
+https://github.com/webosbrew/hyperion-webos/blob/main/unicapture/backends/libvtcapture.cpp
+makes sense indeed. Found out that hue is also reading colors from the
+center of the screen. In other words it can see a lot of different
+pixels
+hyperion-webos/unicapture/backends/libvtcapture.cpp at main · webo...
+hyperion.ng video grabber for webOS. Contribute to
+webosbrew/hyperion-webos development by creating an account on GitHub.
+[]
+[amazegummier]
+[] yolofant they use a different api in vtcapture though but still same
+library
+amazegummier 01/05/2026 11:19 PM
+How do you know?
+[amazegummier]
+amazegummier 01/05/2026 11:18 PM
+I’m trying to get hands on the IPK of Hue so I can reverse engineer it
+and build an app
+[amazegummier]
+[] yolofant they use a different api in vtcapture though but still same
+library
+amazegummier 01/05/2026 11:18 PM
+Can’t we use that library then in an app that doesn’t need root rights?
+then I can simply load it with dev mode.
+[yolofant]
+hellobox. The Hue app?
+yolofant 01/05/2026 9:31 PM
+they use a different api in vtcapture though but still same library
+[yolofant]
+yolofant 01/05/2026 9:30 PM
+yes
+[] yolofant and doesn't make sense because it is also using vtcapture
+hellobox. 01/05/2026 9:18 PM
+The Hue app?
+[yolofant]
+yolofant 01/05/2026 9:15 PM
+and doesn't make sense because it is also using vtcapture (edited)
+01/05/2026 9:14 PM
+no
+01/05/2026 9:14 PM
+[:huh:]
+hellobox. 01/05/2026 9:08 PM
+Is this true? > Some people noted that the libraries used for Hyperion /
+picap were stripped out of recent versions after the hue sync support
+was added to the kernel.
+https://www.reddit.com/r/webos/comments/1q4qmh7/comment/nxv6b05/
+[satdx62]
+satdx62 01/05/2026 6:11 PM
+Hello to all Hyperion.NG + WLED users, Native RGBW support has now been
+added for WLED under the LED controller “wled” with the streaming
+protocols DDP and RAW. This allows the white LED algorithm to be
+selected directly and the RGBW LEDs used to be specified. For the SK6812
+RGBW, for example, these are the Neural White, Cold White, and Warm
+White versions. The white management function in the LED configuration
+of the WLED must be deactivated and control left to Hyperion. For more
+information, see: Adding RGBW support for WLED, DDP, UDPRAW:
+https://github.com/hyperion-project/hyperion.ng/pull/1958 and
+https://github.com/hyperion-project/hyperion.ng/commit/77a7a46530b54ad392ea9bef38a1ab978568dc5d
+A compiled webOS version can be found at:
+https://github.com/satgit62/hyperion.ng-webos-loader/actions/runs/20694543321/artifacts/5017938326.
+(edited)
+[1.png]
+ 1.png
+41.56 KB External
+[2.png]
+ 2.png
+51.82 KB External
+Add RGBW support for WLED, DDP, UDPRAW (#1958) · hyperion-project/...
+[]
+[satdx62]
+mattes_28191 Click to see attachment
+satdx62 01/05/2026 12:10 PM
+Hi, in your log, PicCap is still attempting to start with a resolution
+of 320x180:
+    2.944s [ DBG unicapture_run      ]         UI: pixfmt: 12; 320x180
+    2.944s [ DBG unicapture_run      ]      VIDEO: pixfmt: 5; 320x180
+    2.944s [ DBG unicapture_run      ] CONV    UI: pixfmt: 12; 320x180
+    2.944s [ DBG unicapture_run      ] CONV VIDEO: pixfmt: 12; 320x180
+    Try starting from the command line, adding the IP address, and post the output:
+    /media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/hyperion-webos --verbose -s -b libdile_vt -f 0 -x 192 -y 108 -a 192.168.x.xx
+Otherwise, you need to check whether HyperHDR or Hyperion.NG has started
+the daemon. Simply enter the IP address of your TV:8090 in your browser.
+ 1
+mattes_28191 01/05/2026 9:56 AM
+(no content)
+ message.txt
+29.54 KB External
+01/05/2026 9:52 AM
+After give up getting kodi streaming, I tried to get ambilight running -
+without success. It seems Piccap is not working. I have a LG49UM71007LB.
+This is the output of cat /var/run/nyx/*:
+        "board_type": "K5LP_DVB",
+        "device_name": "k5lp",
+        "hardware_id": "HE_DTV_W19P_AFADABAA",
+        "hardware_revision": "BOARD_DV_1ST",
+        "keyboard_type": "virtual",
+        "modem_present": "N",
+        "nduid": "d40ca0d27d7799ca58e0d8a4906a0d311c63da14",
+        "product_id": "49UM71007LB",
+        "ram_size": "1.5 GB",
+        "serial_number": "001MAHUCR993",
+        "storage_size": "4 GB",
+        "wifi_addr": "60:AB:14:B7:19:BA",
+        "wired_addr": "64:95:6C:57:3B:22"
+    }
+    {
+        "core_os_kernel_version": "4.4.84-p.649.grampians.k5lp.1",
+        "core_os_name": "Rockhopper",
+        "core_os_release": "4.10.2-29",
+        "core_os_release_codename": "goldilocks2-grampians",
+        "encryption_key_type": "prodkey",
+        "webos_api_version": "4.1.0",
+        "webos_build_datetime": "20250702083607",
+        "webos_build_id": "29",
+        "webos_imagename": "starfish-dvb-secured",
+        "webos_manufacturing_version": "05.40.97",
+        "webos_name": "webOS TV Lite",
+        "webos_prerelease": "",
+        "webos_release": "4.10.2",
+        "webos_release_codename": "goldilocks2-grampians"
+    }
+After not getting Piccap working with the Gui, I tried this config
+{"priority":150,"nohdr":false,"nopowerstate":false,"backend":"auto","unix-socket":false,"address":"127.0.0.1","port":19400,"width":192,"nv12":false,"height":108,"quirks":0,"fps":30,"vsync":false,"autostart":true,"nogui":true,"novideo":false,"uibackend":"auto"}
+and ./hyperion-webos --verbose gave me this output: (edited)
+January 4, 2026
+[satdx62]
+[] astur3l maybe its atmega
+satdx62 01/04/2026 6:08 PM
+Yes, the Arduino Uno uses an ATmega16U2 chip as a dedicated
+USB-to-serial converter. UART CDC does not require a kernel driver.
+However, the Arduino board can also be flashed with FastLED and a higher
+baud rate (max 500,000). (edited)
+[astur3l]
+[] satdx62 CH340 would be good, but he said in another thread that he
+doesn't need a CH340 kernel driver becaus...
+astur3l 01/04/2026 6:05 PM
+maybe its atmega
+[satdx62]
+[] astur3l how do u know its not esp based? i didn't find any info, and
+there's no reason why it wouldn't be es...
+satdx62 01/04/2026 5:59 PM
+CH340 would be good, but he said in another thread that he doesn't need
+a CH340 kernel driver because it was recognized without a Kernel-driver.
+From this, I conclude that he doesn't have a CH340. He should connect it
+to his PC and check in Device Manager to see which chip is in it. I
+think it's an Arduino board.
+[astur3l]
+astur3l 01/04/2026 5:55 PM
+how do u know its not esp based? i didn't find any info, and there's no
+reason why it wouldn't be esp
+01/04/2026 5:51 PM
+(no content)
+[-2106169131-1876431752.jpg]
+ -2106169131-1876431752.jpg
+77.27 KB External
+[astur3l]
+[] satdx62 He doesn't use ESP32, but this complete kit with
+Ambibox/Dream Color: https://a.aliexpress.com/_EIco...
+astur3l 01/04/2026 5:51 PM
+according to your link it uses ch340 chip which supports 2m baud rate
+[-2106169131573542550.jpg]
+ -2106169131573542550.jpg
+140.42 KB External
+[satdx62]
+[] astur3l in wled u can change under settings/ sync, bud rate
+controlled on esp side by software (at "boot"), ...
+satdx62 01/04/2026 5:44 PM
+He doesn't use ESP32, but this complete kit with Ambibox/Dream Color:
+https://a.aliexpress.com/_EIcoCcU
+[2.png]
+ 2.png
+60.81 KB External
+[astur3l]
+astur3l 01/04/2026 5:28 PM
+in wled u can change under settings/ sync, bud rate controlled on esp
+side by software (at "boot"), if u have custom firmware which doesn't
+support changing bitrate u need to look another firmware  btw there's
+few Arduino sketch for ada light if u dont wanna use hyperserial (why u
+wouldn't?) (edited)
+[astur3l]
+[] minwi But the baud rate is limited by the hardware right? This cheap
+AliExpress kit doesn't seem to suppor...
+astur3l 01/04/2026 5:27 PM
+yeah it depends what kind of usb ttl chip do u use/have, but even the
+lowest supports 1m
+[satdx62]
+[] minwi But the baud rate is limited by the hardware right? This cheap
+AliExpress kit doesn't seem to suppor...
+satdx62 01/04/2026 5:21 PM
+Yes, the "Ambibox" cannot operate at more than 115200 under adalight.
+The serial chip cannot handle more than that.
+[minwi]
+[] astur3l its because you have pretty low baud rate (115.200 kbps),
+e.g. neopixel data transfer speed is 800kb...
+minwi 01/04/2026 5:09 PM
+But the baud rate is limited by the hardware right? This cheap
+AliExpress kit doesn't seem to support much more than that
+[astur3l]
+[] minwi Thanks! It seems I fixed it by increasing the horizontal led
+depth from 1% to 3% (or more). For the...
+astur3l 01/04/2026 4:16 PM
+its because you have pretty low baud rate (115.200 kbps), e.g. neopixel
+data transfer speed is 800kbps.. , u should use 1M/2M baud rate
+[minwi]
+[] satdx62 Since this works with normal video content but not with DV,
+it can be assumed that the DV LUT table ...
+minwi 01/04/2026 12:31 PM
+Thanks! It seems I fixed it by increasing the horizontal led depth from
+1% to 3% (or more). For the performance, I've seen on the overview the
+led device says ~21 fps... So I've configured both continuous outputs
+and 20Hz update frequency after reading this
+https://www.hyperhdr.eu/2021/04/how-to-set-up-hyperhdr-part-i-basic.html?m=1#chapterSmoothing
+(I guess the cheap led kid I bought won't give me more than that )
+Thank you again!!!
+How to set up HyperHDR? Part I: basic configuration
+hyperhdr 4k ambilight hdr grabber leds linux raspberry raspbian rpi
+windows sk6812 ws2801 ws2812b ezcap hyperion.ng ms2109 rullz ms2130 hdr
+wled
+[satdx62]
+[] minwi ~~I've been following the
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webO...
+satdx62 01/04/2026 12:02 PM
+Since this works with normal video content but not with DV, it can be
+assumed that the DV LUT table is not loaded or cannot be found when
+using HyperHDR. A complete HyperHDR log would therefore be very helpful
+to see which LUT tables are loaded. The numerous dropouts are not the
+cause of this behavior. Depending on which HyperHDR version you are
+using, the dropouts can be remedied by activating Continuous Outputs in
+the smoothing menu.
+[minwi]
+minwi 01/04/2026 10:21 AM
+~~I've been following the
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+docs with this hardware
+https://discord.com/channels/407937994037919756/974942819707924511/1450749619356303401
+regular TV works ok but for example dolby content (via hdmi) is messed
+up. Also for example PS5 shows a couple of lines flickering like crazy.
+TV is a c9 pla and os version is 05.20.07 (webos 4.9.0). Both piccap and
+hyperhdr installed via homebrew. On piccap I have lowered some settings
+to make it smooth like hyperion priority set to 100, resolution to
+256x144 and also enabled the location_2 quirk on hyperhdr I've enabled
+the "HDR to SDR tone mapping" setting as well as removing (well, renamed
+to .old) according to
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS?tab=readme-ov-file#warning
+the 50 MB file "flat_lut_lin_tables.3d" found in
+"/media/developer/apps/usr/palm/services/org.webosbrew.hyperhdr.loader.service/hyperhdr/"
+I think it is related to piccap as I've disabled hyperhdr and still the
+same  any ideas? Thanks!~~ Edit:
+https://www.reddit.com/r/homebrew/comments/13kr5hs/nvidia_shield_dolby_vision_breaks_when_piccap/
+solved it (enabling the "QUIRK_DILE_VT_CREATE_EX" Quirk) Now, it seems
+the upper leds doesn't move on dolby content, they just stay mid
+light... regular TV works fine though. Is it perhaps related to this
+log? 2026-01-04T10:51:44.959Z [PERFORMANCE] [INSTANCE0: FPS = 37.67,
+processed = 2258], [LED0: FPS = 21.25, send = 1275, processed = 1275,
+dropped = 1723] (edited)
+[PXL_20260104_0908307262.jpg]
+ PXL_20260104_0908307262.jpg
+2.18 MB External
+January 3, 2026
+[] satdx62 LEDs must be supplied with 5 volts at both the beginning and
+end of the LED strip.
+mar.tnk 01/03/2026 10:09 PM
+That was the case at the beginning, somehow my powwersupy got faulty, it
+only outputs 2.48V directly (was 5V before)
+[satdx62]
+mar.tnk And the reason is somehow (bevor it worked) there are only 2.36
+V at the leds and there is something...
+satdx62 01/03/2026 10:04 PM
+LEDs must be supplied with 5 volts at both the beginning and end of the
+LED strip.
+[satdx62]
+mar.tnk And the reason is somehow (bevor it worked) there are only 2.36
+V at the leds and there is something...
+satdx62 01/03/2026 10:02 PM
+Yes, Piccap v0.5.1 has been fixed. You can adjust the white balance for
+blue in the LED controller “adalight”.
+[2.jpg]
+ 2.jpg
+248.68 KB External
+mar.tnk 01/03/2026 10:00 PM
+And the reason is somehow (bevor it worked) there are only 2.36 V at the
+leds and there is something wrong with the power supply, I think the
+blue led needs the hightest voltage
+mar.tnk 01/03/2026 9:50 PM
+The blue channel is way to light compared to the others
+01/03/2026 9:50 PM
+(no content)
+[IMG_9512.jpg]
+ IMG_9512.jpg
+643.96 KB External
+01/03/2026 9:49 PM
+(no content)
+[IMG_9511.jpg]
+ IMG_9511.jpg
+662.31 KB External
+01/03/2026 9:49 PM
+(no content)
+[IMG_9510.jpg]
+ IMG_9510.jpg
+639.67 KB External
+01/03/2026 9:48 PM
+Found the problem
+mar.tnk 01/03/2026 9:38 PM
+But that does not seem th be the case here, because for me the preview
+(HDMI Source) is perfectly matching with the real video and no colors
+are changed
+01/03/2026 9:37 PM
+(no content)
+[IMG_9509.jpg]
+ IMG_9509.jpg
+736.88 KB External
+01/03/2026 9:34 PM
+Piccap v0.5.1
+[satdx62]
+mar.tnk HyperHDR Version: 21.0.0.0
+satdx62 01/03/2026 9:33 PM
+I mean PicCap version; I saw the one from HyperHDR in log. Take a look
+here:https://github.com/webosbrew/hyperion-webos/issues/127#issuecomment-2656161273
+Colors reversed with hdmi devices · Issue #127 · webosbrew/hyperi...
+I have an LG OLED55C6P and running PicCap and HyperHDR on the tv&#39;s
+WebOS 3.4. The video preview looks fine when it&#39;s direct from the TV
+(menu bars), but when I have an input device plugged ...
+[]
+mar.tnk 01/03/2026 9:32 PM
+This is the live preview
+[IMG_9508.jpg]
+ IMG_9508.jpg
+1.25 MB External
+01/03/2026 9:30 PM
+HyperHDR Version: 21.0.0.0
+01/03/2026 9:30 PM
+HDMI and it’s a Xiaomi Mi Box 2s
+[satdx62]
+mar.tnk Click to see attachment
+satdx62 01/03/2026 9:27 PM
+Hello, what is the playback source and which PicCap version are you
+using? If HDMI is the source, then which device?
+mar.tnk 01/03/2026 9:01 PM
+(no content)
+ message.txt
+37.65 KB External
+[satdx62]
+mar.tnk For me it feels like the LDSs cannot show any blue lights. For
+example when I put the Boot-Animation...
+satdx62 01/03/2026 8:57 PM
+Where is the HyperHDR log?
+mar.tnk 01/03/2026 8:12 PM
+Also here the same. Green and Red works, but blue seems to not work
+01/03/2026 8:12 PM
+(no content)
+[IMG_9503.jpg]
+ IMG_9503.jpg
+707.33 KB External
+[IMG_9504.jpg]
+ IMG_9504.jpg
+1.37 MB External
+[IMG_9506.jpg]
+ IMG_9506.jpg
+522.5 KB External
+01/03/2026 8:10 PM
+Also in the picture with the color demo you can see that there is no
+blue but red.
+01/03/2026 8:09 PM
+For me it feels like the LDSs cannot show any blue lights. For example
+when I put the Boot-Animation Rainbow, there is only Red and
+Orange/Yellow. Or when I put „Police Lights Solid“ the animation is Red
+(I guess it should be blue)
+[satdx62]
+mar.tnk Hello, I have problems with my Ambiligt. My Setup: LG TV with
+PicCap installed Lolin-S2-Mini with ...
+satdx62 01/03/2026 7:48 PM
+Without a complete log from HyperHDR, it's impossible to say. However,
+the colors look good in the live preview. We need to find out what is
+causing this difference between the live preview and the LEDs. It could
+also be due to excessive delay.
+mar.tnk 01/03/2026 7:32 PM
+Hello, I have problems with my Ambiligt. My Setup: LG TV with PicCap
+installed Lolin-S2-Mini with HyperSerialEsp32 installed on it and
+connected to TV with usb Sk6812 LED Strip I installed it in January,
+then I also tested some YouTube demos and I think it was better. Now it
+mostly detects wrong colors. What would be the best was to debug this?
+[IMG_9500.jpg]
+ IMG_9500.jpg
+659.07 KB External
+[IMG_9499.jpg]
+ IMG_9499.jpg
+937.3 KB External
+[IMG_9497.jpg]
+ IMG_9497.jpg
+515.77 KB External
+the.real.joe.biden 01/03/2026 11:47 AM
+i am using an unfolded circle remote with the kodi integration so I
+mapped the piccap toggle to an activity on that remote
+[Screenshot_2026-01-03_at_5.47.30_AM.png]
+ Screenshot_2026-01-03_at_5.47.30_AM.png
+1.43 MB External
+01/03/2026 11:45 AM
+I made this, could be useful for some folks using CoreELEC on an AM6b+
+https://github.com/dangerouslaser/script.piccap
+GitHub - dangerouslaser/script.piccap: Kodi add-on to toggle Piccap...
+Kodi add-on to toggle Piccap ambient backlight on rooted LG WebOS TVs -
+dangerouslaser/script.piccap
+[]
+ 1
+January 2, 2026
+[satdx62]
+erdal_79740 Hi, does this new version 0.2.2 of hyperion fix the overly
+light green color, for example, in nature...
+satdx62 01/02/2026 8:26 PM
+Hello, I don't know if the green tint will improve in your case with
+this version, but under the LED controller “udpe131” you can select the
+option “Neutral White” or another option that corresponds to your LEDs
+in the menu item “White LED algorithm”. Please test it and give us your
+feedback. A version will soon be available in which native RGBW is also
+available under the “wled” LED controller, along with CW, NW, and WW.
+[1.png]
+ 1.png
+50.59 KB External
+[] satdx62 To do this, the “udpe131” LED controller must be selected and
+configured in Hyperion.NG instead of ‘...
+erdal_79740 01/02/2026 7:42 PM
+Hi, does this new version 0.2.2 of hyperion fix the overly light green
+color, for example, in nature (vegetation) images? Because version 0.2.1
+is very good, but the nature green is too light. (edited)
+December 31, 2025
+erdal_79740 12/31/2025 5:35 PM
+Happy New Year to everyone!
+[the4anoni]
+the4anoni 12/31/2025 1:56 PM
+I hope I can make ambilight next year 
+12/31/2025 1:56 PM
+Happy new year for everyone
+[the4anoni]
+[] satdx62 May it bring you and your family health, happiness, and
+prosperity. Leave the old year behind and we...
+the4anoni 12/31/2025 1:55 PM
+Thank you 
+[satdx62]
+satdx62 12/31/2025 1:13 PM
+May it bring you and your family health, happiness, and prosperity.
+Leave the old year behind and welcome the new opportunities of 2026 with
+confidence and joy! Here's to a successful and wonderful new year!
+[happy-new-year-2026-.png]
+ happy-new-year-2026-.png
+522.61 KB External
+ 2  3
+December 28, 2025
+[satdx62]
+Original message was deleted
+satdx62 12/28/2025 8:13 PM
+Hyperion.NG is an open-source implementation of ambient lighting for TV
+and music devices based on the analysis of video and audio streams,
+similar to HyperHDR. To implement Ambilight, you need one of these two
+programs. You will also need a grabber/capture library that captures the
+image and sends it to HyperHDR or Hyperion.NG, which is responsible for
+processing and forwarding it to the LED controller. In our case on LG
+webOS, the “hyperion-webos” grabber for webOS provides the necessary
+capture library for PicCap (UI).
+See:https://github.com/webosbrew/hyperion-webos#hyperion-webos And yes,
+the Infinite Color Engine is a HyperHDR feature. I hope you understand
+now,
+GitHub - webosbrew/hyperion-webos: hyperion.ng video grabber for webOS
+hyperion.ng video grabber for webOS. Contribute to
+webosbrew/hyperion-webos development by creating an account on GitHub.
+[]
+[] satdx62 <@1328076254779277399> You can use Hyperion's Color
+Calibration Wizard. Direct color calibration is...
+erdal_79740 12/28/2025 6:49 PM
+Ok, thank you for all your work. I'll try it with Kodi.
+[satdx62]
+Original message was deleted
+satdx62 12/28/2025 6:39 PM
+Hey, HyperHDR is just as sophisticated as Hyperion NG. Not to be
+confused with Hyperion-webOS, which is hidden behind the PicCap UI.
+[satdx62]
+Original message was deleted
+satdx62 12/28/2025 6:27 PM
+Well, this is an alternative to HyperHDR for WLED users who prefer
+Hyperion NG but don't want to use HyperSerial/Pico. With this
+alternative, the driver can be explicitly selected for specific LEDs
+(e.g., CW, NW, and WW). No LUT tables are required for this. However,
+corrections are still necessary to ensure adequate color reproduction.
+Which solution to use is up to each user. Just try it out and see what
+you like best!
+[satdx62]
+satdx62 12/28/2025 6:08 PM
+To do this, the “udpe131” LED controller must be selected and configured
+in Hyperion.NG instead of ‘wled’ or “udpraw”. All you need to do is
+enter the host name or IP address of WLED and the number of LEDs. The
+latter must correspond to your LED layout. You do not need to enter the
+CID. Hyperion.NG generates its own. See image. You don't need to worry
+about “Universe.” When the maximum 512 DMX channels of Universe 1 are
+used up, Hyperion automatically switches to the next Universe in WLED.
+This allows you to use more than 512 DMX channels (128 RGBW LEDs). In my
+example, I am using 266 RGBW SK6812 LEDs, which corresponds to a total
+of 1,064 DMX channels. On the WLED-App “Settings” page, in addition to
+your normal settings, you must ensure that “Sync Interfaces” and
+“Network DMX Input” are set as shown in the image. You can download a
+“Nightly” build of the future Hyperion.NG compiled for webOS
+here:https://github.com/satgit62/satgit62.github.io/releases/download/v0.2.0-alpha/org.webosbrew.hyperion.ng.loader_0.2.2_all.ipk
+Have fun! I look forward to your feedback.
+12/28/2025 6:08 PM
+@Erdal You can use Hyperion's Color Calibration Wizard. Direct color
+calibration is easier if Kodi is installed on your TV or a device in
+your network. This works interactively, provided that the remote control
+function is enabled in the Kodi settings so that both programs can
+communicate with each other and exchange data. See image. If there is no
+Kodi web server, you can download the color templates in the next step
+and install them yourself to continue the calibration. You must play the
+templates with a player during calibration. Important for all
+Hyperion.NG users and WLED!: Alternatively, you can use the latest
+“Nightly” version of Hyperion.NG from @Lord-Gray. In addition to
+numerous corrections and bug fixes, this version includes an important
+new control feature for WLED. This is a native RGBW extension of the
+“udpe131” LED controllers. This allows WLED users to natively control
+the correct white channels (CW, NW, and WW) when using RGBW strips such
+as SK6812RGBW. The result is tremendous color accuracy that is just as
+effective as with the adalight HyperSerial/Pico and requires only minor
+corrections.
+See:https://github.com/hyperion-project/hyperion.ng/pull/1888
+[1.png]
+ 1.png
+20.25 KB External
+[2.png]
+ 2.png
+30.61 KB External
+[Kodi_Fernsteuerung.jpg]
+ Kodi_Fernsteuerung.jpg
+96.38 KB External
+[Network_DMX_input.png]
+ Network_DMX_input.png
+22.04 KB External
+rgbw e131 support by lougovsk · Pull Request #1888 · hyperion-pro...
+Summary This PR primarily focuses on extending current implementation of
+e1.31 led device to not only support RGB data but also RGBW and hence
+partially covers #446 feature request for network base...
+[]
+December 26, 2025
+erdal_79740 12/26/2025 10:51 PM
+I managed to get the new version working . I had to set wled as the
+controller in Hyperion. The Updraw controller wasn't being detected by
+Hyperion. How do I configure the color settings and proper calibration?
+[satdx62]
+erdal_79740 The colors are worse than before and it's less smooth. There
+must have been an error during the appl...
+satdx62 12/26/2025 8:37 PM
+Once the installation has been completed successfully and the LEDs are
+lit, you need to configure the color settings. You also need to activate
+smoothing. Without correct calibration, you will never achieve good
+results, let alone excellent ones. I don't want to explain any more
+here, because you give up too quickly. That's a shame...
+erdal_79740 12/26/2025 7:47 PM
+The colors are worse than before and it's less smooth. There must have
+been an error during the application installation.I uninstalled and
+reinstalled. Nothing has changed (edited)
+erdal_79740 12/26/2025 6:19 PM
+Thanks
+[satdx62]
+erdal_79740 I'm going to reinstall the old version. Thanks.
+satdx62 12/26/2025 6:02 PM
+Why keep it? It may happen that the old configuration hyperion.db from
+the directory /home/root/.hyperion/db/ is no longer compatible with this
+new version. In this case, you must back it up and delete or rename it
+and reconfigure everything. Have you tried that? It works fine for me.
+erdal_79740 12/26/2025 5:55 PM
+I'm going to reinstall the old version. Thanks.
+erdal_79740 12/26/2025 5:38 PM
+I have reboot wled too
+12/26/2025 5:37 PM
+I have the old configuration. But the leds no longer light up
+[satdx62]
+erdal_79740 I have installed i can see with m'y phone hyperion but the
+leds don t work
+satdx62 12/26/2025 5:29 PM
+However, it may also happen that the old configuration hyperion.db from
+the directory /home/root/.hyperion/db/ is no longer compatible with this
+version. In this case, you must delete it and reconfigure everything.
+[satdx62]
+erdal_79740 I have installed i can see with m'y phone hyperion but the
+leds don t work
+satdx62 12/26/2025 5:21 PM
+Now, you need to open the Hyperion Loader app and start the daemon. Then
+restart with rebbot and open the Hyperion.NG web interface to check
+whether the old configuration is still correct.
+erdal_79740 12/26/2025 5:14 PM
+I have installed i can see with m'y phone hyperion but the leds don t
+work
+[satdx62]
+erdal_79740 I couldn't find out how to install this file. Is there an
+SSH command so I can install the new versi...
+satdx62 12/26/2025 5:04 PM
+    curl -k -L -o /tmp/app.ipk 'https://github.com/satgit62/satgit62.github.io/releases/download/v0.2.0-alpha/org.webosbrew.hyperion.ng.loader_0.2.1_all.ipk'
+      luna-send-pub -w 15000 -i 'luna://com.webos.appInstallService/dev/install' '{"id":"com.ares.defaultName","ipkUrl":"/tmp/app.ipk","subscribe":true}'
+ 1
+[satdx62]
+satdx62 12/26/2025 4:40 PM
+This is the download link
+https://github.com/satgit62/satgit62.github.io/releases/download/v0.2.0-alpha/org.webosbrew.hyperion.ng.loader_0.2.1_all.ipk
+12/26/2025 4:38 PM
+Everything is there: Either install with webOS Dev Manager or,
+alternatively, as indicated directly below, via SSH
+      curl -k -L -o /tmp/app.ipk '<URL goes here>'
+      luna-send-pub -w 15000 -i 'luna://com.webos.appInstallService/dev/install' '{"id":"com.ares.defaultName","ipkUrl":"/tmp/app.ipk","subscribe":true}'
+(edited)
+erdal_79740 12/26/2025 4:31 PM
+I couldn't find out how to install this file. Is there an SSH command so
+I can install the new version? I have send the file in tv:scp
+org.webosbrew.hyperion.ng.loader_0.2.1_all.ipk root@192.168...:/tmp/
+(edited)
+[satdx62]
+erdal_79740 What SSH command do I need to type to install the new
+version? I haven't been able to find it.
+satdx62 12/26/2025 4:28 PM
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#manual-installation-of-apps-without-homebrew-channel
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+erdal_79740 12/26/2025 4:27 PM
+What SSH command do I need to type to install the new version? I haven't
+been able to find it.
+[satdx62]
+satdx62 12/26/2025 3:59 PM
+(no content)
+[5.png]
+ 5.png
+45.36 KB External
+[satdx62]
+erdal_79740 There is no temperature to set
+satdx62 12/26/2025 3:30 PM
+Oh, that's an old version! You can uninstall the old version and install
+the new one from my guide:
+https://github.com/satgit62/How-to-Install-and-Set-Up-Ambilight-on-LG-webOS#a-current-webos-version-of-hyperionng-212-beta1
+(edited)
+erdal_79740 12/26/2025 3:24 PM
+There is no temperature to set
+[Screenshot_2025-12-26-15-22-25-108_com.android.chrome.jpg]
+ Screenshot_2025-12-26-15-22-25-108_com.android.chrome.jpg
+134.39 KB External
+[satdx62]
+erdal_79740 I activated this setting in WLED, but the blue is much less
+visible. In Hyperion, I changed the blue...
+satdx62 12/26/2025 3:16 PM
+If you use NW (natural white) LEDs, set the temperature to 10000 (cool).
+[satdx62]
+erdal_79740 I activated this setting in WLED, but the blue is much less
+visible. In Hyperion, I changed the blue...
+satdx62 12/26/2025 3:07 PM
+How did you change the blue gamma? Gamma blue : The gamma of blue. 1.0
+is neutral. Over 1.0 it reduces blue, lower than 1.0 it adds blue. So
+you can gradually reduce the B gamma. The Dual should remain switched on
+in WLED. You also need to run the Color Calibration Wizard to adjust the
+colors correctly. To do this, you need Kodi installed on a device that
+is connected to your network. (edited)
+[6.png]
+ 6.png
+70.7 KB External
+erdal_79740 12/26/2025 2:48 PM
+I activated this setting in WLED, but the blue is much less visible. In
+Hyperion, I changed the blue gamma value, but it's no better.
+[satdx62]
+erdal_79740 Hello, The version of Hyperion is 2.0.16 (Paulchen-Panther).
+satdx62 12/26/2025 2:32 PM
+Hello, It is also important to adjust the settings in WLED according to
+the type of LED used: RGB or RGBW. This applies, for example, when using
+four-channel LEDs such as SK6812 RGBW instead of three-channel RGB LEDs
+such as WS2812B. Since you are using 4-channel RGBW LEDs, go to “White
+Management” > “White Balance Correction” > “Calculate White Channel
+Automatically from RGB” in the LED settings and then select “Dual” to
+use the white channel of the LEDs. You can make further corrections
+depending on the SK6812RGBW (NW, CW, and WW) used in Hyperion under
+Temperature. The gamma setting can also be used to achieve success here.
+[Dual.jpg]
+ Dual.jpg
+43.74 KB External
+erdal_79740 12/26/2025 1:35 PM
+Hello, The version of Hyperion is 2.0.16 (Paulchen-Panther).
+[Screenshot_2025-12-26-13-28-39-368_com.android.chrome.jpg]
+ Screenshot_2025-12-26-13-28-39-368_com.android.chrome.jpg
+131.73 KB External
+[satdx62]
+erdal_79740 Hi, I'm using WLED on my ESP32 WiFi and PicCap and Hyperion
+on my TV. The LEDs are SK6812 RGBWN 5V. ...
+satdx62 12/26/2025 12:25 PM
+Hello, What have you set in the WLED app settings in the “White
+Management” section under “LED Preference”? Is the “Default brightness”
+option set to 255 under “Defaults”? Which version of “Hyperion” are you
+using on your TV exactly?
+[satdx62]
+satdx62 12/26/2025 11:55 AM
+For Input Hook, curl must be inserted at the beginning of the link.
+(edited)
+12/26/2025 11:53 AM
+Brightness 2.05
+    http://localhost:8090/json-rpc?request=%7B%22command%22:%22adjustment%22,%22adjustment%22:%7B%22classic_config%22:true,%22luminanceGain%22:2.05%7D%7D
+    Brightness 1,05
+    http://localhost:8090/json-rpc?request=%7B%22command%22:%22adjustment%22,%22adjustment%22:%7B%22classic_config%22:true,%22luminanceGain%22:1.05%7D%7D
+    Brightness 0,50
+    http://localhost:8090/json-rpc?request=%7B%22command%22:%22adjustment%22,%22adjustment%22:%7B%22classic_config%22:true,%22luminanceGain%22:0.50%7D%7D
+[satdx62]
+Original message was deleted
+satdx62 12/26/2025 11:52 AM
+Hi, White Channel Calibration can be found under “LED Hardware” when
+using Adalight (HyperSerial/Pico). The temperature setting can be
+adjusted under “Image Processing.” Under “Brightness/Luminance,” the
+luminance gain (HSV) can be set between 0 and 2. In this new Infinite
+Color Engine, the correct gamma setting is left to the calibration. If
+the color output of the LEDs is not correct, you should therefore
+calibrate the playback source itself and create your own LUT for SDR,
+HDR, and DV. Furthermore, various brightness or saturation profiles can
+be automated and controlled with Home Assistant, or they can be stored
+on unused FB buttons using the Input Hook. The comprehensive JSON API
+from HypeHDR is suitable for this. This allows you to control almost
+everything via a static HTTP link or by sending a JSON packet to an RPC
+HyperHDR service (as a POST request to IP:PORT/json-rpc). “localhost”
+can be replaced with the IP address of your TV/HyperHDR. Simply enter
+the examples in your web browser. Example:
+December 25, 2025
+erdal_79740 12/25/2025 4:03 PM
+Hi, I'm using WLED on my ESP32 WiFi and PicCap and Hyperion on my TV.
+The LEDs are SK6812 RGBWN 5V. The blue is too bright. The green too. Is
+it possible to make them dimmer?
+December 24, 2025
+[satdx62]
+satdx62 12/24/2025 10:52 AM
+@ᴛʜᴇʙᴏʏ, I have contacted the developers regarding the individual gamma
+settings for R, G, and B. I will get back to you as soon as I find out
+more.
+[satdx62]
+Original message was deleted
+satdx62 12/24/2025 10:29 AM
+Yes, the SK6812RGBW-NW have a higher yellow component and less blue. The
+CW version is ideal. When using HyperSerial or HyperSerialPico, this can
+be compensated for very well under the Adalight driver in HyperHDR. Have
+you set the temperature?
+[1.png]
+ 1.png
+75.47 KB External
+[2.png]
+ 2.png
+87.88 KB External
+[satdx62]
+Original message was deleted
+satdx62 12/24/2025 9:53 AM
+Which LEDs are controlled by which controller? When using RGBW LEDs, you
+can correct the RGB/white channel aspect individually under
+HyperSerial/Pico (Adalight driver). Under WLED, this can also be changed
+using different modes. You also have the option of determining the
+temperature/type of your LEDs in HyperHDR (CW, NW, and WW) and the
+option of calibrating LUT tables to suit your source. I will inquire
+whether gamma correction for individual colors will return in a release
+version of awawa-dev. (edited)
+December 23, 2025
+[satdx62]
+Original message was deleted
+satdx62 12/23/2025 7:53 PM
+In version v22.0.0beta0, only User/Global Gamma Setting is currently
+available.
+December 20, 2025
+[satdx62]
+satdx62 12/20/2025 8:36 PM
+In the meantime, there has been a significant increase in speed for
+YUV/NV12/P010 and related codecs.
+See:https://github.com/awawa-dev/HyperHDR/pull/1374 A webOS version is
+available at
+:https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-?tab=readme-ov-file#to-avoid-errors-please-use-only-this-version-for-these-instructions
+Significant speedup for YUV/NV12/P010 and related codecs by awawa-d...
+Changes: optimized video processing Log: replace old C-style format with
+modern C++20 for compile-time safety 1sec = 1000000us Image input size:
+1080p Rpi5 vs Intel N100 performance are compared ...
+[]
+[satdx62]
+satdx62 12/20/2025 6:50 PM
+Hello everyone, If you are using HyperHDR version 22.0.0beta0 with the
+Infinite Colour Engine and are experiencing dropouts or failures with
+your Philips Hue lamps, please activate the 'Continuous Output' option
+in the 'Smoothing' menu. A fix will be provided by @awawa-dev shortly.
+December 16, 2025
+[] satdx62 <@1328076254779277399> , are you really unsure how to create
+a proper HyperHDR log? After restarting...
+erdal_79740 12/16/2025 12:19 PM
+Hi, thank you so much for your help . For now, I'll stick with WLED,
+ESP32 Mini and Live.
+December 15, 2025
+[satdx62]
+[] astur3l with v21 i didnt even get ONE in a whole day :/ im clueless
+satdx62 12/15/2025 1:29 PM
+I will discuss this topic with awawa when the opportunity arises.
+ 1
+[astur3l]
+[] satdx62 It's strange that it doesn't provide the solution you were
+hoping for! I can't explain why you're ge...
+astur3l 12/15/2025 1:26 PM
+with v21 i didnt even get ONE in a whole day :/ im clueless
+[satdx62]
+[] astur3l first performance report had 500+ dropped so i didnt check
+futher.. 
+satdx62 12/15/2025 1:25 PM
+It's strange that it doesn't provide the solution you were hoping for! I
+can't explain why you're getting so many dropped frames. When I debug
+long enough, I also get a few dropped frames, but nowhere near as many
+as with your setup. See image.
+[6.png]
+ 6.png
+64.4 KB External
+December 14, 2025
+[astur3l]
+[] satdx62 Yes, this version also runs on my device without dropouts, as
+far as I could observe. Have you teste...
+astur3l 12/14/2025 9:20 PM
+first performance report had 500+ dropped so i didnt check futher.. 
+[satdx62]
+[] astur3l not yet, ill do today if i have time, can you just rollback
+the v21 btw? i always backup the whole d...
+satdx62 12/14/2025 3:42 PM
+I don't have v21 installed on my devices. Usually, there are no problems
+when updating from a lower to a higher version. The reverse can be
+problematic. That's why I also back up my database so that I can use it
+in case of a downgrade.
+[astur3l]
+[] satdx62 Yes, this version also runs on my device without dropouts, as
+far as I could observe. Have you teste...
+astur3l 12/14/2025 3:24 PM
+not yet, ill do today if i have time, can you just rollback the v21 btw?
+i always backup the whole db (edited)
+[satdx62]
+satdx62 12/14/2025 3:22 PM
+    2025-12-14T15:14:27.944Z [LEDDEVICE0_ADALIGHT] Force ESP/Pico detection override enabled. HyperHDR skips the reset. State: 1, 1
+    2025-12-14T15:14:27.947Z [LEDDEVICE0_ADALIGHT] ESP sent: 'HyperHDR frames: 0 (FPS), receiv.: 0, good: 0, incompl.: 0, mem1: 0, mem2: 450, heap: 123232'
+    2025-12-14T15:14:27.947Z [LEDDEVICE0_ADALIGHT] ESP sent: 'RGBW => Gain: 179/255, red: 255, green: 255, blue: 160'
+    2025-12-14T15:14:27.947Z [LEDDEVICE0_ADALIGHT] DETECTED DEVICE USING HyperSerialEsp8266/HyperSerialESP32/HyperSerialPico FIRMWARE (Welcome! Awa driver 9.) at 2 msec
+    2025-12-14T15:14:27.947Z [LEDDEVICE0_ADALIGHT] (LedDevice.cpp:64) Switch on
+    2025-12-14T15:14:27.947Z [LEDDEVICE0_ADALIGHT] (LedDevice.cpp:140) Power On
+    2025-12-14T15:14:27.947Z [COMPONENTCTRL0] LED device: enabled
+    2025-12-14T15:14:27.948Z [SMOOTHING0] Using YuvInterpolator smoothing input (0)
+    2025-12-14T15:14:27.949Z [LEDDEVICE0_ADALIGHT] (LedDevice.cpp:367) Starting timer with interval = 17ms
+    2025-12-14T15:14:28.028Z [IMAGETOLED_MNG0] Total index number is: 5648 (memory: 5648). User sparse processing is: disabled, image size: 256 x 144, area number: 263
+    2025-12-14T15:15:43.462Z [WEBSOCKET] (HyperAPI.cpp:946) log streaming activated for client ::ffff:192.168.2.61
+    2025-12-14T15:16:17.871Z [PERFORMANCE] [INSTANCE0: FPS = 99.98, processed = 5999], [LED0: FPS = 58.82, send = 3530, processed = 3530, dropped = 0]
+    2025-12-14T15:17:17.876Z [PERFORMANCE] [INSTANCE0: FPS = 99.97, processed = 5999], [LED0: FPS = 58.82, send = 3529, processed = 3529, dropped = 0]
+    2025-12-14T15:18:17.874Z [PERFORMANCE] [INSTANCE0: FPS = 100.02, processed = 6000], [LED0: FPS = 58.82, send = 3530, processed = 3530, dropped = 0]
+    2025-12-14T15:19:17.868Z [PERFORMANCE] [INSTANCE0: FPS = 100.00, processed = 6000], [LED0: FPS = 58.82, send = 3529, processed = 3529, dropped = 0]
+[satdx62]
+[] astur3l <@917488160580182068> so
+<https://github.com/satgit62/HyperHDR/actions/runs/20036228389> works
+for y...
+satdx62 12/14/2025 3:22 PM
+Yes, this version also runs on my device without dropouts, as far as I
+could observe. Have you tested it?
+[astur3l]
+astur3l 12/14/2025 2:49 PM
+@satdx62 so
+https://github.com/satgit62/HyperHDR/actions/runs/20036228389 works for
+you without dropped frames?
+December 13, 2025
+[satdx62]
+erdal_79740 USB only
+satdx62 12/13/2025 5:47 PM
+@Erdal , are you really unsure how to create a proper HyperHDR log?
+After restarting the HyperHDR daemon, open the HyperHDR logs and wait a
+minute. Then scroll all the way down to “Copy to Clipboard,” click on
+it, and paste the entire content into a text editor. Then save it as
+plain text. Finally, upload the files here. (edited)
+[Copy_to_clipboard.png]
+ Copy_to_clipboard.png
+74.99 KB External
+erdal_79740 12/13/2025 4:55 PM
+USB only
+[astur3l]
+erdal_79740 I think this is a problem with esp32. I can t reflash wled.
+In gpio2 0v:2025-12-13T16:34:18.576Z [CO...
+astur3l 12/13/2025 4:44 PM
+did u feed the esp32 from 2 power sources (usb, VIN/5V) ?
+erdal_79740 12/13/2025 4:41 PM
+Gpio2 and ground 0 volt
+12/13/2025 4:40 PM
+I think this is a problem with esp32. I can t reflash wled. In gpio2
+0v:2025-12-13T16:34:18.576Z [CORE] TTY is not attached to the log output
+2025-12-13T16:34:18.659Z [MAIN] Database path:
+'/home/root/.hyperhdr/db/hyperhdr.db', readonlyMode = disabled
+2025-12-13T16:34:18.659Z [MAIN] Starting HyperHdr - 21.0.0.0, (HEAD
+detached at v21.0.0.0) (Awawa-24e1675/803162c-1741515688), built: Mar 10
+2025:23:02:26 2025-12-13T16:34:18.659Z [MAIN] Set user data path to
+'/home/root/.hyperhdr' 2025-12-13T16:34:18.659Z [INSTANCE_CFG] Loading
+instance configuration 2025-12-13T16:34:18.666Z [DB] Database opened:
+/home/root/.hyperhdr/db/hyperhdr.db 2025-12-13T16:34:18.938Z
+[INSTANCE_CFG] Settings database initialized 2025-12-13T16:34:18.971Z
+[SOUND_GRABBER] Sound device is disabled 2025-12-13T16:34:19.080Z
+[DAEMON] The AVF grabber can not be instantiated, because it has been
+left out from the build 2025-12-13T16:34:19.080Z [DAEMON] The MF grabber
+can not be instantiated, because it has been left out from the build
+2025-12-13T16:34:19.080Z [DAEMON] !The v4l2 grabber can not be
+instantiated, because it has been left out from the build
+2025-12-13T16:34:19.102Z [DAEMON] The USB grabber was disabled during
+build. FlatbufferServer now controlls the HDR state.
+2025-12-13T16:34:19.103Z [JSONSERVER] (JsonServer.cpp:26) Created new
+instance 2025-12-13T16:34:19.106Z [JSONSERVER] Started on port 19444
+2025-12-13T16:34:19.110Z [SSDP] (SSDPHandler.cpp:31) SSDPHandler is
+initialized 2025-12-13T16:34:19.093Z [HYPERHDR0] Starting the instance
+2025-12-13T16:34:19.096Z [INSTANCE_CFG0] Loading instance configuration
+2025-12-13T16:34:19.109Z [DB] Database opened:
+/home/root/.hyperhdr/db/hyperhdr.db 2025-12-13T16:34:19.202Z
+[INSTANCE_CFG0] Settings database initialized 2025-12-13T16:34:19.202Z
+[COMPONENTCTRL0] (ComponentController.cpp:27) ComponentController is
+initialized. Components are ENABLED 2025-12-13T16:34:19.212Z [MUXER0]
+(Muxer.cpp:54) Muxer initialized 2025-12-13T16:34:19.213Z [BLACKBORDER]
+[satdx62]
+erdal_79740 Really bad luck, the LEDs on both segments don't light up at
+all, even though there's 5 volts everyw...
+satdx62 12/13/2025 4:24 PM
+Have you stopped and restarted the HyperHDR daemon? Have you switched to
+Wled in the HyperHDR LED controller? What does the log contain? (edited)
+erdal_79740 12/13/2025 2:58 PM
+Really bad luck, the LEDs on both segments don't light up at all, even
+though there's 5 volts everywhere. I don't understand; I can connect to
+WLED and choose the colors, but nothing lights up. The wiring seems
+fine. This happened after unplugging ESP32, plugging ESP32 S2 in to view
+the log, and then plugging ESP32 back in to use WLED.
+erdal_79740 12/13/2025 1:14 PM
+It's been a long time since I logged into WebOS Manager on my iMac. I
+can't seem to connect. When I manage to connect, I'll send you the log.
+Thanks for your help. For now, I'm going to try increasing the
+brightness with WLED by watching YouTube.
+[satdx62]
+erdal_79740 I managed to get Ambilight working with WLED and my ESP32
+Mini and Live, but it uses 90% of the TV's...
+satdx62 12/13/2025 10:57 AM
+It is very strange that HyperSerial is not recognized on the ESP32 S2
+Mini by HyperHDR. To get more information, I need a complete HyperHDR
+log. Please create this as a text file after restarting the HyperHDR
+daemon. You can also use the “WebOS Dev Manager” under “Debug” > “dmesg”
+to check whether HyperSerial is recognized and what device name it is
+assigned. For example, my ESP32-S2 test board has the name ttyACM1. In
+HyperHDR, you need to search for this device under ‘Adalight’ in the
+“Output Path” and select it. As for HyperHDR's CPU resources, these can
+be reduced by selecting a lower resolution in PicCap and disabling UI
+Capture. If HyperHDR's CPU load is still too high, you can select the
+“Quarter of frame for NV12” option in HyperHDR under “Network Services.”
+[7.png]
+ 7.png
+21.92 KB External
+erdal_79740 12/13/2025 9:50 AM
+Otherwise, I'll stick with WLED; it works well for now. I just need to
+find a way to increase the LED brightness when I'm watching YouTube, for
+example; it's quite powerful. I think it's a setting in HyperHDR ?
+erdal_79740 12/13/2025 9:34 AM
+Journaux 2025-12-13T09:00:20.432Z [MUXER0] Set visible priority to 255
+2025-12-13T09:00:20.432Z [HYPERHDR0] New priority[255], previous [255]
+2025-12-13T09:00:20.432Z [HYPERHDR0] No source left -> switch LED-Device
+off 2025-12-13T09:00:20.432Z [SMOOTHING0] Clearing queued colors before:
+disabling 2025-12-13T09:00:20.432Z [SMOOTHING0] Smoothing queue is
+cleared 2025-12-13T09:00:20.432Z [COLORSPACE_CALIBRATION0]
+(ColorSpaceCalibration.cpp:224) setBackLightEnabled: 0
+2025-12-13T09:00:21.342Z [LEDDEVICE0_ADALIGHT] Could not detect
+HyperSerialEsp8266/HyperSerialESP32/HyperSerialPico device
+2025-12-13T09:00:21.343Z [LEDDEVICE0_ADALIGHT] (LedDevice.cpp:63) Switch
+on 2025-12-13T09:00:21.343Z [LEDDEVICE0_ADALIGHT] (LedDevice.cpp:139)
+Power On 2025-12-13T09:00:21.343Z [LEDDEVICE0_ADALIGHT]
+(LedDevice.cpp:366) Starting timer with interval = 20ms
+2025-12-13T09:00:21.343Z [LEDDEVICE0_ADALIGHT] (LedDevice.cpp:296)
+Disable the device 2025-12-13T09:00:21.343Z [LEDDEVICE0_ADALIGHT]
+(LedDevice.cpp:380) Stopping refresh timer 2025-12-13T09:00:21.343Z
+[LEDDEVICE0_ADALIGHT] (LedDevice.cpp:89) Switch off
+2025-12-13T09:00:21.343Z [LEDDEVICE0_ADALIGHT] (LedDevice.cpp:543) Set
+LED strip to black/power off 2025-12-13T09:00:21.343Z [COMPONENTCTRL0]
+LED device: enabled 2025-12-13T09:00:21.344Z [SMOOTHING0] Using
+alternative smoothing input (0) 2025-12-13T09:00:21.345Z [EFFECTENGINE0]
+Run effect "Rainbow swirl fast" on channel 0 2025-12-13T09:00:21.345Z
+[EFFECTENGINE0]
+12/13/2025 9:30 AM
+I managed to get Ambilight working with WLED and my ESP32 Mini and Live,
+but it uses 90% of the TV's processor. I don't know if that's good.
+Otherwise, it works well except that the Ambilight isn't powerful
+enough; the LED brightness isn't strong enough when I watch YouTube.
+Second step for ESP32 S2 with firmware ESP32 S2 Mini SK6812 RGBW Neutral
+Bin that I flashed: HyperHDR doesn't connect to the ESP32 S2 via USB:
+December 12, 2025
+[satdx62]
+erdal_79740 I connected the card to the TV to try it, but HyperHDR
+doesn't recognize the card.
+satdx62 12/12/2025 3:51 PM
+Did you set it up like this?
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#hyperhdr-led-controller-type-settings-for-rp2040-usb-controller-with-hyperserialpico-or-hyperserial-esp32-generics2-mini-firmware
+Which devices are listed under Output Path? Does another device appear
+when you click “Update”? Otherwise, you will need to post me a HyperHDR
+log in the form of text files. (edited)
+erdal_79740 12/12/2025 1:46 PM
+I connected the card to the TV to try it, but HyperHDR doesn't recognize
+the card.
+erdal_79740 12/12/2025 1:17 PM
+No, I haven't tested it. I'll try it. Thank you very much.
+[satdx62]
+erdal_79740 I need to change the pin configuration in PlatformIO, right?
+For example, the second segment that st...
+satdx62 12/12/2025 1:09 PM
+As far as I know, firmware_esp32_s2_mini_SK6812_RGBW_NEUTRAL.bin should
+already be for two segments. Have you tested it?
+[] satdx62 Why do you want to compile something different instead of
+using the “firmware_esp32_s2_mini_SK6812_R...
+erdal_79740 12/12/2025 12:49 PM
+I need to change the pin configuration in PlatformIO, right? For
+example, the second segment that starts at 105 LEDs GPIO4
+[satdx62]
+erdal_79740 Hi, I received my ESP32 S2 mini board. I flashed it using
+`esptool.py write_flash 0x10000 firmware_e...
+satdx62 12/12/2025 12:21 PM
+Why do you want to compile something different instead of using the
+“firmware_esp32_s2_mini_SK6812_RGBW_NEUTRAL.bin” file from awawa-dev as
+it is? The firmware runs perfectly on my S2 test board.
+erdal_79740 12/12/2025 10:47 AM
+Hi, I received my ESP32 S2 mini board. I flashed it using
+esptool.py write_flash 0x10000 firmware_esp32_s2_mini_SK6812_RGBW_NEUTRAL.bin,
+and that step went smoothly. But when I compile Hyperserialesp32 with VS
+Code on Platform.io, I get an error: #include "pins_arduino.h". I can't
+compile. Here's the error: #include "pins_arduino.h" ^~~~~~~~~~~~~~
+compilation terminated. *
+[.pio\build\s2_mini_SK6812_RGBWNEUTRAL\libfb8\SPI\SPI.cpp.o] Error 1
+[.pio\build\s2_mini_SK6812_RGBW_NEUTRAL\src\main.cpp.o] Error 1 In file
+included from
+C:/Users/Evan/.platformio/packages/framework-arduinoespressif32@3.20006.221224/cores/esp32/esp32-hal.h:79,
+from
+C:/Users/Evan/.platformio/packages/framework-arduinoespressif32@3.20006.221224/cores/esp32/Arduino.h:36,
+from
+C:/Users/Evan/.platformio/packages/framework-arduinoespressif32@3.20006.221224/libraries/I2S/src/i2s.cpp:19:
+C:/Users/Evan/.platformio/packages/framework-arduinoespressif32@3.20006.221224/cores/esp32/esp32-hal-gpio.h:29:10:
+fatal error: pins_arduino.h: No such file or directory
+*********************************************************************
+Looking for pins_arduino.h dependency? Check our library registry! CLI >
+platformio lib search "header:pinsarduino.h" Web >
+https://registry.platformio.org/search?q=header:pins_arduino.h
+*******************************************************************
+#include "pins
+arduino.h" ^
+~~~~~~~~~~~~~ compilation terminated.
+[.pio\build\s2_mini_SK6812_RGBW_NEUTRAL\libe6a\I2S\I2S.cpp.o] Error 1
+============================================== [FAILED] Took 1.77
+seconds ==============================================
+PlatformIO Registry
+The world's first package and project dependency management solution for
+embedded development
+[]
+rippmaster 12/12/2025 10:21 AM
+Anyone knows why hyper hdr not work with the scrensaver app in homebrew?
+[theboy08018]
+theboy08018 12/12/2025 1:52 AM
+trying to in adjust values to fix blues and make warmer due to eye care
+mode which is done post processing so doesnt send over flatbuffer
+12/12/2025 1:51 AM
+is there any way to fine tune lut manually after it has been created
+December 10, 2025
+[satdx62]
+[] max_rez i hope that didnt destroy the whole strip
+satdx62 12/10/2025 11:21 PM
+Hopefully not!
+[max_rez]
+max_rez 12/10/2025 11:07 PM
+i hope that didnt destroy the whole strip
+12/10/2025 11:07 PM
+sigh. so sloppy
+12/10/2025 11:06 PM
+i couldnt solder the wires onto the strip once it was on the tv, so what
+i did was cut a small strip of 3 leds, solder the wires to it, then used
+one of those plastic crimp things to attach that short piece to the main
+LED strip. except as you saw, i put the 3 LED piece on backwaRDS
+12/10/2025 11:05 PM
+oh no. i see what you mean
+[satdx62]
+satdx62 12/10/2025 10:58 PM
+What's this then?
+[5.png]
+ 5.png
+243.42 KB External
+[max_rez]
+max_rez 12/10/2025 10:57 PM
+the arrows all point in the same direction. looking at the tv from the
+front, it starts in the bottom left and goes up and around and ends up
+at the bottom left
+12/10/2025 10:54 PM
+it's just an illusion from the angle of the photo
+12/10/2025 10:54 PM
+that black wire isnt connected to the LED strip
+12/10/2025 10:53 PM
+this is not soldered together, it's just overlapping
+[image.png]
+ image.png
+235.53 KB External
+[satdx62]
+[] max_rez I'm a little confused by what you mean by direction. the LEDs
+arrows start at the bottom right strip...
+satdx62 12/10/2025 10:52 PM
+From what I can see of the start and end of the LED strip in your photo,
+it can't work like that. The LED segments at the end of the strip are
+soldered together incorrectly, which could even destroy the LEDs. When I
+talk about the direction of the LEDs, I mean that the arrow markings on
+the LEDs must be the same along the entire strip. Then the plus 5 volt
+and GND polarity will also be correct along the entire length of the
+strip. The LEDs come with a ready-made 3-pin plug and coupling at the
+beginning and end of the strip. A 3-pin adapter for connecting the LED
+controller is also included, so you can connect it exactly as shown in
+my sketch. So, you should first check the composition of the LEDs and,
+if necessary, solder them together correctly so that the arrow, the GND,
+and the 5 volts are on the same side along the entire strip. Take a look
+at the picture: The DATA and GND connections of the controller must be
+soldered where I have marked. The power supply should be connected at
+both the beginning and the end of the strip.
+[Data_input.png]
+ Data_input.png
+86.78 KB External
+[LED-Stripe.jpg]
+ LED-Stripe.jpg
+95.11 KB External
+[max_rez]
+max_rez 12/10/2025 8:18 PM
+I'm a little confused by what you mean by direction. the LEDs arrows
+start at the bottom right strip and continue around to the bottom of the
+tv
+12/10/2025 8:16 PM
+here is a pic. now, I currently have the DATA and GND from the FTDI
+disconnected from the light strip, but normally they are plugged in to
+the black plastic plug at the very bottom left of the picture
+[PXL_20251210_171800630.jpg]
+ PXL_20251210_171800630.jpg
+883.89 KB External
+[max_rez]
+[] satdx62 Did you install the 470-ohm resistor on the data line? As
+shown in the picture?
+max_rez 12/10/2025 8:12 PM
+no, I don't have one.
+[satdx62]
+satdx62 12/10/2025 9:26 AM
+Did you install the 470-ohm resistor on the data line? As shown in the
+picture?
+[9.png]
+ 9.png
+279.4 KB External
+[satdx62]
+[] max_rez well, I got all that installed but it's not lighting up. logs
+show it's talking to the FTDI device s...
+satdx62 12/10/2025 9:17 AM
+Well, I run my FTDI FT232H test board without a level shifter and it
+works perfectly with 300 LEDs. Caution! The +5 volt connection/red wire
+of the LEDs must not be connected to the +5 volt voltage of the FTDI.
+Only DATA and GND are connected to the LEDs. Also make sure that the
+data pin is connected in the correct direction of the LED strip. See the
+direction arrow on the LED. How did you connect it? Can you post a
+photo? Oh yes, Gemeni can say a lot, but Gemeni certainly hasn't tested
+it himself. (edited)
+[max_rez]
+max_rez 12/10/2025 6:05 AM
+well, I got all that installed but it's not lighting up. logs show it's
+talking to the FTDI device successfully. using a multimeter on the DATA
+wire I get a very low reading. Gemini is telling me I need a level
+shifter to bring up the 3.3V to 5V. I'm curious why you say in your
+instructions that isn't necessary.
+December 9, 2025
+[max_rez]
+[] satdx62 Uninstall the version from HBC and install the new version
+using webOS Dev Manager. You should follo...
+max_rez 12/09/2025 7:32 PM
+ah got it. I can't believe I missed that link to the FTDI version. I got
+that and the custom PicCap from those instructions installed now. Once I
+get a break I'll go fiddle with it. thanks again
+[satdx62]
+[] max_rez oh ok. i just need to sideload that?
+satdx62 12/09/2025 9:01 AM
+Uninstall the version from HBC and install the new version using webOS
+Dev Manager. You should follow the installation instructions and read
+everything carefully as a precaution.
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#manual-installation-of-apps-without-homebrew-channel
+(edited)
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[max_rez]
+max_rez 12/09/2025 9:00 AM
+oh ok. i just need to sideload that?
+[satdx62]
+[] max_rez <@917488160580182068> oh man I need your help again. I
+finally got everything set up and all plugged...
+satdx62 12/09/2025 8:57 AM
+@Max Rez Hi, the version from HBC does not support FTDI. I sent you a
+link here
+https://discord.com/channels/407937994037919756/931706504627773450/1446046449816047708
+where you can find my HyperHDR version with FTDI support. You probably
+overlooked it.
+[max_rez]
+max_rez 12/09/2025 7:08 AM
+@satdx62 oh man I need your help again. I finally got everything set up
+and all plugged in. but the LEDs are not turning on. I've checked the
+voltages and there is power in the strip so I think it's a data problem.
+Where I am stuck is I am using the FTDI usb dongle and it turns out the
+Hyperion and HyperHDR do not have any FTDI option under controllers, as
+described in your FAQ. So I don't know what to choose for this dongle.
+The closet I could get is sk6812sp under "RPi SPI" i in Hyperion, but I
+dont know which /dev/spi* I am supposed to pick. Do you know which
+controller setting I should be using?
+[astur3l]
+astur3l 12/09/2025 2:51 AM
+theres rp2040 with builtin shifters, check satdx62 guide or hyperserial
+page, i just soldered an level shifter to my pico's pcb :d (edited)
+12/09/2025 2:50 AM
+the issue is like e.g. the lolin s2 is a clone by default, and have
+clones and so over 
+12/09/2025 2:49 AM
+i bought randomly from ali the rp2040 pico, but so far this is the best
+quality in mcu-s
+12/09/2025 2:48 AM
+most chinese esp32 board have (some) issues tho, but generally bad
+quality
+12/09/2025 2:46 AM
+hyperserial on rp2040, this generates the best led signal btw (edited)
+12/09/2025 2:45 AM
+i didnt tried wled over usb for years, so i dont know its current state,
+it crashed me at high baud rate and lower baud rate wasnt sufficient and
+i moved over quickly
+12/09/2025 2:41 AM
+but by def wled have like 128kbps baud rate  iirc it can be changed
+tho..
+12/09/2025 2:40 AM
+btw u can use wled with adalight protocol too over usb
+[astur3l]
+Original message was deleted
+astur3l 12/09/2025 2:39 AM
+hyperserialwled + usb is possible but wled adds extra overhead and max
+baud rate is limited 
+[astur3l]
+astur3l 12/09/2025 2:36 AM
+connector doesnt matter 
+12/09/2025 2:35 AM
+btw it works with 1mbps too, just limited fps
+[astur3l]
+Original message was deleted
+astur3l 12/09/2025 2:35 AM
+what usb chip is it?
+[astur3l]
+Original message was deleted
+astur3l 12/09/2025 2:26 AM
+s2 is supported, higher esp32 model doesnt mean better led
+capatibilities , in fact, its worser, but if u already have a working
+wled device, why not just flash hyperserial into it?:D (edited)
+[astur3l]
+Original message was deleted
+astur3l 12/09/2025 12:57 AM
+are u sure that s3 is supported? hyperserial uses neopixel lib on i2s
+interface which is changed significant in s3/c3 (edited)
+December 8, 2025
+[astur3l]
+[] satdx62 All right, now I understand. I'm sure they'll solve their
+problems after all. I'll also check whethe...
+astur3l 12/08/2025 8:44 PM
+v22 + qt5 wasnt good either (worser than w/ qt6), it didnt even reported
+the dropped frames, however the leds worked (=lighted up, didnt really
+tested).. somehow  (i dont have the pc near to tv), but v21 same
+toolchain w/ qt5 works fine (i couldnt build w/ qt6..) but in the
+infinite color initial PR state i had it working good /except the
+colors, but i fixed it with rolling back everything to default..which
+wasnt the best exp. :D/ (qt5 + same toolchain, except i didnt shipped
+the new openssl libs, so i didnt have ssl support enabled), but i use
+the same openssl with v21 and its fine.. so i didnt really get how it
+could be the problem..
+[satdx62]
+[] astur3l v21 is fine, v22 no luck, may ill try your build but that
+wont fix my issue :d (that i can't build m...
+satdx62 12/08/2025 8:35 PM
+All right, now I understand. I'm sure they'll solve their problems after
+all. I'll also check whether other users I know have similar problems
+with QT6.
+[astur3l]
+[] satdx62 Because of Hue, I would have to use SSL. Okay, I give up. Are
+you still having so many dropouts?
+astur3l 12/08/2025 8:15 PM
+v21 is fine, v22 no luck, may ill try your build but that wont fix my
+issue :d (that i can't build my own version) (edited)
+[satdx62]
+[] astur3l what do u mean? btw at the first few weeks i used v22 without
+openssl and it didnt had this issue, b...
+satdx62 12/08/2025 8:08 PM
+Because of Hue, I would have to use SSL. Okay, I give up. Are you still
+having so many dropouts? (edited)
+[astur3l]
+[] satdx62 Why don't they swap everything so that we have the same
+starting point?
+astur3l 12/08/2025 7:58 PM
+what do u mean? btw at the first few weeks i used v22 without openssl
+and it didnt had this issue, because i didnt had the libs on my system
+[satdx62]
+satdx62 12/08/2025 7:46 PM
+Why don't they swap everything so that we have the same starting point?
+[satdx62]
+[] astur3l no idea, but v21 same toolchain, everything, except i use
+qt5, works fine v22: same toolchain, qt6...
+satdx62 12/08/2025 7:45 PM
+Yes, but then they still have SSL 3.
+[astur3l]
+[] satdx62 Hmm, why is that? Mine always stays intact.
+astur3l 12/08/2025 7:41 PM
+no idea, but v21 same toolchain, everything, except i use qt5, works
+fine v22: same toolchain, qt6: frame drops.. qt5: even worser p.s: and i
+only replaced the hyperhdr binary (no libs, or anything) (edited)
+[image.png]
+ image.png
+15.71 KB External
+[satdx62]
+[] astur3l no, it vanishes after the countdown, after reload/some time?
+it appear again and starts countdown bu...
+satdx62 12/08/2025 7:39 PM
+Hmm, why is that? Mine always stays intact.
+[6.png]
+ 6.png
+14.41 KB External
+[astur3l]
+[] satdx62 Why is there nothing under “LED Device”? Did you restart the
+daemon or reboot?
+astur3l 12/08/2025 7:35 PM
+no, it vanishes after the countdown, after reload/some time? it appear
+again and starts countdown but i never got led0 performance report :DDDD
+(edited)
+[satdx62]
+[] astur3l getting better... ``2025-12-08T19:26:32.258Z [PERFORMANCE]
+[INSTANCE0: FPS = 23.95, processed = 143...
+satdx62 12/08/2025 7:34 PM
+Why is there nothing under “LED Device”? Did you restart the daemon or
+reboot?
+[astur3l]
+[] satdx62 Yes, my toolchain is older than the latest version available
+from the official build. However, I was...
+astur3l 12/08/2025 7:28 PM
+getting better...
+`2025-12-08T19:26:32.258Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1438]`
+ but the leds works.. with qt5, its way worser..  and the best part
+is that i had working infinite color engine with qt5 while it was in PR
+(edited)
+[image.png]
+ image.png
+25.43 KB External
+[satdx62]
+[] astur3l interesting because v21 with same env, (toolchain, etc) works
+fine, btw your buildroot is older than...
+satdx62 12/08/2025 7:21 PM
+Yes, my toolchain is older than the latest version available from the
+official build. However, I was finally able to compile with mine and
+didn't encounter any more OpenSSL errors.
+[astur3l]
+[] satdx62 <@433352458694033428> Just for fun, I compiled with your
+toolchain, Qt 6, and OpenSSL 3, and I'm als...
+astur3l 12/08/2025 7:11 PM
+interesting because v21 with same env, (toolchain, etc) works fine, btw
+your buildroot is older than latest official (what i used)
+[satdx62]
+satdx62 12/08/2025 7:08 PM
+@asturel If you want to test it, you can exchange the files in HyperHDR.
+https://github.com/satgit62/HyperHDR/actions/runs/20036228389/artifacts/4800543697
+[satdx62]
+[] astur3l i managed to compile against qt5 (current master branch
+doesnt compile w/ qt5, but it was one line c...
+satdx62 12/08/2025 7:04 PM
+@asturel Just for fun, I compiled with your toolchain, Qt 6, and OpenSSL
+3, and I'm also getting dropouts. I'm back on Qt 6 and OpenSSL 1.1 and
+compiled with my toolchain—and there are no dropouts.
+ 1  1
+[astur3l]
+[] satdx62 Hello <@287350521826902016> , It would be interesting to know
+if you also have many dropout frames w...
+astur3l 12/08/2025 6:23 PM
+i managed to compile against qt5 (current master branch doesnt compile
+w/ qt5, but it was one line change now (missing header)), since i didnt
+really see any changes which could cause this, ill try later if somebody
+doesnt have better idea , btw i drive leds with 68-72 fps, dunno how
+many ppl have this setup  (edited)
+[satdx62]
+satdx62 12/08/2025 6:21 PM
+Hello @ᴛʜᴇʙᴏʏ , It would be interesting to know if you also have many
+dropout frames with Beta 22, like @asturel.
+[satdx62]
+Original message was deleted
+satdx62 12/08/2025 6:15 PM
+Hi, this is about adalight/HyperSerialPico on RP2040 via USB and not
+WLED WiFi.
+[satdx62]
+[] astur3l well i use official toolchain
+(<https://github.com/openlgtv/buildroot-nc4/releases/download/webos-a3...
+satdx62 12/08/2025 5:31 PM
+Yes, I saw that. I also use awawa's Qt6 build script, but with my own
+compiled toolchain
+(https://github.com/satgit62/buildroot-nc4/releases/download/webOS.0.1/arm-webos-linux-gnueabi_sdk-buildroot.tar.gz)
+and OpenSSL 1.1.1q.
+[astur3l]
+[] satdx62 Yes, it is a bit strange that Beta 22 runs without dropouts
+on my system, but not on yours, even th...
+astur3l 12/08/2025 5:24 PM
+well i use official toolchain
+(https://github.com/openlgtv/buildroot-nc4/releases/download/webos-a38c582/arm-webos-linux-gnueabi_sdk-buildroot-x86_64.tar.gz) +
+awawa qt build "script", but i build v21 with the same toolchain etc,
+only difference is the qt (edited)
+[satdx62]
+[] astur3l sadly dropped frames are noticable, u see sudden changes on
+leds, but it doesnt happens constantly, ...
+satdx62 12/08/2025 5:22 PM
+Yes, it is a bit strange that Beta 22 runs without dropouts on my
+system, but not on yours, even though we are using the same LED
+controller. I am now constantly monitoring my logs to see if anything
+changes, but so far everything is consistently at 0. My Adalight runs at
+a baud rate of 5000000, but that has nothing to do with this issue.
+[astur3l]
+[] satdx62 What is your conclusion? Is Beta 22 faulty for you, or could
+you live with it? Otherwise, we can ope...
+astur3l 12/08/2025 5:12 PM
+sadly dropped frames are noticable, u see sudden changes on leds, but it
+doesnt happens constantly, its good for few mins, then star t dropping,
+then back to normal, changing smoothing update rate doesnt fix it either
+[satdx62]
+[] astur3l well i checked v21, it does the same (setting refresh rate to
+15ms), but doesnt have this issue, in ...
+satdx62 12/08/2025 5:07 PM
+What is your conclusion? Is Beta 22 faulty for you, or could you live
+with it? Otherwise, we can open a ticket with awawa.
+[astur3l]
+[] satdx62 Oh yes, RP2040 no WLED Ha, Ha. Then you have to plug the
+RP2040 into the device/laptop or Raspberry ...
+astur3l 12/08/2025 4:51 PM
+well i checked v21, it does the same (setting refresh rate to 15ms), but
+doesnt have this issue, in old times it didnt behave like this tho 
+(and i didnt really looked at webui since everything worked fine)
+[satdx62]
+[] astur3l but its clearly due to 15ms refresh rate (led driver)
+satdx62 12/08/2025 3:16 PM
+Oh yes, RP2040 no WLED Ha, Ha. Then you have to plug the RP2040 into the
+device/laptop or Raspberry Pi. Forget it. Yes, the update time for me is
+17ms. RP2040 does not require a separate driver. (edited)
+[astur3l]
+astur3l 12/08/2025 3:12 PM
+but its clearly due to 15ms refresh rate (led driver)
+[astur3l]
+[] satdx62 Hi <@433352458694033428>, Have you tried offloading HyperHDR
+to a Windows or Linux device and redire...
+astur3l 12/08/2025 3:11 PM
+and how would i hook up the led driver? :d
+[satdx62]
+satdx62 12/08/2025 3:11 PM
+Hi @asturel, Have you tried offloading HyperHDR to a Windows or Linux
+device and redirecting the PicCap output to it to see if that changes
+the behavior? It only takes a few minutes.
+[satdx62]
+[] astur3l interesting thing: smoothing changes led refresh rate to
+smoothing update rate, without smoothing it...
+satdx62 12/08/2025 2:51 PM
+Well, maybe awawa can explain why that is.
+[astur3l]
+[] satdx62 No, a higher FPS rate is not necessary, as the smoothing
+settings determine what arrives at the LED....
+astur3l 12/08/2025 2:47 PM
+interesting thing: smoothing changes led refresh rate to smoothing
+update rate, without smoothing its disabled (0ms), in v21 it didn't
+worked that way, if i set refresh rate for this high, v21 starting to
+drop frames too
+[satdx62]
+[] astur3l why would I need higher fps? i watch only movies with real
+cinema mode , i dont have ui capture btw,...
+satdx62 12/08/2025 2:43 PM
+No, a higher FPS rate is not necessary, as the smoothing settings
+determine what arrives at the LED. However, I have gained the impression
+that it runs more smoothly when PicCap provides more frames. But I could
+be wrong. I only asked because I don't have any dropouts under
+Adalight/HyperSerialPico. Otherwise, I wouldn't understand why they have
+them, even though we use the same master branch from awawa. I use the
+YUV Infinite Interpolator.
+[astur3l]
+[] satdx62 Can you achieve a higher FPS by turning off UI capture while
+leaving VSync on? What about dropouts?
+astur3l 12/08/2025 2:30 PM
+why would I need higher fps? i watch only movies with real cinema mode ,
+i dont have ui capture btw, but im not sure what dropped means, hyperhdr
+couldn't write to serial because of "refresh rate" (previous packet
+haven't sent)? or the led driver dropped the packet ? or its reported by
+hyperserial driver (since it have statistics too) anyway with turning
+off smoothing (linear) dropped frames goes back to 0 (edited)
+[satdx62]
+[] astur3l with rp2040
+satdx62 12/08/2025 2:27 PM
+Can you achieve a higher FPS by turning off UI capture while leaving
+VSync on? What about dropouts?
+[satdx62]
+[] astur3l with rp2040
+satdx62 12/08/2025 2:21 PM
+Yes, I also use the RP2040 and, as you can see, I don't have any
+dropouts with v22. I can't tell you why that is, but I had problems with
+SSL3 regarding the HUE lamp handshake, and that was definitely due to
+SSL3. With Qt6 and OpenSSL 1.1.1q, I have no connection problems with
+the Hue lamps. It may be related to the old webOS 3.9 on my device. I'll
+ask awawa-dev what it could be.
+ 1
+[astur3l]
+astur3l 12/08/2025 2:19 PM
+with rp2040
+[astur3l]
+[] satdx62 I only have dropped files with the Philips Hue Device LED1.
+With Adalight/HyperSerial LED0, I had ha...
+astur3l 12/08/2025 2:17 PM
+yeah but i have literally 0 with v21, v22:
+    2025-12-08T13:58:33.584Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1436], [LED0: FPS = 60.84, send = 3656, processed = 3656, dropped = 349]
+    2025-12-08T13:59:33.497Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1437], [LED0: FPS = 59.02, send = 3536, processed = 3536, dropped = 457]
+    2025-12-08T14:00:33.505Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1437], [LED0: FPS = 56.45, send = 3387, processed = 3387, dropped = 612]
+    2025-12-08T14:01:33.511Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1437], [LED0: FPS = 59.48, send = 3569, processed = 3569, dropped = 429]
+    2025-12-08T14:02:33.523Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1437], [LED0: FPS = 61.27, send = 3676, processed = 3676, dropped = 323]
+    2025-12-08T14:03:33.499Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1436], [LED0: FPS = 66.67, send = 4000, processed = 4000, dropped = 0]
+    2025-12-08T14:04:33.524Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1437], [LED0: FPS = 66.01, send = 3961, processed = 3961, dropped = 38]
+    2025-12-08T14:05:33.497Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1436], [LED0: FPS = 66.65, send = 3999, processed = 3999, dropped = 0]
+    2025-12-08T14:06:33.515Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1437], [LED0: FPS = 66.65, send = 3999, processed = 3999, dropped = 0]
+    2025-12-08T14:07:33.495Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1436], [LED0: FPS = 66.67, send = 4000, processed = 4000, dropped = 0]
+    2025-12-08T14:08:33.510Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1437], [LED0: FPS = 66.67, send = 4000, processed = 4000, dropped = 0]
+    2025-12-08T14:09:33.518Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1437], [LED0: FPS = 66.63, send = 3998, processed = 3998, dropped = 1]
+    2025-12-08T14:10:33.528Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1437], [LED0: FPS = 60.73, send = 3644, processed = 3644, dropped = 355]
+    2025-12-08T14:11:36.105Z 
+[satdx62]
+[] astur3l seeems like colors are good now but still have lot of dropped
+frames ```2025-12-08T13:42:17.705Z [P...
+satdx62 12/08/2025 2:14 PM
+I only have dropped files with the Philips Hue Device LED1. With
+Adalight/HyperSerial LED0, I had hardly any or none before and after the
+update.
+    2025-12-08T13:58:38.127Z [PERFORMANCE] [INSTANCE0: FPS = 100.00, processed = 6000], [LED0: FPS = 58.82, send = 3529, processed = 3529, dropped = 0], [INSTANCE1: FPS = 100.00, processed = 6000], [LED1: FPS = 49.73, send = 2984, processed = 2984, dropped = 15]
+    2025-12-08T13:59:38.122Z [PERFORMANCE] [INSTANCE0: FPS = 100.02, processed = 6000], [LED0: FPS = 58.82, send = 3530, processed = 3530, dropped = 0], [INSTANCE1: FPS = 100.02, processed = 6000], [LED1: FPS = 49.93, send = 2996, processed = 2996, dropped = 2]
+    2025-12-08T14:00:38.121Z [PERFORMANCE] [INSTANCE0: FPS = 99.92, processed = 5995], [LED0: FPS = 58.82, send = 3529, processed = 3529, dropped = 0], [INSTANCE1: FPS = 99.92, processed = 5995], [LED1: FPS = 49.88, send = 2993, processed = 2993, dropped = 6]
+    2025-12-08T14:01:38.125Z [PERFORMANCE] [INSTANCE0: FPS = 99.98, processed = 5999], [LED0: FPS = 58.82, send = 3530, processed = 3530, dropped = 0], [INSTANCE1: FPS = 99.98, processed = 5999], [LED1: FPS = 49.85, send = 2991, processed = 2991, dropped = 8]
+    2025-12-08T14:02:38.126Z [PERFORMANCE] [INSTANCE0: FPS = 99.95, processed = 5998], [LED0: FPS = 58.82, send = 3529, processed = 3529, dropped = 0], [INSTANCE1: FPS = 99.95, processed = 5998], [LED1: FPS = 48.93, send = 2936, processed = 2936, dropped = 63]
+    2025-12-08T14:03:38.121Z [PERFORMANCE] [INSTANCE0: FPS = 99.91, processed = 5994], [LED0: FPS = 58.82, send = 3529, processed = 3529, dropped = 0], [INSTANCE1: FPS = 99.92, processed = 5994], [LED1: FPS = 49.30, send = 2958, processed = 2958, dropped = 41]
+    2025-12-08T14:04:38.121Z [PERFORMANCE] [INSTANCE0: FPS = 100.02, processed = 6001], [LED0: FPS = 58.82, send = 3530, processed = 3530, dropped = 0], [INSTANCE1: FPS = 100.02, processed = 6001], [LED1: FPS = 49.73, send = 2984, processed = 2984, dropped = 15]
+[astur3l]
+[] satdx62 Yes, I use a different Buildroot. But more importantly, awawa
+has resolved the issue (Fix RGBCMYK ca...
+astur3l 12/08/2025 1:55 PM
+seeems like colors are good now but still have lot of dropped frames
+    2025-12-08T13:42:17.705Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1436], [LED0: FPS = 66.67, send = 4000, processed = 4000, dropped = 0]
+    2025-12-08T13:43:17.681Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1436], [LED0: FPS = 66.43, send = 3986, processed = 3986, dropped = 13]
+    2025-12-08T13:44:17.705Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1437], [LED0: FPS = 65.70, send = 3942, processed = 3942, dropped = 56]
+    2025-12-08T13:45:17.681Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1436], [LED0: FPS = 66.45, send = 3987, processed = 3987, dropped = 12]
+    2025-12-08T13:46:17.688Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1437], [LED0: FPS = 65.95, send = 3957, processed = 3957, dropped = 41]
+    2025-12-08T13:47:17.699Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1437], [LED0: FPS = 63.97, send = 3838, processed = 3838, dropped = 161]
+    2025-12-08T13:48:21.191Z [PERFORMANCE] [INSTANCE0: FPS = 23.94, processed = 1437], [LED0: FPS = 32.75, send = 2080, processed = 2080, dropped = 2153]
+    2025-12-08T13:49:22.666Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1436], [LED0: FPS = 13.81, send = 849, processed = 849, dropped = 3248]
+    2025-12-08T13:50:07.686Z [IMAGETOLED_MNG0] Total index number is: 16600 (memory: 16600). User sparse processing is: disabled, image size: 384 x 216, area number: 270
+    2025-12-08T13:51:17.719Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1437], [LED0: FPS = 66.63, send = 3998, processed = 3998, dropped = 1]
+    2025-12-08T13:51:31.172Z [IMAGETOLED_MNG0] Total index number is: 26112 (memory: 26112). User sparse processing is: disabled, image size: 384 x 216, area number: 270
+    2025-12-08T13:52:17.688Z [PERFORMANCE] [INSTANCE0: FPS = 23.95, processed = 1436], [LED0: FPS = 60.48, send = 3629, processed = 3629, dropped = 369]
+[satdx62]
+Original message was deleted
+satdx62 12/08/2025 1:39 PM
+Yes, SDR-to-HDR tone mapping must be enabled when using NV12. This is
+how the developer intended it to be. In this case, different LUT tables
+must be used for different content. If the colors of the LEDs do not
+correspond 100 percent to the image content, you should also recalibrate
+your content source.
+December 7, 2025
+[satdx62]
+Original message was deleted
+satdx62 12/07/2025 8:49 PM
+Hi, The RGBCMY calibration bug has been fixed. You can test the new
+version:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#to-avoid-errors-please-use-only-this-version-for-these-instructions
+(edited)
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[satdx62]
+nrgkill even the status and everything is greyed out i can acces
+hyperhdr via browser with ip and port? whic...
+satdx62 12/07/2025 8:33 PM
+I recommend either the ESP32 S2 Mini (Lolin) with HyperSerial firmware
+(level shifter required) or the Adafruit ItsyBitsy RP2040 (has level
+shifter on board) with HyperSerialPico firmware. Neither of these
+devices requires a dedicated driver on your LG. For LEDs, I recommend
+the SK6812RGBW CW 5-volt version. Of course, you can also run WLED on
+ESP32 via WiFi if you have a good connection, but from experience,
+HyperSerial/Pico via USB is a better and more stable connection than
+WiFi. (edited)
+[satdx62]
+pho9574 rpi5
+satdx62 12/07/2025 8:24 PM
+Hi, then you need to install a new version from the awawa-dev
+repositories via SSH. Follow the same procedure as for a Linux
+installation. See Wiki:
+https://github.com/awawa-dev/HyperHDR/wiki/Installation#linux. The
+latest versions can be found at:
+https://github.com/awawa-dev/HyperHDR/actions/runs/20005994085#artifacts.
+(edited)
+ 1
+pho9574 12/07/2025 7:58 PM
+rpi5
+[satdx62]
+pho9574 if so, where?
+satdx62 12/07/2025 7:57 PM
+Yes, this can be set in Beta 22. I need to know which device HyperHDR is
+running on.
+pho9574 12/07/2025 7:53 PM
+if so, where?
+[] satdx62 With the NV12 option in PicCap and multiple LUT tables?
+pho9574 12/07/2025 7:53 PM
+currently running ubs grabber no root on my G5, is that "cold" white a
+setting in 22 beta?
+nrgkill 12/07/2025 7:52 PM
+even the status and everything is greyed out i can acces hyperhdr via
+browser with ip and port? which esp is recommended for this tv 55uh850v?
+i will try this and let you guys know. also piccap is working on it
+(edited)
+[image.png]
+ image.png
+591.09 KB External
+ 1
+[satdx62]
+pho9574 21
+satdx62 12/07/2025 7:47 PM
+With the NV12 option in PicCap and multiple LUT tables?
+[] satdx62 Which version of HyperHDR are you using?
+pho9574 12/07/2025 7:42 PM
+21
+[satdx62]
+pho9574 thanks for the reply. i did the former (wled settings) but where
+is the "cold" setting in hyperhdr?
+satdx62 12/07/2025 7:33 PM
+Which version of HyperHDR are you using?
+pho9574 12/07/2025 7:29 PM
+thanks for the reply. i did the former (wled settings) but where is the
+"cold" setting in hyperhdr?
+[satdx62]
+pho9574 <@917488160580182068> do i need any special settings in "image
+processing" for sk6812 RGBCOLDWHITE v...
+satdx62 12/07/2025 7:25 PM
+Have you set White Balance Correction to dual in the WLED app under LED
+Settings and the temperature to Cold in HyperHDR?
+nrgkill 12/07/2025 7:21 PM
+I removed hyperion and hyperhdr is only installed I started homebrew
+then executed the commands with ssh no result I checked at hyperhdr
+autostart also can not click start (greyed out)
+[20251207_191804.jpg]
+ 20251207_191804.jpg
+505.56 KB External
+[20251207_191715.jpg]
+ 20251207_191715.jpg
+227.82 KB External
+[20251207_191647.jpg]
+ 20251207_191647.jpg
+244.06 KB External
+pho9574 12/07/2025 7:14 PM
+@satdx62 do i need any special settings in "image processing" for sk6812
+RGBCOLDWHITE via WLED? hyperHDR preview window looks great but at the
+LEDs greens and yellows come out too bright/pale
+[satdx62]
+[] astur3l i noticed it only in the logs (PERFORMANCE), as i said it
+last only for 1min at top, (performance c...
+satdx62 12/07/2025 6:52 PM
+Yes, I also checked the logs, but as I mentioned, I don't currently have
+any dropouts. I just installed the latest fixed version and will monitor
+whether everything is running correctly.
+[HyperHDR_new_realease.png]
+ HyperHDR_new_realease.png
+22.35 KB External
+[astur3l]
+[] satdx62 No idea, I don't have any lost frames when using
+HyperSerialPico or WLED. I had some when using Hue ...
+astur3l 12/07/2025 6:48 PM
+i noticed it only in the logs (PERFORMANCE), as i said it last only for
+1min at top, (performance counter updates at every min), so u wont
+really notice on dashboad with just looking it at once
+[satdx62]
+satdx62 12/07/2025 6:39 PM
+(no content)
+[Performance.png]
+ Performance.png
+17.06 KB External
+[satdx62]
+[] astur3l another intereseting thing, with v21, i have ZERO dropped
+frames, v22 sometimes have 500+ dropped fr...
+satdx62 12/07/2025 6:38 PM
+No idea, I don't have any lost frames when using HyperSerialPico or
+WLED. I had some when using Hue with openssl 3.x libs.
+[astur3l]
+astur3l 12/07/2025 6:20 PM
+another intereseting thing, with v21, i have ZERO dropped frames, v22
+sometimes have 500+ dropped frames (sometimes= its fine for few minutes,
+then in the next minute few dropped, then goes back to zero for few
+mins..), maybe its related to qt.. but i cannot test v21 with qt6, v22
+have lot of changes (edited)
+[satdx62]
+[] astur3l how do u stick to openssl 1.x? you need to use newer
+buildroot (because of the new c++20 code), but ...
+satdx62 12/07/2025 6:15 PM
+Yes, I use a different Buildroot. But more importantly, awawa has
+resolved the issue (Fix RGBCMYK calibration).
+See:https://github.com/awawa-dev/HyperHDR/commit/ba86f693cc71df306de51983864ccbd3aa5b0c0b
+Fix RGBCMYK calibration (#1369) · awawa-dev/HyperHDR@ba86f69
+[]
+ 1
+[astur3l]
+[] satdx62 Yes, Qt6 does not seem to offer any advantages at present.
+However, if Qt 5.15.8 becomes incompatibl...
+astur3l 12/07/2025 6:11 PM
+how do u stick to openssl 1.x? you need to use newer buildroot (because
+of the new c++20 code), but newer buildroot have only openssl 3.x libs
+[satdx62]
+[] astur3l you can compile the infinite color engine with qt5 too,
+there's no consumer user benefit from qt6, ...
+satdx62 12/07/2025 5:53 PM
+Yes, Qt6 does not seem to offer any advantages at present. However, if
+Qt 5.15.8 becomes incompatible in the future, Qt6 could play a very
+important role. Hyperion.NG now also relies on Qt6. Let's see how long
+it takes for the changeover to take place here as well. Personally, I
+think everything can stay as it is. Users who do not want to take any
+risks and do not want to use the new features such as the Infinite Color
+Engine should stick with the stable HBC version. However, I myself
+haven't used HBC versions for a long time. I use my own versions, which
+have been completely converted to Qt6 as recommended by awawa. OpenSSL
+1.1.1q has remained because there were significant problems with the
+latest version. (edited)
+[astur3l]
+astur3l 12/07/2025 5:37 PM
+ill debug once i have time, but atm i cannot say more than "something is
+wrong" which is not really helpful, until i cannot describe the exact
+issue i wont open issue ticket , with rolling back atleast i make sure
+my setup is still workin
+[astur3l]
+[] satdx62 Hello, Awawas HyperHDR now uses Qt6 exclusively. The regular
+build.yml “ref: v21.0.0.0,” which is b...
+astur3l 12/07/2025 5:19 PM
+you can compile the infinite color engine with qt5 too, there's no
+consumer user benefit from qt6, so the v21+qt6 benefit is the same ;d I
+just didn't want to rollback everything for using latest stable since
+seems like once i have to use qt6
+ 1
+[satdx62]
+[] astur3l did u tried to compile latest stable (v21) against self
+compiled qt6 ? i run into linker error , i ...
+satdx62 12/07/2025 5:08 PM
+Hello, Awawas HyperHDR now uses Qt6 exclusively. The regular build.yml
+“ref: v21.0.0.0,” which is based on Qt 5.15.8, works perfectly. However,
+“ref: master” does not, as it already uses Qt 6, which must be
+precompiled. I have not tried to compile the stable version “ref:
+v21.0.0.0” with Qt 6. In my opinion, this would not be beneficial, as
+the Infinite Color Engine is not yet included. Or do you mean something
+else? I am now also using Qt 6 and the Infinite Color Engine branch from
+awawa-dev. I will mention it to him when I get the chance because of the
+RGBCMY calibration in the Infinite Color Engine. I haven't been able to
+find any errors in my version yet. It would be very helpful if you could
+define a color that the LEDs output incorrectly. Then I can test it as a
+reference and present it to Awawa. Only with facts can the elimination
+of errors (if there are any) be accelerated.
+[astur3l]
+[] satdx62 This version corresponds to the master version of awawa as of
+November 20, 2025 (master (GitHub-7320...
+astur3l 12/07/2025 3:32 PM
+did u tried to compile latest stable (v21) against self compiled qt6 ? i
+run into linker error , i can compile latest master just fine (before
+the infinity color engine pr im not able to compile but the qt6
+migration was before) (edited)
+[satdx62]
+nrgkill No i swiped autostart but it didnt start and start stop is still
+greyed out. Also set the local ip i...
+satdx62 12/07/2025 1:58 PM
+You can install either HyperHDR or Hyperion.NG and activate autostart.
+Both programs must not be run at the same time. To avoid conflicts and
+high resource consumption, you should uninstall one of the two versions.
+It is best to use HyperHDR, as most people use this version and can
+provide you with help if needed. Also, run the output postings of the
+Commandos I suggested to see what the permissions are like.
+https://discord.com/channels/407937994037919756/931706504627773450/1447130853259083837
+In addition, you should take a screenshot of the HyperHDR loader
+interface. I assume that PicCap is still authorized, as can be seen in
+the first screenshot. It would also be helpful to take a screenshot of
+the PicCap settings page, including the information bar at the bottom.
+(edited)
+nrgkill 12/07/2025 12:45 PM
+No i swiped autostart but it didnt start and start stop is still greyed
+out. Also set the local ip in piccap 127.0.0.1. Strange that evert thing
+in hyperion and hyperhdr is on no (daemon version also unknown) 
+[satdx62]
+nrgkill I have installed the one from Speed47 now after the reboot my TV
+sticks on the circle I also read th...
+satdx62 12/07/2025 11:37 AM
+If an app is not functioning properly, uninstall it using the “webOS Dev
+Manager.” I can only recommend what has helped other users. Since I do
+not own your device, I am unable to test it myself. Completely
+disconnecting the power supply is sometimes very useful. What is the
+current status? Have you verified that the permissions for PicCap and
+HyperHDR are elevating the services?
+[] satdx62 Hi, If your TV is running webOS “dreadlocks-digya” 3.4, you
+have an webosbrew-autostart problem. Thi...
+nrgkill 12/07/2025 10:42 AM
+I have installed the one from Speed47 now after the reboot my TV sticks
+on the circle I also read that someone was bothered by the fact that
+after 40 minutes the TV only came back up in the normal menu.
+[satdx62]
+nrgkill how does this work can someone explain this to me. is this from
+SSH or telnet??
+satdx62 12/07/2025 8:41 AM
+You don't need to do anything else. Under “Release,” you will find
+various ready-made ipk test versions that you can install using the
+“webOS Dev Manager.” Start the app and check the output to see if there
+are any errors. You can try elevating the services via the command line
+(SSH). PicCap/HyperHDR elevated services: HyperHDR elevated services
+    /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service org.webosbrew.hyperhdr.loader.service
+    Piccap elevate-service
+    /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service org.webosbrew.piccap; /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service org.webosbrew.piccap.service
+https://github.com/throwaway96/webosbrew-autostart/releases (edited)
+Releases · throwaway96/webosbrew-autostart
+Input app-based autostart for rooted webOS 3.x and older. (personal dev
+repo) - throwaway96/webosbrew-autostart
+[]
+[satdx62]
+nrgkill Thank you for your response. I disabled the Failsafe mode and
+rebooted from Homebrew Channel HyperHD...
+satdx62 12/07/2025 8:40 AM
+As for the trick with opening the HBC settings, you may have
+misunderstood. Once you are there, you do not need to restart, as this
+will not work. Instead, open the HBC app, go to the settings, and then
+back to the overview page. From there, you can start HyperHDR. Then turn
+on autostart. If the daemon has not started, simply press “Start” and
+see if it stays on. Again, don't restart, just open the HyperHDR web
+interface in a browser and enter the IP address of your TV:8090.
+nrgkill 12/07/2025 1:29 AM
+how does this work can someone explain this to me. is this from SSH or
+telnet??
+[rn_image_picker_lib_temp_1d8a566d-9ea5-491b-a536-7154a874812d.jpg]
+ rn_image_picker_lib_temp_1d8a566d-9ea5-491b-a536-7154a874812d.jpg
+2.58 MB External
+[] satdx62 Hi, If your TV is running webOS “dreadlocks-digya” 3.4, you
+have an webosbrew-autostart problem. Thi...
+nrgkill 12/07/2025 12:30 AM
+Thank you for your response. I disabled the Failsafe mode and rebooted
+from Homebrew Channel HyperHDR started the app same problem. Start and
+stop is greyed out.
+[20251207_002755.jpg]
+ 20251207_002755.jpg
+234.22 KB External
+[astur3l]
+[] satdx62 This version corresponds to the master version of awawa as of
+November 20, 2025 (master (GitHub-7320...
+astur3l 12/07/2025 12:25 AM
+it get better after awawa clamped the max colors (was a while ago), but
+i cant even describe the problem, besides something is not ok :d preview
+looks good but "some" color just way off "sometimes" , usually happens
+with dark colors , but even gamma etc feels like works differently,
+anyway i update hyperhdr if i see related commit (edited)
+[satdx62]
+[] astur3l what's the difference between this and hyperhdr git master
+branch?
+satdx62 12/07/2025 12:14 AM
+This version corresponds to the master version of awawa as of November
+20, 2025 (master (GitHub-7320e44/768fd85-1763583711). I do not have such
+stark color deviations as reported by the user. The latest version I
+published in my instructions dates from October 8, 2025.
+[astur3l]
+[] satdx62 Try this version. I have no problems with RGBCYM calibration
+in Infinite Color Engine; some bugs hav...
+astur3l 12/07/2025 12:07 AM
+what's the difference between this and hyperhdr git master branch?
+December 6, 2025
+[satdx62]
+[] astur3l i kinda have (had) the same settings and have the same issue
+with infinite color engine (v22) :d I j...
+satdx62 12/06/2025 11:59 PM
+Try this version. I have no problems with RGBCYM calibration in Infinite
+Color Engine; some bugs have been fixed in this version. I would be
+happy if it works without any problems for him too. Let me know if
+everything is okay. (edited)
+[] satdx62 Hello, There is no ready-made driver for your kernel yet. You
+will therefore have to either compile ...
+erdal_79740 12/06/2025 11:51 PM
+Thanks
+[satdx62]
+nrgkill Hello everyone. I have successfully rooted my TV with thanks to
+the developers. now I have downloade...
+satdx62 12/06/2025 11:07 PM
+Hi, If your TV is running webOS “dreadlocks-digya” 3.4, you have an
+webosbrew-autostart problem. This prevents the HyperHDR and Hyperion.NG
+daemons from starting correctly. This is a known issue. Since PicCap has
+root privileges, try the following trick: Open the Homebrew Channel
+settings and make sure that “Failsafe” is not enabled. Go back to
+Homebrew Channel Apps, run HyperHDR, and then start the HyperHDR daemon.
+If this trick works, you can use the webosbrew-autostart app or create
+an automation using Home Assistant.
+https://github.com/speed47/webosbrew-autostart/releases or
+https://github.com/throwaway96/webosbrew-autostart (edited)
+Releases · speed47/webosbrew-autostart
+Input app-based autostart for rooted webOS 3.x and older. -
+speed47/webosbrew-autostart
+[]
+GitHub - throwaway96/webosbrew-autostart: Input app-based autostart...
+Input app-based autostart for rooted webOS 3.x and older. (personal dev
+repo) - throwaway96/webosbrew-autostart
+[]
+[satdx62]
+erdal_79740 Hi, I wanted to clarify that initially I installed
+Hyperserial ESP32, following Awawa's setup instru...
+satdx62 12/06/2025 10:51 PM
+Hello, There is no ready-made driver for your kernel yet. You will
+therefore have to either compile it yourself or wait for the ESP32 S2
+Mini. It should work with the S2. However, you should connect/solder
+everything securely to avoid weak points. As for the WLED, you can set
+up and test a second segment. To do this, click on “+” in the “LED
+settings” after the first segment to create a new segment with the
+corresponding GPIO. See my pictures.
+[WLED_1_Segment.png]
+ WLED_1_Segment.png
+24.95 KB External
+[WLED_2_Segment.png]
+ WLED_2_Segment.png
+28.83 KB External
+ 1
+nrgkill 12/06/2025 9:38 PM
+Hello everyone. I have successfully rooted my TV with thanks to the
+developers. now I have downloaded and installed piccap and hyperion ng
+via the homebrew as soon as I start piccap service it gives to Running
+but at hyperion ng (service elevated no daemon running no daemon version
+unknown start and stop is greyed out) I then removed hyperion and
+downloaded hyperhdr there is exactly the same message as with hyperion
+ng. Did I do something wrong can someone guide me in this? thank you
+(edited)
+[rn_image_picker_lib_temp_b916f684-1773-4975-91fe-24799a596847.jpg]
+ rn_image_picker_lib_temp_b916f684-1773-4975-91fe-24799a596847.jpg
+4.9 MB External
+[rn_image_picker_lib_temp_2325be2d-8ba5-4c34-98f8-5573f3f7b61e.jpg]
+ rn_image_picker_lib_temp_2325be2d-8ba5-4c34-98f8-5573f3f7b61e.jpg
+2.04 MB External
+[rn_image_picker_lib_temp_675c6bb8-06e5-444f-b895-18318ba51a52.jpg]
+ rn_image_picker_lib_temp_675c6bb8-06e5-444f-b895-18318ba51a52.jpg
+3.3 MB External
+[] satdx62 Hi, I think it's important not to confuse the discussion. To
+do this, we should stick to an orderly ...
+erdal_79740 12/06/2025 9:18 PM
+Hi, I wanted to clarify that initially I installed Hyperserial ESP32,
+following Awawa's setup instructions, but the USB wasn't recognized. I
+then installed W LED and am currently connected via Wi-Fi. I've resolved
+my data connection issue, so when the LEDs on the first segment (the one
+on the right facing the TV, GPIO2) light up, and then the LEDs on the
+left side (GPIO4) light up, the installation will be complete. I ordered
+an ESP32 S2 so my LG OLED TV would recognize USB, as I couldn't find the
+driver for my 2024 kernel for my ESP32 Mini and Live. 1: ESP32 MH
+controller and CH9102X Drive live, software temporarily installed: wled
+2: Currently using wled, but only temporarily to try and get the LEDs
+working. Parameters: gpio2, 105 leds (this is the first segment, but in
+wLED you can't choose a second segment). The LEDs blink rapidly with
+wled; I can't get the colors to display, so I think the data
+transmission is faulty. Initially, using hyperserialesp32, I flashed the
+RGBWN binary with ESP Home. Then I flashed the hyper serial ESP32 file
+with VS Code. Regarding the necessary kernel drivers, I haven't found
+the driver for my kernel. Here is the version on my TV:Linux LGwebOSTV
+4.4.84-612.jcl4tv.40 #1 SMP PREEMPT Fri Jun 28 11:12:23 UTC 2024 armv7l
+GNU/Linux 3: I'll take a screenshot if you want, but the setup is Awa's
+for two segments with 74AH... level shifters and an ESP32 connected to
+the TV's USB port. I'd have to take the TV off the wall. I think there's
+a bad connection in the Dupont cables and the backboard because I can't
+change the colors; they just flash rapidly. There's no connection for
+the data at the corners, but there is 5 volts along the entire length of
+the LED strip because the last LED that lights up on each side is the
+one just before the corner. (edited)
+[astur3l]
+Original message was deleted
+astur3l 12/06/2025 8:02 PM
+did u checked the new algorithms? yuv, hybrid physics
+[astur3l]
+Original message was deleted
+astur3l 12/06/2025 7:49 PM
+new smoothing is just too good to go back :d i didn't really have time
+to investigate either, since its beta and there's no official release
+not much user using it
+[astur3l]
+Original message was deleted
+astur3l 12/06/2025 7:43 PM
+i kinda have (had) the same settings and have the same issue with
+infinite color engine (v22) :d I just restored everything to default and
+most problem gone but yeah i couldn't archive the same result with v22,
+someone said only RGB calibration works and RGBCYM is broken (i used
+this one), if u figure out pls tell me :dd (edited)
+[satdx62]
+erdal_79740 I use a bredboard and câble Dupont for the data of the esp32
+and level shifter. Perhaps the problem ...
+satdx62 12/06/2025 5:46 PM
+Hi, I think it's important not to confuse the discussion. To do this, we
+should stick to an orderly sequence: 1. Description of the LED
+controllers currently involved, including the software flashed onto
+them. WLED or HyperSerial? 2. If it's WLED: What are your settings under
+“LED Settings” in the WLED app? If it's HyperSerial: What did you flash
+on ESP and how? To determine which kernel drivers are required, it is
+important to know which ESP32 you are using and which serial chip it is
+equipped with. The webOS version/kernel running on your device is also
+relevant.
+    uname -a
+3. A screenshot of your breadboard with the connections to the LEDs.
+(edited)
+erdal_79740 12/06/2025 4:21 PM
+I use a bredboard and câble Dupont for the data of the esp32 and level
+shifter. Perhaps the problem stems from there? And second problème data
+dont pass in corner. I can solder the data. (edited)
+[astur3l]
+Original message was deleted
+astur3l 12/06/2025 3:05 PM
+try changing user gamma back to default, or the RGB calibration
+erdal_79740 12/06/2025 12:34 PM
+Yes, Hyper HDR doesn't detect the ESP32, but the LEDs are lit white
+across the entire bottom of the first and second segments. This doesn't
+extend beyond the bottom corners. However, the data impedance is indeed
+70 ohms before and after the corner. I connected the first segment to
+GPIO2 of the ESP32 and the second segment to GPIO4 of the ESP32. Then I
+connected it to the level decoder exactly as Awawa did.
+[satdx62]
+erdal_79740 I tried testing with WLED, but only the bottom LEDs lit up.
+With Hyper Serial ESP32, it was the same...
+satdx62 12/06/2025 12:03 PM
+Hi, You said that HyperHDR couldn't find your ESP32 with HyperSerial.
+Now you say: “It was the same with Hyper Serial ESP32: only the lower
+LEDs lit up to the corner.” Which is correct? If that's the case, did
+you connect data pin 2 for one segment and data pin 4 for the other
+segment to the level shifter or to the two segments? Did you read the
+instructions from awawa-dev?
+https://github.com/awawa-dev/HyperSerialESP32#multi-segment-wiring The
+same applies to WLED. You have to configure two segments with two data
+outputs.
+GitHub - awawa-dev/HyperSerialESP32: High speed USB serial port LED...
+High speed USB serial port LED strip driver for HyperHDR using ESP32 or
+ESP32-S2 devices. Multi-segment & multi-core support. -
+awawa-dev/HyperSerialESP32
+[]
+ 1
+erdal_79740 12/06/2025 11:06 AM
+I tried testing with WLED, but only the bottom LEDs lit up. With Hyper
+Serial ESP32, it was the same: only the bottom LEDs lit up to the
+corner. I checked the data signal and 5V before and after the corner,
+the ground connection, and the wiring is all correct. I don't understand
+why the data signal doesn't light up beyond the corners.
+[] satdx62 It depends on the ESP32. If HyperHDR does not recognize your
+ESP under Adalight, then you probably d...
+erdal_79740 12/06/2025 1:45 AM
+I'm going to buy an ESP32 S2 Mini to connect my two segments. Hoping it
+works. Thanks.
+December 5, 2025
+[satdx62]
+erdal_79740 Hi, I have HyperHDR and PicCap on my LG OLED TV. I just
+installed SK6812 LEDs in two segments, like ...
+satdx62 12/05/2025 11:49 PM
+It depends on the ESP32. If HyperHDR does not recognize your ESP under
+Adalight, then you probably do not have the necessary serial driver for
+webOS installed. First, you need to find out which serial chip is
+installed on your ESP32. ESP32 Models with a faster serial chip such as
+the CH340G and CH9102x can also be operated with HyperSerial. Please
+note that a kernel driver must be installed on LG for this. Then install
+the appropriate webOS kernel driver. See:
+https://github.com/throwaway96/webos-kernel-drivers. The only ESP32 that
+does not require a dedicated kernel driver for HyperSerial is the ESP32
+S2 Mini Lolin.
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS?tab=readme-ov-file#esp32-with-level-shifter
+(edited)
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+erdal_79740 12/05/2025 10:20 PM
+Hi, I have HyperHDR and PicCap on my LG OLED TV. I just installed SK6812
+LEDs in two segments, like Awawa hyperserialesp32, with the output via
+USB, but it's not working. HyperHDR doesn't detect my ESP32. Yet I
+selected Adalight as the controller in HyperHDR. Can the data for the
+Ambilight LEDs be transmitted via USB, or do I need to install WLED to
+configure it via Wi-Fi?Where could the problem come from? All the wiring
+is ok, I checked everything: esp32, level shifter, data, 5v and gnd.
+Thanks for your help. (edited)
+[satdx62]
+Original message was deleted
+satdx62 12/05/2025 8:12 PM
+In the WLED app, GRB is correct, but in the HyperHDR LED controller,
+“wled” must be set to RGB.
+[satdx62]
+Original message was deleted
+satdx62 12/05/2025 7:56 PM
+If you are using SK6812RGBW LEDs, have you set the white balance in WLED
+to “Dual”? (edited)
+[satdx62]
+Original message was deleted
+satdx62 12/05/2025 7:51 PM
+Hi, Regardless of the LUT tables, you must first calibrate the basic
+colors using the color templates I provided in my instructions. Only
+when RGB and white are displayed correctly can you take care of the LUT
+tables and calibrate them to the source if necessary.
+[satdx62]
+Original message was deleted
+satdx62 12/05/2025 7:43 PM
+Are the basic colors RGB and white displayed correctly? Which LED
+controllers do you use and how have you set the RGB byte order sequence?
+Have you set your LEDs (NW, CW, WW) under temperature?
+[satdx62]
+Original message was deleted
+satdx62 12/05/2025 7:27 PM
+If you follow the instructions, install the necessary LUT tables (the
+compressed ones are sufficient), and activate the PicCap-NV12 option, it
+should work immediately and you should get a live preview image in
+HyperHDR. In addition, the “HDR to SDR Tone Mapping” option must be
+enabled under “Network Services > Flatbuffers Server” in HyperHDR. The
+“Infinite Color Engine Branch” of HyperHDR by awawa-dev has been
+integrated into the master branch, as it is now very stable (authored on
+Sep
+27).https://github.com/awawa-dev/HyperHDR/commit/e2c7094ea4bcd75e57ef2833a11d8dab119e9cbc
+So far, no one has complained that it is not running stably. I use it on
+all my test devices (webOS, Windows, Linux, and Raspberry Pi) without
+any complaints. However, it will take a while for version 22 to be
+released. Therefore, version 22.0.0beta0 is available for now. (edited)
+Infinite Color Engine - Breaking 24-bit Limits (#1261) · awawa-dev...
+[]
+[satdx62]
+Original message was deleted
+satdx62 12/05/2025 6:34 PM
+Hi, I can't reproduce your problem at the moment, as you seem to be
+using an older or different version of HyperHDR than the one described
+in my instructions. See image (Infinite Color Engine). You can try this
+out if you are interested. You can find it at:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#to-avoid-errors-please-use-only-this-version-for-these-instructions.
+Before installing the new version, you can back up your self-calibrated
+LUT tables so that they are available at any time. If the LUT tables
+offered for installation in the new version do not meet your
+requirements, you can replace them. I also recommend that you read
+through the entire instructions. (edited)
+[HyperHDR_Infinite_Color_Engine.png]
+ HyperHDR_Infinite_Color_Engine.png
+94.29 KB External
+GitHub - satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experienc...
+Contribute to
+satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-
+development by creating an account on GitHub.
+[max_rez]
+[] satdx62 Therefore, pay attention to the arrow at the beginning of the
+strip. The 3-pin plug at the beginning...
+max_rez 12/05/2025 6:04 PM
+thanks. that makes sense
+[satdx62]
+[] max_rez my LED strip has a 3pin connector on each end of the 5meter
+strip. however, to insure the data flows...
+satdx62 12/05/2025 3:27 PM
+Therefore, pay attention to the arrow at the beginning of the strip. The
+3-pin plug at the beginning must not be cut off, as it should be
+connected to the supplied 3-pin adapter. The free green and white wires
+must be connected or soldered to the LED controller. If the LED strip is
+longer than the layout allows, it must be cut in the designated or
+marked area at the end of the strip. Then either an end adapter with
+wires for the power supply must be plugged in or two wires for +5 volts
+and GND/- must be soldered. (edited)
+December 4, 2025
+[max_rez]
+max_rez 12/04/2025 6:59 PM
+it's all kind of coming together in my head. I just need to look for
+some tips on how to attach the LEDs to the TV itself. like is there
+anything to keep in mind? obviously, make sure the same number of LEDS
+are on top/bottom and right/left
+12/04/2025 6:57 PM
+my LED strip has a 3pin connector on each end of the 5meter strip.
+however, to insure the data flows only one way (using arrows) I cannot
+make use of the other 3pin connector, correct? I just have to cut up the
+strip starting from the beginning and then at the end I will have the
+bare strip and I can just add one of those connectors ^^^^
+[max_rez]
+[] satdx62 The LED strips are supplied with 3-pin connectors or
+couplings. At the beginning and end of the stri...
+max_rez 12/04/2025 6:55 PM
+thanks! that all makes sense to me. now I just need to chop up the LED
+strip and connect it together. I picked up these to do that:
+[71hZgw8Y7kL._AC_SX679_.jpg]
+ 71hZgw8Y7kL._AC_SX679_.jpg
+69.37 KB External
+[satdx62]
+Original message was deleted
+satdx62 12/04/2025 6:31 PM
+Compared to the CW version,the SK6812RGBW-NW version has a blue
+weakness. This is an excerpt from the developer's recommendation:
+"Neutral RGBW white channel is not close to the color obtained by mixing
+RGB LEDs. It's a bit yellow, so you may need to lower the blue/white
+aspect to make the blue channel stronger. 'Cold RGBW' is usually better
+balanced.“ This cannot be compensated for as easily with WLED drivers as
+it can with HyperSerial/HyperSerialPico in HyperHDR using the
+”Blue/White Channel Aspect“ option in the ”LED Controller“ > ”Adalight"
+menu. You either have to balance it under “Temperature” or actually
+adjust the basic blue colors of the Infinite Color Engine until the
+result is right. It is also unclear which HyperHDR version with which
+LUT tables you are using. And yes, you can calibrate the LUT tables
+yourself to your source. (edited)
+pho9574 12/04/2025 2:55 PM
+hey since there is no root/piccap for the G5 i was wondering if it was
+possible to integrate non-HUE lamps into the HUE-sync app for LG TVs
+apparently it is possible to have the Hue-sync app connect to a DIYHue
+instance on the network according to this reddit:
+https://www.reddit.com/r/homeassistant/comments/1ol6lcd/philips_hue_sync_with_nonhue_lights/
+the idea is to go with DIYHue and have all the WLED strips integrated as
+pseudo Hue Strips: To quote from WLED website: "With DiyHue you can
+emulate a hue bridge that will show all WLED strips as Hue Strip Plus
+which will work with Hue Sync in realtime." has anyone tried this?
+(edited)
+[image.png]
+ image.png
+184.77 KB External
+From the homeassistant community on Reddit
+Explore this post and more from the homeassistant community
+[]
+[satdx62]
+dlugi152 Yes, but i want to keep them off in medium dark scenes also 
+Basically they should be on only in b...
+satdx62 12/04/2025 1:36 PM
+Okay, understood. In this case, you should submit a ticket to awawa-dev
+at https://github.com/awawa-dev/HyperHDR, under discussions.
+https://github.com/awawa-dev/HyperHDR/discussions or
+https://github.com/awawa-dev/HyperHDR/issues (edited)
+ 1
+dlugi152 12/04/2025 1:29 PM
+Yes, but i want to keep them off in medium dark scenes also  Basically
+they should be on only in bright and very bright scenes I find it
+distracting otherwise
+[satdx62]
+dlugi152 Sorry, im using hyperhdr. Minimum brightness level works in
+opposite way what i want. It keeps leds ...
+satdx62 12/04/2025 1:25 PM
+Minimum backlight = 0 With this setting, the LEDs remain off during
+black or very dark scenes.
+dlugi152 12/04/2025 1:17 PM
+Sorry, im using hyperhdr. Minimum brightness level works in opposite way
+what i want. It keeps leds on in darker scenes and if scene is bright
+enough then it follows colors on screen. I want to keep leds off in
+darker scenes
+[satdx62]
+dlugi152 Hi, is it possible to change minimal brightness on screen to
+activate leds? By default if there are ...
+satdx62 12/04/2025 1:12 PM
+Apart from the fact that they do not mention whether they use
+Hyperion.NG or HyperHDR, you should not set the gamma value above 2.2,
+as this will impair the color reproduction of the LEDs. Settings between
+1 and 2.2 are recommended. To do this, you should set the “Minimum
+backlight level.” HyperHDR: Minimum brightness level (scale 0–1.0). Each
+step of 0.0039 (2) corresponds to 1 on the 0–255 scale. The setting is
+disabled during effects, colors, and in the “Off” status. Otherwise,
+there are ways to control/regulate and/or automate the brightness of the
+LEDs using the JSON API.
+dlugi152 12/04/2025 12:41 PM
+Hi, is it possible to change minimal brightness on screen to activate
+leds? By default if there are black scenes leds are off, if there are
+darker scenes leds start to shine, if scene is very bright leds are very
+bright etc I want to activate leds only on bright and very bright scenes
+I changed gamma from 1,5 to 8 and is what i want, but colors are off
+(Orange is recognized as red). I tried to compensate by lowering
+saturation, but colors are still off Any way to change that with default
+gamma?
+[satdx62]
+[] max_rez also a bit confused about how to join the power supply 16g
+wire to the LED 5v line. the led wire is ...
+satdx62 12/04/2025 9:41 AM
+To connect the positive and negative poles of the power supply wires to
+the LED wires, use Wago or Dymo terminals (quick-connect terminal
+blocks). Alternatively, you can simply solder and insulate the wires.
+[satdx62]
+satdx62 12/04/2025 8:52 AM
+The LED strips are supplied with 3-pin connectors or couplings. At the
+beginning and end of the strips, there are additional connection cables
+for the power supply in red and white. The red wire of the LEDs is
+connected to the +5-volt terminal and the white wire to the −5-volt
+terminal of the power supply. You should also supply the end of the LED
+strip with + and - 5 volts. The LEDs come with a 3-pin connection
+adapter with a red, green, and white wire. The LED strip should be
+connected to the FTDI board using the 3-pin adapter. The white wire is
+connected to the GND of the FTDI controller and the green wire to the
+DATA output of the FTDI controller. The red wire of the 3-pin adapter
+must not be connected to the FTDI. It draws power via the USB port of
+the TV. You can find the latest HyperHDR version with FTDI support at:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#to-avoid-errors-please-use-only-this-version-for-these-instructions
+(edited)
+[LED-Stripe.jpg]
+ LED-Stripe.jpg
+95.11 KB External
+[max_rez]
+max_rez 12/04/2025 3:44 AM
+also a bit confused about how to join the power supply 16g wire to the
+LED 5v line. the led wire is tiny compared to the other one
+[PXL_20251204_024142938.jpg]
+ PXL_20251204_024142938.jpg
+394.36 KB External
+12/04/2025 3:38 AM
+hey @satdx62 thanks for your help and diagrams. I have a question. in
+this diagram you show the GND from the FTDI going to the LED strip, but
+it also has a GND coming from the power supply. My LED strip only has 3
+wires on it. do I just connect both GND to the same wire on the LED
+strip?
+[image.png]
+ image.png
+638.52 KB External
+November 29, 2025
+[] satdx62 Hello, please feel free to ask your question or express your
+request. This forum is read by many peo...
+Deleted User 11/29/2025 1:14 PM
+https://dontasktoask.com
+Don't ask to ask, just ask
+[]
+[satdx62]
+Original message was deleted
+satdx62 11/29/2025 11:41 AM
+Hello, please feel free to ask your question or express your request.
+This forum is read by many people, and if someone knows the answer, they
+will get back to you.
+[fpsusername]
+fpsusername 11/29/2025 10:01 AM
+Yeah. So far the hyperpicoserial dev told me to try the led calibration
+and set just yellow the way I want, but that screws up everything as
+seen from the pic above. RGBCMY calibration seems to be broken in
+hyperhdr, or my ledstrip or itsybitsy can't handle it. RGB calibration
+works fine but it's useless to touch it
+[satdx62]
+[] fpsusername But the weird thing is that with swapping red and green,
+pure blue is affected as well. After swappi...
+satdx62 11/29/2025 9:58 AM
+Yes, everything is strange here. I'm curious to see how your LEDs behave
+under WLED. Here are Aircoookie's recommendations: Also check the
+arrangement of the channels. Do your LEDs light up red, green, blue, and
+white when they should, or does your strip light up red, for example,
+even though you selected blue in the controller? Then you should adjust
+the order of the color channels in the settings. With RGBW LEDs, you can
+first define the correct order of the RGB colors. If the white channel
+is on one of the color channels, you can also use the “Swap” function to
+assign everything correctly by swapping the corresponding color channel
+with the white channel.
+[fpsusername]
+fpsusername 11/29/2025 9:52 AM
+But the weird thing is that with swapping red and green, pure blue is
+affected as well. After swapping it leans towards purple (but it's still
+blue), whereas before it leans towards green (but again, still blue).
+Very small difference.
+11/29/2025 9:50 AM
+Separate part within the led chip ofc
+11/29/2025 9:50 AM
+White is a separate led and it works fine
+[satdx62]
+[] fpsusername Yeah, confusing. So my 12v strip has 4 pins, BFT has 6
+pins and there are also variants of 8 pins
+satdx62 11/29/2025 9:49 AM
+You said that the colors red, green, and blue are displayed correctly.
+What about white?
+[fpsusername]
+fpsusername 11/29/2025 9:44 AM
+Yeah, confusing. So my 12v strip has 4 pins, BFT has 6 pins and there
+are also variants of 8 pins
+[satdx62]
+[] fpsusername That's what is written in the description of the one I
+got
+satdx62 11/29/2025 9:14 AM
+Hi, I need to correct myself regarding my 5-volt Sk6812RGBW. Just like
+the one in your photo from
+https://discord.com/channels/407937994037919756/931706504627773450/1441864717902549145,
+it has a 4-pin LED chip. However, after doing some research, I found
+12-volt SK6812RGBW with 6-pin, 8-pin, and now also 4-pin LED chips,
+which has left me even more confused and unsure which one is the right
+one. So I have no choice but to get one of each type to find out. The
+photo here shows a 12-volt SK6812RGBW with a 4-pin LED chip.
+[7.png]
+ 7.png
+134 KB External
+November 28, 2025
+[fpsusername]
+fpsusername 11/28/2025 10:51 PM
+That's what is written in the description of the one I got
+11/28/2025 10:50 PM
+(no content)
+[Screenshot_20251128-225042_com.alibaba.aliexpresshd.png]
+ Screenshot_20251128-225042_com.alibaba.aliexpresshd.png
+190.53 KB External
+[fpsusername]
+[] satdx62 Sorry, the pictures are in German.
+fpsusername 11/28/2025 10:49 PM
+Kein Problem 
+[satdx62]
+[] fpsusername Hmmm
+satdx62 11/28/2025 10:16 PM
+Sorry, the pictures are in German.
+[fpsusername]
+fpsusername 11/28/2025 10:12 PM
+Hmmm
+[satdx62]
+[] fpsusername I do have to say that any animation is smooth, I kind of
+doubt these are per three. I'll check later
+satdx62 11/28/2025 10:01 PM
+I checked the description on AliExpress, and it says that the P8 version
+is individually addressable, but one IC controls three LEDs. Definitely
+a different internal circuit. See pictures.
+[5.png]
+ 5.png
+30.85 KB External
+[6.png]
+ 6.png
+28.44 KB External
+[fpsusername]
+fpsusername 11/28/2025 9:51 PM
+I do have to say that any animation is smooth, I kind of doubt these are
+per three. I'll check later
+[satdx62]
+[] fpsusername Is there a test output to see if each led is controllable
+separately?
+satdx62 11/28/2025 9:32 PM
+I'm thinking, for example, of the running light from “Knight Rider.”
+Take a look under “Effects” and start a Knight Rider or similar effect.
+Pay attention to the LEDs and check whether groups of three LEDs or
+individual LEDs are actually moving.
+[fpsusername]
+fpsusername 11/28/2025 9:00 PM
+Is there a test output to see if each led is controllable separately?
+[satdx62]
+[] fpsusername Single colors are fine, the color palette test looks
+okay, but images and it doesn't work well. Edi...
+satdx62 11/28/2025 8:46 PM
+In the BTF SK6812RGBW 12 volt with 6-pin 5050 LED chip, an IC controls
+an LED chip, meaning that each individual LED chip can be addressed
+separately. In the no-name model SK6812RGBW 12 Volt with an 8-pin 5050
+LED chip, however, an IC controls three LED chips, so that only groups
+of three can be addressed. I believe this is the reason why your
+configuration is not working as intended.
+[fpsusername]
+fpsusername 11/28/2025 6:33 PM
+https://www.artstation.com/artwork/J91ZxD Source if you want to try
+Lost In Between, Alena Aenami
+Cover art trxxshed - Retro Colours Instagram -
+www.instagram.com/aenami.art Patreon - https://www.patreon.com/aenamiart
+NFT - https://foundation.app/Aenami
+[]
+[fpsusername]
+fpsusername 11/28/2025 5:30 PM
+Single colors are fine, the color palette test looks okay, but images
+and it doesn't work well. Edit: it starts doing weirdly when I disable
+RGB calibration, to calibrate all colours (edited)
+11/28/2025 5:30 PM
+Nah it's not that. There's more wrong to it unfortunately. Not sure if
+it's the LED strip or something else at play
+[fpsusername]
+fpsusername 11/28/2025 5:06 PM
+I mean, where did the yellow on top come from (also don't mind the color
+accuracy, my phone can barely pick up the LED colors) (edited)
+[IMG_20251128_170619.jpg]
+ IMG_20251128_170619.jpg
+258.43 KB External
+11/28/2025 5:06 PM
+I updated the pushmaster with the newest toolchain and newest
+actions-gh-release, bad idea. With the R&G color swap, individual colors
+show up correctly, but on some images, weird things happen
+November 27, 2025
+[astur3l]
+[] fpsusername I decreased uint8_t green to 0x50, but I see no visual
+difference. When I put on the color effect, I...
+astur3l 11/27/2025 10:36 AM
+yeah sry i was wrong, its for white calibration only 
+ 1
+[fpsusername]
+[] astur3l hyperhdr led driver calibration should do
+<https://github.com/awawa-dev/HyperSerialPico/blob/571c987...
+fpsusername 11/27/2025 9:30 AM
+I decreased uint8_t green to 0x50, but I see no visual difference. When
+I put on the color effect, I still need to do 255 on red, 127 on green
+to get yellow on my wall. If I set both to 255, then it's yellow with a
+lot of green. But the R/G swap in the struct works fine (edited)
+[fpsusername]
+[] max_rez here's a good example of the sort of difficulties
+fpsusername 11/27/2025 7:58 AM
+There are thousands of powersupply manufacturers. Meanwell is one that
+can be trusted with quality. You just have to name your specifications
+and look at the options. E.g. I took a 12V 60W psu (60/12=5 Ampere) and
+chose one with a fitting plug.
+[satdx62]
+[] max_rez don't have to flash firmware on one of them
+satdx62 11/27/2025 12:23 AM
+I mentioned that I personally prefer the solution with the RP4020 and
+HyperSerialPico as LED controllers, as I believe it achieves the best
+results. Yes, you have to copy the firmware onto it. However, it is very
+easy to do. You can also use the simpler version if you prefer, without
+flashing. (edited)
+[max_rez]
+max_rez 11/27/2025 12:18 AM
+don't have to flash firmware on one of them
+11/27/2025 12:18 AM
+why do you like the RP2040 instead of the one I pasted earlier?
+[satdx62]
+[] max_rez here's a good example of the sort of difficulties
+satdx62 11/27/2025 12:16 AM
+Yes, that's true, but you can see which components belong together from
+the connection diagrams. Most parts are also available at low prices on
+Aliexpress. A few ready-made solutions are actually only available in
+Europe. However, you can also order these for the US. I have personally
+tested all the hardware components mentioned in the description. I
+personally prefer the solution based on the HyperSerialPico on RP2040
+and the SK6812RGBW CW 60 LEDs/m, the 5-volt version. Everything is
+available on Aliexpress at very reasonable prices. See:
+https://github.com/satgit62/How-to-Install-and-Set-Up-Ambilight-on-LG-webOS#adafruit-itsybitsy-rp2040-with-level-shifter-using-gpio14-output_data_pin-on-output-5.
+I recommend these power supplies: MEAN WELL 1439455 LRS-75-5 AC
+85-264VAC 5V 14A or Mean Well LRS-100-5 Case 5 V/DC/0-18/90W power
+supply
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#power-supply
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[max_rez]
+max_rez 11/27/2025 12:09 AM
+lol. feels stupid spending $13 on that. I could just rip up opne of the
+other cords I have lying around
+11/27/2025 12:09 AM
+is this what i want?
+[image.png]
+ image.png
+285.25 KB External
+11/27/2025 12:03 AM
+none of those even look like they are for a screw terminal like the mean
+well power supplies use
+11/27/2025 12:03 AM
+i just want a power cord man. theyve got $10-$50 and different watt and
+it's like 
+11/27/2025 12:02 AM
+here's a good example of the sort of difficulties
+[image.png]
+ image.png
+701.32 KB External
+November 26, 2025
+11/26/2025 11:57 PM
+last thing I want is to solder and glue a bunch of stuff together and
+then it is incompatible haha
+11/26/2025 11:56 PM
+everything that GEmini and the guide say you shouyld get, American
+Amazon has something pretty close, but not exact so it makes me anxious
+if it's gonna work
+11/26/2025 11:56 PM
+if there was a kit of all the parts I'd rather just get that
+11/26/2025 11:55 PM
+that's not true, i only see that one EU one
+11/26/2025 11:55 PM
+> In the hardware section, there is a selection of ready-made LED
+controllers.
+11/26/2025 11:54 PM
+the doc is very thorough, but it's more like a reference. it says
+"here's 50 different ways to accomplish this, pick one and figure it
+out"
+[satdx62]
+[] max_rez It's embarrassing how intimidating this project is. Even
+gathering the materials is hard. Let's say ...
+satdx62 11/26/2025 11:02 PM
+Why does this project seem so daunting? Various solutions are described
+so that everyone can decide for themselves whether they prefer a
+ready-made solution or a DIY project. Everything is described in my
+instructions as far as the hardware is concerned, including the
+connection diagrams and the necessary settings. See the hardware
+section:
+https://github.com/satgit62/How-to-Install-and-Set-Up-Ambilight-on-LG-webOS#ftdi-ft232h-led-controller
+and the settings section:
+https://github.com/satgit62/How-to-Install-and-Set-Up-Ambilight-on-LG-webOS#controller-type-ftdi-ft232h.
+To calculate the output power of the power supply, you must use the WLED
+Calculator:
+https://github.com/satgit62/How-to-Install-and-Set-Up-Ambilight-on-LG-webOS#note-2.
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#power-supply
+and
+https://github.com/satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS#quick-connect-terminal-blocks
+It is up to you whether you want to use connection corners. These can
+also be found in the instructions. However, soldering is preferable. A
+few terminals and a car fuse complete the hardware portfolio. The
+required fuse is suggested in the WLED Calculator. The FT232H requires
+neither firmware nor special drivers and is easy to wire. This manual
+also describes better solutions, of course, but these require more
+software and hardware knowledge. Please note that the FTDI
+implementation is missing in the HyperHDR version installed via the
+Homebrew Channel. You must therefore use the version provided in these
+instructions:
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#to-avoid-errors-please-use-only-this-version-for-these-instructions.
+(edited)
+GitHub - satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS: ...
+Installation instructions and settings for PicCap (hyperion-webos) and
+HyperHDR/Hyperion -
+satgit62/How-to-Install-and-set-up-Ambilight-on-LG-webOS
+[]
+[max_rez]
+max_rez 11/26/2025 9:29 PM
+that means I need 1) a 5m strip of RGBW LEDs 2) a meanwell power supply
+capable of X amps (gemini said 20) 3) ???? do you need a power cord too?
+do you need little weird connecty block things for the power supply?
+maybe some LED-corner-joiner things?>
+11/26/2025 9:27 PM
+It's embarrassing how intimidating this project is. Even gathering the
+materials is hard. Let's say I want to use this controller because it
+seems simple enough: https://www.amazon.com/gp/product/B09KGT5TGJ?psc=1
+HiLetgo FT232H USB to JTAG UART FIFO SPI I2C Adapter High Speed Mul...
+Working voltage: 3.3V-5V Working environment temperature: -40~85 degree
+Supports bus-powered, self-powered and high-power bus-powered USB
+configurations +1.8V (chip core) and +3.3VI/O interface (+5V withstand
+voltage) Use external EEPROM to save operating mode configuration and
+USB descript...
+[]
+[fpsusername]
+[] astur3l did u checkout the git submodules too?:D
+fpsusername 11/26/2025 7:59 PM
+yes, recursively
+[fpsusername]
+fpsusername 11/26/2025 7:59 PM
+yikes
+[image.png]
+ image.png
+17.46 KB External
+[astur3l]
+astur3l 11/26/2025 7:57 PM
+did u checkout the git submodules too?:D
+[fpsusername]
+fpsusername 11/26/2025 7:56 PM
+Yeah, the toolchain was easy to install
+[astur3l]
+[] fpsusername I'm trying to build it, but I don't understand the issue.
+I don't know if I have to set up more than...
+astur3l 11/26/2025 7:55 PM
+why not use just the GH action?
+https://github.com/awawa-dev/HyperSerialPico/wiki btw did u setup
+gcc-arm-none-eabi toolchain? i dont remember it needed extra packages
+[fpsusername]
+fpsusername 11/26/2025 7:55 PM
+Oh wait, apparently github actions are set up already, even on a fork,
+that makes it easier
+[fpsusername]
+[] astur3l hyperhdr led driver calibration should do
+<https://github.com/awawa-dev/HyperSerialPico/blob/571c987...
+fpsusername 11/26/2025 7:49 PM
+I'm trying to build it, but I don't understand the issue. I don't know
+if I have to set up more than cmake and arm gnu gcc toolchain
+[image.png]
+ image.png
+13.57 KB External
+[fpsusername]
+[] astur3l u can use esp32 over serial too, anyway that led strip RGB
+chip has some shitty characteristics
+fpsusername 11/26/2025 12:23 PM
+Yeah. So it's that green is too powerful compared to red and blue at
+~medium brightness, but at full brightness they're all pretty equal. The
+characteristic curve of the green should be toned down a bit
+[astur3l]
+astur3l 11/26/2025 12:17 PM
+i mean the nominal "brightness" would be the lowest luminance of r,g,b
+channels , if u want the closest color accuracy, sk6812 5v have almost
+identical luminance for all channels so doesn't really need color
+correction
+[astur3l]
+[] fpsusername Okay, but doesn't the ESP32 require a stable network
+connection? I prefer to have it running over US...
+astur3l 11/26/2025 12:12 PM
+u can use esp32 over serial too, anyway that led strip RGB chip has some
+shitty characteristics
+ 1
+[fpsusername]
+fpsusername 11/26/2025 12:10 PM
+Okay, but doesn't the ESP32 require a stable network connection? I
+prefer to have it running over USB as is now
+[satdx62]
+[] fpsusername Any idea how I can get it to output correctly? I lowered
+green to 175 to be able to produce a proper...
+satdx62 11/26/2025 11:58 AM
+I'm not sure if this combination of HyperSeialPico/HyperHDR and these
+12-volt LEDs would deliver meaningful output if the driver wasn't
+implemented correctly. If you make adjustments on the software side, it
+will have an impact somewhere else. If you want to use these LEDs, get
+one of the recommended ESP32 chips and flash it with WLED. Then you will
+be able to influence the driver side. You can also use HyperSerial-WLED.
+For this, you need an ESP32 that supports 2 MB speed. (It is best to use
+the ESP32 S2 Mini, as you do not need a separate driver for the LG.)
+(edited)
+[astur3l]
+[] fpsusername Any idea how I can get it to output correctly? I lowered
+green to 175 to be able to produce a proper...
+astur3l 11/26/2025 11:58 AM
+hyperhdr led driver calibration should do
+https://github.com/awawa-dev/HyperSerialPico/blob/571c9879d16319fa6d61df7bee9f97fc3e3d3a6e/include/calibration.h#L59
+, hyperhdr sends calibration at init if u enable (or change at source)
+ 1
+[fpsusername]
+fpsusername 11/26/2025 11:31 AM
+Any idea how I can get it to output correctly? I lowered green to 175 to
+be able to produce a proper yellow color, but when green is on display
+(e.g. picture of grass), then the color is not really present. I already
+lowered white output to 20% (some colors were washed out before at 60%,
+and white is still good at 20%)
+[astur3l]
+[] fpsusername Hmm, perhaps the LEDs are crappy, or well, not that
+balanced. To get yellow I must half the green po...
+astur3l 11/26/2025 11:27 AM
+"balancing" is purely sw based, usually by the led driver, since each
+channel/color on different led strips have different luminance
+November 25, 2025
+[fpsusername]
+fpsusername 11/25/2025 8:57 PM
+What would be cool is if hyperhdr could incorporate a "reflection
+surface color" feature. My wall color RAL9010, so it's a bit warm white
+compared to RAL9016
+11/25/2025 8:50 PM
+Or actually it has to be lowered for yellow, but to see green it needs
+to be up. Difficult to adjust
+[fpsusername]
+fpsusername 11/25/2025 8:40 PM
+Hmm, perhaps the LEDs are crappy, or well, not that balanced. To get
+yellow I must half the green power.
+[astur3l]
+[] fpsusername It's not aligned in the main source code either though
+astur3l 11/25/2025 2:20 PM
+hah, oh yeah, its RGBW in the original code too in ctor, anyway it
+"just" copies the struct into DMA, so changing field order should work ,
+magic happens here
+https://github.com/awawa-dev/HyperSerialPico/blob/571c9879d16319fa6d61df7bee9f97fc3e3d3a6e/include/leds.h#L411
+and
+https://github.com/awawa-dev/HyperSerialPico/blob/master/include/leds.h#L546
+ 2
+[fpsusername]
+fpsusername 11/25/2025 1:54 PM
+It's not aligned in the main source code either though (edited)
+ 1
+[astur3l]
+[] fpsusername I only paid €13 for 4 meters, so honestly not that bad.
+They work fine with the right color settings...
+astur3l 11/25/2025 1:36 PM
+dirty quick hack: just change the ColorGrbw struct fields order (or add
+new typedef)
+https://github.com/awawa-dev/HyperSerialPico/blob/master/include/leds.h#L119
+here like
+        uint8_t R;
+        uint8_t W;
+        uint8_t G;
+        uint8_t B;
+     fixed (it was RWBG, now RWGB)
+    if u get warn/error about the ctor,u need to align the order there too like:
+    cpp
+        ColorGrbw(uint8_t gray) :
+            R(gray), W(gray), G(gray), B(gray)
+        {
+        };
+        ColorGrbw() : R(0), W(0), G(0), B(0)
+        {
+        };
+(edited)
+ 1  1
+[fpsusername]
+fpsusername 11/25/2025 11:08 AM
+I only paid €13 for 4 meters, so honestly not that bad. They work fine
+with the right color settings. I'll see if I can create a modified HSP
+firmware
+ 1
+[satdx62]
+[] fpsusername So from the looks of it, the default for SK6812W (taken
+from 5V) should be: RGBW The post on the WLE...
+satdx62 11/25/2025 11:04 AM
+The fact is that these LEDs are junk. Either they need to have their own
+HyperSerial/HyperSerialPico firmware for this purpose, or they need to
+get/build a cheap WLED controller.
+ 1
+[fpsusername]
+fpsusername 11/25/2025 10:38 AM
+So from the looks of it, the default for SK6812W (taken from 5V) should
+be: RGBW The post on the WLED forum (for 12V): RWGB (RBG +W and swap B
+and W) But that would still mean that red is not swapped, which
+contradicts with my issue where I have to swap Red and Green. And to
+support my case, when I checked each individual color using the effects,
+only R and G were swapped, Blue was showing up fine. So I think that
+HyperSerialPico would require an adjustment. I'm not sure if my HyperHDR
+workaround (by swapping green and red in the imaging settings) has any
+negative effects (edited)
+[fpsusername]
+fpsusername 11/25/2025 10:13 AM
+Will check tonight. Thanks
+[satdx62]
+[] fpsusername It didn't survive the reboot . In fact, now when I try
+full red, I get green. So R and G are indeed ...
+satdx62 11/25/2025 10:13 AM
+After doing some research, I found out that even people who use the
+12-volt version of the SK6812RGBW with the WLED controller get the wrong
+colors with the default “GRB” color order. It turns out that you have to
+select the “Color Order RBG” and “Swap to W & B” options in the WLED
+settings (latest version). See:
+https://wled.discourse.group/t/sk6812-12v-not-showing-correct-color/4663/3.
+However, I don't know for sure, as I don't have these LEDs to test
+whether everything works correctly with “RBG” and HyperSerialPico.
+Otherwise, you would have to check whether HyperSerialPico could be
+recompiled. See:
+https://github.com/awawa-dev/HyperSerialPico/blob/master/include/calibration.h#L29.
+You would have to try it out to see if that is sufficient without making
+any changes to “leds.h”. See also:
+https://github.com/awawa-dev/HyperSerialPico/blob/master/include/leds.h.
+You could also ask the developer how to implement these 12-volt
+SK6812RGBW LEDs in HyperSerialPico. (edited)
+HyperSerialPico/include/calibration.h at master · awawa-dev/HyperS...
+High-speed Adalight USB serial LED driver implementation for Raspberry
+Pi Pico RP2040. Support for sk6812/ws2812b/apa102 and others using Rpi
+multi-core, DMA, PIO, SPI and parallel output. - awawa-...
+[]
+[satdx62]
+[] fpsusername It didn't survive the reboot . In fact, now when I try
+full red, I get green. So R and G are indeed ...
+satdx62 11/25/2025 12:01 AM
+Hi, it really looks as if the RGB byte order on the chip of the 12-volt
+LEDs has swapped green with red. I'll do some research tomorrow.
+November 24, 2025
+[fpsusername]
+fpsusername 11/24/2025 9:28 PM
+It didn't survive the reboot . In fact, now when I try full red, I get
+green. So R and G are indeed swapped on my led strip
+[satdx62]
+[] fpsusername I honestly don't know what happened but now it works
+correctly on capture as well. I'll try it with ...
+satdx62 11/24/2025 9:25 PM
+I had never experienced or heard of anything like this before! But if it
+works like this, then leave it as it is.
+[fpsusername]
+fpsusername 11/24/2025 9:24 PM
+I honestly don't know what happened but now it works correctly on
+capture as well. I'll try it with a full reboot and see if it still
+works correctly. Magic
+11/24/2025 9:22 PM
+So it's only doing it incorrectly with the actual screen capture
+information
+[fpsusername]
+[] satdx62 But that's not normal! What happens in the normal setting
+when you send static colors from the “Effe...
+fpsusername 11/24/2025 9:20 PM
+That works correctly. I ofcourse reverted the red and green swap
+[satdx62]
+[] fpsusername Doing this actually solves the issue, basically swapping
+red and green
+satdx62 11/24/2025 9:17 PM
+But that's not normal! What happens in the normal setting when you send
+static colors from the “Effects” menu to the LEDs yourself? >Red, green,
+blue. Are they displayed correctly?
+[fpsusername]
+fpsusername 11/24/2025 9:14 PM
+Doing this actually solves the issue, basically swapping red and green
+[Screenshot_20251124-211257_com.vivaldi.browser.png]
+ Screenshot_20251124-211257_com.vivaldi.browser.png
+107.38 KB External
+[satdx62]
+[] fpsusername But unfortunately the colors show up wring without ever
+touching the RGB setting
+satdx62 11/24/2025 9:13 PM
+Then there is something wrong with the LEDs.
+[fpsusername]
+fpsusername 11/24/2025 9:12 PM
+But unfortunately the colors show up wring without ever touching the RGB
+setting
+[satdx62]
+[] fpsusername Figured that out when it was showing up with nv12
+disabled
+satdx62 11/24/2025 9:11 PM
+NV12 must be enabled.
+[fpsusername]
+fpsusername 11/24/2025 9:11 PM
+Figured that out when it was showing up with nv12 disabled
+11/24/2025 9:10 PM
+Oh my god. I forgot to enable hdr to sdr tonemapping
+ 1
+[satdx62]
+[] fpsusername Back up and running, but hyperhdr receives a black
+screen. Perhaps reinstall piccap?
+satdx62 11/24/2025 9:10 PM
+PicCap is running, 59.68 frames are displayed in the lower info bar,
+which is sent to HyperHDR. Send HyperHDR log. What can you see in the
+performance overview?
+[fpsusername]
+fpsusername 11/24/2025 9:03 PM
+(no content)
+[IMG_20251124_210304.jpg]
+ IMG_20251124_210304.jpg
+218.23 KB External
+11/24/2025 9:02 PM
+Back up and running, but hyperhdr receives a black screen. Perhaps
+reinstall piccap?
+[Screenshot_20251124-210144_com.vivaldi.browser.png]
+ Screenshot_20251124-210144_com.vivaldi.browser.png
+222.74 KB External
+[satdx62]
+[] fpsusername Odd that they didn't for me, despite the success message.
+Will try again later
+satdx62 11/24/2025 7:47 PM
+You can move it to /home/root/.hyperhdr/ yourself. (edited)
+ lut_lin_tables_hdr.3d.zst
+7.41 MB External
+ lut_lin_tables_dv.3d.zst
+3.35 MB External
+ lut_lin_tables.3d.zst
+9.18 MB External
+ 1
+[fpsusername]
+fpsusername 11/24/2025 7:42 PM
+Odd that they didn't for me, despite the success message. Will try again
+later (edited)
+[image.png]
+ image.png
+3.57 KB External
+[satdx62]
+[] fpsusername It doesn't seem to download the compressed LUTs
+satdx62 11/24/2025 7:41 PM
+The Luts are installed/loaded correctly, just tested.
+[satdx62]
+[] fpsusername It doesn't seem to download the compressed LUTs
+satdx62 11/24/2025 7:35 PM
+Yes, your log stated that no LUTs were available. If compressed, they
+must be located in the directory /home/root/.hyperhdr/.
+[fpsusername]
+fpsusername 11/24/2025 7:30 PM
+It doesn't seem to download the compressed LUTs
+11/24/2025 7:26 PM
+Trying a full reinstallation of hyperhdr
+11/24/2025 7:21 PM
+The luts are actually missing despite me trying to redownload them
+through the hyperhdr interface on the tv
+11/24/2025 7:17 PM
+https://pastebin.com/Eknk9p2r
+2025-11-24T19:15:47.037Z [CORE] TTY is not attached to the log outp...
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[satdx62]
+[] fpsusername Something isn't going right. Hyperhdr spams:
+FLATBUFSERVER] Already requested for LUT
+satdx62 11/24/2025 7:16 PM
+Then I'm sorry, but I really don't know what's wrong anymore. “I'm at my
+wit's end.” A HyperHDR log can still bring light into darkness. Post a
+current one.
+[fpsusername]
+fpsusername 11/24/2025 7:13 PM
+Something isn't going right. Hyperhdr spams: FLATBUFSERVER] Already
+requested for LUT
+[fpsusername]
+fpsusername 11/24/2025 7:05 PM
+I even did a full cold reboot with power removed
+[satdx62]
+[] fpsusername Okay so I did that, but for some reason hyperhdr doesn't
+receive the image captured by piccap, the s...
+satdx62 11/24/2025 7:04 PM
+You must stop and restart the HyperHDR Daemon. If necessary, restart the
+device as well. (edited)
+[fpsusername]
+[] satdx62 I recommend that you reconfigure HyperHDR. To do this, delete
+the file **hyperhdr.db** from the dire...
+fpsusername 11/24/2025 6:58 PM
+Okay so I did that, but for some reason hyperhdr doesn't receive the
+image captured by piccap, the screen remains black, but doesn't say no
+signal
+November 23, 2025
+[fpsusername]
+fpsusername 11/23/2025 4:09 PM
+Will try when I have the time, maybe tomorrow or Tuesday. Thanks for
+looking into the issue.
+[satdx62]
+[] fpsusername Haha, for now nothing else. Just that the rgb order
+resets every boot. Not sure how it can be made s...
+satdx62 11/23/2025 3:30 PM
+I recommend that you reconfigure HyperHDR. To do this, delete the file
+hyperhdr.db from the directory /home/root/.hyperhdr/db/. When
+configuring your Adalight LED controller, leave RGB unchanged under “RGB
+Byte Order” and continue with all other parameters. Then save these
+settings. Everything should then be fine.
+[satdx62]
+[] fpsusername Haha, for now nothing else. Just that the rgb order
+resets every boot. Not sure how it can be made s...
+satdx62 11/23/2025 3:14 PM
+Have you read the developers' response?
+https://github.com/awawa-dev/HyperHDR/discussions/1355#discussioncomment-15048486
+You can ask them questions there. Well, I don't know of any users who
+have to switch to GRB in HyperHDR with HyperSerial or WLED to force the
+nanopixel LEDs to display the correct color.
+RGB byte order in HyperHDR when using the SK6812 RGBW 12-volt versi...
+Hello, A user has reported that colours are displayed incorrectly when
+the &#39;RGB byte order&#39; is set to &#39;RGB&#39; in HyperHDR under
+&#39;Adalight LED Controller&#39;. However, when &#39;G...
+[]
+[fpsusername]
+fpsusername 11/23/2025 2:58 PM
+Haha, for now nothing else. Just that the rgb order resets every boot.
+Not sure how it can be made sticky to be GRB instead of RGB. In the UI
+it's sticky, but the lighting reverts to RGB
+[satdx62]
+[] fpsusername I haven't encountered DRM issues (yet). I didn't test
+netflix. Youtube, plex, hdmi, all work
+satdx62 11/23/2025 2:55 PM
+That's great! What else is bothering you?
+[fpsusername]
+fpsusername 11/23/2025 2:51 PM
+I haven't encountered DRM issues (yet). I didn't test netflix. Youtube,
+plex, hdmi, all work
+11/23/2025 2:51 PM
+Content via hdmi works fine (e.g. nintnedo switch)
+[fpsusername]
+[] fpsusername <@917488160580182068> another question, this more
+regarding piccap on webos 5.4. I know piccap can't...
+fpsusername 11/23/2025 2:50 PM
+This is what happens when UI is disabled with 192x108 resolution. When
+playing video content it works fine, just not UI. Increasing to 2xx by
+144 and enabling UI it captures all just fine
+[satdx62]
+[] fpsusername It wouldn't be bad without UI capture, but the issue is
+that hyperhdr receives garbage resulting in ...
+satdx62 11/23/2025 2:48 PM
+What now? I don't understand what the problem is. If UI capture no
+longer works at a lower resolution where video capture works fine, that
+means to me that your TV doesn't have enough resources to process both
+applications properly. I don't use UI capture, even though it works fine
+for me. I don't see any benefit in it and therefore don't want to cause
+unnecessary overload. I don't know how it works for you with a
+resolution of 160 x 90. You could test it out. I also don't know what it
+would be like if you simply watched your videos via HDMI. Then there
+shouldn't be any DRM issues either.
+[fpsusername]
+fpsusername 11/23/2025 2:34 PM
+Unless at x144 UI capture remains black, not tested
+11/23/2025 2:34 PM
+It wouldn't be bad without UI capture, but the issue is that hyperhdr
+receives garbage resulting in flickering lights
+[fpsusername]
+[] satdx62 What recording settings did you try? Are the menus from LG
+otherwise captured correctly and can you ...
+fpsusername 11/23/2025 2:31 PM
+Increased it to the x144 resolution and the UI captures
+ 1
+[satdx62]
+[] caracolo0234 Hi everybody..Does this darker strip mean that the TV's
+LED strip is off and not working, or is it s...
+satdx62 11/23/2025 1:46 PM
+Check for LCD burn-in or branding by watching the following video on
+your TV. https://www.youtube.com/watch?v=_XHeUH1aY6E and
+https://www.youtube.com/watch?v=ZgzUCR6nQQw (edited)
+JB97 - Tech & Gadgets
+OLED Uniformity and Greyscale Test - Check your TV for Burn In and ...
+This video is a short test to check for OLED burn-in, colour uniformity
+and banding. For me the red gave me clear indications of burn in on a LG
+65C6 OLED, newer OLED TV's are definitely much better at resisting burn
+in and I also checked on an LG 55CX OLED and an LG 77C1 OLED which were
+perfect. What is burn-in? Burn-in occurs when I leave st...
+[] Watch video
+USENIX media
+LCD Backlight Grey Uniformity Test
+[] Watch video
+ 1
+[caracolo0234]
+caracolo0234 11/23/2025 12:12 PM
+(no content)
+[IMG_20251123_120634.jpg]
+ IMG_20251123_120634.jpg
+922.61 KB External
+11/23/2025 12:12 PM
+Hi everybody..Does this darker strip mean that the TV's LED strip is off
+and not working, or is it simply a little dimmer due to use?
+[IMG_20251123_120724.jpg]
+ IMG_20251123_120724.jpg
+913.29 KB External
+[caracolo0234]
+[] satdx62 The colors are reversed. **RGB** must be set in HyperHDR.
+However, the "color order" in the WLED set...
+caracolo0234 11/23/2025 10:16 AM
+I change color order in Wled settings and i set RGB in HyperHDR
+settings...now looks perfect  Thanks (edited)
+ 1  1
+November 22, 2025
+[fpsusername]
+fpsusername 11/22/2025 11:57 PM
+192x108 is what I use with the libvtcapture (the other one doesn't
+work). It's an lg 43un7300 TV. I'll try tomorrow with other resolutions.
+[satdx62]
+[] fpsusername <@917488160580182068> another question, this more
+regarding piccap on webos 5.4. I know piccap can't...
+satdx62 11/22/2025 10:44 PM
+What recording settings did you try? Are the menus from LG otherwise
+captured correctly and can you see them in the HyperHDR preview screen?
+If so, then everything should be fine. I think I heard about a bug where
+UI Capture didn't work. In that case, it was due to an incorrect
+resolution in PicCap. You can test the resolutions yourself one by one.
+(edited)
+[fpsusername]
+fpsusername 11/22/2025 8:35 PM
+@satdx62 another question, this more regarding piccap on webos 5.4. I
+know piccap can't capture DRM on some newer models, but for some reason,
+it can't capture the UI from Youtube and Plex. When I start a video it
+does, but the UI remains either black on the video feed (fine by me) or
+it glitches out and the lights go crazy. Any idea? I tried with both
+capture settings enabled on piccap but it still does this.
+[Screenshot_20251122-151610_io.homeassistant.companion.android.png]
+ Screenshot_20251122-151610_io.homeassistant.companion.android.png
+319.65 KB External
+[satdx62]
+[] fpsusername I mean, I don't see a problem of using GRB, but the issue
+is that internally it resets to RGB, while...
+satdx62 11/22/2025 8:29 PM
+I keep wondering why your setup works correctly with GRB instead of RGB.
+It's a bit confusing because in the WLED app “LED Settings,” the RGB
+byte order is also set to GRB, but in HyperHDR you still have to select
+RGB to get the right colors. The same should theoretically also be the
+case internally in the HyperSerial/HyperSerialPico driver, but only the
+developer himself can answer this question with certainty. That's why I
+asked awawa-dev the question.
+[fpsusername]
+fpsusername 11/22/2025 8:12 PM
+If I need to make a simple adjustment of the itsybitsy firmware to have
+that fixed, then it's also not a big deal, as long as it uses the right
+one for the led strip I have
+11/22/2025 8:12 PM
+I mean, I don't see a problem of using GRB, but the issue is that
+internally it resets to RGB, while on the hyperhdr frontent it remains
+on GRB, so every boot is incorrectly configured
+[satdx62]
+[] fpsusername Click to see attachment
+satdx62 11/22/2025 8:02 PM
+Thanks, it looks exactly like my SK6812RGBW-CW 5-volt version. With the
+“RGB” setting in HyperHDR, it works perfectly for me and countless other
+users.
+[fpsusername]
+fpsusername 11/22/2025 7:57 PM
+(no content)
+[IMG_20251122_195641.jpg]
+ IMG_20251122_195641.jpg
+383.68 KB External
+ 1
+11/22/2025 7:55 PM
+(no content)
+[IMG_20251122_195511.jpg]
+ IMG_20251122_195511.jpg
+368.97 KB External
+[satdx62]
+[] fpsusername Oh thanks!
+satdx62 11/22/2025 7:50 PM
+Can you take a photo of your LED strip? Not the whole thing, just a
+small section.
+[fpsusername]
+fpsusername 11/22/2025 7:28 PM
+Oh thanks!
+[satdx62]
+[] fpsusername It was on rgb by default. I turned on the tv and it
+worked. At first I didn't notice anything wrong ...
+satdx62 11/22/2025 7:16 PM
+I reported your problem to the developer. See:
+https://github.com/awawa-dev/HyperHDR/discussions/1355. Here is your
+chance to join the discussion and ask developers your own questions!
+(edited)
+[fpsusername]
+[] satdx62 Did you use the RGB byte order “GRB” from the start and
+achieve the correct colors? Overwrite the “A...
+fpsusername 11/22/2025 6:36 PM
+It was on rgb by default. I turned on the tv and it worked. At first I
+didn't notice anything wrong with the colors (mainly blue/purple from
+the screensavers), but once I saw orange it was wrong. I cycled through
+the options and found GRB to be correct
+[satdx62]
+[] fpsusername Yes, I did flash that one
+satdx62 11/22/2025 4:28 PM
+Did you use the RGB byte order “GRB” from the start and achieve the
+correct colors? Overwrite the “Adalight” controller with “File,” save,
+and set “Adalight” again without changing the RGB color order. (edited)
+[fpsusername]
+fpsusername 11/22/2025 4:21 PM
+Yes, I did flash that one
+[satdx62]
+satdx62 11/22/2025 4:12 PM
+This is the correct firmware for Adafruit ItsyBitsy RP2040.
+ HyperSerialPico_sk6812Cold.uf2
+92 KB External
+[satdx62]
+[] fpsusername I just tried, set to RGB and rebooted. Same issue, orange
+on screen is green light from the leds.
+satdx62 11/22/2025 4:05 PM
+That's strange. Didn't you flash HyperSerialPico for SK6812 cold white?
+According to awawa-dev, the RGB color order in HyperHDR should be RGB.
+The 5-volt or 12-volt version shouldn't matter. See:
+https://github.com/awawa-dev/HyperSerialPico
+GitHub - awawa-dev/HyperSerialPico: High-speed Adalight USB serial ...
+High-speed Adalight USB serial LED driver implementation for Raspberry
+Pi Pico RP2040. Support for sk6812/ws2812b/apa102 and others using Rpi
+multi-core, DMA, PIO, SPI and parallel output. - awawa-...
+[]
+[fpsusername]
+fpsusername 11/22/2025 3:50 PM
+I just tried, set to RGB and rebooted. Same issue, orange on screen is
+green light from the leds.
+11/22/2025 3:49 PM
+I have 12v sk6812 rgbcw leds
+11/22/2025 3:48 PM
+because the colors show up wrong after the tv booted, on GRB the colors
+seem to be correct.
+[satdx62]
+[] fpsusername And sometimes this happens
+satdx62 11/22/2025 3:26 PM
+Why did you set GRB to adalight in HyperHDR? It should be RGB. Set RGB,
+save, and restart HyperHDR. (edited)
+[fpsusername]
+fpsusername 11/22/2025 3:17 PM
+And sometimes this happens
+[Screenshot_20251122-151610_io.homeassistant.companion.android.png]
+ Screenshot_20251122-151610_io.homeassistant.companion.android.png
+319.65 KB External
+11/22/2025 3:14 PM
+I have to change it to rgb and then back
+11/22/2025 3:14 PM
+(no content)
+[Screenshot_20251122-151425_io.homeassistant.companion.android.png]
+ Screenshot_20251122-151425_io.homeassistant.companion.android.png
+161.76 KB External
+11/22/2025 3:14 PM
+(no content)
+[IMG_20251122_151356.jpg]
+ IMG_20251122_151356.jpg
+231.27 KB External
+[fpsusername]
+[] satdx62 The colors are reversed. **RGB** must be set in HyperHDR.
+However, the "color order" in the WLED set...
+fpsusername 11/22/2025 3:13 PM
+I have this problem that the colors reset to rgb even though I have it
+set to grb
+[satdx62]
+[] caracolo0234 https://we.tl/t-rl5M6kUVQy
+satdx62 11/22/2025 1:59 PM
+The colors are reversed. RGB must be set in HyperHDR. However, the
+"color order" in the WLED settings must be set to GRB. Then the color
+reproduction will also be correct. After you have made these settings,
+restart your WLED and HyperHDR. (edited)
+ 1
+[fpsusername]
+fpsusername 11/22/2025 11:27 AM
+Your ledstrip color settings are wrong
+ 1
+[caracolo0234]
+caracolo0234 11/22/2025 11:24 AM
+Video link on WeTransfer.. exceed 10mb límite on this apo
+11/22/2025 11:23 AM
+https://we.tl/t-rl5M6kUVQy
+vid-20251122-105218_vfhPpDsC.mp4
+1 file sent via WeTransfer, the simplest way to send your files around
+the world
+November 20, 2025
+[satdx62]
+[] fpsusername Like here, now it doesn't switch to dark white with
+having a lot of black on screen
+satdx62 11/20/2025 8:29 PM
+Hi, Regarding the question from
+https://discord.com/channels/407937994037919756/974942819707924511/1441141559419605033.
+Well, you can make corrections under “Controller Type” (Controllertyp)
+‘adalight’ in “White channel calibration” and select the correct
+temperature under “Image Processing” and adjust the minimum backlight
+level. You can use the color template for this.
+https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-/raw/refs/heads/main/Colour%20Template.zip
+See
+also:https://github.com/satgit62/Ultimate-HyperHDR-Ambilight-fine-tuning-experience-for-LG-webOS-with-new-LUT-calibration-#hyperhdr-image-processing
+If you cannot achieve good values, you will need to calibrate the LUT
+yourself. (edited)
+ 1
+[fpsusername]
+fpsusername 11/20/2025 8:14 PM
+Like here, now it doesn't switch to dark white with having a lot of
+black on screen
+[IMG_20251120_201348.jpg]
+ IMG_20251120_201348.jpg
+307.62 KB External
+[fpsusername]
+fpsusername 11/20/2025 8:05 PM
+I notice that the ambilight with hyperhdr doesn't always respect the
+change to black. E.g. on youtube when you exit out of a video, the last
+seen colors remains active. When you watch a video in the small
+thumbnail, the effect starts. A bit weird given that it's on a very
+small part of the screen
+November 19, 2025
+[satdx62]
+satdx62 11/19/2025 4:55 PM
+Hello, As this forum is organised by topic, posts relating to 'root'
+should be posted in the 'rootmytv' section rather than here. This thread
+is primarily used by users with questions about PiCap and
+Hyperion/HyperHDR. This helps to keep the topic clear and prevents it
+from becoming mixed up with other topics. In the 'rootmytv' section,
+however, there are competent developers who can answer most questions
+about rooting and provide active support. (edited)
+ 1
+[kosttt]
+kosttt 11/19/2025 4:28 PM
+Gonna test it as soon as I get the new g5
+[kosttt]
+[] zazzcode How does this works then? I can flash the root to the chip
+via like an ch431a?
+kosttt 11/19/2025 4:27 PM
+I have actually no idea about the method, but it's from the authors of
+webos-forums so I believe it to be legit
+[zazzcode]
+[] kosttt Some russians sell the root on telegram even on last
+firmwares, have no idea how they do it
+zazzcode 11/19/2025 4:01 PM
+How does this works then? I can flash the root to the chip via like an
+ch431a?
+[kosttt]
+[] zazzcode Would this work on one of the latest 2025 models with the
+latest WebOS?
+kosttt 11/19/2025 9:52 AM
+Some russians sell the root on telegram even on last firmwares, have no
+idea how they do it
+November 18, 2025
+hellobox. 11/18/2025 10:49 PM
+It's something I want to try someday. But I have to learn how to reball
+BGAs first
+11/18/2025 10:47 PM
+You may be able to modify the writable filesystems. Not sure if they're
+encrypting eMMC these days
+11/18/2025 10:46 PM
+Probably. No guarantees... There could be anti-rollback stuff, which may
+or may not be a problem depending on how far back you need to go and
+whether certain components were updated
+[zazzcode]
+[] satdx62 If you mean Enabling debug and getting root on LG webOS by
+modifying NVM, then take a look here:http...
+zazzcode 11/18/2025 10:43 PM
+Would this work on one of the latest 2025 models with the latest WebOS?
+[] zazzcode If it would be possible to archive root access throught an
+Hardware Flash
+hellobox. 11/18/2025 10:42 PM
+You could probably downgrade to a vulnerable firmware version
+[satdx62]
+[] zazzcode If it would be possible to archive root access throught an
+Hardware Flash
+satdx62 11/18/2025 10:39 PM
+If you mean Enabling debug and getting root on LG webOS by modifying
+NVM, then take a look
+here:https://gist.github.com/throwaway96/827ff726981cc2cbc46a22a2ad7337a1
+Enabling debug and getting root on LG webOS by modifying NVM
+Enabling debug and getting root on LG webOS by modifying NVM - notes.md
+[]
+[zazzcode]
+hellobox. What do you mean exactly?
+zazzcode 11/18/2025 10:34 PM
+If it would be possible to archive root access throught an Hardware
+Flash
+[] zazzcode Wouldnt it be possible to Hardmod a LG TV?
+hellobox. 11/18/2025 10:32 PM
+What do you mean exactly?
+[zazzcode]
+[] satdx62 Unfortunately, PicCap (Hyperion WebOS) cannot be used without
+root privileges. This also applies if ...
+zazzcode 11/18/2025 8:12 PM
+Wouldnt it be possible to Hardmod a LG TV?
