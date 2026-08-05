@@ -1,0 +1,2083 @@
+May 27, 2025
+hellobox. 05/27/2025 11:22 PM
+You would need some kind of compatibility layer that I don't think
+exists
+[] ccarnell98 or load any library e.g. libEGL.so (32-bit) on a 64-bit
+binary
+hellobox. 05/27/2025 11:22 PM
+Wait, how would that work?
+[ccarnell98]
+ccarnell98 05/27/2025 11:08 PM
+If that's possible
+05/27/2025 11:04 PM
+or load any library e.g. libEGL.so (32-bit) on a 64-bit binary
+05/27/2025 11:03 PM
+e.g. ERROR: ld.so: object '/lib/libSegFault.so' from /etc/ld.so.preload
+cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+05/27/2025 11:03 PM
+So my fellow LG(ers). As the kernel is compiled with CONFIG_COMPAT
+(presumably), how would you go about loading a 32-bit ELF library on a
+aarch64 compiled binary?
+hellobox. 05/27/2025 6:30 PM
+You should double check all of that though
+05/27/2025 6:30 PM
+Not sure about k7lp (maybe 32), but I think k8* is 64
+05/27/2025 6:29 PM
+(guessing) looks like m3r is 32-bit but lm21a is 64
+05/27/2025 6:28 PM
+I believe LX switched to 64-bit kernels in 2019
+ 1
+[ccarnell98]
+ccarnell98 05/27/2025 6:18 PM
+@Mariotaku so uname -m reports aarch64?
+[mariotaku]
+[] ccarnell98 Anybody know earliest aarch64 kernel usage (at least webOS
+4 as aarch64 was added to glibc in 2.24??...
+mariotaku 05/27/2025 5:29 PM
+webOS 4.5 for my TV, what are you going to do?
+ 1
+[ccarnell98]
+ccarnell98 05/27/2025 2:38 PM
+Anybody know earliest aarch64 kernel usage (at least webOS 4 as aarch64
+was added to glibc in 2.24??) 32-bit userland on 64-bit kernel (edited)
+[a6oo]
+a6oo 05/27/2025 1:37 PM
+IA -> Inputstream adaptive. If there is no softfp .so that explains why
+the loading failed. IA needs to support L1 libraries in linux to get it
+working with the .so shipped with the TV.
+[ccarnell98]
+ccarnell98 05/27/2025 1:10 PM
+armv7a? well I would assume they use L1 for netflix
+[ccarnell98]
+[] a6oo The 32 bit binary won't help at all. I tried months ago to load
+the correct 32bit libwidevinecdm.so ...
+ccarnell98 05/27/2025 12:21 PM
+IA?
+[ccarnell98]
+ccarnell98 05/27/2025 12:00 PM
+@A600 was the libwidevinecdm.so softfp? According to
+https://github.com/emilsvennesson/script.module.inputstreamhelper/issues/554
+there is no softfp option
+Detect soft-float ARM platforms · Issue #554 · emilsvennesson/scr...
+Libwidevinecdm.so on ARMv71 is using hard-float ABI (readelf -a
+libwidevinecdm.so | grep Flags). This cannot be loaded on a platform
+using softfp. Kodi fails with a cryptic error message. 2023-12-0...
+[]
+[a6oo]
+a6oo 05/27/2025 11:16 AM
+The 32 bit binary won't help at all. I tried months ago to load the
+correct 32bit libwidevinecdm.so with inputstream.adaptive and couldn't
+get it to load (dlopen error). The most I could was to load the widevine
+library shipped with the TV (libwidevine-wrapper.so) but since IA
+doesn't support L1 for linux... (edited)
+[ccarnell98]
+ccarnell98 05/27/2025 11:04 AM
+Found someone else with the same issue, hopefully the maintainer can fix
+it:
+https://github.com/emilsvennesson/script.module.inputstreamhelper/issues/589
+inputstreamhelper downloaded wrong arch of libwidevinecdm.so? · Is...
+I started the Netflix addon after a long time, and I was prompted to
+update libwidevinecdm, so I followed the wizard. Once finished, I
+couldn&#39;t play the stream and I found this in the log file:...
+[]
+05/27/2025 10:58 AM
+Yup it downloaded the arm64 binary
+    libwidevinecdm.so: ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), dynamically linked, BuildID[sha1]=109fbe02a16653d8c9d55344548a1096c5a2583f, stripped
+[ccarnell98]
+ccarnell98 05/27/2025 10:47 AM
+@Mariotaku Not quite sure now. I tried a different catch up TV service
+and I get with that:
+    2025-05-27 09:46:16.371 T:7694    error <general>: AddOnLog: inputstream.adaptive: [WV-CDM-Library] Failed to load library: /media/developer/apps/usr/palm/applications/org.xbmc.kodi/.kodi/cdm/libwidevinecdm.so: wrong ELF class: ELFCLASS64
+    2025-05-27 09:46:16.371 T:7694    error <general>: AddOnLog: inputstream.adaptive: Unable to load widevine shared library (/media/developer/apps/usr/palm/applications/org.xbmc.kodi/.kodi/cdm/libwidevinecdm.so)
+[ccarnell98]
+ccarnell98 05/27/2025 10:04 AM
+@wsnipex Where does kodi download it's addons from? I've looked at
+https://mirrors.kodi.tv/addons/omega/, can't see any for webOS.
+inputstream.rtmp is where I'm at for IPTV Manager as it's not available
+05/27/2025 9:58 AM
+@Mariotaku Oh yes CDM. Streaming now. I'll try some more content. The
+addon has a lot of issues with everything I tried but at least the
+developer is reponsive 
+[mariotaku]
+[] ccarnell98 <@225167450713358338> Thanks. I've just tried catch up tv
+and more addon (after they fixed sky news ...
+mariotaku 05/27/2025 9:57 AM
+You mean CDM? Sounds amazing
+[ccarnell98]
+ccarnell98 05/27/2025 9:55 AM
+@Mariotaku Thanks. I've just tried catch up tv and more addon (after
+they fixed sky news live TV), it prompted for widevine CRM, it
+downloaded, scanned, and it's now working. At least I have video and
+sound  (edited)
+May 26, 2025
+[mariotaku]
+[] ccarnell98 Any changes to this? I need iptv addons (rtmp is not
+included at least so far). I suppose I could co...
+mariotaku 05/26/2025 5:47 PM
+Widevine library on webOS may be a bit different compared to others, I
+remember the Kodi team tried and didn't get it to work
+[ccarnell98]
+wsnipex they should work, but no DRM content yet and we don't yet have
+the addons for download from the repo...
+ccarnell98 05/26/2025 1:17 PM
+Any changes to this? I need iptv addons (rtmp is not included at least
+so far). I suppose I could compile them but ask first save the hassle 
+May 25, 2025
+[frigoritific]
+frigoritific 05/25/2025 9:21 PM
+Yes, I even have a rpi (1) laying around, will probably set it up 
+pretty happy with the setup with PPLGPwn+LG input hook to jailbreak my
+ps4 now 
+[] frigoritific If you dont have a router or pi-hole able to block it
+from checking for updates you are out of luck....
+ruffy2311 05/25/2025 9:17 PM
+I entered an LG blocklist in Unbound (opnSense), but the TV was still
+able to check for updates. With the tip from the FAQ, at least the
+message is gone for the time being.
+ 1
+hellobox. 05/25/2025 9:16 PM
+well, $20
+05/25/2025 9:13 PM
+you can get an SBC powerful enough to run a DNS server for very cheap
+[frigoritific]
+ruffy2311 Is there a way to suppress the update message of the TV
+(65OLEDC8) via Homebrew? The update itself ...
+frigoritific 05/25/2025 9:11 PM
+If you dont have a router or pi-hole able to block it from checking for
+updates you are out of luck. Best i could do was having Home Assistant
+always send 5 timed back button presses to back out of the notification
+of new update available  Didn't work out for me because it also sent
+the button presses to the Apple TV via hdmi cec, so I'll probably just
+risk the update again, and hopefully set ut a pihole before their next
+update if there ever is another one for the 2017 B7 
+ruffy2311 Is there a way to suppress the update message of the TV
+(65OLEDC8) via Homebrew? The update itself ...
+hellobox. 05/25/2025 7:45 PM
+it's in # unknown-channel
+ 1
+ruffy2311 05/25/2025 7:44 PM
+Is there a way to suppress the update message of the TV (65OLEDC8) via
+Homebrew? The update itself is blocked, but every time the TV is
+started, a message appears stating that the update has failed and asking
+whether it should be tried again. That's annoying. (edited)
+[mariotaku]
+Deleted User Thanks! I know that,but I was thinking if it needs some
+kind of extending period
+mariotaku 05/25/2025 2:22 PM
+No, it is semi-permanent unless you reset the TV. Dev mode should
+definitely be removed after you have root with dejavuln (edited)
+Deleted User 05/25/2025 10:02 AM
+Thanks! I know that,but I was thinking if it needs some kind of
+extending period
+[mariotaku]
+Deleted User If I used the method where I play some files on the
+TV(music app)do I still need to extend somehow t...
+mariotaku 05/25/2025 8:55 AM
+The "music thingy" (DejaVuln) doesn't need dev mode
+Deleted User 05/25/2025 7:35 AM
+If I used the method where I play some files on the TV(music app)do I
+still need to extend somehow the developer mode?
+May 24, 2025
+[yolofant]
+yolofant 05/24/2025 12:03 AM
+yeah, it doesn't work, I came to the same conclusion after some thought
+May 23, 2025
+[smx2460]
+smx2460 05/23/2025 9:53 PM
+If you make hooks in threaded stuff, you'd need to use the host libcs
+threading functions to deal with them
+05/23/2025 9:53 PM
+Is that you'd basically be more limited with shared libraries too
+05/23/2025 9:52 PM
+Another thing worth mentioning
+05/23/2025 9:51 PM
+The backport complexity curve would have a sudden jump
+05/23/2025 9:50 PM
+And going there would mean dealing with Linux 2.6 which is a bit oof
+05/23/2025 9:50 PM
+Wouldn't work on MIPS ones but so far nobody has complained 
+05/23/2025 9:50 PM
+If it works there, it means it would work on any TV newer than 2013
+05/23/2025 9:49 PM
+So in the end it makes more sense to target the version of glibc I had
+on my Netcast 4 TV
+05/23/2025 9:49 PM
+Which is less ideal
+05/23/2025 9:49 PM
+You'd know only at runtime if a symbol is missing
+05/23/2025 9:49 PM
+Then every exported musl functions would redirect to glibc, but you'd be
+unable to tell ahead of time if the program would work (edited)
+05/23/2025 9:48 PM
+Perhaps you could make a shim version of musl that delegates everything
+to glibc via hacks (say having a resolver built with glibc and using it
+to dlsym everything)
+05/23/2025 9:46 PM
+So I had to give Mono a different allocator, which couldn't then use
+pointers allocated with the other one in a safe manner (edited)
+05/23/2025 9:46 PM
+And then Mono expected aligned allocations in a way that LG wasn't doing
+05/23/2025 9:45 PM
+Similar stuff happened when I ported Mono to Netcast 4 (edited)
+05/23/2025 9:44 PM
+And you must be very careful about handling pointers between them
+05/23/2025 9:44 PM
+You have 2 heaps, 2 dynamic libraries lists, 2 different symbol tables
+05/23/2025 9:43 PM
+But then you have 2 separate worlds
+05/23/2025 9:43 PM
+Using different libcs is possible and I made a PoC with ezinject where
+you can inject into a static binary using no imports (edited)
+05/23/2025 9:43 PM
+Which uses global structures (linked lists, symbol buckets, whatnot)
+05/23/2025 9:42 PM
+Let's not talk about libdl and the management of loaded libraries
+05/23/2025 9:42 PM
+And then its management is libc specific
+05/23/2025 9:42 PM
+The initial one passed by the kernel is typically copied somewhere else
+05/23/2025 9:41 PM
+Same goes for environ
+05/23/2025 9:41 PM
+And pass them to the program
+05/23/2025 9:41 PM
+I remember this because I had to modify ezinject to account for them
+05/23/2025 9:41 PM
+RTSIGMIN ... RTSIGMAX iirc
+05/23/2025 9:40 PM
+Some use realtime signals
+05/23/2025 9:40 PM
+Different libcs use the TLS differently
+05/23/2025 9:40 PM
+The way they work, where they store the context
+05/23/2025 9:40 PM
+The same could be via pthreads
+05/23/2025 9:40 PM
+The answer is that you'll likely crash
+05/23/2025 9:39 PM
+Which version of free is called, what memory allocator is used
+05/23/2025 9:39 PM
+And then a free happens
+05/23/2025 9:39 PM
+And vice versa
+05/23/2025 9:39 PM
+What would happen if you pass a pointer allocated from musl to glibc
+[smx2460]
+[] yolofant can we actually use a static musl instead?
+smx2460 05/23/2025 9:39 PM
+Hmmm well
+[ccarnell98]
+ccarnell98 05/23/2025 11:00 AM
+The builder itself doesn't need much changes:
+https://github.com/libretro/libretro-super/compare/master...csdougliss:libretro-super:webos.
+"FORMAT_COMPILER_TARGET=armv" could be removed once each Makefile has a
+webos section. (edited)
+05/23/2025 10:57 AM
+@Mariotaku The list of cores is generated by a script. We could possibly
+automate that on a push to the main branch (edited)
+05/23/2025 10:56 AM
+@Mariotaku Documentation is in the README in retroarch-cores. It didn't
+come out formatted well. There is a section "Manually built:" which is
+where some Makefiles needed to be edited to compile (only the ones with
+comments needed editing). (edited)
+GitHub - webosbrew/retroarch-cores
+Contribute to webosbrew/retroarch-cores development by creating an
+account on GitHub.
+[]
+05/23/2025 10:56 AM
+@Mariotaku A automated build would be nice. Each core has its own git
+repo and each core has its own Makefile.libretro. Some cores will build
+with a target of "arm", some will build with a target of "unix". Ideally
+we need to add a target of "webos" to each Makefile. That would be a lot
+of work (but not impossible) (edited)
+[mariotaku]
+[] ccarnell98 <@373485512150876160> Quit retroarch, then goto core
+downloader, should be there now
+mariotaku 05/23/2025 4:53 AM
+Hi, I'm thinking maybe I can generate a list of cores and put it into
+the index: https://docs.libretro.com/guides/core-list/ Also did you
+document how to build all the votes somewhere? I'm also thinking about
+automating the build for a bit.
+Core List - Libretro Docs
+This is the official RetroArch documentation for users and developers.
+Information from sources outside of this website may be dated or
+incorrect.
+[alicemsu]
+[] ccarnell98 <@373485512150876160> Quit retroarch, then goto core
+downloader, should be there now
+alicemsu 05/23/2025 12:35 AM
+Now it is visible, thanks .
+[ccarnell98]
+ccarnell98 05/23/2025 12:31 AM
+@Alice愛麗絲 Quit retroarch, then goto core downloader, should be there
+now
+[alicemsu]
+[] ccarnell98 <@373485512150876160> The cores are still present, however
+it doesn't seem to list them. I'll have a...
+alicemsu 05/23/2025 12:27 AM
+I hope there is a solution 
+[ccarnell98]
+ccarnell98 05/23/2025 12:20 AM
+@Alice愛麗絲 The cores are still present, however it doesn't seem to
+list them. I'll have a look
+[:salute:] 1
+May 22, 2025
+[alicemsu]
+alicemsu 05/22/2025 11:34 PM
+@Mariotaku What happened to the FBNeo finalburn core in RetroArch, is it
+no longer working with the project?
+[ccarnell98]
+ccarnell98 05/22/2025 1:31 AM
+@RLN Well I only can say what I use and thats Kodi and RetroArch
+(edited)
+[rln]
+[] ccarnell98 Are you on windows, linux or mac
+rln 05/22/2025 1:23 AM
+Thank you so much!! Any other dev apps other than youtube adfree u
+suggest? 
+[rln]
+rln 05/22/2025 1:10 AM
+NVM i found it
+05/22/2025 1:09 AM
+Installed all of these assets. But im unsure where is the installer
+itself to run devmanager. @Craig
+[image.png]
+ image.png
+102.2 KB External
+05/22/2025 1:08 AM
+windows
+[ccarnell98]
+ccarnell98 05/22/2025 1:08 AM
+Are you on windows, linux or mac
+[rln]
+[] ccarnell98 Also you need to remove Youtube app
+rln 05/22/2025 1:08 AM
+Thanks, do you know where the installer is for dev manager? I see a
+bunch of files in assets but im unsure which one is the actual
+installer, i dont know where that is.
+[ccarnell98]
+ccarnell98 05/22/2025 12:54 AM
+Also you need to remove Youtube app
+[rln]
+rln 05/22/2025 12:54 AM
+Great thank you
+[ccarnell98]
+ccarnell98 05/22/2025 12:54 AM
+You don't need to root it to install Youtube Adfree
+[rln]
+[] ccarnell98 <@209225298884034562> Install developer mode app from the
+LG webstore on your TV. Then load up the ...
+rln 05/22/2025 12:53 AM
+Awesome is there any way of doing this without rooting my tv? I’m
+worried this will void my warranty
+[ccarnell98]
+ccarnell98 05/22/2025 12:42 AM
+@RLN Install developer mode app from the LG webstore on your TV. Then
+load up the app on the TV. Sign in. Enable key server. Then use the web
+os dev manager app to connect to the TV and install youtube ad free
+(edited)
+[rln]
+[] ccarnell98 Download
+https://github.com/webosbrew/dev-manager-desktop/releases/tag/v1.99.13
+for your operating s...
+rln 05/22/2025 12:38 AM
+Thank you so much do you know where I can see the instructions? I’m a
+bit new to using GitHub
+[ccarnell98]
+[] rln I have webOS24 / 9.2.2-1809 running on my lg tv. Any way to get
+homebrew I just want to watch YouTub...
+ccarnell98 05/22/2025 12:34 AM
+Download
+https://github.com/webosbrew/dev-manager-desktop/releases/tag/v1.99.13
+for your operating system. Follow the instructions to connect to your
+TV, then install youtube ad free app
+Release v1.99.13 · webosbrew/dev-manager-desktop
+What&#39;s Changed Allows Text Selection for Dumb Shell by @mariotaku in
+#318 Use Raw TCP Connection to Fetch Dev Key by @mariotaku in #319
+Updated Angular by @mariotaku in #326 Cleaned Up Meaning...
+[]
+[rln]
+rln 05/22/2025 12:15 AM
+I have webOS24 / 9.2.2-1809 running on my lg tv. Any way to get homebrew
+I just want to watch YouTube without ads (edited)
+May 20, 2025
+[aljutor]
+[] ccarnell98 Did you ever find it, I am also trying to get the kernel
+config. I've also downloaded all 3 .gz from...
+aljutor 05/20/2025 11:12 PM
+I just ended up building kernel with their default config provided (in
+build sh script)
+May 19, 2025
+[mariotaku]
+[] yuwan1170 I'm looking for an ipk of the PBS app, looking everywhere
+for maybe one from tizenbrew or something ...
+mariotaku 05/19/2025 5:29 PM
+Probably not, we didn't see new apps popping out much recently
+[ccarnell98]
+[] aljutor Also, on webOS 24, with kernel 5.4.268-320 /proc/config.gz
+doesn't exist and extract-ikconfig: Cann...
+ccarnell98 05/19/2025 5:01 PM
+Did you ever find it, I am also trying to get the kernel config. I've
+also downloaded all 3 .gz from lg open source, but I can't see it
+xerox2204 05/19/2025 4:19 PM
+Is there a repo for jellyseer homebrew? I dont want to build it myself
+May 18, 2025
+[7aub]
+7aub 05/18/2025 7:53 PM
+Is there an anime streaming ipk I can install on my rooted webos tv with
+brew installed already?
+[yuwan1170]
+yuwan1170 05/18/2025 2:45 AM
+(if this isn't the right channel, my bad, should it be over in webos?)
+05/18/2025 2:43 AM
+I'm looking for an ipk of the PBS app, looking everywhere for maybe one
+from tizenbrew or something like that hasn't yielded any fruitful
+results. Does anyone have a good source for ipk's not currently in the
+webos homebrew appstore?
+May 16, 2025
+[yolofant]
+yolofant 05/16/2025 12:57 PM
+it's just a define
+[ccarnell98]
+ccarnell98 05/16/2025 12:52 PM
+Or is there an alternative. I can't build buildroot-nc4 still on my sys
+05/16/2025 12:51 PM
+@Yolofant Is is possible to add AT_HWCAP2 to our glibc version? It was
+introduced in 2.18 / 2.26? and its needed to build some retroarch-cores
+(edited)
+May 13, 2025
+[ccarnell98]
+ccarnell98 05/13/2025 10:54 PM
+just for the lols I set it to the latest glibc and it got past that
+point but then complained about polyfills and -lrt
+[ccarnell98]
+ccarnell98 05/13/2025 6:52 PM
+meh I downgraded to gcc-12 and it still sticks in the same place
+[yolofant]
+yolofant 05/13/2025 6:33 PM
+can we actually use a static musl instead?
+05/13/2025 6:32 PM
+hmm
+[] yolofant though I'm not sure if that's going to be feasible going
+forward
+hellobox. 05/13/2025 5:45 PM
+It is a real PITA to backport glibc patches
+[yolofant]
+yolofant 05/13/2025 5:27 PM
+though I'm not sure if that's going to be feasible going forward
+05/13/2025 5:26 PM
+but not necessarily glibc to keep compability
+05/13/2025 5:26 PM
+but yeah, going forward upgrading buildroot is the way to go
+05/13/2025 5:25 PM
+I mean, you can just compile it in a docker container
+[ccarnell98]
+ccarnell98 05/13/2025 4:59 PM
+But for me I was just seeing how low I could go so I compile stuff to
+test (edited)
+05/13/2025 4:58 PM
+If you have any ideas I'm all ears (or eyes) 
+[yolofant]
+yolofant 05/13/2025 4:48 PM
+we are still on 2.14
+05/13/2025 4:48 PM
+hmm, but using 2.28 is not really the goal though
+[ccarnell98]
+ccarnell98 05/13/2025 4:43 PM
+but then glibc i'm using is 2.28 or 2.31 as the one with buildroot-nc4
+has other issues compiling with GCC 14/15 (edited)
+[ccarnell98]
+[] yolofant there is some effort going in <#1326564546810351652> but I'm
+stuck at compiling/linking glibc with g...
+ccarnell98 05/13/2025 4:42 PM
+I've tried gcc 14 and gcc 15.01 compiling glibc and I just get stuck on
+this for 2 hours, but make is apparently still running
+    mv -f /home/defiant/Applications/buildroot-nc4/output/build/glibc-2.28/build/math/libm.so.6.new /home/defiant/Applications/buildroot-nc4/output/build/glibc-2.28/build/math/libm.so.6
+    /usr/bin/make  subdir=setjmp -C setjmp ..=../ others
+    make[4]: Nothing to be done for 'others'.
+    /usr/bin/make  subdir=signal -C signal ..=../ others
+    make[4]: Nothing to be done for 'others'.
+    /usr/bin/make  subdir=stdlib -C stdlib ..=../ others
+    make[4]: Nothing to be done for 'others'.
+    /usr/bin/make  subdir=stdio-common -C stdio-common ..=../ others
+[7coil]
+[] blacklua Hello, OpenTTD does not work on WebOS 4.5
+7coil 05/13/2025 4:24 PM
+weewoo I don't think I own any devices that use WebOS 4.5 so if you're
+able to help diagnose the problem that would be brill
+[yolofant]
+yolofant 05/13/2025 2:51 PM
+host gcc is 13.2 though
+05/13/2025 2:50 PM
+there is some effort going in # unknown-channel but I'm stuck at
+compiling/linking glibc with gcc 14.2
+May 12, 2025
+[ccarnell98]
+ccarnell98 05/12/2025 7:51 PM
+I think some package updates will need to be done to buildroot-nc4 to
+make it compile on GCC 14/15. Debian 12 has GCC 12 asfaik
+[mariotaku]
+[] ccarnell98 Meh ```configure: error: in
+'/home/defiant/Applications/buildroot-nc4/output/build/host-m4-1.4.19':
+...
+mariotaku 05/12/2025 4:58 PM
+Is that in chroot? I did a clean build in Debian 12 and it was fine
+[ccarnell98]
+ccarnell98 05/12/2025 3:46 PM
+Meh
+    configure: error: in '/home/defiant/Applications/buildroot-nc4/output/build/host-m4-1.4.19':
+    configure: error: C compiler cannot create executables
+[ccarnell98]
+ccarnell98 05/12/2025 3:23 PM
+Think I fixed it by updating attr package
+[ccarnell98]
+hellobox. just run `autoreconf`
+ccarnell98 05/12/2025 3:06 PM
+Did that. Now
+    >>> host-skeleton  Extracting
+    >>> host-skeleton  Patching
+    >>> host-skeleton  Configuring
+    >>> host-skeleton  Building
+    >>> host-skeleton  Installing to host directory
+    attr-2.5.1.tar.xz: OK (sha256: db448a626f9313a1a970d636767316a8da32aede70518b8050fa0de7947adc32)
+    >>> host-attr 2.5.1 Extracting
+    xzcat /home/defiant/Applications/buildroot-nc4/dl/attr/attr-2.5.1.tar.xz | tar --strip-components=1 -C /home/defiant/Applications/buildroot-nc4/output/build/host-attr-2.5.1   -xf -
+    >>> host-attr 2.5.1 Patching
+    Applying 0001-build-with-older-GCCs.patch using patch: 
+    Error: duplicate filename '0001-build-with-older-GCCs.patch'
+    Conflicting files are:
+      already applied: /home/defiant/Applications/buildroot-nc4/package/attr/0001-build-with-older-GCCs.patch
+      to be applied  : /home/defiant/Applications/buildroot-nc4/package/attr/0001-build-with-older-GCCs.patch
+    make[1]: *** [package/pkg-generic.mk:251: /home/defiant/Applications/buildroot-nc4/output/build/host-attr-2.5.1/.stamp_patched] Error 1
+    make: *** [Makefile:84: _all] Error 2
+hellobox. 05/12/2025 3:00 PM
+just run autoreconf
+[ccarnell98]
+ccarnell98 05/12/2025 2:47 PM
+Really over .1 
+05/12/2025 2:46 PM
+    configure.ac:7: error: version mismatch.  This is Automake 1.16.5,
+    configure.ac:7: but the definition used by this AM_INIT_AUTOMAKE
+    configure.ac:7: comes from Automake 1.16.4.  You should recreate
+    configure.ac:7: aclocal.m4 with aclocal and run automake again.
+[ccarnell98]
+[] mariotaku I will do a clean `make` to see if it works
+ccarnell98 05/12/2025 2:45 PM
+Did a clean, gets to fakeroot_1.26 but then complains and errors out
+again. Can't see the actual error though, just the warnings
+[mariotaku]
+[] ccarnell98 make --always-make --dry-run
+```/home/defiant/Applications/buildroot-nc4/output/build/host-attr-2.5....
+mariotaku 05/12/2025 2:09 PM
+I will do a clean make to see if it works
+[ccarnell98]
+ccarnell98 05/12/2025 1:54 PM
+I'll downgrade the package see if I can get further
+[ccarnell98]
+ccarnell98 05/12/2025 1:38 PM
+Should have asked you this 2 days ago 
+05/12/2025 1:37 PM
+I have 1.17 lols
+[ccarnell98]
+[] mariotaku debootstrap + chroot would work well! I always use this way
+ccarnell98 05/12/2025 1:37 PM
+make --always-make --dry-run
+    /home/defiant/Applications/buildroot-nc4/output/build/host-attr-2.5.1/build-aux/missing: line 81: aclocal-1.16: command not found
+[mariotaku]
+[] ccarnell98 I think downgrading my O/S would be a radical step as I'd
+lose all the new features  Perhaps I cou...
+mariotaku 05/12/2025 1:29 PM
+debootstrap + chroot would work well! I always use this way
+[ccarnell98]
+ccarnell98 05/12/2025 1:28 PM
+I think downgrading my O/S would be a radical step as I'd lose all the
+new features  Perhaps I could try an older GCC
+[mariotaku]
+[] ccarnell98 Are you on Ubuntu 25.04?
+mariotaku 05/12/2025 1:25 PM
+Ubuntu 24.xx or Debian 12
+[ccarnell98]
+ccarnell98 05/12/2025 1:24 PM
+Are you on Ubuntu 25.04?
+[ccarnell98]
+[] mariotaku Could it be incompatible host GCC? Would using an older
+distro help?
+ccarnell98 05/12/2025 1:24 PM
+GCC is gcc (Ubuntu 14.2.0-19ubuntu2) 14.2.0
+[mariotaku]
+[] ccarnell98 It's been a while since I've used buildroot-nc4, but it's
+stuck on compiling glibc. Any ideas? ```de...
+mariotaku 05/12/2025 1:23 PM
+Could it be incompatible host GCC? Would using an older distro help?
+[ccarnell98]
+ccarnell98 05/12/2025 12:33 PM
+https://github.com/openlgtv/buildroot-nc4/issues/49
+include/bits/xopen_lim.h:34:10: fatal error: bits/stdio_lim.h: No s...
+Fresh git checkout from buildroot-nc4. I have buildroot-essential, make,
+gcc, g++, libc6-dev installed. Trying to compile on Ubuntu 25.04: make
+webos_tv_defconfig make -j$(getconf _NPROCESSORS_ONLN...
+[]
+05/12/2025 12:32 PM
+It's been a while since I've used buildroot-nc4, but it's stuck on
+compiling glibc. Any ideas?
+    defiant@defiant:~/Applications/buildroot-nc4$ make
+    >>> glibc cc0e3d68d499414502400a589007225f03b22437 Building
+    PATH="/home/defiant/Applications/buildroot-nc4/output/host/bin:/home/defiant/Applications/buildroot-nc4/output/host/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin"  /usr/bin/make -j17  -C /home/defiant/Applications/buildroot-nc4/output/build/glibc-cc0e3d68d499414502400a589007225f03b22437/build
+    /usr/bin/make -r PARALLELMFLAGS="" CVSOPTS="" -C /home/defiant/Applications/buildroot-nc4/output/build/glibc-cc0e3d68d499414502400a589007225f03b22437 objdir=`pwd` all
+May 9, 2025
+[annplusplus]
+[] pir8pete_10493 any1 else notice for the newest youtube leanback
+version short are displayed even if disabling them ...
+annplusplus 05/09/2025 7:11 PM
+I think that's an advantage
+hellobox. 05/09/2025 6:09 PM
+They are like vertical waves that increase in frequency with increased
+stretch. When the scroll is released, they flow upward
+[] pir8pete_10493 any1 else notice for the newest youtube leanback
+version short are displayed even if disabling them ...
+hellobox. 05/09/2025 6:06 PM
+Your avatar's interaction with the rubber band scrolling on my phone
+generates some interesting moiré patterns
+[pir8pete_10493]
+pir8pete_10493 05/09/2025 6:01 PM
+any1 else notice for the newest youtube leanback version short are
+displayed even if disabling them is checked, just starts few days ago
+May 7, 2025
+[annplusplus]
+[] trojan_de Wdym?
+annplusplus 05/07/2025 9:57 AM
+# unknown-channel covers that
+[trojan_de]
+[] annplusplus Also remember to be wary of updates
+trojan_de 05/07/2025 9:55 AM
+Wdym?
+[trojan_de]
+[] annplusplus Do you have enough space?
+trojan_de 05/07/2025 9:55 AM
+Yes pretty sure I do
+[trojan_de]
+trojan_de 05/07/2025 9:55 AM
+Ah okay
+[annplusplus]
+[] trojan_de EPK?
+annplusplus 05/07/2025 9:55 AM
+USB install
+[annplusplus]
+annplusplus 05/07/2025 9:55 AM
+Also remember to be wary of updates
+[trojan_de]
+trojan_de 05/07/2025 9:55 AM
+EPK?
+[annplusplus]
+annplusplus 05/07/2025 9:55 AM
+Try an EPK
+[annplusplus]
+[] trojan_de I got a suggested software update every time I boot up my
+TV, but currently when trying to install i...
+annplusplus 05/07/2025 9:54 AM
+Do you have enough space?
+[trojan_de]
+trojan_de 05/07/2025 9:52 AM
+I got a suggested software update every time I boot up my TV, but
+currently when trying to install it it always fails.
+05/07/2025 9:51 AM
+Does anyone know how to reset the root access of my TV, so I can update
+my TV?
+May 6, 2025
+[t5ri]
+t5ri 05/06/2025 2:37 PM
+Any news on the Xbox app for older versions?
+May 4, 2025
+[aljutor]
+aljutor 05/04/2025 1:16 PM
+@hellobox btw, dualsense works very nicely over usbip (with signed
+driver on windows side)
+ 1
+[aljutor]
+aljutor 05/04/2025 12:36 AM
+Ok, I am an idiot. So, in my case usbip is already build into the kernel
+That's why it doesn't load (I suppose) And linux-rockhopper contains a
+default config - lg1k_defconfig Also - there is no
+/mnt/lg/cmn_data/usb.ids, but it can be downloaded externally (edited)
+May 3, 2025
+hellobox. 05/03/2025 9:31 PM
+not unless you modify the app IDs
+[darkirbyssb]
+darkirbyssb 05/03/2025 9:30 PM
+Question about YouTube AdFree. I know this might be a weird one, but is
+it possible to keep the original YouTube app while having the AdFree
+version?
+[aljutor]
+aljutor 05/03/2025 5:40 PM
+It seems that lg1k_defconfig is not one2one with kernel on the device
+like CONFIG_USBIP_CORE=y CONFIG_USBIP_VHCI_HCD=y CONFIG_USBIP_HOST=y
+CONFIG_USBIP_VUDC=y CONFIG_USB_DWC3=y suddenly there Also - for pre
+existing modules - modprobe works (edited)
+[fizzy_fuzzy]
+fizzy_fuzzy 05/03/2025 4:26 PM
+Hello how to i set up ssh on my tv?
+[aljutor]
+aljutor 05/03/2025 3:24 PM
+     modinfo drivers/usb/usbip/usbip-core.ko | grep vermagic
+    vermagic:       5.4.268 SMP preempt mod_unload aarch64
+arch and kernel version seems to be right
+05/03/2025 3:21 PM
+Tried included build script, than
+    scripts/config --module CONFIG_USBIP_CORE
+    scripts/config --module CONFIG_USBIP_HOST
+    scripts/config --module CONFIG_USBIP_VHCI_HCD
+    make prepare
+    scripts/kconfig/conf  --syncconfig Kconfig
+      CALL    scripts/checksyscalls.sh
+      CALL    scripts/atomic/check-atomics.sh
+    make M=drivers/usb/usbip modules
+      WARNING: Symbol version dump ./Module.symvers
+               is missing; modules will have no dependencies and modversions.
+      Building modules, stage 2.
+      MODPOST 4 modules
+    still same error
+    root@LGwebOSTV:~/drivers# insmod /home/root/drivers/usbip-core.ko
+    insmod: ERROR: could not insert module /home/root/drivers/usbip-core.ko: Invalid module format
+[aljutor]
+aljutor 05/03/2025 2:17 PM
+Tried to do it manually, but I think first I should try this one
+05/03/2025 2:13 PM
+Yeah, I think I am dumb a bit
+    This package includes linux kernel source code and bsp kernel driver.
+    All builds are tested on Ubuntu 22.04 LTS.
+    To compile linux kernel and bsp kernel driver, use following command in linux
+    shell prompt.
+      ./build.sh
+From the readme
+[yolofant]
+yolofant 05/03/2025 2:09 PM
+at least that's what I remember the last time I compiled a module
+05/03/2025 2:08 PM
+that source should have everything you need
+[aljutor]
+aljutor 05/03/2025 2:03 PM
+Or do you mean the kernel on a TV? - than it's a vanilla one from LG
+(edited)
+05/03/2025 2:02 PM
+Nope, I downloaded webOS ONN 2.0 and found a linux-rockhopper kernel
+source
+[yolofant]
+yolofant 05/03/2025 2:02 PM
+Are you using a vanilla kernel?
+[aljutor]
+[] yolofant but those toolchains are x64 only
+aljutor 05/03/2025 1:46 PM
+yep, apple silicon for now I have two problems 1) I don't have
+/proc/config.gz 2) modules build with default config do not load
+    root@LGwebOSTV:~/drivers# uname -ra
+    Linux LGwebOSTV 5.4.268-320 #1 SMP PREEMPT Mon Jun 17 01:25:25 UTC 2024 aarch64 GNU/Linux
+    root@LGwebOSTV:~/drivers# insmod usbip-core.ko
+    insmod: ERROR: could not insert module usbip-core.ko: Invalid module format
+    root@LGwebOSTV:~/drivers# modinfo usbip-core.ko
+    filename:       /home/root/drivers/usbip-core.ko
+    modinfo: ERROR: could not get modinfo from 'usbip_core': No such file or directory
+    root@LGwebOSTV:~/drivers#
+    at same time in a build docker 
+    root@c8db804f6a16:/kernel-src# modinfo drivers/usb/usbip/usbip-core.ko | grep vermagic
+    vermagic:       5.4.268-320 SMP preempt mod_unload aarch64
+(edited)
+[djoxtreme]
+djoxtreme 05/03/2025 1:34 PM
+just wante to say that I did root on LG UJ635V with WebOS 6x and it's
+working fine 
+[yolofant]
+yolofant 05/03/2025 1:18 PM
+but those toolchains are x64 only
+05/03/2025 1:18 PM
+for kernel modules usually you just use the toolchain provided with the
+kernel source release
+05/03/2025 1:18 PM
+but I don't think anyone has used br-nc4 to compile kernel modules
+05/03/2025 1:17 PM
+so you need to compile it yourself
+05/03/2025 1:17 PM
+there's no prebuilt toolchain for arm64
+05/03/2025 1:17 PM
+I guess you have apple silicon
+[aljutor]
+aljutor 05/03/2025 12:23 PM
+Also, on webOS 24, with kernel 5.4.268-320 /proc/config.gz doesn't exist
+and extract-ikconfig: Cannot find kernel config
+[aljutor]
+[] yolofant it's not really difficult to download the toolchain in a
+Dockerfile
+aljutor 05/03/2025 12:10 PM
+doing it already, btw, is it possible to build a kernel module in docker
+container on macOS? never done it before in a docker, and I see mixed
+results online
+[yolofant]
+yolofant 05/03/2025 11:09 AM
+it's not really difficult to download the toolchain in a Dockerfile
+05/03/2025 11:09 AM
+no but you can make one
+[aljutor]
+aljutor 05/03/2025 10:49 AM
+btw, is there any native-toolchain provided as docker container?
+May 2, 2025
+[darkirbyssb]
+hellobox. <#1254441206595846164>
+darkirbyssb 05/02/2025 11:14 PM
+didn't see that lol, thx anyways 
+ 1
+[] darkirbyssb when rooting my tv, is it possible to unroot it later in
+case i need to do it?
+hellobox. 05/02/2025 11:11 PM
+# unknown-channel
+[darkirbyssb]
+darkirbyssb 05/02/2025 10:19 PM
+when rooting my tv, is it possible to unroot it later in case i need to
+do it?
+[gcdl]
+[] .ilucha I mentioned it here
+gcdl 05/02/2025 9:26 PM
+try looking intocom.webos.service.preloadmanager maybe, idk im unable to
+test this
+[issame2010]
+issame2010 05/02/2025 9:13 PM
+Is this a hacked version??
+[53df77ae-c77a-4c0e-a171-8fe5a5a1bf95.jpg]
+ 53df77ae-c77a-4c0e-a171-8fe5a5a1bf95.jpg
+210.44 KB External
+[.ilucha]
+[] .ilucha Sorry for replying so late, kind of forgot about this stuff.
+I want to try to get the command for ch...
+.ilucha 05/02/2025 9:02 PM
+I mentioned it here
+[gcdl]
+[] .ilucha Good catch. As rakuten is an (user) app I can uninstall
+manually, I also can install my self built a...
+gcdl 05/02/2025 9:01 PM
+what is the command u use?
+[.ilucha]
+[] astur3l can't uninstall it before? but yeah it doesn't work (ugly
+workaround to edit app's manifest?) if the...
+.ilucha 05/02/2025 8:33 PM
+Good catch. As rakuten is an (user) app I can uninstall manually, I also
+can install my self built app and remap it. As Alexa and Amazon prime
+video are pre installed and non removable, I cannot override them by
+installing an ipk  strange nonetheless: even the installed shortcut
+for rakuten has no function when pressing the rakuten button. Any idea
+why it is not working? If I execute the same command via ssh, it works
+flawlessly
+[astur3l]
+astur3l 05/02/2025 7:26 PM
+can't uninstall it before? but yeah it doesn't work (ugly workaround to
+edit app's manifest?) if there's pre installed app (i had rakuten tv but
+i was able to uninstall it) (edited)
+[.ilucha]
+[] astur3l inputhook doesn't work on WebOS 9 , alternative way is to
+create a WebOS app with that appid which e...
+.ilucha 05/02/2025 7:25 PM
+Yea that is what I ment with React App builder. There I built a ipk with
+the luna command and used the alexa appID. After installing the ipk it
+does not work and alexa opens up again. It is like it cannot be
+overwritten or remapped
+[astur3l]
+[] .ilucha Anyone else any ideas on how to map commands to a certain
+button on the remote?
+astur3l 05/02/2025 7:15 PM
+inputhook doesn't work on WebOS 9 , alternative way is to create a WebOS
+app with that appid which executes command on launch, there's app stub
+generator somewhere online https://dropbox.inf.re/webos-app-stub/
+(edited)
+React App
+Web site created using create-react-app
+[.ilucha]
+.ilucha 05/02/2025 6:57 PM
+Anyone else any ideas on how to map commands to a certain button on the
+remote?
+05/02/2025 6:56 PM
+Webos24/9.2.2 Fw: 23.20.44
+[gcdl]
+gcdl 05/02/2025 6:53 PM
+which remote and webos?
+[.ilucha]
+.ilucha 05/02/2025 6:50 PM
+Now I want to bind the command to the alexa/amazon prime key on the
+remote but it does not work with the React App builder. I can install
+the ipk but when pressing the button on the remote, nothing happens
+05/02/2025 6:46 PM
+So, what I did to get the appID for alexa app was using this command in
+terminal via webOS Dev Manager:
+    ls-monitor -c
+Then after starting the command I spammend the button (not really
+necessary) and then pressed ctrl+c to stop the monitor command. In the
+command windows look for “appId”. The relevant one for me were: Alexa:
+amazon.alexa.view Amazon: amazon Rakuten: ui30 LG channels:
+com.webos.app.lgchannels
+[gcdl]
+gcdl 05/02/2025 6:21 PM
+he cant use lginputhook app so have to make shoutcut and use
+https://dropbox.inf.re/webos-app-stub/
+React App
+Web site created using create-react-app
+hellobox. 05/02/2025 6:21 PM
+it's probably in keyfilters
+[gcdl]
+gcdl 05/02/2025 6:21 PM
+yeah, well other guy
+hellobox. 05/02/2025 6:20 PM
+You just want to know the appid?
+[gcdl]
+gcdl 05/02/2025 6:18 PM
+i dont have same remote nor a alexa app so i cant try it myself
+05/02/2025 6:17 PM
+ah so just launch it and -l then?
+[] gcdl `ls-monitor -l`shows all app_ids right?
+hellobox. 05/02/2025 6:16 PM
+The ones that are running
+[gcdl]
+gcdl 05/02/2025 6:16 PM
+or could use ls-monitor and press the button on remote and look for the
+app_id
+05/02/2025 6:15 PM
+ls-monitor -lshows all app_ids right?
+05/02/2025 6:15 PM
+he is just trying to find alexa appid, i told him to try ls-monitorif
+cant google it
+hellobox. 05/02/2025 6:15 PM
+Or you could use a forum post I guess
+05/02/2025 6:14 PM
+Threads don't have great visibility, but they do show up in searches
+[gcdl]
+hellobox. Why would you want it in a DM? If it's here, other people can
+benefit from it. If it's too long, put...
+gcdl 05/02/2025 6:14 PM
+i thought it was a long thing, but can do it here np (edited)
+[] gcdl send me a dm with what u tried
+hellobox. 05/02/2025 6:13 PM
+Why would you want it in a DM? If it's here, other people can benefit
+from it. If it's too long, put it in a thread.
+[gcdl]
+deleted_user_ab47pa6db052 lg input hook works. you can run commands
+gcdl 05/02/2025 5:59 PM
+i know, i used it, but person im replying to can't use it becuase too
+new fw
+[.mrc]
+.mrc 05/02/2025 5:57 PM
+anybody can help me with retroarch in here?
+[] gcdl what kind of shortcuts do u mean and how do u bind them? i only
+used inputhooks to remap
+deleted_user_ab47pa6db052 05/02/2025 5:54 PM
+lg input hook works. you can run commands
+[gcdl]
+[] .ilucha Now I need to bind those commands to the alexa and rakuten
+button on my remote. I did not find the ...
+gcdl 05/02/2025 5:53 PM
+send me a dm with what u tried
+[gcdl]
+[] .ilucha Now I need to bind those commands to the alexa and rakuten
+button on my remote. I did not find the ...
+gcdl 05/02/2025 5:53 PM
+what kind of shortcuts do u mean and how do u bind them? i only used
+inputhooks to remap
+deleted_user_ab47pa6db052 05/02/2025 5:49 PM
+also if i have a arm64 tv can i use arm64 cores for other devices
+05/02/2025 5:49 PM
+does someone know why desmume isnt being built for retroarch? pcap afaik
+isnt required to play the games. also even then there is the header
+online
+[aljutor]
+aljutor 05/02/2025 2:00 PM
+btw, usb/ip windows driver got signed
+https://github.com/vadimgrn/usbip-win2/issues/13 so, what is needed
+now - a working package for usb/ip on modern webOS
+Signed driver · Issue #13 · vadimgrn/usbip-win2
+Is there any hope of getting a signed driver? My organization has
+policies set which disallow use of test signed drivers. C:\Program
+Files\usbip-win2>bcdedit.exe /set testsigning on An error has...
+[]
+[aljutor]
+[] ohmybahgosh I'm actively working on a clean/safe Entware installer..
+It's in active development FYI https://gith...
+aljutor 05/02/2025 1:59 PM
+What are recovery options or options to remove uninstall (in case
+something went wrong) ?
+[.ilucha]
+.ilucha 05/02/2025 10:41 AM
+Now I need to bind those commands to the alexa and rakuten button on my
+remote. I did not find the package name of the alexa (not amazon prime).
+Also it seems like the command does not work via a shortcut on my
+rakuten button  (edited)
+[.ilucha]
+[] gcdl message me later when you can try commands and i can maybe try
+figuring it out with you. unless some...
+.ilucha 05/02/2025 10:32 AM
+Sorry for replying so late, kind of forgot about this stuff. I want to
+try to get the command for changing picture mode setting (vivid,
+standard, auto). Update: got it working with
+    luna-send -n 1 luna://com.webos.settingsservice/setSystemSettings '{"category": "picture", "settings": {"pictureMode": "eco"}}' 
+(edited)
+[] issame2010 Hello, I think I'm the only Muslim and Arab here haha
+hellobox. 05/02/2025 2:09 AM
+i doubt that very much
+[issame2010]
+issame2010 05/02/2025 1:30 AM
+Hello, I think I'm the only Muslim and Arab here haha
+May 1, 2025
+[blacklua]
+blacklua 05/01/2025 8:10 PM
+it just flies out and that's it
+05/01/2025 8:08 PM
+Hello, OpenTTD does not work on WebOS 4.5
+April 30, 2025
+[malek_._]
+malek_._ 04/30/2025 5:43 PM
+Thx
+04/30/2025 5:43 PM
+Yea good idea
+hellobox. 04/30/2025 5:43 PM
+Find them, upload your images, bind mount over the originals, and maybe
+restart LSM or something
+04/30/2025 5:42 PM
+Yeah, probably
+[malek_._]
+malek_._ 04/30/2025 5:41 PM
+Is there a way I can change the magic remote cursor by changing the
+cursor files?
+04/30/2025 5:37 PM
+Yall
+ 1
+April 29, 2025
+[mariotaku]
+[] .imaglitch It’s a 2022 model
+mariotaku 04/29/2025 5:07 PM
+https://www.webosbrew.org/devmode/
+[.imaglitch]
+.imaglitch 04/29/2025 4:54 PM
+Am I in the wrong channel to ask this stuff
+04/29/2025 4:53 PM
+It’s a 2022 model
+[.imaglitch]
+.imaglitch 04/29/2025 4:12 PM
+How do I get it on there if I can
+04/29/2025 4:12 PM
+This the kind I have
+[IMG_6644.jpg]
+ IMG_6644.jpg
+2.14 MB External
+04/29/2025 4:08 PM
+Or could I get a walk through if mine supports it
+04/29/2025 4:07 PM
+That can get all that stuff I need it for real
+04/29/2025 4:07 PM
+Yes
+[lightfire]
+lightfire 04/29/2025 4:07 PM
+homebrew chanel?
+[.imaglitch]
+.imaglitch 04/29/2025 4:05 PM
+(no content)
+[IMG_6643.png]
+ IMG_6643.png
+1.05 MB External
+04/29/2025 4:05 PM
+I’m wanting to know if I can get this stuff here on my particular lg tv
+hellobox. 04/29/2025 4:02 PM
+installing what?
+[.imaglitch]
+.imaglitch 04/29/2025 4:02 PM
+Can you send me a link to installing on my tv
+[.imaglitch]
+.imaglitch 04/29/2025 2:53 PM
+Ok
+[mariotaku]
+[] .imaglitch I’m I looking in the right direction for that
+mariotaku 04/29/2025 2:51 PM
+1. The best way would be subscribing to them of course 2. Sometimes,
+you'll get a cheaper price by changing region, but normally you'll need
+some VPN to do that 3. If you somehow able to watch without paying on
+PC, you can figure out how to open the page on your TV, too But there's
+no app to allow you to watch premium contents free magically
+[.imaglitch]
+.imaglitch 04/29/2025 2:50 PM
+If I shouldn’t say that please tell me now and I’ll remove it
+04/29/2025 2:49 PM
+I’m I looking in the right direction for that
+04/29/2025 2:48 PM
+Ok I’m wanting to watch nba games and Disney and stuff like that live
+[mariotaku]
+[] .imaglitch Could you dm me
+mariotaku 04/29/2025 2:48 PM
+No. If anything is relevant to homebrew, talking here is better
+[.imaglitch]
+.imaglitch 04/29/2025 2:45 PM
+Could you dm me (edited)
+[mariotaku]
+mariotaku 04/29/2025 2:45 PM
+P.S. we don't talk about how to 
+04/29/2025 2:45 PM
+Actually I'm not sure what do you want, watch online media or local
+media, or just  , they have different ways to achieve
+[.imaglitch]
+.imaglitch 04/29/2025 2:43 PM
+lol
+04/29/2025 2:43 PM
+I’m sorry I know I sound dumb I don’t mean to seem that way
+04/29/2025 2:42 PM
+So I have to get a fire stick for what I’m wanting is that correct
+04/29/2025 2:42 PM
+Oh
+[mariotaku]
+[] .imaglitch Does the kodi app let me watch live tv though that is what
+I meant sorry
+mariotaku 04/29/2025 2:41 PM
+Kodi doesn't natively support using native tuner of your TV, so I guess
+it can't.
+[.imaglitch]
+.imaglitch 04/29/2025 2:41 PM
+lol
+04/29/2025 2:41 PM
+I’m very new to all this stuff I just want my tv to be a good tv
+04/29/2025 2:40 PM
+Does the kodi app let me watch live tv though that is what I meant sorry
+(edited)
+[mariotaku]
+[] .imaglitch Great so if I do this will I be able to watch all the live
+sports and is that stuff all free or is ...
+mariotaku 04/29/2025 2:39 PM
+It won't let you watch stuff for free (out of scope of this server)
+[.imaglitch]
+.imaglitch 04/29/2025 2:38 PM
+Great so if I do this will I be able to watch all the live sports and is
+that stuff all free or is there anything I have to pay for to watch live
+tv
+[mariotaku]
+[] .imaglitch One never rooted my lg tv I wonder if I can get that kodi
+app on it web22/7.5.1-9 am I able with it ...
+mariotaku 04/29/2025 2:30 PM
+Yes, you can install with dev mode
+[.imaglitch]
+.imaglitch 04/29/2025 2:19 PM
+One never rooted my lg tv I wonder if I can get that kodi app on it
+web22/7.5.1-9 am I able with it can someone lmk if I’m able to
+[jauz8888]
+jauz8888 04/29/2025 12:27 PM
+May I ask how to play music from SoundCloud on an LG TV running webOS
+4.x
+April 28, 2025
+[dornellestv]
+[] dornellestv I'm trying to make a nice weather app to show the
+potential of the cross platform framework I'm work...
+dornellestv 04/28/2025 3:04 AM
+https://github.com/gamelly/app-weather-tv
+GitHub - gamelly/app-weather-tv: Cross-platform TV Weather Applicat...
+Cross-platform TV Weather Application / Widget (Ginga NCL, Tizen,
+WebOS) - gamelly/app-weather-tv
+[]
+ 2
+[ohmybahgosh]
+ohmybahgosh 04/28/2025 12:26 AM
+Only tested on my C2 running latest webos24
+ 1
+04/28/2025 12:25 AM
+I'm actively working on a clean/safe Entware installer.. It's in active
+development FYI https://github.com/ohmybahgosh/WEBOS-ENTWARE-INSTALLER"
+target="_blank" rel="noopener
+noreferrer">https://github.com/ohmybahgosh/WEBOS-ENTWARE-INSTALLER
+https://github.com/ohmybahgosh/WEBOS-ENTWARE-INSTALLER" target="_blank"
+rel="noopener
+noreferrer">https://github.com/ohmybahgosh/WEBOS-ENTWARE-INSTALLER
+GitHub - ohmybahgosh/WEBOS-ENTWARE-INSTALLER: Effortless Entware in...
+Effortless Entware installation and safe system expansion for rooted LG
+webos - ohmybahgosh/WEBOS-ENTWARE-INSTALLER
+[]
+April 27, 2025
+[gcdl]
+[] .ilucha Hmm. Thanks for the hint. Need to take a look
+gcdl 04/27/2025 4:21 PM
+message me later when you can try commands and i can maybe try figuring
+it out with you. unless someone who actually knows something comes along
+and can just tell you  (edited)
+[gcdl]
+[] .ilucha Hmm. Thanks for the hint. Need to take a look
+gcdl 04/27/2025 4:19 PM
+i also dont have a rakuten button on my remote but i assume its the one
+just called movies on mine, its the one in bottom left?
+[.ilucha]
+.ilucha 04/27/2025 4:18 PM
+Hmm. Thanks for the hint. Need to take a look
+[gcdl]
+[] .ilucha Unfortunately for the most up to day fw, it is not working
+and many of us are desperately waiting fo...
+gcdl 04/27/2025 4:17 PM
+ah i see, i never tried but you can probably use
+luna://com.webos.service.irdbmanager/sendIrCommand somehow
+[.ilucha]
+[] gcdl perhaps that's what the modified true is for? for it not to
+popup at all?
+.ilucha 04/27/2025 4:09 PM
+Need to try, when i am back home
+[.ilucha]
+[] gcdl yeah you can remap, easy with lginputhook
+.ilucha 04/27/2025 4:08 PM
+Unfortunately for the most up to day fw, it is not working and many of
+us are desperately waiting for a fix. That’s why i am trying to get a
+few shortcuts via this workaround
+[gcdl]
+[] .ilucha Now the question is how to bind those commands to thr alexa
+and rakuten button
+gcdl 04/27/2025 4:07 PM
+yeah you can remap, easy with lginputhook
+[gcdl]
+[] .ilucha Also works for me, thanks! Any idea on how to suppress the
+following message where one has to press ...
+gcdl 04/27/2025 4:07 PM
+perhaps that's what the modified true is for? for it not to popup at
+all?
+[.ilucha]
+.ilucha 04/27/2025 1:53 PM
+Also, does anyone know what the package name for the alexa app is and if
+it possible to use it (as it is a system app) for a luna script? Would
+like to use the rakuten button for auto energy saving mode and the alexa
+app for deactivating energy saving mode
+[.ilucha]
+.ilucha 04/27/2025 12:20 PM
+Now the question is how to bind those commands to thr alexa and rakuten
+button
+[.ilucha]
+[] gcdl it got it working with this: `luna-send -n 1
+'luna://com.webos.settingsservice/setSystemSettings' '{...
+.ilucha 04/27/2025 10:24 AM
+Also works for me, thanks! Any idea on how to suppress the following
+message where one has to press OK?
+[.ilucha]
+[] gcdl it got it working with this: `luna-send -n 1
+'luna://com.webos.settingsservice/setSystemSettings' '{...
+.ilucha 04/27/2025 9:14 AM
+Awesome! Will try it later
+[dornellestv]
+dornellestv 04/27/2025 3:03 AM
+I'm trying to make a nice weather app to show the potential of the cross
+platform framework I'm working on. [:meep:]
+[3768d9e0-a8a2-45e9-a564-3397eeffd304.png]
+ 3768d9e0-a8a2-45e9-a564-3397eeffd304.png
+336.51 KB External
+ 1
+[gcdl]
+[] .ilucha No error but TV did not change anything. ```
+root@LGwebOSTV:~# luna-send-pub -f -n 1 luna://com.we...
+gcdl 04/27/2025 12:58 AM
+it got it working with this:
+luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"picture","settings":{"energySaving":"off"}}'
+seems you dont need the modified true thing
+[gcdl]
+gcdl 04/27/2025 12:46 AM
+maybe try it with luna://com.webos.settingsservice/setSystemSettings
+[.ilucha]
+.ilucha 04/27/2025 12:44 AM
+Seems like my command is not correct at all ?
+[.ilucha]
+[] gcdl did u get an error? i never tried this myself
+.ilucha 04/27/2025 12:42 AM
+No error but TV did not change anything.
+    root@LGwebOSTV:~# luna-send-pub -f -n 1 luna://com.webos.se
+    rvice.applicationManager/launch '{"id":"com.webos.app.tvhot
+    key","params":{"activateType":{"energy-saving-mode":"off","
+    energySavingModified":"true"}}}'
+    {
+        "returnValue": true
+    }
+[gcdl]
+[] .ilucha Tried the following but did not work: luna-send-pub -f -n 1
+luna://com.webos.service.applicationMan...
+gcdl 04/27/2025 12:41 AM
+did u get an error? i never tried this myself
+[.ilucha]
+[] gcdl try adding `"energySavingModified":"true"`
+.ilucha 04/27/2025 12:38 AM
+Tried the following but did not work: luna-send-pub -f -n 1
+luna://com.webos.service.applicationManager/launch
+'{"id":"com.webos.app.tvhotkey","params":{"activateType":{"energy-saving-mode":"off","energySavingModified":"true"}}}'
+April 25, 2025
+[gcdl]
+gcdl 04/25/2025 10:32 PM
+try adding "energySavingModified":"true"
+[.ilucha]
+.ilucha 04/25/2025 10:00 PM
+Do you by chance know the luna command for de-/activating a specific
+energy saving mode? I tried the following but only could get the window
+where I can choose the different energy saving modes instead switching
+directly to a mode.
+    luna-send-pub -f -n 1 luna://com.webos.service.applicationManager/launch '{"id":"com.webos.app.tvhotkey","params":{"activateType":{"energy-saving-mode": "auto"}}}'
+(edited)
+April 24, 2025
+[aljutor]
+aljutor 04/24/2025 6:37 PM
+entware could be a solution to, but it seems no modern webos guide is
+available (edited)
+04/24/2025 6:36 PM
+Yep, this one, around 4 hours more to download
+hellobox. 04/24/2025 6:35 PM
+LG can't decide what to call their SoCs. There are tons of names
+04/24/2025 6:35 PM
+ONN should be correct for C4 (O22N2)
+[aljutor]
+aljutor 04/24/2025 6:34 PM
+I think the LG Open Source one, with WebOS ONN packages (dunno what it's
+actualy mean)
+hellobox. 04/24/2025 6:33 PM
+The GPL site? I get inconsistent speeds from there, but I'm not sure
+which end the problem is on
+[aljutor]
+aljutor 04/24/2025 6:32 PM
+I love download speed on their website - 500KB/sec
+hellobox. 04/24/2025 6:31 PM
+For building kernel modules I recommend using the ~official LG ones
+(edited)
+[aljutor]
+aljutor 04/24/2025 6:31 PM
+For now, I curios how to setup a toolchain for OLED65C41LA with webOS 24
+fw 23.20.35 Should I go for
+https://github.com/webosbrew/native-toolchain or try to find one from LG
+Dev Site?
+GitHub - webosbrew/native-toolchain: Toolchain to build native prog...
+Toolchain to build native program for webOS. Contribute to
+webosbrew/native-toolchain development by creating an account on GitHub.
+[]
+[aljutor]
+hellobox. Wow, pretty cool. From what I've seen, WHQL testing looks like
+a PITA
+aljutor 04/24/2025 6:22 PM
+If I got it correctly, WHQL is not required but would be very good to
+have
+[] aljutor Also, there is a chance that windows usb/ip driver will be
+signed https://github.com/vadimgrn/usbip-...
+hellobox. 04/24/2025 6:19 PM
+Wow, pretty cool. From what I've seen, WHQL testing looks like a PITA
+[aljutor]
+aljutor 04/24/2025 5:44 PM
+Also, there is a chance that windows usb/ip driver will be signed
+https://github.com/vadimgrn/usbip-win2/issues/13
+Signed driver · Issue #13 · vadimgrn/usbip-win2
+Is there any hope of getting a signed driver? My organization has
+policies set which disallow use of test signed drivers. C:\Program
+Files\usbip-win2>bcdedit.exe /set testsigning on An error has...
+[]
+[aljutor]
+hellobox. The toolchain isn't that hard to set up
+aljutor 04/24/2025 5:28 PM
+I am looking for a proper guide, have't build any kernel stuff for years
+hellobox. 04/24/2025 5:26 PM
+The toolchain isn't that hard to set up
+[aljutor]
+aljutor 04/24/2025 5:24 PM
+had anyone managed to make usbip work on webos 24? I found some
+pre-build kernel modules but they are not compatible with mine, and
+preparing whole toolchain is a bit to much
+April 23, 2025
+[gcdl]
+gcdl 04/23/2025 3:05 AM
+i remapped these commands to my remote with the lginputhook app and its
+a huge upgrade, highly recommened literally a single button press rather
+than like 10 press in this slow annoying LG UI 
+[gcdl]
+gcdl 04/23/2025 2:25 AM
+yeah idk, seems like its needed to actually enable some settings, might
+even be just bad korean to english for enable :p
+hellobox. 04/23/2025 2:23 AM
+might be a good idea to figure out the meaning of current_app...
+[gcdl]
+gcdl 04/23/2025 2:22 AM
+please update this in colorcontrol 
+04/23/2025 2:21 AM
+"current_app":true was the answer and its true without " (edited)
+04/23/2025 2:20 AM
+i fucking solved it, this is the commands that work:
+luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"picture","settings":{"truMotionMode":"off"},"current_app":true}'
+luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"picture","settings":{"truMotionMode":"user"},"current_app":true}'
+(edited)
+April 22, 2025
+[gcdl]
+gcdl 04/22/2025 7:09 PM
+if someone actually has it working pls let me know, as in can see the
+difference clearly not that the setting gets enabled
+04/22/2025 7:09 PM
+i have been testing this, and it does not work, it changes in menu but
+dont have effect.. if u read here author of bscpylgtv says its a fw
+issue. "It should work like all other picture settings under docs, but
+some of them does not, you have just found 1 of them. LGE screwed up
+something in the firmware, it doesn't do anything on 2022 models fw
+either."
+https://www.avsforum.com/threads/bscpylgtv-read-all-picture-setting-info.3308138/
+bscpylgtv read all picture setting info?
+I'm looking at bscpylgtv, hoping to use it to collect data on a large
+fleet of LG TVs for remote troubleshooting. (A variety of CX, C1, C2).
+I'd like to poll each TV every minute to record all its current
+settings. I can get a lot of data with bscpylgtv but there are a few
+things I haven't...
+[]
+[satdx62]
+[] astur3l should be like `` luna-send -n 1
+'luna://com.webos.settingsservice/getSystemSettings' '{"category": ...
+satdx62 04/22/2025 5:23 PM
+Ah okay, you mean,
+luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"picture","settings":{"truMotionMode":"smooth"}}' '{}' ; fi
+or
+luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"picture","settings":{"truMotionMode":"off"}}' '{}' ; fi
+(edited)
+[astur3l]
+astur3l 04/22/2025 5:01 PM
+should be like
+` luna-send -n 1 'luna://com.webos.settingsservice/getSystemSettings' '{"category": "picture"}'`
+[astur3l]
+[] satdx62 Hi, Look
+here:https://discord.com/channels/407937994037919756/835489130967859251/1363401645643403345...
+astur3l 04/22/2025 4:58 PM
+just try it on your tv (
+`luna-send -n 1 'luna://com.webos.settingsservice/status' '{}'`), it
+"works" because the if condition never met, and it goes into the else
+part
+[satdx62]
+[] astur3l ``luna-send -n 1 'luna://com.webos.settingsservice/status'
+'{}'`` does it really works for you? did...
+satdx62 04/22/2025 4:56 PM
+Hi, Look
+here:https://discord.com/channels/407937994037919756/835489130967859251/1363401645643403345
+the complete chain of command that works for me in input hook.
+[astur3l]
+[] satdx62 Hello, when I execute this luna command, trumotion-smoth is
+also switched on or off. The menus also ...
+astur3l 04/22/2025 4:47 PM
+`luna-send -n 1 'luna://com.webos.settingsservice/status' '{}'` does it
+really works for you? didnt u just replaced the hyperion-webos service
+name?:D
+    root@LGwebOSTV:~# luna-send -n 1 'luna://com.webos.settingsservice/status' '{}'
+    {"returnValue":false,"errorCode":-1,"errorText":"Unknown method \"status\" for category \"/\""}
+but i bet it wont return "isRunning"
+[satdx62]
+[] gcdl <@917488160580182068>ok i will do it tonight when alone, as i
+agree it does sound strange
+satdx62 04/22/2025 1:58 PM
+Weird, so it works on my device and I can see from a ticker that when
+you turn the smoth on, the ticker runs very smoothly across the screen,
+whereas when it's off, it's very choppy. Also, just test via SSH to rule
+out any error with the input hook.
+[gcdl]
+gcdl 04/22/2025 1:55 PM
+@satdx62ok i will do it tonight when alone, as i agree it does sound
+strange
+[satdx62]
+[] gcdl <@917488160580182068>i can even make a video to show you what i
+mean if you want
+satdx62 04/22/2025 1:53 PM
+Yes please.
+[gcdl]
+gcdl 04/22/2025 1:51 PM
+@satdx62i can even make a video to show you what i mean if you want
+[gcdl]
+gcdl 04/22/2025 1:43 PM
+@satdx62i tried smooth clear and user to be sure
+04/22/2025 1:39 PM
+@satdx62i dont mean it change in open menu, i mean it does not have
+effect, like its stuck on the setting i last manually set, if i have it
+off and i press the button remapped with the command it does not turn on
+but if i go in menu it will say it is on but its not and vice versa
+[satdx62]
+[] gcdl <@917488160580182068>hey, i tried the trumotion command today
+and while it does say it changes it do...
+satdx62 04/22/2025 1:35 PM
+Hello, when I execute this luna command, trumotion-smoth is also
+switched on or off. The menus also show this. You have to execute the
+command first and then check under menu. This does not change in the
+open menu. See also the SSH output:
+    root@LGwebOSTV:~# if luna-send -n 1 'luna://com.webos.settingsservice/status' '{}' | grep '„isRunning“:true'; then luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"cat
+    egory„: ‚picture‘, ‚settings‘:{“truMotionMode„: ‚off‘}}‚ ‘{}‚ ; else luna-send -n 1 ‘luna://com.webos.settingsservice/setSystemSettings‚ ‘{“category„: ‚picture‘, ‚settings‘:{“truMotionMode": “smo
+    oth"}}‚ ‘{}' ; fi
+    {„method“: „setSystemSettings“, ‚returnValue‘: true }
+    root@LGwebOSTV:~# if luna-send -n 1 'luna://com.webos.settingsservice/status' '{}' | grep '„isRunning“:true'; then luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"cat
+    egory„: ‚picture‘, ‚settings‘:{“truMotionMode„: ‚smooth‘}}‚ ‘{}‚ ; else luna-send -n 1 ‘luna://com.webos.settingsservice/setSystemSettings‚ ‘{“category„: ‚picture‘, ‚settings‘:{“truMotionMode":“
+    off"}}‚ ‘{}' ; fi
+    {„method“: „setSystemSettings“, ‚returnValue‘: true }
+    root@LGwebOSTV:~#
+[gcdl]
+gcdl 04/22/2025 12:12 AM
+@satdx62hey, i tried the trumotion command today and while it does say
+it changes it does not have effect, as in menu will say its on but its
+not and it will say its off but it is still on :\
+April 21, 2025
+hellobox. 04/21/2025 5:39 PM
+Like dbus (on which it was based in early webOS version, I believe—which
+may explain some of its weirder aspects)
+[kitsuned]
+[] annplusplus luna is a command set that takes and gives json's
+kitsuned 04/21/2025 5:34 PM
+Luna is a message bus
+April 20, 2025
+[annplusplus]
+[] dornellestv interesting, to use it can I use a spawn process?
+annplusplus 04/20/2025 5:11 PM
+That's present on any webos
+[dornellestv]
+[] annplusplus luna is a command set that takes and gives json's
+dornellestv 04/20/2025 5:10 PM
+interesting, to use it can I use a spawn process?
+[annplusplus]
+[] dornellestv luna is a common http protocol? or is different?
+annplusplus 04/20/2025 5:04 PM
+luna is a command set that takes and gives json's
+[dornellestv]
+dornellestv 04/20/2025 4:49 PM
+luna is a common http protocol? or is different? (edited)
+[.moltimor]
+.moltimor 04/20/2025 3:14 PM
+hello, is there any way to stream torrents with any app on the homebew
+repo?
+[gcdl]
+gcdl 04/20/2025 9:18 AM
+@satdx62ty 
+[satdx62]
+[] gcdl <@917488160580182068>awesome, ty man 
+satdx62 04/20/2025 9:17 AM
+Yes.
+[gcdl]
+gcdl 04/20/2025 9:17 AM
+@satdx62and for "clear" and "user" i just replace "smooth"?
+04/20/2025 9:16 AM
+@satdx62awesome, ty man 
+[satdx62]
+[] gcdl hey, is anyone familiar with lginputhook app? can u tell me what
+trumotion settings is in this list ...
+satdx62 04/20/2025 8:31 AM
+Hello, there is no keycode for truemotion, but it works as a macro with
+luna SSH commands. You must replace the key ID of a selected button with
+command. TruMotionMode On (smooth):
+    if luna-send -n 1 'luna://com.webos.settingsservice/status' '{}' | grep '"isRunning":true'; then luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"picture","settings":{"truMotionMode":"off"}}' '{}' ; else luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"picture","settings":{"truMotionMode":"smooth"}}' '{}' ; fi
+     TruMotionMode Off:
+    if luna-send -n 1 'luna://com.webos.settingsservice/status' '{}' | grep '"isRunning":true'; then luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"picture","settings":{"truMotionMode":"smooth"}}' '{}' ; else luna-send -n 1 'luna://com.webos.settingsservice/setSystemSettings' '{"category":"picture","settings":{"truMotionMode":"off"}}' '{}' ; fi
+(edited)
+[gcdl]
+gcdl 04/20/2025 6:15 AM
+hey, is anyone familiar with lginputhook app? can u tell me what
+trumotion settings is in this list if its there? its nice for stuff like
+sport, but dont want it on movies and its a hassle to dig in menu for it
+so it would be nice to remap to remote
+https://gist.github.com/Simon34545/fc5c91e0456789dd7a56a947c1148939
+Keycodes extracted from decompiled network-input-service binary (LG)
+Keycodes extracted from decompiled network-input-service binary (LG) -
+keymap.txt
+[]
+[mariotaku]
+mariotaku 04/20/2025 3:23 AM
+If you so believe it's doable, I strongly suggest you do it yourself,
+proving us wrong. New app submission is always welcomed
+04/20/2025 3:21 AM
+I love starting a new day by watching people argue again over porting
+stremio
+April 19, 2025
+[amine.md]
+amine.md 04/19/2025 11:06 PM
+so i guess now all the webos users in the restricted regions we are
+cooked
+[amine.md]
+[] lexaproblem Cant you just download the android app and cast it?
+amine.md 04/19/2025 10:58 PM
+i know but i want to use my phone and it's better in the tv
+[lexaproblem]
+lexaproblem 04/19/2025 8:03 PM
+Can you stop pinging me now so I can leave this conversation?
+ 1
+04/19/2025 8:03 PM
+Okay youre right im wrong youve won your little argument heres your
+trophy 
+hellobox. 04/19/2025 8:03 PM
+anyway, thanks for the motivation to organize this into an FAQ entry
+ 1
+[] lexaproblem My bad for not having all the knowledge in the universe
+dude
+hellobox. 04/19/2025 8:02 PM
+yet you still wanted to argue with me, even after i told you the reason
+you were seeing stremio's claims of being open source
+https://discord.com/channels/407937994037919756/835489130967859251/1363192052485062748
+[yolofant]
+yolofant 04/19/2025 7:59 PM
+[:vlc:]
+[:vlc:] 4
+[lexaproblem]
+lexaproblem 04/19/2025 7:59 PM
+My bad for not having all the knowledge in the universe dude
+ 1
+[lexaproblem]
+hellobox. maybe you shouldn't be arguing based on something you just
+"assum[ed]", then ¯\_(ツ)_/¯
+lexaproblem 04/19/2025 7:58 PM
+I aint arguing. Im just saying what Ive observed (edited)
+hellobox. 04/19/2025 7:57 PM
+here's jaruba explaining why it's not open source:
+https://discord.com/channels/407937994037919756/713852484170547222/1234933543080034366
+https://discord.com/channels/407937994037919756/713852484170547222/1234949310026874981
+04/19/2025 7:56 PM
+plenty of evidence that despite their claims that it's entirely open
+source, it, uh... isn't.
+04/19/2025 7:55 PM
+doesn't take much more work to find jaruba saying server.js is
+"partially closed source" a year ago (2024-04-03):
+https://www.reddit.com/r/Stremio/comments/1bvako0/comment/kxy886c/
+04/19/2025 7:54 PM
+first result: https://github.com/Stremio/stremio-service/issues/49
+outdated, but a comment from a stremio employee(?) both links to the
+github org and says "The main desktop app is not open source",
+demonstrating the two are not mutually exclusive second result:
+https://github.com/Stremio/stremio-service/issues/49 more recent,
+actually on one of their github repos, confirming there are
+closed-source components
+04/19/2025 7:51 PM
+you can find a bunch of stuff by googling stremio closed source
+[] lexaproblem My bad for assuming that stremio is open source after
+reading multiple time it is open source and se...
+hellobox. 04/19/2025 7:50 PM
+maybe you shouldn't be arguing based on something you just "assum[ed]",
+then ¯\_(ツ)_/¯
+[lexaproblem]
+lexaproblem 04/19/2025 7:48 PM
+My bad for assuming that stremio is open source after reading multiple
+time it is open source and seeing the open source git repositories
+hellobox. 04/19/2025 7:45 PM
+i believe the node.js part includes a torrent client, among other things
+source:
+https://discord.com/channels/407937994037919756/713852484170547222/1234944236017811547
+(edited)
+04/19/2025 7:45 PM
+fyi here is a stremio developer saying that the webOS app is not open
+source (and that it includes a webOS service) two months ago
+https://discord.com/channels/407937994037919756/408006551656333312/1341064256082280449
+[lexaproblem]
+lexaproblem 04/19/2025 7:44 PM
+[:shruggie:]
+hellobox. 04/19/2025 7:43 PM
+and even if we could build it, we don't have a license to distribute it
+04/19/2025 7:43 PM
+there's a node.js service
+04/19/2025 7:43 PM
+true, because you're wrong
+[lexaproblem]
+lexaproblem 04/19/2025 7:42 PM
+Arguing about this is pointless
+04/19/2025 7:42 PM
+[:facepalm:]
+hellobox. 04/19/2025 7:42 PM
+oh yeah, i forgot you googled and found the git repo
+[lexaproblem]
+lexaproblem 04/19/2025 7:42 PM
+Quite literally is
+04/19/2025 7:42 PM
+It
+hellobox. 04/19/2025 7:42 PM
+it's not just a web app
+[lexaproblem]
+lexaproblem 04/19/2025 7:41 PM
+I dont think packaging what is essentially a webapp to webos wouldnt be
+too difficult to achieve
+[lexaproblem]
+hellobox. the webOS app isn't
+lexaproblem 04/19/2025 7:41 PM
+Well we cant win them all I guess
+hellobox. 04/19/2025 7:38 PM
+we can't have it in the webosbrew repo because there is no way to obtain
+an IPK we're legally allowed to distribute
+04/19/2025 7:37 PM
+so if you can get an unencrypted IPK, you can install it (assuming
+you're running webOS 5+) (edited)
+[] amine.md Dear webOS Homebrew Team, I hope you're doing well. I'm
+reaching out to kindly request the addition ...
+hellobox. 04/19/2025 7:35 PM
+btw you can install apps in Dev Mode without hbchannel
+hellobox. 04/19/2025 7:31 PM
+maybe this subject deserves an # unknown-channel entry, as this isn't
+the first time it has come up
+04/19/2025 7:30 PM
+the webOS app isn't
+[lexaproblem]
+lexaproblem 04/19/2025 7:29 PM
+And the service
+04/19/2025 7:29 PM
+At least the front end
+04/19/2025 7:29 PM
+At the very least its partially open source
+[] lexaproblem Dude idk i just googled it and theres a git repo
+hellobox. 04/19/2025 7:29 PM
+demonstrating how they get away with calling it open source when it's
+not
+[lexaproblem]
+lexaproblem 04/19/2025 7:29 PM
+And afaik stremio is just a media player that downloads torrents and
+transcodes it
+04/19/2025 7:28 PM
+Dude idk i just googled it and theres a git repo
+[] lexaproblem Like 2 months ago
+hellobox. 04/19/2025 7:14 PM
+is this what you're referring to?
+https://blog.stremio.com/stremio-v5-for-windows-is-now-open-source/
+[] lexaproblem Stremio doesnt host content?
+hellobox. 04/19/2025 7:04 PM
+https://github.com/Stremio/server-docker
+hellobox. 04/19/2025 7:00 PM
+and i am 100% sure the webOS app, in particular, was not open source as
+of 2 months ago (edited)
+04/19/2025 7:00 PM
+anyway, unless something has changed within the past year, at least the
+server is closed source. i also don't see anything for building the
+webOS app within their github org
+hellobox. 04/19/2025 6:50 PM
+and where are the build scripts for the webOS version?
+04/19/2025 6:47 PM
+it has a client-server architecture
+[lexaproblem]
+lexaproblem 04/19/2025 6:46 PM
+Its just a media player
+04/19/2025 6:46 PM
+Afaik
+[lexaproblem]
+hellobox. anyway, where is the source for the stremio server?
+lexaproblem 04/19/2025 6:46 PM
+Stremio doesnt host content?
+[lexaproblem]
+lexaproblem 04/19/2025 6:46 PM
+Is all im saying
+04/19/2025 6:46 PM
+The developers probably care more about the apps lifespan and continued
+support than the small percentage of revenue they lose from making it
+open source
+hellobox. 04/19/2025 6:45 PM
+anyway, where is the source for the stremio server?
+04/19/2025 6:43 PM
+it only takes one person to create an ad-free version
+[lexaproblem]
+lexaproblem 04/19/2025 6:43 PM
+Literally anyone over 35
+04/19/2025 6:43 PM
+Like
+04/19/2025 6:43 PM
+Youd be suprised by the amount of people who arent aware that adblockers
+exist
+hellobox. 04/19/2025 6:43 PM
+the same could be said of youtube's userbase, and yet...
+[lexaproblem]
+lexaproblem 04/19/2025 6:42 PM
+There are faster and easier ways to get rid of ads if you really dont
+like it. The vast majority of its userbase either doesnt care or isnt
+tech savvy enough to figure it out
+04/19/2025 6:41 PM
+But like, whos gonna bother
+ 1
+04/19/2025 6:41 PM
+Unless someone makes a specific ad free version
+[lexaproblem]
+hellobox. you know it's like a business, right?
+lexaproblem 04/19/2025 6:41 PM
+They get money from ads. Whether its open source or not doesn’t really
+change that
+hellobox. you know it's like a business, right?
+Deleted User 04/19/2025 6:40 PM
+doesnt stremio have its own company
+[lexaproblem]
+lexaproblem 04/19/2025 6:40 PM
+That it became open source
+hellobox. 04/19/2025 6:40 PM
+what is?
+[lexaproblem]
+lexaproblem 04/19/2025 6:39 PM
+Like 2 months ago
+04/19/2025 6:39 PM
+Oh this is very recent
+hellobox. 04/19/2025 6:39 PM
+you know it's like a business, right?
+[lexaproblem]
+lexaproblem 04/19/2025 6:39 PM
+Thats the good PR (edited)
+04/19/2025 6:39 PM
+You get free content
+04/19/2025 6:39 PM
+Well, essentially a piracy platform
+04/19/2025 6:38 PM
+Why would a piracy platform care about good PR
+hellobox. 04/19/2025 6:38 PM
+yeah, they're trying to get good PR by claiming to be open source
+[lexaproblem]
+hellobox. not all of it, at least the last time i looked into it
+lexaproblem 04/19/2025 6:37 PM
+https://github.com/Stremio
+[IMG_1830.png]
+ IMG_1830.png
+429.09 KB External
+Stremio
+Freedom to Stream. Stremio has 99 repositories available. Follow their
+code on GitHub.
+[]
+hellobox. 04/19/2025 6:37 PM
+(and that was later confirmed by one of the developers)
+[] lexaproblem Stremio is open source
+hellobox. 04/19/2025 6:36 PM
+not all of it, at least the last time i looked into it
+[lexaproblem]
+lexaproblem 04/19/2025 6:35 PM
+So its technically possible to port it over (edited)
+04/19/2025 6:35 PM
+Only the desktop app is closed source
+04/19/2025 6:35 PM
+Afaik
+[lexaproblem]
+hellobox. it's a commercial/proprietary app. it's not up to us.
+lexaproblem 04/19/2025 6:34 PM
+Stremio is open source
+[lexaproblem]
+lexaproblem 04/19/2025 6:31 PM
+Cant you just download the android app and cast it?
+[] amine.md Dear webOS Homebrew Team, I hope you're doing well. I'm
+reaching out to kindly request the addition ...
+hellobox. 04/19/2025 4:22 PM
+it's a commercial/proprietary app. it's not up to us.
+[amine.md]
+[] mariotaku I think it's region restricted, if the dev would provide
+the IPK then we could add that
+amine.md 04/19/2025 3:53 PM
+I hope you make it bro i don't know about developing and this stuffs
+thank you
+[mariotaku]
+[] lightfire theres an official stremio app <:meep:735594230033940553>
+mariotaku 04/19/2025 3:36 PM
+I think it's region restricted, if the dev would provide the IPK then we
+could add that
+[lightfire]
+lightfire 04/19/2025 2:55 PM
+theres an official stremio app [:meep:]
+[amine.md]
+amine.md 04/19/2025 12:17 PM
+haha my eng is bad
+[kitsuned]
+kitsuned 04/19/2025 12:12 PM
+hi chatgpt
+[amine.md]
+amine.md 04/19/2025 12:08 PM
+Dear webOS Homebrew Team, I hope you're doing well. I'm reaching out to
+kindly request the addition of the Stremio app to the list of available
+apps in your webOS Homebrew platform (dev mode). Unfortunately, the
+Stremio app is not available in the LG Content Store in my region, and
+I'm hoping to use it on my LG TV without having to root the device.
+Since your platform supports sideloading apps in developer mode, I
+believe this would be a great solution for many users in a similar
+situation. Thank you for your hard work and for supporting the webOS
+community. I’d really appreciate your consideration of this request.
+April 18, 2025
+[kitsuned]
+kitsuned 04/18/2025 9:21 AM
+atm AltHome is fully functional but requires a lot of effort to make it
+easy for end users
+[kitsuned]
+hellobox. <@524209969374167040> Is it possible to create a replacement
+home app without using QML?
+kitsuned 04/18/2025 9:19 AM
+sure
+April 17, 2025
+[lexaproblem]
+lexaproblem 04/17/2025 8:45 PM
+Smells like poppers /j
+04/17/2025 8:45 PM
+Candle
+[] lexaproblem Huh wow id never expected packaging and installing
+applications on webos is that easy
+hellobox. 04/17/2025 8:44 PM
+Interesting jar of, uh... 
+ 1
+[lexaproblem]
+lexaproblem 04/17/2025 8:22 PM
+Thats rather convenient
+04/17/2025 8:21 PM
+I figured id had to autism into embedded systems or some obsecure cli
+that’d only work on linux
+04/17/2025 8:20 PM
+Huh wow id never expected packaging and installing applications on webos
+is that easy (edited)
+[IMG_1789.jpg]
+ IMG_1789.jpg
+710.62 KB External
+ 1
+[] dornellestv One of the TVs I explored the system was 100% HTML, all
+UI, including volume, channel guide, etc., b...
+hellobox. 04/17/2025 7:15 PM
+That is not true
+[dornellestv]
+hellobox. I assume there was a reason LG used QML/Quick for all of their
+system UI stuff, but it could be just...
+dornellestv 04/17/2025 6:56 PM
+One of the TVs I explored the system was 100% HTML, all UI, including
+volume, channel guide, etc., but it is WEBOS4
+hellobox. 04/17/2025 6:36 PM
+I'm 99.9% sure you'll need a service. And home has to handle app
+lifecycle stuff (edited)
+04/17/2025 6:33 PM
+I assume there was a reason LG used QML/Quick for all of their system UI
+stuff, but it could be just [:lg:] things
+[lexaproblem]
+lexaproblem 04/17/2025 6:33 PM
+I mostly do react and php
+04/17/2025 6:33 PM
+I have no idea what im doing
+04/17/2025 6:33 PM
+Honestly
+04/17/2025 6:32 PM
+I'll cross that bridge when I get there
+hellobox. 04/17/2025 6:31 PM
+good luck ¯\_(ツ)_/¯ (edited)
+04/17/2025 6:31 PM
+I think you're going to have issues with other web apps, since you're
+both running in WAM
+04/17/2025 6:30 PM
+Actually does AltHome not use QML? That's impressive
+[lexaproblem]
+lexaproblem 04/17/2025 6:28 PM
+(no content)
+[afbeelding.png]
+ afbeelding.png
+57.8 KB External
+04/17/2025 6:27 PM
+Running
+luna-send -n 1 -f luna://com.webos.applicationManager/listApps '{}' in
+the terminal returns a list of installed apps so it seems to work
+(edited)
+hellobox. 04/17/2025 6:25 PM
+@kitsuned Is it possible to create a replacement home app without using
+QML?
+04/17/2025 6:23 PM
+I really don't think that's going to work...
+[lexaproblem]
+lexaproblem 04/17/2025 6:23 PM
+As a webapp
+hellobox. 04/17/2025 6:22 PM
+In HTML?
+[lexaproblem]
+lexaproblem 04/17/2025 6:22 PM
+Essentially yea
+hellobox. 04/17/2025 6:21 PM
+Are you trying to replace the home app?
+[] lexaproblem The docs from LG are indeed ass but the OSE docs are
+wonderful
+hellobox. 04/17/2025 6:21 PM
+They are not always applicable to webOS TV
+[lexaproblem]
+lexaproblem 04/17/2025 6:20 PM
+But that would make sense
+04/17/2025 6:20 PM
+The docs from LG are indeed ass but the OSE docs are wonderful
+[mr.meorzipan]
+hellobox. Maybe. Haven't tested. Also, probably won't release the
+autostart method (yet) because LG seems to n...
+mr.meorzipan 04/17/2025 6:15 PM
+That's fine, keep it hidden as long as possible so enough users have
+time to prepare (edited)
+[] mr.meorzipan Does this mean the script from Homebrew Channel that
+mount --binds overlaps the hosts file to block ...
+hellobox. 04/17/2025 6:09 PM
+Maybe. Haven't tested. Also, probably won't release the autostart method
+(yet) because LG seems to not have actually caught on to it, and it has
+other uses (e.g., privesc) (edited)
+[] dornellestv If I enabled LG developer mode, can I install the
+homebrewchannel IPK normally?
+hellobox. 04/17/2025 6:09 PM
+Yes
+[] lexaproblem Thatd make sense. I havent really read the docs besides
+briefly glancing over it and seeing it suppo...
+hellobox. 04/17/2025 6:09 PM
+I suspect the docs will be of ~zero help for what you're trying to do.
+[lexaproblem]
+lexaproblem 04/17/2025 5:31 PM
+https://webostv.developer.lge.com/develop/references/activity-manager
+Activity Manager API Reference Guide
+[]
+[dornellestv]
+dornellestv 04/17/2025 5:30 PM
+If I enabled LG developer mode, can I install the homebrewchannel IPK
+normally?
+[lexaproblem]
+lexaproblem 04/17/2025 5:30 PM
+Not entirely sure though. Dont quote me on that
+04/17/2025 5:29 PM
+But as far as I can tell from quick google searches if your webos is
+rooted you can query the available apps and video inputs with javascript
+04/17/2025 5:27 PM
+Ill have to properly look into everything before i actually start
+developing
+[lexaproblem]
+hellobox. Idk if that's going to work. Probably needs to be QML to
+integrate with the rest of the OS
+lexaproblem 04/17/2025 5:26 PM
+Thatd make sense. I havent really read the docs besides briefly glancing
+over it and seeing it supports webapps
+[mr.meorzipan]
+hellobox. ~~Potentially new autostart method coming to webOS 5+...~~
+(Don't update your firmware!) Probably w...
+mr.meorzipan 04/17/2025 5:19 PM
+Does this mean the script from Homebrew Channel that mount --binds
+overlaps the hosts file to block system update prompts, can start early
+on, so the prompt on cold boot of the TV can also be blocked  ?
+[] lexaproblem Nah thats just vanilla html and css. The idea is to
+create a component based layout thats *somewhat*...
+hellobox. 04/17/2025 5:16 PM
+Idk if that's going to work. Probably needs to be QML to integrate with
+the rest of the OS
+[mariotaku]
+[] lexaproblem Oh for sure. Once I have something functional ill publish
+it on git
+mariotaku 04/17/2025 4:47 PM
+If you make one, I'm gonna revamp https://repo.webosbrew.org and create
+a special section for your app and AltHome
+ 3
+[dornellestv]
+[] lexaproblem Oh for sure. Once I have something functional ill publish
+it on git
+dornellestv 04/17/2025 4:12 PM
+ping me in discord
+[lexaproblem]
+[] dornellestv I found it very interesting, I work with OS construction
+for TVs, I would really like to see the cod...
+lexaproblem 04/17/2025 4:11 PM
+Oh for sure. Once I have something functional ill publish it on git
+ 1
+[dornellestv]
+[] lexaproblem Nah thats just vanilla html and css. The idea is to
+create a component based layout thats *somewhat*...
+dornellestv 04/17/2025 4:08 PM
+cool
+[dornellestv]
+[] lexaproblem Aight so small proof of concept quickly thrown together.
+Once I put effort into styling it properly ...
+dornellestv 04/17/2025 4:08 PM
+I found it very interesting, I work with OS construction for TVs, I
+would really like to see the code in the future
+[lexaproblem]
+lexaproblem 04/17/2025 4:08 PM
+Fuck my 9 to 5 life vro
+04/17/2025 4:08 PM
+So I dont get overwhelmed and get even more burned out from developing
+04/17/2025 4:07 PM
+But for now ill keep the scope somewhat small
+04/17/2025 4:07 PM
+Nah thats just vanilla html and css. The idea is to create a component
+based layout thats somewhat customizable
+[] lexaproblem Aight so small proof of concept quickly thrown together.
+Once I put effort into styling it properly ...
+hellobox. 04/17/2025 4:03 PM
+is that in QML?
+[lexaproblem]
+lexaproblem 04/17/2025 4:02 PM
+also fuck css
+04/17/2025 4:01 PM
+Jarvis, give the person who decided that smart tv's should display
+unnecessary bloat insted of actually useful information testical torsion
+(edited)
+04/17/2025 4:01 PM
+Aight so small proof of concept quickly thrown together. Once I put
+effort into styling it properly and reading the webos docs i might be
+able to publish a decent home app replacement
+[afbeelding.png]
+ afbeelding.png
+946.26 KB External
+[:meep:] 1
+[dornellestv]
+dornellestv 04/17/2025 1:50 PM
+https://github.com/gamelly/?q=core-native

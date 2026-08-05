@@ -1,0 +1,1612 @@
+February 5, 2023
+[smx2460]
+smx2460 02/05/2023 10:46 PM
+     *
+     * Symbols:
+     *
+     * * `i`: int
+     * * `u`: uint
+     * * `f`: fixed
+     * * `s`: string
+     * * `o`: object
+     * * `n`: new_id
+     * * `a`: array
+     * * `h`: fd
+     * * `?`: following argument is nullable
+02/05/2023 10:46 PM
+    static const struct wl_message wl_compositor_requests[] = {
+        { "create_surface", "n", types + 10 },
+        { "create_region", "n", types + 11 },
+    };
+02/05/2023 10:46 PM
+i can get wayland-scanner to generate this
+02/05/2023 10:44 PM
+with argument "id"
+02/05/2023 10:44 PM
+so this maps to WL_COMPOSITOR_CREATE_SURFACE
+02/05/2023 10:44 PM
+      <interface name="wl_compositor" version="4">
+        <description summary="the compositor singleton">
+          A compositor.  This object is a singleton global.  The
+          compositor is in charge of combining the contents of multiple
+          surfaces into one displayable output.
+        </description>
+        <request name="create_surface">
+          <description summary="create new surface">
+        Ask the compositor to create a new surface.
+          </description>
+          <arg name="id" type="new_id" interface="wl_surface"/>
+        </request>
+        <request name="create_region">
+          <description summary="create new region">
+        Ask the compositor to create a new region.
+          </description>
+          <arg name="id" type="new_id" interface="wl_region"/>
+        </request>
+      </interface>
+02/05/2023 10:44 PM
+let's see
+02/05/2023 10:43 PM
+you need to parse the protocol XML and generate "dump" functions
+02/05/2023 10:43 PM
+even automating it is tedious 
+02/05/2023 10:42 PM
+tedious.
+02/05/2023 10:42 PM
+aka write a big switch with case-by-case printf
+02/05/2023 10:42 PM
+to print arguments... you basically would need to know what each of them
+do
+02/05/2023 10:42 PM
+without arguments
+02/05/2023 10:42 PM
+because right now it prints the opcode only
+02/05/2023 10:42 PM
+i'm feeling lazy about it (edited)
+02/05/2023 10:41 PM
+and i'm not sure writing a full wayland-oriented "strace" is worth it
+02/05/2023 10:41 PM
+but we don't know what Kodi is doing
+02/05/2023 10:41 PM
+we know it works for simple demos
+02/05/2023 10:41 PM
+for Kodi
+02/05/2023 10:41 PM
+but it won't matter much until we know what needs to be changed
+02/05/2023 10:41 PM
+i can publish the "waylandhax" standalone
+[yolofant]
+yolofant 02/05/2023 10:41 PM
+yeah
+[smx2460]
+smx2460 02/05/2023 10:40 PM
+but i think you have the full set
+02/05/2023 10:40 PM
+i have stashed away a couple patches for Kodi
+[yolofant]
+yolofant 02/05/2023 10:40 PM
+because I need the kodi recipe
+02/05/2023 10:40 PM
+gonna rebuild from source anyway
+[smx2460]
+smx2460 02/05/2023 10:40 PM
+and your userland
+02/05/2023 10:40 PM
+so that one has wayland 1.11
+[yolofant]
+yolofant 02/05/2023 10:39 PM
+that builds a lot faster now 
+[smx2460]
+smx2460 02/05/2023 10:37 PM
+(no content)
+[image.png]
+ image.png
+31.69 KB External
+02/05/2023 10:37 PM
+p.s. @Yolofant
+[smx2460]
+[] ccarnell98 <@310158180728700929> <@195583665265311744> any luck with
+the black screen issue?
+smx2460 02/05/2023 10:37 PM
+afaik, no
+[ccarnell98]
+ccarnell98 02/05/2023 10:35 PM
+@Smx @Yolofant any luck with the black screen issue?
+[wanderatrus]
+wanderatrus 02/05/2023 9:37 PM
+ tks
+02/05/2023 9:37 PM
+True
+[infowski]
+infowski 02/05/2023 9:37 PM
+you can probably just use the webapp in browser?
+02/05/2023 9:36 PM
+on webOS? 
+[wanderatrus]
+wanderatrus 02/05/2023 9:36 PM
+Is possible to install discord ?
+[infowski]
+infowski 02/05/2023 8:42 PM
+[avwret412123]
+[] infowski First it'll be probably easiest if you open the
+configuration UI on a separate device
+avwret412123 02/05/2023 8:42 PM
+yeah! that was easy, just wanted to replace some buttons to get back
+play/pause  (coming from a C9, C2 is a big downgrade in UX. worse
+controller, worse home menu...)
+[infowski]
+infowski 02/05/2023 8:37 PM
+I insist homebrew should handle that gracefully, but we still probably
+want to mkdir that by default 
+02/05/2023 8:37 PM
+yeah, we talked about it a while ago.
+[smx2460]
+[] infowski I guess, yeah. And we could also make sure that directory
+exists when running homebrew channel start...
+smx2460 02/05/2023 8:37 PM
+@Deleted User
+[infowski]
+infowski 02/05/2023 8:37 PM
+First it'll be probably easiest if you open the configuration UI on a
+separate device
+02/05/2023 8:36 PM
+Depends on what you want to do.
+[avwret412123]
+avwret412123 02/05/2023 8:35 PM
+now to actually figure out how this works 
+ 1
+[infowski]
+infowski 02/05/2023 8:34 PM
+I guess, yeah. And we could also make sure that directory exists when
+running homebrew channel startup script too.
+ 1
+02/05/2023 8:33 PM
+lginputhook tries to create a file in a directory that is not created
+when rooting via crashd. (edited)
+[avwret412123]
+avwret412123 02/05/2023 8:33 PM
+that was it. could be added to the install script eh
+02/05/2023 8:33 PM
+oh, hah
+[infowski]
+infowski 02/05/2023 8:33 PM
+It's more of an incompatiblity with TVs that were rooted via any other
+method than rootmytv v2 
+02/05/2023 8:32 PM
+OK, you need to connect via telnet or ssh to the TV and run
+mkdir /var/lib/webosbrew/init.d
+[avwret412123]
+avwret412123 02/05/2023 8:32 PM
+installed from hbchannel
+02/05/2023 8:32 PM
+no such file or directory, open '/var/lib/webosbrew/init.d/inputhook'
+[smx2460]
+smx2460 02/05/2023 7:33 PM
+https://gist.github.com/smx-smx/7b045357d7fdddec3bd35b92da61998b
+Webos Wayland surface hook via LD_PRELOAD
+Webos Wayland surface hook via LD_PRELOAD. GitHub Gist: instantly share
+code, notes, and snippets.
+[]
+[smx2460]
+smx2460 02/05/2023 6:28 PM
+i'll adjust my code
+02/05/2023 6:28 PM
+i think it's fine
+02/05/2023 6:28 PM
+not sure what the correct path should be
+02/05/2023 6:28 PM
+i used "wayland/" because it was relative to my build dir
+02/05/2023 6:27 PM
+i mean
+[smx2460]
+[] yolofant is this correct? I installed the headers into /usr/include
+directly
+smx2460 02/05/2023 6:27 PM
+should be
+[yolofant]
+yolofant 02/05/2023 5:28 PM
+at least it's like that on ubuntu and the maliit toolchain
+[yolofant]
+[] smx2460 using generated ```#include "wayland/wayland.h" #include
+"wayland/webos-shell.h"```
+yolofant 02/05/2023 5:27 PM
+is this correct? I installed the headers into /usr/include directly
+[smx2460]
+smx2460 02/05/2023 5:08 PM
+but i found it simpler
+02/05/2023 5:08 PM
+which maybe GH also has
+02/05/2023 5:08 PM
+and docker support (edited)
+[smx2460]
+[] infowski Any specific advantage of cirrus over GitHub actions?
+smx2460 02/05/2023 5:07 PM
+speed, usually
+[infowski]
+infowski 02/05/2023 5:06 PM
+Any specific advantage of cirrus over GitHub actions?
+[smx2460]
+smx2460 02/05/2023 4:49 PM
+(locally)
+02/05/2023 4:49 PM
+building...
+[smx2460]
+smx2460 02/05/2023 4:35 PM
+but i bumped the core count
+02/05/2023 4:34 PM
+this one took 2 hours last time (edited)
+02/05/2023 4:34 PM
+ezinject schedules itself in a few seconds
+02/05/2023 4:34 PM
+i mean nothing official but it's obvious
+[yolofant]
+yolofant 02/05/2023 4:34 PM
+[smx2460]
+smx2460 02/05/2023 4:34 PM
+now i'm wondering how long it will take for cirrus ci to schedule the
+build, as the repo has been penalized 
+02/05/2023 4:34 PM
+yep
+[yolofant]
+yolofant 02/05/2023 4:34 PM
+I'm just a bit afraid if it also needs newer dependency versions
+02/05/2023 4:33 PM
+yes
+[smx2460]
+smx2460 02/05/2023 4:32 PM
+ahead of time compared to br folks
+02/05/2023 4:32 PM
+either way @Yolofant, if you want newer Kodi we can always change
+kodi.mk ourselves
+02/05/2023 4:27 PM
+@Yolky
+https://github.com/openlgtv/buildroot-nc4/commit/1d1b67a34fa9260993a19f8f931ba302c655b54a
+wayland: downgrade to v1.11.0 · openlgtv/buildroot-nc4@1d1b67a
+[]
+02/05/2023 4:25 PM
+not sure if it makes sense spending extra time making it introspect
+arguments tho... (edited)
+02/05/2023 4:24 PM
+it boils down to this
+02/05/2023 4:24 PM
+    $CC $FLAGS \
+        es2gears.c \
+        glibc_wrap.c glibc_wrap.lds \
+        -o main
+    wl_gen_header(){
+        local input="$1"
+        local output="${input%.*}.h"
+        $WAYLAND_SCANNER -c client-header < "$input" > "$output"
+    }
+    wl_gen_header ./wayland/wayland.xml
+    wl_gen_header ./wayland/webos-shell.xml
+    $CC -fPIC $FLAGS luna.c -shared -o preloaded.so
+    $CC launcher.c -o es2gears
+02/05/2023 4:24 PM
+need to trim it
+02/05/2023 4:24 PM
+it's simple but it's reminiscent of incremental hacks
+02/05/2023 4:23 PM
+the build script not so much
+02/05/2023 4:23 PM
+it's very barebone now
+02/05/2023 4:23 PM
+@infowski done a massive cleanup of the preload library (edited)
+02/05/2023 4:23 PM
+nice then
+02/05/2023 4:23 PM
+[infowski]
+[] smx2460 i strongly doubt RTK and MStar are anywhere near V4L2
+infowski 02/05/2023 4:22 PM
+I am pretty sure vtcapture on k6lp uses v4l2 under the hood 
+[smx2460]
+smx2460 02/05/2023 4:20 PM
+hm some more stuff can be yanked
+02/05/2023 4:20 PM
+and without using dlopen
+02/05/2023 4:20 PM
+using generated
+    #include "wayland/wayland.h"
+    #include "wayland/webos-shell.h"
+02/05/2023 4:19 PM
+much slimmer
+02/05/2023 4:19 PM
+https://gist.github.com/smx-smx/7b045357d7fdddec3bd35b92da61998b
+Webos Wayland surface hook via LD_PRELOAD
+Webos Wayland surface hook via LD_PRELOAD. GitHub Gist: instantly share
+code, notes, and snippets.
+[]
+[yolofant]
+yolofant 02/05/2023 4:18 PM
+https://github.com/sundermann/buildroot-nc4/commit/d4aabcaa701579642fa98c09e4340184c093a90b
+Include new wayland-webos-client stubs · sundermann/buildroot-nc4@d...
+[]
+[smx2460]
+smx2460 02/05/2023 4:15 PM
+    static inline void
+    wl_shell_surface_set_fullscreen(struct wl_shell_surface *wl_shell_surface, uint32_t method, uint32_t framerate, struct wl_output *output)
+    {
+        wl_proxy_marshal((struct wl_proxy *) wl_shell_surface,
+                 WL_SHELL_SURFACE_SET_FULLSCREEN, method, framerate, output);
+    }
+02/05/2023 4:15 PM
+that "method" might be relevant
+02/05/2023 4:15 PM
+CC @infowski
+02/05/2023 4:15 PM
+    #ifndef WL_SHELL_SURFACE_FULLSCREEN_METHOD_ENUM
+    #define WL_SHELL_SURFACE_FULLSCREEN_METHOD_ENUM
+    /**
+     * @ingroup iface_wl_shell_surface
+     * different method to set the surface fullscreen
+     *
+     * Hints to indicate to the compositor how to deal with a conflict
+     * between the dimensions of the surface and the dimensions of the
+     * output. The compositor is free to ignore this parameter.
+     */
+    enum wl_shell_surface_fullscreen_method {
+        /**
+         * no preference, apply default policy
+         */
+        WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT = 0,
+        /**
+         * scale, preserve the surface's aspect ratio and center on output
+         */
+        WL_SHELL_SURFACE_FULLSCREEN_METHOD_SCALE = 1,
+        /**
+         * switch output mode to the smallest mode that can fit the surface, add black borders to compensate size mismatch
+         */
+        WL_SHELL_SURFACE_FULLSCREEN_METHOD_DRIVER = 2,
+        /**
+         * no upscaling, center on output and add black borders to compensate size mismatch
+         */
+        WL_SHELL_SURFACE_FULLSCREEN_METHOD_FILL = 3,
+    };
+    #endif /* WL_SHELL_SURFACE_FULLSCREEN_METHOD_ENUM */
+02/05/2023 4:14 PM
+i just noticed this
+02/05/2023 4:14 PM
+hm!
+02/05/2023 4:14 PM
+still nice work 
+[yolofant]
+yolofant 02/05/2023 4:14 PM
+not yet in buildroot
+[smx2460]
+smx2460 02/05/2023 4:14 PM
+nice work!
+[yolofant]
+yolofant 02/05/2023 4:14 PM
+https://github.com/sundermann/webos-userland/commit/5b818a3bd871adfac58a79374addc0afb8f56a62
+Add wayland-webos-client · sundermann/webos-userland@5b818a3
+[]
+02/05/2023 4:11 PM
+alright done
+[smx2460]
+smx2460 02/05/2023 4:10 PM
+    void *dummy_data;
+02/05/2023 4:10 PM
+inside dummy.c, add a dummy global variable
+02/05/2023 4:10 PM
+so it's better to make the export of the correct type
+02/05/2023 4:10 PM
+those are exported structs (variables) (edited)
+02/05/2023 4:10 PM
+instead of "dummy"
+02/05/2023 4:10 PM
+use "dummy_data" (edited)
+[yolofant]
+yolofant 02/05/2023 4:10 PM
+    "wl_keyboard_interface" = "dummy";
+    "wl_region_interface" = "dummy";
+    "wl_seat_interface" = "dummy";
+    "wl_surface_interface" = "dummy";
+    "wl_webos_accelerometer_interface" = "dummy";
+    "wl_webos_exported_interface" = "dummy";
+    "wl_webos_foreign_interface" = "dummy";
+    "wl_webos_gyroscope_interface" = "dummy";
+    "wl_webos_imported_interface" = "dummy";
+    "wl_webos_input_manager_interface" = "dummy";
+    "wl_webos_seat_interface" = "dummy";
+    "wl_webos_shell_interface" = "dummy";
+    "wl_webos_shell_surface_interface" = "dummy";
+    "wl_webos_surface_group_compositor_interface" = "dummy";
+    "wl_webos_surface_group_interface" = "dummy";
+    "wl_webos_surface_group_layer_interface" = "dummy";
+    "wl_webos_xinput_extension_interface" = "dummy";
+    "wl_webos_xinput_interface" = "dummy";
+[smx2460]
+smx2460 02/05/2023 4:09 PM
+then i'll replace that with -lwebos-client
+02/05/2023 4:09 PM
+i'll add the patchelf in the build script until we have the bindings
+02/05/2023 4:09 PM
+cool that works
+[yolofant]
+yolofant 02/05/2023 4:09 PM
+(no content)
+ message.txt
+35.44 KB External
+[smx2460]
+smx2460 02/05/2023 4:09 PM
+use that, by all means
+02/05/2023 4:09 PM
+if that's the proper name
+02/05/2023 4:08 PM
+changing .xml to .h
+02/05/2023 4:08 PM
+    for file in *.xml; do /mnt/ExtData/buildroot-nc4/output/host/bin/wayland-scanner client-header < "$file" > "${file%.*}.h"; done
+02/05/2023 4:08 PM
+i generated those via
+02/05/2023 4:08 PM
+oh
+[yolofant]
+yolofant 02/05/2023 4:08 PM
+if I look at the headers from the maliit toolchain those are prefixed
+wayland-webos-foreign-client-protocol.h
+[smx2460]
+smx2460 02/05/2023 4:08 PM
+it should be as-if you made the bindings and i linked against them
+02/05/2023 4:07 PM
+(no content)
+ preloaded.so
+34.45 KB External
+[yolofant]
+yolofant 02/05/2023 4:07 PM
+hmm
+[smx2460]
+smx2460 02/05/2023 4:07 PM
+    $ patchelf --add-needed libwayland-webos-client.so.1 preloaded.so
+02/05/2023 4:07 PM
+    $ patchelf --print-needed preloaded.so
+    libEGL.so
+    libGLESv2.so
+    libwayland-client.so.0
+    libwayland-egl.so
+    libffi.so.6
+    libm.so.6
+    libdl.so.2
+    libc.so.6
+02/05/2023 4:07 PM
+i can use patchelf
+02/05/2023 4:07 PM
+meanwhile, as a hack
+02/05/2023 4:06 PM
+focus on the webos extensions
+02/05/2023 4:06 PM
+since it's part of the core wayland protocols that br-nc4 should already
+be installing
+02/05/2023 4:06 PM
+you probably should ignore wayland.h
+02/05/2023 4:05 PM
+(no content)
+ wayland-protocol.zip
+47.79 KB External
+02/05/2023 4:04 PM
+this is how it's ran tho
+02/05/2023 4:04 PM
+    /mnt/ExtData/buildroot-nc4/output/host/bin/wayland-scanner client-header < ./wayland/webos-shell.xml > wayland/webos-shell.h
+[yolofant]
+yolofant 02/05/2023 4:04 PM
+yeah that would be nice
+[smx2460]
+smx2460 02/05/2023 4:03 PM
+i run it for you and send you the output
+02/05/2023 4:03 PM
+if you want to keep it simple
+02/05/2023 4:03 PM
+if you want to do it nicely, you run wayland-scanner from buildroot as
+part of the build
+02/05/2023 4:03 PM
+so yes, we can
+02/05/2023 4:03 PM
+Apache license
+02/05/2023 4:03 PM
+they are from here
+02/05/2023 4:03 PM
+https://github.com/webosose/webos-wayland-extensions/tree/master/protocol
+webos-wayland-extensions/protocol at master · webosose/webos-waylan...
+Wayland protocol extensions for webOS. Contribute to
+webosose/webos-wayland-extensions development by creating an account on
+GitHub.
+[yolofant]
+yolofant 02/05/2023 4:02 PM
+can we?
+02/05/2023 4:02 PM
+yeah but we can't distribute them
+[smx2460]
+smx2460 02/05/2023 4:02 PM
+from wayland-scanner
+02/05/2023 4:02 PM
+we have them
+[yolofant]
+yolofant 02/05/2023 4:02 PM
+what about the headers
+[smx2460]
+smx2460 02/05/2023 4:02 PM
+and link to it in the .lds
+02/05/2023 4:02 PM
+void *dummy_data (edited)
+02/05/2023 4:01 PM
+define a dummy void *
+02/05/2023 4:01 PM
+but they work the same
+02/05/2023 4:01 PM
+these are variables
+02/05/2023 4:01 PM
+    $ nm -D libwayland-webos-client.so.1
+             w _ITM_deregisterTMCloneTable
+             w _ITM_registerTMCloneTable
+             U __aeabi_unwind_cpp_pr0@GCC_3.5
+             U __aeabi_unwind_cpp_pr1@GCC_3.5
+             w __cxa_finalize
+             w __gmon_start__
+    00012b4c D input_method_context_interface
+    00012b04 D input_method_interface
+    00012ae0 D input_panel_interface
+    00012abc D input_panel_surface_interface
+    0001293c D text_model_factory_interface
+    00012960 D text_model_interface
+             U wl_keyboard_interface
+             U wl_region_interface
+             U wl_seat_interface
+             U wl_surface_interface
+    00012c54 D wl_webos_accelerometer_interface
+    00012e4c D wl_webos_exported_interface
+    00012ea0 D wl_webos_foreign_interface
+    00012c84 D wl_webos_gyroscope_interface
+    00012da4 D wl_webos_imported_interface
+    00012cf0 D wl_webos_input_manager_interface
+    00012cb4 D wl_webos_seat_interface
+    000127f8 D wl_webos_shell_interface
+    00012768 D wl_webos_shell_surface_interface
+    0001290c D wl_webos_surface_group_compositor_interface
+    0001287c D wl_webos_surface_group_interface
+    00012828 D wl_webos_surface_group_layer_interface
+    00012d2c D wl_webos_xinput_extension_interface
+    00012d50 D wl_webos_xinput_interface
+02/05/2023 4:01 PM
+egl/libwayland-webos-client.so.1 i think
+02/05/2023 4:00 PM
+which lib exposes wl_webos_shell_surface_interface
+[yolofant]
+yolofant 02/05/2023 4:00 PM
+just wayland-egl
+[smx2460]
+smx2460 02/05/2023 4:00 PM
+let's do it?  (edited)
+02/05/2023 4:00 PM
+i think you don't
+[yolofant]
+yolofant 02/05/2023 4:00 PM
+no
+[smx2460]
+smx2460 02/05/2023 4:00 PM
+do you stub wayland-webos?
+[yolofant]
+yolofant 02/05/2023 4:00 PM
+that should work
+[smx2460]
+smx2460 02/05/2023 4:00 PM
+i could use your stubs
+02/05/2023 4:00 PM
+cleaner
+[yolofant]
+yolofant 02/05/2023 4:00 PM
+yeah
+[smx2460]
+smx2460 02/05/2023 4:00 PM
+then i don't need dlopen either
+02/05/2023 4:00 PM
+if i link the library against wayland-webos
+02/05/2023 3:59 PM
+hmm maybe i can fix it tho
+02/05/2023 3:59 PM
+the autogenerated ones
+02/05/2023 3:59 PM
+    extern const struct wl_interface wl_display_interface;
+02/05/2023 3:59 PM
+stupid wayland headers doing
+02/05/2023 3:59 PM
+meh
+[yolofant]
+yolofant 02/05/2023 3:59 PM
+./kodi.bin: symbol lookup error: ./preloaded.so: undefined symbol:
+wl_webos_shell_surface_interface
+[smx2460]
+smx2460 02/05/2023 3:58 PM
+    wl_gen_header(){
+        local input="$1"
+        local output="${input%.*}.h"
+        $WAYLAND_SCANNER -c client-header < "$input" > "$output"
+    }
+    wl_gen_header ./wayland/wayland.xml
+    wl_gen_header ./wayland/webos-shell.xml
+02/05/2023 3:58 PM
+i converted it to use wayland-scanner
+02/05/2023 3:58 PM
+@Yolofant can you check if this still works?
+02/05/2023 3:57 PM
+(no content)
+ preloaded.so
+29.09 KB External
+[smx2460]
+smx2460 02/05/2023 3:45 PM
+not sure
+[yolofant]
+yolofant 02/05/2023 3:45 PM
+I hope they include kodi 20.0 into next one
+02/05/2023 3:45 PM
+has buildroot a fixed release schedule?
+[smx2460]
+smx2460 02/05/2023 3:40 PM
+let's see if i can generate some proxy for this
+02/05/2023 3:39 PM
+i think that "oiiu" is the argv
+02/05/2023 3:39 PM
+    static const struct wl_message wl_shell_surface_requests[] = {
+            { "pong", "u", wayland_types + 0 },
+            { "move", "ou", wayland_types + 39 },
+            { "resize", "ouu", wayland_types + 41 },
+            { "set_toplevel", "", wayland_types + 0 },
+            { "set_transient", "oiiu", wayland_types + 44 },
+            { "set_fullscreen", "uu?o", wayland_types + 48 },
+            { "set_popup", "ouoiiu", wayland_types + 51 },
+            { "set_maximized", "?o", wayland_types + 57 },
+            { "set_title", "s", wayland_types + 0 },
+            { "set_class", "s", wayland_types + 0 },
+    };
+02/05/2023 3:39 PM
+among others
+02/05/2023 3:39 PM
+    static const struct wl_message wl_shell_requests[] = {
+            { "get_shell_surface", "no", wayland_types + 37 },
+    };
+    WL_EXPORT const struct wl_interface wl_shell_interface = {
+            "wl_shell", 1,
+            1, wl_shell_requests,
+            0, NULL,
+    };
+02/05/2023 3:38 PM
+i get
+02/05/2023 3:38 PM
+    wayland-scanner public-code < wayland.xml
+02/05/2023 3:38 PM
+if i run
+02/05/2023 3:38 PM
+so
+02/05/2023 3:33 PM
+gtk, bleah
+02/05/2023 3:33 PM
+https://github.com/Rafostar/clapper
+GitHub - Rafostar/clapper: A GNOME media player built using GJS wit...
+A GNOME media player built using GJS with GTK4 toolkit and powered by
+GStreamer with OpenGL rendering. - GitHub - Rafostar/clapper: A GNOME
+media player built using GJS with GTK4 toolkit and powere...
+[]
+02/05/2023 3:31 PM
+yeah has vaapi and vdpau
+02/05/2023 3:30 PM
+to view it inside vlc
+02/05/2023 3:30 PM
+you'd need to run a gstreamer pipeline in the background
+[yolofant]
+yolofant 02/05/2023 3:30 PM
+it does not
+[smx2460]
+smx2460 02/05/2023 3:30 PM
+it also doesn't use gst i think
+02/05/2023 3:30 PM
+but then
+02/05/2023 3:29 PM
+    Might need to set your QT environment, as vlc is built on QT.
+02/05/2023 3:29 PM
+could we get vlc to run?
+02/05/2023 3:29 PM
+hm i wonder
+02/05/2023 3:28 PM
+it's all a mess
+02/05/2023 3:27 PM
+yeah it's not
+02/05/2023 3:27 PM
+i'm not sure if Movian is new enough to use Wayland
+02/05/2023 3:27 PM
+also
+[yolofant]
+yolofant 02/05/2023 3:27 PM
+NDL or ss4s should work
+[smx2460]
+smx2460 02/05/2023 3:26 PM
+yeah if it's not there it needs a GStreamer backend
+[yolofant]
+yolofant 02/05/2023 3:26 PM
+yeah but even OMX won't work on LX
+[smx2460]
+smx2460 02/05/2023 3:26 PM
+OMX_GetParameter is one of the OMX functions
+02/05/2023 3:25 PM
+and the RPI port uses OMX
+02/05/2023 3:25 PM
+Android/Linux generic/RPI
+02/05/2023 3:25 PM
+SunXi
+02/05/2023 3:25 PM
+it runs on freaking Playstation 3
+02/05/2023 3:25 PM
+i mean
+02/05/2023 3:24 PM
+Movian is so much more flexible than Kodi, lol
+02/05/2023 3:24 PM
+https://github.com/andoma/movian/tree/master/src/arch/rpi
+movian/src/arch/rpi at master · andoma/movian
+An advanced media center. Contribute to andoma/movian development by
+creating an account on GitHub.
+[]
+02/05/2023 3:23 PM
+i strongly doubt RTK and MStar are anywhere near V4L2
+[yolofant]
+yolofant 02/05/2023 3:22 PM
+but there are /dev/video* devices also dedicated to decoding I think
+[smx2460]
+smx2460 02/05/2023 3:22 PM
+i'd be shocked lol
+[yolofant]
+yolofant 02/05/2023 3:21 PM
+the lg stuff also uses v4l2 but no idea if everything is implemented
+correctly
+02/05/2023 3:21 PM
+yeah it's a bit unfortunate they don't use gstreamer
+[smx2460]
+smx2460 02/05/2023 3:21 PM
+     with KODI v19 we are working towards a v4l2 pipeline for anything linux based. So if the chipset of your jetson nano will have proper linux kernel support in regards to v4l2, KODI will run just fine with it. 
+02/05/2023 3:21 PM
+which i guess Kodi doesn't use because it's lame
+02/05/2023 3:21 PM
+well... gstreamer has its own APIs
+02/05/2023 3:20 PM
+only reference
+[yolofant]
+yolofant 02/05/2023 3:20 PM
+but there's no omx* plugins for gstreamer
+[smx2460]
+smx2460 02/05/2023 3:20 PM
+lol
+02/05/2023 3:20 PM
+https://github.com/mariotaku/moonlight-tv/issues/58
+[BUG] Crash during session · Issue #58 · mariotaku/moonlight-tv
+Created Time = &lt; REALTIME 2021-04-17T08:12:46.962219 MONOTONIC_TIME
+[3758.287290873] &gt; Starfish Info =&gt; Rockhopper release 4.9.0-53804
+(goldilocks2-gyeryongsan) Machine Info =&...
+[]
+[yolofant]
+yolofant 02/05/2023 3:20 PM
+    ./rootfs.pak.unsquashfs/usr/lib/libStarfishCameraPlayer.so.1.0.0
+    omxmjpegdec
+    appsrc name=dec_src ! omxmjpegdec resource-info="test,core-type=IP1,video-port=%d" ! capsfilter caps="video/x-raw(memory:DMABuf), format=(string)NV12" ! appsink name=dec_sink
+    appsrc name=dec_src ! omxmjpegdec app-type="RTCCAMERA" port=%d ! appsink name=dec_sink
+    appsrc name=enc_src ! omxh264enc name=enc ! capsfilter caps="video/x-h264, width=(int)%d, height=(int)%d" ! appsink name=enc_sink
+    appsrc name=source ! omxmjpegdec resource-info="test,core-type=IP1,video-port=%d" ! glimagesink name=sink force-aspect-ratio=false show-preroll-frame=true sync=false
+    appsrc name=source ! omxmjpegdec app-type="RTCCAMERA" port=%d ! glimagesink name=sink force-aspect-ratio=false show-preroll-frame=true sync=false
+02/05/2023 3:19 PM
+but it's only a very few
+[smx2460]
+smx2460 02/05/2023 3:19 PM
+print all exports from that lib
+02/05/2023 3:19 PM
+hmmm
+[yolofant]
+yolofant 02/05/2023 3:19 PM
+    ./rootfs.pak.unsquashfs/usr/lib/gstreamer-1.0/libgstlxvideodec.so
+    omx_lxvideodec
+    ./rootfs.pak.unsquashfs/usr/lib/gstreamer-1.0/libgstlxvideosink.so
+    omx_lxvideosink
+02/05/2023 3:19 PM
+there is a couple of omx strings
+02/05/2023 3:19 PM
+I guess they use their vdec stuff
+[smx2460]
+smx2460 02/05/2023 3:19 PM
+proprietary through starfish pipeline?
+02/05/2023 3:18 PM
+so what are they using for video playback
+02/05/2023 3:18 PM
+wow
+[yolofant]
+[] smx2460 anything with "omx" in its filename?
+yolofant 02/05/2023 3:18 PM
+nope
+[smx2460]
+smx2460 02/05/2023 3:18 PM
+need to see what it generates
+02/05/2023 3:18 PM
+    wayland-scanner private-code < protocol.xml > protocol.c
+02/05/2023 3:18 PM
+@hellobox https://wayland-book.com/libwayland/wayland-scanner.html
+wayland-scanner - The Wayland Protocol
+02/05/2023 3:17 PM
+OMX_Init i mean
+02/05/2023 3:17 PM
+maybe it was a MTK specific interface
+02/05/2023 3:17 PM
+anything with "omx" in its filename? (edited)
+[yolofant]
+yolofant 02/05/2023 3:17 PM
+nothing
+[smx2460]
+smx2460 02/05/2023 3:15 PM
+i expect a OMX_Init somewhere
+[yolofant]
+yolofant 02/05/2023 3:15 PM
+not something omx related
+02/05/2023 3:14 PM
+afaik gstreamer uses gstlxvideosink
+02/05/2023 3:14 PM
+I don't know how OMX works when there is LX stuff
+02/05/2023 3:14 PM
+need to grep
+02/05/2023 3:14 PM
+I haven't seen omx anywhere on my tv
+02/05/2023 3:13 PM
+need to check
+[smx2460]
+smx2460 02/05/2023 3:13 PM
+did you see if OMX_Init is declared anywhere in your libs?
+02/05/2023 3:13 PM
+to see if we can get omxplayer to do anything
+[yolofant]
+yolofant 02/05/2023 3:13 PM
+yeah
+[smx2460]
+smx2460 02/05/2023 3:12 PM
+maybe as a next commit
+[smx2460]
+[] smx2460 `gst-omx` + `omxplayer`, interesting
+smx2460 02/05/2023 3:12 PM
+i don't care about gtk3, but i might want to attack these
+[yolofant]
+yolofant 02/05/2023 3:12 PM
+but that might be a dependency of omxplayer
+[smx2460]
+smx2460 02/05/2023 3:12 PM
+gtk3 was enabled? lol
+[yolofant]
+yolofant 02/05/2023 3:12 PM
+gtk3 was also disabled
+[smx2460]
+smx2460 02/05/2023 3:12 PM
+gst-omx + omxplayer, interesting
+02/05/2023 3:11 PM
+i think we don't care for now
+02/05/2023 3:11 PM
+yea
+[yolofant]
+yolofant 02/05/2023 3:11 PM
+I don't think it's important for now
+02/05/2023 3:11 PM
+but it disabled some omx stuff as a consequence
+[yolofant]
+[] smx2460 the important bit is making oldconfig after whatever you do
+yolofant 02/05/2023 3:11 PM
+https://github.com/openlgtv/buildroot-nc4/pull/14/commits/b015f21b257d1f41a0859da3db75bc6a99c5a239
+Add webos-userland by sundermann · Pull Request #14 · openlgtv/buil...
+Add stubs for EGL, GLESv1/v2 and wayland-egl. Can be used in favour of
+rpi-userland
+[]
+[smx2460]
+smx2460 02/05/2023 3:10 PM
+you can't make "blind" exports
+02/05/2023 3:09 PM
+right now, you must have the prototype figured out in order to have the
+export
+02/05/2023 3:09 PM
+i could still link against the .so
+02/05/2023 3:09 PM
+if you didn't document some function, and i know its prototype
+02/05/2023 3:09 PM
+aka
+02/05/2023 3:09 PM
+you would still export everything
+02/05/2023 3:09 PM
+and
+02/05/2023 3:09 PM
+"we have 100 functions exported, 80 documented"
+02/05/2023 3:08 PM
+and you can make statistics like
+02/05/2023 3:08 PM
+you need to basically make a .h files where you gradually document the
+known exports
+02/05/2023 3:08 PM
+then
+02/05/2023 3:08 PM
+nm -D original.so | grep ... > original.lds
+02/05/2023 3:08 PM
+which could in fact be autogenerated from original libraries
+02/05/2023 3:08 PM
+replacing them with .lds
+02/05/2023 3:08 PM
+looking at the repo structure, the changes would be that you'd keep the
+.h files and drop all stub .c files
+02/05/2023 3:07 PM
+to avoid getting spammed with warnings about unused arguments
+02/05/2023 3:07 PM
+or disable the respective compiler warning
+[smx2460]
+[] smx2460 i noticed in tv-native-apis you have stuff like this ```c int
+LGNC_DIRECTAUDIO_CheckBuffer(int *len...
+smx2460 02/05/2023 3:07 PM
+you'd need to mark all arguments unused
+[smx2460]
+smx2460 02/05/2023 3:07 PM
+also, thinking about it
+02/05/2023 3:06 PM
+and rpi-userland builds broadcom specific stuff that -> we don't need ->
+breaks if i update the headers (i tried)
+02/05/2023 3:06 PM
+since new LG TVs implement EGL features that aren't defined in those
+headers
+02/05/2023 3:05 PM
+which contains outdated and customized Broadcom EGL headers (edited)
+02/05/2023 3:05 PM
+so we can drop rpi-userland
+02/05/2023 3:05 PM
+we're building a new stub set for EGL/GLES
+02/05/2023 3:05 PM
+here is the implementation
+02/05/2023 3:05 PM
+https://github.com/sundermann/webos-userland
+GitHub - sundermann/webos-userland
+Contribute to sundermann/webos-userland development by creating an
+account on GitHub.
+02/05/2023 3:05 PM
+(export aliases)
+02/05/2023 3:05 PM
+exports the same function multiple times with different names (edited)
+02/05/2023 3:05 PM
+or rather
+02/05/2023 3:05 PM
+the stub library defines multiple aliases to the same function
+02/05/2023 3:04 PM
+and you just ship a header file
+[mariotaku]
+mariotaku 02/05/2023 3:04 PM
+wow.
+[smx2460]
+smx2460 02/05/2023 3:04 PM
+now you don't need to care anymore about signatures in the .c file
+02/05/2023 3:04 PM
+    "eglBindAPI" = "dummy";
+    "eglBindTexImage" = "dummy";
+    "eglChooseConfig" = "dummy";
+    "eglClientWaitSyncKHR" = "dummy";
+    "eglCopyBuffers" = "dummy";
+    "eglCreateContext" = "dummy";
+    "eglCreateImageKHR" = "dummy";
+    "eglCreatePbufferFromClientBuffer" = "dummy";
+    "eglCreatePbufferSurface" = "dummy";
+    "eglCreatePixmapSurface" = "dummy";
+    "eglCreateSyncKHR" = "dummy";
+    "eglCreateWindowSurface" = "dummy";
+    "eglDestroyContext" = "dummy";
+    "eglDestroyImageKHR" = "dummy";
+    "eglDestroySurface" = "dummy";
+    "eglDestroySyncKHR" = "dummy";
+    "eglGetConfigAttrib" = "dummy";
+    "eglGetConfigs" = "dummy";
+    ...
+02/05/2023 3:04 PM
+and make a .lds file for each library, with
+02/05/2023 3:04 PM
+    void dummy(void) {}
+02/05/2023 3:04 PM
+make one single .c file which has
+02/05/2023 3:04 PM
+which is the following
+02/05/2023 3:04 PM
+you can do what i recommented to @Yolofant
+02/05/2023 3:04 PM
+instead of doing this
+[smx2460]
+[] mariotaku I need to catch up. Are you talking about generating some
+headers automatically from binary dump?
+smx2460 02/05/2023 3:04 PM
+i noticed in tv-native-apis you have stuff like this
+    int LGNC_DIRECTAUDIO_CheckBuffer(int *length) { return 0; }
+    int LGNC_DIRECTAUDIO_Close() { return 0; }
+    int LGNC_DIRECTAUDIO_Open(LGNC_ADEC_DATA_INFO_T *info) { return 0; }
+    int LGNC_DIRECTAUDIO_Play(const void *data, unsigned int size) { return 0; }
+[mariotaku]
+[] smx2460 I wonder if we could refactor tv-native-apis to use this
+format
+mariotaku 02/05/2023 3:03 PM
+I need to catch up. Are you talking about generating some headers
+automatically from binary dump?
+[smx2460]
+smx2460 02/05/2023 3:03 PM
+the important bit is making oldconfig after whatever you do
+02/05/2023 3:03 PM
+repeat for the other
+02/05/2023 3:02 PM
+    make webos_tv_defconfig
+    make menuconfig / edit manually
+    make oldconfig
+    cat .config > configs/webos_tv_defconfig
+02/05/2023 3:02 PM
+i normally do
+02/05/2023 3:02 PM
+back
+[yolofant]
+yolofant 02/05/2023 2:59 PM
+do I just edit those files manually?
+02/05/2023 2:58 PM
+alright
+[smx2460]
+[] yolofant do I update the webos config only or also the lgtv one?
+smx2460 02/05/2023 2:58 PM
+Both, if it's enabled on both
+[smx2460]
+smx2460 02/05/2023 2:57 PM
+CC @Mariotaku
+02/05/2023 2:57 PM
+Instead of having many functions returning 0
+[yolofant]
+yolofant 02/05/2023 2:57 PM
+do I update the webos config only or also the lgtv one?
+[smx2460]
+smx2460 02/05/2023 2:57 PM
+I wonder if we could refactor tv-native-apis to use this format
+[yolofant]
+yolofant 02/05/2023 2:57 PM
+(not on LX)
+02/05/2023 2:57 PM
+opencl is also available on some vendors
+02/05/2023 2:56 PM
+yeah, maybe we include OMX
+[smx2460]
+smx2460 02/05/2023 2:56 PM
+I like it 
+02/05/2023 2:56 PM
+And we can also define as many stubs as we like this way
+02/05/2023 2:56 PM
+Now that we have a better way
+02/05/2023 2:56 PM
+Makes no sense to keep rpi
+[smx2460]
+[] yolofant you wanna include them instead of rpi-userland by default?
+smx2460 02/05/2023 2:56 PM
+Yep
+[smx2460]
+smx2460 02/05/2023 2:56 PM
+I'll look at the wayland logger thing in 5 minutes
+[yolofant]
+yolofant 02/05/2023 2:56 PM
+you wanna include them instead of rpi-userland by default?
+02/05/2023 2:55 PM
+yeah
+[smx2460]
+smx2460 02/05/2023 2:55 PM
+We'll need to add it to defconfig 
+[smx2460]
+[] yolofant let me do webos-userland first
+smx2460 02/05/2023 2:55 PM
+Ack
+[yolofant]
+yolofant 02/05/2023 12:38 PM
+let me do webos-userland first
+[smx2460]
+smx2460 02/05/2023 12:34 PM
+how you feel like
+[smx2460]
+[] yolofant the webos-userland stuff or also kodi?
+smx2460 02/05/2023 12:34 PM
+both?
+[yolofant]
+[] smx2460 <@195583665265311744> you can upload the br patches, if you
+want
+yolofant 02/05/2023 12:27 PM
+the webos-userland stuff or also kodi?
+[smx2460]
+smx2460 02/05/2023 10:59 AM
+@Yolofant you can upload the br patches, if you want
+[smx2460]
+hellobox. what```xml <request name="set_toplevel"> <description
+summary="set the surface type as a k...
+smx2460 02/05/2023 10:19 AM
+Lol
+[infowski]
+infowski 02/05/2023 8:54 AM
+PRIME is like part of the support for multi-gpu Nvidia Optimus kind of
+setups? I don't know.
+02/05/2023 8:53 AM
+https://dri.freedesktop.org/docs/drm/gpu/drm-uapi.html there.
+[infowski]
+hellobox. btw i see stuff in `/proc/kallsyms` about (apparently) "drm
+prime", which i recall being supported b...
+infowski 02/05/2023 8:42 AM
+Yeah, that's GPU acceleration-adjacent API exposed by the kernel (?),
+but I don't think LG uses it.
+hellobox. 02/05/2023 6:52 AM
+btw i see stuff in /proc/kallsyms about (apparently) "drm prime", which
+i recall being supported by kodi
+02/05/2023 6:49 AM
+nothing in /usr/bin or /usr/sbin
+02/05/2023 6:43 AM
+is it coming from the kernel?
+02/05/2023 6:42 AM
+that's the only place it was found in all the files under /usr/lib
+02/05/2023 6:42 AM
+that's it
+hellobox. 02/05/2023 4:00 AM
+well, it's here:
+    ./gstreamer-1.0/libgstwaylandsink.so:zwp_linux_dmabuf_v1_interface
+    ./gstreamer-1.0/libgstwaylandsink.so:Could not bind to zwp_linux_dmabuf_v1
+02/05/2023 3:59 AM
+nothing
+02/05/2023 3:59 AM
+i'm searching my entire /usr/lib for zwp_linux_dmabuf_v1
+hellobox. 02/05/2023 1:47 AM
+since we don't know what the different values for enter_key_type can be
+02/05/2023 1:47 AM
+these files aren't enough to figure out what things mean:
+        <request name="set_enter_key_type">
+          <description summary="set type of enter key">
+            Sets the type of the enter key on an input panel (virtual keyboard).
+          </description>
+          <arg name="enter_key_type" type="uint"/>
+        </request>
+02/05/2023 1:46 AM
+and forgot to change the name
+02/05/2023 1:46 AM
+(i.e., the part with set_toplevel)
+02/05/2023 1:46 AM
+it's like they copied a chunk from the core wayland protocol xml
+02/05/2023 1:45 AM
+i'm just pointing out that it's weird
+02/05/2023 1:45 AM
+i'm not saying it's relevant
+[yolofant]
+yolofant 02/05/2023 1:45 AM
+but that is input related
+hellobox. 02/05/2023 1:45 AM
+it's called set_toplevel, but it does... something else?
+[yolofant]
+yolofant 02/05/2023 1:45 AM
+not implemented?
+hellobox. 02/05/2023 1:44 AM
+https://github.com/webosose/webos-wayland-extensions/blob/master/protocol/input-method.xml#L302-L309
+02/05/2023 1:44 AM
+what
+        <request name="set_toplevel">
+          <description summary="set the surface type as a keyboard">
+            An input panel surface is only shown, when a text model is active.
+            Not implemented.
+          </description>
+          <arg name="position" type="uint"/>
+        </request>
+[yolofant]
+yolofant 02/05/2023 1:43 AM
+there is starfish pipeline
+hellobox. 02/05/2023 1:43 AM
+here are the qt extensions:
+https://github.com/qt/qtwayland/tree/dev/src/extensions
+02/05/2023 1:43 AM
+yeah
+[yolofant]
+yolofant 02/05/2023 1:43 AM
+might be video output related
+hellobox. 02/05/2023 1:42 AM
+it might be useful to us though
+02/05/2023 1:42 AM
+which isn't surprising
+02/05/2023 1:42 AM
+it's not in the webos extensions repo
+02/05/2023 1:41 AM
+i wonder what wl_starfish_output is
+02/05/2023 1:41 AM
+because i think i've seen references to it somewhere gpu-related
+02/05/2023 1:41 AM
+that's the only one i even suspected was used
+02/05/2023 1:40 AM
+so i guess i was wrong about wayland-protocols
+[smx2460]
+smx2460 02/05/2023 1:38 AM
+https://gitlab.freedesktop.org/wayland/wayland/-/issues/59
+Add device FD to zwp_linux_dmabuf_v1 (#59) · Issues · wayland / way...
+We provide zwp_linux_dmabuf_v1 for the compositor to advertise supported
+DRM formats and modifiers, and for clients to subsequently then create
+new wl_buffers from a set of dmabufs &...
+[]
+02/05/2023 1:38 AM
+https://chromium.googlesource.com/chromium/src.git/+/51.0.2673.1/third_party/wayland-protocols/include/protocol/linux-dmabuf-unstable-v1-client-protocol.h
+[yolofant]
+yolofant 02/05/2023 1:37 AM
+but I saw it being called
+02/05/2023 1:37 AM
+maybe it's in some of the logs I posted
+hellobox. 02/05/2023 1:37 AM
+i'm pretty sure i searched for that string in my wayland/egl libs
+(edited)
+02/05/2023 1:37 AM
+where does zwp_linux_dmabuf_v1 come from?!
+[smx2460]
+[] yolofant wl_mali is called
+smx2460 02/05/2023 1:36 AM
+oh?
+hellobox. 02/05/2023 1:36 AM
+is that from kodi?
+02/05/2023 1:36 AM
+wow, zwp_linux_dmabuf_v1?
+[smx2460]
+smx2460 02/05/2023 1:35 AM
+    registry hook: wl_webos_input_manager
+    registry hook: wl_seat
+    registry hook: wl_shell
+    registry hook: wl_output
+    registry hook: wl_seat
+[yolofant]
+yolofant 02/05/2023 1:35 AM
+wl_mali is called
+[smx2460]
+smx2460 02/05/2023 1:35 AM
+    registry hook: zwp_linux_dmabuf_v1
+    registry hook: wl_seat
+    registry hook: text_model_factory
+    registry hook: input_method
+    registry hook: input_panel
+    registry hook: wl_webos_xinput_extension
+    registry hook: wl_starfish_output
+    registry hook: wl_starfish_pointer
+    registry hook: wl_webos_shell
+02/05/2023 1:35 AM
+in that log
+02/05/2023 1:35 AM
+but i didn't see calls to wl_mali
+hellobox. 02/05/2023 1:35 AM
+ugh, qt also
+02/05/2023 1:35 AM
+idk
+02/05/2023 1:35 AM
+although maybe
+02/05/2023 1:35 AM
+because they probably never distributed an xml version
+[smx2460]
+smx2460 02/05/2023 1:35 AM
+    registry hook: wl_webos_surface_group_compositor
+    registry hook: wl_webos_foreign
+    registry hook: wl_compositor
+    registry hook: wl_subcompositor
+    registry hook: wl_data_device_manager
+    registry hook: wl_shm
+    registry hook: qt_hardware_integration
+    registry hook: wl_mali
+hellobox. 02/05/2023 1:35 AM
+i doubt there are leaks of it
+[smx2460]
+[] yolofant Click to see attachment
+smx2460 02/05/2023 1:35 AM
+see here
+hellobox. 02/05/2023 1:34 AM
+hmm
+[smx2460]
+smx2460 02/05/2023 1:34 AM
+would be surprised otherwise
+hellobox. 02/05/2023 1:34 AM
+i assume
+[smx2460]
+smx2460 02/05/2023 1:34 AM
+isn't it (edited)
+02/05/2023 1:34 AM
+but....it's proprietary
+hellobox. 02/05/2023 1:34 AM
+hmm
+[smx2460]
+smx2460 02/05/2023 1:34 AM
+there's wl_mali
+hellobox. 02/05/2023 1:34 AM
+like anything mali-specific?
+02/05/2023 1:34 AM
+i don't know if anything else is used on webos
+[] Smx pinned a message to this channel. See all pinned messages.
+2/5/23, 1:34 AM
+hellobox. 02/05/2023 1:33 AM
+https://github.com/wayland-project/wayland/blob/1.11.0/protocol/wayland.xml
+(edited)
+[smx2460]
+smx2460 02/05/2023 1:33 AM
+i'm tired now and i'm going to  too
+02/05/2023 1:33 AM
+tomorrow i'll write something
+hellobox. 02/05/2023 1:33 AM
+then there's wayland-protocols, which is not used on webos
+[smx2460]
+smx2460 02/05/2023 1:32 AM
+ye
+hellobox. 02/05/2023 1:32 AM
+plus the core protocol/wayland.xml (edited)
+[smx2460]
+smx2460 02/05/2023 1:32 AM
+also want the stock wayland ones
+hellobox. 02/05/2023 1:32 AM
+https://github.com/webosose/webos-wayland-extensions/tree/master/protocol
+[smx2460]
+smx2460 02/05/2023 1:32 AM
+to log wayland calls
+02/05/2023 1:32 AM
+and then publish this tool as a useful wayland debugger 
+02/05/2023 1:32 AM
+i can write up a generator
+02/05/2023 1:32 AM
+if you say there's an XML spec
+02/05/2023 1:32 AM
+yea
+02/05/2023 1:32 AM
+or autogen it from XML?
+hellobox. 02/05/2023 1:32 AM
+you could write something or hack up one of the existing scanners
+[smx2460]
+smx2460 02/05/2023 1:31 AM
+but i need to sit down and make a dumper for each heh
+02/05/2023 1:31 AM
+i mean, we know them
+hellobox. 02/05/2023 1:31 AM
+that's what the xml protocol files are for
+[smx2460]
+smx2460 02/05/2023 1:31 AM
+to know how many args it has
+[yolofant]
+yolofant 02/05/2023 1:31 AM
+gonna try that tomorrow
+[smx2460]
+smx2460 02/05/2023 1:31 AM
+dumping all arguments would require knowing proxy+opcode
+02/05/2023 1:31 AM
+basically
+hellobox. 02/05/2023 1:31 AM
+wayland is a bit weird
+[smx2460]
+smx2460 02/05/2023 1:30 AM
+    struct wl_proxy *
+    wl_proxy_marshal_array_constructor_versioned(struct wl_proxy *proxy,
+                             uint32_t opcode,
+                             union wl_argument *args,
+                             const struct wl_interface *interface,
+                             uint32_t version)
+    {
+02/05/2023 1:30 AM
+because call args are variadic (edited)
+02/05/2023 1:30 AM
+but then my code has to be more complex
+02/05/2023 1:30 AM
+better yet would be to dump the call arguments
+02/05/2023 1:29 AM
+with preloaded.so
+02/05/2023 1:29 AM
+and in kodi
+02/05/2023 1:29 AM
+@Yolofant you could try observing the order of calls in es2gears
+02/05/2023 1:27 AM
+02/05/2023 1:27 AM
+lessons of Polish. first word: shit
+02/05/2023 1:26 AM
+hellobox. 02/05/2023 1:26 AM
+thanks to @infowski
+[smx2460]
+smx2460 02/05/2023 1:26 AM
+:p
+hellobox. 02/05/2023 1:26 AM
+that's the only polish word i know
+02/05/2023 1:26 AM
+gowno
+[smx2460]
+[] infowski ok, gotta go, good night everyone!
+smx2460 02/05/2023 1:25 AM
+Dobranoc
+[yolofant]
+yolofant 02/05/2023 1:25 AM
+yeah
+[smx2460]
+smx2460 02/05/2023 1:24 AM
+> diff -rbu orig output/build/kodi > kodi.patch (edited)
+02/05/2023 1:24 AM
+and that's your patch
+02/05/2023 1:23 AM
+then take a diff, excluding object files and whatever
+02/05/2023 1:23 AM
+call it "orig"
+02/05/2023 1:23 AM
+you extract dl/kodi*/whatever into a new dir
+[yolofant]
+yolofant 02/05/2023 1:23 AM
+yeah or stash changes
+[smx2460]
+[] yolofant it would be a bit more convenient if it was checked out as a
+git repo
+smx2460 02/05/2023 1:23 AM
+to make a diff?
+[yolofant]
+yolofant 02/05/2023 1:23 AM
+it would be a bit more convenient if it was checked out as a git repo
+[smx2460]
+smx2460 02/05/2023 1:23 AM
+and delete the "built" timestamp file (edited)
+[smx2460]
+[] infowski not sure how much of a PITA it is to quickly patch up
+software built via buildroot
+smx2460 02/05/2023 1:22 AM
+zero, edit output/build/kodi*/my_file.cpp (edited)
+[yolofant]
+yolofant 02/05/2023 12:59 AM
+but the log is being spammed
+02/05/2023 12:59 AM
+    2023-02-04 23:56:12.969 T:22080   DEBUG <general>: PresentFrame: finish prepare frame presentation
+    2023-02-04 23:56:12.969 T:22080   DEBUG <general>: PresentFrame: get main surface commit
+    2023-02-04 23:56:12.969 T:22080   DEBUG <general>: PresentFrame: finish get main surface commit
+    2023-02-04 23:56:12.969 T:22080   DEBUG <general>: PresentFrame: flush
+    2023-02-04 23:56:12.969 T:22080   DEBUG <general>: PresentFrame: finish flush
+    2023-02-04 23:56:13.017 T:22080   DEBUG <general>: PresentFrame: prepare frame presentation
+    2023-02-04 23:56:13.018 T:22080   DEBUG <general>: PresentFrame: finish prepare frame presentation
+02/05/2023 12:59 AM
+sometimes it also hits the other path
+02/05/2023 12:59 AM
+yeah
+[infowski]
+infowski 02/05/2023 12:58 AM
+Not just once?
+[infowski]
+[] yolofant ```2023-02-04 23:56:00.362 T:22080 DEBUG <general>: ------
+Window Init () ------ 2023-02-04 23:56:...
+infowski 02/05/2023 12:58 AM
+...and I am guessing it's doing it constantly?
+[yolofant]
+[] infowski ok, gotta go, good night everyone!
+yolofant 02/05/2023 12:58 AM
+[:Bedge:]
+[yolofant]
+yolofant 02/05/2023 12:58 AM
+    2023-02-04 23:56:00.362 T:22080   DEBUG <general>: ------ Window Init () ------
+    2023-02-04 23:56:00.411 T:22115   DEBUG <general>: Version Check: Version 0.5.19+matrix.1 started
+    2023-02-04 23:56:00.412 T:22080   DEBUG <general>: PresentFrame: prepare frame presentation
+    2023-02-04 23:56:00.412 T:22080   DEBUG <general>: PresentFrame: finish prepare frame presentation
+    2023-02-04 23:56:00.413 T:22080   DEBUG <general>: PresentFrame: try swap buffers
+    2023-02-04 23:56:00.430 T:22080   DEBUG <general>: PresentFrame: prepare frame presentation
+    2023-02-04 23:56:00.430 T:22080   DEBUG <general>: PresentFrame: finish prepare frame presentation
+[infowski]
+infowski 02/05/2023 12:57 AM
+ok, gotta go, good night everyone!
+[yolofant]
+yolofant 02/05/2023 12:57 AM
+    void CWinSystemWaylandEGLContext::PresentFrame(bool rendered)
+    {
+      CLog::LogF(LOGDEBUG, "prepare frame presentation");
+      PrepareFramePresentation();
+      CLog::LogF(LOGDEBUG, "finish prepare frame presentation");
+      if (rendered)
+      {
+        CLog::LogF(LOGDEBUG, "try swap buffers");
+        if (!m_eglContext.TrySwapBuffers())
+        {
+          // For now we just hard fail if this fails
+          // Theoretically, EGL_CONTEXT_LOST could be handled, but it needs to be checked
+          // whether egl implementations actually use it (mesa does not)
+          CEGLUtils::Log(LOGERROR, "eglSwapBuffers failed");
+          throw std::runtime_error("eglSwapBuffers failed");
+        }
+        // eglSwapBuffers() (hopefully) calls commit on the surface and flushes
+        // ... well mesa does anyway
+      }
+      else
+      {
+        // For presentation feedback: Get notification of the next vblank even
+        // when contents did not change
+        CLog::LogF(LOGDEBUG, "get main surface commit");
+        GetMainSurface().commit();
+        CLog::LogF(LOGDEBUG, "finish get main surface commit");
+        // Make sure it reaches the compositor
+        CLog::LogF(LOGDEBUG, "flush");
+        GetConnection()->GetDisplay().flush();
+        CLog::LogF(LOGDEBUG, "finish flush");
+      }
+      FinishFramePresentation();
+    }
+(edited)
+02/05/2023 12:52 AM
+alright compiling now
+02/05/2023 12:47 AM
+it's ok
+[infowski]
+infowski 02/05/2023 12:46 AM
+not sure how much of a PITA it is to quickly patch up software built via
+buildroot
+02/05/2023 12:45 AM
+I'd try adding some debugging log messages around
+xbmc/windowing/wayland/WinSystemWaylandEGLContext.cpp:void CWinSystemWaylandEGLContext::PresentFrame(bool rendered)
+for example. (edited)
+02/05/2023 12:44 AM
+I don't think that's rendered by kodi...
+[yolofant]
+hellobox.
+https://discord.com/channels/407937994037919756/835489130967859251/1070157578702704681
+yolofant 02/05/2023 12:38 AM
+that one works too 
+[infowski]
+infowski 02/05/2023 12:35 AM
+too bad it's in obj-c
+02/05/2023 12:35 AM
+btw I really like the fact they seemingly use SDL on osx
+[] yolofant hmm not that one
+hellobox. 02/05/2023 12:32 AM
+https://discord.com/channels/407937994037919756/835489130967859251/1070157578702704681
+[yolofant]
+yolofant 02/05/2023 12:28 AM
+es2gears + preloaded.so
+[infowski]
+infowski 02/05/2023 12:28 AM
+Sure, at least we know something works.
+[yolofant]
+yolofant 02/05/2023 12:27 AM
+but I had a es2gears running at some point
+02/05/2023 12:27 AM
+hmm not that one
+[infowski]
+infowski 02/05/2023 12:27 AM
+@Yolofant just to make sure - you got the es3gears demo to work on your
+TV, right?
+https://github.com/throwaway96/es3gears/blob/master/es3gears.c
+es3gears/es3gears.c at master · throwaway96/es3gears
+GLES3 gears for webOS. Contribute to throwaway96/es3gears development by
+creating an account on GitHub.
+[]
+02/05/2023 12:26 AM
+Yeah, I am just wondering what may be wrong.
+[yolofant]
+yolofant 02/05/2023 12:22 AM
+it's just not showing on the screen
+02/05/2023 12:22 AM
+i.e. I got it to read the video library
+02/05/2023 12:22 AM
+if I press keys on the remotes I can see debug output being generated
+02/05/2023 12:22 AM
+kodi is actually running
+[infowski]
+infowski 02/05/2023 12:20 AM
+mhm...
+[yolofant]
+yolofant 02/05/2023 12:19 AM
+    XDG_RUNTIME_DIR=/tmp/xdg \
+    WAYLAND_DISPLAY="wayland-0" \
+    LD_LIBRARY_PATH=. \
+    LD_PRELOAD=preloaded.so \
+    PATH=/home/root/kodi/bin \
+    PYTHONHOME=/home/root/kodi/lib/kodi/python3.10 \
+    PYTHONPATH=/home/root/kodi/lib/kodi/python3.10::/home/root/kodi/lib/kodi/python3.10/lib-dynload::/home/root/kodi/lib/kodi/python3.10/site-packages \
+    PYTHONIOENCODING=UTF-8 \
+    ./kodi.bin
+02/05/2023 12:19 AM
+yes
+[infowski]
+infowski 02/05/2023 12:14 AM
+otherwise I have no idea how the hell would that even work
+02/05/2023 12:14 AM
+you should have it set to /tmp/xdg iirc
+02/05/2023 12:14 AM
+do you have XDG_RUNTIME_DIR set? 
+[infowski]
+[] yolofant ```root@LGwebOSTV:~/kodi/lib/kodi#
+WAYLAND_DISPLAY="wayland-0" LD_LIBRARY_PATH=. PATH=/home/root/kod...
+infowski 02/05/2023 12:13 AM
+hmmm, hold up
+February 4, 2023
+[yolofant]
+yolofant 02/04/2023 11:58 PM
+maybe vsync?
+02/04/2023 11:57 PM
+nothing obvious
+02/04/2023 11:57 PM
+(no content)
+ kodi.log
+66.17 KB External
+[infowski]
+infowski 02/04/2023 11:53 PM
+welpk
+[yolofant]
+yolofant 02/04/2023 11:53 PM
+but I still see the icon sliding in, then black screen

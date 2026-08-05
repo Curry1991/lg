@@ -1,0 +1,1752 @@
+June 21, 2023
+[smx2460]
+smx2460 06/21/2023 2:43 AM
+And jumps to it
+06/21/2023 2:43 AM
+Is a small C function that relocates such payload to an address of your
+liking (edited)
+[maryjohanna42069]
+maryjohanna42069 06/21/2023 2:43 AM
+nice
+[smx2460]
+smx2460 06/21/2023 2:43 AM
+The simplest thing i made
+06/21/2023 2:43 AM
+And a small payload to load it
+06/21/2023 2:43 AM
+So you can lay down whatever you want to load in RAM
+06/21/2023 2:42 AM
+The module jumps to arbitrary code in RAM
+06/21/2023 2:42 AM
+Even without kexec compiled in
+ 2
+06/21/2023 2:42 AM
+And it's available in all kernels
+06/21/2023 2:42 AM
+Which uses "soft_restart" to do the same
+06/21/2023 2:42 AM
+Is use my "rebooter" module
+[maryjohanna42069]
+maryjohanna42069 06/21/2023 2:42 AM
+meh (edited)
+06/21/2023 2:42 AM
+but yeah that wont be universal
+[smx2460]
+smx2460 06/21/2023 2:42 AM
+What you can do instead
+[maryjohanna42069]
+maryjohanna42069 06/21/2023 2:42 AM
+could load a module
+06/21/2023 2:42 AM
+that wouldnt be an issue
+[smx2460]
+smx2460 06/21/2023 2:42 AM
+Therefore, using the original kexec tools requires ugly hacks
+06/21/2023 2:41 AM
+And LG kernels don't ship with kexec enabled
+[maryjohanna42069]
+[] yuki_duki So anyone got a pic of kodi running?
+maryjohanna42069 06/21/2023 2:41 AM
+there is a few posted here
+[smx2460]
+[] maryjohanna42069 why is it simpler?
+smx2460 06/21/2023 2:41 AM
+Loading a kernel requires a loader
+[yuki_duki]
+yuki_duki 06/21/2023 2:41 AM
+So anyone got a pic of kodi running?
+[smx2460]
+smx2460 06/21/2023 2:40 AM
+I'd say "boot from USB"
+06/21/2023 2:40 AM
+If that's the goal
+[maryjohanna42069]
+maryjohanna42069 06/21/2023 2:40 AM
+good point xd
+hellobox. 06/21/2023 2:40 AM
+probably easier to just disable the watchdog
+[maryjohanna42069]
+maryjohanna42069 06/21/2023 2:40 AM
+that way only root would be a requirement
+06/21/2023 2:39 AM
+and then kexecing into that
+06/21/2023 2:39 AM
+i was just wondering if I could make some shitty script that takes the
+currently running kernel from the TV and creates a rootfs by stealing
+required stuff for kodi to run from the original rootfs
+06/21/2023 2:38 AM
+why is it simpler?
+[smx2460]
+smx2460 06/21/2023 2:36 AM
+Simpler than booting a kernel (edited)
+06/21/2023 2:36 AM
+If you really wanna use kexec, you can boot into a patched bootloader
+(edited)
+[smx2460]
+hellobox. i think you can use kexec. <@310158180728700929> has done that
+(on netcast probably)
+smx2460 06/21/2023 2:35 AM
+Easiest way is to just use the bootloader
+[yuki_duki]
+yuki_duki 06/21/2023 2:34 AM
+@Yolofant i dont have experience with webos. So i dont even know how to
+install ipk files. I only have homebrew launcher lmao
+[yolofant]
+yolofant 06/21/2023 2:23 AM
+it doesn't even require root
+06/21/2023 2:23 AM
+there's no chance to brick the tv by installing kodi
+[yuki_duki]
+yuki_duki 06/21/2023 2:21 AM
+So i use kodi on that
+06/21/2023 2:21 AM
+I have an android box in my room that im torturing
+06/21/2023 2:20 AM
+I prefer to install only stable apps to avoid bricking. This is the tv i
+use in the living room
+[astur3l]
+[] yuki_duki Anybody got photos? <3
+astur3l 06/21/2023 2:19 AM
+just install the ipk and make one? :e
+[yuki_duki]
+yuki_duki 06/21/2023 1:41 AM
+Anybody got photos? <3
+06/21/2023 1:41 AM
+Kodi progress makes me excited
+[] astur3l ah,, webos 6.3 doesnt have tvservice
+hellobox. 06/21/2023 12:09 AM
+i'm not even sure there is a watchdog on webos 5+
+hellobox. 06/21/2023 12:09 AM
+this might be it? /etc/init/tvservice-watchdog.conf from webos 2.2.0
+(signage)
+    description "watchdog to reboot if tvservice dies"
+    start on stopping tvservice
+    env KLOG=/dev/kmsg
+    # This job is started when either ls-hubd_public or ls-hubd_private
+    # enter the 'stopping' state.  If this is part of a normal exit
+    # (manual shutdown or reboot)
+    #    RESULT will be "ok"
+    #     - or -
+    #   RUNLEVEL will be 0 or 1 (shutdown) or 6 (reboot)
+    # both are testing since I did not always see the RESULT value set
+    # since we only act in the 'else' case, the tests are negated
+    # and anded.
+    script
+            echo "[TVSERVICE] TVService stopped..." > $KLOG
+            echo "[TVSERVICE] $RESULT" > $KLOG
+            echo "[TVSERVICE] $RUNLEVEL" > $KLOG
+            if [ "$RESULT" != "ok" -a "$RUNLEVEL" != "0" -a "$RUNLEVEL" != "1" -a "$RUNLEVEL" != "6" ]; then
+                    echo "[TVSERVICE] TVService stopped abnormally..." > $KLOG
+                    /sbin/reboot
+            fi
+    end script
+[astur3l]
+astur3l 06/21/2023 12:09 AM
+just `/usr/sbin/tvservicemock`
+06/21/2023 12:09 AM
+ah,, webos 6.3 doesnt have tvservice
+[maryjohanna42069]
+maryjohanna42069 06/21/2023 12:08 AM
+Main reason I decided to root back then (so I can kill it) (edited)
+06/21/2023 12:07 AM
+I have 2 zombie processes causing 70+ load constantly xdd
+06/21/2023 12:07 AM
+Unsure if it was something I did wrong, but the tv just went black and
+rebooted
+[astur3l]
+astur3l 06/21/2023 12:07 AM
+i doesnt matter for me, if it works  i dont even plug in the coax
+cable, and it eats lot of mem
+[maryjohanna42069]
+maryjohanna42069 06/21/2023 12:06 AM
+I tried that already
+06/21/2023 12:06 AM
+Yeah but you have to kill it then
+hellobox. 06/21/2023 12:06 AM
+depends how the watchdog actually works
+[astur3l]
+astur3l 06/21/2023 12:05 AM
+cant we replace the tvservice with some dummy service?
+hellobox. 06/21/2023 12:01 AM
+if you back up the emmc contents, you can theoretically restore it all
+later from the bootloader
+June 20, 2023
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:56 PM
+Saved for later
+06/20/2023 11:56 PM
+Thanks
+hellobox. 06/20/2023 11:56 PM
+if it's already rooted, you can do this from the SoC itself (although on
+webOS 4 debugstatus will be encrypted)
+https://gist.github.com/throwaway96/827ff726981cc2cbc46a22a2ad7337a1
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:55 PM
+Ah right
+hellobox. 06/20/2023 11:55 PM
+DEBUG gives you bootloader access so you can fix bricks
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:55 PM
+But I would want to make Kodi universal
+06/20/2023 11:54 PM
+Havent checked if I do
+06/20/2023 11:54 PM
+4.3.0
+hellobox. 06/20/2023 11:54 PM
+what webos version?
+06/20/2023 11:54 PM
+you don't have DEBUG?
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:53 PM
+Hope I wont brick, but I assume I shouldn't
+06/20/2023 11:53 PM
+Gotta check tomorrow
+06/20/2023 11:53 PM
+I would definitely try
+hellobox. 06/20/2023 11:53 PM
+true
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:53 PM
+Though if you say kexec could work
+06/20/2023 11:53 PM
+I can, but sounds like a lot of work
+hellobox. 06/20/2023 11:53 PM
+i mean it might not work, but i think it's worth a try
+[] maryjohanna42069 Just assumed that I would need all the drivers
+present in my rootfs/kernel
+hellobox. 06/20/2023 11:52 PM
+why can't you do that?
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:52 PM
+Just assumed that I would need all the drivers present in my
+rootfs/kernel
+06/20/2023 11:52 PM
+Well I haven't read the source of webos-userland yet as to how you got
+it working yet
+[] maryjohanna42069 Yeah then it should be kinda easy altough I doubt I
+could get hw decoding working that way
+hellobox. 06/20/2023 11:51 PM
+why not?
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:50 PM
+Yeah then it should be kinda easy altough I doubt I could get hw
+decoding working that way
+hellobox. 06/20/2023 11:50 PM
+i am not actually sure whether lg uses the regular kernel watchdog
+driver or their own thing
+06/20/2023 11:50 PM
+i think you can use kexec. @Smx has done that (on netcast probably)
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:49 PM
+So I cannot just kexec it
+06/20/2023 11:48 PM
+And there is a check on the kernel too, right?
+hellobox. 06/20/2023 11:47 PM
+do more recent webos versions (after moving everything out of
+RELEASE/tvservice) still have a watchdog on a specific process? @Smx
+(edited)
+06/20/2023 11:47 PM
+going to DEBUG (not sure if it's present in EVENT) is probably too much
+work for most people, but there's probably another way to disable the
+watchdog
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:45 PM
+Fantastic
+[] maryjohanna42069 but iirc something checks for the persistence of
+tvservice and if its not there then the TV restarts
+hellobox. 06/20/2023 11:43 PM
+yeah, there's a watchdog (only in RELEASE mode i think)
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:42 PM
+since all that stuff uses way too much memory that could be used by kodi
+instead
+06/20/2023 11:42 PM
+but iirc something checks for the persistence of tvservice and if its
+not there then the TV restarts
+06/20/2023 11:41 PM
+regarding gbm, I was always dreaming of somehow killing the entire
+tvservice process or at least the compositor and just having kodi
+running without any window manager
+06/20/2023 11:37 PM
+But I also had a really stupid build setup. Basically I took out my
+running TV's rootfs and sideloaded it onto an arm64 machine with enough
+resources to compile stuff. Then I compiled a gcc for it and started
+compiling every single required component myself...
+ 1
+[maryjohanna42069]
+[] smx2460 i remember someone here got it compiled and running
+maryjohanna42069 06/20/2023 11:36 PM
+so that was me, I managed to compile some wayland sample and kodi as
+well, but I always saw the window for a sec and then it disappeared. I
+got told to add some luna call to fix that and it worked
+[maryjohanna42069]
+maryjohanna42069 06/20/2023 11:35 PM
+just reading back on the kodi thread so forgive me for necro posting in
+the next couple of minutes. kinda feeling guilty that I wasn't here now
+since you had to figure out most of the stuff I did as well 
+June 18, 2023
+[] Mariotaku started a thread: Moonlight crashing. See all threads.
+6/18/23, 6:26 AM
+June 16, 2023
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 11:28 PM
+well I have this with master too, but there its only with gnutls and
+ffmpeg
+[yolofant]
+yolofant 06/16/2023 11:22 PM
+no, I've had similar issues at first but afaik those had been resolved
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 11:09 PM
+but I am happy that I can even build for now
+06/16/2023 11:09 PM
+i am probably too dumb for this
+[yolofant]
+yolofant 06/16/2023 10:41 PM
+that's weird, I haven't encountered any issues lately
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 10:40 PM
+if I distclean after every error and re-run make it magically compiles
+06/16/2023 10:39 PM
+always have to wait until it fails, first its always native/cmake then
+target/sambav3-gpl or so, then target/ffmpeg and target/gnutls
+[maryjohanna42069]
+wsnipex can you reproduce with a completely clean build? i.e. git clean
+-xfd
+maryjohanna42069 06/16/2023 10:39 PM
+yeah I am doing that always and then I have the same stuff happening
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 10:38 PM
+sure
+[yolofant]
+[] maryjohanna42069 `Dependencies built successfully.` lol
+yolofant 06/16/2023 10:38 PM
+nice, did kodi itself also compile?
+wsnipex 06/16/2023 10:28 PM
+can you reproduce with a completely clean build? i.e. git clean -xfd
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 10:21 PM
+i am not sure then
+wsnipex 06/16/2023 10:17 PM
+well, our ci builds with j64
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 9:43 PM
+thanks for the help
+06/16/2023 9:43 PM
+not too optimal for automated builds, but its okay for now
+06/16/2023 9:43 PM
+had to do that like 4 times
+06/16/2023 9:43 PM
+all I ever did was distcleaning like the docs says whenever something
+failed
+06/16/2023 9:43 PM
+apparently the build script is kinda broken if you have too many cores
+06/16/2023 9:42 PM
+Dependencies built successfully. lol
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 9:11 PM
+only thing I altered were the pathes for the ndk and deps
+[maryjohanna42069]
+wsnipex why not just follow the docs, manually
+maryjohanna42069 06/16/2023 9:10 PM
+I do that now. That's literally all that I have inside the dockerfile,
+the rest I am running in the container shell
+[maryjohanna42069]
+wsnipex our CI uses rootless podman, so that's not it
+maryjohanna42069 06/16/2023 9:10 PM
+I already eliminated one issue that came from the fact that I was using
+rootless podman
+    root@0fea0ea85fad:/kodi-master/tools/depends/target/libass/arm-webos-linux-gnueabi-release# /usr/bin/tar --strip-components=1 -xf /opt/xbmc-deps/xbmc-tarballs/libass-0.17.1.tar.xz
+    /usr/bin/tar: aclocal.m4: Cannot change ownership to uid 197609, gid 197609: Invalid argument
+wsnipex 06/16/2023 9:10 PM
+why not just follow the docs, manually
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 9:09 PM
+thats my dockerfile right now
+06/16/2023 9:09 PM
+    FROM ubuntu:22.04
+    RUN apt update; apt upgrade -y; apt install -y build-essential cmake git wget file curl libcurl4-openssl-dev xz-utils autoconf bison flex default-jdk gawk gperf zlib1g-dev libgl1-mesa-dev libgl-dev libglu-dev
+    RUN wget --quiet https://github.com/openlgtv/buildroot-nc4/releases/download/webos-800cec9/arm-webos-linux-gnueabi_sdk-buildroot.tar.gz -O /tmp/arm-webos-linux-gnueabi_sdk-buildroot.tar.gz
+    RUN mkdir -p /opt/ndk; tar -C /opt/ndk -xf /tmp/arm-webos-linux-gnueabi_sdk-buildroot.tar.gz arm-webos-linux-gnueabi_sdk-buildroot/ --strip-components=1
+    WORKDIR /kodi-src
+wsnipex 06/16/2023 9:08 PM
+our CI uses rootless podman, so that's not it
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 9:08 PM
+I have followed the docs now
+06/16/2023 9:08 PM
+or something is missing from the host
+06/16/2023 9:08 PM
+so I am suspecting rootless podman to be the culprit
+06/16/2023 9:07 PM
+well idk I have tried everything, cant seem to build it
+wsnipex 06/16/2023 9:05 PM
+rendersystem gles is implicit
+[yolofant]
+yolofant 06/16/2023 8:14 PM
+yeah those should work but I think --with-rendersystem=gles
+--with-platform=webos was required the last time I rebuilt
+wsnipex 06/16/2023 7:46 PM
+https://github.com/xbmc/xbmc/blob/master/docs/README.webOS.md#6-configure-and-build-tools-and-dependencies
+xbmc/docs/README.webOS.md at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+06/16/2023 7:45 PM
+don't mess with cflags and such stuff
+06/16/2023 7:44 PM
+you should just follow the docs
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 6:31 PM
+cleaned everything, will try to build on a single core now
+06/16/2023 6:30 PM
+yea
+[yolofant]
+yolofant 06/16/2023 6:30 PM
+did you use the above configure flags?
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 6:26 PM
+master fails with the same issue btw
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 6:04 PM
+the entire state is getting cleared when I rebuild
+06/16/2023 6:04 PM
+well I am using docker
+[yolofant]
+yolofant 06/16/2023 6:03 PM
+but I recommend cleaning everything first before starting over with
+different configure args
+06/16/2023 6:03 PM
+there is a chance the compiler wasn't picked up properly maybe?
+06/16/2023 6:02 PM
+    ./configure --prefix=$HOME/Sourcecode/kodi-deps --host=arm-webos-linux-gnueabi --with-toolchain=$HOME/Sourcecode/arm-webos-linux-gnueabi_sdk-buildroot --enable-debug=no --with-target-cflags='-march=armv7-a -mfloat-abi=softfp -mfpu=neon' --with-rendersystem=gles --with-platform=webos
+06/16/2023 6:02 PM
+hmm
+[maryjohanna42069]
+maryjohanna42069 06/16/2023 6:01 PM
+using this atm:
+https://github.com/Informatic/xbmc/blob/acb-rebased/build-webos.sh
+06/16/2023 5:59 PM
+should I really nuke cmake from tools?
+06/16/2023 5:58 PM
+getting something similar
+06/16/2023 5:58 PM
+    [ 82%] Linking CXX executable ../bin/cmake
+    /usr/bin/ld: /opt/ndk/arm-webos-linux-gnueabi/sysroot/usr/lib/libcurl.so: error adding symbols: file in wrong format
+    collect2: error: ld returned 1 exit status
+    make[5]: *** [Source/CMakeFiles/cmake.dir/build.make:126: bin/cmake] Error 1
+    make[5]: Leaving directory '/kodi-src/tools/depends/native/cmake/x86_64-linux-native'
+    make[4]: *** [CMakeFiles/Makefile2:1969: Source/CMakeFiles/cmake.dir/all] Error 2
+    make[4]: Leaving directory '/kodi-src/tools/depends/native/cmake/x86_64-linux-native'
+    make[3]: *** [Makefile:166: all] Error 2
+    make[3]: Leaving directory '/kodi-src/tools/depends/native/cmake/x86_64-linux-native'
+    make[2]: *** [Makefile:37: x86_64-linux-native/bin/cmake] Error 2
+    make[2]: Leaving directory '/kodi-src/tools/depends/native/cmake'
+    make[1]: *** [Makefile:90: cmake] Error 2
+    make[1]: Leaving directory '/kodi-src/tools/depends/native'
+    make: *** [Makefile:8: native/.installed-x86_64-linux-native] Error 2
+[maryjohanna42069]
+[] yolofant ```[ 82%] Linking CXX executable ../bin/cmake cd
+/home/ssundermann/Sourcecode/kodi/tools/depends/nat...
+maryjohanna42069 06/16/2023 5:58 PM
+hey, what was your fix for that?
+[infowski]
+infowski 06/16/2023 4:44 PM
+And on k6lp I was looking at they only supported piping composite and tv
+stream to video encoder block
+06/16/2023 4:43 PM
+Not that we are aware of. We can capture still frames via
+dile_vt/vtcapture, but it's not performant enough to properly record.
+[newlinersseries]
+[] newlinersseries Can anyone port the screenshot functionality from
+webOS 3 to webOS 5?
+newlinersseries 06/16/2023 4:22 PM
+Actually my TV supports capture for live TV only. Is there any way to
+extend this functionality to HDMI?
+[mariotaku]
+datacorrupt Hardly worth it
+mariotaku 06/16/2023 10:10 AM
+You don't need root to use 80% of them
+[] mariotaku Yes, almost
+datacorrupt 06/16/2023 9:32 AM
+Hardly worth it
+[] newlinersseries Can anyone port the screenshot functionality from
+webOS 3 to webOS 5?
+hellobox. 06/16/2023 1:57 AM
+screenshot functionality?
+[newlinersseries]
+newlinersseries 06/16/2023 12:35 AM
+Also Beanbird cursor port?
+06/16/2023 12:32 AM
+Can anyone port the screenshot functionality from webOS 3 to webOS 5?
+June 15, 2023
+ww8543 06/15/2023 10:21 AM
+and the rest was hardware faults, like faulty emmc ic and such
+06/15/2023 10:21 AM
+people only managed to brick their tv by fucking with the signed
+partitions
+hellobox. i have never heard of anyone bricking a tv since i joined this
+discord last year
+ww8543 06/15/2023 10:20 AM
+you can extend that to the time rootmytv has existed, and crashd too of
+course
+[] isabell121 I would root but don't rly see much use of it other than
+permanently bricking my new tv lol.
+hellobox. 06/15/2023 3:55 AM
+i have never heard of anyone bricking a tv since i joined this discord
+last year
+[isabell121]
+isabell121 06/15/2023 3:54 AM
+I would root but don't rly see much use of it other than permanently
+bricking my new tv lol. (edited)
+[] isabell121 Yeah the yellow homebrew updater icon. Not rooted afaik.
+hellobox. 06/15/2023 3:52 AM
+so, uh, i think the safe updater is pretty much useless without root
+[isabell121]
+isabell121 06/15/2023 3:52 AM
+Yeah the yellow homebrew updater icon. Not rooted afaik.
+hellobox. 06/15/2023 3:50 AM
+is your tv rooted?
+[] isabell121 Just tapped on the Homebrew updater app. It sent me a
+bunch of cli commands on the tv that look like...
+hellobox. 06/15/2023 3:50 AM
+the safe updater?
+[isabell121]
+isabell121 06/15/2023 3:49 AM
+Just tapped on the Homebrew updater app. It sent me a bunch of cli
+commands on the tv that look like errors. Will share the photo later
+[] isabell121 Homebrew updater gives me errors
+hellobox. 06/15/2023 3:48 AM
+what errors? what are you trying to do?
+[isabell121]
+isabell121 06/15/2023 3:35 AM
+Also, do the HB games like doom and pinball work fine for others?
+06/15/2023 3:34 AM
+Homebrew updater gives me errors
+June 14, 2023
+[mariotaku]
+[] azimutftw hi guys, this is almost all homebrew widgets?
+https://repo.webosbrew.org/apps/
+mariotaku 06/14/2023 7:11 PM
+Yes, almost
+[azimutftw]
+azimutftw 06/14/2023 7:10 PM
+hi guys, this is almost all homebrew widgets?
+https://repo.webosbrew.org/apps/
+hellobox. 06/14/2023 6:45 PM
+i forgot about that
+06/14/2023 6:45 PM
+oh, that's part of my gcc spec hax
+[mariotaku]
+hellobox. glibc-polyfills currently just does `getauxval`
+mariotaku 06/14/2023 6:44 PM
+Oh! so somehow clock_gettime doesn't need explicitly linking rt anymore
+hellobox. 06/14/2023 6:33 PM
+glibc-polyfills currently just does getauxval
+[mariotaku]
+hellobox. symbol issue?
+mariotaku 06/14/2023 6:31 PM
+Yes. Without glibc-polyfill it can't resolve clock_gettime on older
+firmwares.
+ 1
+[] mariotaku I tried rebuild RetroArch with newer toolchain and symbol
+issue magically disappeared. But I think I...
+hellobox. 06/14/2023 6:30 PM
+symbol issue?
+[mariotaku]
+mariotaku 06/14/2023 6:30 PM
+I tried rebuild RetroArch with newer toolchain and symbol issue
+magically disappeared. But I think I'm missing proper location to cores.
+@infowski how did you configure the build?
+June 13, 2023
+[mariotaku]
+[] r3ap3r_x0r I have the homebrew channel installed, where would I be
+looking to start porting linux applications.
+mariotaku 06/13/2023 6:14 PM
+Grab our SDK: https://github.com/openlgtv/buildroot-nc4/releases
+Releases · openlgtv/buildroot-nc4
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+ 1
+[julaobr]
+julaobr 06/13/2023 4:34 PM
+hello, i have a 42" oled c2 with firmware 03.30.68 can i do the firmware
+update 03.33.16 normally? i have the latest version of homebrew channel
+0.6.3, piccap and hyper hdr working perfectly.
+[ccarnell98]
+ccarnell98 06/13/2023 11:55 AM
+Does anyone know which CPU/GPU is in the C3? Same as C2 or upgraded?
+[r3ap3r_x0r]
+r3ap3r_x0r 06/13/2023 11:30 AM
+I have the homebrew channel installed, where would I be looking to start
+porting linux applications.
+ww8543 the preview has never worked, it is just a garbled mess in my
+experience...
+Deleted User 06/13/2023 11:21 AM
+But as I wrote Inspect works with Homebrew Channel? How, why, whats the
+difference between apps that can and can't be inspected are beyond my
+limited knowledge.
+ww8543 06/13/2023 9:45 AM
+but you dont use the inspect for the preview anyway, so just ignore that
+Deleted User Tried with all 3 Chrome version. There are no "Preview" and
+same result, the app restarts.
+ww8543 06/13/2023 9:44 AM
+the preview has never worked, it is just a garbled mess in my
+experience...
+June 12, 2023
+[mariotaku]
+mariotaku 06/12/2023 4:15 PM
+You can even use screen_off
+ 3
+[mariotaku]
+Original message was deleted
+mariotaku 06/12/2023 4:15 PM
+to dim the backlight to maximum (like in system settings)
+luna-send -n 1 luna://com.webos.service.settings/setSystemSettings '{"category":"picture", "settings":{"energySaving":"max"}}' -f
+Deleted User 06/12/2023 3:48 PM
+Ok, thank again. I'll try some more!
+hellobox. 06/12/2023 3:48 PM
+you could try an even older chrome
+06/12/2023 3:48 PM
+probably not
+hellobox. you might be able to find something in the logs
+Deleted User 06/12/2023 3:47 PM
+Started webOS Dev Manager and I get a crash for /usr/bin/WebAppMgr ---
+/usr/lib/libcbe.so (_ZN5blink10Thread.... and a loooong crashreport.
+Anything usefull? (edited)
+hellobox. you might be able to find something in the logs
+Deleted User 06/12/2023 3:37 PM
+Thanks for your good advice(s)  I'll try to read up on webOS
+debugging...
+hellobox. 06/12/2023 3:35 PM
+you might be able to find something in the logs
+hellobox. you can try using the server-side devtools
+Deleted User 06/12/2023 3:34 PM
+Tried with all 3 Chrome version. There are no "Preview" and same result,
+the app restarts.
+hellobox. 06/12/2023 3:28 PM
+go to http://<tv>:9998 and click on the app you're intested in
+06/12/2023 3:28 PM
+you can try using the server-side devtools
+06/12/2023 3:26 PM
+in my experience that has been caused by too new chrome version, but if
+you've already tried the older one i'm not sure
+Deleted User 06/12/2023 3:25 PM
+Using advice from hellobox adding inspectable": trueto appinfo.json made
+streaming app dk.yousee.app appear in chrome://inspect ready for
+inspection. But when I start inspect the app restarts and chrome says
+Debugging connection was closed. Reason: Connection lost.... This also
+happens with YouTube Adfree but works for Homebrew Channel. Is this
+because of ares-package –no-minifyoption? And if so can this be
+"patched" or circumvented so Inspect works regardless? I've tried
+Inspect with latest Chrome 64bit, Chromium 68 (recommended by LG) and
+Chrome Canary.
+wsnipex 06/12/2023 6:59 AM
+this keymapper can do it as well
+https://github.com/andrewfraley/magic_mapper.git
+GitHub - andrewfraley/magic_mapper: Remap LG Magic Remote buttons
+Remap LG Magic Remote buttons. Contribute to andrewfraley/magic_mapper
+development by creating an account on GitHub.
+[]
+ 1  1
+June 11, 2023
+[astur3l]
+astur3l 06/11/2023 8:25 PM
+so the command will be something like
+`luna-send -n 1 luna://com.webos.settingsservice/setSystemSettings '{"category"....}`
+06/11/2023 8:23 PM
+just sniff the luna command with `ls-monitor` (webos "communicates" via
+luna bus, so when you made some changes there will be a luna call to
+settings..) https://www.webosbrew.org/pages/luna-service-bus.html
+(edited)
+ 1
+[astur3l]
+[] johnnataj0 what?! really?!
+astur3l 06/11/2023 8:20 PM
+you could also use inputhook app to (re)map remote buttons
+https://github.com/Simon34545/lginputhook magic happens here
+https://github.com/Simon34545/lginputhook/blob/main/service/inputhook/lginput-hook.php#L39
+GitHub - Simon34545/lginputhook: Allows for remapping remote button...
+Allows for remapping remote buttons on LG WebOS TVs. - GitHub -
+Simon34545/lginputhook: Allows for remapping remote buttons on LG WebOS
+TVs.
+[]
+ 1
+[mariotaku]
+mariotaku 06/11/2023 6:25 PM
+Let me share more details tomorrow.
+ 1
+06/11/2023 6:24 PM
+There's some special JS calls on webOS. Called Luna calls
+[johnnataj0]
+johnnataj0 06/11/2023 6:24 PM
+what?! really?! (edited)
+[mariotaku]
+[] johnnataj0 I do know how to code in php, html & css
+mariotaku 06/11/2023 6:24 PM
+Awesome, then you are able to make one!
+[johnnataj0]
+[] mariotaku Do you have experience with frontend?
+johnnataj0 06/11/2023 6:22 PM
+I do know how to code in php, html & css
+[mariotaku]
+mariotaku 06/11/2023 6:22 PM
+It actually should be pretty easy to learn
+[mariotaku]
+[] johnnataj0 But I have no idea how to code a homebrew for LG TVs ...
+mariotaku 06/11/2023 6:21 PM
+Do you have experience with frontend?
+[johnnataj0]
+johnnataj0 06/11/2023 6:21 PM
+But I have no idea how to code a homebrew for LG TVs ... 
+[johnnataj0]
+[] mariotaku Maybe there's a way to make an app toggle high/low
+brightness then you can bind it to the remote
+johnnataj0 06/11/2023 6:19 PM
+wait a min... it is even better  (edited)
+[mariotaku]
+[] johnnataj0 Hey, Is it doable to map luminosity settings on a remote
+or is there quick way set the luminosity up...
+mariotaku 06/11/2023 6:18 PM
+Maybe there's a way to make an app toggle high/low brightness then you
+can bind it to the remote
+ 1
+[mariotaku]
+wsnipex why not use one the several other options for a remote keyboard
+in kodi? android/ios remote apps or ...
+mariotaku 06/11/2023 6:16 PM
+webOS supports that with SDL, not sure if it's available when you use
+Wayland
+[johnnataj0]
+johnnataj0 06/11/2023 6:15 PM
+Hey, Is it doable to map luminosity settings on a remote or is there
+quick way set the luminosity up or down? that'd be bloody awesome !
+Letme explain... I do turn my screen off or on very low luminosity on
+regular basis when I'm listening to podcasts or musics on YT, it takes
+me 1min to get to Settings>Pictures>Luminosity... which is time
+consuming in the long run ^^' (edited)
+wsnipex 06/11/2023 3:56 PM
+why not use one the several other options for a remote keyboard in kodi?
+android/ios remote apps or web interface
+[ccarnell98]
+ccarnell98 06/11/2023 12:47 PM
+Kodi 
+[mariotaku]
+[] ccarnell98 Any idea how to allow custom apps to use the remote
+keyboard that appears in LG Thin Q android app?
+mariotaku 06/11/2023 12:20 PM
+What is the app?
+[ccarnell98]
+ccarnell98 06/11/2023 11:58 AM
+Most things work, but the keyboard does not appear in the android app
+(edited)
+06/11/2023 11:57 AM
+Any idea how to allow custom apps to use the remote keyboard that
+appears in LG Thin Q android app? (edited)
+[chercheur]
+chercheur 06/11/2023 9:49 AM
+Hi no news for a newer kodi version for OS 4.x ?
+wsnipex 06/11/2023 7:45 AM
+or block the relevant domains on DNS or firewall
+06/11/2023 7:45 AM
+you can just upgrade
+June 10, 2023
+[spaceboy_screams]
+spaceboy_screams 06/10/2023 10:42 PM
+Sorry if this isn't the right place to ask. I have a rooted LG C9 that
+keeps trying to update to 05.30.25. The pop-up is really annoying and
+I'm wondering if I will lose Ad Free YouTube when I update and lose
+root? Or can I just block the pop-up somehow?
+[infowski]
+infowski 06/10/2023 1:19 AM
+nope.
+hellobox. 06/10/2023 1:19 AM
+is it early enough with start-devmode or extra_conf?
+06/10/2023 1:18 AM
+oh. and we're definitely too late for that
+[infowski]
+infowski 06/10/2023 1:18 AM
+no - i mean - you can only change appinfo file via bind mount (edited)
+[] infowski well, for built-in apps you can't really reboot. everything
+seemed to restart correctly for me.
+hellobox. 06/10/2023 1:17 AM
+because they have a snapshot?
+[infowski]
+infowski 06/10/2023 1:17 AM
+well, for built-in apps you can't really reboot. everything seemed to
+restart correctly for me.
+hellobox. 06/10/2023 12:51 AM
+so would you recommend rebooting the tv or just restarting sam?
+[infowski]
+infowski 06/10/2023 12:45 AM
+But it works without debug mode too, so it's fine.
+06/10/2023 12:45 AM
+Yes, it will, but also pretty much most of webOS will restart.
+hellobox. 06/10/2023 12:44 AM
+and will that clear the cache?
+[] infowski One important note - appinfo.json seems to be cached by sam
+hellobox. 06/10/2023 12:44 AM
+can you restart sam?
+hellobox. 06/10/2023 12:30 AM
+    .data.rel.ro:00193288 ; `vtable for'boost::signals2::signal<void ()(std::string const&, PackageStatus const&), boost::signals2::optional_last_value<void>, int, std::less<int>, boost::function<void ()(std::string const&, PackageStatus const&)>, boost::function<void ()(boost::signals2::connection const&, std::string const&, PackageStatus const&)>, boost::signals2::mutex>
+06/10/2023 12:28 AM
+also booooooooooost
+06/10/2023 12:28 AM
+sam is a pain in the ass because it stores so much in json structs and
+maps
+[infowski]
+infowski 06/10/2023 12:21 AM
+Especially important for built-in apps
+06/10/2023 12:21 AM
+One important note - appinfo.json seems to be cached by sam
+hellobox. 06/10/2023 12:20 AM
+i just wanted to verify how it behaves within sam
+[] infowski Heh, we've used it a couple of times already, but I see I
+haven't documented it on https://www.webos...
+hellobox. 06/10/2023 12:20 AM
+working on that now
+[infowski]
+hellobox. adding it to this
+<https://gist.github.com/throwaway96/5648720758e354a018c95150d0bb7fb8>
+infowski 06/10/2023 12:20 AM
+Heh, we've used it a couple of times already, but I see I haven't
+documented it on https://www.webosbrew.org/pages/appinfojson.html yet,
+well...
+June 9, 2023
+hellobox. lol what "The price of a cooperative home is not free like
+other forms of housing."
+Deleted User 06/09/2023 10:07 PM
+They must mean "...not 'unregulated' like other" 
+hellobox. 06/09/2023 10:03 PM
+free housing? must be nice...
+06/09/2023 10:02 PM
+lol what "The price of a cooperative home is not free like other forms
+of housing."
+hellobox. *foreningsmængde* is "union" as in sets, apparently
+ww8543 06/09/2023 9:59 PM
+https://da-m-wikipedia-org.translate.goog/wiki/Andelsboligforening?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=de
+Andelsboligforening
+En andelsboligforening eller andelsboligselskab er en forening eller et
+selskab, der har til formål at erhverve, eje og drive en ejendom til
+beboelse for andelsboligforeningens medlemmer. Den enkelte andelshaver
+ejer således ikke deres bolig, men ejer til gengæld en andel af
+foreningen, og har i den forbindelse fået brugsretten til en bolig. En
+...
+[]
+hellobox. lokalforening?
+ww8543 06/09/2023 9:58 PM
+kind of like a housing cooperative
+hellobox. 06/09/2023 9:58 PM
+do you like negotiate a price with the cable company?
+Deleted User 06/09/2023 9:54 PM
+It can mean "klub". A club usually centered around a hobby. E.g.
+Commodore Club, Copenhagen (made up) But here we are talking about a
+derived term. We "forening" of house-hold that can get e.g. Cable-TV
+installed for a supposedly cheaper price when you are combined...
+06/09/2023 9:49 PM
+A club usually centered around a hobby. E.g. Commodore Club, Copenhagen
+(made up) (edited)
+hellobox. 06/09/2023 9:48 PM
+lokalforening?
+06/09/2023 9:47 PM
+foreningsmængde is "union" as in sets, apparently
+06/09/2023 9:47 PM
+is it one of the "derived terms" below?
+ww8543 better use a danish dictionary 
+hellobox. 06/09/2023 9:45 PM
+eh, basically the same https://en.wiktionary.org/wiki/forening#Danish
+ 1
+hellobox. what is a forening? like a club?
+<https://dictionary.cambridge.org/dictionary/norwegian-english/fore...
+Deleted User 06/09/2023 9:45 PM
+Yes, driven by voulenteers, so you can get grants and help with
+accommodations etc. from the council/state.
+hellobox. what is a forening? like a club?
+<https://dictionary.cambridge.org/dictionary/norwegian-english/fore...
+ww8543 06/09/2023 9:45 PM
+better use a danish dictionary 
+hellobox. what is a forening? like a club?
+<https://dictionary.cambridge.org/dictionary/norwegian-english/fore...
+ww8543 06/09/2023 9:44 PM
+something like a organization that is the landlord for several
+people/houses
+ww8543 ah yes i just checked again, they absolutely require some
+specific address, otherwise they will have...
+hellobox. 06/09/2023 9:44 PM
+what is a forening? like a club?
+https://dictionary.cambridge.org/dictionary/norwegian-english/forening
+ww8543 and that was too inconvient for me
+Deleted User 06/09/2023 9:44 PM
+Ok, forgot about "forenings" TV contract's.
+ww8543 06/09/2023 9:42 PM
+and i didnt feel like checking a bunch of addresses
+06/09/2023 9:42 PM
+and that was too inconvient for me
+ww8543 but it seemed to redirect me to a page where you needed to enter
+an address, and it needed to be one...
+Deleted User 06/09/2023 9:41 PM
+Yes, maybe Waoo...
+ww8543 06/09/2023 9:41 PM
+ah yes i just checked again, they absolutely require some specific
+address, otherwise they will have to phone you because of the forening
+does not have a contract with them
+Deleted User No you don't have to. I've been using 2-3 different ISP
+over the years. No restriction? But TV2 is a...
+ww8543 06/09/2023 9:28 PM
+but it seemed to redirect me to a page where you needed to enter an
+address, and it needed to be one where they offer fiber... or maybe i am
+confusing it with waoo?
+ww8543 i am still sad they require you be with them as isp to get the tv
+package 
+Deleted User 06/09/2023 9:27 PM
+No you don't have to. I've been using 2-3 different ISP over the years.
+No restriction? But TV2 is a little special if I remember correct. There
+you need something extra (vacation pass or something) (edited)
+Deleted User Can anyone help me in the right direction? I have a
+streaming webapp YouSee TV (danish TV), somethin...
+ww8543 06/09/2023 9:25 PM
+i am still sad they require you be with them as isp to get the tv
+package 
+hellobox. 06/09/2023 9:11 PM
+adding it to this
+https://gist.github.com/throwaway96/5648720758e354a018c95150d0bb7fb8
+ 1
+hellobox. i thought i had seen it used by something on one of my webos
+systems, but i wasn't able to find anyt...
+Deleted User 06/09/2023 9:10 PM
+Me too  That goes into my luna-call/webos/compile trips and tricks
+document 
+hellobox. 06/09/2023 9:08 PM
+i thought i had seen it used by something on one of my webos systems,
+but i wasn't able to find anything just now. glad it works
+hellobox. try adding `"inspectable": true` to its `appinfo.json`
+Deleted User 06/09/2023 9:07 PM
+OHHHH  Thank you! You just made my day. Have been trying for days
+peeping in with webOSUserScripts/userScript.js and sockets to "smuggle"
+data out with little succes  Thanks again hellobox!
+hellobox. 06/09/2023 9:06 PM
+actually, i do see it in /usr/sbin/sam
+06/09/2023 9:05 PM
+or maybe it's webos ose only
+06/09/2023 9:04 PM
+maybe that's not right... i can't remember how to enable it
+hellobox. try adding `"inspectable": true` to its `appinfo.json`
+Deleted User 06/09/2023 8:59 PM
+Right away...
+hellobox. 06/09/2023 8:59 PM
+try adding "inspectable": true to its appinfo.json
+hellobox. while the app you want to debug is running?
+Deleted User 06/09/2023 8:59 PM
+Unfortunately yes 
+hellobox. 06/09/2023 8:57 PM
+while the app you want to debug is running?
+hellobox. have you tried chrome devtools?
+Deleted User 06/09/2023 8:57 PM
+Yes, I can only see Adfree youtube and Homebrew channel.
+hellobox. 06/09/2023 8:50 PM
+you might need to mark it as inspectable
+Deleted User Can anyone help me in the right direction? I have a
+streaming webapp YouSee TV (danish TV), somethin...
+hellobox. 06/09/2023 8:49 PM
+have you tried chrome devtools? (edited)
+Deleted User 06/09/2023 8:41 PM
+Can anyone help me in the right direction? I have a streaming webapp
+YouSee TV (danish TV), something like Amazon, Netflix with an encrypted
+index.html. If I wanted to emulate "channel selection" ("mouse clicks")
+to enable Home Assistant/OpenHAB etc. integration how should I "spy" on
+the program to figure out it's traffic? Unfortunately there are no debug
+enabled for the app so ares-inspect is a nogo. With ls-monitor, what to
+filter for? Do anyone have any advice for me? I'm not talking about
+"remote-control" click up/down/ok etc. but to emulate webapp mouseclick
+to select <a href=...>live tv, archive etc. for a running app.
+hellobox. 06/09/2023 11:36 AM
+a polyfill would be pretty simple
+[smx2460]
+smx2460 06/09/2023 11:34 AM
+It means it introduces aligned_alloc that won't exist in NC4
+06/09/2023 11:33 AM
+That might be bad
+hellobox. 06/09/2023 10:47 AM
+except it does add a versioned aligned_alloc symbol and these:
+https://github.com/openlgtv/glibc/pull/2/commits/7287c7adbd85ee751ee32e8dd8e68d7935ba6521#diff-92de06333c7bf2c9d2d741549f49c18414daf3776350f3c99460d4deb472253dR32-R35
+[] smx2460 <@803885040827629628> hadn't noticed this. Do you think it's
+ready for merge? Or could it use some a...
+hellobox. 06/09/2023 10:45 AM
+i'm not sure. it's mostly header stuff, so i think the only issues it
+would cause would be build failures
+hellobox. 06/09/2023 10:40 AM
+crashed somewhere in libmali
+[] smx2460 Did Citra build and work?
+hellobox. 06/09/2023 10:40 AM
+it built and started to run...
+[smx2460]
+smx2460 06/09/2023 8:55 AM
+Did Citra build and work?
+06/09/2023 8:55 AM
+@hellobox hadn't noticed this. Do you think it's ready for merge? Or
+could it use some additional testing?
+06/09/2023 8:54 AM
+https://github.com/openlgtv/glibc/pull/2
+Basic C11 stuff; aligned_alloc; ucontext.h cleanup by throwaway96 ·...
+This PR adds some basic C11 support to glibc headers, mostly in order to
+get aligned_alloc working. This hasn't really been tested though. It
+also cleans up some of the namespace pollution comi...
+[]
+June 8, 2023
+hellobox. 06/08/2023 9:01 PM
+you can look at the existing "custom screensaver" app for an example
+robshrk So I would ssh/ftp into the TV, and modify a particular text
+file (qml)?
+hellobox. 06/08/2023 9:01 PM
+you'd be adding a replacement QML file and a script to bind mount it
+over the original on boot
+hellobox. you can replace the fireworks screensaver with basically
+anything you want by bind mounting replacem...
+robshrk 06/08/2023 8:09 PM
+So I would ssh/ftp into the TV, and modify a particular text file (qml)?
+robshrk Does anyone know if it’s possible to replace the fireworks
+screensaver with the built-in art gallery...
+hellobox. 06/08/2023 7:44 PM
+you can replace the fireworks screensaver with basically anything you
+want by bind mounting replacement qml (assuming you know how to
+write/modify qml) (edited)
+robshrk 06/08/2023 7:43 PM
+Does anyone know if it’s possible to replace the fireworks screensaver
+with the built-in art gallery slideshow?
+[.ilucha]
+hellobox. just update it normally
+.ilucha 06/08/2023 5:27 PM
+Seems like it works just fine after the update. Thanks for helping once
+again!
+ 1
+[.ilucha]
+.ilucha 06/08/2023 5:02 PM
+Puh, alright here we go …
+hellobox. 06/08/2023 5:01 PM
+and if you've blocked the snu domains, undo that temporarily
+06/08/2023 5:01 PM
+unblock system updates in hbchannel if necessary
+06/08/2023 5:00 PM
+just update it normally
+[.ilucha]
+hellobox. what is the current firmware version?
+.ilucha 06/08/2023 5:00 PM
+03.21.30
+[] .ilucha Just to be on th safe side: I am currently on an older fw
+(with my G2) and hbchannel is on 0.6.3. Wh...
+hellobox. 06/08/2023 4:59 PM
+what is the current firmware version?
+[.ilucha]
+hellobox. you can apply all current updates without causing any problems
+.ilucha 06/08/2023 4:58 PM
+Just to be on th safe side: I am currently on an older fw (with my G2)
+and hbchannel is on 0.6.3. What are the steps to update to the newest fw
+(03.33.16) and retaining root in the process? Also, is there anything
+what needs to be done after the update has been finished?
+June 7, 2023
+[isabell121]
+isabell121 06/07/2023 9:41 PM
+Deleted
+06/07/2023 9:41 PM
+Ok
+Original message was deleted
+hellobox. 06/07/2023 9:40 PM
+stop cross posting
+hellobox. for *this*
+ww8543 06/07/2023 8:21 PM
+ooooh, of course...
+ww8543 for what?
+hellobox. 06/07/2023 8:21 PM
+for this
+ 1
+ww8543 06/07/2023 8:18 PM
+for what?
+[isabell121]
+isabell121 06/07/2023 7:32 PM
+Is there any guide for this?
+June 5, 2023
+[infowski]
+infowski 06/05/2023 10:50 PM
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/services/webos-service-remote/execbus.js#L30
+← we have pretty much all the code already, just need a switch to use
+luna-send-pub instead of luna-send
+webos-homebrew-channel/execbus.js at main · webosbrew/webos-homebre...
+Unofficial webOS TV homebrew store and root-related tooling -
+webos-homebrew-channel/execbus.js at main ·
+webosbrew/webos-homebrew-channel
+[]
+[kannamori]
+kannamori 06/05/2023 12:54 AM
+Reinstall and complete reboot fixed it. Seems like it was a fluke.
+@infowski
+[kannamori]
+kannamori 06/05/2023 12:06 AM
+Should I reinstall and check or...
+June 4, 2023
+[kannamori]
+kannamori 06/04/2023 11:53 PM
+It's just this.
+[20230604_235249.jpg]
+ 20230604_235249.jpg
+2.11 MB External
+[infowski]
+infowski 06/04/2023 11:51 PM
+hm, if YT AdFree is broken, then it's also very likely broken on all
+webOS 3.x and older TVs...
+[kannamori]
+kannamori 06/04/2023 11:49 PM
+It just gives me a grey screen.
+06/04/2023 11:49 PM
+Seems like YouTube Adfree doesn't load for me anymore.
+wsnipex 06/04/2023 11:43 AM
+so make sure mesa is out of the way
+06/04/2023 11:42 AM
+mali is a pain, it interferes with mesa drivers, by providing GLES and
+EGL
+hellobox. 06/04/2023 9:56 AM
+or the program uses extensions that don't have 1:1 gles+egl equivalents
+06/04/2023 9:54 AM
+and there are translation libraries, but i always end up hitting weird
+bugs in mali drivers or some shit
+06/04/2023 9:53 AM
+everything i try to port uses "desktop" gl (often fixed-function
+pipeline)
+[mariotaku]
+mariotaku 06/04/2023 9:51 AM
+https://github.com/webosbrew/starfish-media-pipeline-api/blob/3287b9a97268f931ee8e820aecf35f13b8cf202f/sample/src/main.c#L111
+starfish-media-pipeline-api/main.c at 3287b9a97268f931ee8e820aecf35...
+Contribute to webosbrew/starfish-media-pipeline-api development by
+creating an account on GitHub.
+[]
+06/04/2023 9:50 AM
+Then you can probably just compile without modify anything.
+hellobox. 06/04/2023 9:49 AM
+i'm just looking for an app that should be straightforward to port
+(i.e., non-webos software that only uses stuff available on webos)
+(edited)
+[mariotaku]
+hellobox. anyone know of something that uses gles via sdl2? i'd like to
+port something relatively easy
+mariotaku 06/04/2023 9:49 AM
+I tried to use GLESv2 via SDL2, what kind of info do you need?
+hellobox. 06/04/2023 6:29 AM
+at least gmp is something we can reasonably fix without implementing
+some kind of multilib thing
+    root@LGwebOSID[lm15u 2.0.0]:~# gdb
+    gdb: error while loading shared libraries: libgmp.so.10: cannot open shared object file: No such file or directory
+06/04/2023 6:28 AM
+    root@LGwebOSID[lm15u 2.0.0]:~# lsusb
+    lsusb: error while loading shared libraries: libudev.so.1: cannot open shared object file: No such file or directory
+June 3, 2023
+hellobox. also, i think we should add the ability to use additional
+c(xx)flags when using cmake
+hellobox. 06/03/2023 11:23 PM
+not sure i know cmake well enough to do this cleanly
+hellobox. 06/03/2023 11:22 PM
+also, i think we should add the ability to use additional c(xx)flags
+when using cmake
+06/03/2023 11:21 PM
+@Smx i don't think these are really sensible default paths for webos
+(from br-nc4 env file)
+    export "CONFIGURE_FLAGS=--target=arm-webos-linux-gnueabi --host=arm-webos-linux-gnueabi --build=x86_64-pc-linux-gnu --prefix=/usr --exec-prefix=/usr --sysconfdir=/etc --localstatedir=/var --program-prefix="
+    alias configure="./configure ${CONFIGURE_FLAGS}"
+    alias cmake="cmake -DCMAKE_TOOLCHAIN_FILE=$SDK_PATH/share/buildroot/toolchainfile.cmake -DCMAKE_INSTALL_PREFIX=/usr"
+although i don't know what a sensible default path would be. maybe we
+just should not have any default paths? (edited)
+hellobox. 06/03/2023 10:25 PM
+anyone know of something that uses gles via sdl2? i'd like to port
+something relatively easy
+[lock_vieira]
+lock_vieira 06/03/2023 7:39 PM
+Hey everyone, someone knows if there is an application to enable xbox
+gamepad on old LG tvs? I mean, I rooted my tv, it is working smoothly, I
+have tried moonlight and it is working nice as well, but I can't find a
+way to connect my gamepad directly to my tv. I know there is bluetooth
+adapter, because I am able to connect soundbar, headset and so on, but I
+can't connect my gamepad.
+[rkars]
+rkars 06/03/2023 2:18 AM
+So close to 1 fps Minecraft on the tv
+hellobox. 06/03/2023 2:16 AM
+at least it supports gles, which is better than a lot of other stuff
+people want ported
+06/03/2023 2:14 AM
+    Thread 2 "mali-cmar-backe" received signal SIGSEGV, Segmentation fault.
+    [Switching to Thread 9287.9298]
+    0x92536786 in ?? () from target:/usr/lib/libmali.so.0
+    (gdb) bt
+    #0  0x92536786 in ?? () from target:/usr/lib/libmali.so.0
+    #1  0x925366ae in ?? () from target:/usr/lib/libmali.so.0
+    Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+06/03/2023 2:09 AM
+the fact that the executable is 275mb is not helping with debugging
+06/03/2023 2:07 AM
+it may be trying to use an extension that's not present though
+06/03/2023 2:07 AM
+it's trying to use gles 3.2, which should be fine
+[rkars]
+hellobox. tried a different rom, and it did other stuff
+rkars 06/03/2023 2:06 AM
+Whatever graphics drivers the tv has are probably too outdated for citra
+hellobox. 06/03/2023 2:03 AM
+tried a different rom, and it did other stuff
+[image.png]
+ image.png
+131.3 KB External
+06/03/2023 1:57 AM
+i assume i need some kind of system runtime
+06/03/2023 1:56 AM
+¯\_(ツ)_/¯
+06/03/2023 1:55 AM
+    [   1.499797] Render.OpenGL <Info> video_core/renderer_opengl/gl_driver.cpp:ReportDriverInfo:132: GL_VERSION: OpenGL ES 3.2 v1.r17p0-01rel0.86ff8387802e775e9f995f58c5d62709
+    [   1.499827] Render.OpenGL <Info> video_core/renderer_opengl/gl_driver.cpp:ReportDriverInfo:133: GL_VENDOR: ARM
+    [   1.499839] Render.OpenGL <Info> video_core/renderer_opengl/gl_driver.cpp:ReportDriverInfo:134: GL_RENDERER: Mali-G31
+    [   3.270863] Render.OpenGL <Info> video_core/renderer_opengl/gl_blit_helper.cpp:BlitHelper:77: Texture views are unsupported, reinterpretation will do intermediate copy
+    [   3.701537] Core <Error> core/core.cpp:Load:316: Failed to find title id for ROM (Error 0)
+    [   3.926280] Service.SRV <Warning> core/hle/service/sm/srv.cpp:RegisterClient:63: (STUBBED) called. Caller PID=11
+    [   3.932481] Service.APT <Warning> core/hle/service/apt/apt.cpp:NotifyToWait:338: (STUBBED) app_id=768
+    [   3.940107] Service <Error> core/hle/service/service.cpp:ReportUnimplementedFunction:165: unknown / unimplemented function 'ConfigureNew3DSCPU': port='ptm:sysm' cmd_buf={[0]=0x8180040 (0x0818, 1, 0), [1]=0x0}
+    [   3.943062] Service.APT <Warning> core/hle/service/apt/apt.cpp:AppletUtility:635: (STUBBED) called command=0X00000007, input_size=0X00000004, output_size=0X00000001
+    [   3.948064] Service.APT <Warning> core/hle/service/apt/apt.cpp:CheckNew3DS:1175: (STUBBED) called
+    [   3.951332] Service.APT <Warning> core/hle/service/apt/apt.cpp:AppletUtility:635: (STUBBED) called command=0X00000004, input_size=0X00000001, output_size=0X00000001
+    [   3.956471] Service.APT <Warning> core/hle/service/apt/apt.cpp:AppletUtility:635: (STUBBED) called command=0X00000004, input_size=0X00000001, output_size=0X00000001
+    [   3.962383] Service.GSP <Warning> core/hle/service/gsp/gsp_gpu.cpp:AcquireRight:747: called flag=00000000 process=11 thread_id=0
+    Segmentation fault
+06/03/2023 1:53 AM
+oh, it just needed use_gles = 1
+06/03/2023 1:47 AM
+and i'm not really interested enough to debug it
+[] rkars Idk how to properly compile it
+hellobox. 06/03/2023 1:47 AM
+i built it, but it does this when i try to run it
+    [SDL2:SYSTEM:0] SDL Init start with flag : 8224
+    [   0.419293] Input <Info> input_common/udp/client.cpp:StartCommunication:206: Starting communication with UDP input server on 127.0.0.1:26760
+    [   0.458291] Frontend <Critical> citra/emu_window/emu_window_sdl2_gl.cpp:EmuWindow_SDL2_GL:100: Failed to create SDL2 GL context: Could not create EGL context
+    ==>[WARN] (citra) EGL: In file: egl/src/mali_egl_display.c  line: 1496 eglp_unload_callback
+    EGLDisplay (0x09cf2238) was not properly terminated by the application before unloading the driver.
+hellobox. 06/03/2023 1:12 AM
+i have a bunch of stuff that is probably ready for a PR
+https://github.com/openlgtv/glibc/compare/master...throwaway96:glibc:ucontext-cleanup
+hellobox. 06/03/2023 12:52 AM
+gross
+https://github.com/openlgtv/glibc/blob/master/ports/sysdeps/unix/sysv/linux/arm/sys/ucontext.h#L43-L74
+[smx2460]
+hellobox. <@310158180728700929> could we do a gcc multilib thing for
+different webos versions? that is, a diff...
+smx2460 06/03/2023 12:11 AM
+I guess we could try
+hellobox. 06/03/2023 12:10 AM
+br-nc4
+[rkars]
+rkars 06/03/2023 12:10 AM
+Idk how to properly compile it
+06/03/2023 12:10 AM
+Hmm
+hellobox. 06/03/2023 12:09 AM
+definitely not going to work:
+      NEEDED            Shared library: [ld-linux-armhf.so.3]
+[rkars]
+rkars 06/03/2023 12:09 AM
+Extracted .so from package
+[rkars]
+hellobox. this?
+<https://archlinuxarm.org/packages/armv7h/libretro-citra>
+rkars 06/03/2023 12:09 AM
+Yes
+[] rkars Idk I took it from arch's arm repo
+hellobox. 06/03/2023 12:08 AM
+this? https://archlinuxarm.org/packages/armv7h/libretro-citra
+[rkars]
+rkars 06/03/2023 12:07 AM
+Also can I force hdr?
+06/03/2023 12:06 AM
+Only place I found the core in armv7
+[rkars]
+hellobox. i assume "armv7h" means it's using the hardfp abi
+rkars 06/03/2023 12:06 AM
+Idk I took it from arch's arm repo
+hellobox. 06/03/2023 12:06 AM
+compatibility i guess
+[rkars]
+hellobox. why is that a problem?
+rkars 06/03/2023 12:06 AM
+Why would they do it?
+[] rkars Sadly no 5fps wii menu cause lg bad an did armv7 on a arm64 cpu
+hellobox. 06/03/2023 12:00 AM
+why is that a problem?
+June 2, 2023
+[] rkars What does that mean
+hellobox. 06/02/2023 11:58 PM
+i assume "armv7h" means it's using the hardfp abi
+[rkars]
+rkars 06/02/2023 11:50 PM
+Sadly no 5fps wii menu cause lg bad an did armv7 on a arm64 cpu
+[rkars]
+hellobox. webos uses the softfp abi
+rkars 06/02/2023 11:49 PM
+What does that mean
+hellobox. 06/02/2023 10:56 PM
+@Smx could we do a gcc multilib thing for different webos versions? that
+is, a different dir full of stub libs for each webos major version,
+selected with something like -twebos-version=6. we could even have
+different vendor dirs (-twebos-vendor=rtk) (edited)
+[] rkars (yes it's an armv7h build)
+hellobox. 06/02/2023 10:54 PM
+webos uses the softfp abi
+[rkars]
+rkars 06/02/2023 9:06 PM
+i wanted 5 fps 3d pinball
+06/02/2023 9:03 PM
+(yes it's an armv7h build)
+06/02/2023 9:02 PM
+truly sadest moment of all time
+06/02/2023 9:02 PM
+[ERROR] Failed to open libretro core:
+"/media/developer/apps/usr/palm/applications/com.retroarch/.config/retroarch/cores/citra_libretro.so"
+06/02/2023 9:02 PM
+NOOOO
+June 1, 2023
+etn40ff 06/01/2023 10:58 PM
+thanks @hellobox
+06/01/2023 10:58 PM
+and there is no way to run homebrew's initialization scripts before the
+first system update check I assume...
+06/01/2023 10:57 PM
+I see
+etn40ff Hi all, I am a n00b here (but with a considerable amount of *nix
+experience). Can anyone explain why...
+hellobox. 06/01/2023 10:48 PM
+the root filesystem is signed
+etn40ff 06/01/2023 10:46 PM
+Hi all, I am a n00b here (but with a considerable amount of *nix
+experience). Can anyone explain why /etc/hosts gets replaced at boot
+rather than modified on the root partition? (As you may have guessed I
+am looking at options to prevent accidental system updates but I do not
+want to setup a firewall on another machine if i can avoid that)
+[pinheadi]
+[] mariotaku It's planned but needs time
+pinheadi 06/01/2023 12:00 PM
+Cool, sounds good enough. Take your time.
+[mariotaku]
+[] pinheadi How about the option to connect to a PC outside of network?
+mariotaku 06/01/2023 11:53 AM
+It's planned but needs time
+[pinheadi]
+[] mariotaku - Keyboard input support - Updated decoders
+pinheadi 06/01/2023 11:53 AM
+How about the option to connect to a PC outside of network?
+[chercheur]
+[] mariotaku I think that might because they only keep snapshot builds
+for a short while, or it will take too muc...
+chercheur 06/01/2023 8:33 AM
+yes this is the reason they already gave; but this makes tests with kodi
+on Webos 4.x impossible for newcomers
+[mariotaku]
+[] chercheur Ok I am available for any tests . I currently have one ipk
+that is not present anymore I the test re...
+mariotaku 06/01/2023 6:41 AM
+I think that might because they only keep snapshot builds for a short
+while, or it will take too much space.
+[chercheur]
+[] mariotaku It's in early development, and everything is subject to
+change.
+chercheur 06/01/2023 6:06 AM
+Ok I am available for any tests . I currently have one ipk that is not
+present anymore I the test release directory
+[mariotaku]
+[] chercheur Hi where did you find it ? I have a webos 4.x. There was an
+ipk in the depot but now it is absent . ...
+mariotaku 06/01/2023 4:15 AM
+It's in early development, and everything is subject to change.
+[mariotaku]
+mariotaku 06/01/2023 4:02 AM
+- Keyboard input support - Updated decoders
+[mariotaku]
+[] pinheadi Any news on the Stream Link implementation?#
+mariotaku 06/01/2023 4:02 AM
+I do have some updates (not released though)
+May 31, 2023
+Deleted User 05/31/2023 7:34 PM
+any NEW homebrew?
+[pinheadi]
+pinheadi 05/31/2023 11:54 AM
+Any news on the Stream Link implementation?#
+[bredcat2220]
+bredcat2220 05/31/2023 10:17 AM
+Oh
+ 1
+May 30, 2023
+[chercheur]
+[] bredcat2220 Kodi was asked for a lot of times and it is right now
+getting made, so i thought it's possible to ma...
+chercheur 05/30/2023 4:57 PM
+Hi where did you find it ? I have a webos 4.x. There was an ipk in the
+depot but now it is absent . The one I found worked but video took
+several tens of seconds to arrive (edited)
+[mariotaku]
+[] bredcat2220 Kodi was asked for a lot of times and it is right now
+getting made, so i thought it's possible to ma...
+mariotaku 05/30/2023 4:13 PM
+Not only it was asked for a lot of times, but I also remember at least 4
+people had some attempts porting it (and eventually they made it)
+[bredcat2220]
+bredcat2220 05/30/2023 3:09 PM
+Kodi was asked for a lot of times and it is right now getting made, so i
+thought it's possible to make the same happen for stremio
+[bredcat2220]
+[] mariotaku TBH the success rate of asking someone else to make an app
+(which is not used by themselves) is clos...
+bredcat2220 05/30/2023 3:08 PM
+Oh 
+[mariotaku]
+mariotaku 05/30/2023 1:08 PM
+TBH the success rate of asking someone else to make an app (which is not
+used by themselves) is close to 0%...
+ 1
+05/30/2023 1:07 PM
+We have some users here wanting an app then tried to get their hands
+on... then they really made it.
+[bredcat2220]
+bredcat2220 05/30/2023 12:17 PM
+oh
+ww8543 05/30/2023 11:00 AM
+and it became a meme 
+05/30/2023 10:59 AM
+someone here was pestering constantly about new homebrew and porting
+ppsspp to webos
+[] bredcat2220 What do you mean
+ww8543 05/30/2023 10:59 AM
+it's an inside joke
+hellobox. unless you have a bunch of hacks in your app like they're
+doing with kodi
+wsnipex 05/30/2023 9:34 AM
+which hacks are you referring to?
+wsnipex 05/30/2023 9:33 AM
+psp emulator?
+[bredcat2220]
+hellobox. stremio is the new ppsspp
+bredcat2220 05/30/2023 7:57 AM
+What do you mean
+hellobox. 05/30/2023 6:26 AM
+stremio is the new ppsspp
+05/30/2023 6:25 AM
+no
+[bredcat2220]
+[] bredcat2220 Any progress on the stremio port?
+bredcat2220 05/30/2023 6:19 AM
+Help
+[rkars]
+rkars 05/30/2023 4:12 AM
+I'm aware that it destroys color accuracy on SDR content but it would
+get significantly brighter
+05/30/2023 4:12 AM
+Can I somehow force the tv into hdr mode?
+May 29, 2023
+hellobox. 05/29/2023 9:18 PM
+i'm sure there are situations like lib A is available on webos 1-4, and
+lib B is on 4+, so if you link against both it'll be compatible with
+only 4
+05/29/2023 9:16 PM
+it would be nice to have a way to say like "only the libs available on
+webos x through y"
+05/29/2023 9:15 PM
+something like that
+[smx2460]
+smx2460 05/29/2023 9:14 PM
+-L dir
+05/29/2023 9:14 PM
+Then the specfile will add the respective dir based on the chosen
+version
+05/29/2023 9:13 PM
+And autogenerated bindings in each
+05/29/2023 9:13 PM
+"webos1" "webos2" ... "webosX"
+05/29/2023 9:13 PM
+You want to have a dir for each webos ver
+05/29/2023 9:12 PM
+Adding maybe a new target option?
+05/29/2023 9:12 PM
+Specfile?
+hellobox. 05/29/2023 8:08 PM
+yeah, but we need to do that and the library stuff
+[smx2460]
+smx2460 05/29/2023 8:07 PM
+Windows does that in windows.h
+05/29/2023 8:07 PM
+For that you don't need a different toolchain
+hellobox. 05/29/2023 6:31 PM
+so we could expose certain interfaces #if __WEBOS_VERSION__ >= 5 or
+something
+05/29/2023 6:31 PM
+plus kernel headers
+05/29/2023 6:30 PM
+and glibc stuff
+05/29/2023 6:30 PM
+yeah
+[smx2460]
+smx2460 05/29/2023 6:30 PM
+You were talking about the library dependencies
+05/29/2023 6:30 PM
+But you weren't talking about that were you?
+05/29/2023 6:30 PM
+So it's a bundled library
+05/29/2023 6:30 PM
+What would it take to generalize the hack
+hellobox. 05/29/2023 6:30 PM
+and i imagine most webos apps are going to want to play video
+05/29/2023 6:30 PM
+mostly for the video pipeline stuff
+[smx2460]
+smx2460 05/29/2023 6:29 PM
+What kind of hacks
+hellobox. 05/29/2023 6:29 PM
+unless you have a bunch of hacks in your app like they're doing with
+kodi
+[smx2460]
+smx2460 05/29/2023 6:28 PM
+Or get into the optimization/ targeting work
+[] smx2460 Then you would also need to publish many versions of your app
+in the first place
+hellobox. 05/29/2023 6:28 PM
+that may be necessary regardless
+[smx2460]
+smx2460 05/29/2023 6:28 PM
+Then you would either neex multiple toolchains
+05/29/2023 6:28 PM
+Targeting specific webos versions
+05/29/2023 6:28 PM
+Then you would also need to publish many versions of your app in the
+first place
+05/29/2023 6:28 PM
+If you do care about app size
+05/29/2023 6:28 PM
+It's probably better to bundle those in the app or statically link
+05/29/2023 6:27 PM
+I guess libssl would change quite a bit for example
+05/29/2023 6:27 PM
+If they change number, they probably aren't
+05/29/2023 6:27 PM
+But is the ABI identical?
+hellobox. 05/29/2023 6:26 PM
+maybe we can autogenerate stub libs from the compat checker data
+05/29/2023 6:26 PM
+i think it's better to handle the mess once in the toolchain than have
+users do it
+[smx2460]
+smx2460 05/29/2023 6:25 PM
+Hmm
+[] smx2460 <@803885040827629628> that can easily become a mess to
+maintain
+hellobox. 05/29/2023 6:25 PM
+true, but right now it's a mess trying to build stuff targeting
+different webos versions
+[smx2460]
+smx2460 05/29/2023 8:48 AM
+@hellobox that can easily become a mess to maintain
+hellobox. 05/29/2023 1:28 AM
+or some kind of macro? different libs are an issue though
+05/29/2023 1:28 AM
+separate defconfig per major version?
+05/29/2023 1:28 AM
+@Smx i think we're going to need a mechanism to choose which webos
+version br-nc4 is targeting
+May 28, 2023
+[zxhzxhz.]
+zxhzxhz. 05/28/2023 5:24 PM
+hi..I think I successfully mounted my webdav server on media
+player/samples, but nothing shows in the app. whats wrong with it?
+[image.png]
+ image.png
+37.92 KB External
+[image.png]
+ image.png
+39.06 KB External
+[bredcat2220]
+bredcat2220 05/28/2023 3:54 PM
+that's all it loads
+05/28/2023 3:54 PM
+(the purple background which the stremio menu has)
+05/28/2023 3:53 PM
+This is what i get when i try to access app.strem.io
+[PXL_20230528_135208479.jpg]
+ PXL_20230528_135208479.jpg
+217.67 KB External
+05/28/2023 3:51 PM
+Any progress on the stremio port?
+May 27, 2023
+[pinheadi]
+pinheadi 05/27/2023 2:50 PM
+Not that it's bad.. but the old one let me use the Home screen without
+closing the background app or whatever is on.
+[infowski]
+infowski 05/27/2023 2:49 PM
+Nice
+[pinheadi]
+[] infowski There isn't one that we are aware of.
+pinheadi 05/27/2023 2:48 PM
+Actually @Craig was right... it never occurred to me to check the
+settings. There's actually a setting where you can choose.
+[infowski]
+infowski 05/27/2023 2:42 PM
+There isn't one that we are aware of.
+[ccarnell98]
+[] pinheadi is there a way to revert to old Home? The new one is just
+awful
+ccarnell98 05/27/2023 2:39 PM
+Believe there is a setting, but I don't own that model anymore
+[pinheadi]
+pinheadi 05/27/2023 2:04 PM
+is there a way to revert to old Home? The new one is just awful
+May 26, 2023
+wsnipex 05/26/2023 11:41 AM
+at least originally
+05/26/2023 11:41 AM
+this is ancient solaris stuff
+hellobox. 05/26/2023 4:33 AM
+and there isn't even a fucking option to disable it
+05/26/2023 4:32 AM
+which is an issue because some packages (e.g., iproute2) will detect it
+and link against it automatically
+05/26/2023 4:30 AM
+i guess libtirpc is only present in webos 5+
+May 25, 2023
+[smx2460]
+hellobox. he seems to have taken over as maintainer and forked 1.0.6,
+but someone (the old maintainer?) releas...
+smx2460 05/25/2023 7:06 PM
+:dafuk:
+May 24, 2023
+wsnipex 05/24/2023 9:22 AM
+just link it statically 
+hellobox. 05/24/2023 3:17 AM
+and it's not even really lg's fault this time
+05/24/2023 3:17 AM
+so it's fucking .0 on webos 1-3.5
+05/24/2023 3:15 AM
+wow
+https://www.openembedded.org/pipermail/openembedded-core/2016-April/238341.html
+05/24/2023 3:14 AM
+https://github.com/webosbrew/compat-checker/blob/master/data/1.2.0/libbz2.so.0.0.0.json
+[mariotaku]
+hellobox. looks like there's a github ci workflow
+mariotaku 05/24/2023 3:10 AM
+Yes, and you can download build artifacts on that page.
+[mariotaku]
+[] restrike has anyone experienced no sound output on the TV when using
+IHSPlay? I just tried it, looked into th...
+mariotaku 05/24/2023 3:09 AM
+There's no settings for audio yet. I'm making some progress.
+[restrike]
+restrike 05/24/2023 2:53 AM
+I've never done that before, I could try
+hellobox. 05/24/2023 2:45 AM
+looks like there's a github ci workflow
+05/24/2023 2:45 AM
+not sure if he's fixed it yet, but you can try building it
+[restrike]
+restrike 05/24/2023 2:39 AM
+As I see in the GitHub, others have had the same problem, and it will be
+fixed on v0.2.4, but that response was on February. Guess I'll wait
+05/24/2023 2:36 AM
+I'm sorry if I'm missing something
+05/24/2023 2:36 AM
+has anyone experienced no sound output on the TV when using IHSPlay? I
+just tried it, looked into the settings on my PC and couldn't figure out
+what the problem was. Settings on IHS are just "Option X" and I don't
+know which one does what.
+hellobox. 05/24/2023 1:55 AM
+he seems to have taken over as maintainer and forked 1.0.6, but someone
+(the old maintainer?) released their own 1.0.7 and 1.0.8 with the old
+build system (edited)
+05/24/2023 1:54 AM
+and br isn't using that guy's (official?) fork
+05/24/2023 1:49 AM
+openembedded has their own makefile for it that uses libtool
+http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-extended/bzip2/bzip2-1.0.6/Makefile.am?h=pyro
+05/24/2023 1:45 AM
+so... wait. it was changed from .1.0 to .1 in 1.0.7, but webos has a
+pre-1.0.7 version with the new soname, and buildroot has a post-1.0.7
+version with the old one?
+05/24/2023 1:41 AM
+https://viruta.org/preparing-the-bzip2-107-release.html
+05/24/2023 1:39 AM
+huh... webos (libbz2.so.1.0.6):
+      SONAME            Library soname: [libbz2.so.1]
+    br-nc4 (`libbz2.so.1.0.8`):
+      SONAME            Library soname: [libbz2.so.1.0]
+May 23, 2023
+[chercheur]
+wsnipex otherwise would pile up
+chercheur 05/23/2023 7:47 PM
+I understand that; I was afraid it could be a security issue
+wsnipex 05/23/2023 7:02 PM
+otherwise would pile up
+05/23/2023 7:02 PM
+test packages get removed automatically after some time
+[mariotaku]
+[] chercheur Hi the package
+https://mirrors.kodi.tv/test-builds/webos/org.xbmc.kodi_20230410-43388ac9-acb-rebased...
+mariotaku 05/23/2023 6:59 PM
+All those packages are for testing only and in development. The release
+version will be there when they are ready.
+[chercheur]
+chercheur 05/23/2023 6:35 PM
+Hi the package
+https://mirrors.kodi.tv/test-builds/webos/org.xbmc.kodi_20230410-43388ac9-acb-rebased_arm.ipk
+that worked in my B9 OLED TV has been removed from the server . Any
+reason why ? Is there any new package available for OS4.x ?
+May 22, 2023
+[thewalkerd]
+thewalkerd 05/22/2023 10:06 PM
+ah.. that's good to know.. thanks!
+[] thewalkerd <@803885040827629628> last question, I'm seeing a
+notification for update already, and based on what...
+hellobox. 05/22/2023 10:05 PM
+you can apply all current updates without causing any problems
+[thewalkerd]
+thewalkerd 05/22/2023 10:05 PM
+(update after it's rooted I mean)
+05/22/2023 10:05 PM
+@hellobox last question, I'm seeing a notification for update already,
+and based on what I read in the github, rooting won't block those.. for
+it to go away I should block the lg domains in my router or it's safe to
+do the next update past webos 7.3?
+[thewalkerd]
+thewalkerd 05/22/2023 9:58 PM
+I see.. no worries. Moonlight and YT are the things that I'm looking for
+hellobox. 05/22/2023 9:57 PM
+i do have an rtl-sdr that would presumably work as an atsc tuner
+(edited)
+[thewalkerd]
+hellobox. ad-free youtube will work
+thewalkerd 05/22/2023 9:57 PM
+that's good to now.. ..I will read the github to undertand the steps
+better (about the TVHeadend, is not a priority to me at all, so it's
+fine if it doesnt work to me later on really)
+hellobox. 05/22/2023 9:56 PM
+i don't have a tvheadend server to test it with though
+05/22/2023 9:54 PM
+i guess i can try it on webos 7
+[thewalkerd]
+hellobox. how do you know tvheadend won't work?
+thewalkerd 05/22/2023 9:54 PM
+people were pointing that out here:
+https://www.reddit.com/r/webos/comments/121wz3x/webos_tvheadend_client_unable_to_set_up/
+r/webos - WebOS TVHeadend Client unable to set up
+6 votes and 5 comments so far on Reddit
+hellobox. 05/22/2023 9:53 PM
+i assume moonlight works
+05/22/2023 9:53 PM
+ad-free youtube will work
+[] thewalkerd Then I just follow the crashd github and I'm good to go?
+I'm mainly interested in the youtube homebr...
+hellobox. 05/22/2023 9:53 PM
+how do you know tvheadend won't work?
+[thewalkerd]
+hellobox. crashd
+thewalkerd 05/22/2023 9:50 PM
+Then I just follow the crashd github and I'm good to go? I'm mainly
+interested in the youtube homebrew and streaming my games.. if my
+version on webos is not a problem for those to work (I know that some
+could not work, like TVHeadend)

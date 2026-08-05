@@ -1,0 +1,1630 @@
+February 4, 2023
+[smx2460]
+smx2460 02/04/2023 5:55 PM
+for all packages?
+[infowski]
+infowski 02/04/2023 5:55 PM
+Add it to default LDFLAGS
+[smx2460]
+smx2460 02/04/2023 5:55 PM
+what do you mean by "global" (edited)
+[infowski]
+infowski 02/04/2023 5:54 PM
+Will LD add that library to rdepends, or ignore it if we don't use any
+symbols from that?
+02/04/2023 5:54 PM
+I mean - to default global ones.
+02/04/2023 5:54 PM
+How bad would adding that to ldflags be?
+02/04/2023 5:53 PM
+-lrt out love.
+hellobox. 02/04/2023 5:53 PM
+-lrt
+[yolofant]
+yolofant 02/04/2023 5:53 PM
+    [100%] Linking CXX executable kodi.bin
+    /home/mi/ssundermann/Sourcecode/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: build/utils/utils.a(TimeUtils.cpp.o): undefined reference to symbol 'clock_gettime@@GLIBC_2.4'
+[yolofant]
+yolofant 02/04/2023 5:38 PM
+BR2_PACKAGE_PROVIDES_LIBEGL_WAYLAND does this need to be defined
+somewhere or is maybe called differently?
+02/04/2023 5:38 PM
+package/webos-userland/Config.in:25:warning: config symbol defined without type
+02/04/2023 5:35 PM
+    ################################################################################
+    #
+    # webos-userland
+    #
+    ################################################################################
+    WEBOS_USERLAND_VERSION = ea82c15c4fcf655cc231ab57503804af6f5f793f
+    WEBOS_USERLAND_SITE = $(call github,sundermann,webos-userland,$(WEBOS_USERLAND_VERSION))
+    WEBOS_USERLAND_LICENSE = BSD-3-Clause
+    WEBOS_USERLAND_LICENSE_FILES = LICENCE
+    WEBOS_USERLAND_INSTALL_STAGING = YES
+    WEBOS_USERLAND_PROVIDES = libegl libgles libwayland-egl
+    ifeq ($(BR2_PACKAGE_LIBEXECINFO),y)
+    WEBOS_USERLAND_DEPENDENCIES += libexecinfo
+    endif
+    WEBOS_USERLAND_POST_INSTALL_TARGET_HOOKS += WEBOS_USERLAND_EXTRA_LIBS_TARGET
+    WEBOS_USERLAND_POST_INSTALL_STAGING_HOOKS += WEBOS_USERLAND_EXTRA_LIBS_STAGING
+    define WEBOS_USERLAND_POST_TARGET_CLEANUP
+        rm -Rf $(TARGET_DIR)/usr/src
+    endef
+    WEBOS_USERLAND_POST_INSTALL_TARGET_HOOKS += WEBOS_USERLAND_POST_TARGET_CLEANUP
+    $(eval $(cmake-package))
+02/04/2023 5:34 PM
+    config BR2_PACKAGE_WEBOS_USERLAND
+        bool "webos-userland"
+        depends on BR2_arm
+        depends on BR2_INSTALL_LIBSTDCPP
+        depends on BR2_TOOLCHAIN_HAS_THREADS
+        depends on !BR2_STATIC_LIBS
+        select BR2_PACKAGE_HAS_LIBEGL
+        select BR2_PACKAGE_HAS_LIBGLES
+        select BR2_PACKAGE_HAS_LIBEGL_WAYLAND
+        help
+          Webos Userland contains the necessary stub libraries to link
+          against.
+          Includes source for the ARM side code to interface to: EGL,
+          GLESv1_cm, GLESv2, wayland-egl.
+    if BR2_PACKAGE_WEBOS_USERLAND
+    config BR2_PACKAGE_PROVIDES_LIBEGL
+        default "webos-userland"
+    config BR2_PACKAGE_PROVIDES_LIBGLES
+        default "webos-userland"
+    config BR2_PACKAGE_PROVIDES_LIBEGL_WAYLAND
+        default "webos-userland"
+    endif
+    comment "webos-userland needs a toolchain w/ C++, threads, dynamic library"
+        depends on BR2_arm
+        depends on !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_HAS_THREADS || \
+            BR2_STATIC_LIBS
+02/04/2023 5:33 PM
+still the same error
+02/04/2023 5:33 PM
+yeah
+[smx2460]
+smx2460 02/04/2023 5:33 PM
+since you don't have a "VMCS_INSTALL_PREFIX" variable in your
+CMakeLists.txt
+02/04/2023 5:32 PM
+> WEBOS_USERLAND_CONF_OPTS = -DVMCS_INSTALL_PREFIX=/usr you don't
+probably need this
+[smx2460]
+[] yolofant so in kodi we removed `BR2_PACKAGE_HAS_LIBEGL_WAYLAND`
+smx2460 02/04/2023 5:32 PM
+you could put it back then
+[smx2460]
+smx2460 02/04/2023 5:31 PM
+    ROCKCHIP_MALI_LIB = libmali-bifrost-g31-rxp0$(ROCKCHIP_MALI_SUFFIX).so
+    ROCKCHIP_MALI_PKGCONFIG_FILES = egl gbm glesv2 mali
+    ROCKCHIP_MALI_ARCH_DIR = $(if $(BR2_arm)$(BR2_armeb),arm-linux-gnueabihf,aarch64-linux-gnu)
+    ROCKCHIP_MALI_HEADERS = EGL FBDEV GLES GLES2 GLES3 KHR gbm.h
+[yolofant]
+yolofant 02/04/2023 5:31 PM
+so in kodi we removed BR2_PACKAGE_HAS_LIBEGL_WAYLAND
+[smx2460]
+smx2460 02/04/2023 5:31 PM
+OT: package/rockchip-mali/rockchip-mali.mk is interesting
+[yolofant]
+yolofant 02/04/2023 5:30 PM
+but that's what it doesn't like
+02/04/2023 5:30 PM
+WEBOS_USERLAND_PROVIDES = libegl libgles libwayland-egl I added
+libywayland-egl here
+ 1  1  1
+[smx2460]
+smx2460 02/04/2023 5:30 PM
+why wouldn't i allow that?
+02/04/2023 5:30 PM
+sure
+[infowski]
+infowski 02/04/2023 5:30 PM
+Also - I am guessing i can steal GCC/libc patches you've already made?
+[smx2460]
+smx2460 02/04/2023 5:30 PM
+i guess we'd be making a layer
+[infowski]
+infowski 02/04/2023 5:29 PM
+I guess when I find some time 
+[smx2460]
+smx2460 02/04/2023 5:29 PM
+i wanna see you do it and learn 
+02/04/2023 5:29 PM
+hmmm i challenge you to port our buildroot setup to Yocto
+[infowski]
+infowski 02/04/2023 5:29 PM
+Yeah sstate cache, as per defaults
+02/04/2023 5:29 PM
+<2 min for full wic/rootfs build (~150mb) here
+[smx2460]
+smx2460 02/04/2023 5:29 PM
+maybe if you use ccache?
+[infowski]
+infowski 02/04/2023 5:28 PM
+It's actually amazingly fast.
+[smx2460]
+smx2460 02/04/2023 5:28 PM
+i don't wanna wait forever for my build to run (edited)
+[smx2460]
+[] infowski And images/SDK/other final artifact bullshit gets generated
+from scratch every time, so no issue wit...
+smx2460 02/04/2023 5:28 PM
+that's a pro and a con
+[smx2460]
+smx2460 02/04/2023 5:28 PM
+or --build=you --host=that --target=that
+02/04/2023 5:27 PM
+gcc-ception
+02/04/2023 5:27 PM
+so you need to build a cross gcc that builds cross binaries, using the
+cross compiler
+02/04/2023 5:27 PM
+aka "i wanna use gcc on TV to build arm binaries"
+ 1
+02/04/2023 5:27 PM
+building "gcc" for arm with the gcc cross compiler it just built
+[infowski]
+infowski 02/04/2023 5:27 PM
+Doing full clean and rebuild on every run seems like what would make me
+less nervous 
+02/04/2023 5:27 PM
+Ugh, cleaning stuff is the part that scares me about buildroot.
+[smx2460]
+smx2460 02/04/2023 5:27 PM
+cross canadian
+02/04/2023 5:26 PM
+there's one thing Yocto can do that buildroot can't
+[infowski]
+infowski 02/04/2023 5:26 PM
+And images/SDK/other final artifact bullshit gets generated from scratch
+every time, so no issue with sysroot clobbering as mentioned above
+[smx2460]
+smx2460 02/04/2023 5:26 PM
+but it feels like you would need a crash course to figure out how to do
+the equivalent you do in buildroot
+[infowski]
+[] smx2460 and last time i couldn't find a decent option to "clean just
+one package"
+infowski 02/04/2023 5:26 PM
+bitbake -c cleanall recipe
+[smx2460]
+smx2460 02/04/2023 5:25 PM
+i should reevaluate it
+02/04/2023 5:25 PM
+made me nervous about it
+02/04/2023 5:25 PM
+and last time i couldn't find a decent option to "clean just one
+package"
+02/04/2023 5:25 PM
+but the fact that the build system is in python
+[infowski]
+infowski 02/04/2023 5:25 PM
+They finally replaced _ with : xD
+[smx2460]
+smx2460 02/04/2023 5:25 PM
+don't get me wrong, i agree it's more structured and all
+[yolofant]
+yolofant 02/04/2023 5:25 PM
+yeah I just saw 
+[infowski]
+infowski 02/04/2023 5:25 PM
+Also, for real, yocto seems to have improved much in the last ~2-3
+years.
+[smx2460]
+smx2460 02/04/2023 5:25 PM
+02/04/2023 5:25 PM
+RPI_USERLAND_VERSION
+02/04/2023 5:25 PM
+> WEBOS_USERLAND_SITE = $(call
+github,sundermann,webos-userland,$(RPI_USERLAND_VERSION))
+02/04/2023 5:24 PM
+lol
+02/04/2023 5:24 PM
+and resumed it
+02/04/2023 5:24 PM
+he copied glibc files on top
+02/04/2023 5:24 PM
+he gave up and decided to interrupt the build halfway through
+[yolofant]
+yolofant 02/04/2023 5:24 PM
+    ################################################################################
+    #
+    # webos-userland
+    #
+    ################################################################################
+    WEBOS_USERLAND_VERSION = ea82c15c4fcf655cc231ab57503804af6f5f793f
+    WEBOS_USERLAND_SITE = $(call github,sundermann,webos-userland,$(RPI_USERLAND_VERSION))
+    WEBOS_USERLAND_LICENSE = BSD-3-Clause
+    WEBOS_USERLAND_LICENSE_FILES = LICENCE
+    WEBOS_USERLAND_INSTALL_STAGING = YES
+    WEBOS_USERLAND_CONF_OPTS = -DVMCS_INSTALL_PREFIX=/usr
+    WEBOS_USERLAND_PROVIDES = libegl libgles libwayland-egl
+    ifeq ($(BR2_PACKAGE_LIBEXECINFO),y)
+    WEBOS_USERLAND_DEPENDENCIES += libexecinfo
+    endif
+    WEBOS_USERLAND_POST_INSTALL_TARGET_HOOKS += WEBOS_USERLAND_EXTRA_LIBS_TARGET
+    WEBOS_USERLAND_POST_INSTALL_STAGING_HOOKS += WEBOS_USERLAND_EXTRA_LIBS_STAGING
+    RPI_USERLAND_CONF_OPTS += -DALL_APPS=OFF
+    define WEBOS_USERLAND_POST_TARGET_CLEANUP
+        rm -Rf $(TARGET_DIR)/usr/src
+    endef
+    WEBOS_USERLAND_POST_INSTALL_TARGET_HOOKS += WEBOS_USERLAND_POST_TARGET_CLEANUP
+    $(eval $(cmake-package))
+[infowski]
+infowski 02/04/2023 5:24 PM
+I guess I could try that at some point.
+[smx2460]
+smx2460 02/04/2023 5:24 PM
+when darkfires first compiled Kodi for WebOS 1 (lg1154)
+[infowski]
+infowski 02/04/2023 5:24 PM
+(for real, I had to make one [appliance] last week, started with
+buildroot since it had BSP for my board mainlined and it was fine, but
+long term yocto seems a little less jank, considering I still had to
+make my own "BSP" for that board...)
+[smx2460]
+smx2460 02/04/2023 5:23 PM
+(friendly joke)
+[smx2460]
+[] infowski *this meme has been made by yocto gang*
+smx2460 02/04/2023 5:23 PM
+make Yocto use glibc 2.12 with gcc12, then you can make that kind of
+meme
+[smx2460]
+smx2460 02/04/2023 5:23 PM
+what do you have at line 31 of webos-userland.mk
+[infowski]
+infowski 02/04/2023 5:23 PM
+this meme has been made by yocto gang
+02/04/2023 5:22 PM
+Just buildroot things
+[yolofant]
+yolofant 02/04/2023 5:21 PM
+maybe I just push what I have
+02/04/2023 5:21 PM
+I already had that
+02/04/2023 5:21 PM
+BR2_PACKAGE_RPI_USERLAND is not set
+[smx2460]
+smx2460 02/04/2023 5:20 PM
+we can do a clean build later
+02/04/2023 5:20 PM
+which is a KConfig kind of conflict
+02/04/2023 5:20 PM
+but for now, solve the build conflict
+02/04/2023 5:19 PM
+if it had been already built/installed, it will cause a soup in the
+target rootfs though
+02/04/2023 5:19 PM
+i mean from .config, ofc
+02/04/2023 5:19 PM
+or just remove everything related to rpi-userland and "make oldconfig"
+02/04/2023 5:18 PM
+in .config
+02/04/2023 5:18 PM
+and "make oldconfig"
+[yolofant]
+yolofant 02/04/2023 5:18 PM
+where?
+[smx2460]
+smx2460 02/04/2023 5:18 PM
+    # BR2_PACKAGE_RPI_USERLAND is not set
+02/04/2023 5:18 PM
+to
+02/04/2023 5:18 PM
+    BR2_PACKAGE_RPI_USERLAND=y
+02/04/2023 5:18 PM
+change
+[yolofant]
+yolofant 02/04/2023 5:18 PM
+are renamed them
+[smx2460]
+smx2460 02/04/2023 5:18 PM
+also
+[yolofant]
+yolofant 02/04/2023 5:18 PM
+I think I removed those
+[smx2460]
+smx2460 02/04/2023 5:18 PM
+it will conflict
+02/04/2023 5:18 PM
+because if you pull in rpi-userland
+02/04/2023 5:18 PM
+none of these needs to be there
+02/04/2023 5:18 PM
+    BR2_PACKAGE_PROVIDES_LIBOPENMAX="rpi-userland"
+02/04/2023 5:18 PM
+    BR2_PACKAGE_PROVIDES_LIBOPENVG="rpi-userland"
+02/04/2023 5:18 PM
+    BR2_PACKAGE_PROVIDES_LIBEGL="rpi-userland"
+    BR2_PACKAGE_PROVIDES_LIBGLES="rpi-userland"
+[yolofant]
+yolofant 02/04/2023 5:18 PM
+yeah
+[smx2460]
+smx2460 02/04/2023 5:17 PM
+did you remove it from .config ?
+[yolofant]
+yolofant 02/04/2023 5:17 PM
+I guess it still finds rpi-userland
+[smx2460]
+smx2460 02/04/2023 5:17 PM
+lol
+02/04/2023 5:17 PM
+if i had to rebuild everything every time i changed something, i'd be
+dead
+[yolofant]
+yolofant 02/04/2023 5:17 PM
+package/webos-userland/webos-userland.mk:31: *** Configuration error: both "webos-userland" and are selected as providers for virtual package "libwayland-egl". Only one provider can be selected at a time. Please fix your configuration. Stop.
+02/04/2023 5:17 PM
+hmm
+02/04/2023 5:17 PM
+alright
+[smx2460]
+smx2460 02/04/2023 5:16 PM
+rm -rf output/build/[package name here]
+[yolofant]
+yolofant 02/04/2023 5:16 PM
+is there a way to make clean rpi-userland
+[smx2460]
+smx2460 02/04/2023 5:16 PM
+mariotaku the man (edited)
+[infowski]
+infowski 02/04/2023 5:14 PM
+We probably want to integrate this lirbary into Kodi :p
+02/04/2023 5:14 PM
+https://github.com/mariotaku/ss4s
+GitHub - mariotaku/ss4s: Simple Sink For Streaming
+Simple Sink For Streaming. Contribute to mariotaku/ss4s development by
+creating an account on GitHub.
+[]
+[smx2460]
+smx2460 02/04/2023 5:14 PM
+fine for me
+02/04/2023 5:13 PM
+yeah i made it
+[yolofant]
+yolofant 02/04/2023 5:13 PM
+gonna put it there
+02/04/2023 5:13 PM
+there's a webos category
+[smx2460]
+smx2460 02/04/2023 5:13 PM
+sorry, it's just that (edited)
+02/04/2023 5:13 PM
+package/Config.in
+[yolofant]
+yolofant 02/04/2023 5:13 PM
+oh ok
+[smx2460]
+smx2460 02/04/2023 5:13 PM
+as well as the top level Makefile
+[yolofant]
+yolofant 02/04/2023 5:12 PM
+do I need anything in addition to the package?
+[smx2460]
+smx2460 02/04/2023 5:12 PM
+you need to add it to "Config.in"
+[yolofant]
+yolofant 02/04/2023 5:12 PM
+hmm my webos-userland package isn't detected
+02/04/2023 5:12 PM
+[smx2460]
+smx2460 02/04/2023 5:12 PM
+slow as fuck, couldn't stand using it for more than 10 seconds
+02/04/2023 5:12 PM
+probably downscale them, but it's shit either way
+[yolofant]
+yolofant 02/04/2023 5:12 PM
+for pip and etc.
+[smx2460]
+smx2460 02/04/2023 5:12 PM
+and i'm not sure what they do to render videos while in Chrome
+[yolofant]
+yolofant 02/04/2023 5:12 PM
+and you can control size position etc
+[smx2460]
+smx2460 02/04/2023 5:12 PM
+resolution is changed when you enter Chrome
+02/04/2023 5:12 PM
+on Netcast4, you have a 1080p VPU and a 720p GPU
+[yolofant]
+yolofant 02/04/2023 5:11 PM
+yes display engine does that
+[smx2460]
+smx2460 02/04/2023 5:11 PM
+it would be downscaled
+02/04/2023 5:11 PM
+you wouldn't be able to render a 4k video if it had to go through the
+GPU
+02/04/2023 5:11 PM
+and the VPU outputs at potentially 4k
+02/04/2023 5:11 PM
+consider that the GPU outputs at 1080p
+02/04/2023 5:11 PM
+also
+02/04/2023 5:11 PM
+which are muxed together by the SoC and it's controlled at the kernel
+level
+02/04/2023 5:10 PM
+it has stacked virtual OSDs (edited)
+[yolofant]
+yolofant 02/04/2023 5:10 PM
+it should also be possible to control the position and size through DE
+(display engine)
+02/04/2023 5:10 PM
+you just call the NDL stuff and it renders it at the back
+02/04/2023 5:10 PM
+yeah
+[smx2460]
+smx2460 02/04/2023 5:10 PM
+i think LG has a direct path to the screen through the VPU
+02/04/2023 5:10 PM
+i'm not 100% convinced it has to go through the GPU
+[yolofant]
+yolofant 02/04/2023 5:10 PM
+yeah
+[smx2460]
+smx2460 02/04/2023 5:09 PM
+that's what i'm saying (edited)
+[infowski]
+infowski 02/04/2023 5:09 PM
+Since that will go through the GPU of course
+[smx2460]
+smx2460 02/04/2023 5:09 PM
+yes
+[infowski]
+infowski 02/04/2023 5:09 PM
+We need egl for GUI rendering regardless
+[smx2460]
+smx2460 02/04/2023 5:09 PM
+but are a bit old/outdated
+[infowski]
+[] yolofant
+https://github.com/xbmc/xbmc/blob/master/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAndroid...
+infowski 02/04/2023 5:09 PM
+This looks like what we want to implement
+[smx2460]
+smx2460 02/04/2023 5:09 PM
+and happen to be good enough
+02/04/2023 5:09 PM
+since we're using headers that are for the Raspberry PI
+02/04/2023 5:09 PM
+fixing EGL is a good thing to achieve tho, regardless of Kodi
+[infowski]
+infowski 02/04/2023 5:08 PM
+And implement S4SS-backed playback driver on the same level as Kodi
+supports Android
+[smx2460]
+smx2460 02/04/2023 5:08 PM
+but Kodi will be useless without OpenMax
+02/04/2023 5:08 PM
+this will get EGL/GLES working
+02/04/2023 5:08 PM
+now @Yolofant is making a br-nc4 package based on stubs
+02/04/2023 5:08 PM
+raspi was added just to have EGL stubs
+[infowski]
+infowski 02/04/2023 5:08 PM
+We should rather look at Android than raspi
+[smx2460]
+smx2460 02/04/2023 5:08 PM
+as the model of operation is different
+02/04/2023 5:08 PM
+which is probably not doable
+02/04/2023 5:07 PM
+you'd need a vaapi to omx layer
+02/04/2023 5:07 PM
+but yeah it's a mess
+02/04/2023 5:07 PM
+    Mesa as of v8.0 includes VDPAU for video cards that utilize Gallium3D. 
+02/04/2023 5:07 PM
+or maybe OMX lets you bind the output to a memory location/surface
+(edited)
+02/04/2023 5:06 PM
+and blast them onto a surface
+02/04/2023 5:06 PM
+so i guess they pull decoded frames out of the OMX codec
+02/04/2023 5:06 PM
+and on LG they go through the VPU
+02/04/2023 5:06 PM
+(Ducati subsystem)
+02/04/2023 5:06 PM
+Omap4's OMX codecs go through a series of embedded DSPs driven by
+Cortex-M cores
+[infowski]
+infowski 02/04/2023 5:06 PM
+(which is essentially a punch hole in normal layout and tells hardware
+compositor to render Surfaces (which are not opengl surfaces) on screen
+[smx2460]
+smx2460 02/04/2023 5:06 PM
+hmmm the video codec might not even use OpenGL
+[yolofant]
+yolofant 02/04/2023 5:05 PM
+https://github.com/xbmc/xbmc/blob/master/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererMediaCodec.cpp
+xbmc/RendererMediaCodec.cpp at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[infowski]
+infowski 02/04/2023 5:05 PM
+As in - without using surfaceview under the hood
+02/04/2023 5:05 PM
+Since if they didn't, they couldn't do it properly on 90% of android
+devices
+[smx2460]
+smx2460 02/04/2023 5:05 PM
+02/04/2023 5:05 PM
+and vdpau made by NVidia (edited)
+[infowski]
+infowski 02/04/2023 5:04 PM
+I am pretty sure Kodi needs to have some way of instrumenting video
+playback without going through opengl
+[smx2460]
+smx2460 02/04/2023 5:04 PM
+which adapts vdpau on top of libva
+02/04/2023 5:04 PM
+yeah libva-vdpau (edited)
+[yolofant]
+yolofant 02/04/2023 5:04 PM
+there's vdpau
+[smx2460]
+smx2460 02/04/2023 5:04 PM
+lol
+02/04/2023 5:04 PM
+    Supported hardware and drivers
+    As of 2019, VA-API is natively supported by:[7]
+        Intel Quick Sync open-source drivers for Linux
+        Mesa open-source drivers for AMD and NVIDIA graphics cards
+        AMDGPU-PRO drivers for AMD graphics cards on Linux
+        libva-vdpau-driver for cards supported by VDPAU
+02/04/2023 5:04 PM
+i mean not Intel only, but Intel wrote it
+02/04/2023 5:03 PM
+and it's an Intel thing
+02/04/2023 5:03 PM
+rest assured you will never see VAAPI in an LG product
+02/04/2023 5:03 PM
+lol
+02/04/2023 5:03 PM
+VAAPI is barely working on PC
+[yolofant]
+yolofant 02/04/2023 5:02 PM
+all their supported backends are here
+https://github.com/xbmc/xbmc/tree/master/xbmc/cores/VideoPlayer/DVDCodecs/Video
+xbmc/xbmc/cores/VideoPlayer/DVDCodecs/Video at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[smx2460]
+smx2460 02/04/2023 5:02 PM
+vaapi
+[yolofant]
+yolofant 02/04/2023 5:01 PM
+and then kodi renders the surface somewhere
+[smx2460]
+smx2460 02/04/2023 5:01 PM
+(no content)
+[image.png]
+ image.png
+20.6 KB External
+[yolofant]
+yolofant 02/04/2023 5:01 PM
+but kodi somewhat assumes the video is rendered into a surface
+02/04/2023 5:01 PM
+the NDL will just display that fullscreen
+02/04/2023 5:01 PM
+that's the problem
+[smx2460]
+smx2460 02/04/2023 5:00 PM
+then no idea who it passes them to
+02/04/2023 5:00 PM
+ah to read encoded frames
+[yolofant]
+yolofant 02/04/2023 5:00 PM
+yeah
+[smx2460]
+smx2460 02/04/2023 5:00 PM
+libavcodec?
+02/04/2023 5:00 PM
+so it uses ffmpeg directly?
+[yolofant]
+yolofant 02/04/2023 5:00 PM
+and then you pass those into the NDL
+[smx2460]
+smx2460 02/04/2023 5:00 PM
+hmmm
+[yolofant]
+yolofant 02/04/2023 5:00 PM
+kodi gives you encoded frames from ffmpeg
+[smx2460]
+smx2460 02/04/2023 5:00 PM
+so we get rid of the outdated RPI stubs
+02/04/2023 5:00 PM
+let's get the userland package going i'd say
+[yolofant]
+yolofant 02/04/2023 4:59 PM
+https://github.com/webosbrew/tv-native-apis/blob/main/libndl-media/include/NDL_directmedia_common.h#L45
+tv-native-apis/NDL_directmedia_common.h at main · webosbrew/tv-nati...
+Headers and API stubs not included in OSE. Contribute to
+webosbrew/tv-native-apis development by creating an account on GitHub.
+[]
+[smx2460]
+smx2460 02/04/2023 4:59 PM
+either way
+02/04/2023 4:59 PM
+exactly
+02/04/2023 4:59 PM
+yep
+[] yolofant hmm but why can we not use the NDK?
+hellobox. 02/04/2023 4:59 PM
+we'd have to hack that into kodi
+[smx2460]
+smx2460 02/04/2023 4:59 PM
+but you need to patch Kodi heavily
+02/04/2023 4:59 PM
+you can use that
+02/04/2023 4:59 PM
+aka it uses HOA/LgOpenAPI (edited)
+[yolofant]
+yolofant 02/04/2023 4:59 PM
+sorry 
+02/04/2023 4:59 PM
+NDL
+[smx2460]
+smx2460 02/04/2023 4:59 PM
+moonlight uses tv-native-apis (edited)
+hellobox. 02/04/2023 4:58 PM
+yeah, we learned some things about wayland
+[smx2460]
+smx2460 02/04/2023 4:58 PM
+what kind of NDK
+[yolofant]
+yolofant 02/04/2023 4:58 PM
+as in moonlight
+[smx2460]
+hellobox. so all this kodi shit was a waste of time?
+smx2460 02/04/2023 4:58 PM
+well we need updated EGL headers regardless
+[yolofant]
+yolofant 02/04/2023 4:58 PM
+hmm but why can we not use the NDK?
+[smx2460]
+smx2460 02/04/2023 4:58 PM
+maybe they are living under a rock
+hellobox. 02/04/2023 4:58 PM
+lol
+02/04/2023 4:58 PM
+so all this kodi shit was a waste of time?
+[smx2460]
+smx2460 02/04/2023 4:58 PM
+Kodi doesn't use that either (edited)
+02/04/2023 4:58 PM
+also about gstreamer
+02/04/2023 4:57 PM
+use gstreamer
+02/04/2023 4:57 PM
+or even better
+02/04/2023 4:57 PM
+and checking if it can work
+02/04/2023 4:57 PM
+is building https://github.com/popcornmix/omxplayer
+02/04/2023 4:57 PM
+what i would personally try
+02/04/2023 4:57 PM
+or you use something else
+02/04/2023 4:57 PM
+so either you use the latest version that still has them
+02/04/2023 4:57 PM
+Kodi dropped OMX support
+02/04/2023 4:56 PM
+what for
+[yolofant]
+yolofant 02/04/2023 4:56 PM
+we can use the NDK
+[smx2460]
+smx2460 02/04/2023 4:56 PM
+but good luck with codecs
+02/04/2023 4:56 PM
+we can complete this to have working GL/GFX (edited)
+02/04/2023 4:56 PM
+with working hw codecs
+02/04/2023 4:56 PM
+it's gonna be impossible to use latest kodi then
+[yolofant]
+yolofant 02/04/2023 4:55 PM
+https://github.com/xbmc/xbmc/blob/master/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.cpp
+xbmc/DVDVideoCodecAndroidMediaCodec.cpp at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[smx2460]
+smx2460 02/04/2023 4:55 PM
+lol?
+02/04/2023 4:55 PM
+omxplayer also dropped
+[yolofant]
+yolofant 02/04/2023 4:55 PM
+hmm might be something else
+[smx2460]
+smx2460 02/04/2023 4:55 PM
+https://github.com/xbmc/xbmc/commit/46b6abdf86298c78859ddbe337008c60e724c635
+Merge pull request #16080 from Rechi/drop/omxplayer · xbmc/xbmc@46b...
+drop omxplayer
+[]
+02/04/2023 4:55 PM
+can't find anything with "VTB Android" on google
+[yolofant]
+yolofant 02/04/2023 4:55 PM
+me neither
+[smx2460]
+smx2460 02/04/2023 4:54 PM
+not sure what it means
+02/04/2023 4:54 PM
+ah
+[yolofant]
+yolofant 02/04/2023 4:54 PM
+I think VTB is used on android
+[smx2460]
+smx2460 02/04/2023 4:54 PM
+rpi userland provides it
+02/04/2023 4:54 PM
+    RPI_USERLAND_PROVIDES = libegl libgles libopenmax libopenvg
+[] smx2460 VTB?
+hellobox. 02/04/2023 4:54 PM
+VTB?
+[smx2460]
+[] yolofant VTB?
+smx2460 02/04/2023 4:54 PM
+VTB?
+[smx2460]
+smx2460 02/04/2023 4:54 PM
+let's see who provides libopenmax in br
+[yolofant]
+yolofant 02/04/2023 4:54 PM
+yes you can use omxplayer
+02/04/2023 4:53 PM
+VTB?
+[smx2460]
+smx2460 02/04/2023 4:53 PM
+but kept "omxplayer"
+02/04/2023 4:53 PM
+they removed "libopenmax"
+02/04/2023 4:53 PM
+https://github.com/xbmc/xbmc/commit/2dc60e81dc7dbfef956a722a038ea833c4ab9cd4
+[settings] remove openmax settings · xbmc/xbmc@2dc60e8
+[]
+hellobox. 02/04/2023 4:53 PM
+(no content)
+[image.png]
+ image.png
+38.67 KB External
+[yolofant]
+yolofant 02/04/2023 4:53 PM
+there's a specific android one
+[smx2460]
+smx2460 02/04/2023 4:53 PM
+most of which use OMX for these things
+02/04/2023 4:52 PM
+how do they do on Android devices
+02/04/2023 4:52 PM
+this is ridiculous
+[yolofant]
+yolofant 02/04/2023 4:52 PM
+and DRM
+02/04/2023 4:52 PM
+I think they use v4l2
+[smx2460]
+smx2460 02/04/2023 4:52 PM
+like what do they use to decode video
+02/04/2023 4:52 PM
+what does "open APIs" even mean
+02/04/2023 4:52 PM
+so RIP LG support? 
+hellobox. 02/04/2023 4:52 PM
+i think it's deprecated
+[smx2460]
+smx2460 02/04/2023 4:52 PM
+lmao
+[yolofant]
+yolofant 02/04/2023 4:52 PM
+in favour of open APIs
+[smx2460]
+smx2460 02/04/2023 4:52 PM
+why
+02/04/2023 4:52 PM
+wut?
+[yolofant]
+yolofant 02/04/2023 4:52 PM
+it was dropped in v18
+02/04/2023 4:52 PM
+yes
+[smx2460]
+smx2460 02/04/2023 4:52 PM
+you sure?
+[yolofant]
+yolofant 02/04/2023 4:52 PM
+kodi doesn't use OMX
+[smx2460]
+smx2460 02/04/2023 4:51 PM
+what i don't know is how Kodi looks up OMX codecs
+02/04/2023 4:51 PM
+aka "you can find the mpeg4 codec in libmtkomx.so"
+02/04/2023 4:51 PM
+it lists OMX-compatible codec providers
+02/04/2023 4:51 PM
+the GSTreamer config file makes sense in this regards
+02/04/2023 4:51 PM
+or yes?
+02/04/2023 4:51 PM
+i'm not sure someone would "link" against a openmax library
+02/04/2023 4:50 PM
+but i'm not sure it's a hard requirement.... or rather
+hellobox. 02/04/2023 4:50 PM
+al for openmax-al?
+[smx2460]
+smx2460 02/04/2023 4:50 PM
+which imports libmtal for OMX_Init and others
+02/04/2023 4:50 PM
+references open.pak.unsquashfs/lib/libmtkomx.so
+02/04/2023 4:50 PM
+which is a config file for gstreamer
+[smx2460]
+[] smx2460 Click to see attachment
+smx2460 02/04/2023 4:50 PM
+NC4M has this config file
+hellobox. 02/04/2023 4:50 PM
+i've seen shit for it in rtk code i think
+[smx2460]
+smx2460 02/04/2023 4:50 PM
+me too
+hellobox. 02/04/2023 4:50 PM
+i believe it is used on webos
+[smx2460]
+smx2460 02/04/2023 4:50 PM
+well, OpenMAX is like an interface
+02/04/2023 4:49 PM
+or "OpenMax"
+02/04/2023 4:49 PM
+"what to do with OMX"
+02/04/2023 4:49 PM
+the question is
+02/04/2023 4:49 PM
+a check for OMX_Init under WebOS
+hellobox. 02/04/2023 4:49 PM
+what do you need?
+[smx2460]
+smx2460 02/04/2023 4:49 PM
+the Vendor HAL
+02/04/2023 4:49 PM
+    vend.pak.unsquashfs/libmtal.so.0.0.0
+02/04/2023 4:48 PM
+let's see who implements it on NC4M
+02/04/2023 4:48 PM
+OpenMax seems to be just an ABI
+02/04/2023 4:48 PM
+also
+02/04/2023 4:47 PM
+http://maemo.org/api_refs/5.0/beta/libomxil-bellagio/group__core.html
+02/04/2023 4:47 PM
+if NC4 used it, i expect WebOS to do so too
+02/04/2023 4:47 PM
+or rather
+02/04/2023 4:47 PM
+i bet it's used on LX too
+02/04/2023 4:47 PM
+among others
+02/04/2023 4:47 PM
+libmtkomx.so imports OMX_Init
+[yolofant]
+yolofant 02/04/2023 4:47 PM
+maybe it's used on mtk
+[smx2460]
+smx2460 02/04/2023 4:46 PM
+CC @hellobox
+02/04/2023 4:46 PM
+you should have something like this... somewhere
+02/04/2023 4:46 PM
+soo
+02/04/2023 4:46 PM
+    omx_mpeg4dec,
+      type=GstOmxMpeg4Dec,
+      library-name=libmtkomx.so,
+      component-name=OMX.MTK.Video.Decoder.MPEG4,
+      rank=256;
+02/04/2023 4:46 PM
+e.g
+02/04/2023 4:45 PM
+04.27.05.01-HE_DTV_NC4M_AFAAABAA\open.pak.unsquashfs\gst-openmax.conf
+02/04/2023 4:45 PM
+(no content)
+ gst-openmax.conf
+3.83 KB External
+02/04/2023 4:45 PM
+and load them
+02/04/2023 4:45 PM
+afaik OMX is just a standard to request codecs
+02/04/2023 4:45 PM
+and the underlying protocols used aren't
+02/04/2023 4:44 PM
+i would think OMX is standard?
+[yolofant]
+yolofant 02/04/2023 4:44 PM
+I haven't seen a openmax implementation in my libmali anyway
+[smx2460]
+smx2460 02/04/2023 4:44 PM
+i have no prior knowledge of the OMX subsystem
+[yolofant]
+yolofant 02/04/2023 4:44 PM
+I don't think so
+[smx2460]
+smx2460 02/04/2023 4:44 PM
+are they required?
+02/04/2023 4:44 PM
+hm
+[yolofant]
+yolofant 02/04/2023 4:44 PM
+BR2_PACKAGE_HAS_LIBOPENVG BR2_PACKAGE_HAS_LIBOPENMAXwe don't provide
+these
+[smx2460]
+smx2460 02/04/2023 4:43 PM
+and we also want to copy to $(TARGET_DIR)
+02/04/2023 4:43 PM
+and use your repo
+02/04/2023 4:43 PM
+ofc you'd change the method to be git
+02/04/2023 4:43 PM
+this is a very simple package to copy A -> B (edited)
+02/04/2023 4:43 PM
+https://github.com/openlgtv/buildroot-nc4/tree/213928c34c91a8625acfe4a26cb1723094962f6e/package/lg_alsa
+buildroot-nc4/package/lg_alsa at 213928c34c91a8625acfe4a26cb1723094...
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+02/04/2023 4:42 PM
+that works too
+[yolofant]
+yolofant 02/04/2023 4:42 PM
+and modify it
+02/04/2023 4:42 PM
+I was just gonna copy the rpi package
+02/04/2023 4:42 PM
+no
+[smx2460]
+smx2460 02/04/2023 4:41 PM
+ever made a br package before?
+[yolofant]
+yolofant 02/04/2023 4:41 PM
+gonna add it to buildroot now
+02/04/2023 4:41 PM
+https://github.com/sundermann/webos-userland/
+GitHub - sundermann/webos-userland
+Contribute to sundermann/webos-userland development by creating an
+account on GitHub.
+[]
+02/04/2023 4:41 PM
+alright
+[smx2460]
+hellobox. ```$ cat wayland-egl.pc prefix=/usr exec_prefix=/usr
+libdir=/usr/lib includedir=${prefix}/include N...
+smx2460 02/04/2023 4:39 PM
+this is the webos one (edited)
+[smx2460]
+smx2460 02/04/2023 4:39 PM
+here's the mesa's .pc file
+02/04/2023 4:39 PM
+https://github.com/dumbbell/mesa/blob/master/src/egl/wayland/wayland-egl/wayland-egl.pc.in
+02/04/2023 4:39 PM
+should be fine, i suppose
+[yolofant]
+yolofant 02/04/2023 4:38 PM
+hmm, wayland-egl headers are directly in /usr/include (edited)
+[smx2460]
+smx2460 02/04/2023 4:38 PM
+we will use buildroot-nc4 to provide wayland
+[yolofant]
+yolofant 02/04/2023 4:38 PM
+alright
+[smx2460]
+smx2460 02/04/2023 4:38 PM
+only put wayland-egl and EGL/GLES
+02/04/2023 4:38 PM
+i wouldn't put wayland in it
+02/04/2023 4:38 PM
+soooo
+02/04/2023 4:38 PM
+all the block
+02/04/2023 4:37 PM
+wayland <--> [wayland-egl <--> EGL] ^ vendor (e.g Mesa/Mali/PowerVR)
+02/04/2023 4:37 PM
+wayland <--> wayland-egl <--> EGL
+02/04/2023 4:37 PM
+yes
+[yolofant]
+yolofant 02/04/2023 4:37 PM
+#include <wayland-client.h>
+[smx2460]
+smx2460 02/04/2023 4:37 PM
+here is mesa for example
+02/04/2023 4:36 PM
+https://github.com/dumbbell/mesa/blob/master/src/egl/wayland/wayland-egl/wayland-egl.c
+02/04/2023 4:36 PM
+aka MALI
+02/04/2023 4:36 PM
+so in this case it's proprietary
+02/04/2023 4:36 PM
+it's part of the window system
+02/04/2023 4:36 PM
+but yes wayland-egl is not in wayland
+[yolofant]
+yolofant 02/04/2023 4:35 PM
+nothing changed
+02/04/2023 4:35 PM
+Emil Velikov authored 5 years ago
+02/04/2023 4:35 PM
+for wayland-egl
+02/04/2023 4:35 PM
+well the headers are small
+[smx2460]
+smx2460 02/04/2023 4:35 PM
+we downgraded wayland to the proper version
+02/04/2023 4:35 PM
+i mean
+02/04/2023 4:35 PM
+which we already did, iirc
+02/04/2023 4:35 PM
+unless we opt in to build it in buildroot
+02/04/2023 4:34 PM
+you will need to get them from a wayland version close enough
+[yolofant]
+yolofant 02/04/2023 4:34 PM
+I also dropped GLES3
+[smx2460]
+smx2460 02/04/2023 4:34 PM
++ wayland-client.h
+[yolofant]
+yolofant 02/04/2023 4:34 PM
+yep
+[smx2460]
+smx2460 02/04/2023 4:34 PM
+wayland-egl.h + wayland-egl-core.h
+[yolofant]
+yolofant 02/04/2023 4:34 PM
+copying those
+02/04/2023 4:34 PM
+yeah
+[smx2460]
+smx2460 02/04/2023 4:34 PM
+https://gitlab.freedesktop.org/wayland/wayland/-/blob/master/egl/wayland-egl.h
+egl/wayland-egl.h · master · wayland / wayland · GitLab
+Core Wayland window system code and protocol
+[]
+02/04/2023 4:34 PM
+yes
+02/04/2023 4:34 PM
+    # Official ABI, taken from the header.
+    REQ_FUNCS="wl_egl_window_resize
+    wl_egl_window_create
+    wl_egl_window_destroy
+    wl_egl_window_get_attached_size
+    "
+[yolofant]
+yolofant 02/04/2023 4:34 PM
+but we need to provide the headers, right?
+02/04/2023 4:33 PM
+I stubbed that already
+[smx2460]
+smx2460 02/04/2023 4:33 PM
+     Each underlying platform will have a means of rendering EGL surfaces. In this chapter we need to look at how EGL surfaces are linked to Wayland surfaces and how windows are built. We won't actually draw into any windows, because that is best done using e.g. OpenGL. That will be done in a later chapter. 
+02/04/2023 4:33 PM
+     From the EGL specification "EGL [is] an interface between rendering APIs such as OpenCL, OpenGL, OpenGL ES or OpenVG (referred to collectively as client APIs) and one or more underlying platforms (typically window systems such as X11)". It is not intended that application programmers write directly to EGL, instead they should use one of the APIs such as OpenGL. 
+02/04/2023 4:32 PM
+it's supposedly just these 4 functions
+02/04/2023 4:32 PM
+https://gitlab.freedesktop.org/wayland/wayland/-/blob/master/egl/wayland-egl-core.h
+egl/wayland-egl-core.h · master · wayland / wayland · GitLab
+Core Wayland window system code and protocol
+[]
+[smx2460]
+[] yolofant where do `wayland-egl` headers come from?
+smx2460 02/04/2023 4:32 PM
+https://gitlab.freedesktop.org/wayland/wayland/-/tree/master/egl
+egl · master · wayland / wayland · GitLab
+Core Wayland window system code and protocol
+[]
+[smx2460]
+smx2460 02/04/2023 4:30 PM
+tho it was more for myself, to know which version was more used
+[smx2460]
+[] pbatard You want to add a badge for that such as (markdown style):
+``` [![Download Stats](https://img.shield...
+smx2460 02/04/2023 4:30 PM
+ah, thanks
+[yolofant]
+yolofant 02/04/2023 4:22 PM
+where do wayland-egl headers come from?
+[pbatard]
+pbatard 02/04/2023 4:20 PM
+You can further customise the download count for each release if you
+want, though it's a bit of a pain to maintain then. See
+https://shields.io/
+Shields.io: Quality metadata badges for open source projects
+We serve fast and scalable informational images as badges for GitHub,
+Travis CI, Jenkins, WordPress and many more services. Use them to track
+the state of your projects, or for promotional purposes.
+02/04/2023 4:19 PM
+With this I can see that, for all releases combined, it has been
+downloaded 1.6k times. (edited)
+[pbatard]
+[] smx2460 Offtopic: lame that they don't show how many times it has
+been downloaded
+pbatard 02/04/2023 4:19 PM
+You want to add a badge for that such as (markdown style):
+    [![Download Stats](https://img.shields.io/github/downloads/openlgtv/buildroot-nc4/total.svg?label=Downloads&style=flat-square)](https://github.com/openlgtv/buildroot-nc4/releases)
+Or direct link
+https://img.shields.io/github/downloads/openlgtv/buildroot-nc4/total.svg?label=Downloads&style=flat-square
+(edited)
+[pbatard]
+pbatard 02/04/2023 4:15 PM
+The only SDK that I didn't have to find myself requiring investing time
+troubleshooting compilation is the old SDK, and since it works just fine
+for our purpose and my time is limited, I haven't looked further.
+[pbatard]
+[] smx2460 You could switch to GCC 12
+pbatard 02/04/2023 4:14 PM
+I actually tried with the SDK your provide but ran into issues (can't
+remember what they were from the top of my head, but I think it was
+header elements not being found). Same (but with a different issue) with
+the official SDK that LG is supposed to use to compile their version of
+GStreamer (of which I even provide a download at
+https://github.com/lgstreamer/starfish-sdk-x86_64).
+hellobox. 02/04/2023 3:15 PM
+wtf is cream?
+[smx2460]
+smx2460 02/04/2023 3:15 PM
+which is under
+04.27.05.01-HE_DTV_NC4M_AFAAABAA\open.pak.unsquashfs\bin\cream
+02/04/2023 3:15 PM
+it's just a shim that calls DBUS methods in a cream daemon
+02/04/2023 3:14 PM
+    00000a88 T HOA_CREAM_AbortUpload
+    000010a4 T HOA_CREAM_GetStatLogin
+    00000994 T HOA_CREAM_GetUploadStatus
+    00000efc T HOA_CREAM_GetUserInfo
+    000008e4 T HOA_CREAM_IsUploadActive
+    00000b68 T HOA_CREAM_RequestLogin
+    00000c50 T HOA_CREAM_RequestLoginSSO
+    00000e48 T HOA_CREAM_RequestLogout
+    00000fdc T HOA_CREAM_SetPrintFlag
+    00000d48 T HOA_CREAM_Upload
+             U HOA_UTIL_GetProcSendConnection
+             U SCF_BUS_Message_Create_Method
+             U SCF_BUS_Message_Get_Any
+             U SCF_BUS_Message_Send_And_Wait_Reply
+             U SCF_BUS_Message_Unreference
+             U SCF_UTIL_Create_StructPayload
+             U SCF_UTIL_Get_StructPayload
+             w _Jv_RegisterClasses
+             U __aeabi_unwind_cpp_pr0@GCC_3.5
+             U __aeabi_unwind_cpp_pr1@GCC_3.5
+    000094b0 A __bss_end__
+    000094ac A __bss_start
+    000094ac A __bss_start__
+             w __cxa_finalize@GLIBC_2.4
+    000094b0 A __end__
+             w __gmon_start__
+    000094b0 A _bss_end__
+    000094ac A _edata
+    000094b0 A _end
+    00001158 T _fini
+    00000790 T _init
+             U memset@GLIBC_2.4
+02/04/2023 3:14 PM
+i don't honestly remember
+02/04/2023 3:14 PM
+02/04/2023 3:14 PM
+let's see what cream is tho
+02/04/2023 3:14 PM
+if it's not labelled "openapi", you're not supposed to be using it
+02/04/2023 3:13 PM
+hellobox. 02/04/2023 3:13 PM
+libcream_openapi?
+[smx2460]
+hellobox. what's the HOA api?
+smx2460 02/04/2023 3:13 PM
+    $ ls | grep -Ei ".*openapi.so DCPH0 quot;
+    libacropenapi.so
+    libafopenapi.so
+    libappdrmopenapi.so
+    libbcopenapi.so
+    libbropenapi.so
+    libcamopenapi.so
+    libcboxopenapi.so
+    libcream_openapi.so
+    libdbmopenapi.so
+    libdmr2openapi.so
+    libfxopenapi.so
+    libiapopenapi.so
+    liblginputopenapi.so
+    liblgncopenapi.so
+    liblgopenapi.so
+    libmfopenapi.so
+    libnetworkmanageropenapi.so
+    libpbsopenapi.so
+    libpeninputopenapi.so
+    libpopupopenapi.so
+    libpushopenapi.so
+    libresopenapi.so
+    libsdpifopenapi.so
+    libsearchopenapi.so
+[smx2460]
+[] infowski where the HOAs at
+smx2460 02/04/2023 3:12 PM
+xD
+[smx2460]
+smx2460 02/04/2023 3:12 PM
+@Mariotaku created his own 
+02/04/2023 3:12 PM
+but you must have a special license with LG to get the headers
+02/04/2023 3:12 PM
+aka exported/supposed to be used
+02/04/2023 3:11 PM
+yes
+hellobox. 02/04/2023 3:11 PM
+i.e. open to developers?
+[smx2460]
+smx2460 02/04/2023 3:11 PM
+it's from the developer's point of view once he/she acquired the LG
+official NDK (edited)
+02/04/2023 3:11 PM
+is not from the user point of view
+02/04/2023 3:11 PM
+the "Open"ness of the API
+02/04/2023 3:11 PM
+also
+02/04/2023 3:11 PM
+but are not identical to NC4 in all aspects
+02/04/2023 3:11 PM
+(probably for people updating their apps?)
+[infowski]
+infowski 02/04/2023 3:10 PM
+where the HOAs at
+[smx2460]
+smx2460 02/04/2023 3:10 PM
+which try to preserve some kind of backward compatibility with Netcast
+02/04/2023 3:10 PM
+he looked at the WebOS implementation of them
+02/04/2023 3:10 PM
+the thing is
+02/04/2023 3:10 PM
+tho those are in another library
+02/04/2023 3:10 PM
+this is probably the closest equivalent
+02/04/2023 3:10 PM
+https://github.com/webosbrew/tv-native-apis/blob/main/lgncapi/src/lgnc_egl.c
+02/04/2023 3:10 PM
+here --> https://github.com/webosbrew/tv-native-apis/tree/main/lgncapi
+02/04/2023 3:09 PM
+@Mariotaku did extensive work on those
+02/04/2023 3:09 PM
+HbbTv Open Api
+hellobox. 02/04/2023 3:09 PM
+what's the HOA api?
+[smx2460]
+smx2460 02/04/2023 3:09 PM
+        handle = dlopen("./libafopenapi.so", 1);
+        if ( handle || (handle = dlopen("/mnt/lg/res/lglib/libafopenapi.so", 1)) != 0 )
+        {
+          printf("WSEGL: ");
+          printf(" *  - Loaded HOA API set.\t                                        *\n");
+          dword_C928 = 1;
+          libafopenapi = (int)handle;
+          HOA_GX_GetWindowProperty = (int)dlsym(handle, "HOA_GX_GetWindowProperty");
+          HOA_GX_GetWindowStereoscope = (int (__fastcall *)(_DWORD, _DWORD, _DWORD))dlsym(
+                                                                                      handle,
+                                                                                      "HOA_GX_GetWindowStereoscope");
+          HOA_GX_GetWindowSurfaceInfo = (int)dlsym(handle, "HOA_GX_GetWindowSurfaceInfo");
+          HOA_GX_UpdateWindow = (int)dlsym(handle, "HOA_GX_UpdateWindow");
+          HOA_GX_SetWindowStereoscope = (int)dlsym(handle, "HOA_GX_SetWindowStereoscope");
+          HOA_GX_SetWindowVsync = (int)dlsym(handle, "HOA_GX_SetWindowVsync");
+        }
+        else
+        {
+          printf("WSEGL: ");
+          printf(" *  - Failed to load HOA API set. Where is libafopenapi.so?         *\n");
+        }
+02/04/2023 3:08 PM
+02/04/2023 3:08 PM
+not sure why it should be a Warning requiring attention
+02/04/2023 3:08 PM
+hellobox. 02/04/2023 3:08 PM
+oh god, not the netcast40's!
+[smx2460]
+hellobox. `Warning! The netcast40's been activated now.`
+smx2460 02/04/2023 3:08 PM
+xD (edited)
+[smx2460]
+smx2460 02/04/2023 3:08 PM
+probably only does the basics
+hellobox. 02/04/2023 3:08 PM
+Warning! The netcast40's been activated now.
+[smx2460]
+smx2460 02/04/2023 3:08 PM
+basically translates EGL calls into LG API calls
+02/04/2023 3:07 PM
+    /dev/fb0
+    USE_NETCAST40
+    /*************************************************************************/
+     * Warning! The netcast40's been activated now.                          *
+     * Please check out each process is on/off.                              *
+     * And check if USE_NETCAST40 is 0 or 1 in linux environment variables.  *
+     *                                                                       *
+     *  - USE_NETCAST40 is 1 (on).                                           *
+     *  - USE_NETCAST40 is 0 (off).                                          *
+     *  - PDP Panel (%dx%d)                                              *
+     *  - LCD Panel (%dx%d)                                              *
+    ./libafopenapi.so
+    /mnt/lg/res/lglib/libafopenapi.so
+     *  - Loaded HOA API set.                                               *
+    HOA_GX_GetWindowProperty
+    HOA_GX_GetWindowStereoscope
+    HOA_GX_GetWindowSurfaceInfo
+    HOA_GX_UpdateWindow
+    HOA_GX_SetWindowStereoscope
+    HOA_GX_SetWindowVsync
+     *  - Failed to load HOA API set. Where is libafopenapi.so?         *
+    WSEGL_InitialiseDisplay: num of devices are 0.
+    WSEGL_InitialiseDisplay: out of memory
+    WSEGL_InitialiseDisplay: failed to enumerate devices
+    WSEGL_InitialiseDisplay: failed to create a device context
+    /dev/fb/%d
+02/04/2023 3:06 PM
+probably i named these back then
+02/04/2023 3:06 PM
+    pfnWSEGL_IsDisplayValid
+    pfnWSEGL_InitialiseDisplay
+    pfnWSEGL_CloseDisplay
+    pfnWSEGL_CreateWindowDrawable
+    pfnWSEGL_CreatePixmapDrawable
+    pfnWSEGL_DeleteDrawable
+    pfnWSEGL_SwapDrawable
+    pfnWSEGL_SwapControlInterval
+    pfnWSEGL_WaitNative
+    pfnWSEGL_CopyFromDrawable
+    pfnWSEGL_CopyFromPBuffer
+    pfnWSEGL_GetDrawableParameters
+    pfnWSEGL_ConnectDrawable
+    pfnWSEGL_DisconnectDrawable
+02/04/2023 3:05 PM
+xD
+hellobox. 02/04/2023 3:05 PM
+what would you rather work with: hacked up wayland, or "cobranetcast40"?
+[smx2460]
+smx2460 02/04/2023 3:04 PM
+used by probably libpvr2d.so
+02/04/2023 3:04 PM
+exports WSEGL_GetFunctionTablePointer
+02/04/2023 3:04 PM
+"CobraNetCast40" Windows System/EGL interface (edited)
+02/04/2023 3:03 PM
+^ Mediatek NC4, @hellobox
+02/04/2023 3:03 PM
+    /cygdrive/r/LG/LG_K/04.27.05.01-HE_DTV_NC4M_AFAAABAA/lgli.pak.unsquashfs
+    $ ls | grep pvr
+    libpvr2d.so
+    libpvrPVR2D_CobraNetCast40WSEGL.so
+    libpvrPVR2D_NullWSEGL.so
+    pvrsrvinit
+    pvrsrvkm.ko
+(edited)
+hellobox. 02/04/2023 3:03 PM
+    $ cat wayland-egl.pc
+    prefix=/usr
+    exec_prefix=/usr
+    libdir=/usr/lib
+    includedir=${prefix}/include
+    Name: wayland-egl
+    Description: Wayland EGL Extensions
+    Version: 1.1.3.0.1.4
+    Libs: -L${libdir} -lwayland-egl
+    Cflags: -I${includedir}
+[smx2460]
+smx2460 02/04/2023 3:02 PM
+we indeed want to generate the .pc (edited)
+02/04/2023 3:02 PM
+if we want to
+02/04/2023 3:02 PM
+should we really include -lmali?
+hellobox. 02/04/2023 3:02 PM
+this is from lg:
+    $ cat glesv2.pc
+    prefix=/usr
+    exec_prefix=/usr
+    libdir=/usr/lib
+    includedir=/usr/include
+    Name: GLES2
+    Description: GLES2 libraries with wayland support
+    Version: 1.1.3.0.1.4
+    Cflags: -I${includedir}
+    Libs: -L${libdir} -lEGL -lwayland-egl -lGLESv2 -lmali
+[yolofant]
+yolofant 02/04/2023 3:02 PM
+yeah I still need to do wayland-egl
+[smx2460]
+smx2460 02/04/2023 3:02 PM
+and we're good to go
+02/04/2023 3:02 PM
+and setting the bits indicating it provides EGL/GLES
+02/04/2023 3:02 PM
+then we can make a package installing everything in /usr
+02/04/2023 3:01 PM
+with accompanying headers
+02/04/2023 3:01 PM
+we need at least egl.pc, glesv2.pc, and wayland-egl.pc
+02/04/2023 3:01 PM
+for packages using that name
+02/04/2023 3:01 PM
+brcmegl seems to be an alias of egl
+02/04/2023 3:01 PM
+    $ cat /mnt/ExtData/buildroot-nc4/output/target/usr/lib/pkgconfig/wayland-egl.pc
+    prefix=/usr
+    exec_prefix=/usr
+    datarootdir=${prefix}/share
+    pkgdatadir=${datarootdir}/wayland
+    libdir=${exec_prefix}/lib
+    includedir=${prefix}/include
+    Name: wayland-egl
+    Description: wayland-egl library
+    Version: 1.11.0
+    Cflags: -I${includedir}
+    Libs: -L${libdir} -lwayland-egl
+02/04/2023 3:00 PM
+    $ cat /mnt/ExtData/buildroot-nc4/output/target/usr/lib/pkgconfig/egl.pc
+    prefix=/usr
+    exec_prefix=${prefix}
+    libdir=${exec_prefix}/lib
+    includedir=${prefix}/include
+    Name: egl
+    Description: RasberryPi implementation of EGL
+    Version: 10
+    Libs: -L${libdir} -lEGL -lGLESv2 -lbcm_host -lvchostif
+    Cflags: -I${includedir}/ -I${includedir}/interface/vcos/pthreads/ \
+            -I${includedir}/interface/vmcs_host/linux/
+02/04/2023 3:00 PM
+    $ ls /mnt/ExtData/buildroot-nc4/output/target/usr/lib/pkgconfig/ | grep -Ei "e?gl"
+    brcmegl.pc
+    brcmglesv2.pc
+    egl.pc
+    glesv2.pc
+    glib-2.0.pc
+    taglib_c.pc
+    taglib.pc
+    wayland-egl++.pc
+    wayland-egl.pc
+[yolofant]
+yolofant 02/04/2023 3:00 PM
+ye
+[smx2460]
+smx2460 02/04/2023 3:00 PM
+changing name and libraries used
+02/04/2023 2:59 PM
+but yeah this is all we need pretty much
+02/04/2023 2:59 PM
+so that's doing the same thing we are already (edited)
+02/04/2023 2:59 PM
+ah
+02/04/2023 2:59 PM
+^ sample
+02/04/2023 2:59 PM
+    $ cat /mnt/ExtData/buildroot-nc4/output/target/usr/lib/pkgconfig/brcmegl.pc
+    prefix=/usr
+    exec_prefix=${prefix}
+    libdir=${exec_prefix}/lib
+    includedir=${prefix}/include
+    Name: brcmEGL
+    Description: Fake brcmEGL package for RPi
+    Version: 10
+    Requires: bcm_host
+    Libs: -L${libdir} -lbrcmEGL -lbrcmGLESv2 -lbcm_host -lvchostif
+    Cflags: -I${includedir} -I${includedir}/interface/vmcs_host/linux \
+            -I${includedir}/interface/vcos/pthreads
+02/04/2023 2:58 PM
+but it shouldn't
+02/04/2023 2:58 PM
+unless...hmm the prefix changes
+02/04/2023 2:54 PM
+just write them once/manually
+02/04/2023 2:54 PM
+i wouldn't generate them
+[yolofant]
+yolofant 02/04/2023 2:45 PM
+just need to install the headers and generate the .pc files
+02/04/2023 2:45 PM
+target_link_options(EGL PRIVATE ${CMAKE_SOURCE_DIR}/src/EGL.lds) this
+works
+ 1
+02/04/2023 2:45 PM
+I'll remove that later
+02/04/2023 2:45 PM
+but EGL.c is not used anyway
+02/04/2023 2:44 PM
+yeah it's a mistake
+[smx2460]
+smx2460 02/04/2023 2:30 PM
+i can help you with CMake if it's still broken
+02/04/2023 2:29 PM
+i guess this is a mistake?
+02/04/2023 2:29 PM
+https://github.com/sundermann/webos-userland/blob/main/src/EGL.c
+webos-userland/EGL.c at main · sundermann/webos-userland
+Contribute to sundermann/webos-userland development by creating an
+account on GitHub.
+[]
+02/04/2023 2:28 PM
+@Yolofant yo
+[infowski]
+[] infowski The issue is that at least on some 4.x tv we checked, if we
+launch root scripts via /autostart and a...
+infowski 02/04/2023 12:00 PM
+This effectively breaks all homebrew channel app/service functionality.
+[infowski]
+infowski 02/04/2023 11:32 AM
+Well, technically - anything that forks out off the hbchannel service,
+not just the startup scripts, even just normal /exec or /spawn commands.
+02/04/2023 11:31 AM
+We have a fix for that queued for h channel 0.5.2/0.6.0
+02/04/2023 11:31 AM
+(all JS services exit on inactivity after a while by default, and this
+is perfectly fine - the issue is that any spawned subprocess inherits
+open ls-hubd FD, and thus ls-hubd is convinced the service is still
+running...)
+02/04/2023 11:30 AM
+The issue is that at least on some 4.x tv we checked, if we launch root
+scripts via /autostart and anything forks out and stays running (like -
+dropbear), the service will not be restarted/accept any further calls,
+after it exits due to inactivity.
+[kopiro91]
+kopiro91 02/04/2023 10:41 AM
+isn't this a problem for later in the boot? (edited)
+[kopiro91]
+[] infowski At least partially.
+kopiro91 02/04/2023 10:41 AM
+not sure why? can you explain please?
+[ccarnell98]
+ccarnell98 02/04/2023 10:25 AM
+@hellobox do you have also a working version of eglinfo and glxinfo? I
+need to get my tool chain fixed up to compile them. That will have to
+wait till I have spare time on Monday 
+[infowski]
+infowski 02/04/2023 10:18 AM
+At least partially.
+02/04/2023 10:18 AM
+Actually yes!
+[kopiro91]
+[] infowski ...and the effect is it doesn't get actually respawned
+whenever someone calls it.
+kopiro91 02/04/2023 10:16 AM
+Is this related to the autostart problem?
+[infowski]
+infowski 02/04/2023 9:00 AM
+that's, uhhh... a lot of fucking installs
+[image.png]
+ image.png
+78.12 KB External
+02/04/2023 8:57 AM
+Yeah.
+[smx2460]
+[] infowski rofl, I actually scrape app downloads in a similar manner
+smx2460 02/04/2023 8:56 AM
+I guess it's exposed by some field of the GitHub APIs?
+[smx2460]
+smx2460 02/04/2023 8:55 AM
+[infowski]
+[] smx2460 Offtopic: lame that they don't show how many times it has
+been downloaded
+infowski 02/04/2023 8:54 AM
+rofl, I actually scrape app downloads in a similar manner

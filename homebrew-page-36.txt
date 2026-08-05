@@ -1,0 +1,1828 @@
+January 27, 2024
+[smx2460]
+smx2460 01/27/2024 4:35 PM
+and be painful to setup
+[yolofant]
+yolofant 01/27/2024 4:35 PM
+they're working on arm64 runners though
+[smx2460]
+smx2460 01/27/2024 4:35 PM
+it'd definitely add overhead
+[yolofant]
+[] kitsuned qemu go brrr?
+yolofant 01/27/2024 4:33 PM
+well, yes but I guess that's going to be painfully slow
+[kitsuned]
+[] yolofant hmm, github actions doesn't have arm64 runners yet
+kitsuned 01/27/2024 4:32 PM
+qemu go brrr?
+[yolofant]
+yolofant 01/27/2024 4:31 PM
+hmm, github actions doesn't have arm64 runners yet
+[smx2460]
+Deleted User <@310158180728700929> check inbox
+smx2460 01/27/2024 4:31 PM
+where
+Deleted User 01/27/2024 4:29 PM
+@Smx check inbox
+[smx2460]
+smx2460 01/27/2024 4:19 PM
+so theoretically we're well below, but buildroot-nc4 builds are 30'-ish
+each
+01/27/2024 4:18 PM
+here's the quota for openlgtv org
+01/27/2024 4:18 PM
+(no content)
+[image.png]
+ image.png
+22.87 KB External
+01/27/2024 4:18 PM
+    Additionally there is an upper monthly limit on free usage equal to 50 compute credits (which is equal to 10,000 CPU-minutes for Linux tasks or 500 minutes for macOS tasks which always use 4 CPUs).
+01/27/2024 4:16 PM
+but i doubt it will run as-is without tweaking
+01/27/2024 4:16 PM
+there's a compat layer to run cirrus CI jobs on Github actions though
+01/27/2024 4:16 PM
+but i really would have preferred Cirrus CI format
+01/27/2024 4:16 PM
+maybe i can do it on github actions
+[yolofant]
+yolofant 01/27/2024 4:15 PM
+D:
+[smx2460]
+smx2460 01/27/2024 4:15 PM
+i'd better not do that
+01/27/2024 4:15 PM
+and has a monthly cap on the number of hours
+01/27/2024 4:15 PM
+theoretically we could, but since Cirrus CI is no longer free
+[yolofant]
+yolofant 01/27/2024 4:15 PM
+from my point yes, maybe we can also add an aarch64 runner and prebuilt
+release for aarch64
+[smx2460]
+smx2460 01/27/2024 4:15 PM
+so i'll go ahead
+01/27/2024 4:15 PM
+well it's already tested
+01/27/2024 4:14 PM
+ok to merge?
+01/27/2024 4:13 PM
+thanks @Yolofant @hellobox for the work
+[smx2460]
+hellobox. lol
+<https://www.mail-archive.com/openembedded-devel@lists.openembedded.org/msg93467.html> >
+Don't b...
+smx2460 01/27/2024 4:12 PM
+lol
+[yolofant]
+yolofant 01/27/2024 2:40 AM
+hellobox. 01/27/2024 2:39 AM
+submitted draft PR. once i finish building it myself, i'll finalize the
+PR (edited)
+[yolofant]
+yolofant 01/27/2024 2:32 AM
+so +1 for that patch from me
+01/27/2024 2:31 AM
+finished building
+hellobox. 01/27/2024 2:28 AM
+no
+[yolofant]
+yolofant 01/27/2024 2:28 AM
+on rpi?
+hellobox. 01/27/2024 2:27 AM
+i usually don't build qt... how much space does it take up when
+building/installed, and how long does it take to build?
+[yolofant]
+yolofant 01/27/2024 2:19 AM
+but it's going to take some minutes
+01/27/2024 2:18 AM
+I'll continue the build
+01/27/2024 2:18 AM
+I don't think libpbnjson is used anywhere
+01/27/2024 2:18 AM
+no, but I don't really see where it could fail
+hellobox. 01/27/2024 2:18 AM
+did you try the complete br-nc4 build?
+[yolofant]
+yolofant 01/27/2024 2:17 AM
+I didn't use a hash file but the rest is basically the same
+01/27/2024 2:17 AM
+    diff --git a/package/lemon/lemon.mk b/package/lemon/lemon.mk
+    index 9a2780e62a..9fe77b6c74 100644
+    --- a/package/lemon/lemon.mk
+    +++ b/package/lemon/lemon.mk
+    @@ -4,10 +4,10 @@
+     #
+     ################################################################################
+    -LEMON_VERSION = 3.7.9
+    -LEMON_TAR_VERSION = 3070900
+    +LEMON_VERSION = 3.45.0
+    +LEMON_TAR_VERSION = 3450000
+     LEMON_SOURCE = sqlite-src-$(LEMON_TAR_VERSION).zip
+    -LEMON_SITE = https://sqlite.org/
+    +LEMON_SITE = https://sqlite.org/2024
+     LEMON_LICENSE = Public domain
+     LEMON_LICENSE_FILES = tea/license.terms
+     LEMON_CPE_ID_VENDOR = sqlite
+    diff --git a/package/libpbnjson/libpbnjson.mk b/package/libpbnjson/libpbnjson.mk
+    index 4c0ed71c7b..9081757d1a 100644
+    --- a/package/libpbnjson/libpbnjson.mk
+    +++ b/package/libpbnjson/libpbnjson.mk
+    @@ -4,7 +4,7 @@
+     #
+     ################################################################################
+    -LIBPBNJSON_VERSION = 19c047b28d73c50330c1c97d2fa94aa8fccebcf6
+    +LIBPBNJSON_VERSION = db844b635d32283d0571347186a7fc2dcbd5fa31
+     LIBPBNJSON_SITE = $(call github,webosose,libpbnjson,$(LIBPBNJSON_VERSION))
+     LIBPBNJSON_INSTALL_STAGING = YES
+hellobox. 01/27/2024 2:16 AM
+    $ patch -Np1 < ../patch/001-cross.patch
+    patching file Makefile.in
+    Hunk #1 succeeded at 847 (offset 74 lines).
+    Hunk #2 succeeded at 1145 with fuzz 2 (offset 83 lines).
+    Hunk #3 succeeded at 1271 (offset 82 lines).
+    Hunk #4 succeeded at 1573 with fuzz 2 (offset 132 lines).
+    $ patch -Np1 < ../patch/001-use-packaged-lempar.c.patch
+    patching file tool/lemon.c
+    Hunk #1 succeeded at 3686 with fuzz 2 (offset 18 lines).
+[] yolofant I do wonder though how or if the patches we had for lemon
+applied
+hellobox. 01/27/2024 2:15 AM
+yeah, they apply
+[] yolofant `LEMON_SITE = https://sqlite.org/2024`
+hellobox. 01/27/2024 2:15 AM
+kind of annoying
+[yolofant]
+yolofant 01/27/2024 2:13 AM
+I do wonder though how or if the patches we had for lemon applied
+01/27/2024 2:12 AM
+LEMON_SITE = https://sqlite.org/2024
+01/27/2024 2:12 AM
+hmm doesn't let me link the line
+01/27/2024 2:11 AM
+https://github.com/openlgtv/buildroot-nc4/compare/master...throwaway96:buildroot-nc4:update-libpbnjson-20240126#diff-708f90740ee21c05146672a51fc45baa0b35f308eb96254f519ce6e2b4d9d251L10
+this actually needs to include 2024
+01/27/2024 2:11 AM
+nice it actually works
+[] yolofant why glibc though?
+hellobox. 01/27/2024 1:57 AM
+it had absolutely no C11 support.
+https://github.com/openlgtv/glibc/commit/19351a0a312f19418d4d6ec1406ff3de5e974506
+[yolofant]
+yolofant 01/27/2024 1:56 AM
+we never run pbnjson on the host anyway
+01/27/2024 1:56 AM
+why glibc though?
+01/27/2024 1:55 AM
+yeah I'm testing that right now
+hellobox. 01/27/2024 1:55 AM
+haven't tested this yet
+https://github.com/openlgtv/buildroot-nc4/compare/master...throwaway96:buildroot-nc4:update-libpbnjson-20240126
+01/27/2024 1:51 AM
+they use _Static_assert everywhere except that one file
+        $(SED) 's|static_assert|_Static_assert|g' -i $(@D)/src/pbnjson_c/jvalue/num_conversion.c
+actually my glibc updates that have been waiting forever for more
+testing may fix this (edited)
+[yolofant]
+yolofant 01/27/2024 1:50 AM
+with newest lemon and pbnjson
+01/27/2024 1:50 AM
+I'm building it now
+01/27/2024 1:49 AM
+just pbnjson (edited)
+[] yolofant I was testing it on an rpi some months ago
+hellobox. 01/27/2024 1:49 AM
+building br-nc4 or just lemon?
+hellobox. 01/27/2024 1:47 AM
+lol
+https://www.mail-archive.com/openembedded-devel@lists.openembedded.org/msg93467.html >
+Don't bother installing a pretty minimal manpage, as very few projects >
+use lemon (sqlite itself, and libpbnjson).
+01/27/2024 1:44 AM
+um. is R_OK documented to be 4?
+    --- a/tool/lemon.c
+    +++ b/tool/lemon.c
+    @@ -3668,6 +3668,8 @@ PRIVATE FILE *tplt_open(struct lemon *le
+         tpltname = buf;
+       }else if( access(templatename,004)==0 ){
+         tpltname = templatename;
+    +  }else if( access("/usr/share/lemon/lempar.c",004)==0 ){
+    +    tpltname = "/usr/share/lemon/lempar.c";
+       }else{
+         toFree = tpltname = pathsearch(lemp->argv0,templatename,0);
+       }
+[yolofant]
+yolofant 01/27/2024 1:41 AM
+I was testing it on an rpi some months ago
+hellobox. 01/27/2024 1:39 AM
+i don't have a (fast) arm64 system to test on
+[yolofant]
+yolofant 01/27/2024 1:39 AM
+but I didn't really understand why that was happening
+01/27/2024 1:38 AM
+and it was crashing in some string comparison
+01/27/2024 1:38 AM
+I don't really understand those lemon templates
+01/27/2024 1:38 AM
+I guess
+hellobox. 01/27/2024 1:38 AM
+oh. so you need a new version, which was incompatible before that fix?
+[yolofant]
+yolofant 01/27/2024 1:38 AM
+so a newer version might fix that
+01/27/2024 1:38 AM
+lemon crashes on arm64
+[] yolofant
+https://github.com/webosose/libpbnjson/commit/db844b635d32283d0571347186a7fc2dcbd5fa31
+hellobox. 01/27/2024 1:38 AM
+why would this only affect arm64?
+[yolofant]
+yolofant 01/27/2024 1:35 AM
+still requires bumping lemon and pbnjson though
+01/27/2024 1:35 AM
+https://github.com/webosose/libpbnjson/commit/db844b635d32283d0571347186a7fc2dcbd5fa31
+Fix build with lemon-3.44 · webosose/libpbnjson@db844b6
+:Release Notes: Fixed build error after lemon tool upgraded to 3.44
+:Detailed Notes: Update the syntax in %syntax_error function to work
+with newer lemon The yy_syntax_error() function is updated...
+[]
+01/27/2024 1:35 AM
+the fuck maybe they've actually fixed it
+01/27/2024 1:34 AM
+I guess it is, spoiler alert: it's going to fail building pbnjson on
+arm64
+[yolofant]
+[] ingwiephoenix auto-building the SDK for arm64 as a testrun ^^
+yolofant 01/27/2024 1:29 AM
+buildroot nc4?
+[ingwiephoenix]
+ingwiephoenix 01/27/2024 12:44 AM
+auto-building the SDK for arm64 as a testrun ^^
+01/27/2024 12:43 AM
+automation anyone?  https://builds.birb.it/jobs/webos-sdk/1
+January 26, 2024
+nacam1620 01/26/2024 5:52 PM
+Good day. I need geforce now ipk file, where can I find it?
+January 24, 2024
+[deniz.kuru]
+deniz.kuru 01/24/2024 9:59 PM
+On webOS 4.4.2 its in Settings -> Accessibility -> Pointer Settings
+ 1
+[astur3l]
+astur3l 01/24/2024 6:36 PM
+(no content)
+[image.png]
+ image.png
+61.24 KB External
+[astur3l]
+pho9574 has anybody ever looked into changing the Magic Remote's
+Airmouse cursor appearance? I got the rem...
+astur3l 01/24/2024 6:35 PM
+https://eguide.lgappstv.com/manual/gb/12018.html > > Configuring the
+Magic Remote Control Pointer On the Magic Remote Control , press the
+Smart Home ( ) button to open the home screen of your Smart TV. On the
+home screen, select Settings . Select OPTION > Pointer to open the
+pointer settings window. Select the setting you wish to configure:
+(edited)
+ 1
+pho9574 01/24/2024 6:20 PM
+has anybody ever looked into changing the Magic Remote's Airmouse cursor
+appearance? I got the remote working to control my PC but the cursor is
+so damn thickkk that it is sometimes hard to aim 
+(#firstworldproblems)
+hellobox. yes
+leek2123 01/24/2024 8:10 AM
+Okay, I'll wait a little longer > 好的，我再等等
+leek2123 ok，未来还会有别的漏洞来root吗
+hellobox. 01/24/2024 8:10 AM
+yes
+hellobox. if it's a 2023 OLED on 03.30.70, no
+leek2123 01/24/2024 8:09 AM
+ok，未来还会有别的漏洞来root吗
+leek2123
+昨天刚知道webos可以root，但是我更新到03.30.70版本了，是不是就没有办法root了？ >
+*I just learned yesterday that webos can be roo...
+hellobox. 01/24/2024 7:47 AM
+if it's a 2023 OLED on 03.30.70, no
+leek2123 01/24/2024 7:41 AM
+昨天刚知道webos可以root，但是我更新到03.30.70版本了，是不是就没有办法root了？ >
+I just learned yesterday that webos can be rooted, but since I have
+updated to version 03.30.70, is there no way to root?
+[e99.tuxuser]
+e99.tuxuser 01/24/2024 12:07 AM
+Feel free, thx for the work you put it
+ 1
+January 23, 2024
+hellobox. 01/23/2024 10:59 PM
+i'll give @ztuxnet and @infowski a day to raise any objections and then
+do a pre-release of 0.1.11
+[lars202]
+lars202 01/23/2024 10:00 PM
+Ok. I dont know how to do that. So i will wait 
+[] lars202 How do we update ?
+hellobox. 01/23/2024 9:59 PM
+right now you can download the ipk from
+https://github.com/throwaway96/hyperion.ng-webos-loader/actions/runs/7620532283
+and install it manually. it will still be version 0.1.10 though (edited)
+[lars202]
+hellobox. all right, thanks. i guess i'll do a prerelease
+lars202 01/23/2024 9:59 PM
+How do we update ?
+[satdx62]
+hellobox. all right, thanks. i guess i'll do a prerelease
+satdx62 01/23/2024 9:35 PM
+Great, I can test at any time if you like
+hellobox. 01/23/2024 9:34 PM
+unless @ztuxnet (or whoever is maintaining it) has a problem with that
+[] satdx62 I have also used your driver via USB.
+hellobox. 01/23/2024 9:33 PM
+all right, thanks. i guess i'll do a prerelease
+[satdx62]
+satdx62 01/23/2024 9:32 PM
+I have also used your driver via USB. (edited)
+hellobox. 01/23/2024 9:31 PM
+whatever uses libusb and QtSerialPort
+[satdx62]
+satdx62 01/23/2024 9:31 PM
+You also mean via USB with Hyperserial from AWAWA
+hellobox. 01/23/2024 9:29 PM
+i want to make sure the USB stuff works, because of the libudev changes
+[satdx62]
+satdx62 01/23/2024 9:29 PM
+Also works with udpraw with LAN
+[] satdx62 WLED
+hellobox. 01/23/2024 9:28 PM
+connected wirelessly or via serial?
+[satdx62]
+satdx62 01/23/2024 9:28 PM
+WLED
+hellobox. 01/23/2024 9:27 PM
+what output driver?
+[satdx62]
+hellobox. did you test it with LEDs?
+satdx62 01/23/2024 9:26 PM
+Yes, I deleted the old one, but the configuration is still there. Yes,
+of course, with LEDs.
+hellobox. 01/23/2024 9:26 PM
+i need to finish my own ambilight test setup (edited)
+01/23/2024 9:25 PM
+did you test it with LEDs?
+01/23/2024 9:25 PM
+they may have been files left over, and i want to be sure that it works
+without those
+[] satdx62 I have installed and it works perfectly. Thanks for that
+too.
+hellobox. 01/23/2024 9:24 PM
+did you delete the old one first?
+[satdx62]
+hellobox.
+<https://github.com/throwaway96/hyperion.ng-webos-loader/actions/runs/7620532283>
+satdx62 01/23/2024 9:24 PM
+I have installed and it works perfectly. Thanks for that too.
+[Hyperion.NG_2.0.16.png]
+ Hyperion.NG_2.0.16.png
+459.42 KB External
+[satdx62]
+hellobox.
+<https://github.com/throwaway96/hyperion.ng-webos-loader/actions/runs/7620532283>
+satdx62 01/23/2024 9:15 PM
+I will.
+[] satdx62 I do use HyperHDR, but I can test this, where is the build?
+hellobox. 01/23/2024 9:14 PM
+https://github.com/throwaway96/hyperion.ng-webos-loader/actions/runs/7620532283
+[satdx62]
+hellobox. can someone using hyperion test my 2.0.16 build please?
+satdx62 01/23/2024 9:13 PM
+I do use HyperHDR, but I can test this, where is the build?
+[yolofant]
+yolofant 01/23/2024 9:10 PM
+there's a recipe for it or you take my binary
+ 1
+01/23/2024 9:10 PM
+you can also compile that using br-nc4
+01/23/2024 9:10 PM
+yeah but now you probably need wg to set the config
+[satdx62]
+hellobox. `GOARCH=arm GOARM=7 GOOS=linux make` will work
+satdx62 01/23/2024 9:08 PM
+Yes great, that's how it worked, thank you and @Yolofant I've learned
+something new again. 
+[wireguard.jpg]
+ wireguard.jpg
+94.45 KB External
+[yolofant]
+yolofant 01/23/2024 9:00 PM
+I think that's from the br-nc4 wireguard recipe
+01/23/2024 9:00 PM
+probably you will need the wg utility tool too
+ wg
+63.16 KB External
+hellobox. 01/23/2024 8:57 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# ./wireguard-go
+    ┌──────────────────────────────────────────────────────┐
+    │                                                      │
+    │   Running wireguard-go is not required because this  │
+    │   kernel has first class support for WireGuard. For  │
+    │   information on installing the kernel module,       │
+    │   please visit:                                      │
+    │         https://www.wireguard.com/install/           │
+    │                                                      │
+    └──────────────────────────────────────────────────────┘
+    Usage: ./wireguard-go [-f/--foreground] INTERFACE-NAME
+01/23/2024 8:56 PM
+can someone using hyperion test my 2.0.16 build please?
+01/23/2024 8:52 PM
+GOARCH=arm GOARM=7 GOOS=linux make will work
+[yolofant]
+yolofant 01/23/2024 8:52 PM
+well that works if the environment variables are set up
+hellobox. 01/23/2024 8:52 PM
+Makefile:
+    wireguard-go: $(wildcard *.go) $(wildcard */*.go)
+            go build -v -o "$@"
+[yolofant]
+yolofant 01/23/2024 8:52 PM
+wireguard-go v0.0.20220316
+01/23/2024 8:51 PM
+that's probably not the newest version though
+01/23/2024 8:51 PM
+(no content)
+ wireguard-go
+3.38 MB External
+hellobox. 01/23/2024 8:51 PM
+    $ file wireguard
+    wireguard: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), statically linked, Go BuildID=mIS0do5JTFhaU2nvHFnO/8z6UXpR__cxlztMjqlly/owaRpd5hftiKkWYGNw7J/kb5RgRP0ZDTxPsIkJ36m, with debug_info, not stripped
+01/23/2024 8:50 PM
+pretty sure you shouldn't be running make
+[] satdx62 Yes, I have done that. Here is the file.
+hellobox. 01/23/2024 8:48 PM
+something's still wrong. .interp is /lib64/ld-linux-x86-64.so.2 
+[satdx62]
+hellobox. did you try just `GOARCH=arm GOARM=7 GOOS=linux go build`?
+satdx62 01/23/2024 8:47 PM
+Yes, I have done that. Here is the file.
+[build.png]
+ build.png
+60.16 KB External
+ wireguard-go
+4.04 MB External
+[] satdx62 What have I done wrong? Do I have to change the configuration
+to compile for webOS?
+hellobox. 01/23/2024 8:35 PM
+did you try just GOARCH=arm GOARM=7 GOOS=linux go build?
+[yolofant]
+yolofant 01/23/2024 8:35 PM
+just need to finish a PR
+01/23/2024 8:35 PM
+I can compile it for you in a bit
+[satdx62]
+[] yolofant you have to extract it from that archive though
+satdx62 01/23/2024 8:33 PM
+Unfortunately, the .deb package does not work either. Maybe something is
+missing in webOS 3.9.x
+[satdx62]
+[] yolofant you have to extract it from that archive though
+satdx62 01/23/2024 8:20 PM
+Yes, I know
+[yolofant]
+yolofant 01/23/2024 8:16 PM
+you have to extract it from that archive though
+[satdx62]
+[] yolofant
+https://packages.debian.org/bookworm/armhf/wireguard-go/download
+satdx62 01/23/2024 8:13 PM
+Super, thank you very much, I will test it.
+[yolofant]
+yolofant 01/23/2024 8:09 PM
+¯\_(ツ)_/¯
+01/23/2024 8:09 PM
+those could work
+01/23/2024 8:09 PM
+https://packages.debian.org/bookworm/armhf/wireguard-go/download
+[satdx62]
+[] yolofant I guess you could also yoink it from some debian package if
+you don't want to build it yourself
+satdx62 01/23/2024 8:06 PM
+Thanks, I was going to try to build it myself, or I'll never learn!
+[yolofant]
+yolofant 01/23/2024 8:03 PM
+I guess you could also yoink it from some debian package if you don't
+want to build it yourself
+01/23/2024 8:00 PM
+yep
+hellobox. 01/23/2024 8:00 PM
+or use export i guess
+[yolofant]
+yolofant 01/23/2024 7:59 PM
+need to put all of those GO* in the same line as go build or put export
+in front
+01/23/2024 7:58 PM
+yeah, that's wrong 
+[satdx62]
+[] yolofant `GOARCH=arm GOARM=7 GOOS=linux go build` this should work on
+linux
+satdx62 01/23/2024 7:57 PM
+What have I done wrong? Do I have to change the configuration to compile
+for webOS?
+[build.png]
+ build.png
+80.95 KB External
+[yolofant]
+yolofant 01/23/2024 7:35 PM
+the other one on windows
+01/23/2024 7:35 PM
+GOARCH=arm GOARM=7 GOOS=linux go build this should work on linux
+01/23/2024 7:33 PM
+let me check
+01/23/2024 7:33 PM
+I compiled it some time ago
+01/23/2024 7:33 PM
+probably the environment was not set up correctly
+01/23/2024 7:33 PM
+yeah
+[satdx62]
+[] yolofant ELF 64-bit LSB executable, x86-64,
+satdx62 01/23/2024 7:32 PM
+Thanks, that means that the works on Ubuntu 64 bit! But not on webOS 32
+bit.
+[yolofant]
+yolofant 01/23/2024 7:26 PM
+ELF 64-bit LSB executable, x86-64,
+01/23/2024 7:23 PM
+sure
+ 1
+[satdx62]
+[] yolofant ``` GOARCH=arm GOARM=7 GOOS=linux go build ```
+satdx62 01/23/2024 7:23 PM
+Yes exactly, can you please check if the file is correct, I have
+compiled with your recommended parameters?
+ wireguard-go
+4.04 MB External
+[yolofant]
+yolofant 01/23/2024 7:22 PM
+    GOARCH=arm GOARM=7 GOOS=linux go build
+[] yolofant maybe it's not the arm version?
+hellobox. 01/23/2024 7:21 PM
+this
+[satdx62]
+satdx62 01/23/2024 7:21 PM
+Ubuntu
+[yolofant]
+yolofant 01/23/2024 7:20 PM
+did you compile on windows or linux
+01/23/2024 7:19 PM
+maybe it's not the arm version?
+01/23/2024 7:18 PM
+hmm
+[satdx62]
+[] yolofant `/home/root/wireguard-go`
+satdx62 01/23/2024 7:16 PM
+root@LGwebOSTV:~# /home/root/wireguard-go /home/root/wireguard-go: line
+4: syntax error: unexpected ")" root@LGwebOSTV:~#
+[yolofant]
+yolofant 01/23/2024 7:14 PM
+/home/root/wireguard-go
+01/23/2024 7:14 PM
+ah nvm
+[satdx62]
+[] yolofant ./root/wireguard-go
+satdx62 01/23/2024 7:12 PM
+(no content)
+[root.jpg]
+ root.jpg
+302.23 KB External
+[sh.jpg]
+ sh.jpg
+65.33 KB External
+[yolofant]
+[] satdx62 I did that, but when I want to start with `wireguard-go wg0`,
+I get root@LGwebOSTV:~#` wireguard-go ...
+yolofant 01/23/2024 7:00 PM
+./root/wireguard-go
+[yolofant]
+yolofant 01/23/2024 6:59 PM
+it's probably not in your path
+[satdx62]
+[] yolofant just put it into your HOME or somewhere in /var/lib
+satdx62 01/23/2024 6:55 PM
+I did that, but when I want to start with wireguard-go wg0, I get
+root@LGwebOSTV:~# wireguard-go wg0 -sh: wireguard-go: not found
+pho9574 01/23/2024 6:54 PM
+anybody using MagicRemoteService?
+https://github.com/Cathwyler/MagicRemoteService/issues/21 got it working
+on rooted C9 but the "emulated" HDMI input is not a PC HDMI the way LG
+wants it understood/configured. This means losing HGIG, and black level
+adjustment. Anybody have a fix/workaround for this? cheers
+HGIG / Black-Level / PC mode no longer available · Issue #21 · Cath...
+first of all thank you for this awesome application! Controls work super
+smooth on a rooted LG C9 the only thing that is not working as i would
+have hoped is the source/input setting. when configur...
+[]
+[yolofant]
+yolofant 01/23/2024 6:06 PM
+just put it into your HOME or somewhere in /var/lib (edited)
+ 1
+01/23/2024 6:05 PM
+you can put it anywhere
+[yolofant]
+[] satdx62 Thanks for the tip. I have compiled wireguard-go as you
+recommended, in which directory on the TV sh...
+yolofant 01/23/2024 6:05 PM
+those two are readonly  (edited)
+[satdx62]
+[] yolofant compilation is easy too
+satdx62 01/23/2024 6:05 PM
+Thanks for the tip. I have compiled wireguard-go as you recommended, in
+which directory on the TV should the wireguard-go file be copied? In
+/bin/ or /usr/bin/
+[yolofant]
+[] icastro That would be my preference as I have a wireguard server at
+home, but not openvpn. The problem is th...
+yolofant 01/23/2024 5:36 PM
+make one 
+[icastro]
+[] yolofant ``` set GOARCH=arm set GOARM=7 set GOOS=linux go build ```
+icastro 01/23/2024 5:33 PM
+That would be my preference as I have a wireguard server at home, but
+not openvpn. The problem is that it would be very helpful to have an
+user friendly app to connect the VPN. How it works if you need to
+connect or disconnect it? (edited)
+[yolofant]
+yolofant 01/23/2024 1:33 PM
+    set GOARCH=arm 
+    set GOARM=7 
+    set GOOS=linux 
+    go build
+01/23/2024 1:33 PM
+compilation is easy too
+01/23/2024 1:33 PM
+I use wireguard go and it works perfectly
+01/23/2024 1:32 PM
+openVPN != wireguard
+[satdx62]
+luxxas4028 Rename your config file to openvpn.ovpn
+satdx62 01/23/2024 12:53 PM
+Hi, Do you think it would work with WireGuard configuration if you
+rename it to openvpn.ovpn and copy it to ovpn folder? I have tested
+under webOS 3.9.2 and my router shows me no connection via WireGuard.
+The OpenVPN ipk can be installed without an error message. With one
+click, a spinning circle in the UI indicates that something is
+happening. With another click, the spinning circle appears again. But
+still no connection is displayed. (edited)
+[] sebsorano Sorry, I'm not used to those overlay mounts so could not
+create the symlink. However, regarding ship...
+hellobox. 01/23/2024 3:04 AM
+when you get a chance, please uninstall that one and try this:
+https://github.com/throwaway96/hyperion.ng-webos-loader/actions/runs/7620532283
+i tested that it starts on webOS 6, but i can't test any of the
+functionality (edited)
+hellobox. 01/23/2024 1:23 AM
+maybe we need a polyfill in br-nc4
+[astur3l]
+astur3l 01/23/2024 1:21 AM
+same issue as was with the dropbear
+01/23/2024 1:20 AM
+new means with your build only? nope (edited)
+[] astur3l also theres another issue with libcrypt (webos 7 >=
+libcrypt.so.2, before libcrypt.so.1 )
+hellobox. 01/23/2024 1:19 AM
+is this a new issue?
+[astur3l]
+astur3l 01/23/2024 1:17 AM
+also theres another issue with libcrypt (webos 7 >= libcrypt.so.2,
+before libcrypt.so.1 )
+hellobox. 01/23/2024 1:14 AM
+it looks like QtSerialPort will try to load it dynamically if it's not
+linked at build time
+01/23/2024 1:08 AM
+so we can build libusb with --disable-udev i guess
+01/23/2024 1:07 AM
+ohhhhhhhh it's required by dependencies 
+    ./libQt5SerialPort.so.5:libudev.so.1
+    ./libusb-1.0.so.0:libudev.so.1
+01/23/2024 1:05 AM
+am i missing something? does any of this use libudev?
+https://github.com/hyperion-project/hyperion.ng/commit/4c2806f966b8d8c3ef4d4c4fa44df1d07b94225b
+luxxas4028 01/23/2024 12:06 AM
+Press once on the app to connect, once to disconnect (edited)
+01/23/2024 12:05 AM
+And transfer it into the the folder applications/webos.openvpn.ovpn/ovpn
+01/23/2024 12:04 AM
+Rename your config file to openvpn.ovpn
+[] icastro Hi. Anybody know if we can expect a vpn app published in
+homebrew channel like wireguard or openvpn ...
+luxxas4028 01/23/2024 12:00 AM
+https://github.com/maxaon09/ipk_MN/raw/main/ovpn/webos.openvpn.ovpn_23.6.2_all.ipk
+January 22, 2024
+hellobox. 01/22/2024 10:52 PM
+surely there's an easier way to get flatc
+[] astur3l flatc used during building, the native build is also for arm,
+isnt it?
+hellobox. 01/22/2024 10:51 PM
+"native" as in native to the system that's building it
+[astur3l]
+hellobox. also, is the native build *just* to have `flatc`?
+astur3l 01/22/2024 10:50 PM
+flatc used during building, the native build is also for arm, isnt it?
+[stiw47]
+hellobox. you can subscribe to it, and you'll get new responses when the
+power status changes
+stiw47 01/22/2024 10:48 PM
+Thanks for comment. I believe you are pointing on this:
+    root@LGwebOSTV:~# luna-send -i 'luna://com.webos.service.tvpower/power/getPowerState' '{"subscribe": true}'
+    { "subscribed": true, "returnValue": true, "state": "Active" }
+    { "returnValue": true, "state": "Screen Off" }
+    { "returnValue": true, "state": "Screen Off", "processing": "Screen On" }
+    { "returnValue": true, "state": "Active" }
+This was my first intention and idea, but for God sake, I have no idea
+how to track changes of this in shell script.
+[smx2460]
+smx2460 01/22/2024 10:47 PM
+polyfill means you potentially need to translate APIs
+01/22/2024 10:47 PM
+why the version is different
+01/22/2024 10:47 PM
+yea
+01/22/2024 10:47 PM
+there might be a reason why
+hellobox. 01/22/2024 10:47 PM
+don't know how different the ABIs are though
+[smx2460]
+smx2460 01/22/2024 10:46 PM
+if possible
+01/22/2024 10:46 PM
+hmm
+hellobox. 01/22/2024 10:46 PM
+orrrrr polyfill
+[smx2460]
+smx2460 01/22/2024 10:46 PM
+the first one involves different profiles/presets for each WebOS/NC4
+version (edited)
+01/22/2024 10:46 PM
+-> statically link the library
+01/22/2024 10:46 PM
+-> provide shared object to copy to target
+01/22/2024 10:46 PM
+the 3 options are: -> provide exact webos version (but each webos
+version might have its own libudev version)
+01/22/2024 10:46 PM
+we cannot really enforce the choice upon users, it depends
+01/22/2024 10:44 PM
+but ymmv
+01/22/2024 10:44 PM
+given the size, i'd statically link it
+01/22/2024 10:44 PM
+fak
+hellobox. 01/22/2024 10:44 PM
+no, there are two different versions
+[smx2460]
+smx2460 01/22/2024 10:44 PM
+wow
+01/22/2024 10:44 PM
+it's missing in WebOS?
+hellobox. 01/22/2024 10:43 PM
+and what should we do about it in br-nc4?
+[smx2460]
+smx2460 01/22/2024 10:43 PM
+uhmmmmm
+hellobox. 01/22/2024 10:43 PM
+should we ship libudev.so.1?
+[smx2460]
+hellobox. <@310158180728700929> any thoughts?
+smx2460 01/22/2024 10:43 PM
+hm?
+hellobox. 01/22/2024 10:42 PM
+why doesn't the CI stuff use build.sh?
+01/22/2024 10:37 PM
+also, is the native build just to have flatc?
+01/22/2024 10:37 PM
+yeah but i don't actually see it calling any udev_* functions
+[astur3l]
+astur3l 01/22/2024 10:33 PM
+maybe identify USB devices?
+hellobox. 01/22/2024 10:26 PM
+what does hyperion.ng even use libudev for?
+hellobox. 01/22/2024 10:16 PM
+ah, you know what? br-nc4 uses eudev
+[] astur3l does some webos use udev ?
+hellobox. 01/22/2024 10:14 PM
+pretty sure systemd uses it
+[astur3l]
+astur3l 01/22/2024 10:14 PM
+does some webos use udev ?
+[] icastro Hi. Anybody know if we can expect a vpn app published in
+homebrew channel like wireguard or openvpn ...
+hellobox. 01/22/2024 10:12 PM
+if someone creates one
+[astur3l]
+astur3l 01/22/2024 10:12 PM
+no idea 
+[icastro]
+icastro 01/22/2024 10:12 PM
+Hi. Anybody know if we can expect a vpn app published in homebrew
+channel like wireguard or openvpn in a nearly future? It would be
+awesome.
+hellobox. 01/22/2024 10:11 PM
+would libudev.so.1 be compatible with the older udev?
+01/22/2024 10:10 PM
+i guess we can ship it?
+      NEEDED            Shared library: [libc.so.6]
+      NEEDED            Shared library: [ld-linux.so.3]
+      NEEDED            Shared library: [librt.so.1]
+      SONAME            Library soname: [libudev.so.1]
+[] astur3l i dont see
+<https://github.com/hyperion-project/hyperion.ng/blob/master/CMakeLists.txt>
+hellobox. 01/22/2024 10:09 PM
+i didn't see anything in there either
+[sebsorano]
+[] astur3l ```ln -s /lib/libudev.so.0.13.1
+/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.l...
+sebsorano 01/22/2024 10:09 PM
+Ok, that worked. Now it runs:
+[image.png]
+ image.png
+4.66 KB External
+[astur3l]
+astur3l 01/22/2024 10:09 PM
+i dont see
+https://github.com/hyperion-project/hyperion.ng/blob/master/CMakeLists.txt
+hellobox. 01/22/2024 10:08 PM
+@asturel do you know if there's an option to disable udev?
+01/22/2024 10:06 PM
+or patchelf
+[astur3l]
+astur3l 01/22/2024 10:05 PM
+    ln -s /lib/libudev.so.0.13.1  /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/libudev.so.1
+01/22/2024 10:05 PM
+just symlink into hyperion lib dir
+[sebsorano]
+sebsorano 01/22/2024 10:04 PM
+Sorry, I'm not used to those overlay mounts so could not create the
+symlink. However, regarding shipping vs building without the file I
+leave that decision up to you since you obviously knows alot better than
+I do 
+hellobox. 01/22/2024 9:55 PM
+we could ship the libudev.so.1 version... or just build without it
+01/22/2024 9:53 PM
+you'd have to use an overlay
+[sebsorano]
+sebsorano 01/22/2024 9:50 PM
+Hmm, /lib/ is read only file system
+01/22/2024 9:49 PM
+I'll try
+[] sebsorano symlink?
+hellobox. 01/22/2024 9:49 PM
+maybe
+hellobox. 01/22/2024 9:48 PM
+@Smx any thoughts?
+[sebsorano]
+sebsorano 01/22/2024 9:48 PM
+symlink?
+hellobox. 01/22/2024 9:48 PM
+ah
+[sebsorano]
+sebsorano 01/22/2024 9:48 PM
+    root@TV-nere:~# ls -lah /lib/ | grep -i libudev
+    lrwxrwxrwx    1 root     root          17 Aug 18  2021 libudev.so.0 -> libudev.so.0.13.1
+    -rwxr-xr-x    1 root     root       35.5K Aug 18  2021 libudev.so.0.13.1 
+hellobox. 01/22/2024 9:47 PM
+this is probably because i updated br-nc4
+[] sebsorano Click to see attachment
+hellobox. 01/22/2024 9:47 PM
+it's not in /lib? (edited)
+[sebsorano]
+sebsorano 01/22/2024 9:46 PM
+(no content)
+[image.png]
+ image.png
+2.67 KB External
+[sebsorano]
+[] astur3l
+https://discord.com/channels/407937994037919756/931706504627773450/1188850776366395472
+sebsorano 01/22/2024 9:46 PM
+    root@TV-nere:~# PYTHONHOME=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/python OPENSSL_armcap=0 HOME=/home/root LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion /media/developer/apps/
+    usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond
+    /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond: error while loading shared libraries: libudev.so.1: cannot open shared object file: No such file or directory
+[astur3l]
+[] sebsorano Click to see attachment
+astur3l 01/22/2024 9:43 PM
+https://discord.com/channels/407937994037919756/931706504627773450/1188850776366395472
+[] sebsorano Click to see attachment
+hellobox. 01/22/2024 9:42 PM
+that's probably because you don't have the right LD_LIBRARY_PATH
+[sebsorano]
+sebsorano 01/22/2024 9:42 PM
+    root@TV-nere:~# /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond
+    /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond: error while loading shared libraries: libpython3.10.so.1.0: cannot open shared object file: No such file or directory
+01/22/2024 9:41 PM
+(no content)
+[image.png]
+ image.png
+10.92 KB External
+hellobox. 01/22/2024 9:40 PM
+might be a issue with older webOS. i'm on 6
+[sebsorano]
+sebsorano 01/22/2024 9:39 PM
+Still same behaviour after removing ~/.hyperion dir
+01/22/2024 9:35 PM
+webOS: 3.9.0
+01/22/2024 9:35 PM
+One sec, let me doublecheck, I always forget which version this one is
+on.
+[astur3l]
+[] sebsorano When clicking Start then Daemon running goes Yes --> No in
+like 2-3 seconds.
+astur3l 01/22/2024 9:34 PM
+WebOS 7?
+[sebsorano]
+sebsorano 01/22/2024 9:32 PM
+(no content)
+[image.png]
+ image.png
+16.11 KB External
+01/22/2024 9:32 PM
+Do you have a port listening on 8090?
+[] sebsorano Hmm, what would be the best way to get rid of any old
+configs that could be lingering around?
+hellobox. 01/22/2024 9:32 PM
+it's probably under /home/root/.hyperion
+[sebsorano]
+sebsorano 01/22/2024 9:31 PM
+Hmm, what would be the best way to get rid of any old configs that could
+be lingering around?
+hellobox. 01/22/2024 9:30 PM
+(no content)
+[image.png]
+ image.png
+34.65 KB External
+[sebsorano]
+sebsorano 01/22/2024 9:30 PM
+(no content)
+[image.png]
+ image.png
+13.91 KB External
+hellobox. 01/22/2024 9:29 PM
+looks like it's running
+    root     19360  1346  0  7943  1628   2 15:28 ?        00:00:00     /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/loader_service
+    root     19365 19360  3 32951 16904   2 15:28 ?        00:00:01       /media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/hyperion/hyperiond
+01/22/2024 9:28 PM
+i don't use any of these apps myself
+01/22/2024 9:28 PM
+i installed it myself to see what's going on
+[sebsorano]
+sebsorano 01/22/2024 9:27 PM
+I guess I could try starting the service/binary from cli and see if it
+errors out with something, I'm really not familiar with the webos cli
+commands so I would need some help with those
+01/22/2024 9:26 PM
+Any log files I should be looking at?
+[] stiw47 I am pretty sure that there is much better and elegant way to
+accomplish this but while statement, b...
+hellobox. 01/22/2024 9:25 PM
+you can subscribe to it, and you'll get new responses when the power
+status changes
+[sebsorano]
+sebsorano 01/22/2024 9:24 PM
+Maybe some old config that causes it to crash/stop
+hellobox. 01/22/2024 9:24 PM
+although it says it's already elevated
+[sebsorano]
+sebsorano 01/22/2024 9:23 PM
+When clicking Start then Daemon running goes Yes --> No in like 2-3
+seconds.
+hellobox. 01/22/2024 9:23 PM
+try
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service org.webosbrew.hyperion.ng.loader.service
+[sebsorano]
+hellobox. you might have to run `elevate-service` on it
+sebsorano 01/22/2024 9:23 PM
+How do I run that?
+[sebsorano]
+sebsorano 01/22/2024 9:22 PM
+(no content)
+[DSC_0479.jpg]
+ DSC_0479.jpg
+256.57 KB External
+hellobox. 01/22/2024 9:21 PM
+you might have to run elevate-service on it
+[sebsorano]
+sebsorano 01/22/2024 9:21 PM
+(no content)
+[image.png]
+ image.png
+66.45 KB External
+[] sebsorano Ok, well I installed the .ipk but it doesnt want to
+properly start the service on my tv now.
+hellobox. 01/22/2024 9:21 PM
+how did you install it?
+[sebsorano]
+hellobox. yeah i didn't change the version
+sebsorano 01/22/2024 9:20 PM
+Ok, well I installed the .ipk but it doesnt want to properly start the
+service on my tv now.
+[] sebsorano The ipk still say 0.1.10 but that doesnt matter right?
+hellobox. 01/22/2024 9:16 PM
+yeah i didn't change the version
+[sebsorano]
+sebsorano 01/22/2024 9:16 PM
+The ipk still say 0.1.10 but that doesnt matter right?
+hellobox. 01/22/2024 9:07 PM
+yeah i was kind of wondering why the flatbuffers tools were being
+installed
+[astur3l]
+astur3l 01/22/2024 9:06 PM
+https://github.com/asturel/hyperhdr-webos-loader/commit/d9919b660a61695c2eef88f7e5b14442e0c4a211
+01/22/2024 9:05 PM
+dont think so 
+hellobox. 01/22/2024 9:05 PM
+@asturel do you know if flathash was actually used?
+01/22/2024 9:04 PM
+since the new one is missing a binary
+01/22/2024 9:04 PM
+well, maybe you should delete the old one
+01/22/2024 9:04 PM
+you can probably just install it over the existing one
+[sebsorano]
+sebsorano 01/22/2024 9:03 PM
+Should I uninstall my old version first?
+01/22/2024 9:03 PM
+Ok, I can do it
+hellobox. 01/22/2024 9:03 PM
+yes
+[sebsorano]
+hellobox. the workflow needs to be updated to 2.0.16
+sebsorano 01/22/2024 9:02 PM
+Do you mean to test the new Hyperion-ng build? (edited)
+[astur3l]
+astur3l 01/22/2024 9:02 PM
+hyperion.ng doesnt support my led driver so it wont be me :/
+hellobox. 01/22/2024 8:57 PM
+if somebody tests it i can do it
+https://github.com/throwaway96/hyperion.ng-webos-loader/actions/runs/7606735550
+(edited)
+[] astur3l fetches the latest stable hyperng version and creates PR with
+the build
+hellobox. 01/22/2024 8:57 PM
+the workflow needs to be updated to 2.0.16
+[astur3l]
+hellobox. what is this even for?
+astur3l 01/22/2024 12:50 PM
+fetches the latest stable hyperng version and creates PR with the build
+[stiw47]
+stiw47 01/22/2024 9:07 AM
+thanks for DVD 
+[infowski]
+infowski 01/22/2024 9:06 AM
+Yo, that's me 
+[stiw47]
+stiw47 01/22/2024 9:06 AM
+Lol, all the time I didn't figured I chat with dev of app which I'm
+customizing for my self - what an honor . You are Informatic on github
+[infowski]
+infowski 01/22/2024 9:04 AM
+And never extracted it when releasing as a proper homebrew app
+01/22/2024 9:03 AM
+It was just much easier for me to put it in a base64 in there since I
+just originally posted it as a single pastebin shitpost here
+01/22/2024 9:03 AM
+Yeah, I think you could even render from a file directly
+[stiw47]
+stiw47 01/22/2024 8:41 AM
+yup, great point. I'm not dev, just an IT admin, so my first mind went
+to shell script, but will see. qml shouldn't be so hard, even less to
+figure just one thing - how to put several base64 encoded png images
+strings into this screensaver-main.qml file and use them randomly.
+(edited)
+[infowski]
+infowski 01/22/2024 8:36 AM
+I would think of embedding shuffling functionality into custom
+screensaver .qml directly 
+[stiw47]
+stiw47 01/22/2024 8:11 AM
+Do you have any advice on how this could be accomplished in a more
+elegant way than a while statement?
+[stiw47]
+[] infowski Yeah, that script definitely runs forever. Try getting this
+script out into a separate file (not in ...
+stiw47 01/22/2024 8:10 AM
+Right point, thank you very much. Didn't know that init.d scripts have
+to be finished in order to not crash root startup. Obviously, this was
+the reason why the TV was boot to failsafe each second time 
+[infowski]
+infowski 01/22/2024 7:36 AM
+Yeah, that script definitely runs forever. Try getting this script out
+into a separate file (not in init.d) and make an init.d script with:
+nohup bash /script/path >/dev/null &
+[stiw47]
+stiw47 01/22/2024 7:31 AM
+I am pretty sure that there is much better and elegant way to accomplish
+this but while statement, but was not able to find a way how to
+monitoring the state of
+luna-send -n 1 'luna://com.webos.service.tvpower/power/getPowerState' '{}'.
+01/22/2024 7:30 AM
+Here you are, and thanks. It basically copying one file over another,
+because I would like to have random picture in custom-screensaver app
+:
+    #!/bin/sh
+    MAIN_QML_PATH="/media/developer/apps/usr/palm/applications/org.webosbrew.custom-screensaver/assets/screensaver-main.qml"
+    SCREENSTATE2=`luna-send -n 1 'luna://com.webos.service.tvpower/power/getPowerState' '{}' | awk '{print $5}' | cut -c 2- | sed 's/.$//'`
+    while sleep 30; do
+            CUSTOM_QML_PATH="$(find /home/root/screensaver/resources -type f | shuf -n 1)";
+            SCREENSTATE1=$SCREENSTATE2;
+            SCREENSTATE2=`luna-send -n 1 'luna://com.webos.service.tvpower/power/getPowerState' '{}' | awk '{print $5}' | cut -c 2- | sed 's/.$/
+    /'`;
+            if [ "$SCREENSTATE1" != "$SCREENSTATE2" ];
+            then
+                    if [ "$SCREENSTATE2" = "Active" ];
+                    then
+                            cp $CUSTOM_QML_PATH $MAIN_QML_PATH;
+                    fi
+            fi 
+    done
+[infowski]
+infowski 01/22/2024 7:28 AM
+We really should rethink the way we handle failsafe
+01/22/2024 7:27 AM
+You can also connect over ssh and make sure using
+ps aux | grep startup.sh if startup scripts are still running after the
+tv is finished booting (without failsafe mode) - this would be an ideal
+indicator that init script hangs
+[stiw47]
+stiw47 01/22/2024 7:26 AM
+Ofc, let me find it.
+[infowski]
+infowski 01/22/2024 7:26 AM
+Can you show us the script?
+[infowski]
+[] stiw47 Did not upgrade the system or something like that. Since it
+started, only 2 actions I have done are:...
+infowski 01/22/2024 7:25 AM
+So basically, if the init.d script never finishes, we will trigger
+failsafe mode
+[stiw47]
+stiw47 01/22/2024 7:18 AM
+Did not upgrade the system or something like that. Since it started,
+only 2 actions I have done are: 1. Made init.d script which is using
+while sleep 30 statement (can provide it if needed). 2. Deleted symlink
+from /var/lib/webosbrew/init.d which was pointing to non existing file,
+and according symlink name was leftover from previous hyperion.ng
+installation (uninstalled)
+01/22/2024 7:11 AM
+Hi. What logs to check in order to find why my C1 suddenly started boot
+to failsafe mode too often? Thanks.
+hellobox. 01/22/2024 5:56 AM
+> The following actions uses node12 which is deprecated and will be
+forced to run on node16: actions/setup-node@v1. god, that's old
+01/22/2024 5:56 AM
+somebody test this please
+https://github.com/throwaway96/hyperion.ng-webos-loader/actions/runs/7606735550
+(edited)
+hellobox. 01/22/2024 5:43 AM
+ughhhh is flathash necessary?
+https://github.com/hyperion-project/hyperion.ng/commit/da275dd44861e1c2ce3501ffb6eba7300e1446ee
+https://github.com/google/flatbuffers/commit/ef5ae488dd5c5574b804208d098509a011e48e54
+[] astur3l may <@803885040827629628> can reenable the workflow ?
+https://github.com/webosbrew/hyperion.ng-webos...
+hellobox. 01/22/2024 4:59 AM
+what is this even for?
+[] astur3l may <@803885040827629628> can reenable the workflow ?
+https://github.com/webosbrew/hyperion.ng-webos...
+hellobox. 01/22/2024 2:11 AM
+https://github.com/webosbrew/hyperion.ng-webos-loader/actions/runs/7605136949
+[] jovial_cheetah_09897 How do I do this my king, could you teach me? 
+hellobox. 01/22/2024 2:07 AM
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#alternative-clients
+[jovial_cheetah_09897]
+jovial_cheetah_09897 01/22/2024 2:05 AM
+How do I do this my king, could you teach me? 
+[] jovial_cheetah_09897 Hi, does anyone know of a method to send files
+to LG TV without root access, I have it through devma...
+hellobox. 01/22/2024 2:02 AM
+sftp
+[astur3l]
+astur3l 01/22/2024 2:02 AM
+may @hellobox can reenable the workflow ?
+https://github.com/webosbrew/hyperion.ng-webos-loader/actions/workflows/poll_hyperion_ng_tag.yml
+Poll Hyperion.NG (Pre-)releases · Workflow runs · webosbrew/hyperio...
+Contribute to webosbrew/hyperion.ng-webos-loader development by creating
+an account on GitHub.
+[]
+[jovial_cheetah_09897]
+jovial_cheetah_09897 01/22/2024 1:55 AM
+Hi, does anyone know of a method to send files to LG TV without root
+access, I have it through devmaganer but the error
+January 21, 2024
+[filip.roksandic]
+[] sebsorano Greetings folks. I noticed that Hyperion 2.0.16 is out,
+https://github.com/hyperion-project/hyperion...
+filip.roksandic 01/21/2024 9:49 PM
+[filip.roksandic]
+hellobox. if you're asking whether you can play video from your phone on
+your TV over USB, i'm pretty sure the...
+filip.roksandic 01/21/2024 9:48 PM
+It's possible with hacky ways, maybe Ethernet over USB tethering and
+correct routing but it's more trouble than it's worth.
+[sebsorano]
+sebsorano 01/21/2024 9:21 PM
+Greetings folks. I noticed that Hyperion 2.0.16 is out,
+https://github.com/hyperion-project/hyperion.ng/releases What's the
+proper way to request an update to the version in homebrew repo?
+Releases · hyperion-project/hyperion.ng
+The successor to Hyperion aka Hyperion Next Generation -
+hyperion-project/hyperion.ng
+[]
+January 20, 2024
+[drwellness]
+drwellness 01/20/2024 8:08 AM
+it shows 1.1.5. on my tv although i installed the linkes 1.0.0 ipk.
+maybe it even updates itself.
+[drwellness]
+[] franartorias It's an app like the other one?
+drwellness 01/20/2024 8:07 AM
+yes it is an app and works nice. just bookmarks doesn't work right now
+for me. but developer will continue
+[franartorias]
+franartorias 01/20/2024 1:41 AM
+Just this or the browser, and that goes like shit
+[franartorias]
+[] 55thetax55war it makes no sense to me why crunchyroll on homebrew and
+not on real search. It's memebership anyways...
+franartorias 01/20/2024 1:40 AM
+LG doesn't have any official app
+January 19, 2024
+[55thetax55war]
+[] drwellness https://github.com/jhassan8/crunchyroll-tizen/releases
+55thetax55war 01/19/2024 11:26 PM
+it makes no sense to me why crunchyroll on homebrew and not on real
+search. It's memebership anyways. I don't like membership. Just want to
+watch some tv without worry. I have yet done any of this. (edited)
+[franartorias]
+franartorias 01/19/2024 9:39 PM
+It's an app like the other one?
+[franartorias]
+[] drwellness https://github.com/jhassan8/crunchyroll-tizen/releases
+franartorias 01/19/2024 9:39 PM
+Yeah, I saw it, i have a C1 too
+[drwellness]
+drwellness 01/19/2024 9:37 PM
+at least on my c1. other guy here has an older lg and it didn't worked
+for him
+01/19/2024 9:37 PM
+there is an working ipk.
+[drwellness]
+[] franartorias Just to know
+drwellness 01/19/2024 9:37 PM
+https://github.com/jhassan8/crunchyroll-tizen/releases
+Releases · jhassan8/crunchyroll-tizen
+Crunchyroll unofficial app for Smart TV Samsung Tizen OS that currently
+doesnt exist in appstore, requires crunchyrrol account. -
+jhassan8/crunchyroll-tizen
+[]
+[franartorias]
+franartorias 01/19/2024 8:56 PM
+Crunchyroll still not working?
+01/19/2024 8:55 PM
+Just to know
+hellobox. 01/19/2024 7:57 AM
+can someone please explain to me what the encoding option to
+child_process.exec() does in node v0.10.x? i thought it was supposed to
+control how (and whether) the stdout/stderr Buffers are converted into
+strings. but in v0.10.x, it seems like those are always Buffers.
+https://nodejs.org/docs/latest-v0.10.x/api/child_process.html#child_process_child_process_exec_command_options_callback
+actually, despite the documentation, i think they're always *strings*.
+https://github.com/nodejs/node/blob/v0.10.15/lib/child_process.js#L613-L614
+(edited)
+[] Cas started a thread: now i just have to figure out how to. See all
+threads. 1/19/24, 6:42 AM
+[] 55thetax55war i downloaded one of the phone app one's. It was very
+laggy. Wanted to cast what my phone has. I paye...
+pritkudale 01/19/2024 5:40 AM
+LG app work pretty well for wifi while playing video from phone on TV
+[55thetax55war]
+hellobox. if you're asking whether you can play video from your phone on
+your TV over USB, i'm pretty sure the...
+55thetax55war 01/19/2024 3:30 AM
+ok thanks.
+[] 55thetax55war i downloaded one of the phone app one's. It was very
+laggy. Wanted to cast what my phone has. I paye...
+hellobox. 01/19/2024 3:30 AM
+if you're asking whether you can play video from your phone on your TV
+over USB, i'm pretty sure the answer is no
+[55thetax55war]
+55thetax55war 01/19/2024 3:09 AM
+i downloaded one of the phone app one's. It was very laggy. Wanted to
+cast what my phone has. I payed for that to. to bad I think the lg
+andriod app allows for mirroring as well. That worked out better. It's
+on the tv in the menu instead. haven't used it in months thou. to
+remember 100%. dam phones don't fill the screen. It will just play what
+the phone has. i just watch it like that. Got the lg c1. Does the usb
+offer video over usb? For a phone? Haven't even tried. Not home at the
+moment. (edited)
+hellobox. 01/19/2024 3:06 AM
+they're almost certainly talking about this or something like it.
+https://www.google.com/chromecast/built-in/tv/ i.e., the ability to
+control what's displayed on your TV from your phone (edited)
+[55thetax55war]
+55thetax55war 01/19/2024 3:06 AM
+ok. Just saying. That's the LG booth. he talks about webos. But that's
+the new stuff. What's with the transperant tv. For a certain space i
+guess. Gimmic. Maybe in a middle of a walk in area with offeces.
+hellobox. 01/19/2024 3:04 AM
+webOS is not android
+[55thetax55war]
+55thetax55war 01/19/2024 3:03 AM
+https://www.youtube.com/watch?v=lCYWbbQ7jNQ 4:51 point. Does that mean
+anything. IDK. Cromecast has google play. IDK we will see what it is
+really.
+AVForums
+CES 2024: LG Launch M4, G4 C4 and Transparent OLED!
+We visit the LG suite at CES 2024 to get a closer look at the brand-new
+C4, G4 and M4 OLED Evo models which receive light refreshes for the new
+year. Plus, we also get hands-on with the OLED T transparent model with
+Dave Seperson from LG. What do you think about transparent TV? Is it
+something you would want and use at home? Let us know in the ...
+[] Watch video
+hellobox. 01/19/2024 3:00 AM
+the only way you'll run android apps on an LG TV is if LG decides to
+sell TVs running android (again)
+01/19/2024 2:58 AM
+there is absolutely no way the google play store is coming to webOS.
+01/19/2024 2:58 AM
+are you talking about this?
+https://www.google.com/chromecast/built-in/tv/
+[] 55thetax55war At CES Cromecast was mentioned in a video i saw for
+CES. To be added to webos Ill look for it in the...
+hellobox. 01/19/2024 2:57 AM
+what video?
+[55thetax55war]
+55thetax55war 01/19/2024 2:55 AM
+At CES Cromecast was mentioned in a video i saw for CES. To be added to
+webos Ill look for it in the weekend. If it has google playstore. all
+good. (edited)
+hellobox. 01/19/2024 1:11 AM
+also there are potentially DRM issues, but i don't really know the
+details there
+01/19/2024 1:11 AM
+but probably only if the site is at least designed for TVs. otherwise
+navigation would likely be an issue
+01/19/2024 1:11 AM
+that might be as simple as redirecting to an existing website with a
+stub webOS app
+01/19/2024 1:10 AM
+if there's no official webOS app for a given service, it would be up to
+whoever who wants to watch it to create something
+[55thetax55war]
+55thetax55war 01/19/2024 1:06 AM
+i mean homebrew channel. Any of those offer show's and movies. Live
+sports is what i look for. Like soccer (football), hockey, Olympics. Man
+i got cable tv and cable internet bundle. It's not really a issue. Just
+something to do. (edited)
+hellobox. 01/19/2024 12:56 AM
+there are a ton of movie/TV apps in th LG content store
+01/19/2024 12:56 AM
+what browser?
+[55thetax55war]
+55thetax55war 01/19/2024 12:55 AM
+Well i gotta update the app. If i do the browser and run it again after.
+will it update if it's available? Ill see if i manage to put it on.
+Kinda want to see how well retroarch runs. and kodi. I wonder if there
+are apps that have movies and shows. Im just watch what's on plex and
+pluto tv. Since there is no log in. And just grab a odd dvd thru out the
+year.
+hellobox. 01/19/2024 12:48 AM
+or the dev manager app on another computer
+01/19/2024 12:48 AM
+or you can do it from the hbchannel app on the TV
+01/19/2024 12:48 AM
+so you can do it manually with SFTP/wget/curl and luna-send(-pub)
+01/19/2024 12:47 AM
+any way that transfers the IPK you want to install to your TV and then
+makes that luna request (with the path to your IPK) will work
+01/19/2024 12:47 AM
+although they ~all ultimately end up calling
+luna://com.webos.appInstallService/dev/install
+01/19/2024 12:46 AM
+if you're talking about (dev mode) apps on webOS, there are several ways
+to install them
+[55thetax55war]
+55thetax55war 01/19/2024 12:46 AM
+homebrew stuff.
+[] 55thetax55war Is it 2 ways to install? One from app with your
+computer. The other thru the web browser? Or do you ...
+hellobox. 01/19/2024 12:46 AM
+install what?
+[55thetax55war]
+55thetax55war 01/19/2024 12:45 AM
+Is it 2 ways to install? One from app with your computer. The other thru
+the web browser? Or do you still need to do both. I havn't done it yet.
+I want to wait a bit more until i feel confy.
+January 18, 2024
+pritkudale How?
+hellobox. 01/18/2024 8:14 AM
+chmod
+pritkudale 01/18/2024 7:50 AM
+How?
+hellobox. 01/18/2024 5:55 AM
+i guess make it 777?
+pritkudale 01/18/2024 5:27 AM
+How to give kodi write permission for USB /tmp/usb/sda/sda2
+[mariotaku]
+[] 7coil im going on strike now brb
+mariotaku 01/18/2024 4:41 AM
+There are a few tips for you to quickly check for compatibility:
+https://github.com/webosbrew/dev-toolbox-cli so you'll be able to know
+which lib is missing objdump -p can do too
+GitHub - webosbrew/dev-toolbox-cli
+Contribute to webosbrew/dev-toolbox-cli development by creating an
+account on GitHub.
+[]
+[7coil]
+7coil 01/18/2024 2:56 AM
+im going on strike now brb
+01/18/2024 2:56 AM
+https://github.com/7coil/webos-openttd/commit/ebf2f3aeae8d3a0062c35e8047bf222a5f061480
+LG WebOS: Attempt compilation · 7coil/webos-openttd@ebf2f3a
+[]
+[7coil]
+7coil 01/18/2024 2:44 AM
+ill dump on git(lab/hub?) and go do something better for now
+[7coil]
+[] 7coil I could Google what this is, or I could just dump this here and
+continue watching BBC 4 ``` root@LGw...
+7coil 01/18/2024 2:44 AM
+doing the same thing hmm
+[7coil]
+7coil 01/18/2024 2:28 AM
+-j11
+01/18/2024 2:28 AM
+before i run out of holy water
+01/18/2024 2:28 AM
+let me ctrl+c
+hellobox. 01/18/2024 2:27 AM
+depends on whether you think infinity is sensible
+[7coil]
+7coil 01/18/2024 2:27 AM
+probably should choose j12
+01/18/2024 2:27 AM
+I thought it would default to a sensible value
+01/18/2024 2:27 AM
+ah
+hellobox. 01/18/2024 2:26 AM
+if you put just -j, there's no limit
+[7coil]
+7coil 01/18/2024 2:26 AM
+I put -j to "speed it up"
+hellobox. 01/18/2024 2:26 AM
+does it have like make -j somewhere? (edited)
+[7coil]
+7coil 01/18/2024 2:26 AM
+I'm not going to question it
+01/18/2024 2:26 AM
+¯\_(ツ)_/¯
+[] 7coil i think _everything_
+hellobox. 01/18/2024 2:26 AM
+wow. why?
+[yolofant]
+yolofant 01/18/2024 2:25 AM
+we need clang 
+[7coil]
+7coil 01/18/2024 2:25 AM
+i think everything
+01/18/2024 2:25 AM
+(no content)
+[image.png]
+ image.png
+355.5 KB External
+[] 7coil will someone think of the children :(
+hellobox. 01/18/2024 2:25 AM
+why so much? how many compilations is it doing in parallel?
+[7coil]
+7coil 01/18/2024 2:24 AM
+so much swap
+01/18/2024 2:24 AM
+will someone think of the children :(
+[image.png]
+ image.png
+25.46 KB External
+hellobox. 01/18/2024 2:24 AM
+webOS 6.3.2:
+    -rw-r--r--    1 root     root        103816 Dec 13  2022 /lib/libgcc_s.so.1
+01/18/2024 2:23 AM
+> There are several situations in which an application should use the
+shared libgcc instead of the static version. The most common of these is
+when the application wishes to throw and catch exceptions across
+different shared libraries. In that case, each of the libraries as well
+as the application itself should use the shared libgcc. > > Therefore,
+the G++ driver automatically adds -shared-libgcc whenever you build a
+shared library or a main executable, because C++ programs typically use
+exceptions, so this is the right thing to do. not exactly sure what the
+implications of this are
+01/18/2024 2:22 AM
+g++ apparently automatically adds -shared-libgcc
+[7coil]
+7coil 01/18/2024 2:21 AM
+will add the other one if it doesnt work
+01/18/2024 2:21 AM
+still building with just -static-libstdc++ first
+01/18/2024 2:21 AM
+I tried all three earlier but got some weird results
+    root@LGwebOSTV:~# XDG_RUNTIME_DIR=/tmp/xdg /usr/bin/jailer -t native_devmode -i com.leondrolio.x.openttd -p /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/openttd '{"@system_native_app":true,"nid":"com.leondrolio.x.openttd"}'
+    Error: No such file or directory, exe: /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/openttd
+[] 7coil openttd's cmake files are really good
+hellobox. 01/18/2024 2:20 AM
+you may want -static-libgcc. not sure though
+[7coil]
+7coil 01/18/2024 2:17 AM
+just edited it slightly
+01/18/2024 2:17 AM
+openttd's cmake files are really good
+[image.png]
+ image.png
+41.79 KB External
+[yolofant]
+[] 7coil (and edit the cmake files)
+yolofant 01/18/2024 2:17 AM
+maybe you can steal from the kodi cmake files
+[7coil]
+7coil 01/18/2024 1:46 AM
+note to self: download more ram
+[7coil]
+7coil 01/18/2024 1:27 AM
+(and edit the cmake files)
+01/18/2024 1:26 AM
+time to jump off a cliff
+[] 7coil I could Google what this is, or I could just dump this here and
+continue watching BBC 4 ``` root@LGw...
+hellobox. 01/18/2024 1:26 AM
+static linking: -static-libstdc++ (edited)
+[7coil]
+7coil 01/18/2024 1:26 AM
+I copied the libstdc++ from the sdk libs, and then downloaded one off of
+SpaceCadetPinball
+01/18/2024 1:25 AM
+I could Google what this is, or I could just dump this here and continue
+watching BBC 4
+    root@LGwebOSTV:~# PATH=$PATH:/media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd XDG_RUNTIME_DIR=/tmp/xdg /usr/bin/jailer -t native_devmode -i com.leondrolio.x.openttd -p /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd /media/developer/apps/u
+    sr/palm/applications/com.leondrolio.x.openttd/openttd '{"@system_native_app":true,"nid":"com.leondrolio.x.openttd"}'
+    /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/openttd: /usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/openttd)
+    /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/openttd: /usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/openttd)
+    /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/openttd: /usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.26' not found (required by /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/openttd)
+    /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/openttd: /usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by /media/developer/apps/usr/palm/applications/com.leondrolio.x.openttd/lib/libicuuc.so.70)
+01/18/2024 1:24 AM
+1 like  = 1 vlc ipk 
+[] 7coil ok with the power of trial and error - copying some libs to the
+libs folder works - you need 64gb of...
+hellobox. 01/18/2024 1:23 AM
+i thought you had to make sure the holy water gets inside the TV
+[7coil]
+7coil 01/18/2024 1:22 AM
+ok with the power of trial and error - copying some libs to the libs
+folder works - you need 64gb of ram to compile openttd for some reason,
+had to add some swap to actually get it working (???) - if you format a
+usb stick as btrfs, put the vlc ipk on, put the usb stick in a demonic
+circle and plug it in to your tv whilst throwing holy water at it, you
+can install vlc for webos
+[7coil]
+7coil 01/18/2024 1:13 AM
+thats what im hoping heh
+hellobox. 01/18/2024 1:12 AM
+well, it should make porting possible
+[7coil]
+7coil 01/18/2024 1:12 AM
+"should"
+January 17, 2024
+[] 7coil got bored so im doing something useless
+hellobox. 01/17/2024 11:53 PM
+looks like it uses SDL2, which should make things easier
+[yolofant]
+hellobox. yes, but if i ask again, will it work then?
+yolofant 01/17/2024 11:51 PM
+yes, if you ask 42 times it will work
+ 1
+hellobox. 01/17/2024 11:18 PM
+or perhaps i have to ask under a different name. then it will definitely
+work
+[] yolofant IT WILL NOT WORK
+hellobox. 01/17/2024 10:47 PM
+yes, but if i ask again, will it work then?
+[kuromi0731]
+kuromi0731 01/17/2024 3:27 PM
+Ok
+[yolofant]
+yolofant 01/17/2024 3:16 PM
+IT WILL NOT WORK
+[kuromi0731]
+kuromi0731 01/17/2024 2:12 PM
+Tell me please 
+01/17/2024 2:09 PM
+(no content)
+[Screenshot_20240117_183827_Samsung_Internet.jpg]
+ Screenshot_20240117_183827_Samsung_Internet.jpg
+95.55 KB External
+01/17/2024 2:09 PM
+Can anyone tell me that the ipk of vlc player will work on webos
+01/17/2024 2:07 PM
+Please reply anyone
+01/17/2024 2:06 PM
+Does anyone have video player ipk for lg
+[mariotaku]
+[] 7coil got bored so im doing something useless
+mariotaku 01/17/2024 7:49 AM
+Let me know when you need assistance and I could help you list it in the
+repo when you're done
+[mariotaku]
+mariotaku 01/17/2024 7:49 AM
+Wow.
+[7coil]
+7coil 01/17/2024 3:00 AM
+will sleep and then continue working
+01/17/2024 2:59 AM
+got bored so im doing something useless
+[image.png]
+ image.png
+41.77 KB External
+ 2
+January 16, 2024
+hellobox. 01/16/2024 3:19 AM
+we should also add an /elevate method so other apps don't have to depend
+on hbchannel being installed under /media/developer
+hellobox. 01/16/2024 2:48 AM
+should hbchannel /exec really respond with returnValue:false when the
+command run but had nonzero exit status? (edited)
+hellobox. 01/16/2024 2:39 AM
+also, if an app is not available for certain webOS versions, it's
+probably because it doesn't work on them
+[] ztfallen Could someone provide me with VIX+ IPK from newers LG TVs /
+USA Region?
+hellobox. 01/16/2024 2:38 AM
+you wouldn't be able to use it anyway without the key
+January 15, 2024
+[ztfallen]
+ztfallen 01/15/2024 8:04 PM
+Could someone provide me with VIX+ IPK from newers LG TVs / USA Region?
+anteo2 01/15/2024 7:15 PM
+Resolved, thanks  (edited)
+[ztfallen]
+ztfallen 01/15/2024 6:18 PM
+webos 3.9.2
+[ztfallen]
+[] drwellness That's kinda strange. Which TV do you have? I got a C1.
+Maybe it is kinda testing version because th...
+ztfallen 01/15/2024 6:18 PM
+This one is a 2016/2017 tv i think 43UJ6560-SB
+[drwellness]
+drwellness 01/15/2024 6:09 PM
+Did you tried to launch the app over webOS dev manager? That's how I
+started it the first time. Don't know what else it can be.
+[drwellness]
+[] ztfallen Click to see attachment
+drwellness 01/15/2024 6:06 PM
+That's kinda strange. Which TV do you have? I got a C1. Maybe it is
+kinda testing version because the developer didn't mention the webOS
+support on his github mainpage.
+[IMG_9005.jpg]
+ IMG_9005.jpg
+824.04 KB External
+[IMG_9006.jpg]
+ IMG_9006.jpg
+1 MB External
+[IMG_9007.jpg]
+ IMG_9007.jpg
+1.45 MB External
+[mariotaku]
+anteo2 Cannot install youtube by homebrew anymore, why?
+mariotaku 01/15/2024 5:22 PM
+Did any error message popped?
+anteo2 01/15/2024 5:12 PM
+Cannot install youtube by homebrew anymore, why?
+ensndj_74587 01/15/2024 5:12 PM
+[kitsuned]
+ensndj_74587 Can anyone make vlc player for webos
+kitsuned 01/15/2024 5:11 PM
+sure, throw us some bucks 
+[yolofant]
+yolofant 01/15/2024 5:11 PM
+THERE IS NO VLC
+ensndj_74587 01/15/2024 5:10 PM
+reply please
+ensndj_74587 01/15/2024 5:00 PM
+Can someone make vlc player for webos please tell me 
+01/15/2024 4:59 PM
+Many people need vlc player
+01/15/2024 4:58 PM
+Can anyone make vlc player for webos
+[mariotaku]
+ensndj_74587 please explain me
+mariotaku 01/15/2024 4:55 PM
+There's a lot to explain, but unless something's stated it's for LG
+webOS, it can't work on your TV.
+[mariotaku]
+[] kitsuned I see, I have to install windows 
+mariotaku 01/15/2024 4:53 PM
+Or you could stream the PC using Moonlight 
+[kitsuned]
+[] mariotaku That's... actually pretty doable
+kitsuned 01/15/2024 4:53 PM
+I see, I have to install windows 
+[mariotaku]
+[] kitsuned how to run exe on my Mac??
+mariotaku 01/15/2024 4:50 PM
+That's... actually pretty doable
+[kitsuned]
+[] mariotaku APK2IPK Converter.exe
+kitsuned 01/15/2024 4:47 PM
+how to run exe on my Mac??
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 01/15/2024 4:45 PM
+there is no easy converter, someone needs to sit down and do the hard
+work of actually adapting VLC so that it can work on webOS
+01/15/2024 4:45 PM
+the "APK2IPK converter" was a joke, it does not actually exist. neither
+does VLC for webOS
+ensndj_74587 01/15/2024 4:45 PM
+please 
+01/15/2024 4:44 PM
+please explain me
+01/15/2024 4:44 PM
+I dont understand
+[mariotaku]
+ensndj_74587 how to download apk2ipk converer
+mariotaku 01/15/2024 4:43 PM
+Again, there's no such thing! Everything that doesn't exist needs to be
+made from scratch!
+ensndj_74587 01/15/2024 4:39 PM
+how to download apk2ipk converer
+[mariotaku]
+[] kitsuned I want
+mariotaku 01/15/2024 4:36 PM
+APK2IPK Converter.exe
+[kitsuned]
+kitsuned 01/15/2024 4:29 PM
+I want
+01/15/2024 4:29 PM
+ipk link
+[kitsuned]
+[] mariotaku **THERE IS NO VLC FOR WEBOS AT THIS MOMENT**
+kitsuned 01/15/2024 4:29 PM
+where download VLC pls
+[mariotaku]
+ensndj_74587 <@99224281371643904>That will work ?
+mariotaku 01/15/2024 4:17 PM
+THERE IS NO VLC FOR WEBOS AT THIS MOMENT
+ensndj_74587 01/15/2024 3:54 PM
+@VitoThat will work ?
+[Screenshot_20240115_174402_Samsung_Internet.jpg]
+ Screenshot_20240115_174402_Samsung_Internet.jpg
+247.02 KB External
+[ztfallen]
+ztfallen 01/15/2024 3:50 PM
+ya asking me too much there, afaik there is no VLC app for lg
+ensndj_74587 01/15/2024 3:40 PM
+I can crop movies letterbox with vlc player or any other player
+01/15/2024 3:39 PM
+I want to install vlc player so that I can change the aspect ratio of my
+movie in it
+[ztfallen]
+ztfallen 01/15/2024 3:35 PM
+the tv itself has a good network video player, also you can use apps
+like plex or kodi
+ensndj_74587 01/15/2024 3:33 PM
+reply please 
+01/15/2024 3:32 PM
+@Vito how to install video player in lg web os
+01/15/2024 3:31 PM
+in lg
+01/15/2024 3:31 PM
+how to install vlc player
+[ztfallen]
+ztfallen 01/15/2024 3:23 PM
+using the app
+01/15/2024 3:23 PM
+(no content)
+[Imagen_de_WhatsApp_2024-01-15_a_las_11.22.52_74208c38.jpg]
+ Imagen_de_WhatsApp_2024-01-15_a_las_11.22.52_74208c38.jpg
+87.02 KB External
+[drwellness]
+[] ztfallen let me check again, but i was getting error yesterday
+drwellness 01/15/2024 3:22 PM
+do you mean the github link or a connection error on tv while using the
+app?
+[ztfallen]
+[] drwellness are you sure? i tested right now and my link and the ipk
+still works like a charm for me
+ztfallen 01/15/2024 3:21 PM
+let me check again, but i was getting error yesterday
+[drwellness]
+[] ztfallen Gives me error of conection
+drwellness 01/15/2024 3:19 PM
+are you sure? i tested right now and my link and the ipk still works
+like a charm for me (edited)
+ensndj_74587 01/15/2024 3:12 PM
+I need video player ipk for lg tv
+01/15/2024 3:11 PM
+how to download ipk apps please tell me
+[ztfallen]
+ztfallen 01/15/2024 2:51 PM
+i need the app VIX+ (streaming app) but its only for USA, and i live in
+south america

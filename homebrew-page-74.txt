@@ -1,0 +1,1585 @@
+February 7, 2023
+[yolofant]
+yolofant 02/07/2023 6:14 PM
+I guess just no gui option
+02/07/2023 6:13 PM
+is the BR2_PACKAGE_KODI_LIBSMBCLIENT bugged?
+[yolofant]
+yolofant 02/07/2023 6:00 PM
+rm -rf output/build/util-linux* 
+02/07/2023 6:00 PM
+BR2_PACKAGE_UTIL_LINUX_LIBBLKID
+[yolofant]
+yolofant 02/07/2023 5:52 PM
+    # Use libblkid and libuuid from util-linux for host and target packages.
+    # This prevents overriding them with e2fsprogs' ones, which may cause
+    # problems for other packages.
+02/07/2023 5:52 PM
+where do I get libblkid from
+02/07/2023 5:51 PM
+hmm
+[yolofant]
+yolofant 02/07/2023 5:38 PM
+[ccarnell98]
+ccarnell98 02/07/2023 5:38 PM
+Off to work now guys, have fun 
+02/07/2023 5:38 PM
+I'm using pulseaudio
+[yolofant]
+yolofant 02/07/2023 5:33 PM
+but it is possible that the sound files are just missing on the tv
+(edited)
+02/07/2023 5:32 PM
+but no gui sounds :/
+02/07/2023 5:32 PM
+hmm I have a pulseaudio output now in kodi
+[yolofant]
+yolofant 02/07/2023 5:10 PM
+ok
+[smx2460]
+smx2460 02/07/2023 5:10 PM
+but you get it
+02/07/2023 5:10 PM
+it should probably be something like BR2_TARGET_LG or similar
+02/07/2023 5:09 PM
+to try and keep the patches br-nc4 specific
+02/07/2023 5:09 PM
+i added this meta package
+02/07/2023 5:09 PM
+you can use $(BR2_PACKAGE_WEBOS) to check if we're building for WebOS
+02/07/2023 5:09 PM
+note
+02/07/2023 5:08 PM
+because you need to pass LDFLAGS as an env var, which is then considered
+by configure (edited)
+[yolofant]
+yolofant 02/07/2023 5:08 PM
+[smx2460]
+smx2460 02/07/2023 5:08 PM
+like this for example
+02/07/2023 5:08 PM
+    ifeq ($(BR2_STATIC_LIBS),y)
+    LIBPTHREAD_STUBS_CONF_ENV += LDFLAGS="$(TARGET_LDFLAGS) -pthread"
+    endif
+[smx2460]
+[] yolofant it's an autotools package
+smx2460 02/07/2023 5:08 PM
+then you need to use CONF_ENV
+[yolofant]
+yolofant 02/07/2023 5:04 PM
+it's an autotools package
+[yolofant]
+[] smx2460 try the more aggressive approach
+yolofant 02/07/2023 5:04 PM
+still the same :/
+[ccarnell98]
+[] yolofant userdata/keymaps/keyboard.xml
+ccarnell98 02/07/2023 5:03 PM
+That works!!!! 
+[smx2460]
+smx2460 02/07/2023 5:03 PM
+try the more aggressive approach
+[yolofant]
+yolofant 02/07/2023 5:02 PM
+let me remove everything
+02/07/2023 5:02 PM
+well only removed .stamp_configured
+[smx2460]
+smx2460 02/07/2023 5:02 PM
+rm -rf output/build/pkg
+[yolofant]
+yolofant 02/07/2023 5:02 PM
+ye
+[smx2460]
+smx2460 02/07/2023 5:02 PM
+did you clean the package?
+[yolofant]
+yolofant 02/07/2023 5:02 PM
+still the same
+[smx2460]
+smx2460 02/07/2023 5:02 PM
+what's the outcome
+02/07/2023 5:02 PM
+why not
+[yolofant]
+yolofant 02/07/2023 5:02 PM
+LIBNFS_LDFLAGS = $(TARGET_LDFLAGS) -lrt this doesn't work for libnfs 
+[smx2460]
+smx2460 02/07/2023 5:01 PM
+rare we have them, but packages that don't want to link against glibc
+02/07/2023 5:01 PM
+i fear that might break some type of packages
+02/07/2023 5:01 PM
+but
+[smx2460]
+[] yolofant can we not just add -lrt in glibc's pkg-config file?
+smx2460 02/07/2023 5:01 PM
+we could just add it to TARGET_LDFLAGS rather
+[yolofant]
+yolofant 02/07/2023 4:55 PM
+another -lrt
+02/07/2023 4:55 PM
+/home/mi/ssundermann/Sourcecode/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: ../lib/.libs/libnfs.so: undefined reference to clock_gettime'`
+02/07/2023 4:55 PM
+let's also try nfs
+02/07/2023 4:53 PM
+in HOME/.kodi (edited)
+02/07/2023 4:53 PM
+userdata/keymaps/keyboard.xml
+[infowski]
+infowski 02/07/2023 4:53 PM
+https://kodi.wiki/view/Keymap
+Keymap
+[ccarnell98]
+[] yolofant ```<keymap> <global> <keyboard> <key id="61952">Back</key>
+</keyboard> </global> <...
+ccarnell98 02/07/2023 4:51 PM
+where does this go? 
+[yolofant]
+yolofant 02/07/2023 4:48 PM
+can we not just add -lrt in glibc's pkg-config file?
+02/07/2023 4:47 PM
+now I need to recompile kodi though
+02/07/2023 4:47 PM
+works
+02/07/2023 4:46 PM
+PULSEAUDIO_LDFLAGS = $(TARGET_LDFLAGS) $(TARGET_NLS_LIBS) -lrt let's see
+[infowski]
+infowski 02/07/2023 4:46 PM
+which glibc version is the last one that needs -lrt?
+[yolofant]
+yolofant 02/07/2023 4:46 PM
+PULSEAUDIO_LDFLAGS = $(TARGET_LDFLAGS) $(TARGET_NLS_LIBS) (edited)
+02/07/2023 4:46 PM
+hmm meson-package
+[smx2460]
+smx2460 02/07/2023 4:45 PM
+Try adding -lrt that's for sure
+[infowski]
+infowski 02/07/2023 4:45 PM
+during pulseaudio build in br-nc4, that is.
+[smx2460]
+smx2460 02/07/2023 4:45 PM
+Ah yes
+[infowski]
+infowski 02/07/2023 4:45 PM
+what if pulseaudio doesn't find clock_gettime because they don't add
+-lrt which is needed (?) on older glibc?
+[smx2460]
+smx2460 02/07/2023 4:44 PM
+Which is what we hit
+[infowski]
+infowski 02/07/2023 4:44 PM
+https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/blob/master/src/pulsecore/core-rtclock.h#L44-49
+src/pulsecore/core-rtclock.h · master · PulseAudio / pulseaudio · G...
+freedesktop.org GitLab login
+[]
+[smx2460]
+smx2460 02/07/2023 4:44 PM
+Aka they probably didn't test building it without ppoll
+[yolofant]
+yolofant 02/07/2023 4:44 PM
+but it says mainloop.c
+[smx2460]
+smx2460 02/07/2023 4:44 PM
+(hypothesis)
+02/07/2023 4:44 PM
+Hence the link error
+02/07/2023 4:43 PM
+But it's nowhere to be found
+02/07/2023 4:43 PM
+It doesn't complain if the function is defined as extern in the header
+02/07/2023 4:43 PM
+But uses it somewhere else
+02/07/2023 4:43 PM
+It skips the function if you don't have ppoll
+[smx2460]
+[] yolofant but it shouldn't fail linking if we don't have
+smx2460 02/07/2023 4:43 PM
+Bug in pulseaudio
+[smx2460]
+smx2460 02/07/2023 4:43 PM
+Which isn't unlikely, we target Linux 3.x and glubx 2.12
+[yolofant]
+yolofant 02/07/2023 4:43 PM
+but it shouldn't fail linking if we don't have
+[smx2460]
+smx2460 02/07/2023 4:42 PM
+So we likely don't have ppoll (edited)
+[smx2460]
+[] yolofant `#ifdef HAVE_PPOLL`
+smx2460 02/07/2023 4:42 PM
+Heh
+[yolofant]
+yolofant 02/07/2023 4:41 PM
+#ifdef HAVE_PPOLL
+02/07/2023 4:41 PM
+it's ifdeffed though
+02/07/2023 4:41 PM
+must be something else
+02/07/2023 4:41 PM
+last modification 13 years ago
+02/07/2023 4:41 PM
+hmm no that code has been around like forever
+02/07/2023 4:38 PM
+buildroot builds 16.1
+[mariotaku]
+mariotaku 02/07/2023 4:37 PM
+https://github.com/search?q=repo%3Awebosbrew%2Fcompat-checker+pa_timespec_store+&type=code
+Build software better, together
+GitHub is where people build software. More than 100 million people use
+GitHub to discover, fork, and contribute to over 330 million projects.
+[]
+[mariotaku]
+[] yolofant `mainloop.c:(.text+0x2218): undefined reference to
+`pa_timespec_store'`
+mariotaku 02/07/2023 4:37 PM
+It must be in some newer pulse. No webOS has this symbol
+[yolofant]
+yolofant 02/07/2023 4:34 PM
+pa_timespec_store is nowhere in my buildroot
+02/07/2023 4:32 PM
+when linking src/pulse/libpulse.so.0.24.2 (edited)
+02/07/2023 4:31 PM
+mainloop.c:(.text+0x2218): undefined reference to pa_timespec_store'`
+[infowski]
+infowski 02/07/2023 4:31 PM
+alsa is less likely to work imo
+02/07/2023 4:31 PM
+are we missing pulseaudio in br-nc4 altogether?
+02/07/2023 4:31 PM
+Hmmm, pulseaudio should work, what's wrong?
+[yolofant]
+yolofant 02/07/2023 4:31 PM
+hmm pulseaudio build fails, what about alsa
+[infowski]
+[] infowski As long as we don't have any more native playback
+decode/output method.
+infowski 02/07/2023 4:31 PM
+I am pretty sure it won't support multi-channel playback (though I may
+be wrong? any experts here)
+[mariotaku]
+mariotaku 02/07/2023 4:28 PM
+It's gonna be a big day for homebrewers if you finish porting kodi
+02/07/2023 4:27 PM
+I'm getting hyped!!
+[yolofant]
+yolofant 02/07/2023 4:26 PM
+yeah
+[infowski]
+infowski 02/07/2023 4:26 PM
+As long as we don't have any more native playback decode/output method.
+02/07/2023 4:26 PM
+I think so. It definitely works.
+[yolofant]
+yolofant 02/07/2023 4:25 PM
+is pulseaudio the recommended audio backend on webos?
+02/07/2023 4:25 PM
+I should probably enable kodi-pulseaudio
+02/07/2023 4:25 PM
+0x0 might come from kodi trying to map the above one
+[infowski]
+infowski 02/07/2023 4:24 PM
+[yolofant]
+yolofant 02/07/2023 4:24 PM
+I figured 0 was unlikely
+02/07/2023 4:24 PM
+there's 2 messages
+[infowski]
+infowski 02/07/2023 4:24 PM
+Ahh...
+[infowski]
+[] yolofant 2023-02-07 14:58:43.964 T:11432 DEBUG <general>: Keyboard:
+scancode: 0x00, sym: 0x0000, unicode: 0...
+infowski 02/07/2023 4:24 PM
+Wasn't keycode for back literally 0?
+[yolofant]
+yolofant 02/07/2023 4:19 PM
+to get back button working 
+02/07/2023 4:19 PM
+      <global>
+        <keyboard>
+          <key id="61952">Back</key>
+        </keyboard>
+      </global>
+    </keymap>
+ww8543 or `killall -9 WebAppMgr`
+ww8543 02/07/2023 4:19 PM
+for a web app, but i guess you are asking about kodi? you can just kill
+the process id that kodi started as
+ww8543 02/07/2023 4:18 PM
+02/07/2023 4:18 PM
+or killall -9 WebAppMgr
+[] ccarnell98 way to force close an apo from the web os frontend?
+ww8543 02/07/2023 4:18 PM
+luna-send -n 1 'luna://com.webos.service.applicationManager/closeByAppId' '{"id":"your.app.id"}'
+[ccarnell98]
+ccarnell98 02/07/2023 4:10 PM
+app*
+02/07/2023 4:10 PM
+way to force close an apo from the web os frontend?
+02/07/2023 4:10 PM
+my keyboard was working before.. but not now.
+02/07/2023 4:09 PM
+Need to map the back button somehow
+02/07/2023 4:08 PM
+https://github.com/xbmc/xbmc/commit/9ceb0beca60b3432827927bb58777456fff98ff7
+Add keys back, remove code no longer needed · xbmc/xbmc@9ceb0be
+[]
+[smx2460]
+[] yolofant yeah buildroot has webos-wayland-extensions now
+smx2460 02/07/2023 4:07 PM
+[astur3l]
+astur3l 02/07/2023 4:07 PM
+i thought i accidently block him.. and searched for mins howto undo it
+:d (edited)
+ww8543 02/07/2023 4:07 PM
+somehow discord has a bug up its ass about him in particular, probably
+because he writes a lot and isnt registered
+[] astur3l is it just me ? every message from <@1051573528522133655>
+marked as spam... 
+ww8543 02/07/2023 4:07 PM
+no no it is not just you
+[smx2460]
+[] yolofant <@1051573528522133655> `
+m_webos_shellSurface.set_property("_WEBOS_ACCESS_POLICY_KEYS_BACK",
+"true"...
+smx2460 02/07/2023 4:07 PM
+Yes
+[ccarnell98]
+ccarnell98 02/07/2023 4:07 PM
+yep discord.... ignore me
+[astur3l]
+astur3l 02/07/2023 4:06 PM
+is it just me ? every message from @Craig marked as spam... 
+[ccarnell98]
+ccarnell98 02/07/2023 4:06 PM
+    2023-02-07 15:05:56.104 T:6031    debug <general>: Keyboard: scancode: 0x0, sym: 0x00, unicode: 0x00, modifier: 0x0
+    2023-02-07 15:05:56.104 T:6031    debug <general>: GetActionCode: Trying Hardy keycode for 0xf200
+    2023-02-07 15:05:56.104 T:6031     info <general>: Skipped 3 duplicate messages..
+    2023-02-07 15:05:56.104 T:6031    debug <general>: HandleKey: long-0 (0x100f200, obc-16838913) pressed, window 10025, action is 
+    2023-02-07 15:05:56.104 T:6031    debug <general>: Keyboard: scancode: 0x0, sym: 0x00, unicode: 0x00, modifier: 0x0`
+[yolofant]
+yolofant 02/07/2023 4:04 PM
+does someone know if SDL maps the back button properly?
+02/07/2023 4:01 PM
+I see those two messages
+02/07/2023 4:01 PM
+2023-02-07 15:00:58.912 T:11432 DEBUG <general>: HandleKey: long-0
+(0x100f200, obc-16838913) pressed, action is
+[ccarnell98]
+ccarnell98 02/07/2023 4:00 PM
+maybe
+02/07/2023 4:00 PM
+set_key_mask, but I'm not sure how to use that yet
+[yolofant]
+yolofant 02/07/2023 3:59 PM
+probably the button is not mapped
+02/07/2023 3:59 PM
+2023-02-07 14:58:43.964 T:11432 DEBUG <general>: Keyboard: scancode:
+0x00, sym: 0x0000, unicode: 0x0000, modifier: 0x0
+02/07/2023 3:58 PM
+yeah
+[ccarnell98]
+ccarnell98 02/07/2023 3:58 PM
+    m_webos_shellSurface.set_property("_WEBOS_ACCESS_POLICY_KEYS_BACK", "true");
+02/07/2023 3:57 PM
+it no longer asks me to exit, but the back button now does nothing
+[yolofant]
+yolofant 02/07/2023 3:56 PM
+it works for me
+[ccarnell98]
+ccarnell98 02/07/2023 3:56 PM
+forgot to update the binary 
+[yolofant]
+yolofant 02/07/2023 3:56 PM
+weird
+[ccarnell98]
+ccarnell98 02/07/2023 3:56 PM
+no hang on
+02/07/2023 3:56 PM
+back button still asks me to exit the app rather than go backwards
+[yolofant]
+yolofant 02/07/2023 3:55 PM
+but its kind of whatever
+02/07/2023 3:55 PM
+even though that's right now at 19.4
+[ccarnell98]
+ccarnell98 02/07/2023 3:55 PM
+It doesn't have any of the changes made in the last few days. I'll get
+round to updating it
+[yolofant]
+yolofant 02/07/2023 3:54 PM
+yeah but you don't use the included recipe
+[ccarnell98]
+ccarnell98 02/07/2023 3:54 PM
+but mine is old now
+02/07/2023 3:54 PM
+I am using buildroot 
+[yolofant]
+yolofant 02/07/2023 3:54 PM
+maybe you should switch to buildroot
+02/07/2023 3:53 PM
+oof
+[ccarnell98]
+ccarnell98 02/07/2023 3:53 PM
+mine has issues with gettext/libiconv stops me using -j16
+[yolofant]
+yolofant 02/07/2023 3:53 PM
+a full build takes 5 minutes for me
+02/07/2023 3:53 PM
+[ccarnell98]
+ccarnell98 02/07/2023 3:53 PM
+    [100%] Built target kodi
+finally
+[yolofant]
+[] ccarnell98 any idea what WAYLAND_PROTOCOLS_DIR is set to on your end?
+yolofant 02/07/2023 3:52 PM
+buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/share/wayland-protocols/
+[ccarnell98]
+[] yolofant but that also kinda sucks
+ccarnell98 02/07/2023 3:50 PM
+any idea what WAYLAND_PROTOCOLS_DIR is set to on your end?
+[mariotaku]
+[] ccarnell98 I'll take a look at it at work. Running out of time 
+mariotaku 02/07/2023 3:50 PM
+Take your time. In the meantime I'll add some tests or docs or some
+fixes.
+[ccarnell98]
+[] mariotaku I'm working on this lib https://github.com/mariotaku/ss4s ,
+to provide very easy media (stream) play...
+ccarnell98 02/07/2023 3:49 PM
+I'll take a look at it at work. Running out of time 
+[mariotaku]
+[] ccarnell98 Any help will be appreciated. I have work now for next 3
+days so it wont be until after that
+mariotaku 02/07/2023 3:48 PM
+I'm working on this lib https://github.com/mariotaku/ss4s , to provide
+very easy media (stream) playback
+GitHub - mariotaku/ss4s: Simple Sink For Streaming
+Simple Sink For Streaming. Contribute to mariotaku/ss4s development by
+creating an account on GitHub.
+[]
+[yolofant]
+yolofant 02/07/2023 3:48 PM
+what I posted above
+ 1
+02/07/2023 3:48 PM
+"true"
+02/07/2023 3:48 PM
+but they don't include it 
+[ccarnell98]
+ccarnell98 02/07/2023 3:48 PM
+hmm I assume its "true" or "1" ?
+[yolofant]
+yolofant 02/07/2023 3:48 PM
+I wanted to ask pkg-config for the install location
+[ccarnell98]
+ccarnell98 02/07/2023 3:48 PM
+    error: cannot convert ‘bool’ to ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’}
+       77 |   m_webos_shellSurface.set_property("_WEBOS_ACCESS_POLICY_KEYS_BACK", true
+[yolofant]
+yolofant 02/07/2023 3:47 PM
+yeah buildroot has webos-wayland-extensions now
+[ccarnell98]
+ccarnell98 02/07/2023 3:47 PM
+it needs to work to tools/depends and without
+[ccarnell98]
+[] yolofant I did this now instead ` set(WEBOS_PROTOCOL_XMLS
+"${WAYLAND_PROTOCOLS_DIR}/../wayland-webos/webos...
+ccarnell98 02/07/2023 3:47 PM
+I'll try that on my end and see if it works
+[ccarnell98]
+ccarnell98 02/07/2023 3:46 PM
+What are you using?
+[yolofant]
+yolofant 02/07/2023 3:45 PM
+the kodi gui is surprisingly fast
+02/07/2023 3:43 PM
+but that also kinda sucks
+02/07/2023 3:43 PM
+I did this now instead
+ set(WEBOS_PROTOCOL_XMLS "${WAYLAND_PROTOCOLS_DIR}/../wayland-webos/webos-shell.xml") 
+02/07/2023 3:43 PM
+set(WEBOS_PROTOCOL_XMLS "${datarootdir}/webos-wayland-extensions/webos-shell.xml")
+this doesn't play nicely with buildroot
+02/07/2023 3:42 PM
+webos-wayland-extensions doesn't have a proper .pc file for the
+protocols
+02/07/2023 3:42 PM
+only one thing needs fixing
+[ccarnell98]
+[] yolofant I applied your patch to 19.4 and it works
+ccarnell98 02/07/2023 3:41 PM
+Woot 
+[ccarnell98]
+[] mariotaku Ping me when you start doing hardware video playback.
+ccarnell98 02/07/2023 3:41 PM
+Any help will be appreciated. I have work now for next 3 days so it wont
+be until after that
+[yolofant]
+[] ccarnell98 <@195583665265311744> Thanks, I've added that locally,
+rebuilding which is taking it's time as I'm c...
+yolofant 02/07/2023 3:41 PM
+I applied your patch to 19.4 and it works
+[ccarnell98]
+[] infowski It's a bug in jailer - USB drives only show up when they are
+already connected when first starting t...
+ccarnell98 02/07/2023 3:41 PM
+Thanks x
+[ccarnell98]
+ccarnell98 02/07/2023 3:40 PM
+@Yolofant Thanks, I've added that locally, rebuilding which is taking
+it's time as I'm checking I don't need other PRs I've pulled in
+[yolofant]
+yolofant 02/07/2023 3:39 PM
+@Craig
+ m_webos_shellSurface.set_property("_WEBOS_ACCESS_POLICY_KEYS_BACK", "true");
+02/07/2023 3:35 PM
+ah that's a string
+[yolofant]
+[] smx2460 `_WEBOS_ACCESS_POLICY_KEYS_BACK`
+yolofant 02/07/2023 3:32 PM
+where is this defined though?
+jvodan. 02/07/2023 3:12 PM
+I had to reset my rooted c1 03.34.55 and now I'm trying to root it
+again. I am having trouble using putty with telnet and logging in now
+any ideas? Getting message connection refused. I was able to load
+homebrew from the webOS Dev Manager.
+[mariotaku]
+mariotaku 02/07/2023 2:11 PM
+Looks in some decoders it's capable of AAC, AC3
+[mariotaku]
+[] yolofant <@225167450713358338> can NDL also do encoded dolby audio?
+mariotaku 02/07/2023 2:11 PM
+I'm not sure. It has a enum of audio types but I only know the meaning
+of 2~3
+[yolofant]
+yolofant 02/07/2023 2:08 PM
+Maybe later
+sudupe 02/07/2023 1:12 PM
+Will Kodi be compatible with WebOS 1.x or 2.x? Or it’s too heavy for
+those tvs?
+[yolofant]
+yolofant 02/07/2023 12:57 PM
+@Mariotaku can NDL also do encoded dolby audio?
+[mariotaku]
+mariotaku 02/07/2023 11:30 AM
+@Will Let's start here
+ IHSplay →
+[yolofant]
+yolofant 02/07/2023 10:57 AM
+because you don't wanna be building all the dependencies yourself
+02/07/2023 10:57 AM
+I'll check later what we need to do to get this into buildroot-nc4
+[yolofant]
+[] mariotaku By the way, is the development of Kodi can be tracked
+somewhere now? Like a repo?
+yolofant 02/07/2023 10:56 AM
+https://github.com/craigcarnell/xbmc/commit/4edd6912cc3773feac3744a8ff63391f19d1c921
+Initial support for webOS shell · craigcarnell/xbmc@4edd691
+[]
+ 1
+[mariotaku]
+mariotaku 02/07/2023 10:24 AM
+By the way, is the development of Kodi can be tracked somewhere now?
+Like a repo?
+[mariotaku]
+[] infowski Kodi supports ASS natively probably, right?
+mariotaku 02/07/2023 10:23 AM
+It must be
+[infowski]
+infowski 02/07/2023 10:19 AM
+Kodi supports ASS natively probably, right?
+02/07/2023 10:19 AM
+God dammit we really need Kodi or some other sensible player on WebOS.
+02/07/2023 10:19 AM
+Ohhhhhh, so shitte.
+[astur3l]
+[] infowski On an unrelated note - does webOS support ASS / SSA
+subtitles by any chance?
+astur3l 02/07/2023 10:19 AM
+just like the subrip, no format or position (edited)
+[infowski]
+infowski 02/07/2023 10:11 AM
+I think it does...
+02/07/2023 10:10 AM
+Jellyfin JS renderer for these is pretty much useless performance-wise
+on 3.x and I am wondering if delegating that to native rendering would
+help.
+02/07/2023 10:09 AM
+On an unrelated note - does webOS support ASS / SSA subtitles by any
+chance?
+[infowski]
+[] infowski you mean - window property thing
+`_WEBOS_ACCESS_POLICY_KEYS_BACK` = `true`?
+infowski 02/07/2023 10:06 AM
+@Craig rel back key behaviour - use the same call as with appId
+[infowski]
+infowski 02/07/2023 10:04 AM
+I think mine does lgnc too. I need to retest ihsplay...
+[mariotaku]
+mariotaku 02/07/2023 10:03 AM
+It needs some tests though - I can only test NDL and SMP.
+ 1
+[mariotaku]
+[] infowski I'd start looking into how to integrate ss4s, since I don't
+think a significant amount of webOS devi...
+mariotaku 02/07/2023 10:03 AM
+Go for ss4s is my advice too. I'm adding all the decoders I can find to
+it.
+[infowski]
+infowski 02/07/2023 8:02 AM
+I'd start looking into how to integrate ss4s, since I don't think a
+significant amount of webOS devices use openmax. GStreamer is well
+supported but it still has some quirks and limitations probabaly...
+[infowski]
+[] ccarnell98 mesa has open source drivers for arm GPUs. It might be an
+alternative to libmali on the TV. Just spe...
+infowski 02/07/2023 7:58 AM
+I have low hopes in that - doesn't mesa mali driver require relevant
+kernelspace driver, which is different to the one used on BSP kernels?
+[infowski]
+[] ccarnell98 Why can't LG keep it simple and bundle VAAPI or something
+infowski 02/07/2023 7:56 AM
+Because BSP kernels don't support that and nobody cares. Open max is the
+most "generic" apis vendors tend to support (and iirc that still tends
+to be pretty platform specific)
+[infowski]
+[] ccarnell98 any other homebrew intercept the back button?
+infowski 02/07/2023 7:54 AM
+RetroArch, moonlight. You need to use the
+wl_webos_shelk_surface_set_property - we talked about it here yesterday
+[infowski]
+[] ccarnell98 I can see them in kodi, but they are blank for some
+reason. The TV reads the USB hard disk in its ow...
+infowski 02/07/2023 7:49 AM
+It's a bug in jailer - USB drives only show up when they are already
+connected when first starting the app - they should show up after a
+reboot if you don't unplug and replug them back in. We could probably
+make some workaround for that with some background root service, but not
+on unrooted devices...
+hellobox. 02/07/2023 5:25 AM
+i'm not sure if there's omx-al stuff
+02/07/2023 5:24 AM
+well, it's an omx-il library
+02/07/2023 5:23 AM
+so that's definitely not going to work with other socs
+02/07/2023 5:23 AM
+this realtek stuff is using /dev/rtkaudio
+02/07/2023 5:17 AM
+lol
+      if (!access ("/home/GST_OMX_DV_COMPOSER_DISABLE", F_OK)) {
+        self->dv_composer = FALSE;
+        GST_RTK_INFO_OBJECT (self, "Disable DV Composer Flow");
+      }
+[ccarnell98]
+ccarnell98 02/07/2023 5:15 AM
+thanks
+hellobox. 02/07/2023 5:14 AM
+gstreamer might be more of a stable target
+02/07/2023 5:14 AM
+omx may vary among soc vendors
+02/07/2023 5:14 AM
+or something
+02/07/2023 5:13 AM
+that's from some rtk gst omx plugin
+02/07/2023 5:13 AM
+        //{"omx_adec", "audio_decoder.alac"},
+        //{"omx_adec", "audio_decoder.mlp"},
+        //{"omx_adec", "audio_decoder.dts-hd"},
+        //{"omx_adec", "audio_decoder.wmapro"},
+        {"omx_vsink", "iv_renderer.yuv.overlay"},
+        {"omx_video_scheduler", "video_scheduler.binary"},
+        {"omx_asink", "audio_renderer.pcm"},
+        {"omx_clock", "clock.binary"},
+        /* terminate the table */
+        {NULL, NULL},
+    };
+02/07/2023 5:13 AM
+    static const char * tComponentName[MAXCOMP][2] =
+    {
+        /* video decoders */
+        {"omx_vdec", "video_decoder.avc"},
+        {"omx_vdec", "video_decoder.mpeg2"},
+        {"omx_vdec", "video_decoder.mpeg4"},
+        {"omx_vdec", "video_decoder.vp8"},
+        {"omx_vdec", "video_decoder.h263"},
+        {"omx_vdec", "video_decoder.wmv"},
+        {"omx_vdec", "video_decoder.wmv7"},
+        {"omx_vdec", "video_decoder.wmv8"},
+        {"omx_vdec", "video_decoder.wmv9"},
+        {"omx_vdec", "video_decoder.rv"},
+        {"omx_vdec", "video_decoder.mjpeg"},
+        {"omx_vdec", "video_decoder.hevc"},
+        {"omx_vdec", "video_decoder.vp6"},
+        {"omx_vdec", "video_decoder.avs"},
+        {"omx_vdec", "video_decoder.vc1"},
+        {"omx_vdec", "video_decoder.divx3"},
+        {"omx_vdec", "video_decoder.vp9"},
+        {"omx_vdec2", "video_decoder.avc"},
+        {"omx_vdec2", "video_decoder.hevc"},
+        {"omx_adec", "audio_decoder.mp3"},
+        {"omx_adec", "audio_decoder.aac"},
+        {"omx_adec", "audio_decoder.aac-latm"},
+        {"omx_adec", "audio_decoder.aac-adts"},
+        {"omx_adec", "audio_decoder.mp2"},
+        {"omx_adec", "audio_decoder.mp1"},
+        {"omx_adec", "audio_decoder.amrnb"},
+        {"omx_adec", "audio_decoder.g726"},
+        {"omx_adec", "audio_decoder.adpcm"},
+        {"omx_adec", "audio_decoder.g711alaw"},
+        {"omx_adec", "audio_decoder.g711mlaw"},
+        {"omx_adec", "audio_decoder.raw"},
+        {"omx_adec", "audio_decoder.flac"},
+        {"omx_adec", "audio_decoder.ape"},
+        {"omx_adec", "audio_decoder.ac3"},
+        {"omx_adec", "audio_decoder.eac3"},
+        {"omx_adec", "audio_decoder.dts"},
+        {"omx_adec", "audio_decoder.wma"},
+        {"omx_adec", "audio_decoder.ra-cook"},
+        {"omx_adec", "audio_decoder.ra-lsd"},
+        {"omx_adec", "audio_decoder.vorbis"},
+        {"omx_adec", "audio_decoder.amrwb"},
+        {"omx_adec", "audio_decoder.amrwb_plus"},
+        {"omx_adec", "audio_decoder.opus"},
+        {"omx_adec", "audio_decoder.mpegh"},
+        {"omx_adec", "audio_decoder.ac4"},
+        {"omx_adec", "audio_decoder.auto"},
+[ccarnell98]
+ccarnell98 02/07/2023 5:11 AM
+ffmpeg has a --enable-omx option, which kodi isn't using.. so I'm gonna
+try that
+hellobox. 02/07/2023 5:11 AM
+current git master
+02/07/2023 5:10 AM
+i'm using 1.21.90 libs
+[ccarnell98]
+ccarnell98 02/07/2023 5:10 AM
+crashes for me, but I compiled against 1.21 
+hellobox. 02/07/2023 5:10 AM
+i'm surprised wayland-info didn't just crash
+[ccarnell98]
+ccarnell98 02/07/2023 5:09 AM
+I thought this was causing issues, as Kodi was using the name to look it
+up later in a map
+02/07/2023 5:09 AM
+wl_output make and model was always empty strings for me, when I was
+debugging kodi code
+hellobox. 02/07/2023 5:09 AM
+make: 'webos', model: 'primary',?
+[] ccarnell98 interesting you have a make and model, mine just returns
+nothing in kodi
+hellobox. 02/07/2023 5:08 AM
+?
+[mariotaku]
+[] ccarnell98 I gathered 
+mariotaku 02/07/2023 5:07 AM
+Ping me when you start doing hardware video playback.
+[ccarnell98]
+ccarnell98 02/07/2023 5:06 AM
+interesting you have a make and model, mine just returns nothing in kodi
+hellobox. 02/07/2023 4:57 AM
+some godforsaken hacks were required to get that to even run
+02/07/2023 4:56 AM
+but i guess lg decided to use Hz
+02/07/2023 4:56 AM
+i think it's mHz in the wayland spec
+02/07/2023 4:56 AM
+lol 0.060 Hz
+02/07/2023 4:55 AM
+    root@LGwebOSTV[k7lp 6.3.2]:~/die_wayland_die# LD_LIBRARY_PATH="${PWD}" ./wayland-info
+    interface: 'wl_compositor',                              version:  3, name:  1
+    interface: 'wl_shm',                                     version:  1, name:  2
+            formats (fourcc):
+            0x20203843 = 'C8  '
+            0x30335258 = 'XR30'
+            0x30335241 = 'AR30'
+            0x30334258 = 'XB30'
+            0x34324241 = 'AB24'
+            0x34324258 = 'XB24'
+            0x32315241 = 'AR12'
+            0x32315258 = 'XR12'
+            0x34324752 = 'RG24'
+            0x35315258 = 'XR15'
+            0x36314752 = 'RG16'
+                     0 = 'AR24'
+                     1 = 'XR24'
+                     1 = 'XR24'
+                     0 = 'AR24'
+    interface: 'mali_buffer_sharing',                        version:  5, name:  3
+    interface: 'wl_seat',                                    version:  3, name:  4
+            name: (null)
+            capabilities: pointer keyboard touch
+    interface: 'wl_webos_surface_group_compositor',          version:  1, name:  5
+    interface: 'wl_webos_foreign',                           version:  1, name:  6
+    interface: 'wl_output',                                  version:  2, name:  7
+            x: 0, y: 0, scale: 1,
+            physical_width: -1 mm, physical_height: -1 mm,
+            make: 'webos', model: 'primary',
+            subpixel_orientation: unknown, output_transform: normal,
+            mode:
+                    width: 1920 px, height: 1080 px, refresh: 0.060 Hz,
+                    flags: current preferred
+    interface: 'wl_shell',                                   version:  1, name:  8
+    interface: 'text_model_factory',                         version:  1, name:  9
+    interface: 'input_method',                               version:  1, name: 10
+    interface: 'input_panel',                                version:  1, name: 11
+    interface: 'wl_webos_xinput_extension',                  version:  1, name: 12
+    interface: 'wl_starfish_output',                         version:  1, name: 13
+...
+[ccarnell98]
+ccarnell98 02/07/2023 4:50 AM
+but looking at the ffmpeg github only mentions encoding not decoding
+02/07/2023 4:49 AM
+like ffmpeg supports openmax in some fashion
+hellobox. 02/07/2023 4:49 AM
+i'm pretty sure that's not what does the video processing though
+[ccarnell98]
+ccarnell98 02/07/2023 4:48 AM
+mesa has open source drivers for arm GPUs. It might be an alternative to
+libmali on the TV. Just speculating at this point.. never got it work
+hellobox. 02/07/2023 4:44 AM
+what are you even trying to do with mesa?
+[ccarnell98]
+ccarnell98 02/07/2023 4:43 AM
+newer mesa needs wayland >1.18 which is a bit annoying
+hellobox. 02/07/2023 4:33 AM
+and probably other drivers for the proprietary video hardware
+02/07/2023 4:32 AM
+via things like gstreamer
+02/07/2023 4:32 AM
+yeah, omx
+[ccarnell98]
+ccarnell98 02/07/2023 4:32 AM
+video acceleration must work somehow 
+02/07/2023 4:29 AM
+I don't know yet. Lots of digging to do
+hellobox. 02/07/2023 4:25 AM
+i'm not going to say there are zero non-x86 platforms that support
+vaapi/vdpau, but i think it's safe to say they're far from common in the
+embedded world
+02/07/2023 4:24 AM
+mesa supports those on non-x86 platforms?
+[ccarnell98]
+ccarnell98 02/07/2023 4:20 AM
+mesa supports vaapi and vdpau, but I don't know if the arm drivers
+support either. It's something I looked into earlier on, but when I used
+mesa it just core dumped
+hellobox. 02/07/2023 4:08 AM
+what non-x86 systems support vaapi?
+02/07/2023 4:08 AM
+but this isn't x86, so...
+02/07/2023 4:08 AM
+v1 anyway
+02/07/2023 4:08 AM
+there is dmabuf
+[ccarnell98]
+ccarnell98 02/07/2023 4:07 AM
+Well thats 2 out of 3 we dont have 
+02/07/2023 4:07 AM
+"VAAPI requires DMABuf, which requires EGL."
+[ccarnell98]
+hellobox. i mean, there's gstreamer
+ccarnell98 02/07/2023 4:05 AM
+Why can't LG keep it simple and bundle VAAPI or something
+[ccarnell98]
+ccarnell98 02/07/2023 4:04 AM
+hmm set_key_mask, 2 is the back button, default mask is 0xFFFFFFF8, A
+value of '1' in the mask indicates that the respective key event (both
+press and release) will be delivered to the client
+hellobox. 02/07/2023 4:03 AM
+i mean, there's gstreamer
+[ccarnell98]
+ccarnell98 02/07/2023 4:02 AM
+I presume it has a player in /usr/bin somewhere
+https://webostv.developer.lge.com/develop/specifications/video-audio-220
+Audio and Video Format on webOS TV 22
+[]
+hellobox. 02/07/2023 4:01 AM
+it didn't use what i told it in the cross file
+02/07/2023 4:01 AM
+i had to put it in an env var
+02/07/2023 4:00 AM
+got it
+02/07/2023 4:00 AM
+aha
+02/07/2023 3:58 AM
+or something
+02/07/2023 3:58 AM
+it's looking for wayland-scanner in the target dir
+02/07/2023 3:56 AM
+wayland and meson are pissing me off
+02/07/2023 3:54 AM
+what built in player?
+[ccarnell98]
+ccarnell98 02/07/2023 3:53 AM
+couple of options, LG has a built in player, perhaps I can use that
+instead of ffmpeg
+02/07/2023 3:51 AM
+i'll take the smaller wins for now
+02/07/2023 3:51 AM
+that's a bigger thing for me to look into, not at almost 3am 
+hellobox. 02/07/2023 3:48 AM
+i'd be more worried about the video functionality
+[ccarnell98]
+ccarnell98 02/07/2023 3:47 AM
+any other homebrew intercept the back button?
+hellobox. 02/07/2023 3:31 AM
+although i had to disable some stuff i wanted
+02/07/2023 3:31 AM
+looks like i got br-nc4 to build
+hellobox. 02/07/2023 3:20 AM
+to do something to the panel, i believe
+02/07/2023 3:20 AM
+oleds stay on for a while after you turn them off
+02/07/2023 3:19 AM
+the reboot command
+[ccarnell98]
+ccarnell98 02/07/2023 3:18 AM
+Disabling quickstart didn't help
+02/07/2023 3:18 AM
+I mean, is there a way to reboot? 
+hellobox. 02/07/2023 3:17 AM
+reboot
+[ccarnell98]
+ccarnell98 02/07/2023 3:17 AM
+easy way to restart?
+hellobox. 02/07/2023 3:17 AM
+if you try to just kill the process, it'll screw things up
+02/07/2023 3:17 AM
+there's a way to have sam reload it i think, but i don't know what it is
+02/07/2023 3:16 AM
+you'll have to restart
+[ccarnell98]
+ccarnell98 02/07/2023 3:15 AM
+actually looks like you can't just reupload appinfo.json as it didnt
+pick up my change
+02/07/2023 3:08 AM
+https://github.com/webosose/webos-wayland-extensions/blob/master/protocol/webos-shell.xml#L188
+webos-wayland-extensions/webos-shell.xml at master · webosose/webos...
+Wayland protocol extensions for webOS. Contribute to
+webosose/webos-wayland-extensions development by creating an account on
+GitHub.
+[]
+02/07/2023 3:07 AM
+set_key_mask maybe?
+hellobox. 02/07/2023 3:07 AM
+you'll have to figure out what the sdl hint does
+02/07/2023 3:06 AM
+as @infowski said, it may only apply to web apps
+[ccarnell98]
+ccarnell98 02/07/2023 3:05 AM
+not sure "disableBackHistoryAPI": true in appinfo.json is the correct
+thing to do
+02/07/2023 3:03 AM
+back button not so much 
+02/07/2023 3:03 AM
+02/07/2023 3:03 AM
+exiting works when launched from the web os bar 
+02/07/2023 3:01 AM
+    patchelf --set-rpath /media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-deps/arm-linux-release/lib liblttng-ust.so.1.0.0
+worked 
+hellobox. 02/07/2023 2:37 AM
+-rpath?
+[ccarnell98]
+ccarnell98 02/07/2023 2:37 AM
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-depends/arm-linux-release/lib
+02/07/2023 2:35 AM
+For some reason it insists on only looking for liblttng-ust-common in
+those places, instead of my kodi sub folder where it finds all the other
+libs it needs
+02/07/2023 2:34 AM
+    openat(AT_FDCWD, "/usr/lib/liblttng-ust-common.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+    openat(AT_FDCWD, "/lib/liblttng-ust-common.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+    openat(AT_FDCWD, "/usr/lib/liblttng-ust-common.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+02/07/2023 2:34 AM
+So it wont open from the menu bar
+hellobox. 02/07/2023 2:11 AM
+i'm working on it in ida
+02/07/2023 2:10 AM
+not sure
+[mariotaku]
+hellobox. so we don't have the lg sdl headers
+mariotaku 02/07/2023 2:10 AM
+I have reverse engineered a part of SDL2 in Ghidra. Any idea how to
+share that?
+hellobox. 02/07/2023 1:59 AM
+so we don't have the lg sdl headers
+[mariotaku]
+mariotaku 02/07/2023 1:55 AM
+I have a board running 4.4 and I'm thinking of paying a visit to a radio
+store to get parts for booting it up
+[mariotaku]
+hellobox. somebody needs to buy <@225167450713358338> a dev board
+mariotaku 02/07/2023 1:55 AM
+I agree, now I only have a webOS 5 TV. 
+[ccarnell98]
+ccarnell98 02/07/2023 1:52 AM
+I gathered 
+hellobox. 02/07/2023 1:52 AM
+now comes the hard part
+[yolofant]
+yolofant 02/07/2023 1:52 AM
+it's software decoding
+[ccarnell98]
+ccarnell98 02/07/2023 1:52 AM
+but badly 
+02/07/2023 1:51 AM
+it plays video
+http://www.larmoire.info/jellyfish/media/jellyfish-10-mbps-hd-hevc-10bit.mkv
+[smx2460]
+smx2460 02/07/2023 1:51 AM
+or prepare to do so
+02/07/2023 1:51 AM
+meanwhile i go sleep 
+02/07/2023 1:51 AM
+then send me a PR
+02/07/2023 1:51 AM
+and it's cleaner this way
+02/07/2023 1:51 AM
+yeah i guess you can remove the lib + headers
+[yolofant]
+yolofant 02/07/2023 1:51 AM
+I remove it
+[smx2460]
+smx2460 02/07/2023 1:51 AM
+(no content)
+ message.txt
+2.04 KB External
+02/07/2023 1:51 AM
+they do.
+[yolofant]
+yolofant 02/07/2023 1:50 AM
+they also build the lib?
+[smx2460]
+smx2460 02/07/2023 1:50 AM
+no
+hellobox. 02/07/2023 1:50 AM
+if i want that package, will i have to rebuild anything after i pull it?
+02/07/2023 1:50 AM
+i guess you didn't change much
+[smx2460]
+smx2460 02/07/2023 1:49 AM
+i should probably have it tho
+[yolofant]
+yolofant 02/07/2023 1:49 AM
+yeah you can disable it
+[smx2460]
+smx2460 02/07/2023 1:49 AM
+@Yolofant p.s. it seems the ".hash" file is optional
+hellobox. 02/07/2023 1:49 AM
+should i stop my build?
+02/07/2023 1:49 AM
+argh
+[smx2460]
+smx2460 02/07/2023 1:49 AM
+have fun
+02/07/2023 1:49 AM
+https://github.com/openlgtv/buildroot-nc4/commit/342a0946c945354602475e4b93d89b38936f3246
+new package: webos-wayland-extensions · openlgtv/buildroot-nc4@342a...
+[]
+02/07/2023 1:49 AM
+pushed
+02/07/2023 1:46 AM
+@Yolofant
+02/07/2023 1:46 AM
+(no content)
+ message.txt
+4.52 KB External
+hellobox. 02/07/2023 1:42 AM
+which would be significantly better
+02/07/2023 1:42 AM
+actually webos 2 uses glibc 2.19
+02/07/2023 1:42 AM
+tbh i should have bumped glibc to at least 2.14
+02/07/2023 1:41 AM
+i disabled kodi but left all the deps
+02/07/2023 1:40 AM
+go for it
+[bowsertm]
+bowsertm 02/07/2023 1:40 AM
+Maybe even teach chatgpt how to use webos API and have a smart tv fully
+controllable with mic only? Lol
+02/07/2023 1:39 AM
+Can someone make a chatgpt app for webos with microphone support?
+hellobox. 02/07/2023 1:39 AM
+they also have https://github.com/pocoproject/poco, which includes json
+and xml support
+02/07/2023 1:37 AM
+libbson
+02/07/2023 1:37 AM
+pugixml
+[smx2460]
+smx2460 02/07/2023 1:36 AM
+lol
+hellobox. 02/07/2023 1:36 AM
+pbnjson, jansson, json-c, jsoncpp, yajl (edited)
+02/07/2023 1:35 AM
+libxml++
+02/07/2023 1:34 AM
+and jsoncpp
+02/07/2023 1:34 AM
+webos has jansson btw
+02/07/2023 1:32 AM
+kodi selects BR2_PACKAGE_XLIB_LIBXRANDR
+[yolofant]
+yolofant 02/07/2023 1:31 AM
+yeah
+[smx2460]
+smx2460 02/07/2023 1:30 AM
+we should probably drop the wayland headers from yours then
+[yolofant]
+[] smx2460 one of them (probably yours) have a wrong name
+yolofant 02/07/2023 1:30 AM
+yeah that's why I said the ones in the maliit toolchain were named
+differently 
+[smx2460]
+smx2460 02/07/2023 1:29 AM
+make clean
+02/07/2023 1:29 AM
+world?
+hellobox. 02/07/2023 1:29 AM
+everything, i guess
+[smx2460]
+hellobox. to rebuild
+smx2460 02/07/2023 1:29 AM
+what do you need to rebuild
+hellobox. 02/07/2023 1:29 AM
+output/*?
+[smx2460]
+smx2460 02/07/2023 1:29 AM
+one of them (probably yours) have a wrong name
+hellobox. 02/07/2023 1:29 AM
+to rebuild
+02/07/2023 1:29 AM
+what do i have to remove?
+[smx2460]
+smx2460 02/07/2023 1:29 AM
+then that's an issue 
+[yolofant]
+yolofant 02/07/2023 1:29 AM
+the names are different
+02/07/2023 1:29 AM
+it doesn't conflict
+[smx2460]
+smx2460 02/07/2023 1:29 AM
+i can add the package
+[yolofant]
+yolofant 02/07/2023 1:28 AM
+kodi builds them at build time
+[smx2460]
+smx2460 02/07/2023 1:28 AM
+it does it already
+02/07/2023 1:28 AM
+    function(WAYLAND_SERVER_PROTOCOL proto toSource baseName)
+        get_filename_component(in ${proto} ABSOLUTE)
+        file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
+        set(serverHeader "${CMAKE_CURRENT_BINARY_DIR}/include/wayland-${baseName}-server-protocol.h")
+        set(code "${CMAKE_CURRENT_BINARY_DIR}/wayland-${baseName}-protocol.c")
+        add_custom_command(OUTPUT "${serverHeader}"
+            COMMAND ${WAYLAND_SCANNER} server-header < ${in} > ${serverHeader}
+            DEPENDS ${in} VERBATIM)
+        add_custom_command(OUTPUT "${code}"
+            COMMAND ${WAYLAND_SCANNER} code < ${in} > ${code}
+            DEPENDS ${in} VERBATIM)
+        list(APPEND ${toSource} "${serverHeader}" "${code}")
+        set(${toSource} ${${toSource}} PARENT_SCOPE)
+    endfunction()
+    function(WAYLAND_CLIENT_PROTOCOL proto toSources baseName)
+        get_filename_component(in ${proto} ABSOLUTE)
+        file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
+        set(clientHeader "${CMAKE_CURRENT_BINARY_DIR}/include/wayland-${baseName}-client-protocol.h")
+        set(code "${CMAKE_CURRENT_BINARY_DIR}/wayland-${baseName}-protocol.c")
+        add_custom_command(OUTPUT "${clientHeader}"
+            COMMAND ${WAYLAND_SCANNER} client-header < ${in} > ${clientHeader}
+            DEPENDS ${in} VERBATIM)
+        add_custom_command(OUTPUT "${code}"
+            COMMAND ${WAYLAND_SCANNER} code < ${in} > ${code}
+            DEPENDS ${in} VERBATIM)
+        list(APPEND ${toSources} "${clientHeader}" "${code}")
+        set(${toSources} ${${toSources}} PARENT_SCOPE)
+    endfunction()
+[yolofant]
+yolofant 02/07/2023 1:28 AM
+yeah
+[smx2460]
+smx2460 02/07/2023 1:28 AM
+if we're going to copy the .xml files we might as well do it at build
+time
+[yolofant]
+yolofant 02/07/2023 1:28 AM
+yeah
+[smx2460]
+smx2460 02/07/2023 1:28 AM
+i used them to generate the .h in your userland
+[yolofant]
+yolofant 02/07/2023 1:28 AM
+but we might need the .xml
+[smx2460]
+smx2460 02/07/2023 1:28 AM
+it just copies xml files
+[yolofant]
+yolofant 02/07/2023 1:28 AM
+no
+[smx2460]
+smx2460 02/07/2023 1:28 AM
+    install(DIRECTORY . DESTINATION ${WEBOS_INSTALL_DATADIR}/wayland-webos FILES_MATCHING PATTERN "*.xml")
+02/07/2023 1:27 AM
+hmmm that would conflict with your userland headers?
+[smx2460]
+[] yolofant and we need
+https://github.com/webosose/webos-wayland-extensions
+smx2460 02/07/2023 1:27 AM
+what needs it
+[smx2460]
+smx2460 02/07/2023 1:27 AM
+not too sure about it
+02/07/2023 1:26 AM
+and i think it might be used by hyperion?
+02/07/2023 1:26 AM
+https://github.com/openlgtv/buildroot-nc4/pull/3 (edited)
+webos: Enable libusb by tuxuser · Pull Request #3 · openlgtv/buildr...
+[]
+hellobox. 02/07/2023 1:26 AM
+i see
+[smx2460]
+smx2460 02/07/2023 1:26 AM
+iirc
+02/07/2023 1:26 AM
+libusb was a request from @ztuxnet
+hellobox. 02/07/2023 1:26 AM
+i don't see it
+02/07/2023 1:26 AM
+does webos use libusb?
+[smx2460]
+smx2460 02/07/2023 1:26 AM
+for a rootfs to be usable you only really need busybox either way
+02/07/2023 1:25 AM
+the target dir
+hellobox. 02/07/2023 1:25 AM
+depending on whether we are actually intending the default configuration
+to create a usable rootfs
+[smx2460]
+smx2460 02/07/2023 1:25 AM
+not even that
+02/07/2023 1:25 AM
+it's just putting a couple of shell scripts in the sysroot
+02/07/2023 1:25 AM
+i'd leave them tho
+hellobox. 02/07/2023 1:24 AM
+just disable those options
+[smx2460]
+smx2460 02/07/2023 1:24 AM
+make sdk builds the toolchain only
+hellobox. 02/07/2023 1:24 AM
+we don't have to hack anything
+[smx2460]
+smx2460 02/07/2023 1:24 AM
+and it makes no sense to hack buildroot to exclude it
+02/07/2023 1:24 AM
+in the sense that it can be useful
+02/07/2023 1:24 AM
+it's not "unwanted"
+02/07/2023 1:24 AM
+it's a byproduct of using buildroot
+02/07/2023 1:24 AM
+what do you mean
+hellobox. 02/07/2023 1:23 AM
+is that something we're intending to be usable?
+[smx2460]
+smx2460 02/07/2023 1:23 AM
+but it's otherwise a full rootfs
+02/07/2023 1:23 AM
+we're pulling pieces out of it
+02/07/2023 1:23 AM
+which you can shove in uboot if you want
+[smx2460]
+hellobox. are these enabled by default or did i enable them accidentally
+somehow?
+smx2460 02/07/2023 1:23 AM
+the output of buildroot is a bootable rootfs
+hellobox. 02/07/2023 1:23 AM
+are these enabled by default or did i enable them accidentally somehow?
+[yolofant]
+yolofant 02/07/2023 1:23 AM
+and we need https://github.com/webosose/webos-wayland-extensions
+hellobox. 02/07/2023 1:22 AM
+BR2_PACKAGE_IFUPDOWN_SCRIPTS
+[smx2460]
+smx2460 02/07/2023 1:22 AM
+    define URANDOM_SCRIPTS_INSTALL_INIT_SYSV
+        $(INSTALL) -D -m 0755 $(URANDOM_SCRIPTS_PKGDIR)/S20urandom \
+            $(TARGET_DIR)/etc/init.d/S20urandom
+    endef
+    $(eval $(generic-package))
+hellobox. 02/07/2023 1:22 AM
+BR2_PACKAGE_URANDOM_SCRIPTS?
+[smx2460]
+smx2460 02/07/2023 1:22 AM
+we could enable it
+02/07/2023 1:22 AM
+actually we're not shipping BR2_PACKAGE_GDB_SERVER
+02/07/2023 1:21 AM
+so you have a mashup of old/new
+02/07/2023 1:21 AM
+but the packages are "already built"
+02/07/2023 1:21 AM
+it will rebuild direct dependencies
+02/07/2023 1:21 AM
+but it will not work properly
+02/07/2023 1:21 AM
+you could trick it into thinking glibc changed
+02/07/2023 1:20 AM
+if you change headers/glibc, yes
+hellobox. 02/07/2023 1:20 AM
+so do i have to delete everything?
+[smx2460]
+smx2460 02/07/2023 1:20 AM
+it will only build new packages
+02/07/2023 1:20 AM
+if you change them
+02/07/2023 1:20 AM
+it won't rebuild headers
+hellobox. 02/07/2023 1:20 AM
+although at this point i'd like to see if the toolchain builds at all
+before i get fancy
+[smx2460]
+smx2460 02/07/2023 1:19 AM
+then enable it 
+hellobox. 02/07/2023 1:19 AM
+but i'd rather have the br one
+02/07/2023 1:19 AM
+i've used debian's gdb in the past
+02/07/2023 1:19 AM
+true
+[smx2460]
+smx2460 02/07/2023 1:19 AM
+on debian you can install gdb-multiarch
+02/07/2023 1:19 AM
+it's not needed
+hellobox. 02/07/2023 1:19 AM
+for the host
+02/07/2023 1:19 AM
+yeah, but we don't build arm gdb
+[smx2460]
+smx2460 02/07/2023 1:19 AM
+i think we're building gdbserver
+hellobox. 02/07/2023 1:19 AM
+why isn't cross gdb enabled by default?
+02/07/2023 1:18 AM
+3.10.x
+02/07/2023 1:18 AM
+sounds good
+02/07/2023 1:18 AM
+3.10.19?
+[smx2460]
+smx2460 02/07/2023 1:18 AM
+WebOS 1.x
+02/07/2023 1:18 AM
+(no content)
+[IMG_20140922_000844.jpg]
+ IMG_20140922_000844.jpg
+2.29 MB External
+hellobox. 02/07/2023 1:18 AM
+webos 2.2.3 has 3.10.23?
+[smx2460]
+smx2460 02/07/2023 1:17 AM
+because otherwise it's a PITA
+hellobox. 02/07/2023 1:17 AM
+webos 3.0 has 3.10.19
+[smx2460]
+smx2460 02/07/2023 1:17 AM
+that can't be backported
+02/07/2023 1:17 AM
+if you specifically need a feature
+02/07/2023 1:17 AM
+either way i'm kind of against randomly bumping glibc if there's a
+better way
+hellobox. 02/07/2023 1:16 AM
+so webos 3.5 has kernel 4.4.3
+02/07/2023 1:16 AM
+and we're kind of snooping on lg
+02/07/2023 1:15 AM
+https://en.wikipedia.org/wiki/Snuper meaning "Higher than Super"
+[smx2460]
+smx2460 02/07/2023 1:15 AM
+hellobox. 02/07/2023 1:15 AM
+snuper is a k-pop boy band
+[smx2460]
+smx2460 02/07/2023 1:15 AM
+snoot
+hellobox. 02/07/2023 1:15 AM
+(i like the name "snuper")
+ 1
+02/07/2023 1:15 AM
+time for "the snu thing"
+02/07/2023 1:15 AM
+hmm
+[smx2460]
+smx2460 02/07/2023 1:14 AM
+to what
+hellobox. 02/07/2023 1:14 AM
+i'm going to bump kernel headers too
+02/07/2023 1:14 AM
+fuck it
+[smx2460]
+smx2460 02/07/2023 1:14 AM
+you can bump it
+[smx2460]
+hellobox. why are we using binutils 2.38 instead of 2.39?
+smx2460 02/07/2023 1:14 AM
+no specific reason
+[smx2460]
+smx2460 02/07/2023 1:14 AM
+it just adds --enable-kernel
+hellobox. 02/07/2023 1:14 AM
+why are we using binutils 2.38 instead of 2.39?
+[smx2460]
+smx2460 02/07/2023 1:14 AM
+    ifeq ($(BR2_PACKAGE_GLIBC_KERNEL_COMPAT),)
+    GLIBC_CONF_OPTS += --enable-kernel=$(call qstrip,$(BR2_TOOLCHAIN_HEADERS_AT_LEAST))
+    endif
+hellobox. 02/07/2023 1:14 AM
+but what specifically does it enable? any idea?
+02/07/2023 1:14 AM
+yeah, i saw
+[smx2460]
+smx2460 02/07/2023 1:14 AM
+    config BR2_PACKAGE_GLIBC_KERNEL_COMPAT
+        bool "Enable compatibility shims to run on older kernels"
+        help
+          Say 'y' here if you plan on running your system on a kernel
+          older than the version used for the toolchain headers.
+          Enabling those compatibility shims may generate a slightly
+          bigger and slightly slower glibc library.
+          The oldest supported kernel version depends on the
+          architecture.
+hellobox. 02/07/2023 1:14 AM
+lol glibc needs a toolchain w/ kernel headers >= 3.2
+[smx2460]
+smx2460 02/07/2023 1:13 AM
+uh
+hellobox. 02/07/2023 1:13 AM
+BR2_PACKAGE_GLIBC_KERNEL_COMPAT
+02/07/2023 1:13 AM
+what does this do? Enable compatibility shims to run on older kernels
+02/07/2023 1:13 AM
+i should have changed the kernel headers version
+[smx2460]
+smx2460 02/07/2023 1:13 AM
+    $ grep -rilE "select.*BR2.*BOOST" package | xargs grep "config BR2_PACKAGE" | cut -d ':' -f2 | cut -d ' ' -f2 | paste -sd '|' | xargs -I{} grep -E "^({})" .config
+    BR2_PACKAGE_BOTAN_ARCH_SUPPORTS=y
+    BR2_PACKAGE_MONGODB_ARCH_SUPPORTS=y
+    BR2_PACKAGE_LIBCAMERA_ARCH_SUPPORTS=y
+    BR2_PACKAGE_BOOST=y
+    BR2_PACKAGE_BOOST_ATOMIC=y
+    BR2_PACKAGE_BOOST_CONTEXT_ARCH_SUPPORTS=y
+    BR2_PACKAGE_BOOST_FILESYSTEM=y
+    BR2_PACKAGE_BOOST_PROGRAM_OPTIONS=y
+    BR2_PACKAGE_BOOST_REGEX=y
+    BR2_PACKAGE_BOOST_SYSTEM=y
+    BR2_PACKAGE_BITCOIN_ARCH_SUPPORTS=y
+    BR2_PACKAGE_LIBPBNJSON=y
+    BR2_PACKAGE_LIBWEBOSI18N=y
+    BR2_PACKAGE_UMEDIASERVER=y
+hellobox. 02/07/2023 1:12 AM
+i'll just build it
+02/07/2023 1:11 AM
+pbnjson requires boost
+02/07/2023 1:11 AM
+ugh
+[smx2460]
+hellobox. what requires boost?
+smx2460 02/07/2023 1:10 AM
+libwebosi18n too (edited)
+hellobox. 02/07/2023 1:10 AM
+umediaserver requires boost
+[smx2460]
+smx2460 02/07/2023 1:09 AM
+maybe these too
+02/07/2023 1:09 AM
+    BR2_PACKAGE_SDL2_OPENGLES=y
+    BR2_PACKAGE_SDL2_WEBOS=y
+    BR2_PACKAGE_SDL2_IMAGE=y
+    BR2_PACKAGE_SDL2_MIXER=y
+    BR2_PACKAGE_SDL2_NET=y
+    BR2_PACKAGE_SDL2_TTF=y
+hellobox. 02/07/2023 1:09 AM
+what requires boost?
+02/07/2023 1:09 AM
+argh
+[smx2460]
+smx2460 02/07/2023 1:09 AM
+remove all these
+02/07/2023 1:09 AM
+    BR2_PACKAGE_QT5_GL_AVAILABLE=y
+    BR2_PACKAGE_QT5_JSCORE_AVAILABLE=y
+    BR2_PACKAGE_QT5=y
+    BR2_PACKAGE_QT5BASE=y
+    BR2_PACKAGE_QT5BASE_CUSTOM_CONF_OPTS=""
+    BR2_PACKAGE_QT5BASE_CONFIG_FILE=""
+    BR2_PACKAGE_QT5BASE_NETWORK=y
+    BR2_PACKAGE_QT5BASE_SQL=y
+    BR2_PACKAGE_QT5BASE_SQLITE_QT=y
+    BR2_PACKAGE_QT5BASE_TEST=y
+    BR2_PACKAGE_QT5BASE_XML=y
+    BR2_PACKAGE_QT5BASE_GUI=y
+    BR2_PACKAGE_QT5BASE_WIDGETS=y
+    BR2_PACKAGE_QT5BASE_LINUXFB=y
+    BR2_PACKAGE_QT5BASE_DEFAULT_QPA=""
+    BR2_PACKAGE_QT5BASE_PRINTSUPPORT=y
+    BR2_PACKAGE_QT5BASE_JPEG=y
+    BR2_PACKAGE_QT5BASE_PNG=y
+    BR2_PACKAGE_QT5SERIALPORT=y
+    BR2_PACKAGE_QT5WEBENGINE_ARCH_SUPPORTS=y
+    BR2_PACKAGE_QT6_ARCH_SUPPORTS=y
+hellobox. 02/07/2023 1:09 AM
+no boost, no qt
+02/07/2023 1:09 AM
+i.e., with the wayland stubs and gl headers
+[smx2460]
+smx2460 02/07/2023 1:09 AM
+then you need to do that
+hellobox. 02/07/2023 1:08 AM
+i just want a toolchain i can use to build kodi
+[smx2460]
+smx2460 02/07/2023 1:08 AM
+and only enable kodi
+02/07/2023 1:08 AM
+you need to wipe all packages out of .config
+02/07/2023 1:08 AM
+if you truly want kodi ONLY
+hellobox. 02/07/2023 1:08 AM
+cancel cancel
+[smx2460]
+smx2460 02/07/2023 1:08 AM
+but it's part of defconfig
+hellobox. 02/07/2023 1:08 AM
+ugh boost
+[smx2460]
+smx2460 02/07/2023 1:08 AM
+no
+hellobox. 02/07/2023 1:08 AM
+does kodi use qt?
+[smx2460]
+smx2460 02/07/2023 1:08 AM
+which includes qt...
+02/07/2023 1:08 AM
+the remainder
+hellobox. 02/07/2023 1:08 AM
+it's building new stuff
+[smx2460]
+smx2460 02/07/2023 1:08 AM
+or it will build it
+02/07/2023 1:08 AM
+after removing KODI from .config
+02/07/2023 1:08 AM
+you need make sdk
+hellobox. 02/07/2023 1:07 AM
+doesn't exist
+[smx2460]
+smx2460 02/07/2023 1:07 AM
+output/host/environment-setup
+hellobox. 02/07/2023 1:07 AM
+that's in the br-nc4 env file

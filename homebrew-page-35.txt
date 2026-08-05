@@ -1,0 +1,1715 @@
+February 8, 2024
+[smx2460]
+smx2460 02/08/2024 8:42 PM
+hmmm so
+hellobox. 02/08/2024 8:41 PM
+.section .asdf, "awx", @progbits
+[smx2460]
+smx2460 02/08/2024 8:40 PM
+we just need to see what the best solution is
+02/08/2024 8:40 PM
+but we're doing all this in the toolchain so we could change defaults
+(edited)
+02/08/2024 8:40 PM
+then specify the options of that section in a linker script addendum
+02/08/2024 8:39 PM
+you could use .section .hellobox
+02/08/2024 8:39 PM
+since you're writing asm
+02/08/2024 8:39 PM
+or
+hellobox. 02/08/2024 8:39 PM
+i suppose
+[smx2460]
+smx2460 02/08/2024 8:39 PM
+by patching the linker script
+02/08/2024 8:39 PM
+you could have it be
+hellobox. 02/08/2024 8:39 PM
+the code you want to patch
+[smx2460]
+smx2460 02/08/2024 8:39 PM
+the code?
+02/08/2024 8:39 PM
+what
+hellobox. 02/08/2024 8:39 PM
+is it going to be in a writable section?
+[smx2460]
+smx2460 02/08/2024 8:38 PM
+    __stdcall void *get_fptr(const char *lib_name, const char *name_ptr){
+        std::string_view mod_name(lib_name);
+        auto mod_item = ::mod_map.find(mod_name);
+        if(mod_item == ::mod_map.end()){
+            printf(">> module '%s' not found, loading...\n", lib_name);
+            HINSTANCE handle = load_original_library(lib_name);
+            if(handle != nullptr && handle != INVALID_HANDLE_VALUE){
+                auto inserted = mod_map.insert(std::make_pair(mod_name, std::make_pair<HINSTANCE&, fn_map_t>(handle, fn_map_t())));
+                mod_item = inserted.first;
+            } else {
+                fprintf(stderr, "failed to load module\n");
+                return nullptr;
+            }
+        }
+        HMODULE mod_handle = mod_item->second.first;
+        auto fn_map = mod_item->second.second;
+        std::string_view name(name_ptr);
+        auto fn_item = fn_map.find(name);
+        if(fn_item != fn_map.end()){
+            return fn_item->second;
+        }
+        void *fn = reinterpret_cast<void *>(
+            GetProcAddress(mod_handle, name_ptr)
+        );
+        fn_map.emplace(name, fn);
+        if(fn == nullptr){
+            return reinterpret_cast<void *>(&null_catch);
+        }
+        return fn;
+    }
+02/08/2024 8:38 PM
+here
+02/08/2024 8:38 PM
+https://github.com/smx-smx/asrled/blob/main/proxy.cpp#L105
+asrled/proxy.cpp at main · smx-smx/asrled
+Nuvoton N76E command dumper. Contribute to smx-smx/asrled development by
+creating an account on GitHub.
+[]
+[] smx2460 this thunk could be improved to patch itself to not call
+`get_fptr` again
+hellobox. 02/08/2024 8:38 PM
+self-modifying code? 
+[smx2460]
+smx2460 02/08/2024 8:38 PM
+this thunk could be improved to patch itself to not call get_fptr again
+[] smx2460 `get_fptr` is implemented in C/C++
+hellobox. 02/08/2024 8:38 PM
+C++?
+[smx2460]
+smx2460 02/08/2024 8:37 PM
+get_fptr is implemented in C/C++ (edited)
+02/08/2024 8:37 PM
+without making an explicit reference
+02/08/2024 8:37 PM
+this calls _get_fptr(lib_name, function_name)
+02/08/2024 8:37 PM
+            fwrite($asm, <<<EOS
+            .globl _{$proxy_fn}
+            _{$proxy_fn}:
+            push eax // save eax
+            // load function name
+            lea eax, str_{$proxy_id}
+            push eax
+            lea eax, str_lib_name
+            push eax
+            call _get_fptr
+            // eax = [saved_eax]
+            // [ret] = fptr
+            xchg eax, [esp]
+            ret
+            EOS);
+02/08/2024 8:36 PM
+ok so we need something like my solution lol
+02/08/2024 8:36 PM
+and if the ELF is not a PIE, it's probably not going to be exported
+02/08/2024 8:36 PM
+if they are provided by an .a, they are part of the program
+02/08/2024 8:35 PM
+they aren't exports
+02/08/2024 8:35 PM
+ah crap
+02/08/2024 8:35 PM
+so the startup code needs to look at the ELF symbols/exports
+02/08/2024 8:35 PM
+is to loop the exports dynamically
+02/08/2024 8:35 PM
+what we'd need to do
+02/08/2024 8:34 PM
+causing the purge to not happen
+02/08/2024 8:34 PM
+that if we have code actually filling the function pointers, there is
+going to be a reference
+02/08/2024 8:34 PM
+but the issue is
+02/08/2024 8:34 PM
+at least it would fail linking and hopefully not at runtime
+02/08/2024 8:34 PM
+but you never know
+02/08/2024 8:34 PM
+so i would assume it's kind of safe
+02/08/2024 8:34 PM
+if they do, they'd probably already use --gc-sections
+[] smx2460 `-Wl,--gc-sections` might or might not break some projects
+hellobox. 02/08/2024 8:34 PM
+yeah, that's not great
+[smx2460]
+smx2460 02/08/2024 8:34 PM
+because there's just one .text
+02/08/2024 8:33 PM
+if they don't use  -ffunction-sections -fdata-sections, i don't expect
+them to break
+02/08/2024 8:33 PM
+-Wl,--gc-sections might or might not break some projects
+02/08/2024 8:33 PM
+    6.3.3.2 Compilation options
+    The operation of eliminating the unused code and data from the final executable is directly performed by the linker.
+    In order to do this, it has to work with objects compiled with the following options: -ffunction-sections -fdata-sections.
+    These options are usable with C and Ada files. They will place respectively each function or data in a separate section in the resulting object file.
+    Once the objects and static libraries are created with these options, the linker can perform the dead code elimination. You can do this by setting the -Wl,--gc-sections option to gcc command or in the -largs section of gnatmake. This will perform a garbage collection of code and data never referenced. 
+02/08/2024 8:32 PM
+to force the linker to prune unused sections
+02/08/2024 8:32 PM
+but then we need to add -gc-whatever to the build options
+02/08/2024 8:32 PM
+puts each function and variable in its own section
+02/08/2024 8:32 PM
+you could build the wrapper with -fdata-sections -fcode-sections
+02/08/2024 8:31 PM
+hmm
+[] smx2460 to ensure you don't have a random crash at some point
+hellobox. 02/08/2024 8:31 PM
+well, that may be desirable if the functions are never actually used
+(i.e., it wouldn't crash) (edited)
+[smx2460]
+smx2460 02/08/2024 8:31 PM
+becuse the system lib doesn't have the symbol crap_ex
+02/08/2024 8:31 PM
+to ensure you don't have a random crash at some point
+02/08/2024 8:31 PM
+you do everything at start time
+02/08/2024 8:31 PM
+if you want to simulate the DT_NEEDED behavior
+[] smx2460 although what do you do if the symbol is not found
+hellobox. 02/08/2024 8:31 PM
+that's part of what i meant by ABI differences
+[smx2460]
+smx2460 02/08/2024 8:30 PM
+abort?
+02/08/2024 8:30 PM
+although what do you do if the symbol is not found
+02/08/2024 8:30 PM
+but yeah lazy could be better
+02/08/2024 8:30 PM
+well you need to dlopen the right library at least
+02/08/2024 8:30 PM
+hmm
+hellobox. 02/08/2024 8:29 PM
+do you think that's better than resolving on first use?
+[smx2460]
+smx2460 02/08/2024 8:29 PM
+the ctor has an attribute to specify the priority
+02/08/2024 8:29 PM
+you need to make sure the ctor happens early
+02/08/2024 8:29 PM
+then the ctor fills the function pointers
+02/08/2024 8:28 PM
+ symbol: load function pointer branch to function pointer 
+02/08/2024 8:28 PM
+ASM so you don't need to know the prototype
+02/08/2024 8:28 PM
+each bound to an ASM routine that calls a function pointer
+02/08/2024 8:28 PM
+i'd say you would make a .a with all possible library symbol names
+02/08/2024 8:27 PM
+so yeah
+02/08/2024 8:27 PM
+then you could use that
+[] smx2460 it uses debug info
+hellobox. 02/08/2024 8:26 PM
+i think we can produce a close enough copy of what's on webOS with debug
+info (edited)
+[smx2460]
+smx2460 02/08/2024 8:26 PM
+and you can't know shit about the prototype
+02/08/2024 8:26 PM
+because it just does a diff of exported symbols by name (edited)
+02/08/2024 8:26 PM
+if you don't have them it's useless
+02/08/2024 8:26 PM
+it uses debug info
+02/08/2024 8:26 PM
+well...yeah
+02/08/2024 8:26 PM
+    For a comprehensive ABI change report between two input shared libraries that includes changes about function and variable sub-types, abidiff uses by default, debug information in DWARF format, if present, otherwise it compares interfaces using debug information in CTF or BTF formats, if present. Finally, if no debug info in these formats is found, it only considers ELF symbols and report about their addition or removal.
+02/08/2024 8:26 PM
+how does it do that
+02/08/2024 8:25 PM
+good to know
+[smx2460]
+hellobox. `abidiff`?
+smx2460 02/08/2024 8:25 PM
+i didn't know such thing existed
+[smx2460]
+smx2460 02/08/2024 8:25 PM
+and places the right wrapper in the function pointer(s) (edited)
+02/08/2024 8:25 PM
+and the constructor does the job of checking which version of the lib
+you're wrapping
+hellobox. 02/08/2024 8:25 PM
+abidiff?
+[smx2460]
+smx2460 02/08/2024 8:25 PM
+or you need the thunk to be a function pointer
+02/08/2024 8:25 PM
+so your ASM thunk already does the right thing
+02/08/2024 8:24 PM
+and the ABI it's using
+02/08/2024 8:24 PM
+either you know ahead of time about the library you're wrapping
+02/08/2024 8:24 PM
+the only way to deal with ABI changes, if any, is to use assembly
+02/08/2024 8:24 PM
+¯\_(ツ)_/¯
+02/08/2024 8:23 PM
+although instead of dummy you need multiple autogenerated thunks
+hellobox. 02/08/2024 8:23 PM
+and how do we find those in the first place?
+02/08/2024 8:23 PM
+how do we handle places where the ABI actually differs btw?
+[smx2460]
+smx2460 02/08/2024 8:23 PM
+https://github.com/sundermann/webos-userland/blob/main/src/AcbAPI.lds
+webos-userland/src/AcbAPI.lds at main · sundermann/webos-userland
+Contribute to sundermann/webos-userland development by creating an
+account on GitHub.
+02/08/2024 8:23 PM
+for ELF targets we just need an lds like webos-userland
+02/08/2024 8:23 PM
+it was done that way for Windows
+02/08/2024 8:23 PM
+in fact
+02/08/2024 8:22 PM
+this is for x64 but we don't need to do it that way
+02/08/2024 8:22 PM
+https://github.com/smx-smx/asrled/blob/main/makedef.php
+asrled/makedef.php at main · smx-smx/asrled
+Nuvoton N76E command dumper. Contribute to smx-smx/asrled development by
+creating an account on GitHub.
+[]
+02/08/2024 8:22 PM
+i already have a tool that wraps all lib symbols
+02/08/2024 8:22 PM
+that's the only issue
+[] smx2460 but we also need to make libcrypt --as-needed
+hellobox. 02/08/2024 8:22 PM
+can we do that?
+[] smx2460 "i am not gonna add a reference to libcrypt because the
+static library before it provides all symbol...
+hellobox. 02/08/2024 8:22 PM
+yeah, i was thinking of something along those lines
+[smx2460]
+smx2460 02/08/2024 8:21 PM
+but we also need to make libcrypt --as-needed
+02/08/2024 8:21 PM
+"i am not gonna add a reference to libcrypt because the static library
+before it provides all symbols"
+02/08/2024 8:21 PM
+this way, the linker would say
+02/08/2024 8:20 PM
+this libfoo-wrap.a would be generated the same was as webos-userland
+02/08/2024 8:20 PM
+to append to the linker list
+02/08/2024 8:20 PM
+is to provide our own libfoo-wrap.a
+02/08/2024 8:20 PM
+i think the only way to do this
+02/08/2024 8:20 PM
+provided you can reference the library without actually using it
+(edited)
+hellobox. 02/08/2024 8:20 PM
+apparently gold doesn't even support --copy-dt...
+https://sourceware.org/git/?p=binutils-gdb.git;a=blob;f=gold/object.cc#l3311
+[smx2460]
+smx2460 02/08/2024 8:19 PM
+this is afaict the only way to omit the DT_NEEDED
+02/08/2024 8:19 PM
+    --as-needed causes a DT_NEEDED tag to only be emitted for a library that satisfies an undefined symbol reference from a regular object file
+02/08/2024 8:18 PM
+it's used to resolve transitive dependencies
+hellobox. 02/08/2024 8:18 PM
+yeah, i think --copy-dt... would make things worse (edited)
+[smx2460]
+smx2460 02/08/2024 8:18 PM
+or rather not what we need
+02/08/2024 8:18 PM
+so it's stupid
+02/08/2024 8:18 PM
+ah
+02/08/2024 8:18 PM
+    However, with --copy-dt-needed-entries it will also search DT_NEEDED libraries of liba, say libb as a dependency of liba and see if the symbol can be resolved in libb. If it can resolve symbols in libb, it will add a DT_NEEDED to libb to the linked file despite only telling the linker to link against liba.
+02/08/2024 8:17 PM
+:p
+hellobox. 02/08/2024 8:17 PM
+i wonder how much of this is still accurate
+https://github.com/clearlinux/distribution/issues/562#issuecomment-478198872
+02/08/2024 8:16 PM
+i didn't realize that site has such old docs. not great
+02/08/2024 8:16 PM
+so they managed to get a version from the 2 years between the addition
+of --copy-dt... to the default change lol
+[smx2460]
+smx2460 02/08/2024 8:15 PM
+now i'm on my desktop
+02/08/2024 8:15 PM
+i was on my phone
+02/08/2024 8:15 PM
+yep
+hellobox. 02/08/2024 8:15 PM
+this? https://linux.die.net/man/1/ld it appears to be the old version.
+copyright date is 2009 (edited)
+[smx2460]
+smx2460 02/08/2024 8:14 PM
+it's probably older (edited)
+[smx2460]
+hellobox. where did you get this?
+smx2460 02/08/2024 8:14 PM
+some man from the web (edited)
+hellobox. 02/08/2024 8:13 PM
+let's see what br-nc4 does. it's using binutils 2.39 (edited)
+[] smx2460 ``` --copy-dt-needed-entries --no-copy-dt-needed-entries This
+option affects the treatment of dy...
+hellobox. 02/08/2024 8:13 PM
+where did you get this?
+hellobox. 02/08/2024 8:12 PM
+apparently they renamed --add-needed to --copy-dt-needed-entries in 2009
+https://binutils.sourceware.narkive.com/LxEkN6k5/rfc-rename-add-needed-to-copy-dt-needed-entries
+02/08/2024 8:10 PM
+> Some time between GCC 4.4 and GCC 4.5 (apparently, see some reference
+https://fedoraproject.org/wiki/UnderstandingDSOLinkChange"
+target="_blank" rel="noopener noreferrer">here - can't find anything
+really authoritative), the default was changed from the recursive
+search, to no recursive search (as you are seeing with the newer GCCs).
+(edited)
+02/08/2024 8:07 PM
+https://binutils.sourceware.narkive.com/owmtAImE/make-no-copy-dt-needed-default
+2011-08-26 (edited)
+[smx2460]
+smx2460 02/08/2024 8:07 PM
+Ummm
+hellobox. 02/08/2024 8:07 PM
+it's from > GNU ld (GNU Binutils for Debian) 2.42
+[smx2460]
+smx2460 02/08/2024 8:06 PM
+I think yours is wrong
+hellobox. 02/08/2024 8:06 PM
+i guess it changed?
+02/08/2024 8:06 PM
+hmm
+02/08/2024 8:06 PM
+that's what's in my man page
+[smx2460]
+smx2460 02/08/2024 8:06 PM
+That's not what is written up there
+hellobox. 02/08/2024 8:05 PM
+> The default behaviour can be restored with
+--no-copy-dt-needed-entries.
+[smx2460]
+smx2460 02/08/2024 8:05 PM
+As mentioned there
+02/08/2024 8:05 PM
+Default is to add
+02/08/2024 8:05 PM
+It isn't
+hellobox. 02/08/2024 8:05 PM
+since the default is already not to add them, right?
+[smx2460]
+smx2460 02/08/2024 8:05 PM
+It does
+hellobox. 02/08/2024 8:05 PM
+although i don't think it helps here
+[] smx2460 ``` --copy-dt-needed-entries --no-copy-dt-needed-entries This
+option affects the treatment of dy...
+hellobox. 02/08/2024 8:05 PM
+interesting
+[smx2460]
+smx2460 02/08/2024 8:04 PM
+    --copy-dt-needed-entries
+    --no-copy-dt-needed-entries
+        This option affects the treatment of dynamic libraries referred to by DT_NEEDED tags inside ELF dynamic libraries mentioned on the command line. Normally the linker will add a DT_NEEDED tag to the output binary for each library mentioned in a DT_NEEDED tag in an input dynamic library. With --no-copy-dt-needed-entries specified on the command line however any dynamic libraries that follow it will have their DT_NEEDED entries ignored. The default behaviour can be restored with --copy-dt-needed-entries.
+        This option also has an effect on the resolution of symbols in dynamic libraries. With the default setting dynamic libraries mentioned on the command line will be recursively searched, following their DT_NEEDED tags to other libraries, in order to resolve symbols required by the output binary. With --no-copy-dt-needed-entries specified however the searching of dynamic libraries that follow it will stop with the dynamic library itself. No DT_NEEDED links will be traversed to resolve symbols. 
+02/08/2024 8:04 PM
+    --no-add-needed
+        These two options have been deprecated because of the similarity of their names to the --as-needed and --no-as-needed options. They have been replaced by --copy-dt-needed-entries and --no-copy-dt-needed-entries. 
+hellobox. 02/08/2024 8:04 PM
+semi-offtopic: there's a ~standard way to embed JSON metadata in ELF
+files? https://systemd.io/ELF_PACKAGE_METADATA/
+[smx2460]
+smx2460 02/08/2024 8:03 PM
+And then it's dlsym'd dynamically
+02/08/2024 8:02 PM
+It would still need the lib to be loaded
+02/08/2024 8:02 PM
+I don't think it is
+02/08/2024 8:02 PM
+Not sure if this is independent from dt_needed
+hellobox. 02/08/2024 8:02 PM
+we'd need a --wrap or lazy for libs rather than symbols
+[smx2460]
+smx2460 02/08/2024 8:02 PM
+        When generating an executable or shared library, mark it to tell the dynamic linker to defer function call resolution to the point when the function is called (lazy binding), rather than at load time. Lazy binding is the default. 
+hellobox. 02/08/2024 8:02 PM
+which is that if a DT_NEEDED lib is not found, the program won't get a
+chance to do anything. right?
+[] smx2460 ld has the --wrap flag
+hellobox. 02/08/2024 8:01 PM
+i don't think that solves the fundamental issue though
+hellobox. 02/08/2024 8:00 PM
+maybe i'm thinking of a specific plugin (LTO)
+02/08/2024 8:00 PM
+or does the BFD version support them?
+[] smx2460 Or plugin
+hellobox. 02/08/2024 8:00 PM
+aren't those gold-only?
+[smx2460]
+smx2460 02/08/2024 8:00 PM
+If it's a thing
+02/08/2024 8:00 PM
+Or plugin
+02/08/2024 8:00 PM
+The only way this could be done is via a linker modification
+02/08/2024 7:59 PM
+The idea is to exclude a library from the needed dependencies
+hellobox. 02/08/2024 7:59 PM
+i don't think ifunc would work here unfortunately
+[smx2460]
+smx2460 02/08/2024 7:59 PM
+Need to check the ld man to see if there's a clever hack
+02/08/2024 7:59 PM
+But still you'd need to list all the symbols
+[smx2460]
+hellobox. ugh
+smx2460 02/08/2024 7:59 PM
+ld has the --wrap flag
+[smx2460]
+smx2460 02/08/2024 7:58 PM
+And it'd be unused
+02/08/2024 7:58 PM
+So that the linker sees the definition is provided by the exe
+[] smx2460 But then what you'd need to do, is wrap each and every
+library symbol
+hellobox. 02/08/2024 7:58 PM
+ugh
+[smx2460]
+smx2460 02/08/2024 7:58 PM
+But then what you'd need to do, is wrap each and every library symbol
+02/08/2024 7:58 PM
+Unless we can do stuff with --as-needed
+02/08/2024 7:58 PM
+The lib gets added to the needed section
+02/08/2024 7:57 PM
+If you pass -lhellobox
+02/08/2024 7:57 PM
+Yeah
+hellobox. 02/08/2024 7:57 PM
+lazy binding just applies to symbols, not libraries, right?
+[smx2460]
+smx2460 02/08/2024 7:56 PM
+The problem is that the library is loaded before the entry point runs
+[] smx2460 We could alter the default entry point
+hellobox. 02/08/2024 7:56 PM
+yeah, we could probably do that
+[smx2460]
+smx2460 02/08/2024 7:56 PM
+In the default lds
+hellobox. 02/08/2024 7:56 PM
+not sure if we can do what we need to with just a linker script
+modification though
+[smx2460]
+smx2460 02/08/2024 7:56 PM
+We could alter the default entry point
+[] smx2460 We can customize the default linker script
+hellobox. 02/08/2024 7:56 PM
+yeah, that's possible
+hellobox. 02/08/2024 7:55 PM
+although i think that's true of at least some of our existing stuff
+[smx2460]
+smx2460 02/08/2024 7:55 PM
+But how
+02/08/2024 7:55 PM
+We can customize the default linker script
+02/08/2024 7:55 PM
+But
+02/08/2024 7:55 PM
+Yeah true
+hellobox. 02/08/2024 7:54 PM
+but that's only for gcc, right? so this wouldn't work for anyone using
+ld directly?
+[smx2460]
+smx2460 02/08/2024 7:54 PM
+-pthreads was handled there iirc
+02/08/2024 7:54 PM
+there might be something we can do in there (edited)
+02/08/2024 7:54 PM
+The spec file
+02/08/2024 7:54 PM
+If we can change the link flags with the ... How was it called
+02/08/2024 7:53 PM
+You could statically link in the helper via glibc-polyfills
+hellobox. 02/08/2024 7:53 PM
+but we still want the toolchain to be usable by normal build
+systems/packages without any modification
+[] smx2460 Or is it?
+hellobox. 02/08/2024 7:53 PM
+i think it's bad... although we could wrap gcc/ld i guess
+[smx2460]
+smx2460 02/08/2024 7:53 PM
+The only alternative is a custom ELF loader
+02/08/2024 7:52 PM
+Or is it?
+02/08/2024 7:52 PM
+Which might be undesirable
+02/08/2024 7:52 PM
+But this needs fixing up all binaries post build or changing their link
+process
+hellobox. 02/08/2024 7:52 PM
+i'd like to make sure our binaries could run e.g. on a readonly fs
+without /tmp set up
+[smx2460]
+smx2460 02/08/2024 7:52 PM
+The helper i mean
+02/08/2024 7:51 PM
+That's why statically linking is better
+hellobox. 02/08/2024 7:51 PM
+ehhh
+[smx2460]
+smx2460 02/08/2024 7:51 PM
+You'd need to drop the helper in the target system yes
+[] smx2460 Or drop a .so and force the exe to load it
+hellobox. 02/08/2024 7:50 PM
+on the target system you mean? or during the build? (edited)
+[smx2460]
+smx2460 02/08/2024 7:50 PM
+Then its ctor would do the fixup
+02/08/2024 7:50 PM
+Or drop a .so and force the exe to load it
+02/08/2024 7:50 PM
+We could then either modify the toolchain to statically include such
+loader function (edited)
+02/08/2024 7:49 PM
+Then we adapt
+02/08/2024 7:49 PM
+After dinner i can do a PoC for x64
+[smx2460]
+hellobox. we don't necessarily need to do *all* libs. we could just have
+a list of ones known to be problemati...
+smx2460 02/08/2024 7:49 PM
+Patchelf would let you do that
+[smx2460]
+smx2460 02/08/2024 7:48 PM
+Then you need to patch the PLT yourself yep
+[] smx2460 Then the exe would run but all imports would be undefined
+hellobox. 02/08/2024 7:48 PM
+we don't necessarily need to do all libs. we could just have a list of
+ones known to be problematic
+[smx2460]
+smx2460 02/08/2024 7:48 PM
+Then the exe would run but all imports would be undefined
+02/08/2024 7:47 PM
+To remove the "needed" libraries
+02/08/2024 7:47 PM
+What if we modified the output using patchelf
+02/08/2024 7:46 PM
+There are a few ways
+[] smx2460 And modify the thunks
+hellobox. 02/08/2024 7:46 PM
+is there an API for that, or would we just be writing to .plt or
+whatever?
+[smx2460]
+smx2460 02/08/2024 7:46 PM
+You'd be defining all the imported symbols as function pointers
+02/08/2024 7:45 PM
+And modify the thunks
+02/08/2024 7:45 PM
+The constructor or entry point can load needed libraries via dlopen
+02/08/2024 7:44 PM
+Not necessarily manually
+[] smx2460 You'd need to artificiality say you don't have any dependency
+hellobox. 02/08/2024 7:44 PM
+yeah, and do it all manually
+[smx2460]
+smx2460 02/08/2024 7:44 PM
+You'd need to artificiality say you don't have any dependency
+[] smx2460 You need to use a custom dlopen in your process
+hellobox. 02/08/2024 7:43 PM
+i don't think that is used by the linker itself though, is it?
+[smx2460]
+smx2460 02/08/2024 7:43 PM
+Before even calling your entry point
+02/08/2024 7:43 PM
+Problem is that the dynlinker looks up DT_NEEDED libs iirc
+02/08/2024 7:43 PM
+Say a hooked one
+02/08/2024 7:43 PM
+You need to use a custom dlopen in your process
+[smx2460]
+hellobox. `man rtld-audit` 
+smx2460 02/08/2024 7:42 PM
+Interesting, i didn't know about it
+hellobox. 02/08/2024 7:40 PM
+also (and i know i'm unlikely to get any responses, but i'm asking so
+nobody can complain later), does anyone have thoughts on an
+/elevateService (or just /elevate) method for hbchannel?
+02/08/2024 7:35 PM
+unless we had some kind of wrapper thing. then we'd probably need to
+handle ELF parsing, and it would be a complete mess also can you have a
+binary with .interp set to itself? lol (edited)
+02/08/2024 7:34 PM
+and i want to be able to produce standalone binaries that will run on
+NC4->webOS 8
+02/08/2024 7:32 PM
+i guess if we replaced .interp in our binaries... but then we'd need to
+ship a the linker from glibc 2.32+, which i doubt would play well with
+glibc 2.whatever is on nc4
+02/08/2024 7:31 PM
+is that even possible?
+02/08/2024 7:31 PM
+what if we... replaced the entire dynamic linker? lol
+02/08/2024 7:30 PM
+@infowski you've come up with cool linker hax before. any ideas?
+02/08/2024 7:29 PM
+implemented in 2020
+https://sourceware.org/pipermail/glibc-cvs/2020q2/069245.html glibc
+2.32... so not even in webOS 8 lol (edited)
+02/08/2024 7:26 PM
+https://stackoverflow.com/questions/34034009/what-does-the-audit-flag-to-gnu-ld-do
+ > The problem is that (as of current trunk) GLIBC dynamic loader does
+not pay attention to it (look for process_dl_audit routine). It only
+pays attention to LD_AUDIT environment variable, and to --audit flag
+when the loader: ld.so is invoked directly. so close! (edited)
+02/08/2024 7:25 PM
+it's not like we could setenv("LD_AUDIT") in a ctor since i'm sure this
+processing happens way before that (or does it?) (edited)
+02/08/2024 7:24 PM
+this is not optimal though > To employ the auditing interface, the
+environment variable LD_AUDIT must be defined to contain a
+colon-separated list of shared libraries, each of which can implement
+(parts of) the auditing API. When an auditable event occurs, the
+corresponding function is invoked in each library, in the order that the
+libraries are listed. (edited)
+02/08/2024 7:23 PM
+    char *la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag);
+> The dynamic linker invokes this function to inform the auditing
+library that it is about to search for a shared object. (edited)
+02/08/2024 7:22 PM
+man rtld-audit 
+02/08/2024 7:21 PM
+i wonder if there's some way to hook into the dynamic linker's symbol
+loading process
+02/08/2024 7:20 PM
+@Smx any ideas for fixing the libcrypt/libudev/etc. soname stuff
+permanently?
+[] ansem93 Tizen app: error 404 "normal" crunchyroll app updated: can't
+login because of header error
+hellobox. 02/08/2024 7:20 PM
+you can debug the apps on port 9998 to see what's happening
+[ansem93]
+[] ztfallen crunchy app doesn't work for me.
+ansem93 02/08/2024 12:09 PM
+maybe CR changed something with login that broke compatibility?
+[ansem93]
+ansem93 02/08/2024 12:09 PM
+Tizen app: error 404 "normal" crunchyroll app updated: can't login
+because of header error
+[ansem93]
+[] drwellness it does. in my opinion this is the better app because of
+the better interface.
+ansem93 02/08/2024 12:05 PM
+I tried to install it just now, but when I open it I recieve an error
+404  The internet connection on my TV works fine
+[] ztfallen crunchy app doesn't work for me.
+hellobox. 02/08/2024 3:53 AM
+report it on the github repo for the app
+[ztfallen]
+ztfallen 02/08/2024 2:48 AM
+3.9.2 WEBOS
+02/08/2024 2:48 AM
+model 43UJ6560-SB
+02/08/2024 2:47 AM
+06.10.30 ver
+02/08/2024 2:47 AM
+crunchy app doesn't work for me.
+February 7, 2024
+[drwellness]
+drwellness 02/07/2024 10:23 PM
+I don't know. How you submit an app for the homebrew channel? I
+downloaded the .ipk and installed it with webOS Dev Manager on my
+laptop. If I understand it correctly it will update itself, so it won't
+be work to stay up to date. (edited)
+[ansem93]
+ansem93 02/07/2024 7:24 PM
+Great! Any hope to see it in the hombrew channel for an easier
+installation?
+[drwellness]
+drwellness 02/07/2024 7:10 PM
+the developer will continue the developing of the app, so there will be
+updates too.
+[drwellness]
+[] ansem93 So does it actually works? I wanted to try it
+drwellness 02/07/2024 7:10 PM
+it does. in my opinion this is the better app because of the better
+interface.
+[ansem93]
+[] drwellness https://github.com/jhassan8/crunchyroll-tizen/releases
+ansem93 02/07/2024 7:06 PM
+So does it actually works? I wanted to try it
+Deleted User 02/07/2024 6:41 PM
+ok, thank you for you help.
+hellobox. 02/07/2024 6:36 PM
+wait for a new exploit
+Deleted User 02/07/2024 6:36 PM
+what do you suggest to do now ?
+hellobox. which is a shame, because we don't have the K8Hpp key
+Deleted User 02/07/2024 6:26 PM
+hmm, what do you suggest to do now ? (edited)
+hellobox. 02/07/2024 6:25 PM
+which is a shame, because we don't have the K8Hpp key
+Deleted User If you mean developer mode then yes. I download it and then
+I turned dev mode status to on.
+hellobox. 02/07/2024 6:25 PM
+no, not that. i guess they're rolling 03.30.77 out slowly. anyway, it's
+patched
+hellobox. and you didn't change it to engineering mode?
+Deleted User 02/07/2024 6:23 PM
+If you mean developer mode then yes. I download it and then I turned dev
+mode status to on.
+hellobox. 02/07/2024 6:19 PM
+and you didn't change it to engineering mode?
+hellobox. and it came with that firmware?
+Deleted User 02/07/2024 6:18 PM
+There was one update on the beginning.
+hellobox. 02/07/2024 6:17 PM
+you didn't change the NSU mode, did you?
+02/07/2024 6:17 PM
+and it came with that firmware? (edited)
+Deleted User 02/07/2024 6:16 PM
+I bought this TV on Saturday.
+Deleted User I have 03.30.77
+hellobox. 02/07/2024 6:15 PM
+how/when did you get that firmware?
+Deleted User 02/07/2024 6:14 PM
+65QNED863RE
+Deleted User I have 03.30.77
+hellobox. 02/07/2024 6:13 PM
+what model is it?
+hellobox. first, check the top of the guide to see if your firmware is
+patched
+Deleted User 02/07/2024 6:12 PM
+I have 03.30.77
+hellobox. 02/07/2024 6:08 PM
+then follow the troubleshooting steps in the FAQ
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#why-am-i-unable-to-connect-to-telnet-with-putty
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#why-isnt-telnetd-starting-
+Deleted User 9. step using putty is not working even if my adress worked
+for dev manager
+hellobox. 02/07/2024 6:07 PM
+first, check the top of the guide to see if your firmware is patched
+hellobox. you're missing part of the model number. but why should
+anything be different?
+Deleted User 02/07/2024 6:06 PM
+9. step using putty is not working even if my adress worked for dev
+manager
+Deleted User Hello, I have LG 65QNED863 and I wanted to install homebrew
+permanently based on this tutorial: htt...
+hellobox. 02/07/2024 5:59 PM
+you're missing part of the model number. but why should anything be
+different?
+Deleted User 02/07/2024 5:57 PM
+Hello, I have LG 65QNED863 and I wanted to install homebrew permanently
+based on this tutorial:
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f. I
+wanted to ask what is different for this model ?
+February 4, 2024
+hellobox. 02/04/2024 8:00 AM
+it built!
+hellobox. 02/04/2024 7:09 AM
+    output/build/glib-networking-2.70.1/meson.build:83:0: ERROR: Dependency lookup for gnutls with method 'pkgconfig' failed: Invalid version, need 'gnutls' ['>= 3.6.5'] found '3.3.30'.
+actually i'm not even sure why i have that enabled (edited)
+hellobox. 02/04/2024 5:53 AM
+i really hope gnutls is the last thing that breaks because of old gmp
+determining the behavior of gnutls and how it was built, then merging
+that with the old and new buildroot makefiles... ugh! (edited)
+hellobox. 02/04/2024 3:38 AM
+huh. dosfstools 2.11 is listed there, but webOS 8.1.0 has
+mkdosfs 2.12-4 (2022-07-18). it's not present on webOS 6.3.2
+shared-mime-info is 1.15-r0 on 8.1.0 but 1.10 in meta-gplv2
+(https://gitlab.freedesktop.org/xdg/shared-mime-info/-/blob/Release-1-15/COPYING"
+target="_blank" rel="noopener noreferrer">still GPLv2 though) (edited)
+02/04/2024 3:33 AM
+lmao. this is why they're using such an old version of gnutls (3.3.30):
+https://layers.openembedded.org/layerindex/branch/master/layer/meta-gplv2/
+also gmp 4.2.1 gettext 0.16.1 gzip 1.3.12 nettle 2.7.1 GNU tar 1.17
+(until they replaced it in webOS 7. maybe this is why? @infowski)
+readline 5.2 (edited)
+hellobox. 02/04/2024 2:51 AM
+whatever. i just downloaded
+https://keys.openpgp.org/vks/v1/by-fingerprint/1F42418905D8206AA754CCDC29EE58B996865171
+and imported it. they have the same primary key fingerprint, so i guess
+it's fine. the keys listed in the release announcement expired a few
+months before this signature was made, so he had to have used a newer
+key. this one is dated 2018-02-06. the file on that site hasn't been
+updated since pre-2015. here he is still listing the expired subkeys in
+march 2020:
+https://lists.gnutls.org/pipermail/gnutls-devel/2020-March/017952.html
+he seems to have left the project soon after (last commit 2020-04-06),
+despite still having by far the most commits (7x as many as the next
+person, ~4 years after he left)
+https://gitlab.com/nmav/gnutls/-/graphs/master?ref_type=heads (edited)
+hellobox. 02/04/2024 2:43 AM
+i was also able to verify gnutls 3.4.7, which was signed by the same guy
+3 years earlier:
+    $ gpg --verify gnutls-3.4.7.tar.xz.sig gnutls-3.4.7.tar.xz
+    gpg: Signature made Sun 22 Nov 2015 07:39:41 AM EST
+    gpg:                using RSA key 9D5EAAF69013B842
+    gpg: Good signature from "Nikos Mavrogiannopoulos <nmav@gnutls.org>" [unknown]
+    gpg:                 aka "Nikos Mavrogiannopoulos <n.mavrogiannopoulos@gmail.com>" [unknown]
+    gpg: Note: This key has expired!
+    Primary key fingerprint: 1F42 4189 05D8 206A A754  CCDC 29EE 58B9 9686 5171
+         Subkey fingerprint: A812 CBFD FCDC 4D0B E7A0  9312 9D5E AAF6 9013 B842
+hellobox. 02/04/2024 2:35 AM
+i'm able to verify other signatures, e.g. for gnutls 3.7.10 (signed by
+different people)
+02/04/2024 2:33 AM
+can someone who is familiar with PGP signatures please help me
+understand what is going on here? file:
+https://www.gnupg.org/ftp/gcrypt/gnutls/v3.3/gnutls-3.3.30.tar.xz sig:
+https://www.gnupg.org/ftp/gcrypt/gnutls/v3.3/gnutls-3.3.30.tar.xz.sig
+the
+https://lists.gnutls.org/pipermail/gnutls-devel/2018-July/008582.html"
+target="_blank" rel="noopener noreferrer">release announcement says it
+was signed by Nikos Mavrogiannopoulos his keys are available at
+https://members.hellug.gr/nmav/pgpkeys.asc (it was the same
+https://web.archive.org/web/20150712080427/http://members.hellug.gr/nmav/pgpkeys.asc"
+target="_blank" rel="noopener noreferrer">back in 2015). i imported
+them, but i'm still getting this:
+    $ gpg --verify gnutls-3.3.30.tar.xz.sig gnutls-3.3.30.tar.xz
+    gpg: Signature made Mon 16 Jul 2018 02:43:08 AM EDT
+    gpg:                using RSA key 59FBB55CA7F3A8AB0C503773D81C4887F1679A65
+    gpg: Can't check signature: No public key
+that key does appear to be his though:
+https://keyserver.ubuntu.com/pks/lookup?search=59FBB55CA7F3A8AB0C503773D81C4887F1679A65&fingerprint=on&op=index
+February 3, 2024
+hellobox. 02/03/2024 4:50 AM
+there is a setPlaybackSettings() method, but i don't know how to get to
+it. it seems to allow for setting playback speed (not sure how; seems to
+involve either "PLAYBACK_SPEED" or 6), but i doubt it would even do
+anything special on webOS beyond setting playbackRate (which doesn't
+work). (edited)
+hellobox. 02/03/2024 4:24 AM
+so except maybe with some of the actual named ~public API, it's
+practically impossible to modify/extend YouTube TV in WAM (edited)
+02/03/2024 4:23 AM
+the only solutions i can think of are basically ridiculous. like calling
+toString() on every function, parsing the code, and comparing the AST to
+what we're looking for (fuzzily). lol
+https://github.com/jugglinmike/compare-ast
+https://github.com/felipelealdefaria/javascript-clone-detection might be
+an interesting project, but not practical
+https://repositorio.uniandes.edu.co/server/api/core/bitstreams/094f3d03-e8d5-4c3c-a8c2-1f251930b5dd/content"
+target="_blank" rel="noopener noreferrer">AST similarty in python also
+python: https://github.com/jncraton/pyastsim" target="_blank"
+rel="noopener noreferrer">pyastsim (code -> AST, normalize, AST -> code,
+Damerau–Levenshtein) just add
+https://stackoverflow.com/questions/41625927/spark-machine-learning-ast-comparison"
+target="_blank" rel="noopener noreferrer">machine learning (edited)
+hellobox. 02/03/2024 4:16 AM
+i guess it's been transpiled with babel (or something) and minified, at
+least. so i don't think the names are stable. e.g. _yttv.E(opt, default)
+gets the value of tectonicConfig.featureSwitches[opt], returning default
+if it doesn't exist. but i don't know if it would still be named E the
+next time they built the site
+02/03/2024 4:15 AM
+i'm looking into the YouTube TV web app a little bit, and i think
+there's very little chance of being able to make significant
+modifications
+hellobox. 02/03/2024 3:43 AM
+lol
+                _.ln(this.X, new _.L("CONFIRM_RACY_CONTENT"), this, function() {
+                    a.reloadVideo(void 0, void 0, "rco")
+                });
+hellobox. 02/03/2024 1:48 AM
+has anyone been using youtube-webos 0.3.2-rc1?
+February 2, 2024
+hellobox. 02/02/2024 11:15 PM
+i don't understand why they stopped maintaining
+https://github.com/actions/upload-release-asset. it's exactly what i
+want. i'd rather use first-party github actions, since they're more
+likely to be well written (or at least properly use the github APIs). i
+also trust github employees to not slip malicious code into their
+actions more than random users (edited)
+02/02/2024 11:14 PM
+wow. there's quite a lot involved in just creating a release
+https://github.com/ncipollo/release-action/tree/main/src
+[] cancerousordo Hey folks. I'm new here, just got my TV rooted earlier
+tonight. Now that I'm all set up, I want to r...
+hellobox. 02/02/2024 9:04 PM
+you can't remove them as in delete the files and free up the space,
+because they're on a read-only/signed filesystem. you may be able to
+prevent them from running, but it could end up being a lot of work and
+potentially break things (edited)
+ 1
+[] smx2460 Is it worth the effort?
+hellobox. 02/02/2024 9:04 PM
+probably
+[smx2460]
+hellobox. using old gmp is going to require using a lot of old packages
+smx2460 02/02/2024 9:03 PM
+Is it worth the effort?
+[gigie07]
+gigie07 02/02/2024 7:23 AM
+any updates with the libreto or retroarch on the latest webOS?
+[cancerousordo]
+cancerousordo 02/02/2024 6:12 AM
+Hey folks. I'm new here, just got my TV rooted earlier tonight. Now that
+I'm all set up, I want to remove a bunch of apps that I don't want or
+use, like LG Channels and all the AI assistants. Does anyone know if/how
+that can be done safely?
+February 1, 2024
+hellobox. 02/01/2024 12:55 AM
+using old gmp is going to require using a lot of old packages
+02/01/2024 12:55 AM
+    configure: error:
+      ***
+      *** Libnettle 3.6 was not found.
+hellobox. 02/01/2024 12:30 AM
+    configure: WARNING: GNU MP not found, or too old. GMP-6.1.0 or later is needed, see https://gmplib.org/.
+        Support for public key algorithms will be unavailable.
+January 31, 2024
+[smx2460]
+smx2460 01/31/2024 8:39 PM
+I don't remember... (edited)
+hellobox. 01/31/2024 8:07 PM
+@Smx what's the point of this?
+https://github.com/openlgtv/buildroot-nc4/blob/master/package/luna-service2/001-build-fixes.patch#L36
+January 30, 2024
+[smx2460]
+smx2460 01/30/2024 10:53 PM
+to better understand the blocker
+[smx2460]
+hellobox. <@310158180728700929> any ideas about the gmp stuff?
+smx2460 01/30/2024 10:53 PM
+i guess i'll need to try what you're trying
+hellobox. 01/30/2024 10:39 PM
+i was thinking about doing this, but i wanted to make sure it had been
+used elsewhere in br first:
+    ifneq ($(BR2_PACKAGE_GOOGLE_MATERIAL_DESIGN_ICONS_TYPE_PNG)$(BR2_PACKAGE_GOOGLE_MATERIAL_DESIGN_ICONS_TYPE_SVG),)
+    mk
+    ifneq ($(ARMBIAN_FIRMWARE_FILES)$(ARMBIAN_FIRMWARE_DIRS),)
+    mk
+    ifneq ($(BR2_TOOLCHAIN_HAS_GCC_BUG_85180)$(BR2_TOOLCHAIN_HAS_GCC_BUG_101952),)
+    mk
+    ifneq ($(BR2_PACKAGE_APCUPSD_MODBUS_USB)$(BR2_PACKAGE_APCUPSD_USB),)
+i guess it's fine (edited)
+01/30/2024 10:37 PM
+    ifeq ($(BR2_PACKAGE_GMP),y)
+    # this works because BR2_PACKAGE_WEBOS_GMP requires BR2_PACKAGE_GMP
+    ifeq ($(BR2_PACKAGE_WEBOS_GMP),y)
+    COREUTILS_DEPENDENCIES += webos-gmp
+    else
+    COREUTILS_DEPENDENCIES += gmp
+    endif
+    else
+    COREUTILS_CONF_OPTS += --without-gmp
+    endif
+01/30/2024 10:35 PM
+do you know where/how dependencies are handled?
+01/30/2024 10:33 PM
+    $ make gmp-show-rdepends
+    coreutils gdb libpbnjson nettle
+01/30/2024 10:30 PM
+@Smx any ideas about the gmp stuff?
+hellobox. 01/30/2024 7:20 PM
+so i guess the best option is just to combine them all back into one
+workflow and use if to conditionally run steps. i thought i could try to
+use some of the functionality github apparently provides for just this
+kind of thing, but nope
+hellobox. 01/30/2024 7:12 PM
+i have multiple workflows in which i want to do mostly the same thing.
+they're just triggered differently and do slightly different things at
+the end
+01/30/2024 7:11 PM
+github actions kinda suck. you can't share a runner with a reusable
+workflow, and https://github.com/orgs/community/discussions/36861"
+target="_blank" rel="noopener noreferrer">composite actions look like a
+pain to use
+[smx2460]
+smx2460 01/30/2024 6:57 PM
+Back...
+[] smx2460 I'm heading to the office soon, will be able to check in 9
+hours 
+hellobox. 01/30/2024 8:40 AM
+have... fun?
+hellobox. 01/30/2024 8:40 AM
+so if you wanted to copy them to a TV, you'd have to copy the new libgmp
+(same as now)
+[smx2460]
+smx2460 01/30/2024 8:40 AM
+I'm heading to the office soon, will be able to check in 9 hours 
+ 1
+hellobox. 01/30/2024 8:40 AM
+that would mean the programs in br-nc4 would be using the newer version
+01/30/2024 8:39 AM
+could we... have both versions, but have libgmp.so linked to the old
+one?
+01/30/2024 8:38 AM
+@Smx any ideas?
+01/30/2024 8:37 AM
+or do i have to go through everything that uses gmp and
+s/gmp/webos-gmp/?
+    ifeq ($(BR2_PACKAGE_GMP),y)
+    COREUTILS_DEPENDENCIES += gmp
+    else
+    COREUTILS_CONF_OPTS += --without-gmp
+    endif
+01/30/2024 8:37 AM
+can i make my package provide gmp?
+01/30/2024 8:36 AM
+shit.
+01/30/2024 8:36 AM
+ah
+    make: *** No rule to make target 'gmp', needed by '
+[smx2460]
+smx2460 01/30/2024 8:36 AM
+But those are host pkgs
+hellobox. 01/30/2024 8:36 AM
+it has the same kind of these errors as that other time
+    build/libc.a(libc-start.o):(.ARM.exidx+0x0): undefined reference to `__aeabi_unwind_cpp_pr0'
+[smx2460]
+smx2460 01/30/2024 8:35 AM
+I'm thinking using new ones is better for gcc and friends
+hellobox. 01/30/2024 8:35 AM
+i did make clean beforehand
+01/30/2024 8:35 AM
+failed in glibc. interesting
+01/30/2024 8:35 AM
+oh, and i just checked the br-nc4 build status... failed 
+[smx2460]
+smx2460 01/30/2024 8:34 AM
+As a shared lib? Interesting
+[] smx2460 Why
+hellobox. 01/30/2024 8:34 AM
+because that's what webOS (and probaly NC4) has
+[smx2460]
+hellobox. we need to put older gmp (4.2.1) in br-nc4
+smx2460 01/30/2024 8:33 AM
+Why
+[smx2460]
+smx2460 01/30/2024 8:32 AM
+It's not much work
+01/30/2024 8:32 AM
+Glibc -> keep ours
+01/30/2024 8:31 AM
+all
+[] smx2460 git merge and fix conflicts
+hellobox. 01/30/2024 8:31 AM
+all at once or package by package though?
+[smx2460]
+hellobox. <@310158180728700929> how do you usually merge newer buildroot
+stuff?
+smx2460 01/30/2024 8:31 AM
+git merge and fix conflicts
+hellobox. 01/30/2024 4:12 AM
+i'm testing the webos-gmp package now. i wonder if it will build... it's
+supposed to still use default br gmp on the host but disable it for the
+target
+01/30/2024 4:10 AM
+i wonder if we need a polyfill for libbz2 (different sonames) (edited)
+01/30/2024 4:07 AM
+yeah, that's pretty much how i feel which i guess is obvious, since i'm
+adding the old gmp (edited)
+[mariotaku]
+hellobox. if it's the latter, we should just have the latest gmp (rather
+than a version from 2006) so you can ...
+mariotaku 01/30/2024 4:06 AM
+I'd say the purpose to me is to target webOS without the need of
+shipping libgmp.
+hellobox. 01/30/2024 3:29 AM
+if it's the latter, we should just have the latest gmp (rather than a
+version from 2006) so you can take it and put it in your chroot or
+whatever. although i guess in this case, the patch issue is kind of
+moot. if it's just there to link against, this patch doesn't change
+anything. and since the whole point is that you'll be able to run
+programs with the libgmp already on webOS, the code in this libgmp will
+never be executed. we still need to decide, because this will come up
+again with patches that do change the ABI
+hellobox. 01/30/2024 3:22 AM
+i think we kind of have to choose one or the other
+01/30/2024 3:22 AM
+so. buildroot uses gmp 6.2.1 with a patch for
+https://nvd.nist.gov/vuln/detail/CVE-2021-43618" target="blank"
+rel="noopener noreferrer">CVE-2021-43618. the patch doesn't look like it
+would apply cleanly to 4.2.1, but i might be able to fix it up. should i
+though? the library on webOS doesn't have the patch. this goes to what
+the purpose of br-nc4 is: to replicate NC4/webOS as much as possible for
+the purpose of being a toolchain targeting NC4/webOS, or * for the
+br-nc4 programs and libraries themselves (potentially newer versions or
+with different patches etc.) to be run on NC4/webOS (e.g. in a chroot)
+(edited)
+hellobox. 01/30/2024 3:00 AM
+apparently you're supposed to put your custom packages in a subdirectory
+of packages i guess maybe it helps keep things neat for updating
+buildroot? i don't really understand why they tell you do that tbh.
+(edited)
+hellobox. 01/30/2024 2:48 AM
+can i just backport an individual package?
+01/30/2024 2:48 AM
+@Smx how do you usually merge newer buildroot stuff?
+01/30/2024 2:46 AM
+can i add it as a separate optional package, or do i have to replace the
+original one? i think it's used on the host, so i don't want to replace
+that
+01/30/2024 2:46 AM
+we need to put older gmp (4.2.1) in br-nc4
+January 29, 2024
+hellobox. 01/29/2024 10:37 PM
+also, @ztuxnet what is the reason for the native build again?
+hellobox. 01/29/2024 10:28 PM
+i wonder if there's a way to make a tag that's explicitly marked as a
+release
+01/29/2024 10:28 PM
+@ztuxnet i assume you're the only other user of this
+01/29/2024 10:26 PM
+i think it shoud be a prerelease by default
+01/29/2024 10:25 PM
+if you push a tag starting with v, it'll automatically create a
+(non-prerelease) release 
+01/29/2024 10:21 PM
+i don't understand why this is a problem, since it automatically updates
+the latest "Development Build" releases automatically all the time
+      Error: Validation Failed: {"resource":"Release","code":"already_exists","field":"tag_name"}
+01/29/2024 10:20 PM
+it failed to upload the assets when i created a release (i now see i was
+just supposed to push a tag, but this works on the hbchannel repo) and
+dumped the entire minified source in the error message
+https://github.com/webosbrew/hyperion.ng-webos-loader/actions/runs/7700718025/job/20985244375
+(edited)
+01/29/2024 10:18 PM
+ughhhhhhh what the hell is going on with
+https://github.com/marvinpinto/action-automatic-releases"
+target="_blank" rel="noopener
+noreferrer">marvinpinto/action-automatic-releases? it hasn't been
+updated for 2 years and is still using node 12, but it's supposedly a
+mirror of
+https://github.com/marvinpinto/actions/tree/master/packages/automatic-releases
+which has been updated to use node 16 (edited)
+[julaobr]
+julaobr 01/29/2024 6:47 PM
+hello!! I have a LG C2 television, I'm on firmware 03.33.90, it's rooted
+with HyperHDR and the pic cap working perfectly!! Is it safe to update
+the firmware to this version 04.40.90???
+[] smx2460 want to make a PR to br-nc4 to bump glibc too?
+hellobox. 01/29/2024 2:30 AM
+looks like the CI builds were successful.
+https://github.com/openlgtv/buildroot-nc4/pull/45
+January 28, 2024
+[] ingwiephoenix I will be blunt, I haven't tested that myself yet. xD
+So happy to see that it works!
+eulondon1 01/28/2024 11:49 PM
+Nice Project! While I'm not deeply knowledgeable in these areas, I can't
+even configure RetroArch properly. I embarked on this endeavor mostly to
+impress my relative, who happens to be a "Samsung fanboy." I was curious
+to see how far I could push the capabilities of the TV.
+[ingwiephoenix]
+ingwiephoenix 01/28/2024 11:37 PM
+I want to work on making a proper ipk as part of my ci/cd setup that i
+now have. I'll keep you posted ^^
+[ingwiephoenix]
+eulondon1 https://www.youtube.com/watch?v=-r2ELvEtc0U Sorry about
+language, I'm not a native speaker. Just a q...
+ingwiephoenix 01/28/2024 11:36 PM
+I will be blunt, I haven't tested that myself yet. xD So happy to see
+that it works!
+[] 55thetax55war ------- Whatever someone who set up retroarch. please
+message me how well retroarch runs. and what t...
+eulondon1 01/28/2024 11:30 PM
+https://www.youtube.com/watch?v=-r2ELvEtc0U Sorry about language, I'm
+not a native speaker. Just a quick video I did to show my relatives.
+Don't mind the brightness my mobile is only a M51 (poor camera) it looks
+better in person. My TV is also an old 55SK8500PSA 4.4 WebOS Rooted on
+firmware 05.50.15. All thanks to the amazing @Ingwie Phoenix Thank you
+very much sir. (edited)
+Gelasio Ebel Junior
+LG WebOS Rodando PSX Nativamente.
+[] Watch video
+ 1
+[] smx2460 <@803885040827629628> new hash needed
+hellobox. 01/28/2024 9:36 PM
+fixed
+ 1
+hellobox. 01/28/2024 9:35 PM
+typo
+01/28/2024 9:35 PM
+oops
+[smx2460]
+smx2460 01/28/2024 9:35 PM
+@hellobox new hash needed
+01/28/2024 9:35 PM
+    ERROR: No hash found for glibc-polyfills-cf6fa6f9b00f833a2bcc4cec12ecb3ff65ab83aa.tar.gz
+hellobox. 01/28/2024 9:04 PM
+i tried to rebuild just glibc, but something weird is going on so
+whatever. i'll just push it and see if it works on CI
+[smx2460]
+smx2460 01/28/2024 5:37 PM
+want to make a PR to br-nc4 to bump glibc too?
+ 1
+01/28/2024 5:36 PM
+@hellobox merged everything
+[smx2460]
+smx2460 01/28/2024 2:46 PM
+can do later
+01/28/2024 2:46 PM
+PR can be merged
+01/28/2024 2:46 PM
+well it looks like it's working
+01/28/2024 2:43 PM
+you mean the internal one
+01/28/2024 2:43 PM
+oh wait
+01/28/2024 2:43 PM
+no
+[] smx2460 ```/tmp # /lib/libc.so.6 GNU C Library stable release version
+2.12.2, by Roland McGrath et al. Copy...
+hellobox. 01/28/2024 2:42 PM
+does it have aligned_alloc?
+[smx2460]
+smx2460 01/28/2024 2:42 PM
+    /tmp # /lib/libc.so.6 
+    GNU C Library stable release version 2.12.2, by Roland McGrath et al.
+    Copyright (C) 2010 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.
+    There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    Compiled by GNU CC version 4.5.1.
+    Compiled on a Linux 2.6.27 system on 2011-07-22.
+    Available extensions:
+            crypt add-on version 2.1 by Michael Glad and others
+            GNU Libidn by Simon Josefsson
+            Native POSIX Threads Library by Ulrich Drepper et al
+            Support for some architectures added on, not maintained in glibc core.
+            BIND-8.2.3-T5B
+    libc ABIs: UNIQUE
+    For bug reporting instructions, please see:
+    <http://www.gnu.org/software/libc/bugs.html>.
+01/28/2024 2:42 PM
+@hellobox
+    /tmp # GLIBC_POLYFILLS_DEBUG=1 ./aa-c17
+    [aligned_alloc]: init
+    addr (0x34000) is aligned
+    check_zero_alignment: non-null (0x31008); no error
+    check_nonpowerof2_alignment: non-null (0x31800); no error
+hellobox. 01/28/2024 12:14 PM
+@Smx (or anyone with a glibc that doesn't provide aligned_alloc) plz run
+this
+    GLIBC_POLYFILLS_DEBUG=1 ./aa-c17
+https://github.com/throwaway96/aligned_alloc-test" target="_blank"
+rel="noopener noreferrer">source you can also try compiling it with old
+br-nc4, but i'm sure that will fail (edited)
+ aa-c17
+72.55 KB External
+01/28/2024 12:11 PM
+the polyfill seems to be working quite well on webOS 8
+    root@lg-k8lpn[k8lpn 8.1.0]:~# GLIBC_POLYFILLS_DEBUG=1 GLIBC_POLYFILLS_ALIGNED_ALLOC_SKIP_GLIBC=1 GLIBC_POLYFILLS_ALIGNED_ALLOC_C17_SEMANTICS=1 ./aa-c17
+    [aligned_alloc]: init
+    [aligned_alloc]: skip_glibc: default=0, env=1
+    [aligned_alloc]: c17_semantics: default=0, env=1
+    addr (0x144000) is aligned
+    check_zero_alignment: null; EINVAL
+    check_nonpowerof2_alignment: null; EINVAL
+    root@lg-k8lpn[k8lpn 8.1.0]:~# GLIBC_POLYFILLS_DEBUG=1 GLIBC_POLYFILLS_ALIGNED_ALLOC_SKIP_GLIBC=1 GLIBC_POLYFILLS_ALIGNED_ALLOC_C17_SEMANTICS=0 ./aa-c17
+    [aligned_alloc]: init
+    [aligned_alloc]: skip_glibc: default=0, env=1
+    [aligned_alloc]: c17_semantics: default=0, env=0
+    addr (0x3e0000) is aligned
+    check_zero_alignment: non-null (0x3dd598); no error
+    check_nonpowerof2_alignment: non-null (0x3dd800); no error
+    root@lg-k8lpn[k8lpn 8.1.0]:~# GLIBC_POLYFILLS_DEBUG=1 GLIBC_POLYFILLS_ALIGNED_ALLOC_SKIP_GLIBC=0 ./aa-c17
+    [aligned_alloc]: init
+    [aligned_alloc]: skip_glibc: default=0, env=0
+    addr (0x3dc000) is aligned
+    check_zero_alignment: non-null (0x3db598); no error
+    check_nonpowerof2_alignment: non-null (0x3db800); no error
+01/28/2024 12:10 PM
+interesting. debian testing is still on glibc 2.37, so we don't get C17
+semantics for aligned_alloc()
+    addr (0x55ff90544000) is aligned
+    check_zero_alignment: non-null (0x55ff905426b0); no error
+    check_nonpowerof2_alignment: non-null (0x55ff90542800); no error
+[yolofant]
+yolofant 01/28/2024 11:49 AM
+and you want to access 192.168.2.1/24 so that would be allowed ips
+01/28/2024 11:48 AM
+your interface address must be 192.168.2.209/32
+[yolofant]
+[] satdx62 In the WireGuard conf generated by Fritz!Box, [Interface]
+Address = `192.168.2.1/24` and [Peer] Allo...
+yolofant 01/28/2024 11:48 AM
+hmm, ok then maybe I was wrong about the conf file
+hellobox. 01/28/2024 11:20 AM
+@Smx i'm almost done with a binary for you to run on nc4 so we can
+finally test the aligned_alloc() polyfill
+[satdx62]
+[] yolofant I guess what you want is
+satdx62 01/28/2024 10:38 AM
+In the WireGuard conf generated by Fritz!Box, [Interface] Address =
+192.168.2.1/24 and [Peer] AllowedIPs = 192.168.2.209/32. The Fritz!Box
+also has the address 192.168.2.1 and the LG has the local fixed IP
+address 192.168.2.81 and is accessed from outside via the address range
+192.168.2.209/32 assigned by Fritz!Box. Or am I making a mistake?
+(edited)
+January 27, 2024
+[yolofant]
+yolofant 01/27/2024 10:41 PM
+and allowed ips = 192.168.2.1/24
+01/27/2024 10:41 PM
+ip address add 192.168.2.209/32 dev wg0 (edited)
+01/27/2024 10:40 PM
+I guess what you want is
+01/27/2024 10:40 PM
+ad allowed ips seems still wrong
+01/27/2024 10:40 PM
+well you just need to check using ip addr and ip route
+[satdx62]
+[] yolofant and allowed ips might also be wrong then
+satdx62 01/27/2024 10:28 PM
+I have now entered everything correctly, but I don't see any traffic.
+Nevertheless, I've made more progress than I did yesterday. Thank you, I
+will continue tomorrow.
+[wg_test_3.jpg]
+ wg_test_3.jpg
+106.17 KB External
+[satdx62]
+[] yolofant and allowed ips might also be wrong then
+satdx62 01/27/2024 10:12 PM
+yes
+[yolofant]
+yolofant 01/27/2024 10:10 PM
+and allowed ips might also be wrong then
+01/27/2024 10:10 PM
+yes
+[satdx62]
+[] yolofant that was just an example from my setup
+satdx62 01/27/2024 10:10 PM
+Ah, I found the error, instead of ip address add 192.168.179.205/24 dev
+wg0 must be ip address add 192.168.2.209/32 dev wg0
+[yolofant]
+yolofant 01/27/2024 10:07 PM
+basically you need to add the ip address from your original config file
+01/27/2024 10:06 PM
+that was just an example from my setup
+01/27/2024 10:06 PM
+is the .205 correct?
+01/27/2024 10:05 PM
+ip route ?
+01/27/2024 10:00 PM
+can you post the output of both those commands?
+[satdx62]
+satdx62 01/27/2024 9:58 PM
+Yes, I have come further.
+[yolofant]
+yolofant 01/27/2024 9:57 PM
+I guess you are using a fritzbox?
+01/27/2024 9:56 PM
+you can use ip addr and ip route to debug
+[yolofant]
+[] satdx62 I will follow your recommendation, thank you in advance. The
+three commands are already working.
+yolofant 01/27/2024 9:56 PM
+hmm, that doesn't mean it's working though 
+[satdx62]
+[] yolofant and then use those 3 commands I posted above to set up the
+address manually
+satdx62 01/27/2024 9:48 PM
+I will follow your recommendation, thank you in advance. The three
+commands are already working.
+[yolofant]
+yolofant 01/27/2024 9:46 PM
+and then use those 3 commands I posted above to set up the address
+manually
+01/27/2024 9:46 PM
+then you can set that
+01/27/2024 9:45 PM
+just remove the Address and DNS stuff from your config
+[yolofant]
+[] satdx62 Yes, I have also generated the file from my router and simply
+imported it into other devices with Wi...
+yolofant 01/27/2024 9:44 PM
+yeah it's not straightforward but also not extremely difficult
+ 1
+[satdx62]
+[] yolofant then there should be `AllowedIPs` inside the config file too
+which specifies what will be routed thr...
+satdx62 01/27/2024 9:41 PM
+Yes, I have also generated the file from my router and simply imported
+it into other devices with WireGuard, but this is quite tricky.
+[yolofant]
+yolofant 01/27/2024 9:38 PM
+apparently I did not set up any routes manually
+01/27/2024 9:38 PM
+then there should be AllowedIPs inside the config file too which
+specifies what will be routed through the tunnel
+01/27/2024 9:37 PM
+192.168.179.205 is the ip address from your config file
+01/27/2024 9:37 PM
+that should be sufficient
+01/27/2024 9:37 PM
+    ip address add 192.168.179.205/24 dev wg0
+    ip link set mtu 1420 dev wg0
+    ip link set wg0 up
+(edited)
+[satdx62]
+[] yolofant like do you want to pass everything through the `wg0`
+interface or only specific traffic
+satdx62 01/27/2024 9:34 PM
+Like them, I wanted to access the device from outside, via my secure wg
+connection to my router.
+[yolofant]
+yolofant 01/27/2024 9:32 PM
+ip route add 192.168.178.0/24 dev wg0 that should pass in that specific
+range through the wg0 interface
+01/27/2024 9:30 PM
+like do you want to pass everything through the wg0 interface or only
+specific traffic
+01/27/2024 9:29 PM
+but it also depends a bit on what you are trying to achieve
+01/27/2024 9:28 PM
+but I think you'll only need to set the address and setup the route
+01/27/2024 9:27 PM
+unfortunately, I don't have the script here that I'm using to make my
+parent's tv connect to my local jellyfin server
+01/27/2024 9:27 PM
+because the system needs to know what to pass through the wg0 interface
+01/27/2024 9:26 PM
+I think you also need to setup a route
+[satdx62]
+[] yolofant something like that
+satdx62 01/27/2024 9:25 PM
+Oh, I'll have to read up on the subject.
+[yolofant]
+yolofant 01/27/2024 9:25 PM
+something like that
+01/27/2024 9:25 PM
+ip -4 address add ADRESS dev wg0
+01/27/2024 9:24 PM
+$proto is -4 for ipv4
+01/27/2024 9:24 PM
+ip $proto address add "$1" dev "$INTERFACE" this is from the wg-quick
+script
+[satdx62]
+satdx62 01/27/2024 9:24 PM
+how? (edited)
+[yolofant]
+yolofant 01/27/2024 9:24 PM
+no you need to use ip
+[satdx62]
+[] yolofant ``` - Address: may be specified one or more times and
+contains one or more IP addresse...
+satdx62 01/27/2024 9:23 PM
+I think the easy thing is to use “nmcli”, but they don't exist here
+either.
+[yolofant]
+yolofant 01/27/2024 9:23 PM
+these are handled by wg-quick usually
+01/27/2024 9:22 PM
+if you have any of these in your config you need to remove them
+01/27/2024 9:22 PM
+          - Address: may be specified one or more times and contains one or more
+            IP addresses (with an optional CIDR mask) to be set for the interface.
+          - DNS: an optional DNS server to use while the device is up.
+          - MTU: an optional MTU for the interface; if unspecified, auto-calculated.
+          - Table: an optional routing table to which routes will be added; if
+            unspecified or \`auto', the default table is used. If \`off', no routes
+            are added.
+          - PreUp, PostUp, PreDown, PostDown: script snippets which will be executed
+            by bash(1) at the corresponding phases of the link, most commonly used
+            to configure DNS. The string \`%i' is expanded to INTERFACE.
+          - SaveConfig: if set to \`true', the configuration is saved from the current
+            state of the interface upon shutdown.
+    `
+01/27/2024 9:21 PM
+yes that's what I meant that parts of the config are not supported
+[satdx62]
+[] yolofant technically you could use `wg-quick` but it requires a
+proper `bash`
+satdx62 01/27/2024 9:21 PM
+Hi, wg seems to be working now, but the WireGuard configuration file
+generated by my router won't take over. With ./wg set wg0 listen-port
+53037 private-key... the same thing happens.
+[wg_conf.jpg]
+ wg_conf.jpg
+42.61 KB External
+[wg_test.png]
+ wg_test.png
+29.12 KB External
+[yolofant]
+yolofant 01/27/2024 9:08 PM
+I think that one did not compile against that old glibc and then I
+raised the glibc temporarily
+01/27/2024 9:08 PM
+I compiled that binary a long time ago and also looked into compiling
+the wireguard kernel module
+01/27/2024 9:07 PM
+we have glib 2.16? in br-nc4 for that reason
+[ingwiephoenix]
+ingwiephoenix 01/27/2024 8:47 PM
+let alone riscv...
+01/27/2024 8:47 PM
+Been wanting my own CI/CD for this for a while - most things i need dont
+really care for arm64 x3
+01/27/2024 8:47 PM
+Currently refining my script for automation so i can hopefuly produce
+some auto builds for retroarch, libretro cores and whatever else i feel
+like.
+01/27/2024 8:46 PM
+Also if this toolchain builds, Ill see if i can set up auto builds for
+nc4 too
+01/27/2024 8:44 PM
+(opkg list-installed is neat.)
+01/27/2024 8:44 PM
+i.e. on my TV, opkg reports: lib32-libc6 - 2.28-r0webos5soclg3starfish8
+[ingwiephoenix]
+[] yolofant maybe I needed to compile it against a newer glibc
+ingwiephoenix 01/27/2024 8:43 PM
+or just statically link. glibc versions have been an actual problem with
+just about everything i ever built for my tv...
+[satdx62]
+[] yolofant technically you could use `wg-quick` but it requires a
+proper `bash`
+satdx62 01/27/2024 8:30 PM
+Yes, I will see what works.
+[yolofant]
+yolofant 01/27/2024 8:27 PM
+technically you could use wg-quick but it requires a proper bash
+01/27/2024 8:26 PM
+wg setconf doesn't support all of the parameters from wg-quick but most
+of them
+[satdx62]
+[] yolofant you can use config files btw
+satdx62 01/27/2024 8:25 PM
+Thank you, I will test it.
+[yolofant]
+yolofant 01/27/2024 8:24 PM
+you can use config files btw
+01/27/2024 8:24 PM
+(no content)
+ wg
+83.47 KB External
+ 1
+[satdx62]
+[] yolofant I think it's from `wireguard-tools`
+satdx62 01/27/2024 8:10 PM
+Yes, exactly.
+[yolofant]
+yolofant 01/27/2024 8:10 PM
+I think it's from wireguard-tools
+01/27/2024 8:08 PM
+let me check what happens if I recompile it now
+ 1
+01/27/2024 8:08 PM
+maybe I needed to compile it against a newer glibc
+[yolofant]
+[] satdx62 In general, wg GLIBC_2.25 needs root@LGwebOSTV:~# ./wg ./wg:
+/lib/libc.so.6: Version `GLIBC_2.25' no...
+yolofant 01/27/2024 8:08 PM
+hmm
+[satdx62]
+satdx62 01/27/2024 7:23 PM
+In general, wg GLIBC_2.25 needs root@LGwebOSTV:~# ./wg ./wg:
+/lib/libc.so.6: Version `GLIBC_2.25' not found (required by ./wg)
+[satdx62]
+[] yolofant there's a recipe for it or you take my binary
+satdx62 01/27/2024 7:10 PM
+Hi, when I want to import a WireGuard configuration file with
+“wg set wg0 listen-port 53037 private-key... and so on”, I get in
+terminal out:
+root@LGwebOSTV:~# ./wg: /lib/libc.so.6: version GLIBC_2.25' not found
+(required by ./wg`), where can I get it? Can I compile it myself?
+(edited)
+[kitsuned]
+kitsuned 01/27/2024 4:52 PM
+I'm Russian [:jail:]
+ 2
+01/27/2024 4:52 PM
+I can't
+[smx2460]
+smx2460 01/27/2024 4:52 PM
+last time i tried I couldn't (edited)
+01/27/2024 4:52 PM
+you could
+[kitsuned]
+kitsuned 01/27/2024 4:52 PM
+you can get a virtual machine from Oracle for free 4 ARM64 cores and 24
+GB of RAM
+[yolofant]
+yolofant 01/27/2024 4:49 PM
+it will become available on github actions eventually
+[smx2460]
+smx2460 01/27/2024 4:49 PM
+that .... doesn't sound good
+01/27/2024 4:49 PM
+    Sapphire is small company with no real revenue source currently, other than our BlueGem.net computer building subsidiary, of which only makes enough to slightly sustain itself.
+01/27/2024 4:48 PM
+https://blog.sapphire.moe/the-crowdfunded-epyc-is-live/
+THE CROWDFUNDED EPYC IS LIVE
+Last January we started a fund raising campaign to raise money for an
+updated server to help host GitGud and it's over 10,000+ projects. We
+were able to raise enough funds by April to make our first purchase.
+Thanks to your support, we were able to buy our HP
+[]
+01/27/2024 4:47 PM
+the guys behind it are https://sapphire.moe/
+Sapphire
+Open source software and SaaS development company
+01/27/2024 4:46 PM
+need to go ask 'em
+01/27/2024 4:46 PM
+    Free shared CI. Just request access from us via a communication channel
+01/27/2024 4:46 PM
+never tried CI on this
+01/27/2024 4:46 PM
+https://gitgud.io/
+Sign in · GitLab
+Fast and Free Git Hosting
+[]
+01/27/2024 4:46 PM
+or what else...
+01/27/2024 4:45 PM
+i could also yolo add it and see if i run out of credits [:blob_shrug:]
+[yolofant]
+yolofant 01/27/2024 4:41 PM
+unfortunately buildroot macos arm support isn't really there yet
+01/27/2024 4:40 PM
+but yeah my incentive for the arm64 build is that I'm also using a arm
+mac now running br-nc4 inside a ubuntu vm
+[smx2460]
+smx2460 01/27/2024 4:39 PM
+[yolofant]
+yolofant 01/27/2024 4:36 PM
+at first I thought that was a joke
+01/27/2024 4:36 PM
+https://www.youtube.com/watch?v=I2J2MzKjcqY
+GitHub
+SNEAK PEEK - new custom M1 macOS runners with Christina Warren
+Go behind the scenes with Christina Warren (@filmgirl) to see how to see
+how GitHub is bringing the new M1 macOS runners to production. With
+these runners, you can build and test native mobile applications faster.
+People have been wanting Apple silicon runners for a really long time,
+they're now here! ▬▬▬▬▬▬ WANT TO LEARN MORE?  ▬▬▬▬▬▬ Le...
+[] Watch video
+ 1
+[smx2460]
+[] yolofant I saw a video where they showed how they ripped mac minis
+out of their cases to put inside a rack 
+smx2460 01/27/2024 4:36 PM
+link if you have it 
+[smx2460]
+smx2460 01/27/2024 4:36 PM
+Cirrus actually deprecated macOS x86_64, you can't use it anymore
+[yolofant]
+yolofant 01/27/2024 4:36 PM
+I saw a video where they showed how they ripped mac minis out of their
+cases to put inside a rack 
+01/27/2024 4:35 PM
+I think github has macOS m1 machines too
+[smx2460]
+smx2460 01/27/2024 4:35 PM
+but same as i said above
+01/27/2024 4:35 PM
+Cirrus has native arm64 macOS and Linux

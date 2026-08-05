@@ -1,0 +1,1821 @@
+June 2, 2022
+[astur3l]
+astur3l 06/02/2022 7:42 PM
+do u have libpng installed?:D
+Deleted User 06/02/2022 7:41 PM
+i dont understand
+[unknown.png]
+ unknown.png
+2.7 KB External
+06/02/2022 7:39 PM
+does it really have to rebuild LibVNCServer each time i build?
+[astur3l]
+astur3l 06/02/2022 6:56 PM
+https://www.kernel.org/doc/html/v5.12/networking/tproxy.html like this
+06/02/2022 6:55 PM
+or if linux, you can use iptables to redirect all web requests to the
+proxy (transparent proxy)
+06/02/2022 6:54 PM
+but http_proxy env var doesnt work? most app (curl, wget, apt) supports
+it
+[] astur3l nope its a really simple http proxy w/ filtering features
+Deleted User 06/02/2022 6:51 PM
+oh
+[astur3l]
+Deleted User would this let me force all programs to go through the
+proxy
+astur3l 06/02/2022 6:47 PM
+nope its a really simple http proxy w/ filtering features
+Deleted User 06/02/2022 6:46 PM
+all the ones ive found only let u add specific apps to use the proxy
+06/02/2022 6:46 PM
+ive been looking for one that does this
+[] astur3l privoxy is very lightweight if u need one
+Deleted User 06/02/2022 6:46 PM
+would this let me force all programs to go through the proxy
+[astur3l]
+astur3l 06/02/2022 6:45 PM
+privoxy is very lightweight if u need one
+Deleted User 06/02/2022 6:45 PM
+it also made the script a lot smaller because i could run the socks5
+proxy in two lines of code
+06/02/2022 6:44 PM
+until i removed the http and https proxies because i wasnt using them'
+[] astur3l I don't think so :/, but you can always use a http->socks
+proxy too 
+Deleted User 06/02/2022 6:44 PM
+i mean, it doesnt have to the script used to run an http, https, and
+sock5 proxy all at once
+[astur3l]
+Deleted User does this support socks5 proxies?
+astur3l 06/02/2022 6:43 PM
+I don't think so :/, but you can always use a http->socks proxy too 
+[] astur3l what about http_proxy env. var?
+Deleted User 06/02/2022 6:41 PM
+does this support socks5 proxies?
+[astur3l]
+astur3l 06/02/2022 12:53 PM
+https://www.golinuxcloud.com/set-up-proxy-http-proxy-environment-variable/
+How to set up proxy using http_proxy & https_proxy environment vari...
+How to set up proxy on Linux using http_proxy and https_proxy
+environment variable. Export the variables or set using /etc/environment
+and /etc/profile.d script
+[]
+06/02/2022 12:53 PM
+what about http_proxy env. var?
+Deleted User 06/02/2022 2:24 AM
+but it doesnt
+06/02/2022 2:24 AM
+i thought this might work
+[unknown.png]
+ unknown.png
+2.05 KB External
+06/02/2022 2:24 AM
+(no content)
+[unknown.png]
+ unknown.png
+45 KB External
+06/02/2022 2:24 AM
+and wsl wont use it
+06/02/2022 2:24 AM
+but now i have to use my proxy
+06/02/2022 2:24 AM
+and installed more missing packages
+[] e99.tuxuser https://github.com/webosbrew/meta-lg-webos-ndk These two
+sections are relevant for you: - https://g...
+Deleted User 06/02/2022 2:24 AM
+well, earlier i got it all set up
+June 1, 2022
+[e99.tuxuser]
+e99.tuxuser 06/01/2022 9:56 PM
+https://github.com/webosbrew/meta-lg-webos-ndk These two sections are
+relevant for you: -
+https://github.com/webosbrew/meta-lg-webos-ndk#compile-program-by-command-line -
+https://github.com/webosbrew/meta-lg-webos-ndk#cmake
+GitHub - webosbrew/meta-lg-webos-ndk: Most important tool to brew s...
+Most important tool to brew some native app for webOS TV - GitHub -
+webosbrew/meta-lg-webos-ndk: Most important tool to brew some native app
+for webOS TV
+[]
+06/01/2022 9:55 PM
+Your TV is ARM, your PC is x86(_64) - that means, to compile software
+for the TV, you need an ARM toolchain to cross-compile for the different
+architecture
+Deleted User 06/01/2022 9:37 PM
+great
+[unknown.png]
+ unknown.png
+4.3 KB External
+06/01/2022 9:35 PM
+nvm again
+[unknown.png]
+ unknown.png
+2.72 KB External
+Deleted User 06/01/2022 9:28 PM
+nvm, i had to install a bunch of packages
+[] infowski
+https://github.com/Informatic/webos-vncserver/tree/native_service
+Deleted User 06/01/2022 9:19 PM
+nice, now i need to figure out how to build it
+[unknown.png]
+ unknown.png
+29.29 KB External
+[infowski]
+infowski 06/01/2022 5:51 PM
+https://github.com/Informatic/webos-vncserver/tree/native_service
+GitHub - Informatic/webos-vncserver at native_service
+An extremely hacky VNC server for WebOS - Works by reading directly from
+the GPU's framebuffer. - GitHub - Informatic/webos-vncserver at
+native_service
+[]
+06/01/2022 5:50 PM
+@Deleted User you can use vncserver - we properly implement
+keyboard/remote input
+Deleted User 06/01/2022 7:14 AM
+or maybe there is, i dont know i couldnt find much documentation at all
+06/01/2022 7:13 AM
+and i realized two things 1: i could only send buttons that were on the
+remote 2: there are no keydown/keyups, only keypresses
+[] mariotaku I think so.
+Deleted User 06/01/2022 7:12 AM
+i had something like this
+    const readline = require('readline');
+    readline.emitKeypressEvents(process.stdin);
+    if (process.stdin.isTTY) {
+        process.stdin.setRawMode(true);
+    }
+    var lgtv = require("lgtv2")({
+        url: 'ws://192.168.1.143:3000'
+    });
+    lgtv.on('error', function (err) {
+        console.log(err);
+        process.exit();
+    });
+    let inputSocket;
+    lgtv.on('connect', function () {
+        console.log('Connected to LG WebOS TV, please wait for input socket connection');
+        lgtv.getSocket('ssap://com.webos.service.networkinput/getPointerInputSocket', function(err, sock) {
+            if (!err) {
+                console.log('Connected to input socket')
+                inputSocket = sock;
+            } else {
+                console.error(err);
+                process.exit();
+            }
+        });
+    });
+    function sendKey(key) {
+        inputSocket.send('button', {name: key});
+    }
+    process.stdin.on('keypress', (str, key) => {
+        if (!inputSocket) {
+            console.error("Not connected to the input socket");
+            process.exit();
+        }
+        if (key.ctrl && key.name === 'c') process.exit();
+        if (key.name == 'w') sendKey('1');
+        if (key.name == 'a') sendKey('2');
+        if (key.name == 's') sendKey('3');
+        if (key.name == 'd') sendKey('4');
+        if (key.sequence == ',') sendKey('5');
+        if (key.name == 'l') sendKey('6');
+        if (key.name == 'return') sendKey('7');
+        if (key.sequence == '\'') sendKey('8');
+    });
+Deleted User 06/01/2022 7:07 AM
+my problem is that i cant get it to differentiate between keydown and
+keyup
+[mariotaku]
+mariotaku 06/01/2022 7:06 AM
+I think so.
+[] mariotaku A simple app using SSAP should be enough
+Deleted User 06/01/2022 7:06 AM
+you mean with something like
+ssap://com.webos.service.networkinput/getPointerInputSocket?
+[mariotaku]
+Deleted User i wonder if it would be possible to use the keyboard on my
+laptop as a keyboard for the tv
+mariotaku 06/01/2022 3:11 AM
+A simple app using SSAP should be enough
+Deleted User 06/01/2022 1:33 AM
+i wonder if it would be possible to use the keyboard on my laptop as a
+keyboard for the tv
+[naetrox]
+naetrox 06/01/2022 12:17 AM
+why set up production for 3 different boards when you can use just one
+06/01/2022 12:17 AM
+which makes sense
+06/01/2022 12:16 AM
+all thats different is the settings in Ez-Adjust
+06/01/2022 12:16 AM
+i checked the images, same motherboard as the 55C8 and 77 for that
+matter
+06/01/2022 12:16 AM
+cheers
+06/01/2022 12:16 AM
+i got the 65C8PJA indeed (edited)
+[smx2460]
+smx2460 06/01/2022 12:16 AM
+take care man
+06/01/2022 12:16 AM
+i see
+[naetrox]
+naetrox 06/01/2022 12:15 AM
+so maybe some other day we can try that
+06/01/2022 12:15 AM
+health reasons mostly
+06/01/2022 12:15 AM
+i have all the data and i appreciate your help, but i am so not set up
+for soldering and probing atm
+[smx2460]
+[] naetrox only a 65C8PJA
+smx2460 06/01/2022 12:15 AM
+that is very likely compatible with an EZ Adjust change
+[smx2460]
+smx2460 06/01/2022 12:14 AM
+do you know the Chassis by chance?
+[smx2460]
+[] naetrox 55C8PJA
+smx2460 06/01/2022 12:14 AM
+let me see if i can find your pinout
+[smx2460]
+smx2460 06/01/2022 12:13 AM
+06/01/2022 12:13 AM
+and that will tell use the offset of rootfs.pak
+06/01/2022 12:13 AM
+we can easily dump it at the beginning of the eMMC (edited)
+06/01/2022 12:13 AM
+if the partition table is not contained within the EPK file itself
+(epk2extract will decode it for you)
+06/01/2022 12:12 AM
+if you don't, we can interpret the LG partition table to find out where
+to write
+06/01/2022 12:12 AM
+where? once you connect the SD card adapter you'll have mmcblkxpxx
+(edited)
+06/01/2022 12:12 AM
+how to image? dd
+06/01/2022 12:11 AM
+you damaged rootfs, so you want to image roofs.pak to the right
+partition
+06/01/2022 12:11 AM
+once you extract the .epk file for your model, you end up with various
+.pak files for each partition
+06/01/2022 12:11 AM
+it's easy and i will help you with it if you decide to try
+06/01/2022 12:11 AM
+as for the firmware image to program and how to do it
+[naetrox]
+naetrox 06/01/2022 12:10 AM
+don't have much else going for me atm
+06/01/2022 12:10 AM
+i just wanna watch TV
+06/01/2022 12:10 AM
+yeah, but i won't bother with it this time :)
+[smx2460]
+[] naetrox it's not exposed from the back, so it could be pain
+smx2460 06/01/2022 12:10 AM
+you need to probe those resistors nearby
+May 31, 2022
+[aabytt]
+aabytt 05/31/2022 12:41 PM
+nvm, got it
+[aabytt]
+aabytt 05/31/2022 9:09 AM
+Is there any example of webos web app with a built-in node js service?
+May 30, 2022
+[infowski]
+infowski 05/30/2022 3:07 PM
+heh
+[jocarduck]
+jocarduck 05/30/2022 3:00 PM
+mmmh, I use it while on the TV, haven't tested to do stream to the TV
+but seat in the computer with the magic remote xD
+[naetrox]
+naetrox 05/30/2022 2:50 PM
+i figured, yes, though that would cause some latency i suppose? anyway,
+it's one of those obvious ideas i think
+[jocarduck]
+[] naetrox another idea i had; a service to relay the magic remote
+cursor position to another computer, essenti...
+jocarduck 05/30/2022 2:50 PM
+if you run moonlight, you can already use the magic controller as the
+mouse in the remote pc
+May 29, 2022
+[astur3l]
+astur3l 05/29/2022 3:11 PM
+if u dont know wechip remote-s
+[astur3l]
+[] naetrox another idea i had; a service to relay the magic remote
+cursor position to another computer, essenti...
+astur3l 05/29/2022 3:10 PM
+i wanted to use magic remote for my pc was unable to capture the bt
+traffic  anyway there are much better air mouse-s
+[naetrox]
+naetrox 05/29/2022 2:23 PM
+haha, as expected
+ww8543 05/29/2022 2:22 PM
+there is magic4pc for windows, and another one for linux
+[] naetrox another idea i had; a service to relay the magic remote
+cursor position to another computer, essenti...
+ww8543 05/29/2022 2:22 PM
+someone already implemented that
+[naetrox]
+naetrox 05/29/2022 1:31 PM
+another idea i had; a service to relay the magic remote cursor position
+to another computer, essentially allowing the magic remote to act as a
+pointing device, kinda niche but might be fun, could also enumerate it
+as a virtual game controller for wii emulation (y'all remember the days
+where you connected your wii remote to bluetooth and had to use two
+tealight candles for IR?_
+05/29/2022 1:27 PM
+cheers, i'm open to other ideas as well, mostly just want to get some
+training in before i tackle openvpn
+[] naetrox once i've got my TV repaired i'd like to create an extended
+picture settings app, essentially just t...
+ww8543 05/29/2022 1:22 PM
+neat idea
+[naetrox]
+naetrox 05/29/2022 1:10 PM
+i'll also be looking into service bus stuff so one can switch profiles
+programmatically, as long as it matches the picture mode of course
+05/29/2022 1:09 PM
+the main point of the app would be to save profiles to somewhere
+external, or heck, a QR code maybe
+05/29/2022 1:08 PM
+once i've got my TV repaired i'd like to create an extended picture
+settings app, essentially just the picture options menu in a different
+form, maybe with some lagom test images if i can get permission
+[dustyangel47]
+[] dustyangel47 update: they did not, apparently how sad
+dustyangel47 05/29/2022 2:35 AM
+~~i'm hopeful for webos 8 to finally see the light and switch though~~
+May 28, 2022
+[naetrox]
+naetrox 05/28/2022 10:42 PM
+i also have the service manual that has some info on this
+05/28/2022 10:42 PM
+maybe that would be enough
+05/28/2022 10:42 PM
+i know you can change the "inch" value in the ez-adjust
+[infowski]
+infowski 05/28/2022 10:41 PM
+yeah, it'll either just work, or you may need some minor readjustments
+in the service menu. (edited)
+[naetrox]
+naetrox 05/28/2022 10:41 PM
+same part numbers, just likely different values set-up in mem
+05/28/2022 10:41 PM
+yeah i confirmed both boards are the same
+05/28/2022 10:41 PM
+it is what it is
+[infowski]
+infowski 05/28/2022 10:41 PM
+different panel size should be fine* (edited)
+[naetrox]
+naetrox 05/28/2022 10:41 PM
+i don't get too upset over material mistakes
+05/28/2022 10:40 PM
+haha it's alright
+[infowski]
+infowski 05/28/2022 10:40 PM
+pressing f fairly badly right now.
+[infowski]
+[] naetrox I'm tempted to go yolo on this
+infowski 05/28/2022 10:40 PM
+lol, i was afk all day
+[dustyangel47]
+[] dustyangel47 inb4 webos 7 changes to musl just to annoy us
+dustyangel47 05/28/2022 7:57 PM
+update: they did not, apparently how sad
+[naetrox]
+naetrox 05/28/2022 7:50 PM
+cheers, ill check it out when i've got the hardware set up
+ww8543 05/28/2022 7:49 PM
+you can unpack those with epk2extract
+[] naetrox I'll probably just end up doing a board swap, I don't really
+have knowledge about eMMC reprogramming...
+ww8543 05/28/2022 7:49 PM
+epk files have nice clean partitions inside them
+[naetrox]
+naetrox 05/28/2022 6:20 PM
+We have a demoscene at least, since there's hackers there's bound to be
+a webOS homebrew user
+05/28/2022 6:19 PM
+Been too busy with life to really try and get out there
+05/28/2022 6:19 PM
+Certainly a handful, I don't know all that many people here in the first
+place tbh haha
+[mariotaku]
+mariotaku 05/28/2022 6:17 PM
+Noice. Wondering how many webOS homebrew users are in Japan, not so much
+I think...
+[naetrox]
+naetrox 05/28/2022 6:14 PM
+Anyway, lots to do and see every time I go
+05/28/2022 6:14 PM
+I really oughta get back on my electronics projects, the only one I
+finished since moving here is my DIY arcade controller
+05/28/2022 6:13 PM
+Unironically, part of why I moved to Japan is the easy access to good
+quality electronic parts. Back home I had no other option than wholesale
+business-oriented websites
+05/28/2022 6:11 PM
+Probably my fav store here
+05/28/2022 6:11 PM
+You might already know this place, but if not, you'll get a kick out of
+it I think https://en.akibadays.com/beep
+BEEP Akihabara | AKIHABARA DAYS
+Recommended because maniac retro games are on sale.
+[]
+[naetrox]
+[] mariotaku Nice place indeed, and besides those maid cafe things I
+interested in electrical stuff more 
+naetrox 05/28/2022 6:10 PM
+Haha yeah, my god the maid cafe's are multiplying, I often visit in the
+late evening/night so the street has more maids than people
+[mariotaku]
+[] naetrox <@225167450713358338> Sweet! I haven't been near the Skytree
+in quite some time, closest I get is my...
+mariotaku 05/28/2022 6:10 PM
+Nice place indeed, and besides those maid cafe things I interested in
+electrical stuff more 
+[naetrox]
+naetrox 05/28/2022 6:10 PM
+Oh fair point, might give it a shot then, I'm happy I made a backup of
+the partition
+[mariotaku]
+[] naetrox I'll probably just end up doing a board swap, I don't really
+have knowledge about eMMC reprogramming...
+mariotaku 05/28/2022 6:09 PM
+If you are able to connect the required pins, under Linux will you see
+similar partitions? My guess is you will, and you can dd the broken
+partition back.
+[naetrox]
+naetrox 05/28/2022 6:04 PM
+@Mariotaku Sweet! I haven't been near the Skytree in quite some time,
+closest I get is my monthly/biweekly roaming around Akihabara
+[mariotaku]
+[] naetrox <@225167450713358338> Do you live in Japan as well by any
+chance?
+mariotaku 05/28/2022 5:56 PM
+Yes. I live somewhere I can see the skytree everyday.
+[naetrox]
+naetrox 05/28/2022 5:28 PM
+I live in Setagaya here
+05/28/2022 5:27 PM
+@Mariotaku Do you live in Japan as well by any chance?
+05/28/2022 5:26 PM
+(and it's on good ole yahoo auctions)
+05/28/2022 5:26 PM
+If I get the C9 board I can get 4k 120hz too, which is p cool
+05/28/2022 5:25 PM
+I could always keep the old board and reprogram it later if I feel like
+it, and then sell it or give it away
+05/28/2022 5:24 PM
+But if it's a lot of time to do this, and I can find a board for 5000
+yen (could even be C9), then it's probably not worth it at the moment
+05/28/2022 5:24 PM
+I'll probably just end up doing a board swap, I don't really have
+knowledge about eMMC reprogramming. If I understand correctly I'd need
+to find the correct 6 pads to wire it up to an SD card, and then
+probably power up the TV. I'm not quite sure about the firmware images,
+whether they have a nice and clean image inside I can use to write or
+not. I could of course dump the entire chip, then do a search in the
+data for the parts I modified, swap them with the original data, and
+write back
+[naetrox]
+naetrox 05/28/2022 5:13 PM
+I'd feel worse about that haha
+[mariotaku]
+[] naetrox I think adding a warning is a good idea, but then again what
+I did was just plain stupid anyway
+mariotaku 05/28/2022 5:13 PM
+I did similar thing the first week I joined this server, chattr-ed one
+file in developer partition, and realized for LG, "factory reset" means
+rm -rf
+[naetrox]
+naetrox 05/28/2022 5:10 PM
+Learnt something new at least
+05/28/2022 5:10 PM
+I think adding a warning is a good idea, but then again what I did was
+just plain stupid anyway
+05/28/2022 5:09 PM
+Then I can confirm, probe for the right pins
+05/28/2022 5:09 PM
+I'll open it up anyway considering I'll need to if I want to replace the
+mobo haha
+[mariotaku]
+mariotaku 05/28/2022 5:08 PM
+Good luck to you, should be doable.
+[naetrox]
+naetrox 05/28/2022 5:06 PM
+Keeping costs down and sharing configs is easiest
+05/28/2022 5:06 PM
+Yeah, I don't see why they'd switch eMMC in the same year
+[mariotaku]
+mariotaku 05/28/2022 5:06 PM
+Hmmm... same chip likely
+05/28/2022 5:05 PM
+(no content)
+[PXL_20220528_150452419.MP.jpg]
+ PXL_20220528_150452419.MP.jpg
+194.2 KB External
+05/28/2022 5:04 PM
+I'm discussing to add such warning to prevent same thing from happening.
+05/28/2022 5:02 PM
+(no content)
+[unknown.png]
+ unknown.png
+64.28 KB External
+05/28/2022 5:02 PM
+I have a board from the same year (but LCD one)
+[naetrox]
+naetrox 05/28/2022 5:02 PM
+i'll just set up an alert for a c8 board, don't have money now anyway :D
+[naetrox]
+naetrox 05/28/2022 4:50 PM
+it's not exposed from the back, so it could be pain
+05/28/2022 4:47 PM
+just under the shielding, C9 and C8 boards look very similar
+05/28/2022 4:45 PM
+i think it's the eMMC
+05/28/2022 4:45 PM
+this is from a C9
+[unknown.png]
+ unknown.png
+125.92 KB External
+05/28/2022 4:40 PM
+I'd need to identify the eMMC first
+05/28/2022 4:40 PM
+yeah it's a bit steep
+[mariotaku]
+mariotaku 05/28/2022 4:36 PM
+15000 yen is a bit expensive and if you have solder tools, eMMC
+reprograming might be an option
+[naetrox]
+naetrox 05/28/2022 4:33 PM
+Which you can do
+05/28/2022 4:33 PM
+I reckon the inch config is just set differently via service menu
+05/28/2022 4:33 PM
+actually, that is the same part as the 55
+05/28/2022 4:32 PM
+only a 65C8PJA
+05/28/2022 4:32 PM
+nothing on there at the moment
+05/28/2022 4:31 PM
+yeah checked auctions
+[mariotaku]
+mariotaku 05/28/2022 4:31 PM
+C8 should be a easy one
+[naetrox]
+naetrox 05/28/2022 4:31 PM
+55C8PJA
+[mariotaku]
+mariotaku 05/28/2022 4:30 PM
+Which model was it?
+05/28/2022 4:30 PM
+ヤフオク is your friend. You may be able to get one with ~5000 yen
+(edited)
+[naetrox]
+naetrox 05/28/2022 4:30 PM
+I'm wondering if it matters what inch model the mobo belonged to
+05/28/2022 4:29 PM
+That is the hard part, I have a Japanese unit
+[mariotaku]
+mariotaku 05/28/2022 4:29 PM
+Yeah, once you can find the exact unit, it should be fine
+[naetrox]
+naetrox 05/28/2022 4:29 PM
+And not awfully costly
+05/28/2022 4:28 PM
+Mainboard is the easiest to replace I guess
+[mariotaku]
+mariotaku 05/28/2022 4:28 PM
+Oh rip... but not that dead. I saw many people revived their TV in that
+way here
+[naetrox]
+naetrox 05/28/2022 4:14 PM
+it is 8 gigs at least, that i know
+05/28/2022 4:12 PM
+i have all the equipment, tons of soldering experience, a microscope
+05/28/2022 4:12 PM
+it might be doable if i can figure out the EMMC chip
+[smx2460]
+smx2460 05/28/2022 4:00 PM
+"just"
+[:ahegao:] 1
+05/28/2022 4:00 PM
+and solder a SD Card adapter
+05/28/2022 4:00 PM
+you just need to find the correct pinout
+05/28/2022 4:00 PM
+no need to unsolder
+[naetrox]
+naetrox 05/28/2022 3:59 PM
+dang, too bad
+[] naetrox if it's not BGA i could try that
+ww8543 05/28/2022 3:55 PM
+it is a bga emmc ic
+[naetrox]
+naetrox 05/28/2022 3:35 PM
+i'm reading that you can swap in a C9 motherboard and it will work, and
+effectively give me an upgrade
+05/28/2022 3:34 PM
+LG C8, ill have to take a look
+05/28/2022 3:34 PM
+if it's not BGA i could try that
+sinergetikus 05/28/2022 3:31 PM
+I guess you can just unsolder flash memory, write your backup dump and
+solder back
+[naetrox]
+naetrox 05/28/2022 2:47 PM
+If I can't get into a shell with that UART I suppose it's motherboard
+replacement time
+[naetrox]
+naetrox 05/28/2022 2:15 PM
+Lesson learned for the time being
+05/28/2022 2:15 PM
+Couldn't find anything, so I suppose I'll order something
+[smx2460]
+smx2460 05/28/2022 1:54 PM
+if(bootloader drops you to a shell || DEBUG settings are enabled) {
+shell: shell can be used to restore partitions via TFTP; } else
+if(bootloader settings are not encrypted){ DEBUG settings can be enabled
+via hardware; goto shell; } else { you're fucked; } (edited)
+[naetrox]
+naetrox 05/28/2022 1:54 PM
+okay lemme rummage and see if i have something
+[smx2460]
+smx2460 05/28/2022 1:54 PM
+unless the bootloader drops you to a shell
+05/28/2022 1:53 PM
+probably nothing
+[naetrox]
+naetrox 05/28/2022 1:53 PM
+even if i manage to get a PL2303 to work, what can i expect to be able
+to do?
+05/28/2022 1:52 PM
+lemme check if i have one
+[smx2460]
+smx2460 05/28/2022 1:52 PM
+but i don't expect it to work
+05/28/2022 1:52 PM
+if you have a PL2303, try to connect it to the side USB port
+05/28/2022 1:51 PM
+the bootloader is failing the rootfs signature check and entering a
+while(1);
+[naetrox]
+naetrox 05/28/2022 1:51 PM
+right now i'm just staring at a blank screen
+[smx2460]
+smx2460 05/28/2022 1:50 PM
+so i can't guarantee that would work
+05/28/2022 1:50 PM
+the bootloader settings are encrypted starting from a particular point
+in time
+[naetrox]
+naetrox 05/28/2022 1:49 PM
+2019...
+[smx2460]
+smx2460 05/28/2022 1:49 PM
+how old is your set
+[naetrox]
+naetrox 05/28/2022 1:49 PM
+ouch, okay, so i'm pretty fucked
+[smx2460]
+smx2460 05/28/2022 1:49 PM
+or maybe you can, if your TV is older than 2020 and you're willing to
+open the box
+05/28/2022 1:49 PM
+you can't do this after the fact, because you need root to do so
+05/28/2022 1:48 PM
+i.e. the recovery is enabling the bootloader shell before starting
+05/28/2022 1:48 PM
+there's no recovery method
+05/28/2022 1:48 PM
+i.e. with a locked bootloader shell
+05/28/2022 1:48 PM
+and if you're not in DEBUG mode/status
+[naetrox]
+naetrox 05/28/2022 1:48 PM
+too late
+[smx2460]
+smx2460 05/28/2022 1:48 PM
+you should never attempt it
+05/28/2022 1:48 PM
+the rootfs is signed
+05/28/2022 1:48 PM
+@Lea ✿ hell no
+[naetrox]
+naetrox 05/28/2022 1:47 PM
+@infowski didn't see your warning rip
+05/28/2022 1:44 PM
+Yeah uh, I fucked it
+[naetrox]
+naetrox 05/28/2022 1:32 PM
+I'm tempted to go yolo on this
+05/28/2022 1:31 PM
+If I manually mount the partition AFTER modification using
+mount -t squashfs /dev/mmcblk0p28 test -o loop it also seems just fine
+05/28/2022 1:29 PM
+For all intents and purposes both partition images are mountable (via
+loop device) and inspectable
+05/28/2022 1:29 PM
+So here's my ask: anyone tried this before? Did it result in a brick -
+or was it fine?
+05/28/2022 1:28 PM
+My pessimistic take is that it'll fuck up
+05/28/2022 1:28 PM
+My optimistic take is that it'll work and that the running system is
+just confused about the mismatch between cache and the new inode set
+05/28/2022 1:28 PM
+Now, I'd love to try to reboot with the modified image, but I am scared
+it'll cause a brick for whatever reason
+05/28/2022 1:27 PM
+Because I didn't want to end up with a bricked TV, I DD'ed the original
+image back onto the partition and all seemed fine after a reboot. Threw
+up some warnings but everything runs
+05/28/2022 1:27 PM
+Countless "SQUASHFS error: Unable to read directory block" and "SQUASHFS
+error: Unable to read metadata cache entry" show up and the TV is
+basically borked in terms of running binaries. DD still works though
+05/28/2022 1:26 PM
+I DD'ed the modified image onto the mmcblk0p28 device, which immediately
+breaks the root filesystem
+05/28/2022 1:25 PM
+Obviously, here is where it gets dangerous
+05/28/2022 1:25 PM
+And also synced a backup of the partition
+05/28/2022 1:25 PM
+Synced it back to the TV as a file first
+05/28/2022 1:25 PM
+Filesize is identical, all properties too, just one extra inode
+05/28/2022 1:24 PM
+I added a directory for testing via the use of unionfs and then
+resquashd the entire thing
+05/28/2022 1:24 PM
+Now, I've DD'd the partition to my PC and managed to modify the squashfs
+filesystem
+05/28/2022 1:23 PM
+Trying to mess around with the mmc partitions on my TV, particularly
+mmcblk0p28 which houses the root filesystem
+May 27, 2022
+[infowski]
+[] naetrox I actually want to look into front-end creation as my first
+homebrew project. If you can find the bi...
+infowski 05/27/2022 8:28 AM
+You should be able to read /tmp/usb/sda/sda1. (this is only visible if
+the USB drive is plugged in before the app is first launched on current
+boot, but does not apply if the you are not running in an app/service
+jail / running as root - the latter is probably required for openvpn to
+work at all)
+[naetrox]
+[] infowski I did not. However, I did manage to build just an `openvpn`
+binary that seems to work fairly well.
+naetrox 05/27/2022 12:46 AM
+I actually want to look into front-end creation as my first homebrew
+project. If you can find the binary, ~~could you share it with me?~~
+(thanks Anatharias) I want the front-end to be able to handle .ovpn
+files; before I start working on this I want to take some time to think
+about how users would upload their .ovpn to the TV (should be easy for a
+layman; maybe temp FTP server? kinda like how PSP homebrew used to do
+things) and where to store it (outside of /media/* would protect against
+accidental app removal - but is that preferred? could argue it's a
+security risk) (edited)
+May 26, 2022
+[anatharias]
+anatharias 05/26/2022 7:58 PM
+I'll give it a try
+[anatharias]
+[] infowski I did not. However, I did manage to build just an `openvpn`
+binary that seems to work fairly well.
+anatharias 05/26/2022 7:58 PM
+I found it in another sub channel to this one (
+https://discord.com/channels/407937994037919756/906943542457401395/908285606185029653
+) (edited)
+[astur3l]
+astur3l 05/26/2022 7:56 PM
+im sure e.g. even C1 is more powerful, it feels lot faster 
+05/26/2022 7:54 PM
+mt5889 soc
+05/26/2022 7:54 PM
+snapped it like for ~800 eur (thats because the A1) (edited)
+[infowski]
+infowski 05/26/2022 7:53 PM
+most are ~800mb, 1.5gb is fairly rare
+[astur3l]
+astur3l 05/26/2022 7:53 PM
+https://www.displayspecifications.com/en/model/8400251a
+64.5" LG OLED65A16LA - Specifications
+Specifications of LG OLED65A16LA. Display: 64.5 in, OLED, 3840 x 2160
+pixels, Viewing angles (H/V): 178 ° / 178 °, Brightness: 300 cd/m²,
+Refresh rate: 50 Hz / 60 Hz, TV tuner: Analog (NTSC/PAL/SECAM), DVB-T,
+DVB-T2, DVB-C, DVB-S2, Cores: 4, Dimensions: 1449 x 830 x 46.9 mm,
+Weight: 23.7 kg. LG OLED65A16LA is also known as LG OLED65A19LA, LG
+OLE...
+[]
+[infowski]
+infowski 05/26/2022 7:53 PM
+is that 2gb of ram? god damn, that's a beefy TV
+[astur3l]
+astur3l 05/26/2022 7:52 PM
+yeah probably, Mem: 1837
+05/26/2022 7:52 PM
+not talking about the preview... :Dmost of the times just flickering ,
+sometimes total freeze + crash
+[infowski]
+[] astur3l does it works in factory browser? because sometimes even
+pornhub fhd crash my tv
+infowski 05/26/2022 7:52 PM
+That sounds more like an out-of-ram issue? 
+[infowski]
+infowski 05/26/2022 7:51 PM
+Though, it's possible to add userscripts to webOS apps (which are also
+executed on any origins outside of local file://, so can be used for
+adblocking like in youtube-webos [which is just a wrapper around
+https://youtube.com/tv)
+[]
+[astur3l]
+astur3l 05/26/2022 7:51 PM
+does it works in factory browser? because sometimes even pornhub fhd
+crash my tv
+[infowski]
+[] astur3l btw couldnt we have proper chromium on webos? with extension
+support 
+infowski 05/26/2022 7:50 PM
+uhhh, not really. unless you really like your chromium without hardware
+video decode support 
+[astur3l]
+astur3l 05/26/2022 7:50 PM
+btw couldnt we have proper chromium on webos? with extension support 
+[infowski]
+infowski 05/26/2022 7:49 PM
+I think I posted it here at some point. Gotta... work on my
+discord-search-fu...
+[infowski]
+[] anatharias Hey, have you followed up on this ?
+infowski 05/26/2022 7:48 PM
+I did not. However, I did manage to build just an openvpn binary that
+seems to work fairly well.
+[infowski]
+infowski 05/26/2022 7:42 PM
+https://www.da.vidbuchanan.co.uk/blog/webos-wampage.html
+ 1
+[infowski]
+[] astur3l odd, appinfo.json: "v8SnapshotFile": "snapshot_blob.bin" ->
+https://www.webosose.org/docs/guides/dev...
+infowski 05/26/2022 7:41 PM
+Yeah. It's generally only meant to be used in system apps. And, funnily,
+@retr0id got a CVE for abusing that feature 
+[astur3l]
+astur3l 05/26/2022 7:40 PM
+odd, appinfo.json: "v8SnapshotFile": "snapshot_blob.bin" ->
+https://www.webosose.org/docs/guides/development/configuration-files/appinfo-json/
+nothing about it  or
+https://webostv.developer.lge.com/develop/app-developer-guide/app-metadata/
+(edited)
+appinfo.json
+Apps are required to have metadata before they can be packaged. This
+metadata is stored in a file called appinfo.json. webOS device uses
+appinfo.json to identify the app, its icon, and other information that
+is needed to launch the app. appinfo.json is located in the app’s root
+directory and contains a single JSON object. Note Here are little t...
+[]
+::: LG | webOS TV Developer :: App Metadata
+Understand how web apps for webOS TV can manage app metadata using
+appinfo.json, and an in-depth look at appinfo.json properties that apps
+can use.
+[astur3l]
+[] infowski I think you should be able to just bindmount an empty file
+over v8 snapshot file, and it'll *probabl...
+astur3l 05/26/2022 7:39 PM
+maybe, but then i'll loose the 'faster load times' (?) 
+[anatharias]
+[] infowski Quick question - anyone interested in OpenVPN (or even
+general VPN) frontend for webOS?
+anatharias 05/26/2022 7:12 PM
+Hey, have you followed up on this ?
+[infowski]
+infowski 05/26/2022 6:46 PM
+I think you should be able to just bindmount an empty file over v8
+snapshot file, and it'll probably just be ignored? 
+[naetrox]
+naetrox 05/26/2022 6:04 PM
+I love me some Emscripten
+[astur3l]
+astur3l 05/26/2022 6:03 PM
+ i would rather go with typescript and transpile to js
+[naetrox]
+naetrox 05/26/2022 6:03 PM
+I come from a C++ and x64 assembly background
+05/26/2022 6:03 PM
+I've only started dabbling in even basic JS stuff recently
+05/26/2022 6:03 PM
+Okay yeah this is way outside of my knowledge haha
+[astur3l]
+astur3l 05/26/2022 6:01 PM
+i mean
+https://github.com/danbev/learning-v8/blob/master/notes/snapshots.md 
+it took effort
+learning-v8/snapshots.md at master · danbev/learning-v8
+Project for learning V8 internals. Contribute to danbev/learning-v8
+development by creating an account on GitHub.
+[]
+[naetrox]
+naetrox 05/26/2022 6:01 PM
+Then you could replace it with your own version
+05/26/2022 6:01 PM
+Can you do a bind mount on it? It's read-only, but maybe
+[astur3l]
+astur3l 05/26/2022 5:59 PM
+but idk how this v8 snapsnot thing works, would be nice to enought to
+edit just the main.js :d
+[naetrox]
+naetrox 05/26/2022 5:59 PM
+It just looks like a mess :P
+05/26/2022 5:59 PM
+Ah, I'm not too familiar with it
+[astur3l]
+astur3l 05/26/2022 5:59 PM
+nothing is obfuscated
+05/26/2022 5:58 PM
+it just how react bundling works
+[naetrox]
+naetrox 05/26/2022 5:58 PM
+I suppose they obfuscated/minified some var names, no way anyone would
+write this and not go insane
+05/26/2022 5:58 PM
+.photovideo seems to have the code
+05/26/2022 5:56 PM
+My C8 is still on 4.x
+[astur3l]
+astur3l 05/26/2022 5:55 PM
+? its the default media player (on webos 6.x it has different name.. not
+the photos..shit)
+[naetrox]
+naetrox 05/26/2022 5:54 PM
+I'm somehow grateful that my TV doesn't have it
+[astur3l]
+astur3l 05/26/2022 5:52 PM
+seems like iths a compiled react app
+05/26/2022 5:52 PM
+/usr/palm/applications/com.webos.app.mediadiscovery/main.js  sorry
+[naetrox]
+naetrox 05/26/2022 5:50 PM
+where is that code from? it makes my brain hurt
+[astur3l]
+astur3l 05/26/2022 5:48 PM
+    const MS = 100,
+05/26/2022 5:48 PM
+okay got it :/ https://bpa.st/LU7A
+[jocarduck]
+jocarduck 05/26/2022 5:40 PM
+I don't really use the built-in media player, but good to know
+[astur3l]
+astur3l 05/26/2022 5:37 PM
+but webos 3.5 also 2.x was fine
+05/26/2022 5:37 PM
+btw, on webos 6.x, the media player forgets the last position after a
+while, but i couldnt figured out why.... im playing from dlna, but i
+tried even restarting (or updateing the SystemUpdateId), seems like the
+tv just forgets it after a while or amount of videos
+[jocarduck]
+jocarduck 05/26/2022 5:35 PM
+maybe, yeah
+[astur3l]
+astur3l 05/26/2022 5:32 PM
+yeah but maybe it shut downs the hdmi ports earlier?
+[jocarduck]
+jocarduck 05/26/2022 5:31 PM
+I have mine via HDMI, I also can control it with the TV's remote
+[astur3l]
+astur3l 05/26/2022 5:31 PM
+but e.g. if i started pressing buttons while it doing the oled self
+care, it will turn back on 
+[astur3l]
+[] jocarduck maybe it depends on the soundbar and how it is connected
+also?
+astur3l 05/26/2022 5:30 PM
+idk, mine connected via optical + LG TV things.. (i can control it via
+the tv's remote)
+[jocarduck]
+jocarduck 05/26/2022 5:30 PM
+oh
+[astur3l]
+astur3l 05/26/2022 5:29 PM
+it just wont turn back on 
+05/26/2022 5:29 PM
+not that annoying that the screensaver sometimes fucks off the HDR
+[jocarduck]
+jocarduck 05/26/2022 5:29 PM
+maybe it depends on the soundbar and how it is connected also?
+[astur3l]
+astur3l 05/26/2022 5:29 PM
+first i thought its because the soundbar didnt received signal for a
+while.. but actually the tv sends the turn off signal when 'clicks' 
+[jocarduck]
+jocarduck 05/26/2022 5:28 PM
+but the soundbar always turns off when I 'power off' the TV
+[jocarduck]
+[] astur3l but you know that it depends how much time was it turned
+on?:D
+jocarduck 05/26/2022 5:27 PM
+yeah, I know, it sometimes does the 'click' immediately, and sometimes
+after a few mins
+[jocarduck]
+[] astur3l odd, you hear that 'click' noise immediately?
+jocarduck 05/26/2022 5:27 PM
+no no, I mean, I don't hear the 'click' but the soundbar turns off,
+after a while I hear the 'click'
+[astur3l]
+astur3l 05/26/2022 5:26 PM
+i mean if you just turn on then off few mins later, probably it wont run
+05/26/2022 5:26 PM
+but you know that it depends how much time was it turned on?:D
+05/26/2022 5:26 PM
+odd, you hear that 'click' noise immediately?
+[jocarduck]
+jocarduck 05/26/2022 5:25 PM
+oh, mine powers off immediately, even if it's running the oled pixel
+things
+[astur3l]
+astur3l 05/26/2022 5:25 PM
+first i didnt know what the heck happening, because my soundbar didnt
+powered off.. then later it was OFF 
+[jocarduck]
+jocarduck 05/26/2022 5:24 PM
+oh, then I don't know why it's discouraged xD
+[astur3l]
+astur3l 05/26/2022 5:24 PM
+it runs after i turn off the tv too, actually, it doesnt turn off until
+it didnt run 
+[jocarduck]
+jocarduck 05/26/2022 5:24 PM
+yes
+[astur3l]
+astur3l 05/26/2022 5:23 PM
+u mean that oled pixel care thing after shutdown?
+[jocarduck]
+jocarduck 05/26/2022 5:23 PM
+I guess it's because of the panel protection features?
+[astur3l]
+astur3l 05/26/2022 5:22 PM
+after a while (few days, top) the tv becomes really slow and buggy, no
+wonder because it always just suspended 
+05/26/2022 5:21 PM
+what's the other reasons? i always disable qs+ (edited)
+[infowski]
+infowski 05/26/2022 5:20 PM
+Yeah, that's non-obvious. By default remote button does not shut
+down/reboot the system. (unless you have QuickStart+ disabled, but
+that's discouraged due to various reasons beyond slower startup times)
+(edited)
+[jocarduck]
+jocarduck 05/26/2022 5:20 PM
+thank you @infowski !
+05/26/2022 5:20 PM
+yeah, I need to learn to read more
+05/26/2022 5:19 PM
+ah... let me try xD
+[infowski]
+infowski 05/26/2022 5:19 PM
+By "restarted" do you mean pressing "Reboot" button in Homebrew Channel
+settings? 
+[jocarduck]
+ww8543 no, but you can send a luna command from ssh to show those menus
+jocarduck 05/26/2022 5:16 PM
+hey, I'm trying to access through SSH but I can't. I already enabled it
+in the homebrew channel and restarted the TV but when I do a port scan,
+port 22 is closed. I also tried with telnet and the same, port is not
+open
+[astur3l]
+[] infowski Fascinating. So... You want to do an equivalent of that
+directly on the TV?
+astur3l 05/26/2022 1:38 PM
+yeah, would be nice if the tv could trigger some commands (like turn off
+my lights, music  via sh script) on play/resume :D, but the main
+reason was because most of the subscription events doesnt worked on my
+tv (but didnt really checked on my newer tv-s), basicly i just wanted my
+tv hooked into google assistant and i wrote a wrapper provider via webos
+api  (so now i can turn on (wol), off, volume, play, resume etc..)
+[naetrox]
+naetrox 05/26/2022 1:25 PM
+Getting it on a repository is likely a bad idea though....
+05/26/2022 1:24 PM
+Might be fun to port SM64 though, I reckon that could run
+[infowski]
+infowski 05/26/2022 12:45 PM
+because none of the ones we tested managed to build / worked / worked
+well enough to be playable. (edited)
+[zeddev]
+zeddev 05/26/2022 12:45 PM
+Finally managed to make my controller work
+05/26/2022 12:45 PM
+Sad
+[infowski]
+infowski 05/26/2022 12:45 PM
+That's why we don't have N64 
+[zeddev]
+zeddev 05/26/2022 12:44 PM
+Oh
+[infowski]
+infowski 05/26/2022 12:44 PM
+Where did you get the n64 core? Core needs to be built specifically for
+webOS.
+[zeddev]
+zeddev 05/26/2022 12:41 PM
+Just wanna know, any reason why the N64 core is not showing in Retroach?
+I even tried manually adding it (with SFTP) but retroach sees the .so
+file as a folder or if i use the archive i just get a black screen
+[infowski]
+[] astur3l getForegroundAppInfo -> 10/9 made the crash also
+infowski 05/26/2022 12:40 PM
+Fascinating. So... You want to do an equivalent of that directly on the
+TV?
+[naetrox]
+naetrox 05/26/2022 12:32 PM
+Oh man, I rely on aiopylgtv daily. Have a little diy brightness slider
+on my desktop that changes the OLED intensity. Also got it set up to go
+to a low brightness at night via cron.
+[astur3l]
+astur3l 05/26/2022 11:28 AM
+getForegroundAppInfo -> 10/9 made the crash also
+05/26/2022 11:28 AM
+yeah, only volume subscription worked 
+[infowski]
+infowski 05/26/2022 11:10 AM
+nice
+[astur3l]
+[] infowski Yeah! Look up things like ssap libraries (there are ones for
+many different languages - like https:/...
+astur3l 05/26/2022 10:57 AM
+im using/used lgtv2, but on my old tv most of the subscriptions caused
+tv crash 
+[infowski]
+[] astur3l is there a way to hook up some command on actions like movie
+play, pause? hotplug or something like ...
+infowski 05/26/2022 9:55 AM
+Yeah! Look up things like ssap libraries (there are ones for many
+different languages - like https://github.com/basnijholt/aiopylgtv or
+https://github.com/hobbyquaker/lgtv2 - they all use "SSAP" protocol) -
+there you can listen for currently running apps and send commands like
+"Play" / "Pause" (via remote emulation - magic remote doesn't have these
+keys, but they are present on IR remotes and pretty much all wbeOS
+devices support these buttons)
+GitHub - basnijholt/aiopylgtv: Library to control webOS based LG Tv...
+Library to control webOS based LG Tv devices. Contribute to
+basnijholt/aiopylgtv development by creating an account on GitHub.
+[]
+GitHub - hobbyquaker/lgtv2: Control LG WebOS TV using node.js
+Control LG WebOS TV using node.js :tv:. Contribute to hobbyquaker/lgtv2
+development by creating an account on GitHub.
+[]
+[astur3l]
+astur3l 05/26/2022 12:36 AM
+is there a way to hook up some command on actions like movie play,
+pause? hotplug or something like that ? :p would be nice to control the
+music when movie starts :d (via Google assistant or curl + api)
+May 25, 2022
+[] jocarduck I just want to check the data, not to modify anything 
+ww8543 05/25/2022 9:07 PM
+well yea, you might not even do it on purpose... but accidents happen, i
+just want you to be extra careful
+ 1
+[jocarduck]
+jocarduck 05/25/2022 6:29 PM
+but thank you for the warning
+[jocarduck]
+ww8543 be careful about what you touch in those menus, the changes you
+make there are immediate!
+jocarduck 05/25/2022 6:29 PM
+I just want to check the data, not to modify anything 
+[] jocarduck Awesome thank you!
+ww8543 05/25/2022 11:53 AM
+be careful about what you touch in those menus, the changes you make
+there are immediate!
+[jocarduck]
+[] infowski
+https://www.webosbrew.org/pages/commands-cheatsheet.html#factorywin-app-ezadjustinstartinstop
+jocarduck 05/25/2022 11:53 AM
+Thank you very much!
+[jocarduck]
+ww8543 no, but you can send a luna command from ssh to show those menus
+jocarduck 05/25/2022 11:52 AM
+Awesome thank you!
+[infowski]
+[] jocarduck hello! is there any homebrew software to access the service
+menu of the TV? the one where you can se...
+infowski 05/25/2022 8:32 AM
+https://www.webosbrew.org/pages/commands-cheatsheet.html#factorywin-app-ezadjustinstartinstop
+May 24, 2022
+[vamastah]
+vamastah 05/24/2022 11:03 PM
+in short - after 48 hours your homebrew apps will be deleted
+05/24/2022 11:02 PM
+u will see why its important after 48 hours 
+05/24/2022 11:02 PM
+@Deleted User so dont do this part
+Deleted User 05/24/2022 10:55 PM
+I don't understand that
+05/24/2022 10:55 PM
+That is the part that makes me scared of trying doin it
+05/24/2022 10:54 PM
+(no content)
+[Screenshot_20220524_225444_com.android.chrome.jpg]
+ Screenshot_20220524_225444_com.android.chrome.jpg
+373.56 KB External
+Deleted User 05/24/2022 10:25 PM
+(no content)
+[Screenshot_20220524_222257.jpg]
+ Screenshot_20220524_222257.jpg
+380.88 KB External
+05/24/2022 10:25 PM
+I would like to install webos brew But root my tv isnt working Could you
+help me understanding the other method and if its worth?
+[] jocarduck hello! is there any homebrew software to access the service
+menu of the TV? the one where you can se...
+ww8543 05/24/2022 9:27 PM
+no, but you can send a luna command from ssh to show those menus
+[jocarduck]
+jocarduck 05/24/2022 7:32 PM
+hello! is there any homebrew software to access the service menu of the
+TV? the one where you can see how many hours the panel has been on and
+that stuff
+Deleted User 05/24/2022 7:28 PM
+Hi
+sinergetikus 05/24/2022 5:28 PM
+No, I should. My /opt is empty without mount bind
+[mariotaku]
+mariotaku 05/24/2022 5:19 PM
+You don't have to bind mount, just set PATH in ~/.profile
+sinergetikus 05/24/2022 4:50 PM
+@infowski I want to mount entware on boot seems like I need only these 2
+commands mount --bind /media/entware /opt
+export PATH="/opt/sbin:/opt/bin:$PATH" Where should I add them to apply
+on boot?
+May 23, 2022
+sinergetikus 05/23/2022 3:24 AM
+so many interesting packages in that repo
+[] infowski ``` root@LGwebOSTV:/tmp# /opt/bin/wireguard-go --version
+wireguard-go v0.0.20220316 Userspace WireG...
+sinergetikus 05/23/2022 3:24 AM
+Thank you. wireguard-go didn't work on my TV, but I was able to connect
+to cloudflare warp VPN with tunsafe
+[infowski]
+infowski 05/23/2022 1:08 AM
+whatever boats your float
+[dustyangel47]
+dustyangel47 05/23/2022 1:08 AM
+i mean yeah but i have a need to build everything myself (edited)
+[infowski]
+infowski 05/23/2022 1:07 AM
+i mean... seems like entware is basically what you want.
+[dustyangel47]
+dustyangel47 05/23/2022 1:07 AM
+hmmmmm it wouldn't be too bad to make a package repo
+05/23/2022 1:06 AM
+well yeah ik how debs are packaged
+[infowski]
+infowski 05/23/2022 1:06 AM
+...which are basically just ar files with a bunch of tar.gz/tar.xz's
+05/23/2022 1:05 AM
+yes.
+[dustyangel47]
+dustyangel47 05/23/2022 1:04 AM
+opkg's format is basically just deb files right?
+05/23/2022 1:04 AM
+hmm
+[infowski]
+infowski 05/23/2022 12:43 AM
+@DustyAngel47 I have a feeling you may like this ↑
+05/23/2022 12:39 AM
+    mkdir /media/entware
+    mount --bind /media/entware /opt
+    wget -O - https://bin.entware.net/armv7sf-k3.2/installer/generic.sh | sh
+    export PATH="/opt/sbin:/opt/bin:$PATH"
+    opkg install wget-ssl ca-certificates
+    sed -i 's;http://bin.entware.net/;https://bin.entware.net/;g' /opt/etc/opkg.conf
+    opkg install wireguard-go
+@Sinergetikus ↑ not sure if I trust entware. not recommending this to
+anyone yet. Just noting down whatever worked on my development board...
+(edited)
+05/23/2022 12:38 AM
+    root@LGwebOSTV:/tmp# /opt/bin/wireguard-go --version
+    wireguard-go v0.0.20220316
+    Userspace WireGuard daemon for linux-arm.
+    Information available at https://www.wireguard.com.
+    Copyright (C) Jason A. Donenfeld <Jason@zx2c4.com>.
+sinergetikus 05/23/2022 12:22 AM
+Previously someone reported that following packages work in WebOS
+https://bin.entware.net/armv7sf-k3.2/Packages.html I tried to install
+some of them with opkg but got this: --------------------------
+Collected errors: Solver encountered 1 problem(s): Problem 1/1: -
+package wireguard-go-v0.0.20220316-1.armv7-3.2 does not have a
+compatible architecture Solution 1: * - do not ask to install
+wireguard-go-v0.0.20220316-1.armv7-3.2 --------------------------
+May 22, 2022
+[dustyangel47]
+[] dustyangel47 progress?
+dustyangel47 05/22/2022 8:39 PM
+but it errors because weird resource loading thing (see reply)
+[dustyangel47]
+dustyangel47 05/22/2022 8:38 PM
+and did actually kinda manage to get something very basic running
+05/22/2022 8:38 PM
+i've been working on a app template in https://vitejs.dev/
+Vite
+05/22/2022 8:37 PM
+i mean you can use it as that but in my experience it's kinda annoying?
+05/22/2022 8:37 PM
+esbuild isn't really made for frontend though
+05/22/2022 8:36 PM
+it's just a plugin
+[dustyangel47]
+[] infowski confusingly, I have a feeling making an enyo compatibility
+plugin for esbuild (which is more-or-less...
+dustyangel47 05/22/2022 8:36 PM
+you can add babel to esbuild
+[mariotaku]
+mariotaku 05/22/2022 12:34 PM
+There's no other useful repo. Submit to wishlist it you have any
+interesting idea:
+https://github.com/webosbrew/apps-repo/issues/new/choose
+Build software better, together
+GitHub is where people build software. More than 83 million people use
+GitHub to discover, fork, and contribute to over 200 million projects.
+[]
+[bennie8186]
+mibx18 @everyone does anyone know any other repos?
+bennie8186 05/22/2022 12:14 PM
+I wonder this to
+mibx18 05/22/2022 12:02 PM
+@everyone does anyone know any other repos? (edited)
+[infowski]
+infowski 05/22/2022 8:37 AM
+confusingly, I have a feeling making an enyo compatibility plugin for
+esbuild (which is more-or-less webpack rewritten from ground up in go)
+would be much easier, since webpack extensibility is vast, but... a
+little underdocumented imo (and I happened to set up similar odd aliases
+in esbuild a week ago  but then also I am not sure how adding babel to
+esbuild would look like, so let's just leave that for alter...) (edited)
+05/22/2022 8:35 AM
+So far only JS loads up properly, but that's still a major move forward
+since my last attempt (where something unexplained broke in internal
+enyo initialization early on...) (edited)
+[e99.tuxuser]
+e99.tuxuser 05/22/2022 2:32 AM
+!!!
+[infowski]
+infowski 05/22/2022 1:51 AM
+Huh! I think I may have accidentally made enyo to work in webpack.
+May 21, 2022
+[] infowski started a thread: webOS 3.4 debugging. See all threads.
+5/21/22, 8:00 PM
+[infowski]
+infowski 05/21/2022 7:52 PM
+No, IMO that's purely due to some difference between native services vs
+JS services
+[e99.tuxuser]
+e99.tuxuser 05/21/2022 7:51 PM
+Or does it make a difference from homebrew channel vs. Others.. that
+homebrew channel elevates itself on each boot?
+05/21/2022 7:50 PM
+elevate-service org.webosbrew.piccap
+05/21/2022 7:50 PM
+Maybe we invoke the elevate-service wrong? For
+piccap/hyperHDR/hyperion.ng?
+[infowski]
+infowski 05/21/2022 7:31 PM
+darn you ls-hubd acl handling
+05/21/2022 7:31 PM
+So... I just installed piccap on 3.4 and 3.8 TVs, and comparing
+/var/luna-service2-dev and /var/palm/ls2-dev, there's... absolutely no
+configuration difference between these two 
+ webOS 3.4 debugging →
+May 20, 2022
+[infowski]
+infowski 05/20/2022 10:54 AM
+"custom screensaver" is a fairly good reference on how to create a
+custom screensaver.
+05/20/2022 10:54 AM
+Though it should be perfectly possible to make a screensaver that cycles
+through photos. You'll just need to create it 
+May 19, 2022
+[urkman5000]
+[] e99.tuxuser no, the custom screensaver is the DVD animation only, no
+custom picture functionality
+urkman5000 05/19/2022 8:56 PM
+OK thx
+[e99.tuxuser]
+e99.tuxuser 05/19/2022 8:15 PM
+no, the custom screensaver is the DVD animation only, no custom picture
+functionality
+05/19/2022 8:15 PM
+ah sorry, thats for "No-Signal" - not screensaver
+05/19/2022 8:14 PM
+check this out:
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1?permalink_comment_id=4056319#gistcomment-4056319
+openlgtv webOS hacking notes
+openlgtv webOS hacking notes. GitHub Gist: instantly share code, notes,
+and snippets.
+[]
+ 1
+[urkman5000]
+urkman5000 05/19/2022 8:03 PM
+Hey there, can anybody tell me if the Homebrew App "Webos Custom
+Scrrensaver" Features Personal Pictures Option? And how to enable it 
+Or is it just an freakin' DVD Animation... (edited)
+May 17, 2022
+[aabytt]
+[] evgeniyprotas yep)
+aabytt 05/17/2022 10:28 PM
+how do you make them running?
+ how do you make them running →
+[evgeniyprotas]
+evgeniyprotas 05/17/2022 10:22 PM
+(no content)
+[unknown.png]
+ unknown.png
+222.02 KB External
+05/17/2022 10:22 PM
+yep) (edited)
+[unknown.png]
+ unknown.png
+426.76 KB External
+[aabytt]
+[] evgeniyprotas Hey guys! Could you please confirm this is the place to
+propose additional packages to the default r...
+aabytt 05/17/2022 10:20 PM
+are these binaries working in webos?
+[evgeniyprotas]
+evgeniyprotas 05/17/2022 9:58 PM
+Hey guys! Could you please confirm this is the place to propose
+additional packages to the default repo? I do use for long time a
+wonderful software repository Entware but found no info that somebody
+uses it in WebOS. https://bin.entware.net/armv7sf-k3.2/Packages.html
+Seems it will be great to pack this as an ipk-file and connect via
+homebrew. I can share a small installation script if it'll be needed 
+(edited)
+[infowski]
+[] kannamori Hey, I've got a quick question. I know I've asked this one
+before but I can't find it anymore. How d...
+infowski 05/17/2022 7:19 PM
+yes/it's complicated.
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1#registering-an-app-as-an-input-can-be-used-to-autostart-an-app
+openlgtv webOS hacking notes
+openlgtv webOS hacking notes. GitHub Gist: instantly share code, notes,
+and snippets.
+[]
+[kannamori]
+kannamori 05/17/2022 6:30 PM
+Hey, I've got a quick question. I know I've asked this one before but I
+can't find it anymore. How do you set a certain app to start upon
+start-up?
+May 15, 2022
+[jclsn]
+[] danin1917 It skips unwanted parts too like intro i think there's a
+sponsor block setting in settings to change...
+jclsn 05/15/2022 3:19 PM
+Thanks
+[danin1917]
+danin1917 05/15/2022 12:33 PM
+Hey I stream using https Any idea what I can use on homebrew to achieve
+successful https streaming on my tv I saw streamkatze or some app with
+similar name I installed it but couldn't figure out how to use it What
+does it do exactly?
+[danin1917]
+[] jclsn Did you guys also have the problem that YT Sponsorblock is
+skipping even though there are no ads?
+danin1917 05/15/2022 12:32 PM
+It skips unwanted parts too like intro i think there's a sponsor block
+setting in settings to change that
+[jclsn]
+jclsn 05/15/2022 10:10 AM
+Did you guys also have the problem that YT Sponsorblock is skipping even
+though there are no ads?
+userwar6909757 05/15/2022 7:08 AM
+ok
+[vamastah]
+vamastah 05/15/2022 7:01 AM
+i dont know, just ask
+userwar6909757 05/15/2022 6:56 AM
+or its restricted?
+05/15/2022 6:56 AM
+and can i pm developers for this ?
+05/15/2022 6:55 AM
+its enough
+05/15/2022 6:55 AM
+just only one time ipk
+05/15/2022 6:55 AM
+app
+05/15/2022 6:54 AM
+i dont need an update for that
+05/15/2022 6:54 AM
+yes
+[vamastah]
+vamastah 05/15/2022 6:54 AM
+its simply time consuming
+userwar6909757 05/15/2022 6:53 AM
+no one likes to do other jobs
+05/15/2022 6:53 AM
+yeah may be
+[vamastah]
+vamastah 05/15/2022 6:53 AM
+but i guess the answer will be "no" 
+05/15/2022 6:53 AM
+here, u can ask if somebody does a job for you
+userwar6909757 05/15/2022 6:52 AM
+where can i request?
+05/15/2022 6:52 AM
+nice
+[vamastah]
+vamastah 05/15/2022 6:52 AM
+ah, k, sure
+userwar6909757 05/15/2022 6:51 AM
+request to devs
+[vamastah]
+vamastah 05/15/2022 6:51 AM
+what do u mean by "keep request"?
+userwar6909757 05/15/2022 6:50 AM
+i mean request for creating an ipk for an android app
+[vamastah]
+vamastah 05/15/2022 6:50 AM
+what do u mean?
+userwar6909757 05/15/2022 6:49 AM
+can i keep request for apps instead?
+05/15/2022 6:49 AM
+oh
+[vamastah]
+vamastah 05/15/2022 6:49 AM
+learn html, js and webdev stuff, then start writing, there is no
+automation in this process
+[] vamastah rewrite them from scratch i suppose
+userwar6909757 05/15/2022 6:48 AM
+how
+[vamastah]
+[] tiss123 Any cool apps in development?
+vamastah 05/15/2022 6:48 AM
+i have developed a wordle clone recently
+ 1
+[vamastah]
+vamastah 05/15/2022 6:47 AM
+rewrite them from scratch i suppose
+userwar6909757 05/15/2022 6:42 AM
+how can i convert android apps to ipk?
+May 14, 2022
+[tiss123]
+tiss123 05/14/2022 8:02 PM
+Any cool apps in development?
+[lewd_pixel]
+lewd_pixel 05/14/2022 3:24 PM
+Oh okay
+[mariotaku]
+mariotaku 05/14/2022 3:24 PM
+This is an old firmware that's not supported by rootmytv, but you can
+try GetMeIn
+https://forum.xda-developers.com/t/getmein-one-time-rooting-jailbreaking-tool-for-webos-lg-tvs.3887904/
+GetMeIn : One time rooting/jailbreaking tool for webOS LG TV's
+Hello XDA, After a long thinking i've decided to create a root or
+jailbreak tool for LG's awesome webOS, today am stating this thread to
+release this new root tool, but before that! am gonna ask you for some
+logs from webOS 3.5 and lower...
+[]
+[lewd_pixel]
+lewd_pixel 05/14/2022 3:14 PM
+What should I do with this
+05/14/2022 3:13 PM
+start-devmode.sh: Downloading from undefined.... start-devmode,sh: Luna
+call failed: {"returnValue":false, errorCode":-1, errorText":"Service
+does not exist: com.webos.service.downloadmanager.") Original
+start-devmode.sh overwrite failed, attempting v2 exploit extra_conf.sh:
+Downloading from undefined..... extra_conf.sh: Luna call failed:
+{"returnValue":false, "errorCode-1, errorText":"Service does not exist:
+com.webos.service.downloadmanager.")
+May 13, 2022
+[e99.tuxuser]
+[] yuki_duki guys, will anyone be able to port kodi to lg webos? i am
+not a coder so i cant, but it should be an ...
+e99.tuxuser 05/13/2022 6:54 PM
+^
+[danin1917]
+danin1917 05/13/2022 6:38 PM
+Anyway one can install Kodi?
+[dustyangel47]
+[] dustyangel47 it's loading the file now
+dustyangel47 05/13/2022 1:44 PM
+.
+[dustyangel47]
+dustyangel47 05/13/2022 1:43 PM
+see i did that and it still didn't want to load properly (edited)
+[infowski]
+infowski 05/13/2022 10:26 AM
+in your case you should probably just use assets/XXX.js
+05/13/2022 10:26 AM
+(just bundle.js would work here as well)
+05/13/2022 10:26 AM
+https://github.com/Informatic/streamkatze/blob/main/src/index.html#L8
+rel
+streamkatze/index.html at main · Informatic/streamkatze
+Experimental streaming.media.ccc.de client for webOS/Smart TVs -
+streamkatze/index.html at main · Informatic/streamkatze
+[]
+05/13/2022 10:25 AM
+you need to use relative paths, so - file:///d/e/f/g.html pointing at
+a/b/c will resolve to file:///d/e/f/a/b/c
+05/13/2022 10:25 AM
+as in - /a/b/c - if the page is loaded from file:///d/e/f/g it'll point
+at file:///a/b/c
+[infowski]
+[] dustyangel47 why is mine specifically failing
+infowski 05/13/2022 10:24 AM
+It's failing because you used an absolute origin-relative path
+May 12, 2022
+[dustyangel47]
+dustyangel47 05/12/2022 10:04 PM
+it's only one year newer than ie11's first release (edited)
+05/12/2022 10:04 PM
+oct. 2014
+05/12/2022 10:04 PM
+which came out in like
+[dustyangel47]
+[] smx2460 You can even target IE11 or older (with polyfills)
+dustyangel47 05/12/2022 10:03 PM
+iirc webos 1.x dev targets chrome 38
+[dustyangel47]
+dustyangel47 05/12/2022 10:03 PM
+that doesn't need to lint the builds, it needs to lint the source code
+[dustyangel47]
+[] smx2460 It needs to know the *minimum* target version
+dustyangel47 05/12/2022 10:02 PM
+not the linter for your es2022 source code
+[smx2460]
+smx2460 05/12/2022 9:53 PM
+Enyo Kotlin when?!
+05/12/2022 9:53 PM
+But the most important question is
+05/12/2022 9:51 PM
+An alternative is to do multiple builds targeting different ES versions
+05/12/2022 9:51 PM
+But it would probably generate inefficient code for modern platforms
+05/12/2022 9:51 PM
+You can even target IE11 or older (with polyfills)
+05/12/2022 9:50 PM
+It needs to know the minimum target version
+[dustyangel47]
+dustyangel47 05/12/2022 9:46 PM
+babel transpiles them to older versions after the fact
+05/12/2022 9:46 PM
+nah it wouldnt
+[e99.tuxuser]
+e99.tuxuser 05/12/2022 8:54 PM
+It needs to know about the target version, no?
+[smx2460]
+smx2460 05/12/2022 8:28 PM
+You shouldn't worry too much about standards if you use babel
+[e99.tuxuser]
+e99.tuxuser 05/12/2022 8:01 PM
+Hence my question, I got not idea about JS standards at all ;)
+[dustyangel47]
+dustyangel47 05/12/2022 7:46 PM
+also > Lints JavaScript based on the latest standards we barely have
+access to ES5 (basing on the webpack template) and the current standard
+is like ~ES9? (edited)
+05/12/2022 7:45 PM
+ we only have one of these in webapps?
+[Screenshot_20220512-134544-143.png]
+ Screenshot_20220512-134544-143.png
+25.67 KB External
+[e99.tuxuser]
+e99.tuxuser 05/12/2022 6:56 PM
+https://github.com/wesbos/eslint-config-wesbos is this an acceptable
+config for our use case, supporting as many WebOS Versions as possible?
+GitHub - wesbos/eslint-config-wesbos: No-Sweat Eslint and Prettier...
+No-Sweat Eslint and Prettier Setup - with or without VS Code - GitHub -
+wesbos/eslint-config-wesbos: No-Sweat Eslint and Prettier Setup - with
+or without VS Code
+[]
+May 11, 2022
+[dustyangel47]
+dustyangel47 05/11/2022 1:04 AM
+apart from inline bundling all the script tags but bleh
+05/11/2022 1:04 AM
+idk what else i can even try lmao
+05/11/2022 12:57 AM
+and it can't just be that it's 404ing in disguise because i can
+literally get the file contents lmao
+[dustyangel47]
+[] dustyangel47 okay lets try reducing all dependencies that could pose
+a problem to bundle size
+dustyangel47 05/11/2022 12:53 AM
+nope, also didn't work
+[dustyangel47]
+dustyangel47 05/11/2022 12:47 AM
+even though i dont think that's the problem
+05/11/2022 12:47 AM
+okay lets try reducing all dependencies that could pose a problem to
+bundle size (edited)
+05/11/2022 12:45 AM
+(should maybe have specified that one) (edited)
+05/11/2022 12:45 AM
+is it just freaking out at a file with like 50k+ line widths? (edited)
+05/11/2022 12:44 AM
+why is mine specifically failing
+05/11/2022 12:44 AM
+which then how do any other apps work?
+[retr0id]
+retr0id 05/11/2022 12:42 AM
+iiiinteresting
+[dustyangel47]
+dustyangel47 05/11/2022 12:41 AM
+(no content)
+[unknown.png]
+ unknown.png
+6.83 KB External
+[retr0id]
+retr0id 05/11/2022 12:41 AM
+What does document.location look like
+[dustyangel47]
+dustyangel47 05/11/2022 12:40 AM
+yeah
+[retr0id]
+retr0id 05/11/2022 12:40 AM
+I need to play around with this, what "protocol" does it think it's
+using to load the files? is it file://
+[dustyangel47]
+dustyangel47 05/11/2022 12:38 AM
+still a blank mime-type
+05/11/2022 12:38 AM
+nope, didn't work
+05/11/2022 12:37 AM
+okay now to try renaming to index.js
+[dustyangel47]
+[] dustyangel47 is it interpreting the `/` at the beginning as it
+meaning an absolute file path???
+dustyangel47 05/11/2022 12:36 AM
+well on the bright side that confirms that this is the case?
+[retr0id]
+retr0id 05/11/2022 12:36 AM
+that's fun
+[dustyangel47]
+dustyangel47 05/11/2022 12:35 AM
+the entire app
+05/11/2022 12:35 AM
+it crashed
+05/11/2022 12:35 AM
+(no content)
+[unknown.png]
+ unknown.png
+10.48 KB External
+05/11/2022 12:33 AM
+1 sec
+05/11/2022 12:33 AM
+ono
+[retr0id]
+[] dustyangel47 is it interpreting the `/` at the beginning as it
+meaning an absolute file path???
+retr0id 05/11/2022 12:33 AM
+what happens if you try to load /etc/passwd lol
+[dustyangel47]
+[] retr0id I wonder if it doesn't like the foo.bar.ext file name
+dustyangel47 05/11/2022 12:32 AM
+that's possible yeah
+[dustyangel47]
+dustyangel47 05/11/2022 12:32 AM
+i manually removed it and now it really loads the file
+05/11/2022 12:32 AM
+is it interpreting the / at the beginning as it meaning an absolute file
+path???
+[retr0id]
+retr0id 05/11/2022 12:32 AM
+I wonder if it doesn't like the foo.bar.ext file name
+[dustyangel47]
+dustyangel47 05/11/2022 12:32 AM
+it's loading the file now
+05/11/2022 12:32 AM
+progress?
+[unknown.png]
+ unknown.png
+5.75 KB External
+05/11/2022 12:29 AM
+it doesn't even work if i change it to a different directory
+[dustyangel47]
+dustyangel47 05/11/2022 12:22 AM
+doesnt wanna load it
+05/11/2022 12:22 AM
+but it just
+05/11/2022 12:22 AM
+the file exists and is being loaded from the correct directory (it even
+works if i load it from a webserver on my pc!)
+05/11/2022 12:20 AM
+(no content)
+[unknown.png]
+ unknown.png
+12.26 KB External
+[unknown.png]
+ unknown.png
+4.66 KB External
+[unknown.png]
+ unknown.png
+4.19 KB External

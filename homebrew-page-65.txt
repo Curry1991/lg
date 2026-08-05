@@ -1,0 +1,1444 @@
+February 26, 2023
+[smx2460]
+smx2460 02/26/2023 6:20 PM
+     include-native/bits/libc-tsd.h |  3 +++
+     include-native/config.h        |  1 +
+     include-native/gnu/stubs.h     |  1 +
+     include-native/intl/loadinfo.h |  4 ++++
+     include-native/libintl.h       | 13 +++++++++++++
+     include-native/symbol-hacks.h  |  1 +
+     include-native/tls.h           | 11 +++++++++++
+     7 files changed, 34 insertions(+)
+02/26/2023 6:20 PM
+just redid it
+02/26/2023 6:20 PM
+i forgot some files
+02/26/2023 6:20 PM
+heh i see why
+hellobox. 02/26/2023 6:20 PM
+?
+https://github.com/openlgtv/buildroot-nc4/pull/20/checks?check_run_id=11608030191
+[smx2460]
+smx2460 02/26/2023 6:19 PM
+for some reason, it doesn't build from my git repo
+02/26/2023 6:19 PM
+still fighting with glibc
+hellobox. 02/26/2023 6:19 PM
+so now what?
+[smx2460]
+smx2460 02/26/2023 6:06 PM
+if we have any
+02/26/2023 6:06 PM
+so this means we can drop lrt patches around
+hellobox. 02/26/2023 6:06 PM
+but it may be with future compat stuff
+02/26/2023 6:05 PM
+it shouldn't be a problem with the librt thing
+[smx2460]
+smx2460 02/26/2023 6:05 PM
+epic work, @hellobox
+hellobox. 02/26/2023 6:04 PM
+change the cflags used to build libgcc etc.
+[] smx2460 you mean change the default cflags in gcc?
+hellobox. 02/26/2023 6:04 PM
+yeah
+hellobox. 02/26/2023 6:04 PM
+https://github.com/openlgtv/buildroot-nc4/pull/20
+[smx2460]
+smx2460 02/26/2023 5:53 PM
+you mean change the default cflags in gcc? (edited)
+02/26/2023 5:53 PM
+oh
+02/26/2023 5:52 PM
+fails building?
+[smx2460]
+hellobox. can we set `CFLAGS_FOR_TARGET` for gcc?
+smx2460 02/26/2023 5:52 PM
+hmm
+[smx2460]
+smx2460 02/26/2023 5:52 PM
+back
+hellobox. 02/26/2023 5:37 PM
+can we set CFLAGS_FOR_TARGET for gcc?
+02/26/2023 5:37 PM
+and/or should we?
+02/26/2023 5:37 PM
+can we make buildroot packages use -tno-webos-compat?
+[smx2460]
+smx2460 02/26/2023 5:37 PM
+i had fixed that
+02/26/2023 5:36 PM
+need to check what happened there
+02/26/2023 5:36 PM
+meh
+02/26/2023 5:36 PM
+    In file included from <command-line>:
+    ./../include/libc-symbols.h:54:10: fatal error: config.h: File o directory non esistente
+       54 | #include <config.h>
+          |          ^~~~~~~~~~
+    compilation terminated.
+    In file included from <command-line>:
+    ./../include/libc-symbols.h:54:10: fatal error: config.h: File o directory non esistente
+       54 | #include <config.h>
+          |          ^~~~~~~~~~
+    compilation terminated.
+    make[3]: *** [../Makerules:297: /mnt/ExtData/buildroot-nc4/output/build/glibc-46ed5ccb773709d5b2aba7bf74126b9cf3282563/build/iconv/iconvconfig-native.o] Errore 1
+    make[3]: *** Attesa per i processi non terminati....
+    In file included from <command-line>:
+    ./../include/libc-symbols.h:54:10: fatal error: config.h: File o directory non esistente
+       54 | #include <config.h>
+          |          ^~~~~~~~~~
+[smx2460]
+hellobox. i don't think there's any way we can make a startfile that
+will set up auxv to work with the system ...
+smx2460 02/26/2023 5:36 PM
+yeah not sure
+[smx2460]
+smx2460 02/26/2023 5:36 PM
+wow nice
+hellobox. 02/26/2023 5:36 PM
+@Smx it seems to work
+02/26/2023 5:34 PM
+if we did that, we'd have to provide our own getauxval implementation
+02/26/2023 5:34 PM
+because of where it's stored
+02/26/2023 5:34 PM
+i don't think there's any way we can make a startfile that will set up
+auxv to work with the system libc's getauxval
+hellobox. 02/26/2023 5:26 PM
+we should probably set -tno-webos-compat for building everything within
+buildroot
+02/26/2023 5:25 PM
+it's rebuilding everything anyway
+hellobox. 02/26/2023 5:17 PM
+rm output/build/*/.stamp*_installed
+hellobox. 02/26/2023 5:09 PM
+how do i get it to properly install gcc?
+02/26/2023 5:09 PM
+but i used the output of -dumpspecs with an existing compiler, and it
+worked
+02/26/2023 5:08 PM
+i'm not sure
+02/26/2023 5:08 PM
+well
+02/26/2023 5:08 PM
+i think the patch works though
+02/26/2023 5:05 PM
+and it looks like it fucked things up
+02/26/2023 5:05 PM
+i ran make host-gcc-final-install
+02/26/2023 5:04 PM
+it built
+[smx2460]
+smx2460 02/26/2023 4:55 PM
+that works too
+hellobox. 02/26/2023 4:49 PM
+i'll just rm -rf output/build/host-gcc-final-12.2.0
+02/26/2023 4:49 PM
+it didn't apply the patch
+[smx2460]
+smx2460 02/26/2023 4:48 PM
+i might be able to provide polyfills in there lol
+02/26/2023 4:48 PM
+theoretically, if i'm forking glibc
+hellobox. 02/26/2023 4:48 PM
+lol
+02/26/2023 4:48 PM
+or -build
+02/26/2023 4:47 PM
+from that or -configure
+02/26/2023 4:47 PM
+there's no output
+[smx2460]
+smx2460 02/26/2023 4:47 PM
+02/26/2023 4:47 PM
+i think
+02/26/2023 4:47 PM
+host-gcc-final-patch
+hellobox. 02/26/2023 4:47 PM
+host-gcc-final-patch
+02/26/2023 4:46 PM
+hmm
+02/26/2023 4:46 PM
+gcc-host-patch?
+[smx2460]
+smx2460 02/26/2023 4:46 PM
+make <package>-patch (edited)
+hellobox. 02/26/2023 4:45 PM
+what do i have to run to get it to apply?
+[smx2460]
+smx2460 02/26/2023 4:45 PM
+yes
+hellobox. 02/26/2023 4:45 PM
+can i just put a patch in package/gcc/12.2.0?
+[smx2460]
+smx2460 02/26/2023 4:45 PM
+will soon fill it
+02/26/2023 4:45 PM
+https://github.com/openlgtv/glibc
+openlgtv/glibc
+Contribute to openlgtv/glibc development by creating an account on
+GitHub.
+[]
+02/26/2023 4:44 PM
+too many patches too keep track of
+02/26/2023 4:44 PM
+i'm gonna fork glibc
+hellobox. 02/26/2023 4:43 PM
+or can i just apply it?
+02/26/2023 4:43 PM
+@Smx do i have to set up a patch in buildroot?
+02/26/2023 4:37 PM
+and it'll disable everything
+02/26/2023 4:37 PM
+i guess i'll just leave it as -tno-webos-compat for now
+02/26/2023 4:37 PM
+to disable all compat shit except the librt stuff?
+02/26/2023 4:37 PM
+should you be able to do e.g. -mno-webos-compat -mwebos-compat-librt?
+02/26/2023 4:36 PM
+maybe i should change it to -mwebos-compat
+02/26/2023 4:36 PM
+although
+02/26/2023 4:36 PM
+i guess i could implement it in the specs language
+02/26/2023 4:35 PM
+i'm not even sure i could use that in specs then
+02/26/2023 4:35 PM
+i was thinking -tno-webos-compat would set -tno-webos-compat-librt and
+-tno-webos-compat-polyfills for example
+02/26/2023 4:34 PM
+is that too much trouble?
+02/26/2023 4:34 PM
+maybe
+02/26/2023 4:34 PM
+i'd have to do it in c
+02/26/2023 4:33 PM
+i don't think it's trivial to have one option set others
+02/26/2023 4:33 PM
+shit
+[smx2460]
+smx2460 02/26/2023 4:26 PM
+https://github.com/bminor/glibc/commit/5f4318d102d604e2f80bc97927e2d80f76063639
+02/26/2023 4:24 PM
+it's stuff that happened between 2.12 and 2.16
+02/26/2023 4:23 PM
+unless i also include those patches
+02/26/2023 4:23 PM
+but i need to apply some edits to the patch to skip them
+02/26/2023 4:23 PM
+i'm not really interested in them
+02/26/2023 4:22 PM
+because there have been some edits to sparc headers (they were moved
+around, actually) (edited)
+02/26/2023 4:22 PM
+the auxv headers patch doesn't apply cleanly
+02/26/2023 4:22 PM
+meanwhile i'm rebuilding gcc after mistakenly deleting it lol
+02/26/2023 4:21 PM
+could work
+hellobox. 02/26/2023 4:21 PM
+basically
+[smx2460]
+smx2460 02/26/2023 4:21 PM
+?
+02/26/2023 4:21 PM
+except you use msomething
+02/26/2023 4:21 PM
+based on say mandroid
+02/26/2023 4:21 PM
+like you want to conditionally do them in the specfile
+02/26/2023 4:21 PM
+options?
+hellobox. 02/26/2023 4:21 PM
+for polyfills and librt
+02/26/2023 4:20 PM
+or should that include sub-options
+02/26/2023 4:20 PM
+is -tno-webos-compat the only thing we need?
+[smx2460]
+smx2460 02/26/2023 4:19 PM
+then take the diff
+02/26/2023 4:18 PM
+until it builds
+02/26/2023 4:18 PM
+and make
+02/26/2023 4:18 PM
+if you get errors, fix them in that dir
+02/26/2023 4:18 PM
+and make
+02/26/2023 4:18 PM
+then go in output/build/host-gcc-final
+02/26/2023 4:18 PM
+    make host-gcc-final-configure
+(edited)
+02/26/2023 4:17 PM
+i would do
+hellobox. 02/26/2023 4:17 PM
+i'm not sure how the hell to test this
+[smx2460]
+smx2460 02/26/2023 4:17 PM
+try
+hellobox. 02/26/2023 4:17 PM
+can i use that for gcc?
+02/26/2023 4:17 PM
+rebuild?
+[smx2460]
+smx2460 02/26/2023 4:16 PM
+instead of rm'ing the dirs
+02/26/2023 4:16 PM
+    $ make glibc-show-depends
+    host-bison host-gawk host-gcc-initial host-skeleton linux-headers skeleton
+02/26/2023 4:15 PM
+which i didn't know existed
+02/26/2023 4:15 PM
+(no content)
+[image.png]
+ image.png
+74.88 KB External
+02/26/2023 4:15 PM
+as well as the ones below
+02/26/2023 4:15 PM
+nice to have
+02/26/2023 4:15 PM
+(no content)
+[image.png]
+ image.png
+63.89 KB External
+02/26/2023 4:15 PM
+https://buildroot.org/downloads/manual/manual.html
+02/26/2023 4:14 PM
+now i need to rebuild lel
+02/26/2023 4:13 PM
+fak i ran rm -rf on the wrong dir lol
+hellobox. 02/26/2023 4:11 PM
+so i should be using LD_AS_NEEDED_OPTION and LD_NO_AS_NEEDED_OPTION
+02/26/2023 4:10 PM
+    elif test x$gcc_cv_ld != x; then
+      # Check if linker supports --as-needed and --no-as-needed options
+      if $gcc_cv_ld --help 2>&1 | grep as-needed > /dev/null; then
+        gcc_cv_ld_as_needed=yes
+        if $gcc_cv_ld --help 2>&1 | grep push-state > /dev/null \
+           && $gcc_cv_ld --help 2>&1 | grep pop-state > /dev/null \
+           && echo "$ld_ver" | grep GNU > /dev/null \
+           && test "$ld_vers_major" -eq 2 -a "$ld_vers_minor" -ge 28; then
+          # Use these options only when both ld.bfd and ld.gold support
+          # --push-state/--pop-state, which unfortunately wasn't added
+          # at the same time.
+          gcc_cv_ld_as_needed_option='--push-state --as-needed'
+          gcc_cv_ld_no_as_needed_option='--pop-state'
+        fi
+      fi
+02/26/2023 4:10 PM
+found it
+02/26/2023 4:10 PM
+ah
+02/26/2023 4:07 PM
+mostly the same as in the documentation it looks like
+02/26/2023 4:06 PM
+there's a whole bunch of things there
+02/26/2023 4:06 PM
+    /* The Specs Language
+    Specs are strings containing lines, each of which (if not blank)
+    is made up of a program name, and arguments separated by spaces.
+    The program name must be exact and start from root, since no path
+    is searched and it is unreliable to depend on the current working directory.
+    Redirection of input or output is not supported; the subprograms must
+    accept filenames saying what files to read and write.
+    In addition, the specs can contain %-sequences to substitute variable text
+    or for conditional text.  Here is a table of all defined %-sequences.
+    Note that spaces are not generated automatically around the results of
+    expanding these sequences; therefore, you can concatenate them together
+    or with constant text in a single argument.
+     %%     substitute one % into the program name or argument.
+     %"     substitute an empty argument.
+     %i     substitute the name of the input file being processed.
+     %b     substitute the basename for outputs related with the input file
+[smx2460]
+smx2460 02/26/2023 4:02 PM
+it looks like someone made some assumptions there 
+02/26/2023 4:02 PM
+not sure
+hellobox. 02/26/2023 4:02 PM
+--push-state
+[smx2460]
+smx2460 02/26/2023 4:02 PM
+the *libgcc or the --as-needed (edited)
+02/26/2023 4:02 PM
+what
+hellobox. 02/26/2023 4:01 PM
+so where does that come from?
+02/26/2023 4:01 PM
+but this is in my specs:
+    *libgcc:
+    %{static|static-libgcc|static-pie:-lgcc -lgcc_eh}%{!static:%{!static-libgcc:%{!static-pie:%{!shared-libgcc:-lgcc --push-state --as-needed -lgcc_s --pop-state}%{shared-libgcc:-lgcc_s%{!shared: -lgcc}}}}}
+02/26/2023 4:01 PM
+that's the only --push-state i could find though
+[smx2460]
+smx2460 02/26/2023 4:00 PM
+that [:lg:] 
+02/26/2023 4:00 PM
+ok
+hellobox. 02/26/2023 4:00 PM
+we could just unconditionally add -lrt
+[smx2460]
+smx2460 02/26/2023 4:00 PM
+(undefined behaviour) (edited)
+02/26/2023 4:00 PM
+or have UD
+02/26/2023 4:00 PM
+just fail?
+02/26/2023 4:00 PM
+if it's not there what should we do
+hellobox. 02/26/2023 4:00 PM
+    #ifdef HAVE_LD_PUSHPOPSTATE_SUPPORT
+    #define MPX_LD_AS_NEEDED_GUARD_PUSH "--push-state --no-as-needed"
+    #define MPX_LD_AS_NEEDED_GUARD_POP "--pop-state"
+    #else
+    #define MPX_LD_AS_NEEDED_GUARD_PUSH ""
+    #define MPX_LD_AS_NEEDED_GUARD_POP ""
+    #endif
+[smx2460]
+smx2460 02/26/2023 4:00 PM
+but i mean
+02/26/2023 4:00 PM
+hmmm we should never be using an ld that doesn't have it
+hellobox. 02/26/2023 4:00 PM
+    ../configure.ac:  AC_DEFINE(HAVE_LD_PUSHPOPSTATE_SUPPORT, 1,
+    ../config/i386/linux-common.h:#ifdef HAVE_LD_PUSHPOPSTATE_SUPPORT
+    ../configure:$as_echo "#define HAVE_LD_PUSHPOPSTATE_SUPPORT 1" >>confdefs.h
+    ../config.in:#undef HAVE_LD_PUSHPOPSTATE_SUPPORT
+    ../ChangeLog-2016:      * configure.ac (HAVE_LD_PUSHPOPSTATE_SUPPORT): New variable.
+02/26/2023 3:59 PM
+actually
+[smx2460]
+smx2460 02/26/2023 3:59 PM
+i didn't even know it was a thing
+hellobox. 02/26/2023 3:59 PM
+it already exists
+02/26/2023 3:59 PM
+should i check for HAVE_LD_PUSHPOPSTATE_SUPPORT?
+[smx2460]
+smx2460 02/26/2023 3:59 PM
+let's not
+02/26/2023 3:59 PM
+but it's an implementation detail
+02/26/2023 3:59 PM
+so theoretically i could use __getauxval without dlsym
+02/26/2023 3:59 PM
+    the old function name or location can still be used as an alias for the new function, without breaking existing programs.
+02/26/2023 3:58 PM
+so if ours is "concrete", it will always win
+02/26/2023 3:58 PM
+the getauxval in glibc is weak
+02/26/2023 3:58 PM
+that's why we don't need anything magic
+02/26/2023 3:58 PM
+    weak_alias is a feature in the GNU C library (glibc) that allows the definition of a weak symbol that can be overridden by a strong symbol at link time. In other words, it allows multiple symbols to refer to the same underlying function or variable, but with different levels of strength.
+    The primary reason for using weak_alias in glibc is to provide a level of backwards compatibility for functions that have been renamed or moved to different libraries over time. When a library function is renamed or moved, it can cause issues for programs that were compiled against the old function name or location. By using weak_alias, the old function name or location can still be used as an alias for the new function, without breaking existing programs.
+    Another reason for using weak_alias is to allow the creation of library functions with different names that share the same implementation. This can be useful in cases where multiple functions perform the same underlying operation, but have different names to indicate different levels of abstraction or behavior.
+02/26/2023 3:58 PM
+ah
+02/26/2023 3:58 PM
+let's ask chatgpt
+02/26/2023 3:57 PM
+and why it's there
+02/26/2023 3:57 PM
+i wonder if we do need that weak_alias thing
+hellobox. 02/26/2023 3:57 PM
+webos 2 has glibc 2.19
+[smx2460]
+smx2460 02/26/2023 3:57 PM
+    unsigned long
+    __getauxval (unsigned long type)
+    {
+      ElfW(auxv_t) *p;
+      if (type == AT_HWCAP)
+        return GLRO(dl_hwcap);
+      for (p = GLRO(dl_auxv); p->a_type != AT_NULL; p++)
+        if (p->a_type == type)
+          return p->a_un.a_val;
+      return 0;
+    }
+    weak_alias (__getauxval, getauxval)
+02/26/2023 3:57 PM
+everything older than 2.16 needs it
+02/26/2023 3:57 PM
+yep
+02/26/2023 3:57 PM
+      GLIBC_2.16 {
+        __getauxval; getauxval;
+      }
+02/26/2023 3:57 PM
+but only the headers
+02/26/2023 3:57 PM
+i backport this:
+https://github.com/bminor/glibc/commit/c7683a6d02f3ed59f5cd119b3e8547f45a15912f
+hellobox. 02/26/2023 3:57 PM
+i'm just saying it's also needed on early webos
+[smx2460]
+smx2460 02/26/2023 3:56 PM
+else no
+hellobox. 02/26/2023 3:56 PM
+i know
+[smx2460]
+smx2460 02/26/2023 3:56 PM
+if the getauxval symbol is available, i use it
+02/26/2023 3:56 PM
+i'm not like checking for netcast or shit like that
+02/26/2023 3:56 PM
+it would work then
+hellobox. 02/26/2023 3:56 PM
+which doesn't have getauxval
+02/26/2023 3:56 PM
+webos 1 uses glibc 2.14
+[smx2460]
+smx2460 02/26/2023 3:56 PM
+(only once)
+02/26/2023 3:56 PM
+the check for getauxval happens at runtime
+02/26/2023 3:56 PM
+the binary is effectively portable
+02/26/2023 3:56 PM
+it's pulled in unconditionally but not used
+hellobox. 02/26/2023 3:55 PM
+this isn't just a netcast thing, is it?
+[smx2460]
+smx2460 02/26/2023 3:55 PM
+i could backport the auxv headers
+02/26/2023 3:55 PM
+plus headers
+02/26/2023 3:55 PM
+now what needs to happen is a specs file that pulls in the polyfills
+02/26/2023 3:54 PM
+it chains to the original getauxval unless it's not present
+02/26/2023 3:54 PM
+or in other words
+02/26/2023 3:54 PM
+this means on NC4 it would go to the else block
+02/26/2023 3:54 PM
+the ifdef is used to test the polyfill
+02/26/2023 3:54 PM
+from glibc
+02/26/2023 3:54 PM
+the bloc within the preprocessor macro calls the original getauxval
+02/26/2023 3:54 PM
+    static void __attribute__((constructor))
+    getauxval_init(){
+    #ifndef SKIP_GLIBC
+        void *glibc_getauxval = dlsym(RTLD_NEXT, "getauxval");
+        if(glibc_getauxval != NULL){
+            getauxval_fn = glibc_getauxval;
+        } else
+    #endif
+        {
+            if(_getauxval_init() < 0){
+                fputs("getauxval_init() failed\n", stderr);
+                abort();
+            }
+            getauxval_fn = &_getauxval;
+        }
+    }
+02/26/2023 3:53 PM
+yep
+hellobox. 02/26/2023 3:53 PM
+even if you're linking against a glibc that has getauxval? (edited)
+[smx2460]
+smx2460 02/26/2023 3:52 PM
+and that's working
+02/26/2023 3:52 PM
+i want my polyfills to always shadow glibc
+02/26/2023 3:52 PM
+it is
+02/26/2023 3:52 PM
+yep
+hellobox. 02/26/2023 3:51 PM
+is that what you want?
+[smx2460]
+smx2460 02/26/2023 3:50 PM
+always calls mine
+02/26/2023 3:50 PM
+it seems to work regardless
+02/26/2023 3:49 PM
+i'm wrong
+02/26/2023 3:49 PM
+no wait
+02/26/2023 3:49 PM
+depends on where you put -static
+02/26/2023 3:49 PM
+ah
+02/26/2023 3:49 PM
+interesting
+02/26/2023 3:49 PM
+it works and it still calls mine
+02/26/2023 3:48 PM
+let's see what happens if i try to link statically
+02/26/2023 3:48 PM
+because i didn't use nodefaultlibs
+02/26/2023 3:48 PM
+i'm linking with -lc
+02/26/2023 3:48 PM
+well
+02/26/2023 3:48 PM
+not yet, not sure
+hellobox. 02/26/2023 3:47 PM
+i guess you shouldn't be linking with a library that has it
+02/26/2023 3:47 PM
+does it matter?
+02/26/2023 3:47 PM
+you didn't make it weak?
+[smx2460]
+smx2460 02/26/2023 3:44 PM
+@hellobox
+https://github.com/smx-smx/glibc-polyfills/blob/master/src/2.16/getauxval.c
+(edited)
+02/26/2023 3:42 PM
+if we define it ourselves, ld will prefer it
+02/26/2023 3:42 PM
+because getauxval would be an UNDEF symbol
+02/26/2023 3:42 PM
+and it makes sense
+02/26/2023 3:41 PM
+the static library takes precedence
+hellobox. 02/26/2023 3:41 PM
+it's not great to rely on /proc, but it's better than nothing i guess
+[smx2460]
+smx2460 02/26/2023 3:41 PM
+i didn't even need to do anything fancy
+02/26/2023 3:41 PM
+this is how i ran the tests btw
+02/26/2023 3:41 PM
+    $ make && gcc test.c -o test -L. -lglibc_polyfills && ./test
+02/26/2023 3:41 PM
+as we could get the original auxv without proc
+02/26/2023 3:41 PM
+if you can hook in a startfile it would be cleaner
+02/26/2023 3:41 PM
+it's simpler
+02/26/2023 3:41 PM
+let's start with this i say
+hellobox. 02/26/2023 3:40 PM
+and use an alternative startfile
+02/26/2023 3:40 PM
+since we're already modifying specs, you could just backport the entire
+glibc implementation
+[smx2460]
+smx2460 02/26/2023 3:39 PM
+but the user code will
+02/26/2023 3:39 PM
+the polyfill doesn't use it
+02/26/2023 3:39 PM
+now i need to think how to backport the header
+02/26/2023 3:39 PM
+AT_PAGESZ works
+02/26/2023 3:39 PM
+    use polyfill
+    CALLED: 0x563fff3ef215
+    val: 4096
+02/26/2023 3:38 PM
+if needed
+02/26/2023 3:38 PM
+if we need to support glibc custom auxvs we can do ad-hoc
+02/26/2023 3:38 PM
+i think it's good enough tho
+02/26/2023 3:37 PM
+these are the values from /proc/self/auxv
+02/26/2023 3:37 PM
+    33 2932772864
+    51 1776
+    16 529267711
+    6 4096
+    17 100
+    3 3858485312
+    4 56
+    5 13
+    7 1469001728
+    8 0
+02/26/2023 3:36 PM
+than glibc has
+02/26/2023 3:36 PM
+the linux kernel passes less info
+02/26/2023 3:36 PM
+i think glibc adds some custom shit in its own
+02/26/2023 3:36 PM
+it might not matter tho
+02/26/2023 3:36 PM
+hmm i'm not sure if /proc/self/auxv is identical to glibc's auxval
+02/26/2023 3:35 PM
+although that's rude 
+02/26/2023 3:35 PM
+probably not
+hellobox. 02/26/2023 3:33 PM
+does it matter if i break -mandroid?
+[smx2460]
+smx2460 02/26/2023 3:32 PM
+yes
+hellobox. 02/26/2023 3:32 PM
+is the polyfill stuff going to involve only ld flags?
+02/26/2023 3:30 PM
+although android is embedded pretty deeply
+[smx2460]
+smx2460 02/26/2023 3:30 PM
+let's fix it
+02/26/2023 3:30 PM
+lel
+02/26/2023 3:30 PM
+    sm@debian:/mnt/ExtData/test_static/build$ ./test
+    use polyfill
+    CALLED: 0x5606111d5215
+    val: 133313
+hellobox. 02/26/2023 3:29 PM
+i guess we don't need the android stuff
+[smx2460]
+smx2460 02/26/2023 3:29 PM
+    static void __attribute__((constructor))
+    getauxval_init(){
+        void *glibc_getauxval = dlsym(RTLD_NEXT, "getauxval");
+        if(glibc_getauxval != NULL){
+            puts("use glibc");
+            getauxval_fn = glibc_getauxval;
+        } else {
+            puts("use polyfill");
+            if(_getauxval_init() < 0){
+                fputs("getauxval_init() failed\n", stderr);
+                abort();
+            }
+            getauxval_fn = &_getauxval;
+        }
+    }
+    static void __attribute__((destructor))
+    getauxval_deinit(){
+        if(g_auxv != NULL){
+            free(g_auxv);
+            g_auxv = NULL;
+        }
+    }
+    unsigned long getauxval(unsigned long type){
+        printf("CALLED: %p\n", getauxval_fn);
+        return getauxval_fn(type);
+    }
+02/26/2023 3:29 PM
+    sm@debian:/mnt/ExtData/test_static/build$ ./test
+    use glibc
+    CALLED: 0x7fdcbe01b6d0
+    val: 0
+hellobox. 02/26/2023 3:29 PM
+should we?
+02/26/2023 3:28 PM
+i don't see anything special
+02/26/2023 3:26 PM
+does lg's toolchain define __WEBOS__ or anything?
+02/26/2023 3:24 PM
+i guess this should just go at the end of config.gcc
+[smx2460]
+smx2460 02/26/2023 3:21 PM
+i like it more
+02/26/2023 3:21 PM
+yeah do that
+hellobox. 02/26/2023 3:21 PM
+or just *-(lgtv|webos)-*?
+[smx2460]
+hellobox. where does buildroot keep source packages?
+smx2460 02/26/2023 3:21 PM
+dl
+[smx2460]
+smx2460 02/26/2023 3:20 PM
+yeah (edited)
+hellobox. 02/26/2023 3:20 PM
+@Smx should i do arm-(lgtv|webos)-*?
+02/26/2023 3:19 PM
+where does buildroot keep source packages?
+02/26/2023 3:14 PM
+ugh why am i getting packet loss?
+[yolofant]
+yolofant 02/26/2023 3:13 PM
+but I guess we can have an test ipk later without hw accel
+02/26/2023 3:11 PM
+probably not
+ 1
+[infowski]
+infowski 02/26/2023 3:11 PM
+@Yolofant planning to push your webOS codec/renderer patches today too?
+(edited)
+hellobox. 02/26/2023 3:10 PM
+yeah, it's fine
+02/26/2023 3:09 PM
+i put it in the wrong place
+02/26/2023 3:08 PM
+i think i made a mistake
+02/26/2023 3:08 PM
+oh wait
+[smx2460]
+smx2460 02/26/2023 3:07 PM
+let's look at getauxval while you look at that
+02/26/2023 3:07 PM
+ok
+02/26/2023 3:04 PM
+it will enable verbose ld output
+02/26/2023 3:04 PM
+to the specs file
+02/26/2023 3:03 PM
+try adding --trace --verbose (edited)
+02/26/2023 3:03 PM
+simple test binary?
+02/26/2023 3:03 PM
+where did you test it
+[smx2460]
+hellobox. i added `--push-state --as-needed -lrt --pop-state` to
+`specs`, and it seems to always link librt
+smx2460 02/26/2023 3:03 PM
+hmm
+[smx2460]
+smx2460 02/26/2023 3:01 PM
+because it's already passing them to ld
+hellobox. 02/26/2023 3:01 PM
+it does the same thing elsewhere
+02/26/2023 3:01 PM
+right
+[smx2460]
+smx2460 02/26/2023 3:01 PM
+we don't need -Wl, right?
+hellobox. 02/26/2023 3:01 PM
+the --as-needed isn't working
+[smx2460]
+smx2460 02/26/2023 3:00 PM
+so it's not working?
+hellobox. 02/26/2023 3:00 PM
+even if it's not used
+02/26/2023 3:00 PM
+i added --push-state --as-needed -lrt --pop-state to specs, and it seems
+to always link librt
+[smx2460]
+smx2460 02/26/2023 3:00 PM
+yep
+02/26/2023 3:00 PM
+LINK_SPEC is probably used in the main linux target
+02/26/2023 2:59 PM
+so it can't be the full thing (edited)
+02/26/2023 2:59 PM
+    #undef LINK_SPEC
+    #define LINK_SPEC \
+     "%{!no-elf2flt:%{!elf2flt*:-elf2flt}} \
+      %{mabi=windowed:--abi-windowed} \
+      %{mabi=call0:--abi-call0}"
+02/26/2023 2:59 PM
+the link specs is just
+02/26/2023 2:59 PM
+i mean
+02/26/2023 2:59 PM
+and just appends to the original specs i suppose
+02/26/2023 2:59 PM
+which is pretty small
+02/26/2023 2:59 PM
+gcc/config/xtensa/uclinux.h
+02/26/2023 2:58 PM
+xtensa, unironically
+02/26/2023 2:58 PM
+    xtensa*-*-uclinux*)
+        tm_file="${tm_file} dbxelf.h elfos.h gnu-user.h linux.h glibc-stdint.h xtensa/uclinux.h"
+        tmake_file="${tmake_file} xtensa/t-xtensa"
+        extra_options="${extra_options} xtensa/uclinux.opt"
+        ;;
+02/26/2023 2:57 PM
+if it exists
+02/26/2023 2:56 PM
+maybe we should pick a linux based on tho
+02/26/2023 2:56 PM
+the netbsd target seems good enough to copy
+02/26/2023 2:55 PM
+we can define our own macros
+02/26/2023 2:54 PM
+we get this for free too
+02/26/2023 2:54 PM
+    #define NETBSD_OS_CPP_BUILTINS_COMMON()        \
+      do                        \
+        {                        \
+          builtin_define ("__NetBSD__");        \
+          builtin_define ("__unix__");        \
+          builtin_assert ("system=bsd");        \
+          builtin_assert ("system=unix");        \
+          builtin_assert ("system=NetBSD");        \
+        }                        \
+      while (0)
+02/26/2023 2:54 PM
+yep
+hellobox. 02/26/2023 2:54 PM
+so we're adding a subtarget?
+[smx2460]
+smx2460 02/26/2023 2:54 PM
+    #undef  SUBTARGET_INIT_BUILTINS
+    #define SUBTARGET_INIT_BUILTINS                        \
+      do {                                    \
+        netbsd_patch_builtins ();                        \
+      } while(0)
+02/26/2023 2:54 PM
+it changes built-ins on the fly
+02/26/2023 2:53 PM
+    static void
+    netbsd_patch_builtin (enum built_in_function fncode)
+    {
+      tree fn = builtin_decl_explicit (fncode);
+      tree sym;
+      char *newname;
+      if (!fn)
+        return;
+      sym = DECL_ASSEMBLER_NAME (fn);
+      newname = ACONCAT (("__c99_", IDENTIFIER_POINTER (sym), NULL));
+      set_user_assembler_name (fn, newname);
+      fn = builtin_decl_implicit (fncode);
+      if (fn)
+        set_user_assembler_name (fn, newname);
+    }
+    void
+    netbsd_patch_builtins (void)
+    {
+      netbsd_patch_builtin (BUILT_IN_CABSF);
+      netbsd_patch_builtin (BUILT_IN_CABS);
+      netbsd_patch_builtin (BUILT_IN_CABSL);
+    }
+02/26/2023 2:53 PM
+interesting
+02/26/2023 2:53 PM
+    netbsd.o: $(srcdir)/config/netbsd.c
+        $(COMPILE)  DCPH0 lt;
+        $(POSTCOMPILE)
+    netbsd-d.o: $(srcdir)/config/netbsd-d.c
+        $(COMPILE)  DCPH0 lt;
+        $(POSTCOMPILE)
+02/26/2023 2:53 PM
+t-netbsd is to add extra C files
+02/26/2023 2:53 PM
+nice
+02/26/2023 2:52 PM
+    powerpc-*-netbsd*)
+        tm_file="${tm_file} dbxelf.h elfos.h gnu-user.h ${nbsd_tm_file} freebsd-spec.h rs6000/sysv4.h rs6000/netbsd.h"
+        extra_options="${extra_options} netbsd.opt netbsd-elf.opt"
+        tmake_file="${tmake_file} rs6000/t-netbsd"
+        extra_options="${extra_options} rs6000/sysv4.opt"
+        ;;
+02/26/2023 2:52 PM
+tm_file for extra headers
+02/26/2023 2:52 PM
+    powerpc-*-darwin*)
+        extra_options="${extra_options} ${cpu_type}/darwin.opt"
+        case ${target} in
+          *-darwin1[0-9]* | *-darwin9*)
+            tmake_file="${tmake_file} ${cpu_type}/t-darwin32-biarch"
+            tm_file="${tm_file} ${cpu_type}/darwin32-biarch.h"
+            ;;
+          *-darwin8*)
+            tmake_file="${tmake_file} ${cpu_type}/t-darwin32-biarch"
+            tm_file="${tm_file} ${cpu_type}/darwin32-biarch.h"
+            ;;
+          *-darwin7*)
+            tm_file="${tm_file} ${cpu_type}/darwin7.h"
+            ;;
+          *-darwin[456]*)
+            # Earlier - ingle arch, with 32b only
+            # OS X 10.0, the first edition is Darwin4
+            ;;
+        esac
+        tmake_file="${tmake_file} t-slibgcc"
+        ;;
+02/26/2023 2:52 PM
+just one file
+02/26/2023 2:52 PM
+not bad actually
+hellobox. 02/26/2023 2:52 PM
+yeah
+[smx2460]
+smx2460 02/26/2023 2:52 PM
+still in config.gcc
+02/26/2023 2:51 PM
+    extra_options="${extra_options} darwin.opt"
+      c_target_objs="${c_target_objs} darwin-c.o"
+      cxx_target_objs="${cxx_target_objs} darwin-c.o"
+      d_target_objs="${d_target_objs} darwin-d.o"
+02/26/2023 2:51 PM
+there
+hellobox. 02/26/2023 2:51 PM
+could we do something for libcrypt?
+[smx2460]
+smx2460 02/26/2023 2:51 PM
+or rather opt file
+02/26/2023 2:51 PM
+how does one add a custom target tho
+[smx2460]
+hellobox. ``` ; The Init here is for the convenience of GCC developers,
+so that cc1 ; and cc1plus don't crash ...
+smx2460 02/26/2023 2:51 PM
+yeah sets the initial value
+[smx2460]
+smx2460 02/26/2023 2:51 PM
+tm_defines sounds like target macros
+hellobox. 02/26/2023 2:51 PM
+    ; The Init here is for the convenience of GCC developers, so that cc1
+    ; and cc1plus don't crash if no -mmacosx-version-min is passed.  The
+    ; driver will always pass a -mmacosx-version-min, so in normal use the
+    ; Init is never used.
+    mmacosx-version-min=
+    Target RejectNegative Joined Var(darwin_macosx_version_min) Init(DEF_MIN_OSX_VERSION)
+    The earliest macOS version on which this program will run.
+[smx2460]
+smx2460 02/26/2023 2:51 PM
+so it looks like it's a good place
+hellobox. 02/26/2023 2:50 PM
+yeah
+[smx2460]
+smx2460 02/26/2023 2:50 PM
+and gcc/config/darwin.h
+02/26/2023 2:50 PM
+we have gcc/config/darwin.opt
+02/26/2023 2:50 PM
+DEF_MIN_OSX_VERSION is exactly used there
+02/26/2023 2:50 PM
+i was lucky
+02/26/2023 2:50 PM
+yep
+02/26/2023 2:50 PM
+if gcc/config.gcc produces something usable in specs file, maybe
+hellobox. 02/26/2023 2:49 PM
+should we do something like that?
+02/26/2023 2:49 PM
+hmm
+[smx2460]
+smx2460 02/26/2023 2:49 PM
+      tm_defines="$tm_defines DEF_MIN_OSX_VERSION=\\\"${macos_maj}.${macos_min}\\\""
+02/26/2023 2:49 PM
+in gcc/config.gcc
+02/26/2023 2:49 PM
+for example this
+02/26/2023 2:49 PM
+    *-*-darwin*)
+      tmake_file="t-darwin "
+      tm_file="${tm_file} darwin.h"
+      darwin_os=`echo ${target} | sed 's/.*darwin\([0-9.]*\).*$/\1/'`
+      darwin_maj=`expr "$darwin_os" : '\([0-9]*\).*'`
+      macos_min=`expr "$darwin_os" : '[0-9]*\.\([0-9]*\).*'`
+      macos_maj=10
+      if test x"${macos_min}" = x; then
+        macos_min=0
+      fi
+      def_ld64=85.2
+      case ${target} in
+          # Darwin 4 to 19 correspond to macOS 10.0 to 10.15
+          *-*-darwin[4-9]* | *-*-darwin1[0-9]*)
+            macos_min=`expr $darwin_maj - 4`
+            ;;
+          *-*-darwin20*)
+            # Darwin 20 corresponds to macOS 11.
+            macos_maj=11
+            def_ld64=609.0
+            ;;
+          *-*-darwin)
+            case ${cpu_type} in
+              aarch64) macos_maj=11 ;;
+              x86_64) macos_min=6 ;;
+              *)  macos_min=5 ;;
+              esac
+              case ${host} in
+                *-*-darwin*) tm_defines="$tm_defines DARWIN_USE_KERNEL_VERS" ;;
+                *)
+                  # If configuring a cross-compiler then we will have set some
+                  # default above, but it is probably not what was intended.
+                  echo "Warning: Using ${target} is only suitable for Darwin hosts" 1>&2
+                  echo "configure with an explicit target version" 1>&2
+                  ;;
+              esac
+            ;;
+          *)
+            echo "Error: configuring for an unreleased macOS version ${target}" 1>&2
+            exit 1
+            ;;
+      esac
+02/26/2023 2:49 PM
+doing different things
+02/26/2023 2:48 PM
+there are so many places that check for the triplet
+hellobox. 02/26/2023 2:48 PM
+i'm not sure why they used it
+02/26/2023 2:48 PM
+it doesn't get the special automatic stuff
+02/26/2023 2:48 PM
+it's treated differently
+02/26/2023 2:48 PM
+neither have i
+[smx2460]
+smx2460 02/26/2023 2:47 PM
+not sure
+02/26/2023 2:47 PM
+never seen that before
+02/26/2023 2:47 PM
+oh
+02/26/2023 2:47 PM
+is there a -t option anywhere?
+hellobox. 02/26/2023 2:47 PM
+-tno-android-* (edited)
+[smx2460]
+smx2460 02/26/2023 2:47 PM
+where did you get -t from
+02/26/2023 2:47 PM
+if you want to experiment on that
+hellobox. 02/26/2023 2:47 PM
+or should it be -mno-webos-compat?
+[smx2460]
+smx2460 02/26/2023 2:47 PM
+hmm we should do some trials
+[smx2460]
+hellobox. we can build that with `-tno-webos-compat`
+smx2460 02/26/2023 2:47 PM
+yeah (edited)
+[smx2460]
+smx2460 02/26/2023 2:47 PM
+but then it's not "nicely integrated"
+hellobox. 02/26/2023 2:47 PM
+we can build that with -tno-webos-compat
+[smx2460]
+smx2460 02/26/2023 2:47 PM
+it will be good
+02/26/2023 2:46 PM
+if we patch it after gcc is built
+02/26/2023 2:46 PM
+i assume the linker will fail
+02/26/2023 2:46 PM
+if we patch it early, and the polyfills are not in place
+02/26/2023 2:46 PM
+will probably use the specs file
+02/26/2023 2:46 PM
+that the -final gcc, which builds libgcc
+hellobox. 02/26/2023 2:46 PM
+i wanted to put it behind the same webos compat flag
+[smx2460]
+smx2460 02/26/2023 2:46 PM
+i mean
+hellobox. 02/26/2023 2:46 PM
+what do you mean?
+[smx2460]
+smx2460 02/26/2023 2:46 PM
+so either we make it optional
+02/26/2023 2:46 PM
+it will try to use it
+02/26/2023 2:46 PM
+if we add it to the specs file in the sources
+02/26/2023 2:45 PM
+this is tricky
+02/26/2023 2:45 PM
+it will however reference it in the specs file
+hellobox. 02/26/2023 2:45 PM
+yeah
+[smx2460]
+smx2460 02/26/2023 2:45 PM
+gcc would be able to build without it
+02/26/2023 2:45 PM
+it doesn't need to build it
+02/26/2023 2:45 PM
+"used" means it references it
+02/26/2023 2:45 PM
+well
+[smx2460]
+hellobox. but it's going to be used by gcc, right?
+smx2460 02/26/2023 2:45 PM
+hmm yeah
+[smx2460]
+smx2460 02/26/2023 2:45 PM
+it's WIP
+02/26/2023 2:45 PM
+(no content)
+[image.png]
+ image.png
+12.64 KB External
+hellobox. 02/26/2023 2:45 PM
+but it's going to be used by gcc, right?
+[smx2460]
+smx2460 02/26/2023 2:45 PM
+and possibly others
+02/26/2023 2:44 PM
+a static library that adds getauxval
+02/26/2023 2:44 PM
+polyfills is supposed to be independent
+hellobox. 02/26/2023 2:44 PM
+or is that for something else?
+[smx2460]
+smx2460 02/26/2023 2:44 PM
+hmm
+02/26/2023 2:44 PM
+what you add on top could always be applied to the git tree later
+hellobox. 02/26/2023 2:44 PM
+use that polyfill repo?
+[smx2460]
+smx2460 02/26/2023 2:44 PM
+and call it "initial commit"
+02/26/2023 2:44 PM
+you could just extract all of the gcc release
+02/26/2023 2:44 PM
+yeah
+hellobox. 02/26/2023 2:44 PM
+so should i be doing this on a clean gcc 12.2.0 tree?
+[smx2460]
+smx2460 02/26/2023 2:43 PM
+like an OS part that has -ps3 (edited)
+02/26/2023 2:43 PM
+surprisingly no specific target tho
+02/26/2023 2:43 PM
+yep rs6000
+hellobox. 02/26/2023 2:43 PM
+i think we'd have to do *-webos-*|*-lgtv-*
+02/26/2023 2:42 PM
+glob
+[smx2460]
+smx2460 02/26/2023 2:42 PM
+isn't there a PS3 target in gcc?
+02/26/2023 2:42 PM
+it should be a RE
+02/26/2023 2:42 PM
+(lgtv|webos) (edited)
+hellobox. 02/26/2023 2:42 PM
+we don't i guess
+[smx2460]
+smx2460 02/26/2023 2:42 PM
+we can just match
+02/26/2023 2:41 PM
+but why do we need to change it
+02/26/2023 2:41 PM
+hm
+02/26/2023 2:41 PM
+which is the second part
+02/26/2023 2:41 PM
+i would change the "vendor" (edited)
+hellobox. 02/26/2023 2:41 PM
+yeah
+[smx2460]
+smx2460 02/26/2023 2:41 PM
+i think that might give some troubles
+hellobox. 02/26/2023 2:41 PM
+i don't know
+[smx2460]
+smx2460 02/26/2023 2:41 PM
+you think we should change the ABI? (edited)
+02/26/2023 2:41 PM
+hmm
+hellobox. 02/26/2023 2:41 PM
+might make more sense
+02/26/2023 2:41 PM
+or something
+[smx2460]
+smx2460 02/26/2023 2:41 PM
+but back then i didn't think of patching it
+hellobox. 02/26/2023 2:41 PM
+arm-lgtv-linux-weboseabi
+[smx2460]
+smx2460 02/26/2023 2:41 PM
+which gave me some issues when building
+[smx2460]
+hellobox. ```m4 i[34567]86-pc-msdosdjgpp*) xm_file=i386/xm-djgpp.h
+tm_file="dbxcoff.h ${tm_fil...
+smx2460 02/26/2023 2:41 PM
+yeah it has a custom specs file too
+[smx2460]
+smx2460 02/26/2023 2:40 PM
+https://gist.github.com/smx-smx/8c4db4a317ce24f8ac5c5270d3fc52c3
+QNX6 Cross Toolchain
+QNX6 Cross Toolchain. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+02/26/2023 2:40 PM
+but i had managed to build a gcc cross compiler for it
+hellobox. 02/26/2023 2:40 PM
+    i[34567]86-pc-msdosdjgpp*)
+            xm_file=i386/xm-djgpp.h
+            tm_file="dbxcoff.h ${tm_file} i386/unix.h i386/bsd.h i386/gas.h i386/djgpp.h i386/djgpp-stdint.h"
+            native_system_header_dir=/dev/env/DJDIR/include
+            extra_options="${extra_options} i386/djgpp.opt"
+            gnu_ld=yes
+            gas=yes
+            use_gcc_stdint=wrap
+            ;;
+    i[34567]86-*-lynxos*)
+            xm_defines=POSIX
+            tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h i386/lynx.h lynx.h"
+            tmake_file="${tmake_file} t-lynx"
+            extra_options="${extra_options} lynx.opt"
+            thread_file=lynx
+            gnu_ld=yes
+            gas=yes
+            ;;
+    i[34567]86-*-nto-qnx*)
+            tm_file="${tm_file} i386/att.h dbxelf.h tm-dwarf2.h elfos.h i386/unix.h i386/nto.h"
+            extra_options="${extra_options} i386/nto.opt"
+            gnu_ld=yes
+            gas=yes
+            ;;
+    i[34567]86-*-rtems*)
+            tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h i386/i386elf.h i386/rtemself.h rtems.h newlib-stdint.h"
+            tmake_file="${tmake_file} i386/t-rtems"
+            ;;
+[smx2460]
+smx2460 02/26/2023 2:40 PM
+it's incomplete
+02/26/2023 2:40 PM
+i was porting ezinject to it
+02/26/2023 2:40 PM
+aka QNX 6
+02/26/2023 2:39 PM
+QNX neutrino
+02/26/2023 2:39 PM
+yes
+02/26/2023 2:39 PM
+but that's for building i think
+hellobox. 02/26/2023 2:39 PM
+nto is neutrino?
+[smx2460]
+smx2460 02/26/2023 2:39 PM
+        i[[34567]]86-*-nto-qnx*)
+        # QNX uses GNU C++, but need to define -shared option too, otherwise
+        # it will coredump.
+        $1='-fPIC -shared'
+        ;;
+02/26/2023 2:39 PM
+picflag.m4 has this (edited)
+02/26/2023 2:39 PM
+for example
+02/26/2023 2:39 PM
+each specific for certain flags
+02/26/2023 2:39 PM
+there are several places
+hellobox. 02/26/2023 2:39 PM
+hmm, with android they put it at the end: *-androideabi)
+[smx2460]
+smx2460 02/26/2023 2:39 PM
+as that's a good candidate to check
+02/26/2023 2:38 PM
+which are encoded as -nto
+02/26/2023 2:38 PM
+i'm looking at the QNX options
+02/26/2023 2:36 PM
+i didn't pick it up 
+02/26/2023 2:36 PM
+sorry
+hellobox. 02/26/2023 2:36 PM
+that's what i was asking before
+[smx2460]
+smx2460 02/26/2023 2:36 PM
+for example..
+02/26/2023 2:36 PM
+then defines something we can use in the specs header (edited)
+02/26/2023 2:36 PM
+in the --configure
+02/26/2023 2:36 PM
+so that it picks up *-webos-* (edited)
+02/26/2023 2:35 PM
+or even going as far as changing config.host and friends
+02/26/2023 2:35 PM
+by duplicating the built in specs?
+02/26/2023 2:35 PM
+how should we do it
+02/26/2023 2:35 PM
+the question is
+02/26/2023 2:35 PM
+why not
+02/26/2023 2:35 PM
+if we're going to patch gcc
+02/26/2023 2:35 PM
+well yeah
+hellobox. 02/26/2023 2:35 PM
+i think we should change the built-in specs
+[smx2460]
+smx2460 02/26/2023 2:34 PM
+i say we want it off by default, and enabled in specs (edited)
+02/26/2023 2:34 PM
+hm
+02/26/2023 2:34 PM
+actually
+[smx2460]
+hellobox. `-tno-webos-compat`?
+smx2460 02/26/2023 2:34 PM
+hmmm i guess we want that as default?
+[yolofant]
+yolofant 02/26/2023 2:30 PM
+I'll change that anyway later
+[ccarnell98]
+ccarnell98 02/26/2023 2:30 PM
+I tried lots of combinations of setenvs and it wouldnt work for me
+[yolofant]
+[] ccarnell98 xkbcommon needs to set the location of /usr/share/X11/xkb
+when its compiling.. I think
+yolofant 02/26/2023 2:30 PM
+as I said don't assume specific locations during compile time
+[yolofant]
+yolofant 02/26/2023 2:30 PM
+ setenv("XKB_CONFIG_ROOT", "/usr/share/X11/xkb", 1); (edited)
+ 1
+[ccarnell98]
+ccarnell98 02/26/2023 2:30 PM
+It's on my TODOs
+02/26/2023 2:29 PM
+xkbcommon needs to set the location of /usr/share/X11/xkb when its
+compiling.. I think
+[infowski]
+infowski 02/26/2023 2:29 PM
+Or some dependency?
+02/26/2023 2:29 PM
+Yeah, and this we should probably... Just use correct path for that. No
+idea what uses these paths. Kodi itself?
+[yolofant]
+[] ccarnell98 the generated kodi.sh looks like this:
+yolofant 02/26/2023 2:28 PM
+yes but we cannot use a launch script because of luna stuff
+hellobox. 02/26/2023 2:28 PM
+from /etc/jail_native_devmode.conf:
+    mount ro /usr/share
+ 1
+[infowski]
+infowski 02/26/2023 2:28 PM
+(hello Realtek)
+02/26/2023 2:28 PM
+xD
+02/26/2023 2:28 PM
+They shouldn't bypass suc basic stuff as symljnks xf
+02/26/2023 2:27 PM
+Yeah, so its just the path that's wrong, how I anticipated. While we
+know some BSP patches are horrendous...
+hellobox. 02/26/2023 2:27 PM
+i think it's mounted by default
+02/26/2023 2:27 PM
+or you can fix the path in kodi itself
+02/26/2023 2:27 PM
+yeah i think it should be fine with a symlink
+02/26/2023 2:26 PM
+    |   |-/var/palm/jail/netflix/usr/share                                                                   overlay[/share]                                                   overlay    ro,nosuid,relatime,lowerdir=/overlay/bsppart/bsp/usr:/usr
+02/26/2023 2:26 PM
+netflix has it
+02/26/2023 2:26 PM
+maybe not by default
+02/26/2023 2:26 PM
+oh wait
+02/26/2023 2:25 PM
+it's just because you're not using /usr as PREFIX
+02/26/2023 2:25 PM
+so the symlink is fine i guess
+02/26/2023 2:25 PM
+/usr/share/X11/xkb does seem to be present in the jail
+02/26/2023 2:24 PM
+i guess that one isn't recursive
+02/26/2023 2:24 PM
+maybe it's just giving up when it finds a recursive symlink
+[ccarnell98]
+ccarnell98 02/26/2023 2:24 PM
+if [ ! -d /media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-deps/arm-linux-release/share/X11 ]; then mkdir -p /media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-deps/arm-linux-release/share/X11; ln -s /usr/share/X11/xkb /media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-deps/arm-linux-release/share/X11 fi
+02/26/2023 2:24 PM
+the generated kodi.sh looks like this:
+02/26/2023 2:23 PM
+It works for me 
+[yolofant]
+yolofant 02/26/2023 2:23 PM
+I just copied everything over from /usr/share/X11/xbk to the ipk
+02/26/2023 2:22 PM
+I never tried symlinking though @Craig claimed it was working
+[infowski]
+infowski 02/26/2023 2:22 PM
+Hmmmmm
+02/26/2023 2:22 PM
+Sounds fishy
+[yolofant]
+yolofant 02/26/2023 2:22 PM
+that's what surprises me

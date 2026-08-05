@@ -1,0 +1,1663 @@
+March 7, 2023
+[smx2460]
+hellobox. and it's building with `-Werror`
+smx2460 03/07/2023 9:22 PM
+@meep would like to have a word with you
+hellobox. 03/07/2023 9:22 PM
+and it's building with -Werror
+[smx2460]
+smx2460 03/07/2023 9:22 PM
+possible but weird
+hellobox. 03/07/2023 9:22 PM
+i think it's probably because we're using a newer gcc
+03/07/2023 9:22 PM
+let me try it with the lg toolchain
+03/07/2023 9:21 PM
+but it's still weird
+03/07/2023 9:21 PM
+well the enum is going to be an int
+[smx2460]
+smx2460 03/07/2023 9:21 PM
+i don't get it (edited)
+hellobox. 03/07/2023 9:21 PM
+yeah
+[smx2460]
+smx2460 03/07/2023 9:21 PM
+that's theoretically the same
+03/07/2023 9:20 PM
+1 << 31 hm
+hellobox. 03/07/2023 9:20 PM
+the same
+[smx2460]
+smx2460 03/07/2023 9:20 PM
+same. (edited)
+03/07/2023 9:20 PM
+what is it in our glibc tho
+03/07/2023 9:20 PM
+    enum EPOLL_EVENTS
+      {
+        EPOLLIN = 0x001,
+    #define EPOLLIN EPOLLIN
+        EPOLLPRI = 0x002,
+    #define EPOLLPRI EPOLLPRI
+        EPOLLOUT = 0x004,
+    #define EPOLLOUT EPOLLOUT
+        EPOLLRDNORM = 0x040,
+    #define EPOLLRDNORM EPOLLRDNORM
+        EPOLLRDBAND = 0x080,
+    #define EPOLLRDBAND EPOLLRDBAND
+        EPOLLWRNORM = 0x100,
+    #define EPOLLWRNORM EPOLLWRNORM
+        EPOLLWRBAND = 0x200,
+    #define EPOLLWRBAND EPOLLWRBAND
+        EPOLLMSG = 0x400,
+    #define EPOLLMSG EPOLLMSG
+        EPOLLERR = 0x008,
+    #define EPOLLERR EPOLLERR
+        EPOLLHUP = 0x010,
+    #define EPOLLHUP EPOLLHUP
+        EPOLLRDHUP = 0x2000,
+    #define EPOLLRDHUP EPOLLRDHUP
+        EPOLLONESHOT = (1 << 30),
+    #define EPOLLONESHOT EPOLLONESHOT
+        EPOLLET = (1 << 31)
+    #define EPOLLET EPOLLET
+      };
+hellobox. 03/07/2023 9:20 PM
+    In file included from ../../strace-6.2/src/epoll.c:34:
+    ../../strace-6.2/src/xlat/epollevents.h:113:25: error: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Werror=sign-compare]
+      113 | static_assert((EPOLLET) == (0x80000000), "EPOLLET != 0x80000000");
+          |                         ^~
+    cc1: all warnings being treated as errors
+03/07/2023 9:20 PM
+same thing with 6.2
+[smx2460]
+smx2460 03/07/2023 9:19 PM
+#define EPOLLET 1234 (edited)
+03/07/2023 9:19 PM
+it's probably a #define somewhere
+03/07/2023 9:18 PM
+probably not
+03/07/2023 9:18 PM
+but without the minus... is it unsigned?
+03/07/2023 9:18 PM
+-EPOLLET could be negative, aka signed (edited)
+03/07/2023 9:18 PM
+hmmm it sounds like a bug
+hellobox. 03/07/2023 9:18 PM
+i think there's a newer strace version
+[smx2460]
+smx2460 03/07/2023 9:18 PM
+which makes sense because the MSB is 1
+03/07/2023 9:17 PM
+but 0x80000000 is promoted to uint
+03/07/2023 9:17 PM
+hmm so EPOLLET is signed
+03/07/2023 9:17 PM
+(no content)
+[image.png]
+ image.png
+195.42 KB External
+ 1
+03/07/2023 9:16 PM
+uhm
+hellobox. 03/07/2023 9:16 PM
+    In file included from ../../strace-6.0/src/epoll.c:34:
+    ../../strace-6.0/src/xlat/epollevents.h:113:25: error: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Werror=sign-compare]
+      113 | static_assert((EPOLLET) == (0x80000000), "EPOLLET != 0x80000000");
+          |                         ^~
+    cc1: all warnings being treated as errors
+03/07/2023 9:15 PM
+i think strace failed to build
+03/07/2023 9:15 PM
+let's see
+03/07/2023 9:15 PM
+hmm
+[smx2460]
+smx2460 03/07/2023 9:15 PM
+now that we have our own dedicated glibc fork it's less annoying than
+managing patches
+hellobox. 03/07/2023 9:15 PM
+all right
+[smx2460]
+smx2460 03/07/2023 9:15 PM
+so i can start to find what to backport
+03/07/2023 9:15 PM
+in any case, having the details is a prerequisite
+hellobox. 03/07/2023 9:15 PM
+that's great
+[smx2460]
+smx2460 03/07/2023 9:15 PM
+and feel like doing stuff again
+ 1
+03/07/2023 9:15 PM
+i am mostly recovered from the sickness i had
+ 1
+03/07/2023 9:14 PM
+i could
+hellobox. 03/07/2023 9:14 PM
+if you want to work on it now, i can go check
+03/07/2023 9:14 PM
+some of the things are just header issues
+[smx2460]
+smx2460 03/07/2023 9:14 PM
+first of all i need to see the problem manifesting
+03/07/2023 9:14 PM
+i need to find out if it's something that is just cosmetics or can cause
+runtime issues
+[yolofant]
+yolofant 03/07/2023 9:13 PM
+[smx2460]
+smx2460 03/07/2023 9:13 PM
+well
+[smx2460]
+hellobox. that was fixed in a newer glibc
+smx2460 03/07/2023 9:13 PM
+backport time!
+[smx2460]
+smx2460 03/07/2023 9:13 PM
+gotta eliminate those bugs
+hellobox. 03/07/2023 9:13 PM
+that was fixed in a newer glibc
+[smx2460]
+smx2460 03/07/2023 9:13 PM
+hellobox. 03/07/2023 9:13 PM
+something with file offset lengths i think
+03/07/2023 9:13 PM
+i'll have to go try to build stuff again and see
+[smx2460]
+smx2460 03/07/2023 9:13 PM
+what's the leftover part that makes it "almost"? 
+hellobox. 03/07/2023 9:12 PM
+we're almost to the point that i can use br-nc4 instead of the lg
+toolchains for most things
+[smx2460]
+smx2460 03/07/2023 9:12 PM
++ @meep [:meep:]
+03/07/2023 9:12 PM
+@Unknown User + @Yolofant + @infowski
+03/07/2023 9:11 PM
+thanks to everyone
+03/07/2023 9:11 PM
+it's up
+03/07/2023 9:11 PM
+https://github.com/openlgtv/buildroot-nc4/releases/tag/webos-800cec9
+Release 2022.11.1 - compatibility update · openlgtv/buildroot-nc4
+all: new BR2_PACKAGE_LGTV meta-package new glibc polyfills for getauxval
+new gcc patch for librt and libglibc-polyfills automatic inclusion
+(@throwaway96) glibc: new fork (https://github.com/openl...
+[]
+ 2
+hellobox. 03/07/2023 9:09 PM
+uhhh... i don't think so
+ 1
+[smx2460]
+smx2460 03/07/2023 9:08 PM
+anything else that i forgot?
+03/07/2023 9:08 PM
+@hellobox
+[image.png]
+ image.png
+48.88 KB External
+[] ccarnell98 Don't know if its a bug or what.. but i received an update
+to developer mode and for some reason dev...
+hellobox. 03/07/2023 7:23 PM
+you're not the only one
+[ccarnell98]
+ccarnell98 03/07/2023 7:22 PM
+Don't know if its a bug or what.. but i received an update to developer
+mode and for some reason dev mode session now says 999h 
+[witwolfy]
+witwolfy 03/07/2023 6:07 PM
+why dpes youtube lean back crash my webos dev manager when I try and
+install it manually?
+[infowski]
+infowski 03/07/2023 3:58 PM
+Yep.
+[mariotaku]
+mariotaku 03/07/2023 3:57 PM
+if (uid != 0) return "plz elevate";
+03/07/2023 3:56 PM
+I think error handling + telling the user to elevate in Luna response is
+good enough
+03/07/2023 3:55 PM
+Yeah lol
+[infowski]
+infowski 03/07/2023 3:54 PM
+I don't think we have many headless WebOS users ;p
+03/07/2023 3:53 PM
+I think it's fine as it is.
+03/07/2023 3:53 PM
+We don't do that since we don't need to. We could add an appinfo field
+to request that? But not sure.
+03/07/2023 3:53 PM
+Nope.
+[mariotaku]
+mariotaku 03/07/2023 3:51 PM
+Will hbchannel attempt to elevate an app when it gets updated?
+03/07/2023 3:51 PM
+It worked so well.
+[infowski]
+infowski 03/07/2023 3:51 PM
+And also better error handling 
+03/07/2023 3:51 PM
+So... Effectively not an issue? I guess I could suggest running the app
+via luna-send in the readme for headless/remote users
+03/07/2023 3:50 PM
+Ah 
+[mariotaku]
+mariotaku 03/07/2023 3:50 PM
+I tried to elevate directly and it worked, including the input
+[mariotaku]
+[] infowski Btw are you sure the service is elevated and all?
+App/frontend start should autoelevate it on first ...
+mariotaku 03/07/2023 3:50 PM
+This is exactly the case!
+[mariotaku]
+[] infowski Btw are you sure the service is elevated and all?
+App/frontend start should autoelevate it on first ...
+mariotaku 03/07/2023 3:48 PM
+I remember it worked on 1.0.1
+[mariotaku]
+mariotaku 03/07/2023 3:47 PM
+https://gist.github.com/mariotaku/0334aa8372d673dfdd5859bbb27f1d66
+webos-vncserver crashes at location /var/palm/jail/org.webosbrew.v...
+webos-vncserver crashes at location
+/var/palm/jail/org.webosbrew.vncserver/usr/lib/libkadaptor.so.2.0.1
+(gcoHAL_QuerySeparated2D+0x2c) - crash.txt
+[]
+[infowski]
+infowski 03/07/2023 3:47 PM
+Btw are you sure the service is elevated and all? App/frontend start
+should autoelevate it on first start
+[infowski]
+[] mariotaku I noticed vncserver failed to launch on my board, and got
+some core dumps. Also I noticed directly i...
+infowski 03/07/2023 3:47 PM
+Sure
+[mariotaku]
+mariotaku 03/07/2023 2:12 PM
+I noticed vncserver failed to launch on my board, and got some core
+dumps. Also I noticed directly invoking the binary works and input is
+fine too. Wanna take a look at the crash log? @infowski
+March 6, 2023
+[kitsuned]
+derpyherpy Anyone know the status of the Alt Home project? Is it usable
+currently?
+kitsuned 03/06/2023 10:54 PM
+kinda yeah
+derpyherpy 03/06/2023 10:23 PM
+Anyone know the status of the Alt Home project? Is it usable currently?
+[smx2460]
+Deleted User ive just realized 80% of your messages have  in them
+somewhere
+smx2460 03/06/2023 8:27 PM
+[astur3l]
+astur3l 03/06/2023 8:20 PM
+i just want it off , generating thumb for 60+ gigs movies is not funny
+ (edited)
+Deleted User 03/06/2023 8:20 PM
+OR you can run ffprobe on it
+03/06/2023 8:19 PM
+just look at the file headers in a hex editor
+03/06/2023 8:19 PM
+well those have a different extension too
+03/06/2023 8:19 PM
+i guess its different across webos versions
+03/06/2023 8:19 PM
+hm
+[astur3l]
+astur3l 03/06/2023 8:18 PM
+     find /tmp/tnm
+    /tmp/tnm
+    /tmp/tnm/work
+    /tmp/tnm/work/body
+    /tmp/tnm/work/header
+    /tmp/tnm/thumb
+    /tmp/tnm/thumb/media31.254x254_0_2443663555.tn
+    /tmp/tnm/thumb/media29.254x254_0_1619941263.tn
+    /tmp/tnm/thumb/media30.254x254_0_1994170073.tn
+    /tmp/tnm/thumb/media28.254x254_0_3587403556.tn
+    /tmp/tnm/thumb/media27.254x254_0_1504741596.tn
+    /tmp/tnm/thumb/media26.254x254_0_2389353764.tn
+    /tmp/tnm/thumb/media25.254x254_0_2766098637.tn
+    /tmp/tnm/thumb/media24.254x254_0_1424016554.tn
+    /tmp/tnm/thumb/media23.254x254_0_471544067.tn
+    /tmp/tnm/thumb/media22.254x254_0_3438961846.tn
+    /tmp/tnm/thumb/media21.254x254_0_575859740.tn
+    /tmp/tnm/thumb/media20.254x254_0_1004643829.tn
+    /tmp/tnm/thumb/media19.254x254_0_63134220.tn
+    /tmp/tnm/thumb/media18.254x254_0_592170265.tn
+    /tmp/tnm/thumb/media17.254x254_0_2198352212.tn
+    /tmp/tnm/thumb/media16.254x254_0_4284321846.tn
+    /tmp/tnm/thumb/media15.254x254_0_2845933467.tn
+    /tmp/tnm/thumb/media14.254x254_0_590125839.tn
+    /tmp/tnm/thumb/media13.254x254_0_4025450544.tn
+    /tmp/tnm/thumb/media12.254x254_0_3108302966.tn
+    /tmp/tnm/thumb/media11.254x254_0_2330504263.tn
+    /tmp/tnm/thumb/media10.254x254_0_1775820244.tn
+    /tmp/tnm/thumb/media9.254x254_0_472184919.tn
+    /tmp/tnm/thumb/media8.254x254_0_338114729.tn
+    /tmp/tnm/thumb/media7.254x254_0_2177213043.tn
+    /tmp/tnm/thumb/media6.254x254_0_785651569.tn
+    /tmp/tnm/thumb/media4.254x254_0_2195055077.tn
+    /tmp/tnm/thumb/media5.254x254_0_3666255065.tn
+    /tmp/tnm/thumb/media3.254x254_0_2795989167.tn
+    /tmp/tnm/thumb/media2.254x254_0_2619331218.tn
+    /tmp/tnm/thumb/media1.254x254_0_447219771.tn
+Deleted User 03/06/2023 8:17 PM
+then the creation timestamp
+03/06/2023 8:17 PM
+then the format seems to be either i or m, where m is an animated webp
+file and i is just a regular jfif (basically jpeg) file (edited)
+03/06/2023 8:17 PM
+then the thumbnail WIDTHxHEIGHT
+03/06/2023 8:16 PM
+filename is just the name of the video
+03/06/2023 8:16 PM
+N is some number which im not sure what it means
+03/06/2023 8:16 PM
+the filename format seems to be
+Nfilename.WIDTHxHEIGHT_FORMAT_TIMESTAMP.tn3
+03/06/2023 8:15 PM
+i ended up looking into those files to see what TN3 is supposed to be
+03/06/2023 8:14 PM
+that INFO file contains this
+    {"INFO":"{ \"core_os_release\": \"4.4.1-1004\", \"returnValue\": true }{ \"device_name\": \"lm18a\", \"returnValue\": true }"}
+03/06/2023 8:14 PM
+(no content)
+[image.png]
+ image.png
+18.18 KB External
+03/06/2023 8:14 PM
+they get saved to the root of the drive in some folder
+03/06/2023 8:13 PM
+when i browse videos on a usb drive
+[astur3l]
+astur3l 03/06/2023 8:13 PM
+its under `/tmp/tnm` somehehwre (edited)
+Deleted User 03/06/2023 8:13 PM
+although they dont seem to be saved as GIF files
+03/06/2023 8:12 PM
+on webos 4.4 i also get animated thumbnails
+ 1
+[astur3l]
+astur3l 03/06/2023 8:11 PM
+would be simplier to just write an alternative app  since everything
+is a luna call it just a react app on webos 6.3
+ 1
+[pbatard]
+pbatard 03/06/2023 8:10 PM
+It does. Coz those were the gstreamer logs I was looking at.
+[astur3l]
+astur3l 03/06/2023 8:10 PM
+it uses gstreamer iirc  (edited)
+[pbatard]
+pbatard 03/06/2023 8:09 PM
+Yeah, that's what I'm talking about. Sure makes analysing video logs a
+hoot when you have double playback if you happen to have hovered on the
+file...
+[astur3l]
+astur3l 03/06/2023 8:09 PM
+well check this: "success to get gif thumbnail." 
+[330942999_514197057327421_3270180070736899590_n.png]
+ 330942999_514197057327421_3270180070736899590_n.png
+682.97 KB External
+03/06/2023 8:08 PM
+if i hover over a video, it starts generating an animated thumbnail, by
+making several request to the actual video and extract the frames and
+combine into a gif... and my tv is about to die that time
+[pbatard]
+pbatard 03/06/2023 8:08 PM
+And yeah, no thumbnails for folders, but animated (non .gif) thumbnail
+playback from video is still something I guess
+03/06/2023 8:07 PM
+I'm on WebOS 5, so it's not mediaplayer but photovideo
+Deleted User 03/06/2023 8:06 PM
+ive just realized 80% of your messages have  in them somewhere
+[astur3l]
+astur3l 03/06/2023 8:05 PM
+btw your internal "mediapalyer" (mediadiscovery) app doesnt generate
+fuckin thumbnails for folders? or animated gifs for videos...  on
+earlier webos it was enought to just switch back to "list view" but on
+webos 6.x it doesnt work also it didnt have folder thumbnails 
+(edited)
+[pbatard]
+pbatard 03/06/2023 8:05 PM
+Why am I not surprised....
+[astur3l]
+astur3l 03/06/2023 8:03 PM
+lg barely supports dlna 1.0  (only required implementations)
+[pbatard]
+pbatard 03/06/2023 8:03 PM
+Yeah, when you have to implement bookmarking server side, it means that
+your protocol is lacking... Jut add SMB support and stop trying to
+abstract the "oh-so-scary" folders already!
+[astur3l]
+[] pbatard Just FYI, I'm not going to bother further with a "Resume last
+played media from a list" app, on acco...
+astur3l 03/06/2023 7:58 PM
+haha, i noticed many years ago that if i change the dc:title it just
+resets the last playback pos.  btw. samsung had its own vendor dlna
+extension which had a 'X_SetBookmark' or whatever method, where it send
+the actual position, and the dlna server could store it, and it become
+a + property on content listing, sadly LG doesnt have this 
+https://community.synology.com/enu/forum/17/post/34949 -- i tried to
+find some lg specific dlna ext. without luck tho  (edited)
+Hi! Come and join us at Synology Community. A place to answer all your
+Synology questions. Ask a question or start a discussion now.
+[pbatard]
+pbatard 03/06/2023 7:51 PM
+Just FYI, I'm not going to bother further with a "Resume last played
+media from a list" app, on account that doing it properly (for DLNA,
+which is what I'm mostly interested with) would require monitoring the
+luna bus for storage so that we can resolve a DLNA media file
+(identified only as http://<IP>:<PORT>/MediaItems/<NUMBER>.<EXT>) to the
+actual file name, along with the directory where that file is located.
+It's doable, but too much of a pain. Also, I found out that LG use a
+different kind of compression on their leveldb .db files compared to
+Google base code, which makes using apps that aren't based on the
+internal browser an annoyance as well. I guess there's a reason why LG
+don't have a "Recently played" feature, like anyone would expect from a
+smart TV... (edited)
+[infowski]
+infowski 03/06/2023 5:52 PM
+insmod, yeah.
+[amylizzle]
+amylizzle 03/06/2023 4:23 PM
+so essentially when I get this working, it'd basically just be a module
+and a startup script that modprobes it added to webosbrew/init.d?
+03/06/2023 4:22 PM
+good to know, thanks
+[infowski]
+infowski 03/06/2023 4:04 PM
+webosbrew.org has some tips.
+03/06/2023 4:04 PM
+(by startup scripts I mean scripts in our /var/lib/webosbrew/init.d
+directory)
+03/06/2023 4:03 PM
+You can create startup scripts that'll do runtime overlays or load
+modules or whatever, but read-only partitions are signed and verified on
+boot, so if you were to rewrite them on emmc you will brick the TV.
+03/06/2023 4:02 PM
+Just a warning you may see when logging in via ssh/telnet - do not try
+to permanently modify rootfs or any other read-only partitions.
+[amylizzle]
+amylizzle 03/06/2023 3:41 PM
+fair point
+[infowski]
+infowski 03/06/2023 3:40 PM
+But you can just load modules dynamically anyways.
+03/06/2023 3:40 PM
+Nope.
+[amylizzle]
+amylizzle 03/06/2023 3:38 PM
+follow up question: don't suppose there's an emulator I can test against
+so I don't accidentally brick my TV?
+03/06/2023 3:38 PM
+nice, I might have a crack at that then
+03/06/2023 3:37 PM
+it's a DKMS module, so that should be reasonably easy then with the
+available sources
+[infowski]
+[] amylizzle as a general inquiry, how hard would it be to add the xone
+driver to webos 4.9.7? Assume I'm reasona...
+infowski 03/06/2023 3:36 PM
+You may need to build/backport the kernel module for it? There are
+kernel sources for relevant models on opensource.lge.com
+[amylizzle]
+amylizzle 03/06/2023 3:31 PM
+as a general inquiry, how hard would it be to add the xone driver to
+webos 4.9.7? Assume I'm reasonably technically competent
+[pinheadi]
+pinheadi 03/06/2023 1:39 PM
+Working fine now
+03/06/2023 1:39 PM
+Yeah, i though i saves the proper appinfo, but i didn't
+hellobox. 03/06/2023 12:46 PM
+does the appinfo.json have supportGIP and largeIcon?
+03/06/2023 12:45 PM
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1#registering-an-app-as-an-input-can-be-used-to-autostart-an-app
+[] pinheadi root@LGwebOSTV:~# luna-send-pub -n 1
+'luna://com.webos.service.eim/addDevice' '{"appId":"tv.24h.play...
+hellobox. 03/06/2023 12:45 PM
+you forgot luna-send etc. on the second one
+[pinheadi]
+pinheadi 03/06/2023 12:32 PM
+root@LGwebOSTV:~# luna-send-pub -n 1
+'luna://com.webos.service.eim/addDevice'
+'{"appId":"tv.24h.playtv","mvpdIcon": "", "pigImage":""}'
+{"returnValue":true} root@LGwebOSTV:~#
+luna://com.webos.service.eim/deleteDevice {"appId":"tv.24h.playtv"} -sh:
+luna://com.webos.service.eim/deleteDevice {appId:tv.24h.playtv}: not
+found root@LGwebOSTV:~#
+03/06/2023 12:32 PM
+Hello, trying to add an app to autostart, but it seems like it doesn't
+works
+March 5, 2023
+[infowski]
+infowski 03/05/2023 10:57 PM
+(also I didn't actually play with smp on 3.x this weekend, sorry. wasn't
+in a mood for trying to figure out cross-cxx abi compatibility bullshit
+ )
+03/05/2023 10:56 PM
+You'd just need to stop its systems service first.
+03/05/2023 10:56 PM
+Hmmm... It doesn't crash on mine if I pause it for 10s of seconds but
+when running in gdb directly. You could as well just run WAM directly in
+gdb probably?
+[yolofant]
+yolofant 03/05/2023 10:13 PM
+I thought it was crashing because the app doesn't like to be paused for
+like 10s
+03/05/2023 10:11 PM
+this was also happening with netflix and amazon when trying to attach
+03/05/2023 10:11 PM
+what do you mean?
+[smx2460]
+smx2460 03/05/2023 10:01 PM
+You need to change thread i suppose
+[yolofant]
+yolofant 03/05/2023 8:15 PM
+attaching to a running webappmgr just freezes the app
+03/05/2023 8:14 PM
+but how to gdb into that?
+03/05/2023 8:14 PM
+it uses smp
+[infowski]
+infowski 03/05/2023 8:11 PM
+What does wam use for audio playback?
+[yolofant]
+yolofant 03/05/2023 7:53 PM
+which app might use pcm audio through starfish media api?
+[yolofant]
+yolofant 03/05/2023 1:05 PM
+pushAudioDiscontinuityGap(int64_t pts_before, int64_t pts_after) and
+getAudioBufferSize(int32_t& used, int32_t& total) seems useful but is
+only available from 5.X 
+[infowski]
+infowski 03/05/2023 11:39 AM
+Need to set it up on webosbrew.org
+03/05/2023 11:39 AM
+https://pypi.org/project/pelican-search/ hmmmmm
+pelican-search
+Pelican plugin that indexes content and enables static site searches
+[]
+[smx2460]
+smx2460 03/05/2023 2:57 AM
+no 2.40 yet
+03/05/2023 2:57 AM
+from master
+03/05/2023 2:57 AM
+    config BR2_BINUTILS_VERSION
+        string
+        default "arc-2020.09-release"    if BR2_BINUTILS_VERSION_ARC
+        default "2.37"        if BR2_BINUTILS_VERSION_2_37_X
+        default "2.38"        if BR2_BINUTILS_VERSION_2_38_X
+        default "2.39"        if BR2_BINUTILS_VERSION_2_39_X
+03/05/2023 2:56 AM
+hellobox. 03/05/2023 2:56 AM
+lol kodi changes
+03/05/2023 2:55 AM
+https://github.com/buildroot/buildroot/compare/2022.11.1...2022.11.2
+[smx2460]
+smx2460 03/05/2023 2:55 AM
+nothing worth updating for
+03/05/2023 2:55 AM
+i say wait
+hellobox. 03/05/2023 2:55 AM
+should we update or wait for 2023.02?
+[smx2460]
+smx2460 03/05/2023 2:53 AM
+not much
+03/05/2023 2:53 AM
+https://github.com/buildroot/buildroot/commit/71ddf1a0848e7b17c220b759ffae30ea2b13e1a8
+Update for 2022.11.2 · buildroot/buildroot@71ddf1a
+Signed-off-by: Peter Korsgaard
+[]
+03/05/2023 2:52 AM
+released 3 days ago
+03/05/2023 2:52 AM
+2022.11.2
+03/05/2023 2:52 AM
+there is also a minor patch
+03/05/2023 2:52 AM
+means the next stop is release
+03/05/2023 2:52 AM
+upstream br at 2023.02-rc2 (edited)
+03/05/2023 2:52 AM
+https://github.com/buildroot/buildroot/releases/tag/2023.02-rc2
+Release 2023.02-rc2 · buildroot/buildroot
+Release 2023.02-rc2
+[]
+hellobox. 03/05/2023 2:51 AM
+the new features in 2.40 look slightly more interesting:
+https://lists.gnu.org/archive/html/info-gnu/2023-01/msg00003.html
+[smx2460]
+smx2460 03/05/2023 2:47 AM
+whatever the package metadata is
+03/05/2023 2:47 AM
+fancy
+03/05/2023 2:47 AM
+    * The ELF linker now supports a --package-metadata option that allows
+        embedding a JSON payload in accordance to the Package Metadata
+        specification. 
+hellobox. 03/05/2023 2:46 AM
+https://lists.gnu.org/archive/html/info-gnu/2022-08/msg00002.html
+03/05/2023 2:46 AM
+some weak symbol fixes/features
+[smx2460]
+smx2460 03/05/2023 2:46 AM
+lol
+hellobox. 03/05/2023 2:46 AM
+no arm though
+03/05/2023 2:46 AM
+      * The objdump program now supports coloured/colored syntax
+        highlighting of its disassembler output for some architectures.
+        (Currently: AVR, RiscV, s390, x86, x86_64).
+03/05/2023 2:45 AM
+not that i know of
+[smx2460]
+smx2460 03/05/2023 2:45 AM
+anything cool coming with 2.39?
+03/05/2023 2:45 AM
+if you want
+hellobox. 03/05/2023 2:45 AM
+i've been using it myself
+[smx2460]
+smx2460 03/05/2023 2:45 AM
+yup
+hellobox. 03/05/2023 2:45 AM
+can i bump binutils from 2.38 to 2.39?
+03/05/2023 2:39 AM
+i'm using 3.10.19
+[smx2460]
+smx2460 03/05/2023 2:39 AM
+yeah
+03/05/2023 2:39 AM
+earliest webos is 3.10
+hellobox. 03/05/2023 2:39 AM
+i guess you can test it
+[smx2460]
+smx2460 03/05/2023 2:39 AM
+i'm ok with that
+03/05/2023 2:38 AM
+just change it in webos_tv_defconfig
+03/05/2023 2:38 AM
+or actually
+hellobox. 03/05/2023 2:38 AM
+i think stuff built against newer headers will still work on older
+kernels
+[smx2460]
+smx2460 03/05/2023 2:38 AM
+if you say it's back compat with 3.0, then why not
+hellobox. 03/05/2023 2:38 AM
+that's what i'm using
+03/05/2023 2:38 AM
+why not 3.10?
+[smx2460]
+hellobox. i really don't know if there's even any reason to be using
+(such) old kernel headers
+smx2460 03/05/2023 2:38 AM
+we might bump them to 3.4, it's probably harmless
+[smx2460]
+smx2460 03/05/2023 2:36 AM
+looking at bootlin
+[smx2460]
+hellobox. yep. added in 3.3
+smx2460 03/05/2023 2:36 AM
+i thought 3.4
+hellobox. 03/05/2023 2:34 AM
+and add the necessary defines
+03/05/2023 2:34 AM
+or we could patch the kernel headers
+[smx2460]
+smx2460 03/05/2023 2:32 AM
+you could save the reverse patch
+hellobox. 03/05/2023 2:32 AM
+we can just stop it from building i guess
+[smx2460]
+smx2460 03/05/2023 2:32 AM
+but you get the point
+hellobox. 03/05/2023 2:32 AM
+that code will likely never be used anyway
+[smx2460]
+smx2460 03/05/2023 2:32 AM
+i was trying to paste the raw diff
+03/05/2023 2:32 AM
+yeah
+hellobox. 03/05/2023 2:32 AM
+we don't really need it
+03/05/2023 2:32 AM
+patch it out?
+[smx2460]
+smx2460 03/05/2023 2:31 AM
+https://github.com/eudev-project/eudev/commit/c18d88dc6a7aeddd397c6385faebc711136bca5b#diff-c2b80757e707ddb93ce9b5e3b10a7f2351bb075e7b2e60cd3d69283ade8f662aL73
+v4l_id: use device_caps if available · eudev-project/eudev@c18d88d
+According to the specification[1] the &#39;capabilities&#39; describe
+the physical device as a whole and the &#39;device_caps&#39; describe
+the current device node. The existence of...
+[]
+03/05/2023 2:31 AM
+let's git blame that
+03/05/2023 2:30 AM
+so it wants V4L2_CAP_DEVICE_CAPS
+03/05/2023 2:27 AM
+why do we need v4l2 tho
+[smx2460]
+hellobox. <@310158180728700929>
+<https://github.com/openlgtv/buildroot-nc4/pull/22>
+smx2460 03/05/2023 2:26 AM
+hellobox. 03/05/2023 2:10 AM
+i really don't know if there's even any reason to be using (such) old
+kernel headers
+03/05/2023 2:09 AM
+yep. added in 3.3
+03/05/2023 2:09 AM
+https://linuxtv.org/downloads/v4l-dvb-apis/userspace-api/v4l/hist-v4l2.html#v4l2-in-linux-3-3
+03/05/2023 2:07 AM
+since it builds for me with 3.10 headers
+03/05/2023 2:06 AM
+probably because of ancient kernel headers
+03/05/2023 2:06 AM
+eudev fails to build:
+https://github.com/openlgtv/buildroot-nc4/pull/22/checks?check_run_id=11767672075
+03/05/2023 2:06 AM
+ffs
+hellobox. 03/05/2023 1:18 AM
+@Smx https://github.com/openlgtv/buildroot-nc4/pull/22
+hellobox. 03/05/2023 1:08 AM
+or maybe accidentally
+03/05/2023 1:08 AM
+i think i had disabled it for some reason
+03/05/2023 1:08 AM
+true
+[smx2460]
+hellobox. <@310158180728700929> should we enable libusb and eudev in
+br-nc4?
+smx2460 03/05/2023 1:06 AM
+libusb is there already
+hellobox. 03/05/2023 1:06 AM
+which is much nicer than busybox's
+03/05/2023 1:06 AM
+so people can use its lsusb
+03/05/2023 1:06 AM
+also usbutils
+hellobox. 03/05/2023 12:58 AM
+since they're actually present on webos
+03/05/2023 12:58 AM
+i think there's a much better case to be made for them than libftdi
+03/05/2023 12:58 AM
+@Smx should we enable libusb and eudev in br-nc4?
+March 4, 2023
+[astur3l]
+astur3l 03/04/2023 9:56 PM
+well its a react app,, but still, 1.4M is huge  for basically a list +
+player ui (if i can call it as player....:D) (edited)
+[infowski]
+infowski 03/04/2023 9:56 PM
+Rootfs is still compressed :^)
+03/04/2023 9:56 PM
+They probably could have extracted 1m of common framework code across
+all the apps, but meh.
+03/04/2023 9:56 PM
+Welcome to modern webdev.
+[astur3l]
+astur3l 03/04/2023 9:52 PM
+1.4M js for just the ui (because the mediadiscovery basically just bunch
+of luna calls)  (edited)
+[infowski]
+infowski 03/04/2023 9:50 PM
+not runtime performance.
+03/04/2023 9:49 PM
+Yeah, it will only affect startup time.
+[astur3l]
+astur3l 03/04/2023 9:49 PM
+the thing is, it may starts a bit slower
+03/04/2023 9:48 PM
+i wonder is there an actual performance benefit from using snapshots..
+havent noticed performance difference in normal usage
+[infowski]
+infowski 03/04/2023 9:48 PM
+You could rebuild a snapshot using some v8 tooling but i dont think
+youll get a significant uplift anyways. (You could measure it though :P)
+03/04/2023 9:47 PM
+No, it won't.
+[astur3l]
+[] infowski You need to corrupt the snapshot - just bindmount an empty
+file over itm
+astur3l 03/04/2023 9:47 PM
+should it regenerate? because its still 0 byte :/ (edited)
+[astur3l]
+[] pbatard I think the reason why LG may have set a low size is that
+leveldb storage is such that you always wr...
+astur3l 03/04/2023 9:17 PM
+on my device seems the `lppData` cleared very frequently.. i closed the
+app and reopened and its empty
+[pbatard]
+pbatard 03/04/2023 8:16 PM
+I think the reason why LG may have set a low size is that leveldb
+storage is such that you always write all the
+_file://com.webos.app.photovideo-webos\x00\x01lppData records when you
+update, so, assuming that you played 1000 files, each time you stop
+playback, you're going to write 1000 records, instead of just
+removing/updating a couple. This probably resulted in noticeable
+slowdowns or something.
+[pbatard]
+pbatard 03/04/2023 8:05 PM
+FYI, https://github.com/google/leveldb compiled nicely on Linux with
+CMake (haven't tried cross compiling for webOS yet), and one of the
+utilities will happily dump data from a levelDB log file (e.g.
+./leveldbutil dump /mnt/test/leveldb/000502.log). Doesn't seem to dump
+my .db files though (Corruption: corrupted compressed block contents)
+but this may very well be because my DB was actually corrupted. At any
+rate, since we should be able to produce a libleveldb.a for webOS, we
+should be able to manipulate the DB quite easily from rooted TV.
+GitHub - google/leveldb: LevelDB is a fast key-value storage librar...
+LevelDB is a fast key-value storage library written at Google that
+provides an ordered mapping from string keys to string values. -
+GitHub - google/leveldb: LevelDB is a fast key-value storage libr...
+[]
+[infowski]
+warndorfer I have a LG UK7700AUB TV. Since it's last software update
+(05.50.10) it no longer works with homebr...
+infowski 03/04/2023 7:45 PM
+What do you mean by no longer works with homebrew? Is that webOS 4.x?
+Crashd exploit should work, and you can use webosbrew-autostart app for
+startup scripts execution.
+[infowski]
+infowski 03/04/2023 7:44 PM
+And of course - you can refresh using the inspector
+[infowski]
+[] astur3l sadly seems like just editing main.js doesnt have effect (?),
+i tried to kill the app, but ``ps aux ...
+infowski 03/04/2023 7:44 PM
+You need to corrupt the snapshot - just bindmount an empty file over itm
+ 1
+warndorfer 03/04/2023 7:26 PM
+I have a LG UK7700AUB TV. Since it's last software update (05.50.10) it
+no longer works with homebrew. Will there be an updated fix?
+[astur3l]
+astur3l 03/04/2023 7:14 PM
+sadly seems like just editing main.js doesnt have effect (?), i tried to
+kill the app, but `ps aux |grep -i mediadiscovery` shows nothing (while
+i inspecting....).. in inspector the source i see the constant is still
+100.. :/ (edited)
+03/04/2023 7:11 PM
+after the underscore, the first id the device id (in my case the dlna
+server id), after that the file length  so
+`{dc:title}_{upnp_id}_{res@size}` (edited)
+[pbatard]
+pbatard 03/04/2023 6:58 PM
+Interesting...
+[astur3l]
+astur3l 03/04/2023 6:58 PM
+    window.localStorage.getItem("lppData")
+    18:58:26.187 '[{"3x02: Disengage (1080p, DV, HDR, TRiNiTY)_6a01a8c0-0000-0000-0000-000000000000_1859002183":{"lpp":8000,"duration":3089000}}]'
+03/04/2023 6:56 PM
+btw its inspectable after restarting webapp-mgr
+[image.png]
+ image.png
+253.98 KB External
+[pbatard]
+[] astur3l ```egrep -o 'const
+([A-Z]+)=100,[A-Z]+="/usr/palm/applications/com.webos.app.mediadiscovery/"'
+main....
+pbatard 03/04/2023 6:52 PM
+Most likely. Nice script!
+[astur3l]
+astur3l 03/04/2023 6:43 PM
+i dont know howto generate snapshot binary tho :/ (edited)
+[astur3l]
+astur3l 03/04/2023 6:18 PM
+    egrep -o 'const ([A-Z]+)=100,[A-Z]+="/usr/palm/applications/com.webos.app.mediadiscovery/"' main.js
+    const DS=100,AS="/usr/palm/applications/com.webos.app.mediadiscovery/"
+    #/bin/sh
+    # kill media discovery
+    ps aux |grep com.webos.app.mediadiscovery | awk '{print $2}' | xargs -i kill {}
+    # umount
+    umount /usr/palm/applications/com.webos.app.mediadiscovery/main.js || true
+    umount /usr/palm/applications/com.webos.app.mediadiscovery/snapshot_blob.bin || true
+    rm /tmp/com.webos.app.mediadiscovery_snapshot_blob.bin
+    touch /tmp/com.webos.app.mediadiscovery_snapshot_blob.bin
+    # increase history size
+    sed -r 's/const ([A-Z]+)=100,([A-Z]+)="\/usr\/palm\/applications\/com.webos.app.mediadiscovery\/"/const \1=10000,\2="\/usr\/palm\/applications\/com.webos.app.mediadiscovery\/"/' /usr/palm/applications/com.webos.app.mediadiscovery/main.js > /tmp/com.webos.app.mediadiscovery_main.js
+    mount --bind /tmp/com.webos.app.mediadiscovery_main.js /usr/palm/applications/com.webos.app.mediadiscovery/main.js
+    mount --bind /tmp/com.webos.app.mediadiscovery_snapshot_blob.bin /usr/palm/applications/com.webos.app.mediadiscovery/snapshot_blob.bin
+(edited)
+03/04/2023 6:15 PM
+i guess its due to react minify/uglification/obfuscation?  (edited)
+[astur3l]
+[] pbatard var name is different on webOS 5 (`const dk = 100`), so if
+trying to patch `main.js` you'll have to ...
+astur3l 03/04/2023 6:14 PM
+just checked on newer fw (i grabbed from webos 6.2 earlier), on webos
+6.3 its `const DS = 100,` 
+[pbatard]
+pbatard 03/04/2023 5:40 PM
+It did recreate the whole DB set though, rather than just the last
+played DB, so there may be some drawbacks...
+03/04/2023 5:39 PM
+Well, going with the nuclear option and just deleting that stale
+000501.ldb DB certainly appears to have resolved my problem.
+[pbatard]
+pbatard 03/04/2023 5:17 PM
+On the other hand, being able to display the last played files and allow
+the user to easily jump to them from a list would be nice (edited)
+03/04/2023 5:16 PM
+To be fair, I think that _"100 should be enough for everyone"_, so I'm
+not that hell bent on figuring out how to increase that limit.
+[astur3l]
+astur3l 03/04/2023 5:15 PM
+or maybe its automatically generates if it doesn't existing (and
+presents in manifest so webappmgr passes thr snapnsot flag)
+03/04/2023 5:13 PM
+sadly its compiled into the snapshot binary too , but probably easily
+can be done too https://blog.logrocket.com/snapshot-flags-node-js-v18-8/
+Alexander Godwin
+Introduction to snapshot flags in Node.js v18.8.0 - LogRocket Blog
+Learn about the experimental Node.js v18.8.0 snapshot flags feature,
+which allows you to generate run-time user-land snapshots.
+[]
+[pbatard]
+pbatard 03/04/2023 5:09 PM
+var name is different on webOS 5 (const dk = 100), so if trying to patch
+main.js you'll have to be careful (edited)
+03/04/2023 5:07 PM
+And I can confirm it's also set to 100 on WebOS 5.x
+03/04/2023 5:07 PM
+so it no longer stores anything (edited)
+03/04/2023 5:07 PM
+Yeah, my problem is that it stopped trimming down altogether
+[astur3l]
+[] pbatard
+https://www.cclsolutionsgroup.com/post/hang-on-thats-not-sqlite-chrome-electron-and-leveldb
+format
+astur3l 03/04/2023 4:45 PM
+i was aware of its not sqlite but didnt know there's a simple way to
+read it  btw since it stores just the last 100 and on every save it
+trimes down the array to 100... best would be to bump up the max
+history, wonders is there a reason that lg kept it this low? on olde
+webos i have the history for like years back....
+[pbatard]
+pbatard 03/04/2023 4:29 PM
+https://www.cclsolutionsgroup.com/post/hang-on-thats-not-sqlite-chrome-electron-and-leveldb
+format
+Hang on! That’s not SQLite! Chrome, Electron and LevelDB
+CCL's Principal Analyst Alex Caithness asks the question: After SQLite,
+what comes next? A must-read primer on LevelDB - tomorrow's ubiquitous
+format?
+[]
+03/04/2023 4:24 PM
+Well, I can certainly see my last played files in
+/var/lib/wam/Default/Local Storage/leveldb/000501.ldb, and I'm kind of
+relying on root access for the time being
+[astur3l]
+[] pbatard <@433352458694033428>, thanks, let me take a stab at this
+when I have a chance.
+astur3l 03/04/2023 4:15 PM
+the big question is how do u extract the data from local storage? since
+webapps uses common folder for chromium things
+`/var/lib/wam/Default/Local\ Storage` but i guess webapp restricted to
+own 'origin' (app path/id?) so cannot just access the another app's
+local storage
+[pbatard]
+pbatard 03/04/2023 4:11 PM
+@asturel, thanks, let me take a stab at this when I have a chance.
+[astur3l]
+astur3l 03/04/2023 4:10 PM
+but the other question is.. could i just hexedit the snapsnot binary to
+change `const MS=100 -> const MS=999` e.g.?:DDDDDDDD (edited)
+03/04/2023 4:08 PM
+yeah i dont remember exactly either :DDDDD
+[infowski]
+infowski 03/04/2023 4:08 PM
+But it was just a single attribute
+03/04/2023 4:07 PM
+Or however was the name of that attribute
+03/04/2023 4:07 PM
+Yep.
+[astur3l]
+astur3l 03/04/2023 4:07 PM
+and inspectable: true should be enought in manifest?
+[infowski]
+infowski 03/04/2023 4:07 PM
+systemctl restart sam lol
+ 1
+03/04/2023 4:06 PM
+It's the main process responsible for app info and launch handling, and
+it caches appinfo's internally
+[astur3l]
+astur3l 03/04/2023 4:06 PM
+but i have no idea howto do it, there's no init.d for it :d
+[infowski]
+infowski 03/04/2023 4:06 PM
+Nah, starfish activity/application manager iirc
+[astur3l]
+astur3l 03/04/2023 4:06 PM
+surface to air missile?:D (edited)
+[infowski]
+[] astur3l i wanted to attach chrome debugger it but mounting
+appinfo.json over it seems too late to pick up th...
+infowski 03/04/2023 4:05 PM
+That works, just need to restart SAM (and probably WAM to)
+[astur3l]
+astur3l 03/04/2023 3:59 PM
+anyway the main reason i dropped its because its compiled into a
+snapsnot binary to sped up in theory things  but if you found out
+howto inspect the app tell me pls  (edited)
+03/04/2023 3:56 PM
+                                const n = {};
+                                if (n[t] = {
+                                        lpp: r,
+                                        duration: o
+                                    }, e.length >= MS) {
+                                    Ar.info("PV_LOG", {}, "==== last play position is exceeded max count.. delete previous info. =====");
+                                    const t = e.length - MS + 1;
+                                    e.splice(0, t)
+                                }
+                                e.push(n)
+    window.localStorage.setItem("lppData", JSON.stringify(e))
+`const MS=100`  (edited)
+03/04/2023 3:53 PM
+i wanted to attach chrome debugger it but mounting appinfo.json over it
+seems too late to pick up the changes and isnt become inspectable 
+03/04/2023 3:51 PM
+anyway search in main.js for lastPlayPosition 
+[astur3l]
+astur3l 03/04/2023 3:42 PM
+its a simple const in the js app :d iirc it was something like const
+MAX_..  (edited)
+03/04/2023 3:42 PM
+also same issue.. it stores the last 10 iirc
+[astur3l]
+[] pbatard Anybody here knows where the LG default player stores its
+database to remember the timestamp/file po...
+astur3l 03/04/2023 3:42 PM
+on my WebOS 6.3 is the com.webos.app.mediadiscovery app local storage
+(edited)
+ 1
+[pbatard]
+pbatard 03/04/2023 3:34 PM
+Basically I have two reasons to ask this (before I start looking at the
+various partitions and stuff): 1. My TV recently stopped storing
+timestamps for where recently played files where paused/stopped, which
+is very annoying 2. I wouldn't mind creating an app that shows a list of
+recently played files and allows the user to pick from the list to
+continue
+03/04/2023 3:30 PM
+Anybody here knows where the LG default player stores its database to
+remember the timestamp/file position of recently played files?
+[yolofant]
+yolofant 03/04/2023 3:10 PM
+I'll test it later
+03/04/2023 3:10 PM
+nice!
+[smx2460]
+smx2460 03/04/2023 2:24 PM
+Grab it from here
+03/04/2023 2:24 PM
+https://cirrus-ci.com/task/6748404097744896
+Cirrus CI
+Cirrus CI makes your development cycle fast, efficient, and secure by
+leveraging modern cloud technologies.
+[]
+03/04/2023 2:23 PM
+Thanks to @hellobox for the last fixes
+03/04/2023 2:23 PM
+I'll make a new release later
+03/04/2023 2:23 PM
+New buildroot-nc4 build up from CI
+[itsyogsothoth]
+itsyogsothoth 03/04/2023 2:21 PM
+For me seeking just causes picture to freeze
+[astur3l]
+astur3l 03/04/2023 1:52 PM
+oh, i thought that binary already contains that :d
+[yolofant]
+yolofant 03/04/2023 1:49 PM
+but it makes audio sync worse 
+03/04/2023 1:49 PM
+I have seeking working locally
+[astur3l]
+astur3l 03/04/2023 1:49 PM
+should seek work correctly now with hw dec? because sometimes/mostly it
+just stuck at the first frame (?)
+[yolofant]
+yolofant 03/04/2023 1:49 PM
+Essentially we have av/sync problems with the current setup because kodi
+can tell the video decoder to drop frames which we cannot implement
+03/04/2023 1:48 PM
+hmm so regarding av/sync I think we have two options: 1) Make one
+CStarfishPipeline class that will merge the incoming video/audio data
+into one pipeline. That should make the starfish pipeline handle av/sync
+internally. The problem might be that video/audio in kodi is in separate
+threads raising the question if libplayerAPIs is threadsafe (I've seen
+some locking code but I can't tell if feeding from 2 threads is safe) 2)
+Make two separate pipelines like it is intended in kodi and then use
+SetSlaveClock (video) / SetMasterClock (audio). I think if both
+pipelines share the same clock they should synchronize but who knows 
+hellobox. 03/04/2023 11:52 AM
+should be gone
+ 1
+03/04/2023 11:51 AM
+that's left over from one of the older attempts
+03/04/2023 11:51 AM
+fffff
+[smx2460]
+smx2460 03/04/2023 11:49 AM
+Is it even defined?
+03/04/2023 11:49 AM
+Is this needed?
+03/04/2023 11:49 AM
+    LDFLAGS="$(GLIBC_EXTRA_LDFLAGS)
+03/04/2023 11:49 AM
+Thanks
+hellobox. 03/04/2023 11:48 AM
+@Smx https://github.com/openlgtv/buildroot-nc4/pull/21
+03/04/2023 11:44 AM
+and polyfills
+03/04/2023 11:44 AM
+worked for glibc
+[smx2460]
+hellobox. have to move where i'm appending to `GLIBC_CONF_ENV`
+smx2460 03/04/2023 11:43 AM
+Maybe this is good enough though
+[smx2460]
+smx2460 03/04/2023 11:42 AM
+Like the last link
+03/04/2023 11:42 AM
+You could use the generic package system
+03/04/2023 11:41 AM
+Yes
+hellobox. 03/04/2023 11:41 AM
+have to move where i'm appending to GLIBC_CONF_ENV
+[smx2460]
+smx2460 03/04/2023 11:41 AM
+https://github.com/openlgtv/buildroot-nc4/blob/ec2bfb64e8350c9cda00a67a130716472f4d822c/package/libvpx/libvpx.mk
+buildroot-nc4/libvpx.mk at ec2bfb64e8350c9cda00a67a130716472f4d822c...
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+hellobox. 03/04/2023 11:41 AM
+ah, oops
+03/04/2023 11:40 AM
+soooo now glibc failed to build
+03/04/2023 11:38 AM
+i think it's just putting it on the make command line
+03/04/2023 11:38 AM
+yeah
+[smx2460]
+smx2460 03/04/2023 11:37 AM
+It says makefile.in is particular there
+03/04/2023 11:37 AM
+Not sure if that would work
+hellobox. 03/04/2023 11:37 AM
+what about it?
+[smx2460]
+smx2460 03/04/2023 11:36 AM
+@hellobox
+03/04/2023 11:36 AM
+https://github.com/openlgtv/buildroot-nc4/blob/86ddf59439bfb91f5c83d43bd4f7e145401d12e0/package/wavemon/wavemon.mk
+buildroot-nc4/wavemon.mk at 86ddf59439bfb91f5c83d43bd4f7e145401d12e...
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+hellobox. 03/04/2023 11:33 AM
+of which there is a lot
+03/04/2023 11:33 AM
+with all the other shit
+03/04/2023 11:33 AM
+not without making my own TARGET_CONFIGURE_OPTS
+[smx2460]
+smx2460 03/04/2023 11:33 AM
+I remember there is an option
+03/04/2023 11:33 AM
+You can't prevent the original one from being passed?
+hellobox. 03/04/2023 11:33 AM
+passing multiple different values for CC in the same command is not
+great imo
+[smx2460]
+smx2460 03/04/2023 11:32 AM
+It's a bit of Makefile metaprogramming
+hellobox. 03/04/2023 11:31 AM
+but it's not the normal way of doing things
+03/04/2023 11:31 AM
+well, maybe not nobody
+03/04/2023 11:31 AM
+nobody else uses makefiles this way
+[smx2460]
+smx2460 03/04/2023 11:31 AM
+That's why there are all those ugly per package prefixes
+[smx2460]
+hellobox. because i think all the `.mk` files are included into one make
+instance
+smx2460 03/04/2023 11:31 AM
+Yes
+hellobox. 03/04/2023 11:30 AM
+i'm doing that now
+03/04/2023 11:30 AM
+i had to in order for it to be used in TARGET_CONFIGURE_OPTS
+[smx2460]
+smx2460 03/04/2023 11:30 AM
+You should have passed CC= to glibc_conf_env
+03/04/2023 11:30 AM
+You shouldn't have changed TARGET_CC directly
+hellobox. 03/04/2023 11:30 AM
+i modified TARGET_CC in glibc.mk, and then whenever
+TOOLCHAIN_CMAKE_INSTALL_FILES got executed, the new value was used for
+making the toolchain file
+[smx2460]
+smx2460 03/04/2023 11:30 AM
+Yes but
+hellobox. 03/04/2023 11:29 AM
+because i think all the .mk files are included into one make instance
+[smx2460]
+smx2460 03/04/2023 11:29 AM
+Why did it persist (edited)
+hellobox. 03/04/2023 11:29 AM
+we don't want that being set for all cmake builds
+03/04/2023 11:29 AM
+set(CMAKE_C_COMPILER "${RELOCATED_HOST_DIR}/bin/arm-webos-linux-gnueabi-gcc -tno-lgtv-compat")
+03/04/2023 11:29 AM
+it did
+[smx2460]
+smx2460 03/04/2023 11:29 AM
+Not TARGET_CFLAGS
+03/04/2023 11:28 AM
+The CC edits should only add the no webos compat
+03/04/2023 11:28 AM
+Wait tho
+03/04/2023 11:28 AM
+How so
+[smx2460]
+hellobox. ...because somehow the `CC` modification persisted to
+glibc-polyfills
+smx2460 03/04/2023 11:28 AM
+Hmm
+hellobox. 03/04/2023 11:28 AM
+this is getting ugly
+03/04/2023 11:28 AM
+restarting build
+03/04/2023 11:27 AM
+new idea
+03/04/2023 11:25 AM
+so i can't just mess around with TARGET_CC
+03/04/2023 11:25 AM
+    define TOOLCHAIN_CMAKE_INSTALL_FILES
+            @mkdir -p $(HOST_DIR)/share/buildroot
+            sed \
+                    -e 's#@@STAGING_SUBDIR@@#$(call qstrip,$(STAGING_SUBDIR))#' \
+                    -e 's#@@TARGET_CFLAGS@@#$(call qstrip,$(TARGET_CFLAGS))#' \
+                    -e 's#@@TARGET_CXXFLAGS@@#$(call qstrip,$(TARGET_CXXFLAGS))#' \
+                    -e 's#@@TARGET_FCFLAGS@@#$(call qstrip,$(TARGET_FCFLAGS))#' \
+                    -e 's#@@TARGET_LDFLAGS@@#$(call qstrip,$(TARGET_LDFLAGS))#' \
+                    -e 's#@@TARGET_CC@@#$(subst $(HOST_DIR)/,,$(call qstrip,$(TARGET_CC)))#' \
+                    -e 's#@@TARGET_CXX@@#$(subst $(HOST_DIR)/,,$(call qstrip,$(TARGET_CXX)))#' \
+                    -e 's#@@TARGET_FC@@#$(subst $(HOST_DIR)/,,$(call qstrip,$(TARGET_FC)))#' \
+                    -e 's#@@CMAKE_SYSTEM_PROCESSOR@@#$(call qstrip,$(CMAKE_SYSTEM_PROCESSOR))#' \
+                    -e 's#@@TOOLCHAIN_HAS_CXX@@#$(if $(BR2_INSTALL_LIBSTDCPP),1,0)#' \
+                    -e 's#@@TOOLCHAIN_HAS_FORTRAN@@#$(if $(BR2_TOOLCHAIN_HAS_FORTRAN),1,0)#' \
+                    -e 's#@@CMAKE_BUILD_TYPE@@#$(if $(BR2_ENABLE_RUNTIME_DEBUG),Debug,Release)#' \
+                    $(TOPDIR)/support/misc/toolchainfile.cmake.in \
+                    > $(HOST_DIR)/share/buildroot/toolchainfile.cmake
+            $(Q)$(INSTALL) -D -m 0644 support/misc/Buildroot.cmake \
+                    $(HOST_DIR)/share/buildroot/Platform/Buildroot.cmake
+    endef
+03/04/2023 11:24 AM
+is it running everything in one giant makefile?
+03/04/2023 11:24 AM
+ughhhhh
+03/04/2023 11:24 AM
+somehow this ended up in toolchainfile.cmake:
+    if(NOT DEFINED CMAKE_C_COMPILER)
+      set(CMAKE_C_COMPILER "${RELOCATED_HOST_DIR}/bin/arm-webos-linux-gnueabi-gcc -tno-lgtv-compat")
+    endif()
+03/04/2023 11:22 AM
+which was hoping for it to be just the path to an executable
+03/04/2023 11:22 AM
+and got passed to cmake
+03/04/2023 11:22 AM
+...because somehow the CC modification persisted to glibc-polyfills
+03/04/2023 11:21 AM
+but failed on polyfills
+03/04/2023 11:21 AM
+well, it built glibc
+[smx2460]
+smx2460 03/04/2023 11:19 AM
+(no content)
+[image0.png]
+ image0.png
+14.42 KB External
+03/04/2023 11:19 AM
+Epic
+hellobox. 03/04/2023 11:19 AM
+testing it now
+03/04/2023 11:19 AM
+i did
+[smx2460]
+hellobox. from `support/misc/toolchainfile.cmake.in`:```cmake if(NOT
+DEFINED CMAKE_C_FLAGS) set(CMAKE_C_FLAG...
+smx2460 03/04/2023 11:18 AM
+Well just override them with TARGET_CFLAGS + stuff then (edited)
+[smx2460]
+smx2460 03/04/2023 11:08 AM
+Makes sense
+03/04/2023 11:08 AM
+Ah
+hellobox. 03/04/2023 11:08 AM
+from support/misc/toolchainfile.cmake.in:
+    if(NOT DEFINED CMAKE_C_FLAGS)
+      set(CMAKE_C_FLAGS "@@TARGET_CFLAGS@@" CACHE STRING "Buildroot CFLAGS")
+    endif()
+03/04/2023 11:05 AM
+in package/Makefile.in:
+    TARGET_CONFIGURE_OPTS = \
+            $(TARGET_MAKE_ENV) \
+            AR="$(TARGET_AR)" \
+            AS="$(TARGET_AS)" \
+            LD="$(TARGET_LD)" \
+            NM="$(TARGET_NM)" \
+            CC="$(TARGET_CC)" \
+            GCC="$(TARGET_CC)" \
+[smx2460]
+smx2460 03/04/2023 11:04 AM
+    $(TARGET_CC), $(TARGET_LD), etc. to get the target cross-compilation utilities 
+03/04/2023 11:04 AM
+Yeah
+03/04/2023 11:03 AM
+Don't trust me on that tho
+03/04/2023 11:03 AM
+Maybe TARGET_CC
+03/04/2023 11:03 AM
+There's a variable somewhere that holds it
+03/04/2023 11:02 AM
+Yeah
+hellobox. 03/04/2023 11:02 AM
+should i try adding CC to glibc configure?
+[smx2460]
+smx2460 03/04/2023 11:01 AM
+So CC is not just a binary, but is expected to be binary + flags
+(edited)
+03/04/2023 11:00 AM
+Aka it's doing what the manual says by design, @hellobox
+03/04/2023 11:00 AM
+     Any compiler options required for all compilations, such as options selecting an ABI or a processor for which to generate code, should be included in CC. Options that may be overridden by the GNU C Library build system for particular files, such as for optimization and debugging, should go in CFLAGS. The default value of CFLAGS is ‘-g -O2’, and the GNU C Library cannot be compiled without optimization, so if CFLAGS is specified it must enable optimization
+03/04/2023 11:00 AM
+https://www.gnu.org/software/libc/manual/html_node/Configuring-and-compiling.html
+Configuring and compiling (The GNU C Library)
+Configuring and compiling (The GNU C Library)
+03/04/2023 10:58 AM
+But i might be wrong
+03/04/2023 10:58 AM
+You probably can't
+hellobox. 03/04/2023 10:57 AM
+also, i didn't figure out how to pass additional cflags to cmake without
+overwriting them
+03/04/2023 10:57 AM
+i haven't tested just patching gcc-final
+[smx2460]
+smx2460 03/04/2023 10:56 AM
+Hmm
+hellobox. 03/04/2023 10:56 AM
+it's not usable because i had to manually hack the glibc build
+[smx2460]
+smx2460 03/04/2023 10:56 AM
+Wanna push that?
+[smx2460]
+hellobox. any new homebrew
+smx2460 03/04/2023 10:56 AM
+So you got a usable tchain with the cflags fix?
+hellobox. 03/04/2023 10:50 AM
+any new homebrew
+[whodarewin]
+whodarewin 03/04/2023 10:47 AM
+is there any new tweaks for the tv
+[infowski]
+infowski 03/04/2023 10:40 AM
+probably by hacking up some horrible solution involving dlsym and
+friends
+[whodarewin]
+whodarewin 03/04/2023 10:38 AM
+how you fix kodi in webos
+[infowski]
+infowski 03/04/2023 10:34 AM
+oh come on
+[smx2460]
+[] infowski
+https://gitlab.com/AOMediaCodec/SVT-AV1/-/blob/master/Docs/Appendix-Film-Grain-Synthesis.md
+holy shi...
+smx2460 03/04/2023 10:34 AM
+People doing serious stuff, unlike me
+[infowski]
+infowski 03/04/2023 10:32 AM
+unless weak/strong symbols are resolved during compilation/linking, not
+by ld.so?
+03/04/2023 10:29 AM
+so... weak backwards-compat symbol that calls the non-cxx11 abi and
+converts non-cxx11 std::string to cxx11 std::string? :___DDDDD
+03/04/2023 10:24 AM
+ah, that's probably because of std::string? :/
+[infowski]
+infowski 03/04/2023 10:16 AM
+is that normal python thing?
+03/04/2023 10:16 AM
+why thehell would they include python makefile in there
+03/04/2023 10:15 AM
+lol
+03/04/2023 10:15 AM
+    /usr/lib/python2.7/config/Makefile:CXX=         arm-lg115x-linux-gnueabi-g++  -march=armv7-a -mthumb -mthumb-interwork -mfloat-abi=softfp -mfpu=neon -mtune=cortex-a9 -Os -mcpu=cortex-a9 -funwind-tables -rdynamic -D__SOFTFP__ 
+    /usr/lib/python2.7/config/Makefile:CONFIG_ARGS=  '--build=x86_64-linux' '--host=arm-starfish-linux-gnueabi' '--target=arm-starfish-linux-gnueabi' '--prefix=/usr' '--exec_prefix=/usr' '--bindir=/usr/bin' '--sbindir=/usr/sbin' '--libexecdir=/usr/lib/python' '--datadir=/usr/share' '--sysconfdir=/etc' '--sharedstatedir=/com' '--localstatedir=/var' '--libdir=/usr/lib' '--includedir=/usr/include' '--oldincludedir=/usr/include' '--infodir=/usr/share/info' '--mandir=/usr/share/man' '--disable-silent-rules' '--disable-dependency-tracking' '' '--with-threads' '--with-pymalloc' '--without-cxx-main' '--with-signal-module' '--enable-shared' '--enable-ipv6=yes' 'ac_cv_header_bluetooth_bluetooth_h=no' 'ac_cv_header_bluetooth_h=no' '--with-wctype-functions' 'ac_cv_sizeof_off_t=8' 'build_alias=x86_64-linux' 'host_alias=arm-starfish-linux-gnueabi' 'target_alias=arm-starfish-linux-gnueabi' 'CC=arm-lg115x-linux-gnueabi-gcc  -march=armv7-a -mthumb -mthumb-interwork -mfloat-abi=softfp -mfpu=neon -mtune=cortex-a9 -Os -mcpu=cortex-a9 -funwind-tables -rdynamic -D__SOFTFP__ ' 'CFLAGS= -O2 -pipe -g -feliminate-unused-debug-types -Os' 'LDFLAGS=-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed' 'CPPFLAGS=' 'CPP=arm-lg115x-linux-gnueabi-gcc -E   -march=armv7-a -mthumb -mthumb-interwork -mfloat-abi=softfp -mfpu=neon -mtune=cortex-a9 -Os -mcpu=cortex-a9 -funwind-tables -rdynamic -D__SOFTFP__'
+03/04/2023 10:14 AM
+/usr/lib/libicutu.so.53.1:arm-lg115x-linux-gnueabi-g++ -march=armv7-a -mthumb -mthumb-interwork -mfloat-abi=softfp -mfpu=neon -mtune=cortex-a9 -Os -mcpu=cortex-a9 -funwind-tables -rdynamic --sysroot=/vol/users/gatekeeper.tvsw/cerberus_root/starfish-official-drd4tv/BUILD/sysroots/k3lp
+hmm, same
+03/04/2023 10:13 AM
+arm-lg115x-linux-gnueabi-gcc -march=armv7-a -mthumb -mthumb-interwork -mfloat-abi=softfp -mfpu=neon -mtune=cortex-a9 -Os -mcpu=cortex-a9 -funwind-tables -rdynamic --sysroot=/vol/users/gatekeeper.tvsw/cerberus_root/starfish-official-drd4tv/BUILD/sysroots/k3lp
+hmmmmm, but that's just plain gcc
+[] infowski well crap, they switched to cxx11 abi on webOS 4.0
+hellobox. 03/04/2023 10:08 AM
+can you find g++ flags used on webos < 4?
+[infowski]
+infowski 03/04/2023 10:06 AM
+well crap, they switched to cxx11 abi on webOS 4.0
+03/04/2023 10:02 AM
+OH. _ZN17StarfishMediaAPIs4FeedEPKc vs
+_ZN17StarfishMediaAPIs4FeedB5cxx11EPKc
+03/04/2023 10:01 AM
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos: symbol lookup error: /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos: undefined symbol: _ZN17StarfishMediaAPIs4FeedB5cxx11EPKc
+that's a progress
+[infowski]
+infowski 03/04/2023 9:51 AM
+what(): Missing required wl_webos_foreign protocol not surprising :^)
+hellobox. 03/04/2023 8:51 AM
+referenced paper https://norkin.org/pdf/DCC_2018_AV1_film_grain.pdf
+[infowski]
+infowski 03/04/2023 8:50 AM
+Yep
+[] infowski
+https://gitlab.com/AOMediaCodec/SVT-AV1/-/blob/master/Docs/Appendix-Film-Grain-Synthesis.md
+holy shi...
+hellobox. 03/04/2023 8:50 AM
+so film grain is stripped out during encoding and added back when
+decoding?
+[infowski]
+infowski 03/04/2023 8:39 AM
+(went for a DV -> libplacebo rabbit hole and ended up here xD)
+03/04/2023 8:38 AM
+That's so cool
+03/04/2023 8:38 AM
+https://gitlab.com/AOMediaCodec/SVT-AV1/-/blob/master/Docs/Appendix-Film-Grain-Synthesis.md
+holy shit
+Docs/Appendix-Film-Grain-Synthesis.md · master · Alliance for Open ...
+Welcome to the Gitlab repo for the SVT-AV1!
+[]
+[itsyogsothoth]
+itsyogsothoth 03/04/2023 1:54 AM
+1080p is fine though
+03/04/2023 1:54 AM
+Yeah, 4K footage has AV sync issues
+[itsyogsothoth]
+itsyogsothoth 03/04/2023 1:40 AM
+Seems fine to me, unless we're talking about desyncs in 4K material
+[yolofant]
+yolofant 03/04/2023 1:37 AM
+but you will notice that audio is not perfectly in sync
+[itsyogsothoth]
+itsyogsothoth 03/04/2023 1:36 AM
+I dunno if I have anything with Dolby Vision on my drive, but this
+Wall-E movies had "Dolby HD" picked up
+[yolofant]
+yolofant 03/04/2023 1:36 AM
+but in theory the tv can also do the dual layer dv
+03/04/2023 1:36 AM
+profile 5 only so far
+03/04/2023 1:36 AM
+also dolby vision
+[itsyogsothoth]
+itsyogsothoth 03/04/2023 1:35 AM
+(no content)
+[PXL_20230304_003539987.jpg]
+ PXL_20230304_003539987.jpg
+406.22 KB External
+[yolofant]
+yolofant 03/04/2023 1:35 AM
+yes I have implemented hdr
+[itsyogsothoth]
+itsyogsothoth 03/04/2023 1:35 AM
+(no content)
+[PXL_20230304_003459683.MP.jpg]
+ PXL_20230304_003459683.MP.jpg
+329.9 KB External
+03/04/2023 1:32 AM
+Interesting - playing 4K video (H265 encoded) not only plays smoothly,
+but it also enabled HDR mode
+03/04/2023 1:28 AM
+Yes, that's from YouTube addon
+03/04/2023 1:27 AM
+This Kodi build passed Scarlet Fire test
+[PXL_20230304_002701854.jpg]
+ PXL_20230304_002701854.jpg
+843.5 KB External
+[yolofant]
+yolofant 03/04/2023 12:52 AM
+but we will need to conditionally bind webos_foreign on <= 3.X
+03/04/2023 12:51 AM
+hook up gdb into amazon/netflix and see how they call Load
+[infowski]
+infowski 03/04/2023 12:49 AM
+Will try to figure out how to make it work on 3.x over the weekend then
+[yolofant]
+yolofant 03/04/2023 12:48 AM
+has cursor fixes, ssl cert fixes and preliminary hw decoding
+03/04/2023 12:48 AM
+settings.xml is needed for the new setting keys
+03/04/2023 12:48 AM
+if someone wants to give it a shot
+03/04/2023 12:48 AM
+(no content)
+ kodi-webos
+85.65 MB External
+ settings.xml
+164.88 KB External
+03/04/2023 12:46 AM
+but I'm too tired now to build a proper ipk
+03/04/2023 12:46 AM
+I can give you the binary
+03/04/2023 12:46 AM
+@asturel
+03/04/2023 12:46 AM
+hmm
+03/04/2023 12:45 AM
+so I think in that case we need to call flush and then Seek
+03/04/2023 12:45 AM
+I figured out kodi calls Reset on a seek
+03/04/2023 12:44 AM
+that will require looking deeper into libplayerAPIs
+03/04/2023 12:44 AM
+hw video decoding seems ok except for seeking
+03/04/2023 12:43 AM
+working really well
+03/04/2023 12:43 AM
+@infowski applied your fixes 
+ 1
+March 3, 2023
+[yolofant]
+yolofant 03/03/2023 11:15 PM
+then I'll apply @infowski's fixes 
+ 1
+03/03/2023 11:14 PM
+these #ifdefs everywhere
+03/03/2023 11:14 PM
+I'm extracting the wayland code into a subclass now
+[yolofant]
+yolofant 03/03/2023 10:35 PM
+audio/video sync is not completely working neither is seeking
+[yolofant]
+[] astur3l will u share release also?:D
+yolofant 03/03/2023 10:35 PM
+not now
+[astur3l]
+astur3l 03/03/2023 10:22 PM
+btw did u figured out the smb issue? since it works by direct ip
+[astur3l]
+[] yolofant staging initial hw accel commit now 
+astur3l 03/03/2023 10:22 PM
+will u share release also?:D
+[infowski]
+infowski 03/03/2023 10:16 PM
+Preparing mentally for a full weekend of webOS 3.x debugging
+[yolofant]
+yolofant 03/03/2023 10:07 PM
+staging initial hw accel commit now 
+ 2  2
+[infowski]
+infowski 03/03/2023 5:19 PM
+You're welcome.
+03/03/2023 5:19 PM
+No problem.
+peloto00 03/03/2023 5:18 PM
+let me repeat it: thank you so much
+[infowski]
+infowski 03/03/2023 5:18 PM
+heh 
+peloto00 03/03/2023 5:18 PM
+damn, now I understand the interface thank you so much I (silly me)
+though it just hides the button override from the view
+[infowski]
+infowski 03/03/2023 5:18 PM
+...which should make the back button behave as it normally would
+(edited)
+03/03/2023 5:17 PM
+Yep.
+peloto00 03/03/2023 5:17 PM
+I see... and it'd remove the override
+[infowski]
+infowski 03/03/2023 5:17 PM
+There should be just "Remove" button
+peloto00 03/03/2023 5:16 PM
+options I see are: disable, app, execute, replace
+[infowski]
+infowski 03/03/2023 5:16 PM
+peloto00 03/03/2023 5:16 PM
+yes, it's kind of what I'm asking but I didn't see any "restore" or
+remove the override
+[infowski]
+infowski 03/03/2023 5:10 PM
+...if that's what you're asking 
+03/03/2023 5:10 PM
+Normally override list is completely empty. If you added something as
+BACK button you can just remove it to bring back normal functionality.
+03/03/2023 5:09 PM
+03/03/2023 5:09 PM
+Wait, what?
+03/03/2023 5:09 PM
+You can just remove the override for that button
+peloto00 03/03/2023 5:05 PM
+hi has any of you used the LG Input hook app? Accidentally I've deleted
+the "BACK" button in my remote and cannot set it back as I don't know
+which command I have to execute when it is pressed
+[yolofant]
+yolofant 03/03/2023 4:38 PM
+weird
+03/03/2023 4:38 PM
+it works with the other set of headers for smp I've created

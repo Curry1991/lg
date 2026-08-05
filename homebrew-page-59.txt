@@ -1,0 +1,1609 @@
+March 8, 2023
+[yolofant]
+yolofant 03/08/2023 11:59 PM
+because netflix/amazon use SDL to export their windows on webos 4.x+
+[infowski]
+infowski 03/08/2023 11:58 PM
+nope
+[yolofant]
+yolofant 03/08/2023 11:58 PM
+does you SDL have the exported window stuff?
+03/08/2023 11:58 PM
+hmm
+03/08/2023 11:57 PM
+the pipeline is playing
+[infowski]
+infowski 03/08/2023 11:57 PM
+yeah, and nothing obvious in WAYLAND_DEBUG either
+[yolofant]
+yolofant 03/08/2023 11:56 PM
+no information in the load string where to render to
+03/08/2023 11:56 PM
+the adaptive streaming stuff isn't needed
+03/08/2023 11:56 PM
+hmm
+[infowski]
+infowski 03/08/2023 11:54 PM
+{"args":[{"mediaTransportType":"BUFFERSTREAM","option":{"adaptiveStreaming":{"maxFrameRate":23.98,"maxHeight":1080,"maxWidth":1920},"externalStreamingInfo":{"bufferingCtrInfo":{"bufferMaxLevel":0,"bufferMinLevel":0,"preBufferByte":0,"qBufferLevelAudio":0,"qBufferLevelVideo":0,"srcBufferLevelAudio":{"maximum":1048576,"minimum":1024},"srcBufferLevelVideo":{"maximum":8388608,"minimum":1024}},"contents":{"aacInfo":{"channels":2,"format":"adts","frequency":48,"profile":2},"codec":{"audio":"AAC","video":"H264"},"esInfo":{"pauseAtDecodeTime":true,"ptsToDecode":0,"seperatedPTS":true,"videoFpsScale":1001,"videoFpsValue":24000},"format":"RAW","provider":"netflix"},"restartStreaming":false,"svpVersion":20,"totalStreamSize":256}}}]}
+03/08/2023 11:49 PM
+since, well, that's the target.
+03/08/2023 11:49 PM
+I'll just take a look at it on my tv
+[infowski]
+hellobox. or is it generated at runtime?
+infowski 03/08/2023 11:49 PM
+probably built at runtime mostly
+[infowski]
+[] infowski god i fucking love c++
+infowski 03/08/2023 11:49 PM
+actually we could probably even use the same source file for both
+versions, and just have function name contain _GLIBCXX_USE_CXX11_ABI
+value in its name, and built with two different g++ invocations...
+hellobox. 03/08/2023 11:49 PM
+or is it generated at runtime?
+03/08/2023 11:48 PM
+would it be in the binary?
+[] yolofant probably a dumped load string from netflix/amazon would be
+helpful
+hellobox. 03/08/2023 11:48 PM
+what exactly are you looking for?
+[infowski]
+[] yolofant probably a dumped load string from netflix/amazon would be
+helpful
+infowski 03/08/2023 11:48 PM
+oh yeah, I will start with that in a minute
+[infowski]
+infowski 03/08/2023 11:47 PM
+i sure bet this will get upstreamed
+[yolofant]
+yolofant 03/08/2023 11:47 PM
+probably a dumped load string from netflix/amazon would be helpful
+03/08/2023 11:47 PM
+[infowski]
+infowski 03/08/2023 11:47 PM
+god i fucking love c++
+[image.png]
+ image.png
+14.5 KB External
+03/08/2023 11:43 PM
+(added char* output, size_t sz to Feed3 to pull the result back into
+rest of C++ world lol)
+03/08/2023 11:42 PM
+2023-03-08 22:42:16.552 T:26329 debug <general>: Result: {"returnValue":"Ok"}
+ok, that's something
+[yolofant]
+yolofant 03/08/2023 11:38 PM
+the webosbrew fork should build and has the video decoding stuff for
+webos >= 4.x (edited)
+03/08/2023 11:37 PM
+I think there was only this problem where libpng doesn't build randomly
+03/08/2023 11:37 PM
+with the getauxval changes
+hellobox. 03/08/2023 11:37 PM
+every time i go to build it, i get sidetracked with br-nc4 shit
+[yolofant]
+yolofant 03/08/2023 11:37 PM
+I think so
+hellobox. 03/08/2023 11:37 PM
+is kodi in a decent state to build?
+[yolofant]
+yolofant 03/08/2023 11:37 PM
+means the pipeline is at 13.89s
+03/08/2023 11:36 PM
+that means that it seems to be playing
+03/08/2023 11:36 PM
+yes
+[infowski]
+infowski 03/08/2023 11:35 PM
+well, second
+03/08/2023 11:35 PM
+Sorry, literally looking for the first time at this codebase 
+03/08/2023 11:35 PM
+2023-03-08 22:30:36.590 T:25430 debug <general>: GetPlaytime is 13889000000
+is this progressing relevant?
+[yolofant]
+yolofant 03/08/2023 11:34 PM
+the logs should have it already
+[infowski]
+infowski 03/08/2023 11:34 PM
+Let me add some logs.
+[yolofant]
+yolofant 03/08/2023 11:34 PM
+does it feed?
+[infowski]
+infowski 03/08/2023 11:34 PM
+Oh, I see that.
+[yolofant]
+yolofant 03/08/2023 11:34 PM
+in the log
+03/08/2023 11:34 PM
+PlayerCallback 22
+[infowski]
+[] yolofant does it go into playing?
+infowski 03/08/2023 11:33 PM
+How can I tell it is? I don't see video on screen, audio is playing back
+as expected. That above is the only callback I have.
+[yolofant]
+yolofant 03/08/2023 11:33 PM
+the abi is different in the lib
+[ccarnell98]
+ccarnell98 03/08/2023 11:33 PM
+you can copy libstdc++ anyway from buildroot?
+[yolofant]
+yolofant 03/08/2023 11:32 PM
+does it go into playing?
+[infowski]
+infowski 03/08/2023 11:29 PM
+it's doing something
+03/08/2023 11:29 PM
+2023-03-08 22:25:03.370 T:25056 debug <general>: CStarfishVideoCodec::PlayerCallback type: 4, numValue: 0, strValue: {"context":"_5mfVmG6nEcBLAy","content":"movie","video":{"frameRate":23.976,"scanType":"VIDEO_PROGRESSIVE","width":960,"height":540,"bitRate":0,"adaptive":false,"path":"network","pixelAspectRatio":{"wid th":1,"height":1},"afd":16,"rotation":0,"data3D":{"originalPattern":"2d","currentPattern":"2d","typeLR":"LR"},"hdrType":"none","mediaSei":{"displayPrimariesX0":0,"displayPrimariesX1":0,"displayPrimariesX2":0,"displayPrimariesY0":0,"displayPrimariesY1":0,"displayPrimariesY2":0,"whitePointX":0,"whitePointY":0,"minDisplay MasteringLuminance":0,"maxDisplayMasteringLuminance":0,"maxContentLightLevel":0,"maxPicAverageLightLevel":0},"mediaVui":{"transferCharacteristics":0,"colorPrimaries":0,"matrixCoeffs":0}}}
+03/08/2023 11:29 PM
+I mean - confirmed it does not crash at this point, but I don't see the
+video yet.
+03/08/2023 11:28 PM
+since symbol is resolved on use, we could just use Feed3 or Feed4plus
+(or whatever) depending on detected webOS version (or availability of a
+symbol...)
+03/08/2023 11:28 PM
+absolutely disgusting, but could work. moved out Feed() call out of
+DVDVideoCodecStarfish and into a separate static method
+(static int Feed3(StarfishMediaAPIs* api, char* payload);) that doesn't
+interact with anything cxx-specific, and just made an implementation of
+that in a file that just has #define _GLIBCXX_USE_CXX11_ABI 0 at the
+beginning
+[yolofant]
+yolofant 03/08/2023 11:26 PM
+[infowski]
+infowski 03/08/2023 11:25 PM
+kinda
+03/08/2023 11:25 PM
+rofl figured it out
+[yolofant]
+yolofant 03/08/2023 11:05 PM
+but it would require bind mounting the lib first anyway
+03/08/2023 11:04 PM
+maybe if you take a libplayerAPI from a similar SOC
+03/08/2023 11:04 PM
+I don't think that works in all cases
+[infowski]
+infowski 03/08/2023 11:04 PM
+well, it probably should explode, since it's linked against libstdc++
+with cxx11 support?
+03/08/2023 11:04 PM
+I'd expect it to explode
+03/08/2023 11:04 PM
+can I use libplayerAPIs from a newer TV? 
+[yolofant]
+yolofant 03/08/2023 11:03 PM
+with execve wrapper?
+[infowski]
+infowski 03/08/2023 11:03 PM
+(and i care about 3.x since it's on my tv  )
+[yolofant]
+yolofant 03/08/2023 11:03 PM
+LD_PRELOAD?
+03/08/2023 11:03 PM
+problem is that system libraries take precedence so we can't just put
+our own libplayerAPIs into lib
+[infowski]
+infowski 03/08/2023 11:03 PM
+so only <=3.x is problematic
+03/08/2023 11:02 PM
+cxx11
+03/08/2023 11:02 PM
+fuck
+03/08/2023 11:02 PM
+4.x is using cxx1
+03/08/2023 11:02 PM
+everything else is working fine1 (edited)
+[yolofant]
+yolofant 03/08/2023 11:02 PM
+4.x also?
+03/08/2023 11:02 PM
+yes
+[infowski]
+infowski 03/08/2023 11:02 PM
+on webOS 3.x and 4.x+
+[infowski]
+[] yolofant not sure what we can do about the different symbol name
+infowski 03/08/2023 11:02 PM
+Right now I am trying to wrap my head around on how to handle different
+underlying symbol on smp->Feed(...)
+[yolofant]
+yolofant 03/08/2023 11:01 PM
+ah but we need to check when we set the region
+03/08/2023 11:01 PM
+window name should be "" by default
+03/08/2023 11:00 PM
+because we just add some json keys
+03/08/2023 11:00 PM
+it shouldn't matter
+03/08/2023 11:00 PM
+not sure what we can do about the different symbol name
+[infowski]
+infowski 03/08/2023 11:00 PM
+well, and add some more strategic if's checking for it's falsey-ness
+[yolofant]
+yolofant 03/08/2023 11:00 PM
+ok 
+[infowski]
+infowski 03/08/2023 11:00 PM
+I managed to do that and it doesn't fail anymore.
+03/08/2023 11:00 PM
+Yes!
+[yolofant]
+yolofant 03/08/2023 11:00 PM
+at least that will make it not fail
+[yolofant]
+[] infowski current status: `// father, forgive me for i have dlsymmed`
+yolofant 03/08/2023 11:00 PM
+regarding the wl_foreign stuff I think we can pass false to the required
+parameter in RequestSingleton
+[infowski]
+infowski 03/08/2023 10:42 PM
+current status: // father, forgive me for i have dlsymmed
+[philipou]
+hellobox. no
+philipou 03/08/2023 10:28 PM
+ok thanks
+hellobox. 03/08/2023 10:25 PM
+no
+[philipou]
+philipou 03/08/2023 10:25 PM
+any other repo for homebrew channels ?(other than the webosbrew.org 2
+repos and webosapp.club repo)
+Deleted User 03/08/2023 9:27 PM
+Oh so i can use it
+[infowski]
+infowski 03/08/2023 9:27 PM
+pro: it is con: doesn't work
+ 2
+Deleted User 03/08/2023 9:26 PM
+Kidi on webos? Damn. Pro's/Con's
+[infowski]
+infowski 03/08/2023 8:30 PM
+whatever.
+[yolofant]
+yolofant 03/08/2023 8:30 PM
+it should hide though
+[infowski]
+infowski 03/08/2023 8:30 PM
+foreign - in inputcommon app
+03/08/2023 8:29 PM
+No - I mean - they use wl_foreign to put tv/inputs on screen, and that
+surface is removed/hidden off screen when switching apps
+[yolofant]
+yolofant 03/08/2023 8:29 PM
+also before we had hw acceleration
+03/08/2023 8:29 PM
+no
+[infowski]
+infowski 03/08/2023 8:29 PM
+@Yolofant wonder if it's because of them moving to explicit
+wl_foreign_... stuff
+[yolofant]
+yolofant 03/08/2023 8:29 PM
+doesn't happen on mine
+[infowski]
+infowski 03/08/2023 8:28 PM
+technically tv pipeline should be deinitialized, but... it's not for
+some reason.
+Deleted User 03/08/2023 8:28 PM
+i thought you were talking about the noise for a second
+03/08/2023 8:28 PM
+oh
+[infowski]
+infowski 03/08/2023 8:28 PM
+Our application is transparent for video playback to be visible. we are
+not initializing any video playback layer, and thus... well... we see tv
+static.
+Deleted User 03/08/2023 8:27 PM
+you mean when kodi is running?
+03/08/2023 8:27 PM
+what do you mean ?
+[infowski]
+infowski 03/08/2023 8:25 PM
+but kinda works as intended.
+03/08/2023 8:25 PM
+The fact it's there is pretty funny.
+[] infowski rofl that static in the background
+Deleted User 03/08/2023 8:25 PM
+what about it?
+Deleted User 03/08/2023 8:24 PM
+jeez, that burn in is terrible
+[treyard]
+treyard 03/08/2023 8:19 PM
+i must say that installing on the ssd , helps with the transactions,
+performance. but still laggy sometimes and also takes more time than the
+native windows version to the transitions opening the addons and so on.
+plus in xbox there is no option of background / command line exec as is
+a sandbox
+[tomikaka]
+tomikaka 03/08/2023 8:18 PM
+kodi on webos?
+03/08/2023 8:18 PM
+holy cow
+[treyard]
+treyard 03/08/2023 8:16 PM
+so i guess the memory is not correctly handled there
+03/08/2023 8:15 PM
+This is from xbox kodi nexus just idle
+03/08/2023 8:15 PM
+(no content)
+[20230308_201438.jpg]
+ 20230308_201438.jpg
+356.38 KB External
+03/08/2023 8:13 PM
+for example in xbox gets the 95% of the ram
+03/08/2023 8:12 PM
+also i must say im impressed with the WIP of the port
+[infowski]
+infowski 03/08/2023 8:11 PM
+Works exactly how I anticipated.
+[treyard]
+treyard 03/08/2023 8:11 PM
+i didnt knew you guys @Yolofant and @Craig were working on a kodi
+version. i apologize for that. just i was talking about my experience
+with kodi in xbox , which resources wise is very limited.
+[infowski]
+Deleted User and i guess ill contribute with my own shitty recording of
+launching it (didnt test video playback t...
+infowski 03/08/2023 8:11 PM
+rofl that static in the background
+Deleted User 03/08/2023 8:09 PM
+ive just realized it says 7:00 PM when it was 11:00 AM
+Deleted User <@879486455473385532> so, if you just want *proof* of kodi
+working on webos...
+Deleted User 03/08/2023 8:08 PM
+and i guess ill contribute with my own shitty recording of launching it
+(didnt test video playback though)
+ 8mb.video-uAN-MDoSrCG2.mp4
+6.33 MB External
+[yolofant]
+yolofant 03/08/2023 7:53 PM
+it's known
+Deleted User 03/08/2023 7:52 PM
+and i assume this is known and being worked on / fixed?
+[image.png]
+ image.png
+6.57 KB External
+[yolofant]
+yolofant 03/08/2023 7:47 PM
+because the packaging script needs some rework
+03/08/2023 7:47 PM
+I didn't bother to build a full ipk
+Deleted User 03/08/2023 7:42 PM
+you should see pictures/videos people have sent of it
+03/08/2023 7:42 PM
+and scroll through the results for a bit
+03/08/2023 7:42 PM
+go into the discord search bar, and type in: homebrew has:file
+03/08/2023 7:41 PM
+@treyard so, if you just want proof of kodi working on webos...
+[infowski]
+infowski 03/08/2023 7:38 PM
+Whatever. It's still in the works.
+Deleted User 03/08/2023 7:38 PM
+yeah, that binary/xml was the latest thing sent since that ipk
+[infowski]
+infowski 03/08/2023 7:37 PM
+(it's been fixed in some latest commits but not sure if the binary was
+built after that)
+03/08/2023 7:37 PM
+Like seeking, and mouse cursor
+03/08/2023 7:37 PM
+Well, there's still a lot of shit broken
+Deleted User 03/08/2023 7:37 PM
+so you would have to install the ipk and then overwrite thoe files?
+[infowski]
+infowski 03/08/2023 7:36 PM
+I think there was a bare executable and settings.xml posted
+03/08/2023 7:36 PM
+With broken input and software decoder only.
+Deleted User 03/08/2023 7:36 PM
+was there a new one posted here?
+[infowski]
+infowski 03/08/2023 7:36 PM
+Ok, that's the pretty old one
+[] yolofant anyone wanna try a kodi ipk?
+Deleted User 03/08/2023 7:36 PM
+and this is the only other one i know of
+[] yolofant ok so this ipk has the symlink included
+Deleted User 03/08/2023 7:35 PM
+this is the ipk i just sent
+Deleted User 03/08/2023 7:35 PM
+im only aware of 2 ipks that have been posted
+03/08/2023 7:35 PM
+wait, does one of them have hw decoding?
+pho9574 03/08/2023 7:35 PM
+beautiful -- ill be glad to test the shit out of the first build :))
+[infowski]
+Deleted User <@879486455473385532>
+https://cdn.discordapp.com/attachments/835489130967859251/1079825093435347054/...
+infowski 03/08/2023 7:34 PM
+Was it the one that had hw decoding? Or just software?
+[infowski]
+infowski 03/08/2023 7:34 PM
+Yeah, 4.5
+ 1
+Deleted User 03/08/2023 7:34 PM
+@treyard
+https://cdn.discordapp.com/attachments/835489130967859251/1079825093435347054/org.xbmc.kodi_20.90.101_arm.ipk
+pho9574 03/08/2023 7:34 PM
+holy shit; C9 is webos 4+ iirc?
+[infowski]
+infowski 03/08/2023 7:33 PM
+Even seemingly stuff like dovi works (edited)
+[infowski]
+pho9574 youre kidding right? like full blown 4k HDR playback possible?
+infowski 03/08/2023 7:33 PM
+No, most of the API was already reverse engineered with moonlight-tv and
+it was just a matter of, well, drawing the rest of the fucking owl
+Deleted User 03/08/2023 7:32 PM
+@treyard if you scroll up far enough theres a test ipk somewhere
+pho9574 03/08/2023 7:32 PM
+youre kidding right? like full blown 4k HDR playback possible?
+[infowski]
+infowski 03/08/2023 7:32 PM
+3.x and older are slightly different, but I'll try to figure it out in
+some free time.
+[] mariotaku Asking someone else to do cool stuff isn't the coolest
+thing (I'm having Deja vu for saying that smh...
+Deleted User 03/08/2023 7:32 PM
+you guys should be make some NEW homebrew i think that would be cool
+[infowski]
+infowski 03/08/2023 7:32 PM
+Not well tested with some bugs, but it seems pretty close, at least on
+webOS 4.x+
+[infowski]
+pho9574 awesome job on kodi webOS everybody! so let me ask a dumb
+question: what are the chances for kodi w...
+infowski 03/08/2023 7:31 PM
+It's almost done.
+ 1
+pho9574 03/08/2023 7:30 PM
+awesome job on kodi webOS everybody! so let me ask a dumb question: what
+are the chances for kodi with hardware playback on webOS in the future?
+[mariotaku]
+mariotaku 03/08/2023 4:27 PM
+It's just an advice, no one can stop you unless you post something
+against server's rule/tos.
+[:solderingB:] 1  1
+[treyard]
+treyard 03/08/2023 4:25 PM
+but freedom of speech is everywhere
+ 1
+03/08/2023 4:25 PM
+ i will watch and learn
+[mariotaku]
+mariotaku 03/08/2023 4:25 PM
+If you don't have any idea how awesome work @Yolofant and @Craig are
+doing, it's better to sit and watch
+ 3 🇲 1 🇦 1 🇬 1 🇮 1 🇨 1  1
+03/08/2023 4:24 PM
+60gb movie playback needs less than 9MB/s, Anyone can achieve that in
+their local network
+[:meep:] 1
+[treyard]
+treyard 03/08/2023 4:21 PM
+it works good?
+[treyard]
+[] yolofant ?
+treyard 03/08/2023 4:21 PM
+well, need a fast link for that, i didnt tested that in kodi yet
+[yolofant]
+yolofant 03/08/2023 4:20 PM
+nfs/smb?
+03/08/2023 4:20 PM
+?
+[treyard]
+treyard 03/08/2023 4:20 PM
+but hey i m down to betatest that
+[treyard]
+[] yolofant so kodi on webos has av1 with dovi 
+treyard 03/08/2023 4:20 PM
+with 8gb storage for a 60gb movie yeah 
+[yolofant]
+yolofant 03/08/2023 4:19 PM
+is there a point now?
+03/08/2023 4:19 PM
+so kodi on webos has av1 with dovi 
+[treyard]
+treyard 03/08/2023 4:19 PM
+https://github.com/xiph/rav1e/pull/3000
+Implement support for encoding HDR10+ from JSON metadata file by qu...
+The goal of this PR is to allow users to encode HDR video with HDR10+
+metadata, in compliance with the AV1 HDR10+ specification. In the
+current state, the changes make it possible to encode HDR10+ ...
+[]
+03/08/2023 4:19 PM
+but you can get it played thought just the tv
+03/08/2023 4:19 PM
+i know
+[ccarnell98]
+ccarnell98 03/08/2023 4:19 PM
+kodi does not support HDR yet alone Dolby Vision on Xbox
+[treyard]
+treyard 03/08/2023 4:18 PM
+or just a tv with dolby vision suppor and hdd and media in mkv
+[treyard]
+[] yolofant can you recommend me a kodi device that has av1 dolby vision
+support?
+treyard 03/08/2023 4:17 PM
+xbox series
+[yolofant]
+yolofant 03/08/2023 4:17 PM
+can you recommend me a kodi device that has av1 dolby vision support?
+[treyard]
+treyard 03/08/2023 4:17 PM
+or opengl to webgl
+03/08/2023 4:16 PM
+is like porting i dont know.. citra to asmw
+[treyard]
+[] mariotaku Asking someone else to do cool stuff isn't the coolest
+thing (I'm having Deja vu for saying that smh...
+treyard 03/08/2023 4:15 PM
+im not asking.. i am just making a point  a port of kodi in webos ,
+wouldnt add nothing new to what alredy exist 
+[mariotaku]
+mariotaku 03/08/2023 4:15 PM
+Asking someone else to do cool stuff isn't the coolest thing (I'm having
+Deja vu for saying that smh)
+[treyard]
+treyard 03/08/2023 4:15 PM
+and more like fun i think is for adding tech improvements from nowdays
+like highter resolution, shaders, highter fps
+03/08/2023 4:14 PM
+now they just released xbox360 emulator for xbox series  (edited)
+[yolofant]
+yolofant 03/08/2023 4:13 PM
+xd
+[treyard]
+[] mariotaku You know why people port DOOM to everywhere?
+treyard 03/08/2023 4:13 PM
+yeah but then release some cool things like xbox emu with has opengl or
+rpcs3
+ww8543 just follow this discussion to stay up to date
+https://github.com/xbmc/xbmc/pull/22721
+ww8543 03/08/2023 4:13 PM
+^^^^^^
+[mariotaku]
+mariotaku 03/08/2023 4:13 PM
+and we can
+[treyard]
+treyard 03/08/2023 4:13 PM
+plus maintaining it 
+[mariotaku]
+mariotaku 03/08/2023 4:12 PM
+because it's fun
+[mariotaku]
+[] treyard but i guess porting kodi to webos is not a practical solution
+when android boxes are chep
+mariotaku 03/08/2023 4:12 PM
+You know why people port DOOM to everywhere?
+[yolofant]
+yolofant 03/08/2023 4:12 PM
+[treyard]
+treyard 03/08/2023 4:12 PM
+*cheap
+03/08/2023 4:12 PM
+but i guess porting kodi to webos is not a practical solution when
+android boxes are chep
+03/08/2023 4:11 PM
+im curious now lol
+ww8543 03/08/2023 4:11 PM
+... kodi
+[yolofant]
+yolofant 03/08/2023 4:11 PM
+icannot
+ 1
+[treyard]
+treyard 03/08/2023 4:11 PM
+ah okay u mean to develop in webos. but what in webos would require 3d
+rendering?
+[] treyard and why you want vulkan when you have opengl and directx?
+ww8543 03/08/2023 4:11 PM
+not on webos
+[ccarnell98]
+ccarnell98 03/08/2023 4:10 PM
+because choice is good
+03/08/2023 4:10 PM
+directx is microsoft.. we don't have that
+[treyard]
+[] ccarnell98 Mesa has some nice stuff.. like vulkan for example
+treyard 03/08/2023 4:10 PM
+and why you want vulkan when you have opengl and directx?
+[treyard]
+treyard 03/08/2023 4:10 PM
+then i have no clue 
+[yolofant]
+yolofant 03/08/2023 4:08 PM
+that's tib_size
+[treyard]
+treyard 03/08/2023 4:08 PM
+is not written in array id .but seems the id of the gpu
+03/08/2023 4:07 PM
+if seems to me this is the number you looking for 16384
+03/08/2023 4:07 PM
+if (panfrost_model_list[i].gpu_id == gpu_id)
+[yolofant]
+yolofant 03/08/2023 4:06 PM
+I think we had a glxinfo compiled somewhere
+[ccarnell98]
+ccarnell98 03/08/2023 4:06 PM
+Mesa has some nice stuff.. like vulkan for example
+[treyard]
+treyard 03/08/2023 4:05 PM
+i guess is for emulators  but why to reinvent the wheel?
+[yolofant]
+yolofant 03/08/2023 4:04 PM
+I doubt mesa can work easily
+[treyard]
+treyard 03/08/2023 4:04 PM
+so probably check mesa docs and see whats the codename for gpu ids
+supported
+[ccarnell98]
+ccarnell98 03/08/2023 4:04 PM
+Just tinkering. No advantage at present
+[yolofant]
+yolofant 03/08/2023 4:04 PM
+why use mesa though?
+[ccarnell98]
+ccarnell98 03/08/2023 4:03 PM
+I've managed to get mesa v23.0.0 to work, however it needs to he gpu_id
+adding to
+https://gitlab.freedesktop.org/mesa/mesa/-/blob/main/src/panfrost/lib/pan_props.c#L70
+to load the correct driver, as it just loads softpipe at the moment
+src/panfrost/lib/pan_props.c · main · Mesa / mesa · GitLab
+Mesa 3D graphics library
+[]
+[yolofant]
+[] ccarnell98 Any idea how I can get the GPU_ID being used (it's a
+Mali-G52 in the LG C2) - e.g. 0x7212 but not th...
+yolofant 03/08/2023 4:02 PM
+what do you need that for?
+[treyard]
+[] ccarnell98 Any idea how I can get the GPU_ID being used (it's a
+Mali-G52 in the LG C2) - e.g. 0x7212 but not th...
+treyard 03/08/2023 4:02 PM
+you mean it uses the software to decode instead of the gpu?
+[ccarnell98]
+ccarnell98 03/08/2023 4:02 PM
+in that format 0x7212
+03/08/2023 4:01 PM
+Any idea how I can get the GPU_ID being used (it's a Mali-G52 in the LG
+C2) - e.g. 0x7212 but not that 
+[treyard]
+[] yolofant I give up...
+treyard 03/08/2023 4:00 PM
+POC or never happened 
+[yolofant]
+yolofant 03/08/2023 3:59 PM
+I give up...
+[treyard]
+treyard 03/08/2023 3:59 PM
+https://kodi.wiki/view/Linux
+Linux
+03/08/2023 3:58 PM
+also 4gb ram, 8gb hdd. its a weak machine
+[ccarnell98]
+ccarnell98 03/08/2023 3:57 PM
+Its WIP
+[treyard]
+[] yolofant yeah but it runs on the tv
+treyard 03/08/2023 3:57 PM
+what version you install and in which tv?
+[ccarnell98]
+ccarnell98 03/08/2023 3:57 PM
+no ETA at present
+03/08/2023 3:57 PM
+Back to LG
+[yolofant]
+yolofant 03/08/2023 3:56 PM
+yeah but it runs on the tv
+[treyard]
+treyard 03/08/2023 3:56 PM
+so i use it in xbox or in a tv box
+[treyard]
+[] yolofant it can?
+treyard 03/08/2023 3:55 PM
+i dont know i didnt root my tv 
+[treyard]
+treyard 03/08/2023 3:55 PM
+the most similar to kodi i found in lg is forkplayer. and you need to
+write your own parsers . similar to kodi addons
+[yolofant]
+yolofant 03/08/2023 3:55 PM
+it can?
+[treyard]
+[] yolofant but then again how does that relate to kodi on the tv?
+treyard 03/08/2023 3:54 PM
+i mean the topic is that LG can run linux kodi? :d isnt it
+[treyard]
+[] ccarnell98 4k video would crash, updating databases would crash. All
+fixed now. But they didn't have anyone to ...
+treyard 03/08/2023 3:54 PM
+you can always install previous version in dev mode
+[yolofant]
+yolofant 03/08/2023 3:54 PM
+but then again how does that relate to kodi on the tv?
+[treyard]
+[] ccarnell98 4k video would crash, updating databases would crash. All
+fixed now. But they didn't have anyone to ...
+treyard 03/08/2023 3:53 PM
+if you realize the problem in xbox is that memory calls are not
+correctly handled and it has only 100mb ram free
+[ccarnell98]
+ccarnell98 03/08/2023 3:53 PM
+4k video would crash, updating databases would crash. All fixed now. But
+they didn't have anyone to fix it
+[yolofant]
+yolofant 03/08/2023 3:53 PM
+[treyard]
+[] yolofant can you xbox do av1 decoding?
+treyard 03/08/2023 3:52 PM
+your tv must be android
+[treyard]
+treyard 03/08/2023 3:52 PM
+its not broken just the addons are not updated 
+[treyard]
+[] ccarnell98 I have Kodi on my Series X and it was left broken for over
+a year due to lack of devs. It runs fine ...
+treyard 03/08/2023 3:52 PM
+its because most addons use python 2.0
+[ccarnell98]
+ccarnell98 03/08/2023 3:52 PM
+I have Kodi on my Series X and it was left broken for over a year due to
+lack of devs. It runs fine now though..
+[yolofant]
+yolofant 03/08/2023 3:51 PM
+the kodi ui is on my tv is smoother than on my nvidia shield pro
+03/08/2023 3:51 PM
+can you xbox do av1 decoding?
+[astur3l]
+astur3l 03/08/2023 3:50 PM
+and? no high end gpu required for video decoding
+[yolofant]
+yolofant 03/08/2023 3:50 PM
+and none of that matters 
+[treyard]
+[] yolofant how does ram relate to performance?
+treyard 03/08/2023 3:50 PM
+well to avoid lags and bottlenecks. plus loading times. also to handle
+high resolutions.. also xbox has more gpu power than tvs
+[yolofant]
+yolofant 03/08/2023 3:49 PM
+how does ram relate to performance?
+[treyard]
+treyard 03/08/2023 3:49 PM
+i run kodi in xbox series which has 6gb ram and its not performing very
+good
+[yolofant]
+yolofant 03/08/2023 3:49 PM
+o22 is 4x cortex a76
+[treyard]
+treyard 03/08/2023 3:48 PM
+yeah but thats kind of tv box 
+03/08/2023 3:48 PM
+its more practical a tv box..
+[yolofant]
+yolofant 03/08/2023 3:48 PM
+nvidia shield has 3gb
+[treyard]
+[] yolofant not true 
+treyard 03/08/2023 3:48 PM
+like 2gb ram ? or maybe 3gb and 8 - 16 storage
+[yolofant]
+[] treyard but i think tv specs arent strong enought for kodi
+yolofant 03/08/2023 3:48 PM
+not true 
+[treyard]
+treyard 03/08/2023 3:47 PM
+but i think tv specs arent strong enought for kodi
+03/08/2023 3:46 PM
+forkplayer
+03/08/2023 3:45 PM
+there is something similar to kodi.. well you need to write your own
+parsers or at least a conversor for the xml pages
+[] 25xcent any eta?
+ww8543 03/08/2023 3:37 PM
+just follow this discussion to stay up to date
+https://github.com/xbmc/xbmc/pull/22721
+Initial support for webOS shell by craigcarnell · Pull Request #227...
+Description This PR adds support for LG webOS. It allows the GUI to be
+displayed and input is working. Video playback (software rendering at
+present) as well as audio support is provided due to ope...
+[]
+[25xcent]
+25xcent 03/08/2023 3:36 PM
+any eta?
+[] 25xcent kodi is finished on webos?
+ww8543 03/08/2023 3:35 PM
+no
+[25xcent]
+25xcent 03/08/2023 3:25 PM
+kodi is finished on webos?
+[smx2460]
+smx2460 03/08/2023 12:57 PM
+The implementation is provided by glibc-polyfills
+03/08/2023 12:57 PM
+For getauxval for example, i backported ONLY the header changes without
+adding the implementation
+03/08/2023 12:56 PM
+And apply them too
+03/08/2023 12:56 PM
+I Need to unroll the history a little bit
+03/08/2023 12:56 PM
+Like renaming files and moving them around
+03/08/2023 12:56 PM
+And some of the patches were applied after other commits were added
+03/08/2023 12:56 PM
+No significant syscall changes but they reworked the headers
+03/08/2023 12:56 PM
+These are header changes
+03/08/2023 12:55 PM
+But the bulk of the problem is shoving the interface changes in our
+glibc fork
+03/08/2023 12:55 PM
+Anything newer than that could cause problems
+[smx2460]
+[] infowski Again - the grand question is - do we **really** need to
+have old Kernel headers?
+smx2460 03/08/2023 12:55 PM
+@hellobox bumped the min kernel headers to 3.10, for WebOS 1 baseline
+[smx2460]
+hellobox. might as well add `CLOCK_BOOTTIME_ALARM` and
+`CLOCK_REALTIME_ALARM` too, since they're in linux 3.0+...
+smx2460 03/08/2023 12:54 PM
+Yeah
+[smx2460]
+hellobox. huh? ``` CLOCK_BOOTTIME (since Linux 2.6.39; Linux-specific) A
+nonsettable sy...
+smx2460 03/08/2023 12:54 PM
+Yes it's missing, and the cherry pick i did yesterday late fucked it
+up - need to take a better look
+[smx2460]
+hellobox. so i patched `mmc-utils`
+smx2460 03/08/2023 12:53 PM
+How did you patch it? If it's a patch that makes sense (and not a hack)
+it's better than patching the headers (as it'd be a package bug)
+[smx2460]
+hellobox. why do we have stuff like `BR2_PACKAGE_URANDOM_SCRIPTS=y` and
+`BR2_PACKAGE_IFUPDOWN_SCRIPTS=y`?
+smx2460 03/08/2023 12:53 PM
+br-nc4 produces a bootable rootfs, those were kept as defaults and are
+stored in /etc
+[smx2460]
+hellobox. it's `\xb1\xfb`
+smx2460 03/08/2023 12:52 PM
+Dafuck?
+[smx2460]
+hellobox. capstone (lol)
+smx2460 03/08/2023 12:52 PM
+Lol they ship capstone?
+[smx2460]
+hellobox. and the versions probably vary with webos version
+smx2460 03/08/2023 12:51 PM
+Yep
+[smx2460]
+hellobox. we'd need to try to match versions
+smx2460 03/08/2023 12:51 PM
+Not necessarily, but if you don't you have a different dependency that
+you must ship yourself
+[smx2460]
+hellobox. should we try to include ~all libraries that are present on
+webos?
+smx2460 03/08/2023 12:50 PM
+Depends on what you need, not necessarily as some are tedious to build
+(node stuff)
+[smx2460]
+hellobox. should enable ncurses
+smx2460 03/08/2023 12:50 PM
+Yeah
+[smx2460]
+hellobox. we have it on the command line
+smx2460 03/08/2023 12:50 PM
+Hmm in glibc or elfutils?
+[smx2460]
+hellobox. <@310158180728700929> so your glibc is based on 2.12.1?
+smx2460 03/08/2023 12:49 PM
+Yes
+[smx2460]
+Original message was deleted
+smx2460 03/08/2023 12:49 PM
+Nice
+[smx2460]
+smx2460 03/08/2023 12:49 PM
+Sorry @hellobox
+hellobox. 03/08/2023 7:37 AM
+i don't even think having old headers is adding anything
+compatibility-wise
+[infowski]
+infowski 03/08/2023 7:32 AM
+Again - the grand question is - do we really need to have old Kernel
+headers?
+ 1
+hellobox. 03/08/2023 3:53 AM
+might as well add CLOCK_BOOTTIME_ALARM and CLOCK_REALTIME_ALARM too,
+since they're in linux 3.0+
+https://github.com/bminor/glibc/commit/05bb4a68ad7b05e16f942552a867da6ffb88278f
+03/08/2023 3:52 AM
+although it's since been modified
+03/08/2023 3:52 AM
+commit that added CLOCK_BOOTTIME
+https://github.com/bminor/glibc/commit/94521213b6b157037944693f56dec159da0084bc
+03/08/2023 3:50 AM
+it's in linux/time.h but not bits/time.h
+03/08/2023 3:50 AM
+oh, glibc just doesn't have it
+03/08/2023 3:49 AM
+huh?
+           CLOCK_BOOTTIME (since Linux 2.6.39; Linux-specific)
+                  A  nonsettable  system-wide  clock that is identical to CLOCK_MONOTONIC, except that it also includes any time that the system is suspended.  This allows applications to get a suspend-aware
+                  monotonic clock without having to deal with the complications of CLOCK_REALTIME, which may have discontinuities if the time is changed using settimeofday(2) or similar.
+03/08/2023 3:49 AM
+    m_gate.c:30:23: error: ‘CLOCK_BOOTTIME’ undeclared here (not in a function); did you mean ‘CLOCK_REALTIME’?
+       30 |         { "BOOTTIME", CLOCK_BOOTTIME },
+          |                       ^~~~~~~~~~~~~~
+          |                       CLOCK_REALTIME
+hellobox. 03/08/2023 3:37 AM
+i also enabled something that brought in rust
+03/08/2023 3:32 AM
+so maybe i just have to set LINUX_HEADERS_PATCH
+03/08/2023 3:29 AM
+or does one of the other makefiles apply patches?
+03/08/2023 3:27 AM
+so we'd need to modify linux-headers.mk or make our own linux headers
+package
+03/08/2023 3:27 AM
+well that sucks
+03/08/2023 3:26 AM
+oh, that looks like it's only used if you're taking headers from a
+kernel build
+03/08/2023 3:25 AM
+i guess there's stuff in linux-headers.mk for patching
+03/08/2023 3:24 AM
+should we patch kernel headers?
+03/08/2023 3:24 AM
+but i'm not sure what to do about br-nc4
+03/08/2023 3:24 AM
+and got it to build
+03/08/2023 3:24 AM
+so i patched mmc-utils
+03/08/2023 3:18 AM
+this is a kernel header thing
+03/08/2023 3:17 AM
+it's present in 4.4
+03/08/2023 3:16 AM
+commit that added what it needs
+https://github.com/torvalds/linux/commit/a5f5774c55a2e3ed75f4d6c5556b7bfcb726e6f0
+03/08/2023 3:14 AM
+i can't build mmc-utils with br-nc4
+03/08/2023 3:13 AM
+i enabled something that requires mercurial...
+hellobox. 03/08/2023 2:39 AM
+why do we have stuff like BR2_PACKAGE_URANDOM_SCRIPTS=y and
+BR2_PACKAGE_IFUPDOWN_SCRIPTS=y?
+03/08/2023 2:32 AM
+it's \xb1\xfb
+03/08/2023 2:31 AM
+how the hell did they end up with this filename?
+      File: '/usr/lib/▒▒' -> 'libvocon3200_nmsp.so.4.10.4'
+      Size: 27              Blocks: 0          IO Block: 4096   symbolic link
+    Device: b31bh/45851d    Inode: 17486       Links: 1
+    Access: (0777/lrwxrwxrwx)  Uid: (    0/    root)   Gid: (    0/    root)
+    Access: 2021-07-08 03:33:12.000000000
+    Modify: 2021-07-08 03:33:12.000000000
+    Change: 2021-07-08 03:33:12.000000000
+03/08/2023 2:30 AM
+here we go
+    ~ # find /usr/lib -inum 17486 | hd
+    00000000  2f 75 73 72 2f 6c 69 62  2f b1 fb 0a              |/usr/lib/...|
+    0000000c
+03/08/2023 2:30 AM
+    ~ # find /usr/lib -inum 17486 | cat -v
+    /usr/lib/M-1M-{
+03/08/2023 2:29 AM
+    ~ # find /usr/lib -inum 17486
+    /usr/lib/▒▒
+03/08/2023 2:28 AM
+and busybox ls doesn't support -b
+03/08/2023 2:27 AM
+wtf is this? in /usr/lib:
+    lrwxrwxrwx    1 root     root            27 Jul  8  2021 ?? -> libvocon3200_nmsp.so.4.10.4
+03/08/2023 2:26 AM
+libcap
+03/08/2023 2:25 AM
+capstone (lol)
+03/08/2023 2:25 AM
+e.g. i see protobuf, protobuf-c, libtasn1, libsigc++
+03/08/2023 2:24 AM
+and the versions probably vary with webos version
+03/08/2023 2:24 AM
+we'd need to try to match versions
+03/08/2023 2:23 AM
+should we try to include ~all libraries that are present on webos?
+03/08/2023 2:21 AM
+i also see popt and readline on webos 6
+03/08/2023 2:21 AM
+should enable ncurses
+hellobox. 03/08/2023 2:13 AM
+    checking for tgoto in -ltinfo... no
+    checking for tgoto in -ltinfow... no
+    checking for initscr in -lxcurses... no
+    checking for initscr in -lncursesw... no
+    checking for initscr in -lncurses... no
+    checking for initscr in -lcurses... no
+    checking for tgetent in -ltermcap... no
+    checking for tgetent in -ltermlib... no
+03/08/2023 2:11 AM
+@Smx building less with br-nc4:
+    checking for working terminal libraries... Cannot find terminal libraries - configure failed
+hellobox. 03/08/2023 1:55 AM
+we have it on the command line
+03/08/2023 1:54 AM
+they seem to be defining _FILE_OFFSET_BITS in config.h
+03/08/2023 1:54 AM
+that fedora patch isn't going to work for us
+03/08/2023 1:53 AM
+https://github.com/openlgtv/glibc/blob/master/io/fts.h#L41
+03/08/2023 1:52 AM
+@Smx so your glibc is based on 2.12.1?
+03/08/2023 1:50 AM
+somebody having a similar problem
+https://lists.fedorahosted.org/archives/list/elfutils-devel@lists.fedorahosted.org/thread/AXFF4MJNKNY5DCNE3BDLYPQJTFMNHT2V/
+hellobox. 03/08/2023 12:45 AM
+@Smx found the problem with _FILE_OFFSET_BITS in elfutils:
+    In file included from ../../elfutils-0.188/libdwfl/linux-kernel-modules.c:36:
+    /opt/arm-webos-linux-gnueabi_compat/arm-webos-linux-gnueabi/sysroot/usr/include/fts.h:41:3: error: #error "<fts.h> cannot be used with -D_FILE_OFFSET_BITS==64"
+       41 | # error "<fts.h> cannot be used with -D_FILE_OFFSET_BITS==64"
+          |   ^~~~~
+March 7, 2023
+hellobox. 03/07/2023 10:11 PM
+mheg
+[smx2460]
+smx2460 03/07/2023 10:08 PM
+    SI2158_M13
+    SI2158_M13_SUB
+    ATSC_M13
+    DVB_M13
+    M13DB
+    M13DB
+    M13P5DB
+(edited)
+03/07/2023 10:08 PM
+    LGE.HE.MW_MHEG106.NC40-M13
+03/07/2023 10:06 PM
+kernel is built in 2018 tho
+03/07/2023 10:06 PM
+    ~ # cat /proc/version
+    Linux version 3.0.13 (release.tvsw@swfarm-cil3) (gcc version 4.5.1 (GCC) ) #1 SMP PREEMPT Thu Jan 11 11:06:33 KST 2018
+03/07/2023 10:05 PM
+mine is m13
+hellobox. 03/07/2023 10:05 PM
+so ~10 years
+[smx2460]
+smx2460 03/07/2023 10:05 PM
+probably 2013
+hellobox. 03/07/2023 10:05 PM
+when was nc4 released?
+03/07/2023 10:05 PM
+trying to make stuff that's compatible across... idk how many years
+03/07/2023 10:05 PM
+we have a much harder job than they do in some ways
+[smx2460]
+smx2460 03/07/2023 10:04 PM
+lol
+hellobox. 03/07/2023 10:04 PM
+i think there's a reason lg makes new toolchains every 2 years
+03/07/2023 10:04 PM
+and only define stuff when the kernel has it
+[smx2460]
+smx2460 03/07/2023 10:04 PM
+(by using a newer glibc i mean)
+hellobox. 03/07/2023 10:04 PM
+we could do the WEBOS_VERSION macro thing
+03/07/2023 10:03 PM
+hmm
+[smx2460]
+smx2460 03/07/2023 10:03 PM
+you're cutting WebOS 3 and 4
+03/07/2023 10:03 PM
+if CLOCK_TAI is 4.5+
+03/07/2023 10:03 PM
+so there's your answer
+03/07/2023 10:03 PM
+you said WebOS 4.9.7-11 has Kernel 4.4
+hellobox. 03/07/2023 10:03 PM
+(no content)
+ config.h.diff
+26.84 KB External
+[smx2460]
+smx2460 03/07/2023 10:03 PM
+you also did
+03/07/2023 10:03 PM
+hm
+hellobox. 03/07/2023 10:02 PM
+didn't @infowski make one?
+[smx2460]
+smx2460 03/07/2023 10:02 PM
+so you know what you'd cut if you target 4.5+
+03/07/2023 10:02 PM
+do we have that?
+03/07/2023 10:02 PM
+with webos - kernel ver
+03/07/2023 10:02 PM
+i don't have a matrix handy
+hellobox. 03/07/2023 10:02 PM
+yeah...
+[smx2460]
+smx2460 03/07/2023 10:01 PM
+so you've seen how it is
+03/07/2023 10:01 PM
+you've worked on br-nc4
+03/07/2023 10:01 PM
+i mean if you have a better (and maintainable) idea, sure
+hellobox. 03/07/2023 10:01 PM
+when using br-nc4
+03/07/2023 10:01 PM
+but if you look at config.h, there's a bunch missing
+03/07/2023 10:01 PM
+i just added u
+03/07/2023 10:01 PM
+i just changed my headers by hand
+[smx2460]
+smx2460 03/07/2023 10:01 PM
+i did some pushes to glibc
+hellobox. 03/07/2023 10:00 PM
+well
+03/07/2023 10:00 PM
+i think strace builds now
+[smx2460]
+smx2460 03/07/2023 9:57 PM
+i'll probably ignore it for now
+03/07/2023 9:57 PM
+this commit is a mess
+03/07/2023 9:57 PM
+https://github.com/bminor/glibc/commit/05b68e14b146586c46121730241142256f0ef850
+Installed-header hygiene (BZ#20366): time.h types. · bminor/glibc@0...
+Many headers are expected to expose a subset of the type definitions in
+time.h. time.h has a whole bunch of messy logic for conditionally
+defining some its types and structs, but, as best I can te...
+[]
+hellobox. 03/07/2023 9:56 PM
+lg webos 5:
+    checking whether TCA_ACT_PAD is declared... yes
+    checking whether TCA_ACT_COOKIE is declared... yes
+    checking whether TCA_ACT_FLAGS is declared... no
+    checking whether TCA_ACT_HW_STATS is declared... no
+    checking whether TCA_ACT_USED_HW_STATS is declared... no
+    checking whether TCA_ACT_IN_HW_COUNT is declared... no
+03/07/2023 9:55 PM
+to be fair, many of those are also missing with the webos 5 toolchain
+03/07/2023 9:53 PM
+    checking whether XFRM_MSG_SETDEFAULT is declared... no
+    checking whether XFRM_MSG_GETDEFAULT is declared... no
+    checking whether PTP_PF_NONE is declared... no
+    checking whether PTP_PF_EXTTS is declared... no
+    checking whether PTP_PF_PEROUT is declared... no
+    checking whether PTP_PF_PHYSYNC is declared... no
+    checking whether NFEA_UNSPEC is declared... no
+    checking whether NFEA_ACTIVITY_NOTIFY is declared... no
+    checking whether NFEA_DONT_REFRESH is declared... no
+    checking whether TCA_ACT_UNSPEC is declared... yes
+    checking whether TCA_ACT_KIND is declared... yes
+    checking whether TCA_ACT_OPTIONS is declared... yes
+    checking whether TCA_ACT_INDEX is declared... yes
+    checking whether TCA_ACT_STATS is declared... yes
+    checking whether TCA_ACT_PAD is declared... no
+    checking whether TCA_ACT_COOKIE is declared... no
+    checking whether TCA_ACT_FLAGS is declared... no
+    checking whether TCA_ACT_HW_STATS is declared... no
+    checking whether TCA_ACT_USED_HW_STATS is declared... no
+    checking whether TCA_ACT_IN_HW_COUNT is declared... no
+03/07/2023 9:51 PM
+although i think the details of that would be difficult/impossible
+03/07/2023 9:50 PM
+if you get what i mean
+03/07/2023 9:50 PM
+what if we used a newer glibc and had a way to statically link any
+symbols that aren't provided by the target glibc?
+[smx2460]
+smx2460 03/07/2023 9:49 PM
+nah i think it's sensical than having 10x versions
+hellobox. 03/07/2023 9:49 PM
+maybe we can find a way to link against a newer glibc, with polyfills
+for missing symbols
+[smx2460]
+smx2460 03/07/2023 9:49 PM
+03/07/2023 9:49 PM
+you're pessimistic
+hellobox. 03/07/2023 9:48 PM
+idk; i think this is ultimately a doomed effort
+03/07/2023 9:47 PM
+and we might never notice that
+03/07/2023 9:47 PM
+it looks like strace will build with slightly degraded functionality if
+it doesn't find things
+03/07/2023 9:47 PM
+this is why i didn't want to wait for something to break before adding
+missing defines etc. (edited)
+03/07/2023 9:46 PM
+    checking whether LO_FLAGS_USE_AOPS is declared... no
+    checking whether <linux/signal.h> can be used along with <signal.h>... no
+    checking for struct __aio_sigset... no
+    checking for struct iocb.aio_flags... yes
+    checking for struct iocb.aio_rw_flags... no
+[smx2460]
+smx2460 03/07/2023 9:46 PM
+https://github.com/bminor/glibc/commit/e9ff8efb5cb0fd944f4a5c8f03b14dee508cf7e8
+Define CLOCK_TAI on Linux (bug 17608) · bminor/glibc@e9ff8ef
+[]
+hellobox. 03/07/2023 9:46 PM
+    checking whether IEEE802154_ADDR_NONE is declared... no
+    checking whether IEEE802154_ADDR_SHORT is declared... no
+    checking whether IEEE802154_ADDR_LONG is declared... no
+    checking whether XFRM_MSG_SETDEFAULT is declared... no
+    checking whether XFRM_MSG_GETDEFAULT is declared... no
+03/07/2023 9:46 PM
+like this:
+    checking whether P_PIDFD is declared... no
+03/07/2023 9:46 PM
+there's a bunch of stuff they look for in configure...
+[smx2460]
+smx2460 03/07/2023 9:45 PM
+let me look at CLOCK_TAI while you validate that
+03/07/2023 9:45 PM
+any other?
+03/07/2023 9:45 PM
+    enum EPOLL_EVENTS
+      {
+        EPOLLIN = 0x001,
+    #define EPOLLIN EPOLLIN
+        EPOLLPRI = 0x002,
+    #define EPOLLPRI EPOLLPRI
+        EPOLLOUT = 0x004,
+    #define EPOLLOUT EPOLLOUT
+        EPOLLRDNORM = 0x040,
+    #define EPOLLRDNORM EPOLLRDNORM
+        EPOLLRDBAND = 0x080,
+    #define EPOLLRDBAND EPOLLRDBAND
+        EPOLLWRNORM = 0x100,
+    #define EPOLLWRNORM EPOLLWRNORM
+        EPOLLWRBAND = 0x200,
+    #define EPOLLWRBAND EPOLLWRBAND
+        EPOLLMSG = 0x400,
+    #define EPOLLMSG EPOLLMSG
+        EPOLLERR = 0x008,
+    #define EPOLLERR EPOLLERR
+        EPOLLHUP = 0x010,
+    #define EPOLLHUP EPOLLHUP
+        EPOLLRDHUP = 0x2000,
+    #define EPOLLRDHUP EPOLLRDHUP
+        EPOLLWAKEUP = 1u << 29,
+    #define EPOLLWAKEUP EPOLLWAKEUP
+        EPOLLONESHOT = 1u << 30,
+    #define EPOLLONESHOT EPOLLONESHOT
+        EPOLLET = 1u << 31
+    #define EPOLLET EPOLLET
+      };
+03/07/2023 9:44 PM
+not sure if there are others
+03/07/2023 9:44 PM
+merged epoll commits x2
+hellobox. 03/07/2023 9:43 PM
+pulseaudio?
+03/07/2023 9:43 PM
+although i'm not sure what it is
+03/07/2023 9:43 PM
+and you have an example of something trying to use those
+03/07/2023 9:42 PM
+and struct sock_txtime i guess
+03/07/2023 9:42 PM
+ETH_P_TSN, SO_TXTIME, SCM_TXTIME, CLOCK_TAI
+[smx2460]
+smx2460 03/07/2023 9:41 PM
+for epoll i can just merge those 2 commits then (edited)
+03/07/2023 9:41 PM
+well
+03/07/2023 9:41 PM
+let me find that
+hellobox. 03/07/2023 9:41 PM
+and all this
+https://discord.com/channels/407937994037919756/835489130967859251/1074048852606337025
+[smx2460]
+smx2460 03/07/2023 9:41 PM
+ooof... right
+hellobox. 03/07/2023 9:40 PM
+then there's CLOCK_TAI
+https://discord.com/channels/407937994037919756/835489130967859251/1074090936210030632
+[smx2460]
+smx2460 03/07/2023 9:40 PM
+https://github.com/bminor/glibc/commit/f8d44fdc72253347dae69fd2c4a231efba4fec98
+Merge Linux 3.5 epoll changes · bminor/glibc@f8d44fd
+Add EPOLLWAKEUP.
+[]
+03/07/2023 9:39 PM
+https://github.com/bminor/glibc/commit/981569c74cbb6bafa2ddcefa6dd9dbdc938ff1c8
+Update glibc headers for Linux 4.5. · bminor/glibc@981569c
+This patch updates the glibc headers with the defines MADV_FREE,
+IPV6_HDRINCL and EPOLLEXCLUSIVE that are added in Linux 4.5. Tested for
+x86_64 and x86 (testsuite, and that installed stripped shar...
+[]
+hellobox. 03/07/2023 9:39 PM
+where's that kernel version table?
+03/07/2023 9:39 PM
+hmm
+03/07/2023 9:39 PM
+well
+03/07/2023 9:39 PM
+i don't think there's any harm in adding them now though
+[smx2460]
+smx2460 03/07/2023 9:39 PM
+let me even find the commit
+03/07/2023 9:39 PM
+if you come across something that fails to build due to them missing,
+i'll add it
+hellobox. 03/07/2023 9:39 PM
+yeah
+[smx2460]
+smx2460 03/07/2023 9:38 PM
+ok then in theory the kernel could just signal an error (edited)
+hellobox. 03/07/2023 9:38 PM
+i don't think glibc is doing anything with them
+[smx2460]
+hellobox. `epoll_ctl(2)`
+smx2460 03/07/2023 9:38 PM
+ah
+hellobox. 03/07/2023 9:37 PM
+yeah
+[smx2460]
+smx2460 03/07/2023 9:37 PM
+i guess that goes to a syscall
+03/07/2023 9:37 PM
+or is it just gonna return failure
+hellobox. 03/07/2023 9:37 PM
+why not just add them to the enum?
+[smx2460]
+smx2460 03/07/2023 9:37 PM
+and a conditional glibc patch probably?
+03/07/2023 9:37 PM
+because we need a new preset with newer kernel headers (edited)
+hellobox. 03/07/2023 9:37 PM
+why?
+[smx2460]
+smx2460 03/07/2023 9:37 PM
+it's a bit of a PITA otherwise
+03/07/2023 9:37 PM
+or that could benefit from them
+hellobox. 03/07/2023 9:37 PM
+hmm
+[smx2460]
+smx2460 03/07/2023 9:36 PM
+unless we find something that needs them
+[smx2460]
+hellobox. so `EPOLLEXCLUSIVE` isn't going to be supported by some
+kernels
+smx2460 03/07/2023 9:36 PM
+my take is to not add them
+[smx2460]
+smx2460 03/07/2023 9:36 PM
+https://github.com/openlgtv/buildroot-nc4/commit/67d4fc33f295cdfe9c3be4856b738f6754cb004a
+Updated glibc (EPOLLONESHOT and EPOLLET are now unsigned) · openlgt...
+[]
+hellobox. 03/07/2023 9:36 PM
+maybe we need a WEBOS_VERSION macro or something
+03/07/2023 9:35 PM
+they're in the webos 5 headers though
+03/07/2023 9:35 PM
+so EPOLLEXCLUSIVE isn't going to be supported by some kernels
+03/07/2023 9:35 PM
+           EPOLLEXCLUSIVE (since Linux 4.5)
+                  Sets an exclusive wakeup mode for the epoll file descriptor that is being attached to the target file descriptor, fd.  When a wakeup event occurs and multiple epoll file descriptors are at‐
+                  tached to the same target file using EPOLLEXCLUSIVE, one or more of the epoll file descriptors will receive an event with epoll_wait(2).  The default in this scenario  (when  EPOLLEXCLUSIVE
+                  is not set) is for all epoll file descriptors to receive an event.  EPOLLEXCLUSIVE is thus useful for avoiding thundering herd problems in certain scenarios.
+                  If  the  same file descriptor is in multiple epoll instances, some with the EPOLLEXCLUSIVE flag, and others without, then events will be provided to all epoll instances that did not specify
+                  EPOLLEXCLUSIVE, and at least one of the epoll instances that did specify EPOLLEXCLUSIVE.
+                  The following values may be specified in conjunction with EPOLLEXCLUSIVE: EPOLLIN, EPOLLOUT, EPOLLWAKEUP, and EPOLLET.  EPOLLHUP and EPOLLERR can also be specified,  but  this  is  not  re‐
+                  quired: as usual, these events are always reported if they occur, regardless of whether they are specified in events.  Attempts to specify other values in events yield the error EINVAL.
+                  EPOLLEXCLUSIVE  may be used only in an EPOLL_CTL_ADD operation; attempts to employ it with EPOLL_CTL_MOD yield an error.  If EPOLLEXCLUSIVE has been set using epoll_ctl(), then a subsequent
+                  EPOLL_CTL_MOD on the same epfd, fd pair yields an error.  A call to epoll_ctl() that specifies EPOLLEXCLUSIVE in events and specifies the target file descriptor fd as an epoll instance will
+                  likewise fail.  The error in all of these cases is EINVAL.
+03/07/2023 9:35 PM
+           And the available input flags are:
+           EPOLLET
+                  Requests edge-triggered notification for the associated file descriptor.  The default behavior for epoll is level-triggered.  See epoll(7) for more detailed information about edge-triggered
+                  and level-triggered notification.
+           EPOLLONESHOT (since Linux 2.6.2)
+                  Requests  one-shot notification for the associated file descriptor.  This means that after an event notified for the file descriptor by epoll_wait(2), the file descriptor is disabled in the
+                  interest list and no other events will be reported by the epoll interface.  The user must call epoll_ctl() with EPOLL_CTL_MOD to rearm the file descriptor with a new event mask.
+           EPOLLWAKEUP (since Linux 3.5)
+                  If EPOLLONESHOT and EPOLLET are clear and the process has the CAP_BLOCK_SUSPEND capability, ensure that the system does not enter "suspend" or "hibernate" while this event is pending or be‐
+                  ing  processed.  The event is considered as being "processed" from the time when it is returned by a call to epoll_wait(2) until the next call to epoll_wait(2) on the same epoll(7) file de‐
+                  scriptor, the closure of that file descriptor, the removal of the event file descriptor with EPOLL_CTL_DEL, or the clearing of EPOLLWAKEUP for the event file descriptor with  EPOLL_CTL_MOD.
+                  See also BUGS.
+03/07/2023 9:34 PM
+epoll_ctl(2)
+03/07/2023 9:34 PM
+oh, here we go
+[smx2460]
+smx2460 03/07/2023 9:34 PM
+xD
+hellobox. 03/07/2023 9:34 PM
+man page doesn't mention EPOLLEXCLUSIVE
+03/07/2023 9:34 PM
+       Interaction with autosleep
+           If  the  system  is in autosleep mode via /sys/power/autosleep and an event happens which wakes the device from sleep, the device driver will keep the device awake only until that event is queued.
+           To keep the device awake until the event has been processed, it is necessary to use the epoll_ctl(2) EPOLLWAKEUP flag.
+           When the EPOLLWAKEUP flag is set in the events field for a struct epoll_event, the system will be kept awake from the moment the event is queued, through the epoll_wait(2) call which  returns  the
+           event until the subsequent epoll_wait(2) call.  If the event should keep the system awake beyond that time, then a separate wake_lock should be taken before the second epoll_wait(2) call.
+03/07/2023 9:33 PM
+so there should be no harm in adding them
+03/07/2023 9:33 PM
+those flags probably just go to the kernel
+03/07/2023 9:32 PM
+just two new ones
+03/07/2023 9:32 PM
+they're not different
+03/07/2023 9:32 PM
+oops
+[smx2460]
+smx2460 03/07/2023 9:31 PM
+new flags (edited)
+03/07/2023 9:31 PM
+they are new
+hellobox. 03/07/2023 9:31 PM
+they're different
+03/07/2023 9:31 PM
+wait
+[smx2460]
+smx2460 03/07/2023 9:31 PM
+no
+03/07/2023 9:31 PM
+now need to update the commit hash
+hellobox. 03/07/2023 9:31 PM
+did you add the other two?
+[smx2460]
+smx2460 03/07/2023 9:31 PM
+done
+hellobox. 03/07/2023 9:30 PM
+you want to do it?
+03/07/2023 9:30 PM
+from the lg webos 5 headers:
+    #define EPOLLRDHUP EPOLLRDHUP
+        EPOLLEXCLUSIVE = 1u << 28,
+    #define EPOLLEXCLUSIVE EPOLLEXCLUSIVE
+        EPOLLWAKEUP = 1u << 29,
+    #define EPOLLWAKEUP EPOLLWAKEUP
+        EPOLLONESHOT = 1u << 30,
+    #define EPOLLONESHOT EPOLLONESHOT
+        EPOLLET = 1u << 31
+    #define EPOLLET EPOLLET
+[smx2460]
+smx2460 03/07/2023 9:29 PM
+i can backport that
+hellobox. 03/07/2023 9:28 PM
+is it?
+03/07/2023 9:28 PM
+wait
+[smx2460]
+smx2460 03/07/2023 9:28 PM
+https://github.com/bminor/glibc/commit/4920765eb417431261367bf65f1a8a5ffb78baf7
+(edited)
+Define EPOLLONESHOT and EPOLLET using unsigned values · bminor/glib...
+[]
+[smx2460]
+hellobox. i mean the strace file is generated
+smx2460 03/07/2023 9:28 PM
+ah yes (edited)
+hellobox. 03/07/2023 9:28 PM
+i mean the strace file is generated
+[smx2460]
+smx2460 03/07/2023 9:28 PM
+so yes
+03/07/2023 9:28 PM
+epoll was surpsingly in glibc 2.12
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 03/07/2023 9:27 PM
+Is epoll even in webos kernels
+[smx2460]
+smx2460 03/07/2023 9:27 PM
+https://github.com/bminor/glibc/blob/8390014c2320f94ffd8a8f6088c10c1f64567954/sysdeps/unix/sysv/linux/sys/epoll.h#L65
+(edited)
+03/07/2023 9:27 PM
+nope
+hellobox. 03/07/2023 9:27 PM
+i guess that file is generated
+[smx2460]
+smx2460 03/07/2023 9:27 PM
+but let's see when it was introduced
+03/07/2023 9:27 PM
+i'm not sure if backporting this is a good idea
+hellobox. 03/07/2023 9:27 PM
+yeah
+[smx2460]
+smx2460 03/07/2023 9:27 PM
+1****u**** (edited)
+03/07/2023 9:26 PM
+x64 debian
+03/07/2023 9:26 PM
+    enum EPOLL_EVENTS
+      {
+        EPOLLIN = 0x001,
+    #define EPOLLIN EPOLLIN
+        EPOLLPRI = 0x002,
+    #define EPOLLPRI EPOLLPRI
+        EPOLLOUT = 0x004,
+    #define EPOLLOUT EPOLLOUT
+        EPOLLRDNORM = 0x040,
+    #define EPOLLRDNORM EPOLLRDNORM
+        EPOLLRDBAND = 0x080,
+    #define EPOLLRDBAND EPOLLRDBAND
+        EPOLLWRNORM = 0x100,
+    #define EPOLLWRNORM EPOLLWRNORM
+        EPOLLWRBAND = 0x200,
+    #define EPOLLWRBAND EPOLLWRBAND
+        EPOLLMSG = 0x400,
+    #define EPOLLMSG EPOLLMSG
+        EPOLLERR = 0x008,
+    #define EPOLLERR EPOLLERR
+        EPOLLHUP = 0x010,
+    #define EPOLLHUP EPOLLHUP
+        EPOLLRDHUP = 0x2000,
+    #define EPOLLRDHUP EPOLLRDHUP
+        EPOLLEXCLUSIVE = 1u << 28,
+    #define EPOLLEXCLUSIVE EPOLLEXCLUSIVE
+        EPOLLWAKEUP = 1u << 29,
+    #define EPOLLWAKEUP EPOLLWAKEUP
+        EPOLLONESHOT = 1u << 30,
+    #define EPOLLONESHOT EPOLLONESHOT
+        EPOLLET = 1u << 31
+    #define EPOLLET EPOLLET
+      };
+hellobox. 03/07/2023 9:25 PM
+don't see this one there
+03/07/2023 9:25 PM
+https://github.com/strace/strace/issues?q=static_assert
+[smx2460]
+smx2460 03/07/2023 9:24 PM
+hm it's a kind of macro
+03/07/2023 9:24 PM
+https://github.com/strace/strace/blob/master/src/xlat/epollevents.in
+strace/epollevents.in at master · strace/strace
+strace is a diagnostic, debugging and instructional userspace utility
+for Linux - strace/epollevents.in at master · strace/strace
+[]
+03/07/2023 9:24 PM
+it must have been removed
+03/07/2023 9:24 PM
+i can't find that static_assert in the strace master
+[_._._._._._._._._._._.]
+hellobox. i don't know if i'd use it in something i released like this
+though
+_._._._._._._._._._._. 03/07/2023 9:24 PM
+My point exactly
+hellobox. 03/07/2023 9:24 PM
+i don't know if i'd use it in something i released like this though
+03/07/2023 9:23 PM
+but i do like it in general
+03/07/2023 9:23 PM
+well, i didn't set it here
+[smx2460]
+smx2460 03/07/2023 9:23 PM
+what even is EPOLLET in an x64 install
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 03/07/2023 9:23 PM
+So I heard you like -Werror
+[smx2460]
+smx2460 03/07/2023 9:23 PM
+using Werror means "i don't care what future compilers will do"
+hellobox. 03/07/2023 9:23 PM
+gcc 8.2
+[smx2460]
+smx2460 03/07/2023 9:23 PM
+(and he's probably right, it's a moving target)
+hellobox. 03/07/2023 9:23 PM
+yeah, it built with the lg webos 5 toolchain
+[smx2460]
+smx2460 03/07/2023 9:22 PM
+(he hates Werror)

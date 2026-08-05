@@ -1,0 +1,1666 @@
+January 25, 2023
+[smx2460]
+smx2460 01/25/2023 8:55 PM
+https://gist.github.com/smx-smx/7b045357d7fdddec3bd35b92da61998b
+Webos Wayland surface hook via LD_PRELOAD
+Webos Wayland surface hook via LD_PRELOAD. GitHub Gist: instantly share
+code, notes, and snippets.
+[]
+[ccarnell98]
+ccarnell98 01/25/2023 8:54 PM
+just finding out which libffi I have agian
+[ccarnell98]
+[] smx2460 Yes
+ccarnell98 01/25/2023 8:54 PM
+Can you send it over, I might need to recompile it 
+[smx2460]
+smx2460 01/25/2023 8:50 PM
+and set LD_LIBRARY_PATH
+01/25/2023 8:49 PM
+As a hack
+01/25/2023 8:49 PM
+Try a symlink for now
+01/25/2023 8:49 PM
+Do you have the .7 one?
+[smx2460]
+[] ccarnell98 ./kodi.bin: error while loading shared libraries:
+libffi.so.6: cannot open shared object file: No su...
+smx2460 01/25/2023 8:49 PM
+Ah
+[smx2460]
+[] ccarnell98 do you have the source for it?
+smx2460 01/25/2023 8:47 PM
+Yes
+Deleted User 01/25/2023 8:44 PM
+i dont even know what symbol it uses
+Deleted User but im not so sure how to go about doing this
+Deleted User 01/25/2023 8:44 PM
+my tv doesnt use micomservice id need someone to volunteer and test it
+[ccarnell98]
+ccarnell98 01/25/2023 8:43 PM
+do you have the source for it?
+01/25/2023 8:41 PM
+./kodi.bin: error while loading shared libraries: libffi.so.6: cannot
+open shared object file: No such file or directory
+Deleted User 01/25/2023 8:41 PM
+but im not so sure how to go about doing this
+Deleted User my goal for the next release is to have `micomservice`
+support
+Deleted User 01/25/2023 8:40 PM
+this has a much higher priority as it prevents anyone on webos 5 and up
+from using the input hook with ir remotes
+[smx2460]
+smx2460 01/25/2023 8:37 PM
+LD_PRELOAD=full_path
+Deleted User 01/25/2023 8:36 PM
+and probably the long press actions
+[smx2460]
+[] ccarnell98 #!/bin/bash export
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/media/developer/apps/usr/palm/applications/org...
+smx2460 01/25/2023 8:36 PM
+Try with a full path
+Deleted User 01/25/2023 8:36 PM
+my goal for the next release is to have micomservice support
+01/25/2023 8:36 PM
+should work correctly now...
+01/25/2023 8:35 PM
+https://github.com/Simon34545/lginputhook/releases/tag/v1.3.1
+[] astur3l state 0 pressed, 1 released, iirc infoswiki hooked to state 0
+:d
+Deleted User 01/25/2023 8:25 PM
+yeah, same on my tv... i dont know where my brain got that information
+from
+[astur3l]
+Deleted User huh... i swear there was another event when you held the
+button down
+astur3l 01/25/2023 8:21 PM
+https://discord.com/channels/407937994037919756/413498235307425802/1067099371805605909
+[] astur3l state 0 pressed, 1 released, iirc infoswiki hooked to state 0
+:d
+Deleted User 01/25/2023 8:18 PM
+huh... i swear there was another event when you held the button down
+[ccarnell98]
+ccarnell98 01/25/2023 8:18 PM
+just realized I had some old luna-send-pub in there, but I don't think
+that would make much diff
+[astur3l]
+Deleted User when you hold a button, do you see a bunch of events get
+spammed after a second or two?
+astur3l 01/25/2023 8:18 PM
+state 0 pressed, 1 released, iirc infoswiki hooked to state 0 :d
+[ccarnell98]
+ccarnell98 01/25/2023 8:18 PM
+#!/bin/bash export
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-depends/arm-webos-linux-gnueabi-release/lib
+export WAYLAND_DISPLAY=wayland-0 echo 'kodi.bin started' >>
+/media/developer/tmp/kodi-bin.log export | grep 'LD_LIBRARY_PATH' >>
+/media/developer/tmp/kodi-bin.log export | grep 'HOME' >>
+/media/developer/tmp/kodi-bin.log luna-send-pub -n 1
+'luna://com.webos.applicationManager/registerApp' '{"id":
+"org.xbmc.kodi"}'
+./strace -o /media/developer/tmp/trace.log ./kodi.bin --debug
+LD_PRELOAD=preloaded.so ./kodi.bin echo 'kodi.bin ended' >>
+/media/developer/tmp/kodi-bin.log
+01/25/2023 8:18 PM
+kodi.sh :
+01/25/2023 8:17 PM
+preloaded.so is in the same folder
+01/25/2023 8:16 PM
+./kodi.sh
+01/25/2023 8:16 PM
+cd /media/developer/apps/usr/palm/applications/org.xbmc.kodi
+01/25/2023 8:16 PM
+I tried it from ssh
+[smx2460]
+smx2460 01/25/2023 8:14 PM
+And how are you launching it?
+[smx2460]
+[] ccarnell98 {"errorCode":1,"returnValue":false,"errorText":"not
+existing app"} ERROR: ld.so: object 'preloaded.s...
+smx2460 01/25/2023 8:11 PM
+Wrong path?
+Deleted User 01/25/2023 8:10 PM
+oh
+rembihnutur 01/25/2023 8:09 PM
+No, no difference to a single press. It just waits with the second line
+until I let go.
+Deleted User 01/25/2023 8:07 PM
+    id => 1
+    id => 2
+    id => 2
+    id => 2
+    id => 2
+    id => 2
+    id => 2
+    id => 2
+    id => 2
+    ...
+    id => 0
+01/25/2023 8:07 PM
+but i think when you hold it down, it looks something like this
+01/25/2023 8:06 PM
+like when you normally press a button, you should see
+    id => 1
+    id => 0
+01/25/2023 8:03 PM
+in the logs
+01/25/2023 8:03 PM
+when you hold a button, do you see a bunch of events get spammed after a
+second or two? (edited)
+01/25/2023 8:02 PM
+hmm
+rembihnutur 01/25/2023 8:02 PM
+Thank you! Launch apps works. would it be possible so implement
+something like a long press to trigger a launch or command? would be
+nice to have a reboot button, but with a long press to not push it by
+accident  (edited)
+Deleted User 01/25/2023 8:01 PM
+i guess sending strings as buffers instead of just strings is more
+reliable
+01/25/2023 8:00 PM
+im not sure why that fixed it
+01/25/2023 7:56 PM
+i need to release this
+01/25/2023 7:56 PM
+nice!
+rembihnutur 01/25/2023 7:55 PM
+It worked! 
+01/25/2023 7:55 PM
+(no content)
+[Bildschirmfoto_2023-01-25_um_19.54.52.png]
+ Bildschirmfoto_2023-01-25_um_19.54.52.png
+1.35 MB External
+Deleted User 01/25/2023 7:50 PM
+afterwards reboot
+01/25/2023 7:49 PM
+replace line 346 with
+ var data = Buffer(JSON.stringify(response.payload));
+rembihnutur Click to see attachment
+Deleted User 01/25/2023 7:48 PM
+i want you to edit the file again
+[ccarnell98]
+ccarnell98 01/25/2023 7:47 PM
+LD_PRELOAD=preloaded.so ./kodi.bin
+01/25/2023 7:47 PM
+{"errorCode":1,"returnValue":false,"errorText":"not existing app"}
+ERROR: ld.so: object 'preloaded.so' from LD_PRELOAD cannot be preloaded
+(cannot open shared object file): ignored. ERROR: ld.so: object
+'preloaded.so' from LD_PRELOAD cannot be preloaded (cannot open shared
+object file): ignored. ERROR: ld.so: object 'preloaded.so' from
+LD_PRELOAD cannot be preloaded (cannot open shared object file):
+ignored. ERROR: ld.so: object 'preloaded.so' from LD_PRELOAD cannot be
+preloaded (cannot open shared object file): ignored.
+01/25/2023 7:47 PM
+preloaded:
+Deleted User 01/25/2023 7:45 PM
+yup... its a problem with node.js
+rembihnutur 01/25/2023 7:42 PM
+(no content)
+ curl_localhost.1842.apps.rtf
+103.83 KB External
+Deleted User 01/25/2023 7:40 PM
+maybe i need to make it a buffer?
+01/25/2023 7:38 PM
+can you ssh into the tv and run curl localhost:1842/apps.json ?
+01/25/2023 7:37 PM
+there should be an extra e} at the end of that
+01/25/2023 7:37 PM
+i need to figure out why the response is getting truncated
+01/25/2023 7:37 PM
+well shit (edited)
+rembihnutur 01/25/2023 7:37 PM
+(no content)
+[Bildschirmfoto_2023-01-25_um_19.37.06.png]
+ Bildschirmfoto_2023-01-25_um_19.37.06.png
+1.87 MB External
+Deleted User 01/25/2023 7:34 PM
+if it does, that means the fix might not be as simple as i thought it
+might be
+01/25/2023 7:34 PM
+it probably wont fix it, but i want to see if it truncates an additional
+character
+01/25/2023 7:33 PM
+yes
+rembihnutur 01/25/2023 7:33 PM
+so just remove +1 ? thats it?
+[Bildschirmfoto_2023-01-25_um_19.32.56.png]
+ Bildschirmfoto_2023-01-25_um_19.32.56.png
+92.87 KB External
+Deleted User 01/25/2023 7:32 PM
+and show it
+01/25/2023 7:32 PM
+then go to /apps.json again
+01/25/2023 7:32 PM
+reboot your tv
+01/25/2023 7:31 PM
+remove the  + 1 and save it
+01/25/2023 7:31 PM
+should be  'Content-Length': data.length + 1
+01/25/2023 7:31 PM
+line 349
+01/25/2023 7:31 PM
+i want you to edit that file
+01/25/2023 7:31 PM
+well
+01/25/2023 7:31 PM
+okay
+rembihnutur 01/25/2023 7:30 PM
+With SSH of course. I have Cyberduck and the webosmanager
+Deleted User 01/25/2023 7:30 PM
+i guess it might be easier if i just sent you an ipk
+01/25/2023 7:30 PM
+specifically
+/media/developer/apps/usr/palm/services/org.webosbrew.inputhook.service/service.js
+01/25/2023 7:30 PM
+are you able to edit files on the tv?
+Deleted User would you be comfortable modifying one of the service files
+on the tv?
+rembihnutur 01/25/2023 7:30 PM
+I don't think I know what that means exactly 
+rembihnutur Ok i entered this in my browser, i hope thats correct.
+Deleted User 01/25/2023 7:28 PM
+would you be comfortable modifying one of the service files on the tv?
+Deleted User 01/25/2023 7:27 PM
+its missing the closing bracket
+01/25/2023 7:27 PM
+im not even sure why it does that
+01/25/2023 7:27 PM
+it fixed for me but i guess not for you
+01/25/2023 7:27 PM
+and i thought i fixed that bug
+rembihnutur Ok i entered this in my browser, i hope thats correct.
+Deleted User 01/25/2023 7:27 PM
+alright, this is weird
+Deleted User `<tv_ip>:1842/apps.json`
+rembihnutur 01/25/2023 7:26 PM
+Ok i entered this in my browser, i hope thats correct.
+[Bildschirmfoto_2023-01-25_um_19.25.28.png]
+ Bildschirmfoto_2023-01-25_um_19.25.28.png
+1.87 MB External
+ app.rtf
+18.84 KB External
+Deleted User 01/25/2023 7:21 PM
+<tv_ip>:1842/apps.json
+01/25/2023 7:20 PM
+no
+Deleted User can you go to `/apps.json`
+rembihnutur 01/25/2023 7:20 PM
+Which path do you mean exactly? Media/developers/apps?
+Deleted User 01/25/2023 7:18 PM
+and show me what the file looks like at the very end
+rembihnutur The password was correcrt, but you were right. The URL was
+wrong  Do you know anything about the ...
+Deleted User 01/25/2023 7:18 PM
+can you go to /apps.json
+Deleted User my browser keeps trying to go to
+`http://192.168.1.143:1842/interface/` when its actually `http://19...
+rembihnutur 01/25/2023 7:17 PM
+The password was correcrt, but you were right. The URL was wrong  Do
+you know anything about the Syntax Error? "Couldn't parse JSON:
+SyntaxError: JSON Parse error: Expected "' (org.webosbrew.inputhook)"
+[Bildschirmfoto_2023-01-25_um_19.13.45.png]
+ Bildschirmfoto_2023-01-25_um_19.13.45.png
+63.83 KB External
+Deleted User 01/25/2023 7:17 PM
+(no content)
+[image.png]
+ image.png
+17.79 KB External
+hellobox. 01/25/2023 7:16 PM
+if the firmware hasn't been updated in a while (6 months?) you can use
+rootmytv
+hellobox.
+<https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f>
+sagar.y 01/25/2023 7:16 PM
+Thank you
+sagar.y Hmm ok. I'll try rooting it. Thanks. Is there a quick link that
+can guide me please
+hellobox. 01/25/2023 7:16 PM
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f
+sagar.y No
+sagar.y 01/25/2023 7:16 PM
+Hmm ok. I'll try rooting it. Thanks. Is there a quick link that can
+guide me please
+sagar.y No
+hellobox. 01/25/2023 7:15 PM
+well that's why
+hellobox. are you rooted?
+sagar.y 01/25/2023 7:15 PM
+No
+sagar.y The YouTube Ad-free and homebrew keeps getting uninstalled. The
+TV seems to be deleting them every t...
+hellobox. 01/25/2023 7:15 PM
+are you rooted?
+sagar.y 01/25/2023 7:14 PM
+The YouTube Ad-free and homebrew keeps getting uninstalled. The TV seems
+to be deleting them every time i power off the TV and power on. Any help
+please?
+[link_sama.]
+link_sama. 01/25/2023 7:06 PM
+Anybody know how to use Bluetooth speakers+TV speakers at same time on
+LG 55um761c0sb?
+Deleted User 01/25/2023 6:33 PM
+my browser keeps trying to go to http://192.168.1.143:1842/interface/
+when its actually http://192.168.1.143:1842/
+01/25/2023 6:32 PM
+also, make sure youre going to / and not /interface/
+rembihnutur Hey <@456226577798135808> I updated to the new input hook
+because i want to try the new launch app ...
+Deleted User 01/25/2023 6:30 PM
+are you sure you entered the password correctly? (edited)
+[yolofant]
+yolofant 01/25/2023 6:15 PM
+but you need to add the lib to LD_PRELOAD for it to work
+01/25/2023 6:14 PM
+but basically it intercepts the wayland shell creation ? and then calls
+the webos wayland stuff in addition
+01/25/2023 6:11 PM
+do you have root?
+[ccarnell98]
+ccarnell98 01/25/2023 6:03 PM
+How does the preload.so work?
+[infowski]
+infowski 01/25/2023 5:44 PM
+None of these exist on webOS
+01/25/2023 5:43 PM
+https://github.com/xbmc/xbmc/search?q=dbus → yep, udisks, upower,
+freedesktop screensaver...
+hellobox. 01/25/2023 5:43 PM
+so wpa_supplicant and connman
+01/25/2023 5:43 PM
+    message+  1374     1  0  1296   872   2 Jan24 ?        00:00:00   /usr/bin/dbus-daemon --system
+    root      1388     1  0  1264   404   1 Jan24 ?        00:00:00   /usr/bin/dbus-daemon --syslog --fork --print-pid 4 --print-address 6 --session
+    dbus      2422     1  0  2040  2084   2 Jan24 ?        00:01:25   /usr/sbin/wpa_supplicant -u -s
+    dbus      2426     1  0  2770  2464   1 Jan24 ?        00:00:00   /usr/sbin/connmand -n --nobacktrace --noplugin=bluetooth,bluetooth_legacy
+    dbus      2595     1  0 13035  3860   1 Jan24 ?        00:00:02   /usr/sbin/webos-connman-adapter
+[infowski]
+infowski 01/25/2023 5:43 PM
+Yep, that'd make most sense here.
+[ccarnell98]
+ccarnell98 01/25/2023 5:43 PM
+well I can disable it on build of kodi if it's not needed
+[infowski]
+infowski 01/25/2023 5:42 PM
+kodi probably uses dbus to keep sleep inhibitors on desktop systems...
+hellobox. 01/25/2023 5:42 PM
+it's just used for wpa_supplicant and something else i think
+[ccarnell98]
+ccarnell98 01/25/2023 5:42 PM
+Idk, but it's on mine - 7.3.0-16
+hellobox. 01/25/2023 5:42 PM
+i'm just saying it's there
+01/25/2023 5:42 PM
+there is none
+[infowski]
+infowski 01/25/2023 5:41 PM
+But what is the point of using dbus here anyways?
+[ccarnell98]
+ccarnell98 01/25/2023 5:41 PM
+message+ 1769 0.0 0.0 4808 736 ? Ss 16:24 0:00 /usr/bin/dbus-daemon
+--system root 1776 0.0 0.0 4680 224 ? Ss 16:24 0:00 /usr/bin/dbus-daemon
+--syslog --fork --print-pid 4 --print-address 6 --sessio
+hellobox. 01/25/2023 5:40 PM
+i've seen it on at least some versions
+[] infowski There's no dbus on webOS
+hellobox. 01/25/2023 5:40 PM
+there actually is i think
+[ccarnell98]
+ccarnell98 01/25/2023 5:40 PM
+cat /tmp/var/run/dbus/pid 1769
+01/25/2023 5:40 PM
+@infowski something is, somewhere
+[infowski]
+infowski 01/25/2023 5:40 PM
+It's much more likely they needed to pull in dbus as a dependency of
+systemd or something...
+[yolofant]
+[] infowski since, you know, copying over random libraries from
+production firmware is not sustainable if anyone...
+yolofant 01/25/2023 5:40 PM
+that was from the mali toolchain
+[infowski]
+infowski 01/25/2023 5:39 PM
+And I doubt LG plans switching from luna to dbus anytime soon -
+everything is done via luna.
+01/25/2023 5:39 PM
+nothing uses dbus, and it's not available/used on webOS 5.x/6.x and
+older.
+[ccarnell98]
+ccarnell98 01/25/2023 5:38 PM
+[infowski]
+infowski 01/25/2023 5:38 PM
+01/25/2023 5:38 PM
+It's all fake news.
+[ccarnell98]
+ccarnell98 01/25/2023 5:38 PM
+/media/developer $ find / -name dbus* /usr/bin/dbus-cleanup-sockets
+/usr/bin/dbus-daemon /usr/bin/dbus-launch /usr/bin/dbus-monitor
+/usr/bin/dbus-run-session /usr/bin/dbus-send
+/usr/bin/dbus-update-activation-environment /usr/bin/dbus-uuidgen
+/usr/lib/systemd/user/dbus.service /usr/lib/systemd/user/dbus.socket
+/usr/lib/systemd/user/sockets.target.wants/dbus.socket
+/usr/lib/sysusers.d/dbus.conf /usr/lib/tmpfiles.d/dbus.conf
+/usr/share/dbus-1 /usr/share/xml/dbus-1 /lib/systemd/system/dbus.service
+/lib/systemd/system/dbus.socket /lib/systemd/system/dbus.target.wants
+/lib/systemd/system/dbus.target.wants/dbus.socket
+/lib/systemd/system/multi-user.target.wants/dbus.service
+/lib/systemd/system/sockets.target.wants/dbus.socket /var/run/dbus.pid
+/var/run/dbus.addr
+01/25/2023 5:38 PM
+@infowski What about these?
+[infowski]
+infowski 01/25/2023 5:25 PM
+since, you know, copying over random libraries from production firmware
+is not sustainable if anyone wants to build anything that interacts with
+wayland directly
+01/25/2023 5:24 PM
+or can we just build libwayland-webos-client out of protocol definitions
+from OSE? I have no idea where that library comes from honestly
+01/25/2023 5:24 PM
+on a somewhat related note - doesn't meta-lg-webos-ndk produce
+libwayland-webos-client close enough to our target system for us to be
+able to link against it?
+01/25/2023 5:17 PM
+you need to disable dbus support in kodi.
+01/25/2023 5:17 PM
+There's no dbus on webOS
+[ccarnell98]
+ccarnell98 01/25/2023 5:05 PM
+would --host=arm-linux work? I see their is symlinks already in place in
+the toolchain
+[ccarnell98]
+ccarnell98 01/25/2023 4:50 PM
+actually think I could just get rid of xbmc-deps and call it something
+else 
+01/25/2023 4:49 PM
+./configure
+--prefix=/media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-deps
+--host=arm-webos-linux-gnueabi ? something
+01/25/2023 4:45 PM
+The path is too long, socket paths are only allowed up to 107/108
+characters and it should get rid of a dbus error
+01/25/2023 4:44 PM
+Using configure - is there anyway to reduce
+arm-webos-linux-gnueabi-release to arm-linux-gnueabi-release as above?
+01/25/2023 4:44 PM
+@Smx
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-deps/arm-linux-gnueabi-release/var/run/dbus
+01/25/2023 4:44 PM
+I will put them up
+[yolofant]
+yolofant 01/25/2023 4:36 PM
+I would restraint from building wayland-webos
+01/25/2023 4:36 PM
+I mean for kodi
+[ccarnell98]
+[] yolofant <@1051573528522133655> do you have built instructions
+somewhere?
+ccarnell98 01/25/2023 4:27 PM
+Only what I just posted above. It uses scripts all over the place
+https://github.com/webosose/build-webos
+GitHub - webosose/build-webos: webOS OSE build layer
+webOS OSE build layer. Contribute to webosose/build-webos development by
+creating an account on GitHub.
+[]
+[jclsn]
+jclsn 01/25/2023 4:12 PM
+Tried Firefox and Chromium
+01/25/2023 4:12 PM
+I just get an empty page when clicking on the app there
+01/25/2023 4:06 PM
+Thx will try
+ww8543 01/25/2023 4:05 PM
+then you can open http://ip_of_your_tv:9998 in chrome and get to the
+inspect tools
+01/25/2023 4:04 PM
+then either reboot or do initctl restart sam through ssh
+[] jclsn I don't know how to do that
+ww8543 01/25/2023 4:04 PM
+add "inspectable":true to your appinfo.json
+[jclsn]
+jclsn 01/25/2023 4:03 PM
+I am not a web developer at all
+[jclsn]
+ww8543 have you tried inspecting your app while it runs?
+jclsn 01/25/2023 4:03 PM
+I don't know how to do that
+ww8543 01/25/2023 4:02 PM
+maybe you can see some relevant errors on the console
+[] jclsn I think webOS is missing some components to play these streams.
+Also in the browser app Stremio does...
+ww8543 01/25/2023 4:02 PM
+have you tried inspecting your app while it runs?
+[jclsn]
+jclsn 01/25/2023 3:55 PM
+I think webOS is missing some components to play these streams. Also in
+the browser app Stremio doesn't work
+[yolofant]
+yolofant 01/25/2023 3:31 PM
+@Craig do you have built instructions somewhere?
+[jclsn]
+ww8543 that page is probably not meant for low-end devices, more
+"optimized" for desktop
+jclsn 01/25/2023 2:46 PM
+Yeah the UI is not very TV friendly. I want to give it a try though.
+Would be a nice alternative to Netflix. There are many addons like for
+Kodi, but the UI is more modern
+[jclsn]
+ww8543 does this involve any kind of drm?
+jclsn 01/25/2023 2:45 PM
+I don't think so. It can stream from Netflix etc. but also from Torrents
+[ccarnell98]
+ccarnell98 01/25/2023 2:32 PM
+It's also in the zip I attached earlier
+01/25/2023 2:31 PM
+Gives you source and compiled libwayland-webos
+01/25/2023 2:31 PM
+bitbake webos-wayland-extensions
+01/25/2023 2:30 PM
+source oe-init-build-env
+01/25/2023 2:30 PM
+mcf -p 2 -b 2 raspberrypi4
+01/25/2023 2:30 PM
+https://github.com/webosose/build-webos.git
+GitHub - webosose/build-webos: webOS OSE build layer
+webOS OSE build layer. Contribute to webosose/build-webos development by
+creating an account on GitHub.
+[]
+01/25/2023 2:30 PM
+Wayland scanner will make the files apparently
+01/25/2023 2:29 PM
+https://github.com/webosose/webos-wayland-extensions/blob/620680a4721a7de5da8bbb87e021afd78c493898/cmake/wayland.cmake
+webos-wayland-extensions/wayland.cmake at 620680a4721a7de5da8bbb87e...
+Wayland protocol extensions for webOS. Contribute to
+webosose/webos-wayland-extensions development by creating an account on
+GitHub.
+[]
+[ccarnell98]
+[] smx2460 Because they are useless
+ccarnell98 01/25/2023 2:29 PM
+That's what I thought. But:
+[smx2460]
+smx2460 01/25/2023 2:09 PM
+since the prototype is the same
+01/25/2023 2:09 PM
+but in most cases it's not a change that impacts the program flow
+01/25/2023 2:08 PM
+if the symbol version changed, it means the behavior changed somehow
+01/25/2023 2:08 PM
+there might be a better way, but this is in any case a hack
+01/25/2023 2:08 PM
+if gcc doesn't optimize it away, ld will pick it up for symbol
+resolution thanks to the .lds
+01/25/2023 2:07 PM
+so you can make a function somewhere that calls "foo" (edited)
+01/25/2023 2:07 PM
+or it will say it's an undefined symbol
+01/25/2023 2:07 PM
+the catch is that you must use "foo" at least once within the program
+01/25/2023 2:07 PM
+with "foo@@GLIBC_whatever"="foo";
+01/25/2023 2:06 PM
+also for @Craig
+[smx2460]
+[] yolofant but then you still need to fix the glibc stuff
+smx2460 01/25/2023 2:06 PM
+you make a .lds file
+[smx2460]
+[] smx2460 It's a bunch of XML files isn't it?
+smx2460 01/25/2023 2:05 PM
+i mean, we don't have the sources for the actual implementations
+[] jclsn It is also not very performant. Maybe it is better to compile
+the native Qt application, although I ...
+ww8543 01/25/2023 1:37 PM
+that page is probably not meant for low-end devices, more "optimized"
+for desktop
+[] jclsn Does it need some video browser plugins or something?
+ww8543 01/25/2023 1:36 PM
+does this involve any kind of drm?
+[] jclsn It is also not very performant. Maybe it is better to compile
+the native Qt application, although I ...
+ww8543 01/25/2023 1:36 PM
+might be simple enough.... i would give it a try at least
+[smx2460]
+smx2460 01/25/2023 1:30 PM
+It's a bunch of XML files isn't it?
+01/25/2023 1:30 PM
+Because they are useless (edited)
+01/25/2023 1:30 PM
+Wayland webos extensions aren't
+01/25/2023 1:30 PM
+@Craig btw luna-service2 is already in br-nc4
+[jclsn]
+jclsn 01/25/2023 1:22 PM
+It is also not very performant. Maybe it is better to compile the native
+Qt application, although I guess that won't be so simple (edited)
+01/25/2023 1:20 PM
+Codecs?
+01/25/2023 1:19 PM
+Does it need some video browser plugins or something?
+[jclsn]
+ww8543 just create a very basic html, with embedded js that just sets
+window.location to the url you want t...
+jclsn 01/25/2023 1:19 PM
+Yeah that works as well, but video stream still can't be fetched
+ww8543 01/25/2023 1:17 PM
+something like this
+01/25/2023 1:17 PM
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <script>location.href='https://whatever.com';</script>
+    </head>
+    <body>
+    </body>
+    </html>
+01/25/2023 1:17 PM
+or location.href works too
+01/25/2023 1:16 PM
+it is what most web apps do
+[] jclsn So I have tried to build a simple Webapp of Stremio by just
+embedding the website using the embed ta...
+ww8543 01/25/2023 1:15 PM
+just create a very basic html, with embedded js that just sets
+window.location to the url you want to end up in
+[jclsn]
+jclsn 01/25/2023 1:08 PM
+So I have tried to build a simple Webapp of Stremio by just embedding
+the website using the embed tag, but after logging in I cannot stream
+videos. It says "Could not update casting device info: streaming service
+might be unavailabe. failed to fetch". No issues on my laptop though.
+Are there maybe some components missing in the webapp that would be need
+for video streaming? I am not experienced in web developent, so help is
+appreciated  The webapp is also pretty laggy. Maybe use an iFrame
+instead? I could also try to compile
+https://github.com/Stremio/stremio-shell which seems to require Qt
+5.10.x, so a pretty old version. Would webOS support that? (edited)
+GitHub - Stremio/stremio-shell:  Qt5-based shell for Stremio; comp...
+ Qt5-based shell for Stremio; compile this to run the desktop app -
+GitHub - Stremio/stremio-shell:  Qt5-based shell for Stremio; compile
+this to run the desktop app
+[]
+[ccarnell98]
+ccarnell98 01/25/2023 1:03 PM
+01/25/2023 1:03 PM
+100% yes :0
+[yolofant]
+yolofant 01/25/2023 1:03 PM
+if it works you can still try to move it into waylandpp properly
+01/25/2023 1:02 PM
+I mean for the time being you should make it work first
+[ccarnell98]
+ccarnell98 01/25/2023 1:02 PM
+it's a wrapper wrapped with another kodi wrapper 
+[yolofant]
+yolofant 01/25/2023 1:01 PM
+waylandpp should only be a wrapper around the c api
+[ccarnell98]
+ccarnell98 01/25/2023 12:59 PM
+taking me a while as I haven't done this kind of stuff in ages..
+[ccarnell98]
+[] yolofant why do you want to call it through waylandpp
+ccarnell98 01/25/2023 12:59 PM
+2 reasons, 1 to make the code compatible with kodi, so that I could
+upstream it. 2. because I think the registry is binded or something like
+that and cannot be changed? so my code would interfere with kodi's own.
+I'm not sure yet, I still have lots of debugging to do
+[ccarnell98]
+ccarnell98 01/25/2023 12:58 PM
+not yet, only just downloaded it a few mins ago and I'll give it a go
+[yolofant]
+yolofant 01/25/2023 12:57 PM
+and did you try the preload library
+01/25/2023 12:57 PM
+you can just call the c function
+01/25/2023 12:57 PM
+why do you want to call it through waylandpp
+[ccarnell98]
+[] smx2460 After 6 hours
+ccarnell98 01/25/2023 12:56 PM
+no worries 
+[ccarnell98]
+ccarnell98 01/25/2023 12:56 PM
+not being able to get wl_webos_shell in waylandpp is the bit i'm stuck
+at
+01/25/2023 12:55 PM
+It's made more confusing because kodi uses
+https://github.com/NilsBrause/waylandpp, I tried converting the code
+from wayland_egl sample into this format, but couldn't work out the
+registry stuff, like if it's creating it or does it already exist. Idk
+01/25/2023 12:54 PM
+but the code was running on the tV
+01/25/2023 12:54 PM
+but because I am still new to wayland, I don't know if I had things
+configured correctly. the whole wayland protocol/scanner xml thing
+confuses me
+01/25/2023 12:53 PM
+Looking at the code here
+https://github.com/webosose/samples/blob/master/native-apps/external/com.sample.waylandegl/src/wayland_egl.c#L49,
+I would have expected to see "wl_webos_shell" listed in the interfaces
+in the debug code above
+samples/wayland_egl.c at master · webosose/samples
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+01/25/2023 12:52 PM
+didn't see*
+01/25/2023 12:52 PM
+I sent to a log the content of interface, see "wl_webos_shell" listed,
+just wl_compositor, wl_shm, wl_subcompositor, wl_seat and
+wl_data_device_manager
+01/25/2023 12:50 PM
+Just after TryBind(registryProxy, bind.target, name, interface,
+bind.minVersion, bind.maxVersion, version);
+01/25/2023 12:50 PM
+https://github.com/xbmc/xbmc/blob/master/xbmc/windowing/wayland/Registry.cpp#L98
+xbmc/Registry.cpp at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+01/25/2023 12:50 PM
+regarding wayland and kodi, I put some debug code into my kodi
+[yolofant]
+yolofant 01/25/2023 12:46 PM
+but then you still need to fix the glibc stuff
+01/25/2023 12:46 PM
+yeah
+[ccarnell98]
+ccarnell98 01/25/2023 12:46 PM
+contains c/h and libs
+[yolofant]
+yolofant 01/25/2023 12:46 PM
+but yeah you might need those
+01/25/2023 12:46 PM
+hmm not sure if those are the headers or libs
+[ccarnell98]
+ccarnell98 01/25/2023 12:46 PM
+Is that of any use?
+ libwayland-webos.zip
+204.46 KB External
+[smx2460]
+smx2460 01/25/2023 12:45 PM
+After 6 hours
+01/25/2023 12:45 PM
+I can't help you right now tho
+01/25/2023 12:45 PM
+But it's more tedious
+01/25/2023 12:45 PM
+Alternatively you can use dlopen
+01/25/2023 12:44 PM
+You need a linker script to create some aliases
+01/25/2023 12:44 PM
+About the glibc errors
+01/25/2023 12:44 PM
+Pull it
+[smx2460]
+[] ccarnell98 The LG .so (using https://github.com/webosose/build-webos)
+is built with a newer glibc which is not ...
+smx2460 01/25/2023 12:44 PM
+Use the one from your TV
+[yolofant]
+yolofant 01/25/2023 12:42 PM
+yeah maybe
+01/25/2023 12:42 PM
+[smx2460]
+smx2460 01/25/2023 12:39 PM
+If it can be merged into Kodi upstream, I'm the Pope (edited)
+01/25/2023 12:39 PM
+Then link against blobs
+[yolofant]
+yolofant 01/25/2023 12:38 PM
+yeah we have that
+[smx2460]
+[] yolofant if you link at build time
+smx2460 01/25/2023 12:38 PM
+You'd need a .h file declaring LG extensions
+[ccarnell98]
+ccarnell98 01/25/2023 12:38 PM
+The LG .so (using https://github.com/webosose/build-webos) is built with
+a newer glibc which is not compatible with my TV
+[yolofant]
+yolofant 01/25/2023 12:38 PM
+if you link at build time
+01/25/2023 12:38 PM
+and that pretty much makes it unmergable into main kodi
+[smx2460]
+smx2460 01/25/2023 12:37 PM
+And yeah, see if the LD_PRELOAD works
+01/25/2023 12:37 PM
+Exactly
+[yolofant]
+yolofant 01/25/2023 12:37 PM
+we don't have the source code for the wayland-webos stuff
+[smx2460]
+smx2460 01/25/2023 12:37 PM
+And put function/data externs somewhere
+01/25/2023 12:37 PM
+Link with the LG .so
+[smx2460]
+[] ccarnell98 That's what I thought. But I will need to build
+wayland-webos-client under buildroot-nc4 which I'm n...
+smx2460 01/25/2023 12:36 PM
+Don't
+[ccarnell98]
+ccarnell98 01/25/2023 12:34 PM
+That's what I thought. But I will need to build wayland-webos-client
+under buildroot-nc4 which I'm not sure how to do that just yet 
+[yolofant]
+yolofant 01/25/2023 12:32 PM
+yeah you need to link against wayland-webos-client
+[ccarnell98]
+ccarnell98 01/25/2023 12:31 PM
+[ 50%] Building C object CMakeFiles/wayland_egl.dir/src/wayland_egl.c.o
+[100%] Linking C executable pkg_/wayland_egl /usr/bin/ld:
+CMakeFiles/wayland_egl.dir/src/wayland_egl.c.o: warning: relocation
+against wl_webos_shell_surface_interface' in read-only section .text'
+/usr/bin/ld: CMakeFiles/wayland_egl.dir/src/wayland_egl.c.o: in function
+wl_webos_shell_get_shell_surface': wayland_egl.c:(.text+0x203): undefined reference to wl_webos_shell_surface_interface'
+/usr/bin/ld: CMakeFiles/wayland_egl.dir/src/wayland_egl.c.o: in function
+registryHandler': wayland_egl.c:(.text+0x372): undefined reference to wl_webos_shell_interface'
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE collect2: error: ld
+returned 1 exit status make[2]: *
+[CMakeFiles/wayland_egl.dir/build.make:97: pkg_/waylandegl] Error 1
+make[1]: [CMakeFiles/Makefile2:83: CMakeFiles/wayland_egl.dir/all] Error
+2 make: *** [Makefile:91: all] Error 2
+[ccarnell98]
+ccarnell98 01/25/2023 12:23 PM
+slowly learning wayland
+01/25/2023 12:23 PM
+I've managed to compile some wayland test code by adding the headers
+[yolofant]
+yolofant 01/25/2023 12:23 PM
+do you have the wayland headers?
+[ccarnell98]
+ccarnell98 01/25/2023 12:22 PM
+@Smx @hellobox Have you managed to compilel
+https://github.com/webosose/samples/blob/master/native-apps/external/com.sample.waylandegl/src/wayland_egl.c
+under buildroot-nc4? If so, how? I
+samples/wayland_egl.c at master · webosose/samples
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+[jclsn]
+jclsn 01/25/2023 12:22 PM
+That would be really nice I think. Should be fairly easy to write an app
+of the web-based Stremio version https://app.strem.io. I would actually
+try to do that if no on else ever did it. (edited)
+01/25/2023 12:21 PM
+Was there ever an interest here to package a Stremio app?
+[yolofant]
+yolofant 01/25/2023 12:14 PM
+it is but the chances of getting webos specific stuff merged is low
+[ccarnell98]
+ccarnell98 01/25/2023 12:14 PM
+It's been about 20 years since I've done any c/c++ but I think it's
+possible 
+[yolofant]
+yolofant 01/25/2023 12:13 PM
+yeah but the webos stuff is probably not upstreamable
+[ccarnell98]
+ccarnell98 01/25/2023 12:13 PM
+webos version of kodi*
+01/25/2023 12:13 PM
+@Yolofant But my long term goal is to upstream everything to kodi so
+webos can be built by anyone (without hacks)
+01/25/2023 12:12 PM
+@Yolofant I've just caught up with discord. I'll d/l and give it a try
+[yolofant]
+yolofant 01/25/2023 12:11 PM
+that doesn't require patching
+01/25/2023 12:11 PM
+yeah but why dont you try the LD_PRELOAD way first
+[ccarnell98]
+ccarnell98 01/25/2023 12:11 PM
+https://github.com/xbmc/xbmc/blob/master/xbmc/windowing/wayland/WinSystemWayland.cpp#L171
+I just don't know at this point how to modify the code (using
+wl_webos_shell_interface)
+xbmc/WinSystemWayland.cpp at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[yolofant]
+yolofant 01/25/2023 12:08 PM
+from @Smx
+01/25/2023 12:08 PM
+try the LD_PRELOAD binary
+[ccarnell98]
+ccarnell98 01/25/2023 12:07 PM
+but waylandpp is using objects
+01/25/2023 12:07 PM
+https://github.com/webosose/samples/blob/master/native-apps/external/com.sample.waylandegl/src/wayland_egl.c#L55
+uses a struct
+samples/wayland_egl.c at master · webosose/samples
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+01/25/2023 12:07 PM
+@hellobox Yesterday I was looking at implementing
+https://github.com/webosose/samples/blob/master/native-apps/external/com.sample.waylandegl/src/wayland_egl.c
+code into kodi as an example to register the app. But kodi specifically
+uses https://github.com/NilsBrause/waylandpp which is a c++ interface to
+wayland.
+samples/wayland_egl.c at master · webosose/samples
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+GitHub - NilsBrause/waylandpp: Wayland C++ bindings
+Wayland C++ bindings. Contribute to NilsBrause/waylandpp development by
+creating an account on GitHub.
+[]
+[yolofant]
+hellobox. hmm, they're using that xdg shell stuff:
+<https://github.com/xbmc/xbmc/blob/master/xbmc/windowing/wa...
+yolofant 01/25/2023 11:57 AM
+it seems there is a fallback to a regular wl_shell
+https://github.com/xbmc/xbmc/blob/master/xbmc/windowing/wayland/WinSystemWayland.cpp#L315
+xbmc/WinSystemWayland.cpp at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+rembihnutur 01/25/2023 11:54 AM
+Hey @Deleted User I updated to the new input hook because i want to try
+the new launch app feature. Unfortunately there is an error. View this
+page on another device also no longer works. When I enter the password,
+a blank page appears.
+[inputhook.jpg]
+ inputhook.jpg
+367.25 KB External
+[yolofant]
+hellobox. but webos uses a pretty old version of wayland
+yolofant 01/25/2023 11:47 AM
+webos 7 at least hat wayland 1.18 which is from 2020
+Deleted User 01/25/2023 9:20 AM
+what is it for?
+01/25/2023 9:20 AM
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1#factory-mode--instart--instop:~:text=%23%20Bang%20%26%20Olufsen%20password%3A%201925
+Deleted User whats this?
+Deleted User 01/25/2023 9:20 AM
+oh, i see it mentioned here
+[smx2460]
+smx2460 01/25/2023 8:59 AM
+Or libhelpers (edited)
+[smx2460]
+hellobox. i'm trying to figure out how to run the glib main loop in
+another thread
+smx2460 01/25/2023 8:59 AM
+That's what SDL does iirc lol
+hellobox. 01/25/2023 8:41 AM
+i give up for now
+01/25/2023 8:39 AM
+i'm trying to figure out how to run the glib main loop in another thread
+hellobox. 01/25/2023 8:19 AM
+i thought luna://com.webos.pmlogd/setAllowDevLog was enough to disable
+the whitelist, but i had to (also?) do
+luna-send -n 1 -f luna://com.webos.service.config/setConfigs '{"configs": {"system.collectDevLogs": true}}'
+01/25/2023 8:18 AM
+aha
+hellobox. 01/25/2023 7:47 AM
+ugh. i implemented a bunch of luna/pbnjson shit in c
+hellobox. 01/25/2023 7:38 AM
+the webos documentation is really not sufficient for creating an app
+hellobox. 01/25/2023 7:30 AM
+pbnjson sure is clunky
+hellobox. 01/25/2023 6:58 AM
+    #define LS__FILE__BASENAME (strrchr("/" __FILE__, '/') + 1)
+01/25/2023 6:57 AM
+it returns false... even if the function doesn't return bool
+01/25/2023 6:57 AM
+    #define _LSErrorIfFail(cond, lserror, message_id)                     \
+    do {                                                                  \
+        if (unlikely(!(cond)))                                            \
+        {                                                                 \
+            LOG_LS_ERROR(message_id, 4,                                   \
+                         PMLOGKS("COND", #cond),                          \
+                         PMLOGKS("FUNC", __FUNCTION__),                   \
+                         PMLOGKS("FILE" , LS__FILE__BASENAME),            \
+                         PMLOGKFV("LINE", "%d", __LINE__),                \
+                         "%s: failed", #cond);                            \
+            _LSErrorSetFunc(lserror, LS__FILE__BASENAME, __LINE__, __FUNCTION__,\
+                -1,                                                       \
+                #cond );                                                  \
+            return false;                                                 \
+        }                                                                 \
+    } while (0)
+01/25/2023 6:57 AM
+wtf, the luna code is weird
+01/25/2023 6:55 AM
+why are there two of these?
+    /**
+     *******************************************************************************
+     * @brief Get the payload of this message.
+     *
+     * @param  message IN message
+     *
+     * @retval const char*, payload
+     *******************************************************************************
+     */
+    const char *
+    LSMessageGetPayload(LSMessage *message)
+    {
+        _LSErrorIfFail(message != NULL, NULL, MSGID_LS_MSG_ERR);
+        if (message->payload)
+        {
+            return message->payload;
+        }
+        message->payload = LSPayloadGetJson(LSMessageAccessPayload(message));
+        return message->payload;
+    }
+    /**
+     *******************************************************************************
+     * @brief Get the payload of this message.
+     *
+     * @param  message IN message
+     *
+     * @retval const char*, payload
+     *******************************************************************************
+     */
+    LSPayload*
+    LSMessageAccessPayload(LSMessage *message)
+    {
+        _LSErrorIfFail(message != NULL, NULL, MSGID_LS_MSG_ERR);
+        return &message->ls_payload;
+    }
+Deleted User 01/25/2023 6:54 AM
+i only have webos 3 and 4 to test on
+01/25/2023 6:53 AM
+https://github.com/Simon34545/lginputhook/issues/4
+No Buttons appearing in logs and remap not working · Issue #4 · Sim...
+I&#39;ve just rooted my TV and installed this tool, but for some reason
+it is not working. Model: 55UN71003LB WebOS: 5.4.1-903 I&#39;m using an
+IR remote that is similar to the one from the...
+01/25/2023 6:53 AM
+@infowski shit!! i forgot about you saying something about micomservice
+not being supported
+Deleted User 01/25/2023 6:21 AM
+its referenced in /usr/lib/qt5/qml/CoverUI/StartUpUI.qml
+01/25/2023 6:19 AM
+/usr/lib/qt5/qml/CoverUI/images/cover.png
+01/25/2023 6:19 AM
+whats this?
+[cover.png]
+ cover.png
+69.65 KB External
+hellobox. 01/25/2023 6:16 AM
+https://github.com/throwaway96/es3gears
+Deleted User 01/25/2023 6:05 AM
+im guessing that message is generated in mojoloader or something
+hellobox. 01/25/2023 6:00 AM
+i added the latter to the remote ui
+01/25/2023 6:00 AM
+see also
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Logical_OR_assignment
+and
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_assignment
+01/25/2023 5:59 AM
+like if you have if (func1() && func2()), if func1 returns false/zero,
+func2 won't get called
+01/25/2023 5:59 AM
+you have to be aware of short-circuit evaluation for if statements
+though
+01/25/2023 5:58 AM
+it's not really used like that though
+01/25/2023 5:58 AM
+you see it a little bit in C
+01/25/2023 5:58 AM
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Logical_AND#short-circuit_evaluation
+01/25/2023 5:57 AM
+you can do it with || too
+01/25/2023 5:56 AM
+because if file.source is false (falsy), the whole expression will be
+false, so the next part won't be evaluated
+01/25/2023 5:56 AM
+it takes advantage of short-circuit evaluation
+01/25/2023 5:56 AM
+if file.source is true (well, truthy), it'll run the include thing
+Deleted User 01/25/2023 5:56 AM
+oh it determines whether to call that function
+[image.png]
+ image.png
+11.77 KB External
+01/25/2023 5:55 AM
+im not even sure what that is supposed to do
+01/25/2023 5:55 AM
+on one single line
+01/25/2023 5:54 AM
+file.source && webos.include(file.source);
+hellobox. 01/25/2023 5:54 AM
+            if [ "$debug" = on -a ! -f "/var/luna/preferences/debug_system_services" ] ; then
+                echo "-d disabled for system services"
+                debug=off
+                exit 2
+            fi
+Deleted User Click to see attachment
+Deleted User 01/25/2023 5:54 AM
+i didnt even know you could do stuff like this
+Deleted User 01/25/2023 5:51 AM
+        // Deprecated: we need to change context of current process. After pushing
+        // service roles, the instance will appear from the hub as non-privileged
+        // service with own specific role and permissions.
+        //
+        // After all services have been migrated to ACG, the whole statement can be
+        // removed.
+hellobox. what triggers this? `Deprecated security model is used. Please
+update configuration for ACG security...
+Deleted User 01/25/2023 5:51 AM
+i havent found what exactly logs that, but theres this
+hellobox. 01/25/2023 5:49 AM
+http://www.banneret.nl/webos/documentation/all/dev-guide/js-services/creating-hello-world-service.html
+Deleted User 01/25/2023 5:48 AM
+(no content)
+ bootstrap.js
+3.98 KB External
+ bootstrap-node.js
+3.41 KB External
+ palm_bus_config.json
+73 Bytes External
+ sources.json
+540 Bytes External
+01/25/2023 5:48 AM
+(no content)
+[image.png]
+ image.png
+11.91 KB External
+hellobox. 01/25/2023 5:47 AM
+lol wtf is this?
+https://download.csdn.net/download/weixin_42166261/20700209
+01/25/2023 5:47 AM
+https://github.com/webosose/mojoservicelauncher/blob/master/run-js-service.in
+01/25/2023 5:47 AM
+where did this script come from?
+    if [ $SERVICE_NAME_LENGTH -gt 13 ] ; then
+            if [ x`uname` != xDarwin ] ; then
+                    SERVICE_NAME_INDEX=$(expr $SERVICE_NAME_LENGTH - 12)
+                    SERVICE_NAME=$(expr substr $SERVICE_NAME $SERVICE_NAME_INDEX 13)
+            fi
+    fi
+Deleted User 01/25/2023 5:46 AM
+as that message appears after
+/usr/bin/node /usr/palm/services/jsservicelauncher/bootstrap-node.js -- /tmp/run-js-service-no-cgroup /var/palm/ls2-dev /media/developer/apps/usr/palm/services/org.webosbrew.inputhook.service
+01/25/2023 5:46 AM
+probably that node script
+01/25/2023 5:46 AM
+im not sure
+hellobox. 01/25/2023 5:46 AM
+what triggers this?
+Deprecated security model is used. Please update configuration for ACG security model.
+Deleted User 01/25/2023 5:45 AM
+    SERVICE_PATH is /media/developer/apps/usr/palm/services/org.webosbrew.inputhook.service
+    root: [run-js-service] FULL_SERVICE_NAME  org.webosbrew.inputhook.service
+    /usr/bin/node /usr/palm/services/jsservicelauncher/bootstrap-node.js -- /tmp/run-js-service-no-cgroup /var/palm/ls2-dev /media/developer/apps/usr/palm/services/org.webosbrew.inputhook.service
+    Deprecated security model is used. Please update configuration for ACG security model.
+    /usr/lib/node_modules/webos-service/lib/service.js:52
+                    this.privateHandle = new palmbus.Handle(busId, false);
+                                         ^
+    Error: Attempted to register for a service name that already exists: org.webosbrew.inputhook.service
+hellobox. i'm not sure how services are run
+Deleted User 01/25/2023 5:45 AM
+i turned on verbose mode
+Deleted User 01/25/2023 5:44 AM
+same
+hellobox. 01/25/2023 5:44 AM
+    root@LGwebOSTV[k7lp 6.3.2]:~# ls -l /var/palm/node
+    ls: /var/palm/node: No such file or directory
+Deleted User 01/25/2023 5:42 AM
+(no content)
+ run-js-service.sh
+10.3 KB External
+01/25/2023 5:41 AM
+    #! /bin/sh
+    # :^)
+    eval "$(cat /usr/bin/run-js-service | sed 's/^thirdparty_jail=.*/thirdparty_jail=off/')"
+hellobox. 01/25/2023 5:40 AM
+there are "unified" services on some versions
+Deleted User 01/25/2023 5:40 AM
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service -n /media/developer/apps/usr/palm/services/org.webosbrew.inputhook.service
+hellobox. 01/25/2023 5:40 AM
+among other things
+01/25/2023 5:40 AM
+and it depends on the webos version i think
+01/25/2023 5:40 AM
+i'm not sure how services are run
+dmag6283 01/25/2023 5:40 AM
+bound to be another like me haha
+Deleted User 01/25/2023 5:39 AM
+i tried pkilling node but it didnt seem to work
+01/25/2023 5:39 AM
+how can i kill a nodejs service?
+hellobox. 01/25/2023 5:39 AM
+until dev manager is replaced...
+01/25/2023 5:39 AM
+i guess i can add something though
+01/25/2023 5:39 AM
+it should probably be in the dev manager documentation
+01/25/2023 5:38 AM
+that's just about rooting
+dmag6283 01/25/2023 5:38 AM
+that link you gave me the getting started one
+hellobox. 01/25/2023 5:38 AM
+what tutorial?
+dmag6283 01/25/2023 5:37 AM
+probably worth adding at to there tutorial as it didnt say add another
+device to be fair lol
+01/25/2023 5:35 AM
+oh yes also have to change authentication method to password i think i
+tried inserting your advice into the wrong software
+Deleted User 01/25/2023 5:31 AM
+im not sure why it would do that (edited)
+01/25/2023 5:31 AM
+and it worked with my previous ipk
+01/25/2023 5:30 AM
+and it only is doing that on one tv
+01/25/2023 5:30 AM
+404
+[image.png]
+ image.png
+228.17 KB External
+hellobox. 01/25/2023 5:30 AM
+here, for example:
+https://discord.com/channels/407937994037919756/835489130967859251/1067592289305755708
+Deleted User 01/25/2023 5:30 AM
+but ive got this weird problem
+dmag6283 had to add another device but change the user to root not
+prisoner
+hellobox. 01/25/2023 5:30 AM
+yeah, i told you that
+Deleted User 01/25/2023 5:30 AM
+new ipk
+ org.webosbrew.inputhook_1.3.0_all.ipk
+2.75 MB External
+dmag6283 01/25/2023 5:22 AM
+had to add another device but change the user to root not prisoner
+01/25/2023 5:22 AM
+finally i got dev manager to ssh :))
+Deleted User ```php $fileContents = file_get_contents($configLocation);
+if ($fileContents...
+Deleted User 01/25/2023 4:59 AM
+even if it does throw an exception, it will get caught
+Deleted User this should create it on the first service startup ```js
+function ensureDirectoryExistence(filePath...
+Deleted User 01/25/2023 4:59 AM
+i put config.json instead of keybinds.json (edited)
+Deleted User 01/25/2023 4:58 AM
+i just realized two things
+Deleted User 01/25/2023 4:49 AM
+something tells me pressing the "Website" option on an app in
+dev-manager isnt supposed to do this
+[image.png]
+ image.png
+303.04 KB External
+hellobox. 01/25/2023 4:46 AM
+actually i think it stops if you launch it properly
+01/25/2023 4:45 AM
+it keeps running after you exit
+01/25/2023 4:45 AM
+there's a slight problem though
+01/25/2023 4:44 AM
+and it works
+01/25/2023 4:44 AM
+i made it request gles3
+Deleted User 01/25/2023 4:37 AM
+so if i change the readme, i have to change the yml, which means
+creating another pull request
+01/25/2023 4:36 AM
+as mine is supposed to be the README but with the build instructions
+removed
+01/25/2023 4:36 AM
+it would be cool if the yml files instead had a url to a DESCRIPTION.md
+or something
+hellobox. 01/25/2023 4:32 AM
+to build
+01/25/2023 4:32 AM
+but it depends on lg binaries
+01/25/2023 4:32 AM
+i'd like to release this
+01/25/2023 4:32 AM
+can i distribute lg's toolchain?
+01/25/2023 4:25 AM
+i was going to replace the main loop and draw function, but i've decided
+to work on luna stuff instead
+01/25/2023 4:25 AM
+forget it
+01/25/2023 4:23 AM
+the new one doesn't
+01/25/2023 4:22 AM
+the old eglut draws on the wl_surface::frame event
+01/25/2023 4:22 AM
+hmm
+01/25/2023 4:18 AM
+but webos uses a pretty old version of wayland
+01/25/2023 4:18 AM
+so wl_shell is deprecated
+hellobox. 01/25/2023 4:10 AM
+do we even need wl-shell? i guess the lg sample uses it
+01/25/2023 4:10 AM
+so xdg-shell seems to replace wl-shell (edited)
+01/25/2023 4:05 AM
+the only change in eglut.c though is removing openvg
+01/25/2023 4:04 AM
+the newer eglut has too much xdg-shell garbage
+01/25/2023 4:04 AM
+i updated to the newer es2gears.c
+hellobox. 01/25/2023 3:56 AM
+this isn't really helping though
+01/25/2023 3:56 AM
+i need to get a better understanding of wayland
+01/25/2023 3:56 AM
+ugh. i'm reading this. https://wayland.freedesktop.org/docs/html/
+hellobox. 01/25/2023 3:45 AM
+hmm, they're using that xdg shell stuff:
+https://github.com/xbmc/xbmc/blob/master/xbmc/windowing/wayland/ShellSurfaceXdgShell.cpp
+01/25/2023 3:42 AM
+i guess the "right" way to do it would be to wrap this shit in classes
+01/25/2023 3:41 AM
+since kodi is c++
+01/25/2023 3:39 AM
+and i got my es2gears working
+01/25/2023 3:39 AM
+and added the relevant stuff to eglut
+01/25/2023 3:39 AM
+so i looked at
+https://github.com/webosose/samples/blob/master/native-apps/external/com.sample.waylandegl/src/wayland_egl.c
+Deleted User 01/25/2023 3:32 AM
+oh okay
+hellobox. 01/25/2023 3:32 AM
+i'm not really set up for using remotes
+Deleted User 01/25/2023 3:31 AM
+create a keybind with the action launch, and check that it launches the
+specified app
+01/25/2023 3:31 AM
+@infowski @hellobox ~~mind confirming that this works properly?~~ i
+built a new ipk and posted it somewhere below (edited)
+ org.webosbrew.inputhook_1.3.0_all.ipk
+2.75 MB External
+hellobox. 01/25/2023 3:15 AM
+i guess i'll add the webos-shell stuff now
+01/25/2023 3:14 AM
+if i launch it "properly" it lasts longer
+01/25/2023 3:13 AM
+took a while
+01/25/2023 3:13 AM
+oh, it died
+01/25/2023 3:13 AM
+i didn't have to add any webos_shell shit
+01/25/2023 3:13 AM
+i got my es2gears to work without really modifying anything
+01/25/2023 3:07 AM
+also, they put _LG at the end
+01/25/2023 3:07 AM
+startfish? (edited)
+01/25/2023 3:07 AM
+EGL_startfish_surface_LG
+01/25/2023 3:07 AM
+EGL_EXTENSIONS = EGL_startfish_surface_LG EGL_WL_bind_wayland_display EGL_KHR_partial_update EGL_KHR_config_attribs EGL_KHR_image EGL_KHR_image_base EGL_KHR_fence_sync EGL_KHR_wait_sync EGL_KHR_gl_colorspace EGL_KHR_get_all_proc_addresses EGL_IMG_context_priority EGL_KHR_no_config_context EGL_EXT_image_dma_buf_import EGL_EXT_pixel_format_float EGL_ARM_pixmap_multisample_discard EGL_ARM_implicit_external_sync EGL_KHR_gl_texture_2D_image EGL_KHR_gl_renderbuffer_image EGL_KHR_create_context EGL_KHR_surfaceless_context EGL_KHR_gl_texture_cubemap_image EGL_EXT_image_gl_colorspace EGL_EXT_create_context_robustness
+Deleted User 01/25/2023 2:58 AM
+i pressed every single button on the ir remote (i think) and didnt find
+that one (edited)
+01/25/2023 2:58 AM
+huh.. somehow a button was pressed which i havent found yet
+[image.png]
+ image.png
+2.58 KB External
+[mariotaku]
+[] infowski It's a wrapper around electron IPC to run stuff in
+"background process" aka non-web nodejs world
+mariotaku 01/25/2023 2:54 AM
+BTW I'm saying goodbye to Electron. Just need a bit more polishing and I
+can release a new dev manager with rust main process 
+ 2
+Deleted User 01/25/2023 2:38 AM
+@infowski why cant i send keypresses or use the mouse with the vnc
+server?
+Deleted User 01/25/2023 2:23 AM
+in the meantime ill bookmark it
+01/25/2023 2:23 AM
+i feel like this should get pinned somewhere...
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1 i
+thought i lost it because it wasnt anywhere in my history, and had to
+search for it in discord
+Deleted User 01/25/2023 2:14 AM
+                $fileContents = file_get_contents($configLocation);
+                if ($fileContents === false) {
+                    throw new Exception('Failed to get file contents.');
+                }
+(edited)
+01/25/2023 2:14 AM
+i wasnt going to create the file at first until i realized the php
+script is going to throw an error if it doesnt exist
+01/25/2023 2:13 AM
+this should create it on the first service startup
+    function ensureDirectoryExistence(filePath) {
+      var dirname = path.dirname(filePath);
+      if (fs.existsSync(dirname)) {
+        return true;
+      }
+      ensureDirectoryExistence(dirname);
+      fs.mkdirSync(dirname);
+        return false;
+    }
+    if (!ensureDirectoryExistence('/home/root/.config/lginputhook/config.json')) {
+        fs.writeFileSync('/home/root/.config/lginputhook/config.json', '{}');
+    }
+01/25/2023 2:08 AM
+ok, the config file directory should be changed
+[yolofant]
+yolofant 01/25/2023 2:06 AM
+speaking of kodi
+01/25/2023 2:06 AM
+I wonder how difficult the hardware acceleration implementation is going
+to be
+Deleted User 01/25/2023 2:03 AM
+remote is currently in use with the other tv
+01/25/2023 2:03 AM
+any way to remotely send keypresses which would get picked up by the
+inputhook? (edited)
+[smx2460]
+smx2460 01/25/2023 2:00 AM
+opening it from the app bar works tho
+01/25/2023 2:00 AM
+hm
+hellobox. 01/25/2023 2:00 AM
+probably sends a relaunch
+[smx2460]
+smx2460 01/25/2023 2:00 AM
+it stays stuck on the loading screen
+hellobox. 01/25/2023 2:00 AM
+what button is esc mapped to? (edited)
+[smx2460]
+smx2460 01/25/2023 1:59 AM
+then re-issue luna-send
+01/25/2023 1:59 AM
+and if i switch app
+01/25/2023 1:59 AM
+yeah esc doesn't work
+hellobox. 01/25/2023 1:59 AM
+you might need to handle a close event
+Deleted User 01/25/2023 1:59 AM
+esc button?
+[smx2460]
+smx2460 01/25/2023 1:59 AM
+maybe it's because i'm on VNC
+[] smx2460 how do i close the app?
+hellobox. 01/25/2023 1:59 AM
+what do you mean?
+[] smx2460 how do i close the app?
+Deleted User 01/25/2023 1:59 AM
+exit button?
+Deleted User 01/25/2023 1:58 AM
+also forgot the 0 when reading this, so ive just realized this wont work
+[image.png]
+ image.png
+16.02 KB External
+[smx2460]
+smx2460 01/25/2023 1:58 AM
+normally
+01/25/2023 1:58 AM
+how do i close the app?
+01/25/2023 1:58 AM
+noob question
+01/25/2023 1:58 AM
+yes
+hellobox. 01/25/2023 1:58 AM
+so es2gears just shows up right away?
+[smx2460]
+Deleted User i have this on one of my apps ``` "noSplashOnLaunch": true,
+"spinnerOnLaunch": false, ```
+smx2460 01/25/2023 1:57 AM
+this.
+[smx2460]
+smx2460 01/25/2023 1:57 AM
+worked lol
+Deleted User 01/25/2023 1:57 AM
+forgot the 0
+01/25/2023 1:57 AM
+oops
+Deleted User the oldest node js version on webos is `10.12.0`, right?
+hellobox. 01/25/2023 1:57 AM
+i think v0.10.something
+Deleted User 01/25/2023 1:56 AM
+the oldest node js version on webos is 10.12.0, right?
+[smx2460]
+smx2460 01/25/2023 1:56 AM
+kk
+hellobox. 01/25/2023 1:56 AM
+try what @Deleted User just posted
+[smx2460]
+smx2460 01/25/2023 1:56 AM
+maybe it timed out for the registration
+hellobox. 01/25/2023 1:56 AM
+lol
+[smx2460]
+smx2460 01/25/2023 1:55 AM
+it did load after a long time
+01/25/2023 1:55 AM
+oh wait
+hellobox. 01/25/2023 1:55 AM
+i don't think you have an ssh key
+[smx2460]
+smx2460 01/25/2023 1:55 AM
+main is es2gears (edited)
+dmag6283 what did you put for the passphrase when setting up ssh key for
+the vs code ext it wont accept alpin...
+hellobox. 01/25/2023 1:55 AM
+you need the passphrase for your ssh key, not that
+[smx2460]
+smx2460 01/25/2023 1:55 AM
+again, quick&dirty
+01/25/2023 1:55 AM
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <unistd.h>
+    #include <limits.h>
+    static char preload_env[2048] = {0};
+    int main(int argc, char *argv[]){
+        char buf[2048] = {0};
+        readlink("/proc/self/exe", buf, sizeof(buf));
+        char *last = strrchr(buf, '/');
+        if(last){
+            *last = '\0';
+        }
+        snprintf(preload_env, sizeof(preload_env), "%s/preloaded.so", buf);
+        setenv("LD_PRELOAD", preload_env, 1);
+        strncat(buf, "/main", sizeof(buf) - strlen(buf));
+        printf("== LAUNCHING: %s, with %s\n", buf, preload_env);
+        fflush(stdout);
+        execv(buf, argv);
+        return EXIT_FAILURE;
+    }
+this is what the main entry point does, btw
+hellobox. in `appinfo.json`
+Deleted User 01/25/2023 1:55 AM
+i have this on one of my apps
+      "noSplashOnLaunch": true,
+      "spinnerOnLaunch": false,
+dmag6283 01/25/2023 1:55 AM
+what did you put for the passphrase when setting up ssh key for the vs
+code ext it wont accept alpine
+hellobox. 01/25/2023 1:54 AM
+in appinfo.json
+01/25/2023 1:54 AM
+i think there's a way to disable the splash screen?
+01/25/2023 1:54 AM
+and maybe need to process events
+[smx2460]
+smx2460 01/25/2023 1:54 AM
+possibly
+01/25/2023 1:54 AM
+(no content)
+[image.png]
+ image.png
+21.82 KB External
+hellobox. 01/25/2023 1:54 AM
+maybe because you need registerApp
+01/25/2023 1:54 AM
+hmm
+[smx2460]
+smx2460 01/25/2023 1:54 AM
+if i use the commented command, it hangs on the splash tho
+01/25/2023 1:53 AM
+yes
+hellobox. 01/25/2023 1:53 AM
+so you're running it jailed?
+[smx2460]
+smx2460 01/25/2023 1:53 AM
+lazy to migrate
+01/25/2023 1:53 AM
+VM older than WSL
+hellobox. 01/25/2023 1:53 AM
+why not wsl?
+[smx2460]
+smx2460 01/25/2023 1:53 AM
+running the following expect script
+01/25/2023 1:53 AM
+    set host [lindex $argv 0];
+    set app_id [lindex $argv 1];
+    set app_path [lindex $argv 2];
+    set bin_name [lindex $argv 3];
+    spawn ssh $host
+    send "pkill -9 -f $bin_name\n"
+    send "export XDG_RUNTIME_DIR=/tmp/xdg\n"
+    send "export SDL_WEBOS_DEBUG=1\n"
+    send "echo TRACK_ALL > /media/internal/tconfig.txt\n"
+    send "echo TRACK_TO_STDOUT >> /media/internal/tconfig.txt\n"
+    send "/usr/bin/jailer -t native_devmode -i $app_id -p $app_path $app_path/$bin_name '{\"@system_native_app\":true,\"nid\":\"$app_id\"}'\n"
+    #send "luna-send -n 1 -f luna://com.webos.service.applicationManager/launch '{\"id\":\"$app_id\", \"params\": {}}'\n"
+    interact
+01/25/2023 1:52 AM
+and then into @infowski 's set
+01/25/2023 1:52 AM
+cygwin is SSH'd into that
+01/25/2023 1:52 AM
+working with a Linux VM
+01/25/2023 1:52 AM
+i use Windows daily
+hellobox. 01/25/2023 1:52 AM
+why cygwin?
+[smx2460]
+smx2460 01/25/2023 1:51 AM
+(no content)
+[image.png]
+ image.png
+163.58 KB External
+Deleted User 01/25/2023 1:50 AM
+i think i can just use this directory
+[image.png]
+ image.png
+4.59 KB External
+hellobox. 01/25/2023 1:48 AM
+i have it somewhere
+[yolofant]
+yolofant 01/25/2023 1:48 AM
+https://cdn.discordapp.com/attachments/835489130967859251/1067189639837917275/es2gears
+01/25/2023 1:48 AM
+sec
+[smx2460]
+smx2460 01/25/2023 1:48 AM
+@Yolofant repost it if you have it handy please
+01/25/2023 1:48 AM
+the vanilla one (edited)
+01/25/2023 1:48 AM
+yeah
+[yolofant]
+yolofant 01/25/2023 1:48 AM
+you can use it with the very first es2gears binary

@@ -1,0 +1,1723 @@
+January 31, 2023
+[smx2460]
+smx2460 01/31/2023 9:56 PM
+this is a bit ugly in that...different WebOS versions have different
+wayland versions (edited)
+01/31/2023 9:56 PM
+1.11.0 *
+01/31/2023 9:56 PM
+1.10 you said?
+01/31/2023 9:55 PM
+this is likely not gonna work
+01/31/2023 9:55 PM
+    WAYLAND_VERSION = 1.21.0
+[ccarnell98]
+ccarnell98 01/31/2023 9:55 PM
+I haven'tr tried kodi today but what I have tried is to compile
+https://github.com/webosose/samples/tree/master/native-apps/external/com.sample.waylandegl
+samples/native-apps/external/com.sample.waylandegl at master · webo...
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+[smx2460]
+smx2460 01/31/2023 9:55 PM
+which version?
+[smx2460]
+[] yolofant `BR2_PACKAGE_WAYLAND`
+smx2460 01/31/2023 9:55 PM
+yes but the problem with that is
+[smx2460]
+smx2460 01/31/2023 9:55 PM
+rather than GBM
+01/31/2023 9:55 PM
+you would want this
+[yolofant]
+yolofant 01/31/2023 9:55 PM
+BR2_PACKAGE_WAYLAND
+[smx2460]
+smx2460 01/31/2023 9:55 PM
+    config BR2_PACKAGE_KODI_PLATFORM_SUPPORTS_WAYLAND
+        bool
+        default y
+        depends on BR2_PACKAGE_HAS_LIBGL || BR2_PACKAGE_HAS_LIBGLES
+        depends on BR2_PACKAGE_HAS_LIBEGL_WAYLAND # waylandpp
+        depends on BR2_HOST_GCC_AT_LEAST_4_9 # waylandpp
+        depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_9 # waylandpp
+        depends on BR2_INSTALL_LIBSTDCPP # waylandpp
+        depends on BR2_PACKAGE_WAYLAND # waylandpp
+        select BR2_PACKAGE_KODI_PLATFORM_SUPPORTS
+01/31/2023 9:55 PM
+yes
+hellobox. 01/31/2023 9:55 PM
+misleading error message
+[smx2460]
+smx2460 01/31/2023 9:54 PM
+if !GBM && !WAYLAND && !X11 -> GBM errors
+01/31/2023 9:54 PM
+so basically it's a trick
+[yolofant]
+yolofant 01/31/2023 9:54 PM
+ah
+[smx2460]
+smx2460 01/31/2023 9:54 PM
+you wouldn't see that
+01/31/2023 9:54 PM
+but if the requirements for BR2_PACKAGE_KODI_PLATFORM_SUPPORTS_WAYLAND
+were met
+01/31/2023 9:54 PM
+it checks the Config.in top down
+01/31/2023 9:54 PM
+because it doesn't have the requirements to fulfill gbm
+01/31/2023 9:53 PM
+i'm saying that it hits that
+01/31/2023 9:53 PM
+no
+[yolofant]
+yolofant 01/31/2023 9:53 PM
+you wanna build gbm?
+[smx2460]
+smx2460 01/31/2023 9:53 PM
+    config BR2_PACKAGE_KODI_PLATFORM_SUPPORTS_GBM
+        bool
+        default y
+        depends on BR2_PACKAGE_HAS_LIBGL || BR2_PACKAGE_HAS_LIBGLES
+        depends on BR2_PACKAGE_HAS_LIBGBM
+        depends on BR2_PACKAGE_LIBGBM_HAS_FEATURE_DMA_BUF
+        depends on BR2_PACKAGE_HAS_UDEV # libinput
+        select BR2_PACKAGE_KODI_PLATFORM_SUPPORTS
+    comment "kodi needs udev support for gbm"
+        depends on !BR2_PACKAGE_KODI_PLATFORM_SUPPORTS
+(edited)
+01/31/2023 9:53 PM
+basically
+hellobox. 01/31/2023 9:52 PM
+has it been done?
+01/31/2023 9:52 PM
+lol can we build an x server for webos?
+[smx2460]
+smx2460 01/31/2023 9:52 PM
+or BR2_PACKAGE_KODI_PLATFORM_SUPPORTS_X11
+01/31/2023 9:52 PM
+which is provided by either BR2_PACKAGE_KODI_PLATFORM_SUPPORTS_GBM or
+BR2_PACKAGE_KODI_PLATFORM_SUPPORTS_WAYLAND
+[yolofant]
+yolofant 01/31/2023 9:52 PM
+it needs BR2_PACKAGE_KODI_PLATFORM_SUPPORTS
+hellobox. 01/31/2023 9:52 PM
+so probably forget about wayland-protocols
+01/31/2023 9:51 PM
+@Craig even the stuff in wayland-protocols that looks like it might be
+used has different versions in
+https://github.com/webosose/webos-wayland-extensions/blob/master/protocol/
+(edited)
+[smx2460]
+smx2460 01/31/2023 9:51 PM
+BR2_PACKAGE_KODI_PLATFORM_SUPPORTS
+[yolofant]
+yolofant 01/31/2023 9:51 PM
+I don't understand the Config.in file completely
+01/31/2023 9:51 PM
+yeah that's where I'm stuck
+[smx2460]
+smx2460 01/31/2023 9:51 PM
+now need to debug this
+01/31/2023 9:51 PM
+    # kodi needs udev support for gbm
+    #
+    #
+    # kodi needs an OpenGL EGL backend with OpenGL or GLES support
+    #
+01/31/2023 9:51 PM
+yeah done
+[yolofant]
+yolofant 01/31/2023 9:51 PM
+change that to .py and .pyc
+[yolofant]
+[] smx2460 hm
+yolofant 01/31/2023 9:50 PM
+python3 module format to install
+hellobox. 01/31/2023 9:50 PM
+and we have the xml shit?
+01/31/2023 9:50 PM
+doesn't waylandpp have a scanner?
+[smx2460]
+smx2460 01/31/2023 9:49 PM
+hm
+[yolofant]
+yolofant 01/31/2023 9:49 PM
+just enable python3 .py and .pyc (edited)
+01/31/2023 9:49 PM
+that one is an easy fix
+[smx2460]
+smx2460 01/31/2023 9:48 PM
+pff
+01/31/2023 9:48 PM
+    # kodi needs python3 w/ .py modules, a uClibc or glibc toolchain w/ C++, threads, wchar, dynamic library, gcc >= 4.9
+01/31/2023 9:48 PM
+01/31/2023 9:48 PM
+doesn't use webos.
+hellobox. 01/31/2023 9:48 PM
+doesn't use webos for playing video
+ 1
+[smx2460]
+smx2460 01/31/2023 9:47 PM
+~~thinks kodi is overrated~~
+hellobox. 01/31/2023 9:47 PM
+regardless, i don't think wayland-protocols is important here
+01/31/2023 9:47 PM
+maybe input-method
+01/31/2023 9:47 PM
+linux-dmabuf might be
+01/31/2023 9:47 PM
+of those, i don't think any of the stable or staging ones are used
+01/31/2023 9:46 PM
+contents of wayland-protocols:
+    stable/presentation-time
+    stable/viewporter
+    stable/xdg-shell
+    staging/content-type
+    staging/drm-lease
+    staging/ext-idle-notify
+    staging/ext-session-lock
+    staging/fractional-scale
+    staging/single-pixel-buffer
+    staging/tearing-control
+    staging/xdg-activation
+    staging/xwayland-shell
+    unstable/fullscreen-shell
+    unstable/idle-inhibit
+    unstable/input-method
+    unstable/input-timestamps
+    unstable/keyboard-shortcuts-inhibit
+    unstable/linux-dmabuf
+    unstable/linux-explicit-synchronization
+    unstable/pointer-constraints
+    unstable/pointer-gestures
+    unstable/primary-selection
+    unstable/relative-pointer
+    unstable/tablet
+    unstable/text-input
+    unstable/xdg-decoration
+    unstable/xdg-foreign
+    unstable/xdg-output
+    unstable/xdg-shell
+    unstable/xwayland-keyboard-grab
+[yolofant]
+yolofant 01/31/2023 9:46 PM
+if you build it manually
+01/31/2023 9:46 PM
+too many dependencies
+[smx2460]
+smx2460 01/31/2023 9:46 PM
+it shouldn't be
+[ccarnell98]
+ccarnell98 01/31/2023 9:46 PM
+Well i've got kodi building fine, it's just the black screen issue atm
+[yolofant]
+yolofant 01/31/2023 9:46 PM
+so I'd rather use the recipe from br directly even though that one is
+still stuck at 19.4
+[smx2460]
+[] yolofant I tried to build kodi master using br-nc4 but it's a
+nightmare
+smx2460 01/31/2023 9:46 PM
+why
+[yolofant]
+yolofant 01/31/2023 9:46 PM
+I tried to build kodi master using br-nc4 but it's a nightmare
+[ccarnell98]
+ccarnell98 01/31/2023 9:45 PM
+[yolofant]
+yolofant 01/31/2023 9:45 PM
+true
+[smx2460]
+smx2460 01/31/2023 9:45 PM
+so is kodi
+01/31/2023 9:45 PM
+either way, if he's starting it wrong,
+[yolofant]
+yolofant 01/31/2023 9:45 PM
+I guess you were just starting it wrong?
+01/31/2023 9:45 PM
+yeah but it does work 
+[smx2460]
+smx2460 01/31/2023 9:44 PM
+if that doesn't work, Kodi will never work
+hellobox. 01/31/2023 9:44 PM
+looks like a bunch of stuff that's not used by webos
+[smx2460]
+[] ccarnell98 I did, but I didn't get it to work.. i'll have to dig out
+the issue
+smx2460 01/31/2023 9:44 PM
+we need to see what's wrong
+[] ccarnell98 <@803885040827629628> is there such a thing as opkg info
+wayland-protocols ?
+hellobox. 01/31/2023 9:44 PM
+what's even in wayland-protocols?
+[smx2460]
+[] yolofant <@310158180728700929> he has the same tv as mine so no
+reason it should't work
+smx2460 01/31/2023 9:44 PM
+lol
+[ccarnell98]
+[] smx2460 <@1051573528522133655> did you try es2gears?
+ccarnell98 01/31/2023 9:44 PM
+I did, but I didn't get it to work.. i'll have to dig out the issue
+[] ccarnell98 <@803885040827629628> is there such a thing as opkg info
+wayland-protocols ?
+hellobox. 01/31/2023 9:43 PM
+no
+[yolofant]
+yolofant 01/31/2023 9:43 PM
+@Smx he has the same tv as mine so no reason it should't work
+[ccarnell98]
+ccarnell98 01/31/2023 9:43 PM
+@hellobox is there such a thing as opkg info wayland-protocols ?
+[smx2460]
+smx2460 01/31/2023 9:42 PM
+@Craig did you try es2gears? (edited)
+hellobox. 01/31/2023 9:42 PM
+was there a separate toolchain for webos 2?
+01/31/2023 9:41 PM
+and i don't think i've ever seen a 4.5 toolchain for example
+01/31/2023 9:41 PM
+i haven't confirmed that it's the case for 3.0/3.5 and 4.0/4.5, but
+based on the naming i assume it is
+[ccarnell98]
+ccarnell98 01/31/2023 9:41 PM
+I was trying to get wayland-info to work so I can see the protocols
+implemented so I can work out that version
+hellobox. 01/31/2023 9:41 PM
+so 5/6 use the same toolchain, and 8 will use the same as 7
+[ccarnell98]
+ccarnell98 01/31/2023 9:41 PM
+sysroots/x8664-starfishsdk-linux/usr/include/wayland-client-protocol.h:/
+Generated by wayland-scanner 1.18.0 *
+hellobox. 01/31/2023 9:41 PM
+my hypothesis is that lg updates the toolchain every two years
+01/31/2023 9:40 PM
+although the toolchain is the same
+01/31/2023 9:40 PM
+interesting that they're using a lot of jcl packages on kcl
+[smx2460]
+[] yolofant `../wayland-1.11.0/src/wayland-server.c` from
+libwayland-server.so
+smx2460 01/31/2023 9:40 PM
+we didn't have that
+[ccarnell98]
+ccarnell98 01/31/2023 9:40 PM
+connman, gstreamer, maliit- #define WAYLAND_VERSION "1.11.0"
+[yolofant]
+yolofant 01/31/2023 9:40 PM
+../wayland-1.11.0/src/wayland-server.c from libwayland-server.so
+hellobox. 01/31/2023 9:39 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# opkg info wayland
+    Package: wayland
+    Version: 1.11.0-r0pro6
+    Depends: libc6 (>= 2.28), libffi6 (>= 3.2.1), libgcc1 (>= 8.2.0), libpmloglib3 (>= 3.3.0-74.jcl4tv.13)
+    Status: install user installed
+    Architecture: k7lp
+    Installed-Size: 99284
+    Installed-Time: 1670991957
+01/31/2023 9:39 PM
+(webos 6.3.2) (edited)
+01/31/2023 9:39 PM
+wayland - 1.11.0-r0pro6
+[smx2460]
+smx2460 01/31/2023 9:37 PM
+diffing them with the LG SO
+01/31/2023 9:37 PM
+and i actually went and compiled a bunch of wayland servers
+01/31/2023 9:36 PM
+based on date of release
+01/31/2023 9:36 PM
+for lg1154 we had to guess
+01/31/2023 9:36 PM
+unless you prove me wrong and there is some version field in the
+compiled .so
+01/31/2023 9:36 PM
+you cannot know about the exact wayland version easily, afaik
+[yolofant]
+[] smx2460 for the EGL part
+yolofant 01/31/2023 9:34 PM
+what about wayland-egl?
+[ccarnell98]
+ccarnell98 01/31/2023 9:33 PM
+having one of those days 
+01/31/2023 9:33 PM
+nothing I've tried works today
+[yolofant]
+[] ccarnell98 I'm looking. I can see that the webos wayland headers were
+generated by wayland 1.18 but thats about...
+yolofant 01/31/2023 9:33 PM
+ok might have mixed those up
+[yolofant]
+yolofant 01/31/2023 9:32 PM
+hmm
+[smx2460]
+smx2460 01/31/2023 9:32 PM
+for the EGL part
+01/31/2023 9:32 PM
+then it's good, @Yolofant
+[ccarnell98]
+[] yolofant ah it's actually 1.11.0
+ccarnell98 01/31/2023 9:32 PM
+I'm looking. I can see that the webos wayland headers were generated by
+wayland 1.18 but thats about it 
+[yolofant]
+yolofant 01/31/2023 9:32 PM
+rpi userland is enabled
+[yolofant]
+[] smx2460 enable RPI EGL
+yolofant 01/31/2023 9:23 PM
+do you know the category it is in?
+[smx2460]
+[] yolofant <@310158180728700929> any idea on how to add the EGL
+libraries in buildroot?
+smx2460 01/31/2023 9:17 PM
+enable RPI EGL
+[ccarnell98]
+ccarnell98 01/31/2023 9:17 PM
+is that wayland or wayland-protocol?
+[yolofant]
+yolofant 01/31/2023 9:16 PM
+wrong number in my head 
+01/31/2023 9:15 PM
+ah it's actually 1.11.0
+hellobox. 01/31/2023 9:14 PM
+but i also deduplicated most of the archives. lg likes to release the
+same exact files multiple times
+01/31/2023 9:14 PM
+because i extracted some of the important stuff
+01/31/2023 9:13 PM
+although some of that is redundant
+01/31/2023 9:13 PM
+i have 229gb of lg opensource packages
+[yolofant]
+yolofant 01/31/2023 9:04 PM
+maliit might be outdated but it has the most complete headers regarding
+wayland
+01/31/2023 9:03 PM
+check gstreamer, connman and maliit packages
+[ccarnell98]
+ccarnell98 01/31/2023 9:03 PM
+@Yolofant I've looked all over in
+https://opensource.lge.com/product/list?page=&ctgr=005&subCtgr=006&keyword=OLED65C24LA,
+is it in the starfish toolchain?
+[yolofant]
+yolofant 01/31/2023 8:59 PM
+unless they messed up the documentation
+01/31/2023 8:57 PM
+function is not marked since: xyz
+01/31/2023 8:57 PM
+https://wayland.freedesktop.org/docs/html/apb.html#Client-classwl__proxy_1a086e3515aa4c9db893a3418987703473
+01/31/2023 8:54 PM
+but then still wl_proxy_marshal_flags should be around in wayland like
+forever
+[ccarnell98]
+[] yolofant the buildroot is based on 2022.11 and that one has
+wayland-protocols 1.27
+ccarnell98 01/31/2023 8:53 PM
+Ah thanks
+[yolofant]
+yolofant 01/31/2023 8:50 PM
+the buildroot is based on 2022.11 and that one has wayland-protocols
+1.27
+01/31/2023 8:50 PM
+also wayland-protocols is not outdated
+01/31/2023 8:48 PM
+yeah
+[ccarnell98]
+ccarnell98 01/31/2023 8:48 PM
+what source? the lg open source websit for the TV?
+[yolofant]
+yolofant 01/31/2023 8:47 PM
+headers
+[ccarnell98]
+ccarnell98 01/31/2023 8:46 PM
+Thanks, how did you determine the version number?
+[yolofant]
+yolofant 01/31/2023 8:46 PM
+webos 7 has 1.18
+[ccarnell98]
+ccarnell98 01/31/2023 8:45 PM
+(error was on the TV)
+01/31/2023 8:44 PM
+webos open source edition using 1.20
+01/31/2023 8:44 PM
+how do you determine the version? I compiled wayland-info using
+buildroot-nc4, but I got an error about wayland-info: undefined symbol:
+wl_proxy_marshal_flags
+hellobox. 01/31/2023 8:43 PM
+i doubt webos 7 has anything much newer
+01/31/2023 8:43 PM
+regardless, the wayland version on webos 6 is like 1.11
+01/31/2023 8:42 PM
+oh, you're saying br-nc4 is using old buildroot?
+[] ccarnell98 <@310158180728700929> buildroot-nc4 contains outdated
+wayland-protocol, the one in buildroot is 1.31...
+hellobox. 01/31/2023 8:42 PM
+more likely it's way too new
+[ccarnell98]
+ccarnell98 01/31/2023 8:37 PM
+@Smx buildroot-nc4 contains outdated wayland-protocol, the one in
+buildroot is 1.31.
+https://github.com/buildroot/buildroot/blob/master/package/wayland-protocols/wayland-protocols.mk
+buildroot/wayland-protocols.mk at master · buildroot/buildroot
+Buildroot, making embedded Linux easy. Note that this is not the
+official repository, but only a mirror. The official Git repository is
+at http://git.buildroot.net/buildroot/. Do not open issues or...
+[]
+[finipiniricardocosta]
+finipiniricardocosta 01/31/2023 8:37 PM
+For sure someone with home assistant and the knowledge to explain my
+setup will know why this happens..... i just follow well rated
+tutorials, but sometimes don,t know what i am doing  (edited)
+01/31/2023 8:34 PM
+the two errors, when i use http and https with my internal ip.
+01/31/2023 8:33 PM
+this
+[Screenshot_35.png]
+ Screenshot_35.png
+48.3 KB External
+Deleted User 01/31/2023 8:22 PM
+ok
+[finipiniricardocosta]
+Deleted User can you show what happens when you connect to the tv
+through ssh and use the curl command?
+finipiniricardocosta 01/31/2023 8:20 PM
+Ok, i,ll show you.
+[finipiniricardocosta]
+Deleted User can you try connecting to it with your browser or
+something?
+finipiniricardocosta 01/31/2023 8:19 PM
+To home assistant? In my home network i have to use https either.
+Deleted User 01/31/2023 7:31 PM
+can you show what happens when you connect to the tv through ssh and use
+the curl command?
+01/31/2023 7:31 PM
+i dont see why it wouldnt work unless home assistant itself wasnt
+working right
+[] finipiniricardocosta I tryed with http and https ( even inside my
+network i connect to home assistant with https://192.16...
+Deleted User 01/31/2023 7:19 PM
+can you try connecting to it with your browser or something?
+[] infowski Hmmmm... are you sure it's actually using CEC and not IR
+emulation? 
+derpyherpy 01/31/2023 6:08 PM
+Yeah it's using CEC. I can manually send the command by pressing ... on
+the remote and then clicking Home on the simplink menu. I did check to
+make sure it wasn't using irdbmanager. I don't see any relevant calls
+when I run ls-monitor -l and then do the ... menu.
+[infowski]
+derpyherpy Should have mentioned I tried ls-monitor and didn’t find
+anything relevant. Usually I easily find w...
+infowski 01/31/2023 5:24 PM
+Hmmmm... are you sure it's actually using CEC and not IR emulation? 
+[yolofant]
+yolofant 01/31/2023 5:14 PM
+https://github.com/openlgtv/buildroot-nc4/blob/master/package/kodi/Config.in#L37
+probably libegl-wayland missing?
+[yolofant]
+yolofant 01/31/2023 4:59 PM
+https://github.com/openlgtv/buildroot-nc4/blob/master/package/kodi/Config.in#L18
+01/31/2023 4:54 PM
+@Smx any idea on how to add the EGL libraries in buildroot?
+[WindowsTerminal_PtHf28OJgV.png]
+ WindowsTerminal_PtHf28OJgV.png
+5.69 KB External
+[finipiniricardocosta]
+finipiniricardocosta 01/31/2023 1:56 PM
+I tryed with http and https ( even inside my network i connect to home
+assistant with https://192.168.1.64:8123 ) and i doesnt work.
+[finipiniricardocosta]
+Deleted User either way, try it with http
+finipiniricardocosta 01/31/2023 1:55 PM
+Ok i tested it , it only works with my home assistant external url.
+jvodan. 01/31/2023 1:20 PM
+I'm running 03.34.55. Keeping being rejected for trying to telnet into
+tv. Any advice
+[pinheadi]
+pinheadi 01/31/2023 1:00 PM
+Can I edit an .ipk before installing it, or I must install it and than
+edit it?
+[] infowski Check `ls-monitor` when issuing CEC command using the
+remote - it definitely is available on your sy...
+derpyherpy 01/31/2023 12:52 PM
+Should have mentioned I tried ls-monitor and didn’t find anything
+relevant. Usually I easily find what’s happening, but some other process
+must be handling it. I could make a macro to use the “…” menu as a last
+resort
+[mariotaku]
+mariotaku 01/31/2023 8:56 AM
+Oh. I think I misunderstood. Sending the key TO the device so it can
+open its home screen.
+[infowski]
+derpyherpy Anyone know if luna-send can send hdmi-cec commands?
+com.webos.service.cec doesn't seem to be avail...
+infowski 01/31/2023 8:54 AM
+Check ls-monitor when issuing CEC command using the remote - it
+definitely is available on your system, but may have different name/API
+[mariotaku]
+derpyherpy Anyone know if luna-send can send hdmi-cec commands?
+com.webos.service.cec doesn't seem to be avail...
+mariotaku 01/31/2023 8:53 AM
+If you already have root, you can maybe replace the home app to open
+certain HDMI input.
+derpyherpy 01/31/2023 5:16 AM
+Anyone know if luna-send can send hdmi-cec commands?
+com.webos.service.cec doesn't seem to be available. I'm just looking for
+a way to send the Home command to a FireTV or Shield.
+[] finipiniricardocosta Yes, makes sense , my internal url is either
+https because i have enable ssl_certificate and so on H...
+Deleted User 01/31/2023 12:47 AM
+either way, try it with http
+ 1
+[finipiniricardocosta]
+Deleted User otherwise it gives an ssl error
+finipiniricardocosta 01/31/2023 12:45 AM
+Yes, makes sense , my internal url is either https because i have enable
+ssl_certificate and so on HA. At least i think is because of that, dont
+now much about it. But its fine for me. Will give feedback when i test
+it on the TV. (edited)
+Deleted User 01/31/2023 12:42 AM
+at this point would it be easier to just factory reset? and start over
+[infowski]
+infowski 01/31/2023 12:42 AM
+You'll need to do a factory reset, if you've removed homebrew
+channel/root.telnet app at this point.
+01/31/2023 12:42 AM
+because you've created /var/luna/preferences/devmode_enabled directory,
+and they really don't like that.
+01/31/2023 12:41 AM
+I am guessing devmode startup script doesn't work anymore
+hellobox. 01/31/2023 12:41 AM
+this is why i don't use dev manager
+01/31/2023 12:41 AM
+idk
+cib89 01/31/2023 12:41 AM
+to password
+hellobox. 01/31/2023 12:40 AM
+did you change the auth type to password or whatever?
+cib89 01/31/2023 12:40 AM
+I mean, I used root/alpine on port 22
+01/31/2023 12:39 AM
+no
+hellobox. 01/31/2023 12:39 AM
+root/alpine on port 22
+cib89 strangely I also cant use dev manager afterwards to connect to
+ssh, although putty works fine
+hellobox. 01/31/2023 12:39 AM
+did you change the configuration?
+cib89 01/31/2023 12:39 AM
+strangely I also cant use dev manager afterwards to connect to ssh,
+although putty works fine
+01/31/2023 12:38 AM
+Used it today for the first time; had no access to files earlier and
+also terminal was not working. I was able to install homebrew channel
+and then custom repo for root.telnet and used that to conitnue rooting
+Deleted User otherwise it gives an ssl error
+Deleted User 01/31/2023 12:37 AM
+(no content)
+[image.png]
+ image.png
+70.97 KB External
+hellobox. 01/31/2023 12:37 AM
+you may have had an old config if you used dev mode before a couple days
+ago
+cib89 01/31/2023 12:36 AM
+I did not delete it beforehand and it worked anyway
+hellobox. 01/31/2023 12:36 AM
+if you logged into dev mode, it would have downloaded the jail config
+again
+Deleted User 01/31/2023 12:36 AM
+(i think, im only testing with a test nodejs web server)
+hellobox. 01/31/2023 12:36 AM
+i don't know what you've done then
+Deleted User 01/31/2023 12:35 AM
+otherwise it gives an ssl error
+cib89 01/31/2023 12:35 AM
+I forgot about root.telnet.. too late
+Deleted User 01/31/2023 12:35 AM
+but for the internal url, you have to change https to http
+[] finipiniricardocosta Just a sec
+Deleted User 01/31/2023 12:35 AM
+that command is correct
+cib89 01/31/2023 12:35 AM
+because I am no longer rooted, I had no access to ssh anymore and telnet
+was not working either.. so I renabled dev mode to restart the process
+hellobox. 01/31/2023 12:34 AM
+why?
+01/31/2023 12:33 AM
+you're rooting again?
+01/31/2023 12:33 AM
+oh, no
+cib89 01/31/2023 12:33 AM
+so i can ingore those steps for the jails?
+01/31/2023 12:33 AM
+okay
+hellobox. 01/31/2023 12:33 AM
+the old version is full of bugs, and the new version is under
+development
+01/31/2023 12:33 AM
+don't worry about dev manager
+hellobox. copy it again
+cib89 01/31/2023 12:32 AM
+I am currently reinstalling everything, but I realize that I also have a
+problem with dev manager; under "files" it just displays "command exited
+with non-zero return code 123"
+Deleted User 01/31/2023 12:29 AM
+let me test something
+01/31/2023 12:29 AM
+i dont see why the internal url wouldnt work
+01/31/2023 12:28 AM
+hmm
+[finipiniricardocosta]
+finipiniricardocosta 01/31/2023 12:28 AM
+    curl -X POST -H "Authorization: Bearer fQ.EwG68lGPI9g9_JaP7h8ZfEyqpq3g6kUFMxavm-3bl7E" -H "Content-Type: application/json" -d "{\"entity_id\": \"light.luz_2_sala\"}" https://myexternalurl/api/services/light/toggle
+[finipiniricardocosta]
+Deleted User can you give me the exact command youre using now?
+finipiniricardocosta 01/31/2023 12:27 AM
+Just a sec
+[finipiniricardocosta]
+Deleted User you can execute a command through ssh/telnet on the tv, it
+should work with the home assistant
+finipiniricardocosta 01/31/2023 12:26 AM
+Ok, but cant try now, only tomorrow.
+[finipiniricardocosta]
+finipiniricardocosta 01/31/2023 12:25 AM
+Oh. Internal is by internal IP , external is in my case with cloudflare
+tunnel, ir could be with duckdns.
+Deleted User 01/31/2023 12:25 AM
+can you give me the exact command youre using now?
+01/31/2023 12:25 AM
+you can execute a command through ssh/telnet on the tv, it should work
+with the home assistant
+01/31/2023 12:24 AM
+im not so familiar with home assistant
+01/31/2023 12:24 AM
+whats the difference between external and internal url? (edited)
+[finipiniricardocosta]
+Deleted User wdym external url?
+finipiniricardocosta 01/31/2023 12:24 AM
+My home assistant external url
+hellobox. 01/31/2023 12:23 AM
+this might fix the fd leak:
+https://github.com/webosbrew/webos-homebrew-channel/compare/uninstall-feature...throwaway96:webos-homebrew-channel:fd-leak-hack
+Deleted User 01/31/2023 12:23 AM
+wdym external url?
+[finipiniricardocosta]
+finipiniricardocosta 01/31/2023 12:23 AM
+Can,t try now on the webos, Will try tomorrow.
+[finipiniricardocosta]
+Deleted User does that command work over ssh?
+finipiniricardocosta 01/31/2023 12:23 AM
+I manage to get the comand work over ssh , but only with my external
+url, and never with internal even over https. Is this normal ?
+hellobox. 01/31/2023 12:08 AM
+copy it again
+cib89 01/31/2023 12:08 AM
+I might have :S
+hellobox. 01/31/2023 12:06 AM
+did you delete startup.sh?
+cib89 01/31/2023 12:05 AM
+uh.. now I get this error on startup.. what happened now? 
+[PXL_20230130_230235951.jpg]
+ PXL_20230130_230235951.jpg
+2.22 MB External
+January 30, 2023
+hellobox. 01/30/2023 11:58 PM
+too bad we're not using bash https://unix.stackexchange.com/a/663982
+[infowski]
+infowski 01/30/2023 11:55 PM
+I guess this one is not that critical
+hellobox. 01/30/2023 11:55 PM
+maybe startup.sh should run stuff with 200>&-
+[infowski]
+infowski 01/30/2023 11:55 PM
+xD
+01/30/2023 11:55 PM
+hmmmm, wat
+hellobox. 01/30/2023 11:54 PM
+lol
+    root@LGwebOSTV[k7lp 6.3.2]:~# ls -l /proc/$/fd
+    total 0
+    lrwx------    1 root     root            64 Jan 30 17:54 0 -> /dev/pts/2
+    lrwx------    1 root     root            64 Jan 30 17:54 1 -> /dev/pts/2
+    lrwx------    1 root     root            64 Jan 30 17:54 10 -> /dev/tty
+    lrwx------    1 root     root            64 Jan 30 17:54 11 -> socket:[44513]
+    lrwx------    1 root     root            64 Jan 30 17:54 14 -> socket:[44521]
+    lrwx------    1 root     root            64 Jan 30 17:54 2 -> /dev/pts/2
+    l-wx------    1 root     root            64 Jan 30 17:54 200 -> /tmp/webosbrew_startup.lock (deleted)
+    lrwx------    1 root     root            64 Jan 30 17:54 9 -> /dev/shm/pmloglib.lock
+[] infowski <@542758746187890691> thanks for help with debugging - I'll
+test this out and try fixing it this wee...
+cib89 01/30/2023 11:53 PM
+my pleasure, thanks for working on this guys 
+hellobox. 01/30/2023 11:52 PM
+that's org.webosbrew.hbchannel.service
+01/30/2023 11:51 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# ls -l /proc/10074/fd
+    total 0
+    lr-x------    1 root     root            64 Jan 30 17:50 0 -> /dev/null
+    l-wx------    1 root     root            64 Jan 30 17:50 1 -> /dev/null
+    lrwx------    1 root     root            64 Jan 30 17:50 10 -> anon_inode:[eventfd]
+    lrwx------    1 root     root            64 Jan 30 17:50 11 -> socket:[15764605]
+    lrwx------    1 root     root            64 Jan 30 17:50 12 -> socket:[15764606]
+    lrwx------    1 root     root            64 Jan 30 17:50 14 -> socket:[15763389]
+    l-wx------    1 root     root            64 Jan 30 17:50 2 -> /dev/null
+    lrwx------    1 root     root            64 Jan 30 17:50 3 -> anon_inode:[eventpoll]
+    lr-x------    1 root     root            64 Jan 30 17:50 4 -> pipe:[15764589]
+    l-wx------    1 root     root            64 Jan 30 17:50 5 -> pipe:[15764589]
+    lr-x------    1 root     root            64 Jan 30 17:50 6 -> pipe:[15764590]
+    l-wx------    1 root     root            64 Jan 30 17:50 7 -> pipe:[15764590]
+    lrwx------    1 root     root            64 Jan 30 17:50 8 -> anon_inode:[eventfd]
+    lrwx------    1 root     root            64 Jan 30 17:50 9 -> /dev/shm/pmloglib.lock
+01/30/2023 11:48 PM
+you could put some kind of hack that closes all fds > 2 in startup.sh
+01/30/2023 11:47 PM
+although i guess most things spawned that way won't run as long as
+dropbear
+[infowski]
+infowski 01/30/2023 11:47 PM
+eh what a shitshow.
+hellobox. 01/30/2023 11:46 PM
+the problem is also going to exist with /exec
+[infowski]
+infowski 01/30/2023 11:46 PM
+@CiB89 thanks for help with debugging - I'll test this out and try
+fixing it this week. (edited)
+01/30/2023 11:45 PM
+I will.
+hellobox. 01/30/2023 11:45 PM
+you can try it
+01/30/2023 11:45 PM
+i don't think so
+[infowski]
+infowski 01/30/2023 11:45 PM
+I mean - when processing & part
+01/30/2023 11:44 PM
+hmmmmm... won't the shell close all fds when going to background?
+hellobox. 01/30/2023 11:44 PM
+the fd will still be open though
+[yolofant]
+yolofant 01/30/2023 11:44 PM
+so that ssh / telnet doesn't crash together with hb channel I guess
+01/30/2023 11:44 PM
+detaching startup.sh from hb channel
+hellobox. 01/30/2023 11:41 PM
+what is nohup going to do?
+[infowski]
+[] infowski <@803885040827629628> ↑ look how fun.
+<https://github.com/webosbrew/webos-homebrew-channel/blob/main...
+infowski 01/30/2023 11:40 PM
+In that specific snippet.
+[infowski]
+infowski 01/30/2023 11:40 PM
+In /autostart handler?
+hellobox. 01/30/2023 11:39 PM
+in where?
+[infowski]
+infowski 01/30/2023 11:38 PM
+nohup startup.sh & in there should work fine, wouldn't it?
+hellobox. 01/30/2023 11:38 PM
+so what do you think we should do?
+[infowski]
+infowski 01/30/2023 11:37 PM
+no idea.
+hellobox. 01/30/2023 11:36 PM
+how does lg deal with this kind of thing?
+[infowski]
+infowski 01/30/2023 11:35 PM
+which kinda makes sense, since it's a very deep implementation detail.
+01/30/2023 11:35 PM
+I don't think there's an api for that in libluna-service2.
+hellobox. 01/30/2023 11:35 PM
+we can't get the fd?
+[infowski]
+infowski 01/30/2023 11:34 PM
+Wait, you mean to do that to luna service bus fd? I don't think we can
+do that, since it's dug deep in libluna-service2
+hellobox. 01/30/2023 11:33 PM
+https://medium.com/@fun_cuddles/opening-files-in-node-js-considered-harmful-d7de566d499f
+01/30/2023 11:31 PM
+how do we set FD_CLOEXEC in node.js?
+[infowski]
+infowski 01/30/2023 11:31 PM
+@kopiro ↑ I think this may be somewhat interesting to you too... 
+01/30/2023 11:31 PM
+...and the effect is it doesn't get actually respawned whenever someone
+calls it.
+hellobox. 01/30/2023 11:30 PM
+excellent
+01/30/2023 11:30 PM
+lol
+[infowski]
+infowski 01/30/2023 11:30 PM
+@hellobox ↑ look how fun.
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/services/service.ts#L545-L550
+somehow dropbear inherits luna fd and it keeps the connection going
+after js service exits due to inactivity. (edited)
+01/30/2023 11:29 PM
+Yeah. I think we've got it. This needs fixing.
+cib89 01/30/2023 11:29 PM
+4380 org.webosbrew.hbchannel.service /usr/bin/node dynamic yPnP2HRn
+01/30/2023 11:29 PM
+only this: 4380 org.webosbrew.hbchannel.service /usr/bin/node dynamic
+yPnP2HRn
+[infowski]
+infowski 01/30/2023 11:23 PM
+@CiB89 does ls-monitor -l | grep -i hbchannel still print what it did a
+while ago?
+cib89 01/30/2023 11:23 PM
+the exec things are from the app I isntalled for turning off the screen
+(which works, as long as homebrew is not crashing or whatever is going
+on)
+[infowski]
+infowski 01/30/2023 11:22 PM
+Oh, I think I know what may be the reason... 
+[] infowski OK, what kind of homebrew are you using? Wonder what that
+`exec` thing above is 
+cib89 01/30/2023 11:21 PM
+using 0.51
+cib89 01/30/2023 11:21 PM
+root 5550 0.0 0.0 4380 1132 ? S 23:11 0:00
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/bin/dropbear
+-R root 6048 0.0 0.0 4572 636 pts/5 S+ 23:21 0:00 grep -i 4380
+01/30/2023 11:20 PM
+the check auth canceled
+[infowski]
+infowski 01/30/2023 11:20 PM
+Will ps aux | grep -i 4380 show anything specific?
+cib89 01/30/2023 11:20 PM
+now checking root it is stuck
+[infowski]
+infowski 01/30/2023 11:20 PM
+OK, what kind of homebrew are you using? Wonder what that exec thing
+above is 
+cib89 01/30/2023 11:20 PM
+4380 org.webosbrew.hbchannel.service /usr/bin/node dynamic yPnP2HRn
+01/30/2023 11:19 PM
+/var/lib/webosbrew/init.d is empty
+[infowski]
+infowski 01/30/2023 11:18 PM
+Also - do you have anything in /var/lib/webosbrew/init.d?
+01/30/2023 11:18 PM
+Can you trigger that situation and then run
+ls-monitor -l | grep -i hbchannel and then something like:
+luna-send -n 1 'luna://org.webosbrew.hbchannel.service/checkRoot' '{}'
+and do the first one again?
+cib89 01/30/2023 11:15 PM
+Back again. It's really weird, it seems like my homebrew channel crashes
+after a few minutes; after restarting everything seems to work fine
+(root is ok, I can install apps and start them), but then suddenly root
+shows pending, I cannot install apps anymore, apps wont work correctly
+and reboot does not work from homebrew, need to reboot from ssh / turn
+tv off (which also takes longer than usual before I can turn it back on
+again)
+[finipiniricardocosta]
+finipiniricardocosta 01/30/2023 10:57 PM
+Going try to check whats missing
+[finipiniricardocosta]
+Deleted User does that command work over ssh?
+finipiniricardocosta 01/30/2023 10:57 PM
+Ohh not really no. I never used ssh, but defnetly something wrong with
+that curl command (edited)
+Deleted User 01/30/2023 10:45 PM
+or telnet
+[] finipiniricardocosta ```curl -X POST -H "Authorization: Bearer
+myharoken" \ -H "Content-Type: application/json" \-d '{"en...
+Deleted User 01/30/2023 10:45 PM
+does that command work over ssh?
+[finipiniricardocosta]
+finipiniricardocosta 01/30/2023 10:38 PM
+I see the command beeing executed in the logs
+01/30/2023 10:38 PM
+    curl -X POST -H "Authorization: Bearer myharoken" \ -H "Content-Type: application/json" \-d '{"entity_id": "light.luz_2_sala"}' \https://192.168.1.64:8123/api/services/light/toggle
+01/30/2023 10:37 PM
+I am using this, but no luck :
+01/30/2023 10:37 PM
+Hi someone using lginputHook app to send a command to home assistant?
+Deleted User 01/30/2023 9:32 PM
+the output got cut off
+cib89 01/30/2023 9:31 PM
+I gotta go, be back in an hour, thanks for the help so far
+01/30/2023 9:31 PM
+(no content)
+ message.txt
+4.14 KB External
+[infowski]
+cib89 yes
+infowski 01/30/2023 9:30 PM
+can you connect through that and ps aux | grep -i hbchannel?
+Deleted User 01/30/2023 9:30 PM
+(no content)
+[image.png]
+ image.png
+13.86 KB External
+[] infowski FYI `com.webos.service.tv.power/turnOffScreen` SSAP call
+should work
+Deleted User 01/30/2023 9:29 PM
+huh..
+[image.png]
+ image.png
+8.41 KB External
+cib89 01/30/2023 9:28 PM
+yes
+[infowski]
+infowski 01/30/2023 9:26 PM
+Does telnet/ssh work?
+cib89 01/30/2023 9:25 PM
+hm.. now I got the "pending" issue again for root. When I press "reboot
+system" its also stuck on "rebooting".. that should not be normal,
+should it? 
+01/30/2023 9:23 PM
+but its not the same interface
+01/30/2023 9:21 PM
+oh, sorry: com.webos.service.tv.power.interface
+01/30/2023 9:20 PM
+none of the commands
+01/30/2023 9:19 PM
+I used that one, yes. But as I said I installed another repo in homebrew
+that has another screen off function via single click, and that works
+[infowski]
+[] infowski
+`/usr/palm/services/com.webos.service.secondscreen.gateway/interfaces/`
+has a list of all the suppor...
+infowski 01/30/2023 9:19 PM
+since you are rooted - check what's available on that path
+cib89 01/30/2023 9:18 PM
+{"type":"error","id":"0","error":"404 no such service or
+method","payload":{}}
+[infowski]
+infowski 01/30/2023 9:17 PM
+are you sure you used that specific one?
+01/30/2023 9:17 PM
+https://github.com/home-assistant-libs/aiowebostv/blob/f8feeb0d3cd90e1cc6473369e35fad69fcbf951b/aiowebostv/endpoints.py#L53-L54
+aiowebostv/endpoints.py at f8feeb0d3cd90e1cc6473369e35fad69fcbf951b...
+Python library to control LG webOS based TV devices -
+aiowebostv/endpoints.py at f8feeb0d3cd90e1cc6473369e35fad69fcbf951b ·
+home-assistant-libs/aiowebostv
+[]
+01/30/2023 9:17 PM
+Hey, that's a different URI than the one in aiowebostv
+01/30/2023 9:16 PM
+Hmmmmmm... I may be wrong then. Does it return success but just doesn't
+control power?
+[] infowski FYI `com.webos.service.tv.power/turnOffScreen` SSAP call
+should work
+cib89 01/30/2023 9:16 PM
+is this due to homebrew? Because this command has never worked on
+C8/webos 4.4 versions
+[infowski]
+infowski 01/30/2023 9:16 PM
+/usr/palm/services/com.webos.service.secondscreen.gateway/interfaces/
+has a list of all the supported interfaces 
+[infowski]
+cib89 Since my C8 is using an older webos where I cannot turn off the
+screen directly, in the homebrew cha...
+infowski 01/30/2023 9:15 PM
+FYI com.webos.service.tv.power/turnOffScreen SSAP call should work
+[infowski]
+Deleted User if youd like to have a button on the remote do it for you,
+you can try what i suggested, itll remap ...
+infowski 01/30/2023 9:13 PM
+This is completely unrelated.
+cib89 yes, I can also do that. But the I would prefer a single command
+Deleted User 01/30/2023 9:12 PM
+if youd like to have a button on the remote do it for you, you can try
+what i suggested, itll remap the FLASHBK button to turning the screen
+off
+[infowski]
+infowski 01/30/2023 9:12 PM
+cib89 01/30/2023 9:12 PM
+I tried, nothing happens
+[infowski]
+infowski 01/30/2023 9:12 PM
+You can just launch webos.screen.off app by its app id?
+Deleted User also, you said youre on webos 4.4.2?
+cib89 01/30/2023 9:11 PM
+yes, I can also do that. But the I would prefer a single command
+[infowski]
+infowski 01/30/2023 9:11 PM
+Ah, yes.
+[] infowski Do you mean - via remote SSAP, or some other IoT
+integration?
+cib89 01/30/2023 9:11 PM
+iot integration, home assistant e.g.
+Deleted User 01/30/2023 9:11 PM
+in picture settings somewhere in power saving mode
+01/30/2023 9:10 PM
+im on the same version, and i can turn the screen off through settings
+01/30/2023 9:10 PM
+also, you said youre on webos 4.4.2?
+[infowski]
+cib89 Since my C8 is using an older webos where I cannot turn off the
+screen directly, in the homebrew cha...
+infowski 01/30/2023 9:09 PM
+Do you mean - via remote SSAP, or some other IoT integration?
+Deleted User 01/30/2023 9:09 PM
+something like this would work
+[image.png]
+ image.png
+11.08 KB External
+cib89 Since my C8 is using an older webos where I cannot turn off the
+screen directly, in the homebrew cha...
+Deleted User 01/30/2023 9:09 PM
+try input hook
+hellobox. 01/30/2023 9:06 PM
+you could try the input remapper thing
+cib89 01/30/2023 9:05 PM
+Since my C8 is using an older webos where I cannot turn off the screen
+directly, in the homebrew channel I installed the webos.screen.off app.
+How can I remotely start this app/use this command? (e.g. as I would use
+com.webos.service.tvpower/power/turnOffScreen)
+hellobox. try rebooting
+cib89 01/30/2023 8:55 PM
+okay, after 2nd reboot it works 
+cib89 For whatever reason when checking root status in homebrew it is
+now stuck on "pending"?
+hellobox. 01/30/2023 8:50 PM
+try rebooting
+cib89 01/30/2023 8:47 PM
+For whatever reason when checking root status in homebrew it is now
+stuck on "pending"?
+Deleted User 01/30/2023 8:41 PM
+(no content)
+[image.png]
+ image.png
+34.63 KB External
+01/30/2023 8:40 PM
+(no content)
+[image.png]
+ image.png
+10.26 KB External
+Deleted User well that was fast
+Deleted User 01/30/2023 8:40 PM
+and there are no results for this specific error
+cib89 01/30/2023 8:38 PM
+perfect, worked
+Deleted User 01/30/2023 8:35 PM
+well that was fast
+[image.png]
+ image.png
+4.57 KB External
+hellobox. 01/30/2023 8:33 PM
+so updateStartupScript doesn't install startup.sh if missing, and
+autostart is broken on old nodejs
+01/30/2023 8:32 PM
+and leads to situations where one or the other breaks
+01/30/2023 8:32 PM
+kind of redundant to have both though
+01/30/2023 8:32 PM
+and we'll be running that on launch
+01/30/2023 8:32 PM
+well, i guess autostart will do that
+01/30/2023 8:31 PM
+should we make updateStartupScript install it if it's missing?
+[infowski]
+infowski 01/30/2023 8:30 PM
+Its icon will probably be random (bug in homebrew channel app), but it
+should be there.
+cib89 01/30/2023 8:30 PM
+ok, I am gonna try
+[infowski]
+infowski 01/30/2023 8:30 PM
+It has the "Autostart dev" app available - you can install and launch it
+once and it'll register itself as an input app, that'll essentially make
+it launch on every cold boot automatically.
+[infowski]
+cib89 Do I add the URL as a custom repo in homebrew?
+infowski 01/30/2023 8:29 PM
+Yes.
+[] infowski well actually - it's installable through this custom repo:
+https://karen.inf.re/repo/index.json
+cib89 01/30/2023 8:29 PM
+Do I add the URL as a custom repo in homebrew?
+[infowski]
+infowski 01/30/2023 8:29 PM
+that's a hostname of one of my shit vms lol
+01/30/2023 8:29 PM
+@hellobox I'd like to first post the source somewhere and put it behind
+some... more normal url
+Deleted User 01/30/2023 8:28 PM
+karen
+hellobox. 01/30/2023 8:28 PM
+should i point people to that?
+[infowski]
+infowski 01/30/2023 8:27 PM
+well actually - it's installable through this custom repo:
+https://karen.inf.re/repo/index.json
+hellobox. 01/30/2023 8:27 PM
+(no content)
+[image.png]
+ image.png
+10.12 KB External
+[infowski]
+infowski 01/30/2023 8:27 PM
+I'll link it... in ~30 minutes since I need to go do some groceries...
+01/30/2023 8:26 PM
+@CiB89 there's an alterantive startup method app I built a while ago
+(similar to webosbrew-autostart linked in that gist but slightly more
+complete :P)
+hellobox. that's a different problem then
+cib89 01/30/2023 8:26 PM
+But the version number is included in the fix you suggested: webOS
+4.0–4.4
+hellobox. 01/30/2023 8:26 PM
+that's what i was talking about
+[] infowski I thought you meant `/updateStartupScript` that is called on
+app startup already.
+hellobox. 01/30/2023 8:26 PM
+yeah
+[infowski]
+infowski 01/30/2023 8:26 PM
+I thought you meant /updateStartupScript that is called on app startup
+already.
+cib89 4.4.2
+hellobox. 01/30/2023 8:26 PM
+that's a different problem then
+[infowski]
+infowski 01/30/2023 8:25 PM
+wait - /autostart will copy the script into
+/var/lib/webosbrew/startup.sh and run it
+cib89 01/30/2023 8:25 PM
+4.4.2
+hellobox. 01/30/2023 8:25 PM
+i guess i should rewrite that section then
+01/30/2023 8:25 PM
+oh
+[infowski]
+infowski 01/30/2023 8:25 PM
+It won't copy/update the startup script if it doesn't exist yet.
+(edited)
+hellobox. 01/30/2023 8:25 PM
+well, it should copy the update script i think
+[infowski]
+infowski 01/30/2023 8:25 PM
+i guess we can roll out an rc version?
+ 1
+[infowski]
+hellobox. yeah i think that might be broken
+infowski 01/30/2023 8:24 PM
+That'll be broken until Homebrew Channel v0.5.2
+hellobox. 01/30/2023 8:24 PM
+what webos version?
+cib89 Just to make sure: When I manually start the homebrew app after
+turning on the tv, should SSH then w...
+hellobox. 01/30/2023 8:24 PM
+yeah i think that might be broken
+hellobox. specifically
+<https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#why-doesnt-ssh-or...
+cib89 01/30/2023 8:24 PM
+Just to make sure: When I manually start the homebrew app after turning
+on the tv, should SSH then work? Because it still doesn't.
+Deleted User 01/30/2023 8:23 PM
+thats assumes i dont run into 5000 errors
+01/30/2023 8:22 PM
+at least the build instructions seem pretty simple
+01/30/2023 8:22 PM
+great
+Deleted User i find it very annoying that when i type in wsl it
+automatically adds this $/
+Deleted User 01/30/2023 8:22 PM
+    build QtJambi:
+    > ant all
+    (This step may take several hours.)
+hellobox. 01/30/2023 8:21 PM
+specifically
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#why-doesnt-ssh-or-telnetother-services-start-at-boot
+cib89 I have rooted my TV, but I cannot SSH into my tv nor use telnet
+although it's turned on. I can telne...
+hellobox. 01/30/2023 8:20 PM
+see https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f
+cib89 01/30/2023 8:20 PM
+I have rooted my TV, but I cannot SSH into my tv nor use telnet although
+it's turned on. I can telnet when using the root.telnet app (which I
+used to root the TV). Can someone help?
+Deleted User 01/30/2023 8:16 PM
+i find it very annoying that when i type in wsl it automatically adds
+this $/
+[image.png]
+ image.png
+12.49 KB External
+Deleted User im assuming it found the qt libs, because im getting a
+different error now ``` Exception in thread "...
+Deleted User 01/30/2023 8:14 PM
+guess i gotta build them
+hellobox. 01/30/2023 8:13 PM
+the only place i can find it is
+https://github.com/webosose/webos-initscripts/blob/master/files/systemd/environments/30-webos-global.conf.in
+01/30/2023 8:13 PM
+what's this? QSG_PROGRAM_BINARY_STORE=/var/cache/qsg-shader-cache
+01/30/2023 8:11 PM
+    export QTDIR
+    export QT_HARFBUZZ='new'
+    export QT_IM_MODULE='wayland'
+    export QT_QPA_FONTDIR='/usr/share/fonts'
+    export QT_QPA_PLATFORM='wayland'
+    export QT_VER='qt5'
+    export QT_WAYLAND_DISABLE_WINDOWDECORATION='1'
+    export QT_WAYLAND_HARDWARE_INTEGRATION='wayland-egl'
+    export QT_WAYLAND_SHELL_INTEGRATION='webos'
+    export QT_WAYLAND_XKB_RULE_NAMES='evdev:lgwebostv:us::'
+01/30/2023 8:11 PM
+i guess this is what they used https://github.com/qt/qtwayland
+Deleted User 01/30/2023 8:09 PM
+there arent even any cookies its just a service worker
+01/30/2023 8:09 PM
+i have to clear my cookies every time
+hellobox. 01/30/2023 8:09 PM
+now it does though
+01/30/2023 8:09 PM
+it didn't show any results when i first went to it
+Deleted User 01/30/2023 8:09 PM
+yes
+hellobox. 01/30/2023 8:09 PM
+that sonatype site?
+Deleted User 01/30/2023 8:08 PM
+when i reload all the search results go away
+01/30/2023 8:08 PM
+also is it just me or is this website broken
+hellobox. 01/30/2023 8:08 PM
+      NEEDED            Shared library: [libgcc_s.so.1]
+      NEEDED            Shared library: [libQt5Quick.so.5]
+      NEEDED            Shared library: [libQt5Gui.so.5]
+      NEEDED            Shared library: [libQt5Qml.so.5]
+      NEEDED            Shared library: [libQt5Core.so.5]
+      NEEDED            Shared library: [libpthread.so.0]
+      NEEDED            Shared library: [libwayland-server.so.0]
+      NEEDED            Shared library: [libxkbcommon.so.0]
+      NEEDED            Shared library: [libmali.so.0]
+      NEEDED            Shared library: [libstdc++.so.6]
+      NEEDED            Shared library: [libc.so.6]
+      SONAME            Library soname: [libQt5Compositor.so.5]  NEEDED            Shared library: [libgcc_s.so.1]
+      NEEDED            Shared library: [libwayland-client.so.0]
+      NEEDED            Shared library: [libwayland-cursor.so.0]
+      NEEDED            Shared library: [libfontconfig.so.1]
+      NEEDED            Shared library: [libfreetype.so.6]
+      NEEDED            Shared library: [libglib-2.0.so.0]
+      NEEDED            Shared library: [libmali.so.0]
+      NEEDED            Shared library: [libQt5Gui.so.5]
+      NEEDED            Shared library: [libQt5Core.so.5]
+      NEEDED            Shared library: [libpthread.so.0]
+      NEEDED            Shared library: [libdl.so.2]
+      NEEDED            Shared library: [libxkbcommon.so.0]
+      NEEDED            Shared library: [libstdc++.so.6]
+      NEEDED            Shared library: [libc.so.6]
+      SONAME            Library soname: [libQt5WaylandClient.so.5]
+01/30/2023 8:08 PM
+i guess they don't update those as often
+Deleted User 01/30/2023 8:07 PM
+just those two
+[image.png]
+ image.png
+7.15 KB External
+01/30/2023 8:07 PM
+that one is 5.4.2
+01/30/2023 8:07 PM
+oh yeah
+hellobox. 01/30/2023 8:07 PM
+oh, actually also /usr/lib/libQt5WaylandClient.so.5.6.3
+Deleted User 01/30/2023 8:06 PM
+weird
+hellobox. 01/30/2023 8:06 PM
+all of mine are 5.12.3 except /usr/lib/libQt5Compositor.so.5.6.3
+Deleted User im assuming it found the qt libs, because im getting a
+different error now ``` Exception in thread "...
+Deleted User 01/30/2023 8:06 PM
+of course they only have prebuilt natives for x64 linux
+hellobox. 01/30/2023 8:06 PM
+interesting
+01/30/2023 8:06 PM
+that's not going to be supplied with qt
+Deleted User 01/30/2023 8:06 PM
+except for the compositor which says 5.4.2
+hellobox. `/usr/lib/libQt5Core.so.5.12.3`
+Deleted User 01/30/2023 8:06 PM
+all of them say 5.6.3
+hellobox. 01/30/2023 8:06 PM
+looks like you need libQtJambi
+Deleted User 01/30/2023 8:05 PM
+im assuming it found the qt libs, because im getting a different error
+now
+    Exception in thread "main" io.qt.QLibraryNotFoundError: Library QtJambi (libQtJambi.so.5.15.13, libQtJambi.so.5.15, libQtJambi.so.5, libQtJambi.so) was not found in 'java.library.path=/usr/java/packages/lib/aarch32:/lib:/usr/lib:/tmp/QtJambi5.15.13_6285'
+hellobox. 01/30/2023 8:05 PM
+/usr/lib/libQt5Core.so.5.12.3
+01/30/2023 8:05 PM
+i just looked at the library filenames
+Deleted User 01/30/2023 8:05 PM
+how do i check the qt version?
+hellobox. 01/30/2023 8:03 PM
+webos 6.3.2 seems to have qt 5.12.3
+01/30/2023 8:02 PM
+try one of the 5.15 releases
+01/30/2023 8:02 PM
+they've got 5.15 and 5.15.2
+Deleted User 01/30/2023 8:00 PM
+actually, seems theres several different versions
+https://search.maven.org/artifact/io.qtjambi/qtjambi
+Maven Central Repository Search
+Official search by the maintainers of Maven Central Repository
+Deleted User 01/30/2023 7:44 PM
+would the 5.15 work?
+[] infowski there's only qt5 on webOS
+Deleted User 01/30/2023 7:44 PM
+well, seems theres only 5.15.13 6.2.11 6.4.3 versions of qtjambi
+[ccarnell98]
+ccarnell98 01/30/2023 6:55 PM
+Followed this example
+https://github.com/webosose/samples/blob/master/native-apps/built-in/com.example.app.nativeqt/ServiceRequest.cpp
+samples/ServiceRequest.cpp at master · webosose/samples
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+01/30/2023 6:51 PM
+That was with registerApp
+[] ccarnell98 Does anyone have access to the official NDK and associated
+documentation?
+hellobox. 01/30/2023 6:51 PM
+lol no (edited)
+[ccarnell98]
+[] yolofant the registerapp stuff isn't required
+ccarnell98 01/30/2023 6:47 PM
+It was worth a try  
+[ccarnell98]
+ccarnell98 01/30/2023 6:46 PM
+                        2023-01-30 17:10:13.017 T:14096    info <general>: LUNA: acquireHandle -1027: Invalid permissions for org.xbmc.kodi (_LSTransportRequestName @ transport.c:2173)
+    2023-01-30 17:10:13.018 T:14096    info <general>: LUNASERVICE ERROR -1: sh != NULL (_LSCallFromApplicationCommon @ callmap.c:1945)
+01/30/2023 6:46 PM
+But I get:
+[yolofant]
+yolofant 01/30/2023 6:46 PM
+the registerapp stuff isn't required
+[ccarnell98]
+ccarnell98 01/30/2023 6:45 PM
+and add the registerApp call for luna bus
+01/30/2023 6:45 PM
+    `"requiredPermissions" : ["application.operation"],
+        "nativeLifeCycleInterfaceVersion": 2
+01/30/2023 6:45 PM
+I've also tried editing appinfo.json and changing it to run as:
+01/30/2023 6:44 PM
+ah yes prisoner is 6557, and root is obviously 0 and /tmp/xdg is owned
+by root
+[yolofant]
+yolofant 01/30/2023 6:42 PM
+just try to run things as root for now
+01/30/2023 6:42 PM
+I mean
+[ccarnell98]
+ccarnell98 01/30/2023 6:40 PM
+    XDG_RUNTIME_DIR (/tmp/xdg) is not owned by us (uid 6557), but by uid 0! (This could e g happen if you try to connect to a non-root PulseAudio as a root user, over the native protocol. Don't do that.)
+    ps aux | grep kodi
+    prisoner 16276  0.0  0.0   4336   712 ?        S    17:39   0:00 /bin/bash ./kodi.sh
+    prisoner 16283  6.0  0.0   4372  1284 ?        S    17:39   0:00 ./strace -o /media/developer/apps/usr/palm/applications/org.xbmc.kodi/strace.log ./kodi.bin --debug
+    prisoner 16286 15.1  3.4 358100 70312 ?        SLl  17:39   0:02 ./kodi.bin --debug
+01/30/2023 6:38 PM
+FYI:
+[yolofant]
+yolofant 01/30/2023 6:38 PM
+audio related
+[ccarnell98]
+ccarnell98 01/30/2023 6:38 PM
+When you launch a app from the menu or ssh, what user does it run as? I
+am wondering about this error:
+    XDG_RUNTIME_DIR (/tmp/xdg) is not owned by us (uid 6557), but by uid 0! (This could e g happen if you try to connect to a non-root PulseAudio as a root user, over the native protocol. Don't do that.)
+01/30/2023 6:33 PM
+I also intend to get a wayland egl demo working. I've already tried this
+before but I had various issues etc and Ill try again
+01/30/2023 6:31 PM
+Does anyone have access to the official NDK and associated
+documentation?
+01/30/2023 6:30 PM
+    2023-01-30 17:16:25.648 T:14798   error <general>: CDRMUtils::OpenDrm - no drm devices found: (No such file or directory)
+    2023-01-30 17:16:25.648 T:14798   error <general>: CWinSystemGbm::InitWindowSystem - failed to initialize Atomic DRM
+    2023-01-30 17:16:25.649 T:14798   error <general>: CDRMUtils::OpenDrm - no drm devices found: (No such file or directory)
+    2023-01-30 17:16:25.649 T:14798   error <general>: CWinSystemGbm::InitWindowSystem - failed to initialize Legacy DRM
+    2023-01-30 17:16:25.649 T:14798   error <general>: CDRMUtils::OpenDrm - no drm devices found: (No such file or directory)
+    2023-01-30 17:16:25.649 T:14798   error <general>: CWinSystemGbm::InitWindowSystem - failed to initialize off screen DRM
+    2023-01-30 17:16:25.649 T:14798   debug <general>: CApplication::CreateGUI - unable to init gbm windowing system
+    2023-01-30 17:16:25.649 T:14798   debug <general>: CWinSystemGbm::DestroyWindowSystem - deinitialized DRM
+    2023-01-30 17:16:25.847 T:14805   debug <general>: Thread libinput 4098879216 terminating
+    2023-01-30 17:16:25.848 T:14798 critical <general>: CApplication::CreateGUI - unable to init windowing system
+[ccarnell98]
+[] yolofant but we had a working `eglinfo` using gbm
+ccarnell98 01/30/2023 6:30 PM
+I'm going to try eglinfo again tomorrow. I tried without WAYLAND_DISPLAY
+and what I got what:
+[yolofant]
+yolofant 01/30/2023 6:10 PM
+but we had a working eglinfo using gbm
+01/30/2023 6:10 PM
+no idea if that can work though because gbm would be bypassing wayland
+[yolofant]
+[] ccarnell98 Hi, Yes it is by default compiled for wayland and gbm. By
+launching it with --windowing=gbm the resu...
+yolofant 01/30/2023 6:06 PM
+what if you do unset WAYLAND_DISPLAY first?
+[ccarnell98]
+ccarnell98 01/30/2023 5:14 PM
+    ==>[INIT] (eglinfo) CDBG: In file: ../cdbg/src/mali_cdbg_channels.c  line: 571 cdbgp_channel_init
+    Initing shared dests 0xb: failed to init 0x8. Some debug output may not appear due to this
+    ==>[INIT] (eglinfo) CDBG: In file: ../cdbg/src/mali_cdbg_channels.c  line: 647 cdbgp_channel_open
+    Initing dest bitpattern 0x4 for channel 1: failed dests bitpattern is 0x4. Some debug output may not appear from this channel.
+    ==>[INIT] (eglinfo) CDBG: In file: ../cdbg/src/mali_cdbg_channels.c  line: 647 cdbgp_channel_open
+    Initing dest bitpattern 0x4 for channel 2: failed dests bitpattern is 0x4. Some debug output may not appear from this channel.
+    ==>[INIT] (eglinfo) CDBG: In file: ../cdbg/src/mali_cdbg_channels.c  line: 647 cdbgp_channel_open
+    Initing dest bitpattern 0x4 for channel 3: failed dests bitpattern is 0x4. Some debug output may not appear from this channel.
+    1675095223.649906 ( 9664: 9664) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_display.c  line: 3067 eglInitialize
+    Bad display
+    1675095223.650108 ( 9664: 9664) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_display.c  line: 3067 eglInitialize
+    Bad display
+    EGL client extensions string:
+        EGL_EXT_client_extensions EGL_EXT_platform_base
+        EGL_KHR_client_get_all_proc_addresses EGL_KHR_platform_gbm
+        EGL_KHR_platform_wayland EGL_EXT_platform_wayland
+    GBM platform:
+    eglinfo: eglInitialize failed
+    Wayland platform:
+    eglinfo: eglInitialize failed
+[ccarnell98]
+hellobox. <@1051573528522133655> i believe this'll only work on webos 5+
+ccarnell98 01/30/2023 5:14 PM
+Does this work for you from ssh? When I run it I get:
+[ccarnell98]
+ccarnell98 01/30/2023 5:10 PM
+    2023-01-30 16:09:23.446 T:9119    debug <general>: CWinSystemGbm::InitWindowSystem - not allowed to run GBM under a window manager
+    2023-01-30 16:09:23.446 T:9119    debug <general>: CApplication::CreateGUI - unable to init gbm windowing system
+    2023-01-30 16:09:23.446 T:9119    debug <general>: CWinSystemGbm::DestroyWindowSystem - deinitialized DRM
+[ccarnell98]
+[] yolofant <@1051573528522133655> Did you try a GBM build instead of
+Wayland?
+ccarnell98 01/30/2023 5:10 PM
+Hi, Yes it is by default compiled for wayland and gbm. By launching it
+with --windowing=gbm the result is:
+[jclsn]
+roleaf Someone needs to port Strem.io to LGTV
+jclsn 01/30/2023 4:47 PM
+Alteady on it. The client can easily be installed as web app. We just
+need to package the server somehow. First try was not successful. I will
+look into it again when I find the time (edited)
+[yolofant]
+yolofant 01/30/2023 1:25 PM
+@Craig Did you try a GBM build instead of Wayland?
+[infowski]
+Deleted User `Exception in thread "main" io.qt.QLibraryNotFoundError:
+Library QtCore (libQt6Core.so.6.4, libQt6Co...
+infowski 01/30/2023 10:46 AM
+there's only qt5 on webOS
+[infowski]
+roleaf Someone needs to port Strem.io to LGTV
+infowski 01/30/2023 10:46 AM
+@jclsn ↑ :^)
+[infowski]
+infowski 01/30/2023 10:45 AM
+qt libs are stored in the balls
+ 1
+roleaf 01/30/2023 10:41 AM
+Someone needs to port Strem.io to LGTV
+Deleted User Click to see attachment
+hellobox. 01/30/2023 9:11 AM
+case sensitive
+Deleted User 01/30/2023 3:54 AM
+(no content)
+[image.png]
+ image.png
+34.77 KB External
+01/30/2023 3:54 AM
+huh, i cant find any qtcore libs
+01/30/2023 3:51 AM
+Exception in thread "main" io.qt.QLibraryNotFoundError: Library QtCore (libQt6Core.so.6.4, libQt6Core.so.6, libQt6Core.so) was not found in 'java.library.path=/usr/java/packages/lib/aarch32:/lib:/usr/lib:/tmp/QtJambi6.4.3_25589'
+01/30/2023 3:45 AM
+where are the qt libs stored?
+January 29, 2023
+[kanagi_]
+hellobox. did you reboot after enabling ssh?
+kanagi_ 01/29/2023 11:50 PM
+No, sec
+hellobox. 01/29/2023 11:50 PM
+did you reboot after enabling ssh?
+[kanagi_]
+kanagi_ 01/29/2023 11:49 PM
+(no content)
+[image.png]
+ image.png
+18.75 KB External
+[] kanagi_ I can no longer connect to the Dev Manager and I tried using
+sftp, but it does not connect
+hellobox. 01/29/2023 11:49 PM
+if you want to use dev manager, you have to change to root/alpine on
+port 22
+[kanagi_]
+kanagi_ 01/29/2023 11:48 PM
+I can no longer connect to the Dev Manager and I tried using sftp, but
+it does not connect
+[] kanagi_ Hello! Is there any way to access the tv files via ftp? I
+wanted to test retroarch, but I don't know...
+hellobox. 01/29/2023 11:47 PM
+if you enable ssh, you can use sftp
+[kanagi_]
+kanagi_ 01/29/2023 11:47 PM
+Hello! Is there any way to access the tv files via ftp? I wanted to test
+retroarch, but I don't know how to pass the roms
+[ccarnell98]
+hellobox. <@1051573528522133655> i believe this'll only work on webos 5+
+ccarnell98 01/29/2023 9:26 PM
+Thanks I'll try it tomorrow when I'm off work 
+hellobox. 01/29/2023 9:25 PM
+@Craig i believe this'll only work on webos 5+
+ eglinfo
+34.6 KB External
+[] ccarnell98 @xmx <@803885040827629628> any idea which package in
+buildoot-nc4 I need to enable to add GLES3/gl32...
+hellobox. 01/29/2023 5:40 PM
+i got it from lg
+[ccarnell98]
+ccarnell98 01/29/2023 4:52 PM
+@xmx @hellobox any idea which package in buildoot-nc4 I need to enable
+to add GLES3/gl32.h ?
+[smx2460]
+hellobox. ```OK: dlopen("libwayland-webos-client.so.1", RTLD_LAZY |
+RTLD_GLOBAL) ERROR: dlopen("libwayland-web...
+smx2460 01/29/2023 3:50 AM
+oh
+January 28, 2023
+[] smx2460 <@803885040827629628> what did you change
+hellobox. 01/28/2023 11:33 PM
+also some other stuff like GL/gl.h -> GLES3/gl32.h
+[] smx2460 they are 2 different libraries
+hellobox. 01/28/2023 11:31 PM
+    OK: dlopen("libwayland-webos-client.so.1", RTLD_LAZY | RTLD_GLOBAL)
+    ERROR: dlopen("libwayland-webos-client.so.1", RTLD_LAZY | RTLD_GLOBAL)
+[ccarnell98]
+[] smx2460 i mean after doing this
+ccarnell98 01/28/2023 9:32 PM
+No couldn't get it to work unfortunately
+[smx2460]
+smx2460 01/28/2023 9:06 PM
+and tell you to recompile it
+01/28/2023 9:06 PM
+otherwise i'll add a call to dlerror to print the error
+[smx2460]
+[] ccarnell98 ```export
+LD_LIBRARY_PATH='/mnt/bsppart/bsp/lib:/mnt/bsppart/bsp/usr/lib:/mnt/license/usr/lib:/media...
+smx2460 01/28/2023 9:05 PM
+i mean after doing this
+[ccarnell98]
+[] smx2460 <@1051573528522133655> worked?
+ccarnell98 01/28/2023 9:05 PM
+include_next <stdint.h> not found. At work now so will have to try tomorrow
+[smx2460]
+hellobox. it found it the first time
+smx2460 01/28/2023 9:02 PM
+they are 2 different libraries
+[smx2460]
+smx2460 01/28/2023 9:02 PM
+oh it's just the Makefile
+01/28/2023 9:01 PM
+@hellobox what did you change
+01/28/2023 9:00 PM
+@Craig worked?
+[ccarnell98]
+ccarnell98 01/28/2023 4:43 PM
+@hellobox Thank you  
+01/28/2023 4:42 PM
+    export LD_LIBRARY_PATH='/mnt/bsppart/bsp/lib:/mnt/bsppart/bsp/usr/lib:/mnt/license/usr/lib:/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/binaries-armv71/opt/openssh/lib/openssh:/usr/lib:/media/developer/lib'
+hellobox. 01/28/2023 4:42 PM
+@Craig https://github.com/throwaway96/webos-eglinfo
+[ccarnell98]
+ccarnell98 01/28/2023 4:41 PM
+    OK: dlopen("libwayland-client.so.0", RTLD_LAZY | RTLD_GLOBAL)
+    OK: dlopen("libwayland-webos-client.so.1", RTLD_LAZY | RTLD_GLOBAL)
+    OK: dlsym(hlib1, "wl_webos_shell_surface_interface")
+    OK: dlsym(hlib1, "wl_webos_shell_interface")
+    OK: dlsym(hlib0, "wl_registry_interface")
+    OK: dlsym(hlib0, "wl_shell_surface_interface")
+    OK: dlsym(hlib0, "wl_surface_interface")
+    OK: dlsym(hlib0, "wl_display_connect")
+    OK: dlsym(hlib0, "wl_proxy_add_listener")
+    OK: dlsym(hlib0, "wl_proxy_marshal_array_constructor")
+    OK: dlsym(hlib0, "wl_proxy_marshal_array_constructor_versioned")
+    == LAUNCHING: /media/developer/apps/usr/palm/applications/com.test.es2gears/main, with /media/developer/apps/usr/palm/applications/com.test.es2gears/preloaded.so
+    OK: dlopen("libwayland-client.so.0", RTLD_LAZY | RTLD_GLOBAL)
+    ERROR: dlopen("libwayland-webos-client.so.1", RTLD_LAZY | RTLD_GLOBAL)
+    /media/developer/apps/usr/palm/applications/com.test.es2gears $ ls -la /media/developer/lib/libway*
+    -rwxr-xr-x    1 prisoner 5000         34580 Jan 28 15:35 /media/developer/lib/libwayland-client.so.0
+    -rwxr-xr-x    1 prisoner 5000         14016 Jan 28 15:04 /media/developer/lib/libwayland-webos-client.so.1
+[ccarnell98]
+ccarnell98 01/28/2023 4:33 PM
+already*
+[ccarnell98]
+[] smx2460 And make a symlink
+ccarnell98 01/28/2023 4:33 PM
+it exists in /usr/lib aready?
+hellobox. 01/28/2023 4:33 PM
+it found it the first time
+[smx2460]
+smx2460 01/28/2023 4:32 PM
+And make a symlink
+01/28/2023 4:32 PM
+Find the right name
+01/28/2023 4:32 PM
+@Craig as you can see, it can't find the library
+[ccarnell98]
+ccarnell98 01/28/2023 4:32 PM
+Thanks, do you have build instructions? Meson doesn't want to be
+friendly to me
+hellobox. 01/28/2023 4:28 PM
+https://gitlab.freedesktop.org/mesa/demos/-/blob/main/src/egl/opengl/eglinfo.c
+[ccarnell98]
+ccarnell98 01/28/2023 4:28 PM
+@hellobox which eglinfo are you compiling?
+hellobox. 01/28/2023 4:26 PM
+(no content)
+ eglinfo.log
+5.77 KB External
+[ccarnell98]
+ccarnell98 01/28/2023 4:19 PM
+Seems to be stuck in a loop in strace
+01/28/2023 4:19 PM
+    OK: dlopen("libwayland-client.so.0", RTLD_LAZY | RTLD_GLOBAL)
+    OK: dlopen("libwayland-webos-client.so.1", RTLD_LAZY | RTLD_GLOBAL)
+    OK: dlsym(hlib1, "wl_webos_shell_surface_interface")
+    OK: dlsym(hlib1, "wl_webos_shell_interface")
+    OK: dlsym(hlib0, "wl_registry_interface")
+    OK: dlsym(hlib0, "wl_shell_surface_interface")
+    OK: dlsym(hlib0, "wl_surface_interface")
+    OK: dlsym(hlib0, "wl_display_connect")
+    OK: dlsym(hlib0, "wl_proxy_add_listener")
+    OK: dlsym(hlib0, "wl_proxy_marshal_array_constructor")
+    OK: dlsym(hlib0, "wl_proxy_marshal_array_constructor_versioned")
+    == LAUNCHING: /media/developer/apps/usr/palm/applications/com.test.es2gears/main, with /media/developer/apps/usr/palm/applications/com.test.es2gears/preloaded.so
+    OK: dlopen("libwayland-client.so.0", RTLD_LAZY | RTLD_GLOBAL)
+    ERROR: dlopen("libwayland-webos-client.so.1", RTLD_LAZY | RTLD_GLOBAL)
+01/28/2023 4:19 PM
+@Smx If I rename es2gears to main I get:
+hellobox. 01/28/2023 4:18 PM
+es1_info seems to depend on x pretty heavily
+01/28/2023 4:18 PM
+at least not as much as the rest
+[ccarnell98]
+ccarnell98 01/28/2023 4:18 PM
+woot I'll download! 
+hellobox. 01/28/2023 4:17 PM
+eglinfo doesn't require x
+[ccarnell98]
+ccarnell98 01/28/2023 4:17 PM
+They need to get with the (wayland) times
+01/28/2023 4:17 PM
+Their is also a eglinfo  shame these all require x11 to build
+[ccarnell98]
+hellobox. `eglinfo`?
+ccarnell98 01/28/2023 4:17 PM
+glxinfo?
+[ccarnell98]
+ccarnell98 01/28/2023 4:13 PM
+    write(1, "== LAUNCHING: /media/developer/a"..., 162) = 162
+    execve("/media/developer/apps/usr/palm/applications/com.test.es2gears/main", ["./es2gears"], 0x5ad190 /* 82 vars */) = -1 ENOENT (No such file or directory)
+    exit_group(1)                           = ?
+    +++ exited with 1 +++
+[] ccarnell98 Do you have glinfo as well please? 
+hellobox. 01/28/2023 4:13 PM
+eglinfo?

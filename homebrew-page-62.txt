@@ -1,0 +1,1698 @@
+March 1, 2023
+[ccarnell98]
+ccarnell98 03/01/2023 4:49 PM
+Cool does it break anything else? 
+[infowski]
+infowski 03/01/2023 4:49 PM
+@Craig @Yolofant seems like
+./configure --with-toolchain=$SDK_PATH --prefix=/opt/xbmc-deps --host=arm-webos-linux-gnueabi ...
+helps with libiconv detection
+[blacklua]
+blacklua 03/01/2023 4:48 PM
+[:lg:]
+03/01/2023 4:47 PM
+I can't install addons even from a USB stick and ftp in Kodi...
+[infowski]
+infowski 03/01/2023 4:46 PM
+Could NOT find Java (missing: Java_JAVA_EXECUTABLE Runtime) wtf
+[smx2460]
+smx2460 03/01/2023 4:26 PM
+Except we're not linking the extra static library
+03/01/2023 4:25 PM
+But now we're declaring it as available
+03/01/2023 4:25 PM
+Qt5 must have a way to work without it
+03/01/2023 4:25 PM
+Which it thinks it can use because of the new headers
+03/01/2023 4:24 PM
+Because it pulls in getauxval from qt5
+03/01/2023 4:24 PM
+But doesn't on webos
+03/01/2023 4:24 PM
+It actually builds on lgtv config
+hellobox. 03/01/2023 4:23 PM
+or multiple wrappers
+03/01/2023 4:23 PM
+our best option is making a wrapper script for gcc i think
+03/01/2023 4:23 PM
+i did a little bit, but nothing worth pushing
+[smx2460]
+smx2460 03/01/2023 4:22 PM
+Build failing
+03/01/2023 4:22 PM
+I left master broken
+03/01/2023 4:22 PM
+For br-nc4 polyfills (edited)
+hellobox. 03/01/2023 4:21 PM
+hmm?
+[smx2460]
+smx2460 03/01/2023 4:21 PM
+I haven't touched it
+03/01/2023 4:21 PM
+@hellobox did you do any extra test by chance?
+03/01/2023 4:20 PM
+But I'm a bit down
+[smx2460]
+[] yolofant it's just missing getauxval
+smx2460 03/01/2023 4:20 PM
+Which is pretty much done except for the integration
+[yolofant]
+yolofant 03/01/2023 4:13 PM
+[infowski]
+infowski 03/01/2023 4:10 PM
+seems like --with-toolchain=... --host=arm-webos-linux-gnueabi without
+-j... seems to slowly work so far. we'll see how it goes later.
+hellobox. 03/01/2023 4:06 PM
+https://gcc.gnu.org/onlinedocs/gccint/Configure-Terms.html
+[yolofant]
+[] infowski like - target platform is the one we are crosscompiling for?
+yolofant 03/01/2023 4:03 PM
+ye
+[infowski]
+infowski 03/01/2023 4:01 PM
+wait, i don't know
+03/01/2023 4:01 PM
+--with-toolchain seems to make it use toolchain to build cmake as well?
+hellobox. 03/01/2023 4:00 PM
+but if this is building stuff for both build and host, idk
+03/01/2023 4:00 PM
+target is what stuff like compilers will output
+03/01/2023 3:59 PM
+build is what you're building it on
+03/01/2023 3:59 PM
+host is what it's going to run on
+[infowski]
+infowski 03/01/2023 3:59 PM
+i know there's the canadian thing as well
+03/01/2023 3:59 PM
+...for which cmake should be built
+hellobox. 03/01/2023 3:59 PM
+not usually
+[infowski]
+infowski 03/01/2023 3:59 PM
+and host is my build machine
+03/01/2023 3:59 PM
+like - target platform is the one we are crosscompiling for?
+hellobox. 03/01/2023 3:59 PM
+i don't even know
+03/01/2023 3:58 PM
+lol
+[infowski]
+infowski 03/01/2023 3:58 PM
+cmake, ffmpeg, libpng, libjpeg...
+03/01/2023 3:58 PM
+it's a mix of random target and host dependencies
+03/01/2023 3:58 PM
+whatever that is
+03/01/2023 3:58 PM
+tools/depends
+hellobox. 03/01/2023 3:58 PM
+for building what?
+[infowski]
+infowski 03/01/2023 3:57 PM
+we should be doing something like
+--target=arm-webos-linux-gnueabi --host=x86_64-linux, right? (edited)
+03/01/2023 3:56 PM
+the fact they somehow mix up target/host in tools/depends is also
+fucking annoying (edited)
+[yolofant]
+yolofant 03/01/2023 3:40 PM
+because the build doesnt know about the libraries from buildroot
+[yolofant]
+[] infowski shouldn't we be passing `--with-toolchain` to `configure`?
+yolofant 03/01/2023 3:40 PM
+I think that might be part of the problem
+[ccarnell98]
+ccarnell98 03/01/2023 3:30 PM
+@infowski
+https://github.com/craigcarnell/xbmc/blob/feature/webOS7/docs/README.webOS.md
+xbmc/README.webOS.md at feature/webOS7 · craigcarnell/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[infowski]
+infowski 03/01/2023 3:28 PM
+shouldn't we be passing --with-toolchain to configure?
+03/01/2023 3:24 PM
+CMAKE_LIBRARY_PATH="/opt/xbmc-deps/arm-webos-linux-gnueabi-release/lib:/usr/usr/lib/arm-webos-linux-gnueabi:/usr/lib/arm-webos-linux-gnueabi"
+well that doesn't seem right
+03/01/2023 3:21 PM
+but check_function_exists returns 1 actually.
+03/01/2023 3:21 PM
+It doesn't find c for some reason, indeed
+03/01/2023 3:16 PM
+imagine
+[infowski]
+[] yolofant (and libiconv unless you wanna debug why kodi wants it)
+infowski 03/01/2023 3:16 PM
+I ACTUALLY DO
+[yolofant]
+yolofant 03/01/2023 3:14 PM
+(and libiconv unless you wanna debug why kodi wants it)
+03/01/2023 3:13 PM
+don't forget about flatbuffers
+03/01/2023 3:13 PM
+libc? idk 
+ 1
+[infowski]
+infowski 03/01/2023 3:13 PM
+Dependencies built successfully. ah yes, just casually running make
+again and everything works.
+[ccarnell98]
+ccarnell98 03/01/2023 3:11 PM
+wth is c? 
+03/01/2023 3:11 PM
+    find_library(ICONV_LIBRARY NAMES iconv libiconv c)
+[yolofant]
+yolofant 03/01/2023 3:10 PM
+so it searches for an alternative
+03/01/2023 3:09 PM
+but as I said kodi seems to fail detecting that we have iconv natively
+03/01/2023 3:09 PM
+kodi needs it too
+[ccarnell98]
+ccarnell98 03/01/2023 3:09 PM
+which is then needed by python
+03/01/2023 3:08 PM
+iconv is needed by gettext
+[yolofant]
+yolofant 03/01/2023 3:08 PM
+but using libiconv is not the proper fix
+03/01/2023 3:08 PM
+not sure
+[ccarnell98]
+ccarnell98 03/01/2023 3:08 PM
+hmm so how do we fix it?
+[yolofant]
+yolofant 03/01/2023 3:08 PM
+iconv is in glibc
+03/01/2023 3:08 PM
+it shouldn't need it
+03/01/2023 3:08 PM
+yes but that's bug
+[ccarnell98]
+ccarnell98 03/01/2023 3:08 PM
+oh
+03/01/2023 3:08 PM
+but I always end up having to build it
+[yolofant]
+[] ccarnell98 shouldn't it set need_libiconv=1 to anyway?
+yolofant 03/01/2023 3:08 PM
+no because iconv is provided by glibc unlike on android
+[yolofant]
+yolofant 03/01/2023 3:07 PM
+I dont know why
+[yolofant]
+[] infowski rofl, it just built this time around
+yolofant 03/01/2023 3:07 PM
+yes
+[ccarnell98]
+ccarnell98 03/01/2023 3:07 PM
+hmm so according to that, it does find it in the toolchain?
+[infowski]
+infowski 03/01/2023 3:06 PM
+lol
+03/01/2023 3:06 PM
+wait, no, it failed
+[ccarnell98]
+ccarnell98 03/01/2023 3:05 PM
+at least mine works atm
+03/01/2023 3:05 PM
+the joys of building kodi
+[infowski]
+[] yolofant I remember there were issues with libpng
+infowski 03/01/2023 3:05 PM
+rofl, it just built this time around
+[ccarnell98]
+ccarnell98 03/01/2023 3:05 PM
+nvm its in some condition
+03/01/2023 3:05 PM
+according to that
+03/01/2023 3:05 PM
+shouldn't it set need_libiconv=1 to anyway?
+03/01/2023 3:04 PM
+    if test "$platform_os" = "android"; then
+      need_libiconv=1
+    else
+      AC_SEARCH_LIBS([iconv_open],iconv, link_iconv=$ac_cv_search_iconv_open, link_iconv=-liconv; AC_MSG_WARN("No iconv support in toolchain. Will build libiconv."); need_libiconv=1)
+    fi
+[infowski]
+infowski 03/01/2023 3:00 PM
+I will in a minute, yeah xD
+[yolofant]
+yolofant 03/01/2023 3:00 PM
+can you try building with -j1 ?
+[ccarnell98]
+ccarnell98 03/01/2023 3:00 PM
+03/01/2023 3:00 PM
+my git rebase master just screwed up too
+[yolofant]
+[] infowski ...running with that NDK already
+yolofant 03/01/2023 3:00 PM
+I remember there were issues with libpng
+[yolofant]
+yolofant 03/01/2023 3:00 PM
+We shouldn't be using libiconv but rather use the system one
+03/01/2023 2:59 PM
+@Craig I think that libiconv change is wrong. There should be native
+support from glibc but kodi doesn't detect that
+03/01/2023 2:59 PM
+Hmm
+[infowski]
+[] yolofant https://cirrus-ci.com/task/5752207975383040
+infowski 03/01/2023 2:57 PM
+...running with that NDK already
+[infowski]
+infowski 03/01/2023 2:56 PM
+ffs, libpng keeps failing on libm
+[yolofant]
+yolofant 03/01/2023 2:28 PM
+I'm setting the env variables pretty early in the env setup so no idea
+if that's already available
+03/01/2023 2:28 PM
+just need to check if CSpecialProtocol::TranslatePath works
+[infowski]
+infowski 03/01/2023 2:26 PM
+[yolofant]
+yolofant 03/01/2023 2:25 PM
+we already have the file in our ipk
+[infowski]
+infowski 03/01/2023 2:16 PM
+we probably should
+[yolofant]
+yolofant 03/01/2023 2:12 PM
+We can do that in our env setup
+[infowski]
+infowski 03/01/2023 1:48 PM
+https://github.com/xbmc/xbmc/blob/master/xbmc/platform/android/PlatformAndroid.cpp#L32
+xbmc/PlatformAndroid.cpp at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+03/01/2023 1:48 PM
+Hey! They even do exactly that in android platform code.
+03/01/2023 1:47 PM
+regarding let's encrypt -
+https://kodi.wiki/view/SSL_certificates#All_other_platforms this
+generally applies to us
+SSL certificates
+[infowski]
+infowski 03/01/2023 1:26 PM
+That I do know.
+ 1
+[kitsuned]
+[] infowski does Dockerfile `ADD` automatically extract the tarballs?!
+kitsuned 03/01/2023 1:25 PM
+also it can fetch files from url
+[yolofant]
+yolofant 03/01/2023 1:23 PM
+yeah 
+[infowski]
+infowski 03/01/2023 1:22 PM
+and then build all the deps starting from that (edited)
+03/01/2023 1:22 PM
+as a base source of truth
+03/01/2023 1:22 PM
+@Yolofant i mean... if you provide your own prebuilt toolchain for [host
+systems] it can kinda work
+[yolofant]
+yolofant 03/01/2023 1:21 PM
+using buildroot is one solution but unfortunately the dependency version
+do not all match the ones kodi needs
+03/01/2023 1:21 PM
+but bazel also won't solve that issue as they need to build a lot of
+dependencies and those deps will then use different buildsystems
+[yolofant]
+[] blacklua Oops that is Addons*
+yolofant 03/01/2023 1:20 PM
+yes we already tracked that down to certificates not being updated on
+your tv
+[infowski]
+infowski 03/01/2023 1:19 PM
+So... you end up in a fairly similar situation as here, just with much
+more starlark and java
+03/01/2023 1:19 PM
+I didn't have much good experience with bazel either, and the fact you
+need to commit to actually make the build environment hermetic means
+nobody ever actually does that.
+[yolofant]
+yolofant 03/01/2023 1:19 PM
+I guess some dependency problem
+03/01/2023 1:19 PM
+most likely it'll fail with make -j BIGNUMBERHERE xD
+[blacklua]
+[] yolofant what plugins?
+blacklua 03/01/2023 1:19 PM
+Oops that is Addons*
+[infowski]
+infowski 03/01/2023 1:18 PM
+literally every fucking native buildsystem (except for nix :^)) is wonky
+[yolofant]
+yolofant 03/01/2023 1:18 PM
+they're not really using a buildsystem just a lot of makefiles
+[infowski]
+infowski 03/01/2023 1:18 PM
+it always is
+[yolofant]
+yolofant 03/01/2023 1:18 PM
+it fails sometimes randomly
+03/01/2023 1:18 PM
+yeah unfortunately the build is a bit wonky
+[infowski]
+[] yolofant after you compiled the dependencies you'll need to build
+libiconv (this seems a bug) and flatbuffers
+infowski 03/01/2023 1:17 PM
+Ah yes, nothing like a good hermetic reproducible build.
+[yolofant]
+[] blacklua LG plugins are not installed
+yolofant 03/01/2023 1:17 PM
+what plugins?
+[yolofant]
+[] blacklua Everything is fine on Android
+yolofant 03/01/2023 1:17 PM
+yes, I would expect so webOS is just a lot different
+[blacklua]
+[] blacklua Everything is fine on Android
+blacklua 03/01/2023 1:17 PM
+LG plugins are not installed
+[yolofant]
+yolofant 03/01/2023 1:16 PM
+    make -C native/flatbuffers
+    make -C target/libiconv
+[blacklua]
+[] blacklua I can't install plugins
+blacklua 03/01/2023 1:16 PM
+Everything is fine on Android
+[yolofant]
+yolofant 03/01/2023 1:16 PM
+after you compiled the dependencies you'll need to build libiconv (this
+seems a bug) and flatbuffers
+[infowski]
+infowski 03/01/2023 1:15 PM
+If <src> is a local tar archive in a recognized compression format (identity, gzip, bzip2 or xz) then it is unpacked as a directory. Resources from remote URLs are not decompressed. 
+this is pretty dumb tbh
+[yolofant]
+yolofant 03/01/2023 1:15 PM
+    make -C tools/depends/target/cmakebuildsys BUILD_DIR=/home/ssundermann/Sourcecode/xbmc-webos-build CMAKE_EXTRA_ARGUMENTS="-DHAVE_LINUX_UDMABUF=OFF -DSWIG_EXECUTABLE=/home/ssundermann/Sourcecode/xbmc-webos-deps/x86_64-linux-gnu-native/bin/swig -DCORE_PLATFORM_NAME=webos"
+ 1
+03/01/2023 1:15 PM
+    ./configure --prefix=/home/ssundermann/Sourcecode/xbmc-webos-deps --host=arm-webos-linux-gnueabi --with-rendersystem=gles --enable-debug=no --with-target-cflags='-march=armv7-a -mfloat-abi=softfp -mfpu=neon' --with-platform=webos --with-target-cxxflags='-static-libstdc++'
+[infowski]
+infowski 03/01/2023 1:15 PM
+the more you know
+03/01/2023 1:14 PM
+does Dockerfile ADD automatically extract the tarballs?!
+03/01/2023 1:14 PM
+wait wtf
+03/01/2023 1:14 PM
+xD
+[yolofant]
+yolofant 03/01/2023 1:13 PM
+[:MonkaWTF:]
+[infowski]
+infowski 03/01/2023 1:13 PM
+>>>>tar: /opt/ndk.tar.gz: Cannot read: Is a directory the what
+[yolofant]
+yolofant 03/01/2023 1:13 PM
+[infowski]
+infowski 03/01/2023 1:13 PM
+not my first rodeo
+[yolofant]
+yolofant 03/01/2023 1:13 PM
+because kodi stores some of the binaries source tree
+[infowski]
+infowski 03/01/2023 1:13 PM
+I know, I know.
+03/01/2023 1:13 PM
+yeah
+[yolofant]
+yolofant 03/01/2023 1:13 PM
+if you already started building some stuff I would recommend git clean
+-fdx
+03/01/2023 1:10 PM
+yep
+hellobox. 03/01/2023 1:10 PM
+same commit
+03/01/2023 1:10 PM
+may work
+03/01/2023 1:10 PM
+https://github.com/openlgtv/buildroot-nc4/commit/b3466f0317942aa114e349d6bd210aa63ef91e9b
+[yolofant]
+yolofant 03/01/2023 1:09 PM
+it's just missing getauxval
+03/01/2023 1:09 PM
+this has the stdint fixes and -lrt by default
+03/01/2023 1:09 PM
+https://cirrus-ci.com/task/5752207975383040
+Cirrus CI
+Cirrus CI makes your development cycle fast, efficient, and secure by
+leveraging modern cloud technologies.
+[]
+hellobox. 03/01/2023 1:08 PM
+you definitely don't want the latest commits
+[infowski]
+infowski 03/01/2023 1:08 PM
+Oh, so I need... version newer than the latest binary release? :^)
+[yolofant]
+yolofant 03/01/2023 1:07 PM
+yeah but you need some other changes
+[infowski]
+infowski 03/01/2023 1:07 PM
+So that's probably from before getauxval fuckery?
+03/01/2023 1:06 PM
+I mean - the "github release"
+03/01/2023 1:06 PM
+The newest one is from 2023-01-21
+[yolofant]
+yolofant 03/01/2023 1:06 PM
+sorry, let me check 
+03/01/2023 1:06 PM
+I'm not sure about those getauxval changes
+[infowski]
+infowski 03/01/2023 1:06 PM
+lol
+[yolofant]
+yolofant 03/01/2023 1:06 PM
+maybe actually not the newest
+[infowski]
+infowski 03/01/2023 1:05 PM
+I had buildroot 2022.05.2-based version.
+03/01/2023 1:04 PM
+Good point.
+[yolofant]
+yolofant 03/01/2023 1:02 PM
+@infowski you should probably use newest br-nc4 ci artifact
+[blacklua]
+[] ccarnell98 <@849182868713635870> You're missing a bit. You can always
+used pastebin if it's too long
+blacklua 03/01/2023 12:58 PM
+https://pastebin.com/WjPGL6wh
+[infowski]
+infowski 03/01/2023 12:57 PM
+webOS 6 and older should be able to properly update from Homebrew
+Channel, the big scary warning is only for rooted webOS 22 users.
+ 2
+hellobox. 03/01/2023 12:56 PM
+https://github.com/webosbrew/webos-homebrew-channel/releases/tag/v0.6.3
+0verr1de_ thanks for your answer, so i can update it when it shows the
+update and i will se it when its ready?
+hellobox. 03/01/2023 12:56 PM
+it's out now
+ 2
+[] infowski We pulled it due to a self-update bug on webOS 22 leading to
+loss of root. I'll release a final patc...
+0verr1de_ 03/01/2023 12:54 PM
+thanks for your answer, so i can update it when it shows the update and
+i will se it when its ready?
+[ccarnell98]
+ccarnell98 03/01/2023 12:46 PM
+@Blacklua You're missing a bit. You can always used pastebin if it's too
+long
+[infowski]
+infowski 03/01/2023 12:38 PM
+what do you want from me
+[image.png]
+ image.png
+5.26 KB External
+03/01/2023 12:37 PM
+did I mention I despise most of native build environments? :^)
+03/01/2023 12:36 PM
+I need to figure out my build environment for kodi to test this theory
+out...
+03/01/2023 12:34 PM
+wonder if it's a bug in kodi/xbmc (and we need to wait a little longer),
+or a bug in wayland compositor here.
+[blacklua]
+[] ccarnell98 Can you try this: curl -vL
+https://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/script.cu.lrclyr...
+blacklua 03/01/2023 12:34 PM
+     [5 bytes data]
+    * TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+    { [265 bytes data]
+    * TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+    { [265 bytes data]
+    * old SSL session ID is stale, removing
+    { [5 bytes data]
+    < HTTP/2 302
+    < date: Wed, 01 Mar 2023 11:30:50 GMT
+    < content-type: text/html; charset=utf-8
+    < content-length: 0
+    < location: https://mirror.yandex.ru/mirrors/xbmc/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip
+    < cache-control: no-cache
+    < content-md5: BEkKN0dOc97uISCOvGpG0w==
+    < content-sha1: AsY7dnhUNgyXjSWJvicmhCapPaA=
+    < content-sha256: AhwVtJlgMb9dHP4uKo2+z8LVYGWY5o4bokrRMVSgN8I=
+    < link: <https://ftp.halifax.rwth-aachen.de/xbmc/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip>; rel=duplicate; pri=1; geo=de
+    < expires: Wed, 01 Mar 2023 11:30:49 GMT
+    < x-frame-options: SAMEORIGIN
+    <
+    { [0 bytes data]
+[infowski]
+infowski 03/01/2023 12:34 PM
+only on_mode and on_geometry
+03/01/2023 12:33 PM
+@Yolofant OH! I see why it doesn't work on webOS 3.x - according to
+WAYLAND_DEBUG xbmc/windowing/wayland/Output.cpp on_done callback is
+never issued by wl_output there. (edited)
+03/01/2023 12:27 PM
+iirc some older webOS versions only had DST Root CA X3, or both DST Root
+CA X3 and ISRG Root CA X1, but due to some... openssl bug/mishandling of
+expired certs, most of the time it's unable to validate the X1-issued
+chain. (edited)
+[ccarnell98]
+ccarnell98 03/01/2023 12:27 PM
+@Blacklua Can you provide the output of the curl command above? thx
+03/01/2023 12:26 PM
+* Server certificate: * subject: CN=*.kodi.tv * start date: Jan 8 21:05:15 2023 GMT * expire date: Apr 8 21:05:14 2023 GMT * subjectAltName: host "mirrors.kodi.tv" matched cert's "*.kodi.tv" * issuer: C=US; O=Let's Encrypt; CN=R3 * SSL certificate verify ok.
+(edited)
+[infowski]
+infowski 03/01/2023 12:25 PM
+https://letsencrypt.org/docs/dst-root-ca-x3-expiration-september-2021/
+03/01/2023 12:25 PM
+(curl -v on a "normal" curl instal should show you some certificate info
+at the beginning - or you can just use your usual browser to take a look
+at it) (edited)
+03/01/2023 12:24 PM
+and I see mirrors.kodi.tv is using Let's Encrypt
+03/01/2023 12:24 PM
+We've been struggling with this since end of 2021 so we know that 
+[ccarnell98]
+[] infowski Missing CA certificate for Let's Encrypt.
+ccarnell98 03/01/2023 12:24 PM
+how did you find out it was that specific cert?
+[infowski]
+infowski 03/01/2023 12:23 PM
+I am guessing they do that on Android already?
+03/01/2023 12:22 PM
+if so - it's probably because of the CA certificates - "LG" problem -
+IMO we should probably just add our own CA bundle if that's possible
+here.
+[ccarnell98]
+ccarnell98 03/01/2023 12:22 PM
+should download a non-empty file
+[ccarnell98]
+[] blacklua And how to fix it? Or nothing?
+ccarnell98 03/01/2023 12:22 PM
+Can you try this: curl -vL
+https://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip
+--output script.cu.lrclyrics-6.5.2.zip
+[infowski]
+infowski 03/01/2023 12:22 PM
+By this I mean - fetching extensions in kodi itself, not plain curl
+command (edited)
+03/01/2023 12:22 PM
+Does this work on your TV? LG has updated CA certificates to include
+"newer" Let's Encrypt CA on some newer firmware versions.
+[ccarnell98]
+ccarnell98 03/01/2023 12:22 PM
+curl -vL
+https://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip
+--output script.cu.lrclyrics-6.5.2.zip ---> works on my TV now
+03/01/2023 12:21 PM
+@infowski Is that a problem with mirrors.kodi.tv, or the mirror itself,
+or an LG problem ? 
+03/01/2023 12:20 PM
+curl -vL
+https://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip
+--output script.cu.lrclyrics-6.5.2.zip
+03/01/2023 12:20 PM
+aha this does
+[infowski]
+infowski 03/01/2023 12:20 PM
+Missing CA certificate for Let's Encrypt.
+[ccarnell98]
+ccarnell98 03/01/2023 12:16 PM
+this does: curl -v
+https://mirrors.up.pt/pub/kodi/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip
+--output script.cu.lrclyrics-6.5.2.zip
+03/01/2023 12:15 PM
+This doesn't work locally.. curl -v
+https://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip
+--output script.cu.lrclyrics-6.5.2.zip
+[infowski]
+infowski 03/01/2023 12:11 PM
+https://gist.github.com/Informatic/50d6160d3c08cabfad99d6cd6f69e5fd#file-kodi-log-L156
+hmmmmmm...
+kodi.log
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+[yolofant]
+yolofant 03/01/2023 12:09 PM
+that should enable debug logging and windowing logging
+03/01/2023 12:09 PM
+      <loglevel>2</loglevel>  
+      <setting id="debug.extralogging">true</setting>
+      <setting id="debug.setextraloglevel">524288</setting>
+    </advancedsettings>
+03/01/2023 12:07 PM
+yes
+[infowski]
+infowski 03/01/2023 12:07 PM
+I only see LOGINFO...
+03/01/2023 12:07 PM
+oh wait, I should probably enable some deeper logging in kodi?
+[yolofant]
+yolofant 03/01/2023 12:07 PM
+if it's 4k it should have 1080p framebuffer
+03/01/2023 12:06 PM
+yeah
+[infowski]
+infowski 03/01/2023 12:06 PM
+(it's 4k TV, and 1080p works on RetroArch)
+03/01/2023 12:06 PM
+That should be 1080p
+[yolofant]
+yolofant 03/01/2023 12:06 PM
+do you know the framebuffer size on the tv?
+[ccarnell98]
+ccarnell98 03/01/2023 12:05 PM
+On 7 it is 1.11
+[yolofant]
+yolofant 03/01/2023 12:05 PM
+the resolution is 1080p hardcoded by default
+03/01/2023 12:05 PM
+maybe
+03/01/2023 12:05 PM
+hmm
+[infowski]
+infowski 03/01/2023 12:05 PM
+May be. WAYLAND_DEBUG=1 does show... something.
+https://gist.github.com/Informatic/7193734443cbd010b5b6b1c656d2de0f#file-wayland_kodi-webos_4174-log
+kodi.log
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+[yolofant]
+yolofant 03/01/2023 12:03 PM
+I think it was 1.10 on webos 7
+[ccarnell98]
+ccarnell98 03/01/2023 12:03 PM
+do we know what version of wayland they are using
+[yolofant]
+yolofant 03/01/2023 12:03 PM
+https://github.com/xbmc/xbmc/blob/master/xbmc/windowing/wayland/WinSystemWayland.cpp#L193
+xbmc/WinSystemWayland.cpp at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+03/01/2023 12:02 PM
+is it possible the protocols are too new?
+03/01/2023 12:01 PM
+[infowski]
+[] yolofant either that or we can also try a `libwayland-client.so.1`
+from buildroot
+infowski 03/01/2023 12:01 PM
+I stole libwayland-client.so.0 from 2018 TV firmware and it does
+actually start executing some xbmc code, but logs end on
+2023-03-01 11:59:41.774 T:4105 info <general>: InitWindowSystem: Connecting to Wayland server
+and it crashes with what(): No outputs received from compositor
+[ccarnell98]
+ccarnell98 03/01/2023 12:00 PM
+nothing gets downloaded
+03/01/2023 12:00 PM
+curl -v
+https://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip
+--output /media/developer/script.cu.lrclyrics-6.5.2.zip
+[mariotaku]
+mariotaku 03/01/2023 11:58 AM
+We probably need to ship a CA database OR enable unsafe TLS
+03/01/2023 11:57 AM
+Sooo...
+[yolofant]
+yolofant 03/01/2023 11:57 AM
+it is possible that LG doesn't have certificates for the CA
+[mariotaku]
+mariotaku 03/01/2023 11:57 AM
+No wonder.
+[yolofant]
+yolofant 03/01/2023 11:57 AM
+they use lets encrypt
+03/01/2023 11:56 AM
+curl https://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip
+[blacklua]
+[] ccarnell98 Can you try curl from ssh ?
+blacklua 03/01/2023 11:56 AM
+And how to check?
+[ccarnell98]
+[] blacklua And how to fix it? Or nothing?
+ccarnell98 03/01/2023 11:54 AM
+Can you try curl from ssh ?
+[ccarnell98]
+ccarnell98 03/01/2023 11:54 AM
+I don't need luna yet
+03/01/2023 11:54 AM
+at the moment
+[yolofant]
+yolofant 03/01/2023 11:54 AM
+oh you still use a script?
+[ccarnell98]
+ccarnell98 03/01/2023 11:53 AM
+my work around was to change LD_LIBRARY_PATH in kodi.sh
+[yolofant]
+yolofant 03/01/2023 11:53 AM
+so if you have a webos4+ tv you can't really test this
+03/01/2023 11:53 AM
+the jailer exports local libraries in LD_LIBRARY_PATH first
+03/01/2023 11:53 AM
+umm but how do you test
+[ccarnell98]
+[] yolofant either that or we can also try a `libwayland-client.so.1`
+from buildroot
+ccarnell98 03/01/2023 11:52 AM
+had that thought, that may work. It still seems to load kodi 
+[yolofant]
+yolofant 03/01/2023 11:52 AM
+/usr/lib has precedence so we can safely ship that
+[blacklua]
+[] ccarnell98 This is the issue --> Failed: SSL peer certificate or SSH
+remote key was not OK(60)
+blacklua 03/01/2023 11:52 AM
+And how to fix it? Or nothing?
+[yolofant]
+[] infowski that could work indeed. 
+yolofant 03/01/2023 11:52 AM
+either that or we can also try a libwayland-client.so.1 from buildroot
+[ccarnell98]
+ccarnell98 03/01/2023 11:51 AM
+This is the issue --> Failed: SSL peer certificate or SSH remote key was
+not OK(60)
+[blacklua]
+blacklua 03/01/2023 11:51 AM
+I can't install plugins
+[blacklua]
+[] yolofant not sure about your 2nd question
+blacklua 03/01/2023 11:49 AM
+    2023-03-01 13:48:08.954 T:13358   error <general>: Could not fetch addon location and hash from https://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/script.cu.lrclyrics-6.5.2.zip
+    2023-03-01 13:48:08.954 T:13358   error <general>: CAddonInstallJob[script.cu.lrclyrics]: failed to resolve addon install source path
+    2023-03-01 13:48:09.941 T:13358   error <general>: CCurlFile::Stat - <http://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/resources/icon.png> Failed: SSL peer certificate or SSH remote key was not OK(60)
+    2023-03-01 13:48:22.792 T:13318   error <general>: CCurlFile::Stat - <http://mirrors.kodi.tv/addons/nexus/script.cu.lrclyrics/resources/icon.png> Failed: SSL peer certificate or SSH remote key was not OK(60)
+    2023-03-01 13:48:23.709 T:13318   error <general>: CCurlFile::CReadState::FillBuffer - (0x817de280) Failed: SSL peer certificate or SSH remote key was not OK(60)
+[infowski]
+infowski 03/01/2023 11:42 AM
+that could work indeed. 
+[infowski]
+[] yolofant
+https://gitlab.freedesktop.org/wayland/wayland/-/commit/6d29c0da3cd168e08187cd204d2314188479c0f1
+thi...
+infowski 03/01/2023 11:42 AM
+Huh... as a weak symbol?
+[yolofant]
+yolofant 03/01/2023 11:08 AM
+not sure about your 2nd question
+[yolofant]
+[] blacklua Hello everyone, why doesn't kodi see the flash drive? And I
+can't install dependencies
+yolofant 03/01/2023 11:07 AM
+I don't know about the first one usually flash drives would be mounted
+in /tmp/usb but it doesn't work properly
+[blacklua]
+[] blacklua Hello everyone, why doesn't kodi see the flash drive? And I
+can't install dependencies
+blacklua 03/01/2023 10:23 AM
+?
+[infowski]
+0verr1de_ i read in the piccap thread that a new homebrew version is
+out? is this version also published in th...
+infowski 03/01/2023 7:33 AM
+We pulled it due to a self-update bug on webOS 22 leading to loss of
+root. I'll release a final patch sometime later this week.
+[blacklua]
+blacklua 03/01/2023 5:25 AM
+Hello everyone, why doesn't kodi see the flash drive? And I can't
+install dependencies
+[mariotaku]
+[] yolofant <@225167450713358338> can we move webos-userland to
+webosbrew?
+mariotaku 03/01/2023 2:20 AM
+Yes. Please let me know when you perform the transfer.
+0verr1de_ 03/01/2023 2:20 AM
+i read in the piccap thread that a new homebrew version is out? is this
+version also published in the normal homebre chanel update?
+[yolofant]
+yolofant 03/01/2023 12:53 AM
+that flag is only used for assertions
+03/01/2023 12:53 AM
+actually it should be fine
+03/01/2023 12:51 AM
+    wrapper->flags = WL_PROXY_FLAG_WRAPPER;
+that might be a problem though
+03/01/2023 12:47 AM
+https://gitlab.freedesktop.org/wayland/wayland/-/commit/6d29c0da3cd168e08187cd204d2314188479c0f1
+this seems backportable for webos < 4
+client: Introduce proxy wrappers (6d29c0da) · Commits · wayland / w...
+Using the libwayland-client client API with multiple threads with thread
+local queues are prone to race conditions. The problem is that one
+thread can read and queue events after another...
+[]
+[astur3l]
+astur3l 03/01/2023 12:25 AM
+ there's no server for win 10 pro
+[yolofant]
+yolofant 03/01/2023 12:07 AM
+use nfs 
+[astur3l]
+[] itsyogsothoth I think it's just normal smb behaviour when it
+enumerates the directory. The more objects the longer...
+astur3l 03/01/2023 12:06 AM
+fast on my phone in solid explorer
+[itsyogsothoth]
+[] astur3l it took seconds to load the directories  in browse
+itsyogsothoth 03/01/2023 12:05 AM
+I think it's just normal smb behaviour when it enumerates the directory.
+The more objects the longer it takes
+February 28, 2023
+[yolofant]
+yolofant 02/28/2023 11:21 PM
+I think you can change the userdata path in the settings though
+02/28/2023 11:20 PM
+it pretty much matches the behaviour on android
+02/28/2023 11:20 PM
+it should be
+02/28/2023 11:20 PM
+but updating is fine
+02/28/2023 11:20 PM
+yes
+[] yolofant I think if you install the same apk again it will only
+overwrite the files
+hellobox. 02/28/2023 11:19 PM
+not sure, but i'm pretty sure uninstalling and reinstalling would cause
+the directory to be deleted
+[astur3l]
+astur3l 02/28/2023 11:18 PM
+since 4k with sw decoding its worser than slide show 
+02/28/2023 11:17 PM
+no, fhd was kinda fine
+[yolofant]
+yolofant 02/28/2023 11:17 PM
+that doesn't mean that the file transfer is slow too
+[astur3l]
+astur3l 02/28/2023 11:17 PM
+it took seconds to load the directories  in browse (edited)
+[yolofant]
+yolofant 02/28/2023 11:17 PM
+how do you know?
+02/28/2023 11:17 PM
+[astur3l]
+astur3l 02/28/2023 11:16 PM
+anyway smb was awfull slow
+[yolofant]
+yolofant 02/28/2023 11:16 PM
+version checker uses that
+[astur3l]
+astur3l 02/28/2023 11:16 PM
+ah lol 
+[yolofant]
+yolofant 02/28/2023 11:16 PM
+lsb_release cannot run in jail properly
+02/28/2023 11:16 PM
+check version error is normal
+[astur3l]
+astur3l 02/28/2023 11:16 PM
+but sometimes it feels that kodi have some network issues?:D mine cant
+check version and when i went back from video it throwed 'couldnt
+connect to remote' on smb share.. meanwhile it was playing in the
+background.. 
+02/28/2023 11:15 PM
+btw @Yolofant smb share works via adding it by ip..:D
+[yolofant]
+yolofant 02/28/2023 11:14 PM
+I think if you install the same apk again it will only overwrite the
+files
+ 1
+02/28/2023 11:14 PM
+are they wiped though?
+hellobox. 02/28/2023 11:13 PM
+so settings don't get wiped on reinstall
+02/28/2023 11:13 PM
+or somewhere in /var maybe
+02/28/2023 11:12 PM
+maybe you should use /home/root if elevated?
+02/28/2023 11:12 PM
+i was going to suggest storing settings in /home/root, but i guess you'd
+need root for that
+[yolofant]
+yolofant 02/28/2023 11:11 PM
+if we had usb devices we could move the userdata onto the usb stick to
+save space
+02/28/2023 11:10 PM
+but it works in retroarch
+02/28/2023 11:10 PM
+unfortunately usb devices don't seem to mount in kodi :/
+02/28/2023 11:10 PM
+yeah
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 11:08 PM
+Yup. All userdata and config is stored there from what I can tell
+[astur3l]
+astur3l 02/28/2023 11:05 PM
+but where's settings stored?:D
+`/media/developer/apps/usr/palm/applications/org.xbmc.kodi/.kodi` ?
+[yolofant]
+yolofant 02/28/2023 11:04 PM
+[:POG:]
+[astur3l]
+astur3l 02/28/2023 11:03 PM
+hah, it works. just took a min to open the share. 
+02/28/2023 11:01 PM
+fml.. after pressing ok, it just freezed 
+[astur3l]
+[] itsyogsothoth So umm... did you add network location using IP address
+or hostname?
+astur3l 02/28/2023 10:58 PM
+i trying it now.. but i wanted to avoid typing too much 
+[astur3l]
+astur3l 02/28/2023 10:58 PM
+lol, mr pointer just started to working
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 10:56 PM
+So umm... did you add network location using IP address or hostname?
+(edited)
+[astur3l]
+astur3l 02/28/2023 10:55 PM
+    2023-02-28 21:53:48.664 T:17821   error <general>: SMBDirectory->GetDirectory: Unable to open directory : 'smb://192.168.1.106/'
+                                                       unix_err:'16' error : 'Invalid argument'
+    2023-02-28 21:53:49.989 T:17821   error <general>: GetDirectory - Error getting smb://ASTUREL-PC/
+    2023-02-28 21:53:49.989 T:17821   error <general>: CGUIDialogFileBrowser::GetDirectory(smb://ASTUREL-PC/) failed
+    2023-02-28 21:53:50.703 T:17821   error <general>: SMBDirectory->GetDirectory: Unable to open directory : 'smb://192.168.1.106/'
+                                                       unix_err:'16' error : 'Invalid argument'
+    2023-02-28 21:53:51.589 T:17821   error <general>: GetDirectory - Error getting smb://ASTUREL-PC/
+    2023-02-28 21:53:51.589 T:17821   error <general>: CGUIDialogFileBrowser::GetDirectory(smb://ASTUREL-PC/) failed
+    2023-02-28 21:53:52.787 T:17821   error <general>: SMBDirectory->GetDirectory: Unable to open directory : 'smb://192.168.1.106/'
+                                                       unix_err:'16' error : 'Invalid argument'
+    2023-02-28 21:53:53.588 T:17821   error <general>: GetDirectory - Error getting smb://ASTUREL-PC/
+    2023-02-28 21:53:53.589 T:17821   error <general>: CGUIDialogFileBrowser::GetDirectory(smb://ASTUREL-PC/) failed
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 10:54 PM
+Firewall settings?
+[astur3l]
+astur3l 02/28/2023 10:51 PM
+i tried, same error, oh fuck i mistyped the ip  MR support wanted 
+anyway doesnt works (edited)
+[yolofant]
+yolofant 02/28/2023 10:49 PM
+maybe that's it
+02/28/2023 10:49 PM
+interesting
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 10:49 PM
+Also make sure workgroup name is matching
+02/28/2023 10:48 PM
+The only thing I've changed was WINS server address to match my machine
+[PXL_20230228_214825727.jpg]
+ PXL_20230228_214825727.jpg
+238.85 KB External
+[astur3l]
+astur3l 02/28/2023 10:47 PM
+i dont even have https://kodi.wiki/view/Settings/Services/SMB_Client ,
+yeah, i dont have smb client option :d oh needs advanced settings 
+(edited)
+SMB Client
+[yolofant]
+yolofant 02/28/2023 10:46 PM
+you can change smb version there
+02/28/2023 10:45 PM
+I think in system -> services
+02/28/2023 10:45 PM
+there's some kodi setting
+02/28/2023 10:45 PM
+it should use v3
+02/28/2023 10:45 PM
+I haven't researched the smb not working stuff any further
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 10:45 PM
+I changed samba config to not allow smb v1 connections and it still
+works
+[yolofant]
+yolofant 02/28/2023 10:45 PM
+no
+[astur3l]
+astur3l 02/28/2023 10:44 PM
+the smb share 
+[yolofant]
+yolofant 02/28/2023 10:44 PM
+what?
+[astur3l]
+astur3l 02/28/2023 10:44 PM
+or its stored in some db
+02/28/2023 10:44 PM
+didnt u tried to add via editing settings xml?:D
+[yolofant]
+yolofant 02/28/2023 10:43 PM
+yes it should have that
+[astur3l]
+astur3l 02/28/2023 10:43 PM
+but kodi 21 have smb3 support, doesnt it?
+02/28/2023 10:42 PM
+@Yolofant
+https://forum.kodi.tv/showthread.php?tid=304203&pid=2688499#pid2688499
+02/28/2023 10:40 PM
+but i guess linux smb by def have smb1 enabled, or atleast not smb3
+restricted (edited)
+[itsyogsothoth]
+[] astur3l it doesnt tell much without telling ``lsb_release -a`` 
+itsyogsothoth 02/28/2023 10:40 PM
+I'll just say Arch
+[astur3l]
+[] itsyogsothoth Whatever samba package provides
+astur3l 02/28/2023 10:40 PM
+it doesnt tell much without telling `lsb_release -a` 
+[yolofant]
+yolofant 02/28/2023 10:40 PM
+@ItsYogSothoth has to help 
+02/28/2023 10:40 PM
+yeah it doesn't work for me
+[itsyogsothoth]
+[] astur3l which smb protocol ver? v1?
+itsyogsothoth 02/28/2023 10:39 PM
+Whatever samba package provides
+[astur3l]
+astur3l 02/28/2023 10:39 PM
+btw @Yolofant afaik i get the same error (invalid arg?) when tried smb
+v1,v2 on windows smb3 only share..
+[astur3l]
+[] itsyogsothoth <@195583665265311744> just tested playback over SMB in
+your Kodi build. And well.... it works
+astur3l 02/28/2023 10:38 PM
+which smb protocol ver? v1?
+[yolofant]
+yolofant 02/28/2023 10:38 PM
+I've had that working except for seeking 
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 10:15 PM
+1080p H265 with software decoding is problematic. Still, I'm very
+impressed with this first build of Kodi
+02/28/2023 10:08 PM
+Can't wait
+[yolofant]
+yolofant 02/28/2023 10:08 PM
+maybe this weekend 
+02/28/2023 10:07 PM
+I already have a prototype that I need to clean up
+02/28/2023 10:07 PM
+not too soon 
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 10:07 PM
+soon
+[yolofant]
+yolofant 02/28/2023 10:07 PM
+hw decoding soon 
+ 1
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 10:06 PM
+1080p is a okay though
+[yolofant]
+yolofant 02/28/2023 10:06 PM
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 10:06 PM
+Oh, I can tell after playing 4K vid
+02/28/2023 10:04 PM
+Huh
+[yolofant]
+yolofant 02/28/2023 10:03 PM
+nice though that is pure software decoding
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 10:03 PM
+1080p over smb, no stuttering
+[PXL_20230228_210303300.MP.jpg]
+ PXL_20230228_210303300.MP.jpg
+437.16 KB External
+[yolofant]
+yolofant 02/28/2023 10:01 PM
+I think that is a more suitable place
+02/28/2023 10:01 PM
+@Mariotaku can we move webos-userland to webosbrew?
+02/28/2023 9:59 PM
+but I'm glad that it is indeed working!
+02/28/2023 9:59 PM
+it didn't work for me so I used nfs instead 
+02/28/2023 9:59 PM
+nice!
+02/28/2023 9:59 PM
+[itsyogsothoth]
+itsyogsothoth 02/28/2023 9:33 PM
+@Yolofant just tested playback over SMB in your Kodi build. And well....
+it works
+[yolofant]
+yolofant 02/28/2023 8:29 PM
+[blacklua]
+[] yolofant <@849182868713635870> did that work?
+blacklua 02/28/2023 8:29 PM
+Yes.Thank you very much for your help
+[yolofant]
+yolofant 02/28/2023 8:24 PM
+else things break due to libstdc++ version differences
+02/28/2023 8:23 PM
+I already have that
+hellobox. 02/28/2023 8:20 PM
+would -static-libstdc++ help?
+02/28/2023 8:20 PM
+what's it used by?
+[yolofant]
+yolofant 02/28/2023 8:12 PM
+even if the host has libatomic
+02/28/2023 8:11 PM
+do you think we can just bundle libatomic from buildroot?
+hellobox. 02/28/2023 6:59 PM
+4.0.0 m16pp doesn't have libatomic
+[yolofant]
+yolofant 02/28/2023 6:57 PM
+[m.ksy]
+[] yolofant <@849182868713635870> did that work?
+m.ksy 02/28/2023 6:50 PM
+It worked on my 4.9 (edited)
+[yolofant]
+yolofant 02/28/2023 6:28 PM
+@Blacklua did that work?
+hellobox. 02/28/2023 5:38 PM
+just run it again
+02/28/2023 5:38 PM
+no
+[blacklua]
+[] yolofant Click to see attachment
+blacklua 02/28/2023 5:37 PM
+Then reboot?
+[yolofant]
+yolofant 02/28/2023 5:33 PM
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib
+02/28/2023 5:32 PM
+rename that one to libatomic.so.1 and put it into kodi/lib
+02/28/2023 5:32 PM
+(no content)
+ libatomic.so.1.2.0
+39.42 KB External
+[] smx2460 Is this computed?
+hellobox. 02/28/2023 5:32 PM
+no, that's straight from the kernel. glibc does some stuff with it that
+we won't have access to that way, but it's probably not necessary
+[] ccarnell98 buildroot-nc4
+hellobox. 02/28/2023 5:30 PM
+i don't see any versioned symbols newer than GLIBC_2.4, so it might work
+[yolofant]
+yolofant 02/28/2023 5:29 PM
+[:lg:]
+02/28/2023 5:29 PM
+usually 
+hellobox. 02/28/2023 5:29 PM
+libatomic, which is usually installed alongside libstdc++.
+02/28/2023 5:29 PM
+https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_concurrency_impl.html
+[ccarnell98]
+ccarnell98 02/28/2023 5:28 PM
+buildroot-nc4
+02/28/2023 5:28 PM
+output/target/lib/libatomic.so
+hellobox. 02/28/2023 5:28 PM
+i think so
+[yolofant]
+yolofant 02/28/2023 5:28 PM
+isn't libatomic from gcc?
+hellobox. 02/28/2023 5:27 PM
+it's not on 1.2.0 or 1.4.0
+02/28/2023 5:27 PM
+soc vendor?
+[yolofant]
+yolofant 02/28/2023 5:27 PM
+something happened on 4.9.0
+02/28/2023 5:27 PM
+ye
+hellobox. 02/28/2023 5:27 PM
+and 3.4.0
+02/28/2023 5:27 PM
+lol it's on 2.2.3 though?
+[yolofant]
+yolofant 02/28/2023 5:27 PM
+you probably just need a libatomic from somewhere
+[blacklua]
+blacklua 02/28/2023 5:26 PM
+?
+02/28/2023 5:25 PM
+It turns out that Kodi can't be started? In Webos 4.9
+[yolofant]
+yolofant 02/28/2023 5:05 PM
+4.9.0 indeed doesn't have it
+02/28/2023 5:05 PM
+oh nvm
+[yolofant]
+[] mariotaku Give this tool a shot!
+https://github.com/webosbrew/compat-checker
+yolofant 02/28/2023 5:04 PM
+I've checked it there and libatomic is available
+[mariotaku]
+[] yolofant the * was important 
+mariotaku 02/28/2023 5:00 PM
+Give this tool a shot! https://github.com/webosbrew/compat-checker
+GitHub - webosbrew/compat-checker: Compatibility checker tool for apps
+Compatibility checker tool for apps. Contribute to
+webosbrew/compat-checker development by creating an account on GitHub.
+[]
+[blacklua]
+blacklua 02/28/2023 4:56 PM
+4.9
+[] blacklua It's still like this
+hellobox. 02/28/2023 4:40 PM
+what webos version?
+[blacklua]
+[] yolofant the * was important 
+blacklua 02/28/2023 4:36 PM
+It's still like this
+[yolofant]
+yolofant 02/28/2023 3:40 PM
+the * was important 
+[blacklua]
+[] yolofant `ls -lah /usr/lib/libatomic*`
+blacklua 02/28/2023 3:13 PM
+    ls -lah /usr/lib/libatomic
+    ls: /usr/lib/libatomic: No such file or directory
+[yolofant]
+yolofant 02/28/2023 3:08 PM
+ls -lah /usr/lib/libatomic*
+[blacklua]
+[] yolofant ```/usr/bin/jailer -t native_devmode -i org.xbmc.kodi -p /
+media/developer/apps/usr/palm/application...
+blacklua 02/28/2023 3:04 PM
+    /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos: error while loading shared libraries: libatomic.so.1: cannot open shared object file: No such file or directory
+[yolofant]
+yolofant 02/28/2023 2:58 PM
+    /usr/bin/jailer -t native_devmode -i org.xbmc.kodi -p /
+    media/developer/apps/usr/palm/applications/org.xbmc.kodi /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+[blacklua]
+blacklua 02/28/2023 2:53 PM
+Fixed it, but when I go in, nothing happens in Kodi
+[infowski]
+infowski 02/28/2023 2:23 PM
+Well, are you sure the file is in /tmp? (edited)
+[yolofant]
+yolofant 02/28/2023 2:08 PM
+Hmm the command is a little different from the one on the hb channel
+manual installation instruction
+[blacklua]
+[] yolofant Are you sure the path is correct?
+blacklua 02/28/2023 12:55 PM
+1) There is memory 2) I mean luna-send -i -f
+luna://com.webos.appInstallService/dev/install
+'{"id":"org.xbmc.kodi","ipkUrl":"/tmp/app.ipk ","subscribe":true}'
+[yolofant]
+yolofant 02/28/2023 12:36 PM
+Are you sure the path is correct?
+02/28/2023 12:36 PM
+Total size is 0
+02/28/2023 12:35 PM
+Do you have enough space?
+[blacklua]
+[] yolofant ok so this ipk has the symlink included
+blacklua 02/28/2023 12:32 PM
+Hello, what to do if it does not install? { "id": "org.xbmc.kodi",
+"statusValue": 24, "details": { "receivedSize": "0", "packageId": "",
+"modifiedTime": "", "unpackFileSize": "0", "client":
+"com.webos.lunasend-7414", "totalSize": "0", "progress": 100,
+"verified": false, "errorCode": -5, "installBasePath":
+"/media/developer", "reason": "Failed to extract package", "downgrade":
+true, "paused": false, "simpleStatus": "install", "state": "install
+failed", "update": false, "ipkFile": "/tmp/app.ipk" } (edited)
+[yolofant]
+yolofant 02/28/2023 10:18 AM
+it seems waylandpp can select different wrapper_types
+https://github.com/NilsBrause/waylandpp/commit/f7ba41a70bf3de14f79b3d1646b703b31d011404#diff-327987a44a7b58e9f261bb70034872d804257f9d06eeddaa0ba1e3c637331175R132
+02/28/2023 10:12 AM
+ah ck
+[infowski]
+[] infowski
+https://wayland-devel.freedesktop.narkive.com/3c8ZGSby/rfc-wayland-1-2-client-introduce-proxy-wrappe...
+infowski 02/28/2023 10:12 AM
+there - a somewhat technical description
+[infowski]
+infowski 02/28/2023 10:12 AM
+it's not wl_proxy_create - it's wl_proxy_create_wrapper
+02/28/2023 10:12 AM
+wait
+[yolofant]
+yolofant 02/28/2023 10:11 AM
+different vendors?
+02/28/2023 10:11 AM
+and 3.4.0?
+https://github.com/webosbrew/compat-checker/blob/master/data/3.4.0/libwayland-client.so.0.3.0.json#L59
+02/28/2023 10:11 AM
+it's actually there on 3.8.0
+https://github.com/webosbrew/compat-checker/blob/master/data/3.8.0/libwayland-client.so.0.3.0.json
+02/28/2023 10:05 AM
+https://github.com/NilsBrause/waylandpp/commit/f7ba41a70bf3de14f79b3d1646b703b31d011404
+02/28/2023 10:05 AM
+https://github.com/NilsBrause/waylandpp/blob/master/src/wayland-client.cpp#L278
+[infowski]
+infowski 02/28/2023 10:04 AM
+definitely not something upstreamable lol
+[yolofant]
+yolofant 02/28/2023 10:04 AM
+hmm or maybe in waylandpp
+[infowski]
+infowski 02/28/2023 10:03 AM
+how about global wl_proxy_create-wrapping mutex :___DDD
+[yolofant]
+yolofant 02/28/2023 10:02 AM
+they have multiple
+[infowski]
+infowski 02/28/2023 10:02 AM
+Yeah, I misread, I was convinced there's a single CRegistry instance for
+all of xbmc...
+02/28/2023 10:02 AM
+ah, nvm, I am stupid.
+[yolofant]
+yolofant 02/28/2023 10:01 AM
+https://github.com/webosbrew/xbmc/blob/feature/webOS/xbmc/windowing/wayland/ShellSurfaceWebOSShell.cpp#L39
+xbmc/ShellSurfaceWebOSShell.cpp at feature/webOS · webosbrew/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[infowski]
+infowski 02/28/2023 10:00 AM
+as in - that's the only place where proxies are created (edited)
+02/28/2023 10:00 AM
+wait, it's not even the Request - it's just the CRegistry::bind - this
+should be inherently single-threaded?
+02/28/2023 9:59 AM
+I guess I could just try replacing that with a direct wl_proxy_create
+and see what happens.
+02/28/2023 9:58 AM
+Aren't m_registry.Request... done kinda sequentially here anyways?
+(edited)
+02/28/2023 9:57 AM
+But I am looking around, and I don't think we'd be affected by said
+race...  (edited)
+02/28/2023 9:57 AM
+https://wayland-devel.freedesktop.narkive.com/3c8ZGSby/rfc-wayland-1-2-client-introduce-proxy-wrapper-concept
+it's only available in newer wayland
+02/28/2023 9:57 AM
+nope
+[yolofant]
+yolofant 02/28/2023 9:56 AM
+maybe it is just in another lib?
+[yolofant]
+[] infowski
+`/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos:
+symbol lookup error: /media/d...
+yolofant 02/28/2023 9:55 AM
+[yolofant]
+[] mariotaku It runs smoothly even on an entry level HD TV!
+yolofant 02/28/2023 9:55 AM
+nice!
+[infowski]
+infowski 02/28/2023 9:26 AM
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos: symbol lookup error: /media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libwayland-client++.so.0: undefined symbol: wl_proxy_create_wrapper
+press f for webOS 3
+[mariotaku]
+[] yolofant ok so this ipk has the symlink included
+mariotaku 02/28/2023 8:28 AM
+It runs smoothly even on an entry level HD TV!
+[smx2460]
+smx2460 02/28/2023 8:22 AM
+02/28/2023 8:22 AM
+(no content)
+[Screenshot_2023-02-28-08-22-26-673_com.gh4a.jpg]
+ Screenshot_2023-02-28-08-22-26-673_com.gh4a.jpg
+45.2 KB External
+[smx2460]
+hellobox. ```shell root@LGwebOSTV[k8lp 7.1.0]:~# python/run.sh auxv.py
+AT_SYSINFO_EHDR: 0xf7ab7000 AT_HWCAP: 0...
+smx2460 02/28/2023 8:21 AM
+Is this computed?
+[smx2460]
+hellobox. on some platforms it seems to calculate it
+smx2460 02/28/2023 8:21 AM
+Hm
+[smx2460]
+smx2460 02/28/2023 8:10 AM
+It worked for me on nc4
+[smx2460]
+hellobox. <@310158180728700929> i don't think your polyfill supports
+hwcaps
+smx2460 02/28/2023 8:10 AM
+hellobox. 02/28/2023 4:45 AM
+    root@LGwebOSTV[k8lp 7.1.0]:~# python/run.sh auxv.py
+    AT_SYSINFO_EHDR: 0xf7ab7000
+    AT_HWCAP: 0x37b0d6
+    AT_PAGESZ: 0x1000
+    AT_CLKTCK: 0x64
+    AT_PHDR: 0x10034
+    AT_PHENT: 0x20
+    AT_PHNUM: 0x9
+    AT_BASE: 0xf7a8f000
+    AT_FLAGS: 0x0
+    AT_ENTRY: 0x10658
+    AT_UID: 0x0
+    AT_EUID: 0x0
+    AT_GID: 0x0
+    AT_EGID: 0x0
+    AT_SECURE: 0x0
+    AT_RANDOM: 0xffd81dfc
+    AT_HWCAP2: 0x1f
+    AT_EXECFN: 0xffd82fd7
+    AT_PLATFORM: 0xffd81e0c
+    AT_NULL: 0x0
+    got AT_NULL, exiting
+    platform: 'v8l'
+    hwcap: Arm64Hwcap.HWCAP_SHA512|HWCAP_ASIMDDP|HWCAP_SM3|HWCAP_SHA3|HWCAP_DCPOP|HWCAP_LRCPC|HWCAP_JSCVT|HWCAP_ASIMDRDM|HWCAP_CRC32|HWCAP_SHA2|HWCAP_PMULL|HWCAP_EVTSTRM|HWCAP_ASIMD
+    hwcap2: Arm64Hwcap2.HWCAP2_SVEBITPERM|HWCAP2_SVEPMULL|HWCAP2_SVEAES|HWCAP2_SVE2|HWCAP2_DCPODP
+02/28/2023 4:43 AM
+and libffi
+02/28/2023 4:42 AM
+/home/root/python/bin/python3.10: error while loading shared libraries: libcrypt.so.1: cannot open shared object file: No such file or directory
+02/28/2023 4:41 AM
+i'll just put 3.10 on there
+02/28/2023 4:41 AM
+but i don't think that's the reason for that error
+02/28/2023 4:41 AM
+actually, i think some of the annotations i used were introduced in 3.9
+in 3.10
+02/28/2023 4:40 AM
+python 3.8 doesn't support typing?
+02/28/2023 4:40 AM
+    root@LGwebOSTV[k8lp 7.1.0]:~# python3.8 auxv.py
+    Traceback (most recent call last):
+      File "auxv.py", line 5, in <module>
+        from typing import Final, NamedTuple, Type
+    ModuleNotFoundError: No module named 'typing'
+hellobox. 02/28/2023 4:30 AM
+made v7l an alias for arm:
+    AT_SYSINFO_EHDR: 0x9eddc000
+    AT_HWCAP: 0x3fb0d6
+    AT_PAGESZ: 0x1000
+    AT_CLKTCK: 0x64
+    AT_PHDR: 0x10034
+    AT_PHENT: 0x20
+    AT_PHNUM: 0x9
+    AT_BASE: 0x96edc000
+    AT_FLAGS: 0x0
+    AT_ENTRY: 0x10658
+    AT_UID: 0x0
+    AT_EUID: 0x0
+    AT_GID: 0x0
+    AT_EGID: 0x0
+    AT_SECURE: 0x0
+    AT_RANDOM: 0x9e8216e3
+    AT_HWCAP2: 0x1f
+    AT_EXECFN: 0x9e821fdb
+    AT_PLATFORM: 0x9e8216f3
+    AT_NULL: 0x0
+    got AT_NULL, exiting
+    platform: 'v7l'
+    hwcap: ArmHwcap.HWCAP_EVTSTRM|HWCAP_LPAE|HWCAP_VFPD32|HWCAP_IDIV|HWCAP_IDIVT|HWCAP_IDIVA|HWCAP_VFPv4|HWCAP_TLS|HWCAP_VFPv3|HWCAP_NEON|HWCAP_EDSP|HWCAP_VFP|HWCAP_FAST_MULT|HWCAP_THUMB|HWCAP_HALF
+    hwcap2: ArmHwcap2.HWCAP2_CRC32|HWCAP2_SHA2|HWCAP2_SHA1|HWCAP2_PMULL|HWCAP2_AES
+02/28/2023 4:30 AM
+this is what i get on webos:
+    AT_SYSINFO_EHDR: 0x9ed56000
+    AT_HWCAP: 0x3fb0d6
+    AT_PAGESZ: 0x1000
+    AT_CLKTCK: 0x64
+    AT_PHDR: 0x10034
+    AT_PHENT: 0x20
+    AT_PHNUM: 0x9
+    AT_BASE: 0x96f4e000
+    AT_FLAGS: 0x0
+    AT_ENTRY: 0x10658
+    AT_UID: 0x0
+    AT_EUID: 0x0
+    AT_GID: 0x0
+    AT_EGID: 0x0
+    AT_SECURE: 0x0
+    AT_RANDOM: 0x9ec2b6e3
+    AT_HWCAP2: 0x1f
+    AT_EXECFN: 0x9ec2bfdb
+    AT_PLATFORM: 0x9ec2b6f3
+    AT_NULL: 0x0
+    got AT_NULL, exiting
+    platform: 'v7l'
+    platform not found in hwcap map
+02/28/2023 4:27 AM
+well, i guess i could just remove the 3.11 features i'm using
+02/28/2023 4:27 AM
+i need python 3.11 for webos
+02/28/2023 4:27 AM
+hmm
+02/28/2023 4:25 AM
+    $ ./read_auxv.py
+    AT_SYSINFO_EHDR: 0x7ffc75f85000
+    AT_MINSIGSTKSZ: 0x6f0
+    AT_HWCAP: 0x178bfbff
+    AT_PAGESZ: 0x1000
+    AT_CLKTCK: 0x64
+    AT_PHDR: 0x400040
+    AT_PHENT: 0x38
+    AT_PHNUM: 0xd
+    AT_BASE: 0x7f35b9bbc000
+    AT_FLAGS: 0x0
+    AT_ENTRY: 0x628a00
+    AT_UID: 0x3e8
+    AT_EUID: 0x3e8
+    AT_GID: 0x3e8
+    AT_EGID: 0x3e8
+    AT_SECURE: 0x0
+    AT_RANDOM: 0x7ffc75e42199
+    AT_HWCAP2: 0x2
+    AT_EXECFN: 0x7ffc75e43fe7
+    AT_PLATFORM: 0x7ffc75e421a9
+    AT_NULL: 0x0
+    got AT_NULL, exiting
+    platform: 'x86_64'
+    no hwcap info for platform
+    hwcap2: X86Hwcap2.HWCAP2_FSGSBASE
+hellobox. 02/28/2023 3:50 AM
+but it's probably not used by anything on webos
+02/28/2023 3:50 AM
+i guess we'll miss out on that
+02/28/2023 3:50 AM
+https://www.gnu.org/software/libc/manual/html_node/Hardware-Capability-Tunables.html#index-glibc_002ecpu_002ehwcap_005fmask
+02/28/2023 3:49 AM
+or modify it
+02/28/2023 3:49 AM
+on some platforms it seems to calculate it
+02/28/2023 3:49 AM
+and glibc just caches it?
+02/28/2023 3:49 AM
+i guess it's in /proc/self/auxv
+hellobox. 02/28/2023 2:18 AM
+from the actual getauxval (well, __getauxval2):
+      if (type == AT_HWCAP)
+        {
+          *result = GLRO(dl_hwcap);
+          return true;
+        }
+      else if (type == AT_HWCAP2)
+        {
+          *result = GLRO(dl_hwcap2);
+          return true;
+        }
+02/28/2023 2:18 AM
+@Smx i don't think your polyfill supports hwcaps
+02/28/2023 2:15 AM
+<https://github.com/bminor/glibc/blob/3d8b5dde879c6e024548118914da5bfcbd5170a7/sysdeps/arm/Makefile#L37
+glibc/Makefile at 3d8b5dde879c6e024548118914da5bfcbd5170a7 · bminor...
+Unofficial mirror of sourceware glibc repository. Updated daily. -
+glibc/Makefile at 3d8b5dde879c6e024548118914da5bfcbd5170a7 ·
+bminor/glibc
+[]
+02/28/2023 2:14 AM
+not sure what's going on there though
+02/28/2023 2:14 AM
+https://github.com/bminor/glibc/blob/master/sysdeps/arm/rtld-global-offsets.sym
+02/28/2023 2:14 AM
+hwcap is important to have
+[yolofant]
+yolofant 02/28/2023 1:54 AM
+oh ;D
+hellobox. 02/28/2023 1:43 AM
+i mean on actual netcast4
+[yolofant]
+yolofant 02/28/2023 1:43 AM
+at least before your changes
+02/28/2023 1:43 AM
+2.12.1
+hellobox. 02/28/2023 1:37 AM
+2.12, 2.12.1, or 2.12.2?
+02/28/2023 1:37 AM
+@Smx what version of glibc exactly is used in nc4?
+[smx2460]
+smx2460 02/28/2023 1:09 AM
+This is equally interesting tho
+02/28/2023 1:09 AM
+    __libc_stack_end = stack_end;
+02/28/2023 1:09 AM
+The address changes
+02/28/2023 1:08 AM
+get "environ", putenv, get it again
+02/28/2023 1:08 AM
+I had made a test program
+02/28/2023 1:08 AM
+If you then use it, it will point to the heap
+02/28/2023 1:08 AM
+As soon as a putenv is issued
+02/28/2023 1:08 AM
+Because environ can (and will) be reallocated
+hellobox. 02/28/2023 1:08 AM
+      char **ev = &argv[argc + 1];
+      __environ = ev;
+      /* Store the lowest stack address.  This is done in ld.so if this is
+         the code for the DSO.  */
+      __libc_stack_end = stack_end;
+    # ifdef HAVE_AUX_VECTOR
+      /* First process the auxiliary vector since we need to find the
+         program header to locate an eventually present PT_TLS entry.  */
+    #  ifndef LIBC_START_MAIN_AUXVEC_ARG
+      ElfW(auxv_t) *auxvec;
+      {
+        char **evp = ev;
+        while (*evp++ != NULL)
+          ;
+        auxvec = (ElfW(auxv_t) *) evp;
+      }
+    #  endif
+      _dl_aux_init (auxvec);
+    # endif
+[smx2460]
+smx2460 02/28/2023 1:07 AM
+It won't be modified yet
+hellobox. 02/28/2023 1:07 AM
+looks like it would work
+[smx2460]
+smx2460 02/28/2023 1:07 AM
+So maybe if we access it in init
+hellobox. 02/28/2023 1:07 AM
+hmm
+[smx2460]
+smx2460 02/28/2023 1:07 AM
+https://elixir.bootlin.com/glibc/latest/source/csu/libc-start.c#L246
+libc-start.c - csu/libc-start.c - Glibc source code (glibc-2.37.900...
+Elixir Cross Referencer - Explore source code in your browser -
+Particularly useful for the Linux kernel and other low-level projects in
+C/C++ (bootloaders, C libraries...)
+02/28/2023 1:06 AM
+https://codebrowser.dev/glibc/glibc/posix/environ.c.html
+02/28/2023 1:06 AM
+environ is a global symbol
+02/28/2023 1:05 AM
+Probably not
+02/28/2023 1:05 AM
+Is "environ" equiv?
+hellobox. 02/28/2023 1:03 AM
+can we get envp in an init function?
+https://sourceware.org/pipermail/libc-alpha/2005-July/019240.html
+02/28/2023 1:02 AM
+    #ifdef MAIN_AUXVEC_ARG
+    /* main gets passed a pointer to the auxiliary.  */
+    # define MAIN_AUXVEC_DECL    , void *
+    # define MAIN_AUXVEC_PARAM    , auxvec
+    #else
+    # define MAIN_AUXVEC_DECL
+    # define MAIN_AUXVEC_PARAM
+    #endif
+02/28/2023 12:57 AM
+clktck?
+02/28/2023 12:57 AM
+    #ifdef HAVE_AUX_VECTOR
+      extern __typeof (dl->_dl_auxv) _dl_auxv attribute_hidden;
+      dl->_dl_auxv = _dl_auxv;
+      extern __typeof (dl->_dl_clktck) _dl_clktck attribute_hidden;
+      dl->_dl_clktck = _dl_clktck;
+    #endif

@@ -1,0 +1,1674 @@
+May 22, 2023
+[] thewalkerd hi, I have been reading a bit about the ways of getting
+homebrew but I'm not sure it can be done in ...
+hellobox. 05/22/2023 9:43 PM
+crashd
+ 1
+[thewalkerd]
+thewalkerd 05/22/2023 9:40 PM
+hi, I have been reading a bit about the ways of getting homebrew but I'm
+not sure it can be done in my version of webos. It's probable a frequent
+noob question, but is there something I can do at webos 7.3 ? Tnx
+hellobox. 05/22/2023 8:59 PM
+@Smx we're building br-nc4 as arm; lg is using thumb for everything
+hellobox. 05/22/2023 6:42 PM
+but we probably should
+05/22/2023 6:42 PM
+so we don't necessarily need to fix the LFS issue
+05/22/2023 6:42 PM
+i guess this is how:
+    # elfutils gets confused when lfs mode is forced, so don't
+    ELFUTILS_CFLAGS = $(filter-out -D_FILE_OFFSET_BITS=64,$(TARGET_CFLAGS))
+    ELFUTILS_CPPFLAGS = $(filter-out -D_FILE_OFFSET_BITS=64,$(TARGET_CPPFLAGS))
+05/22/2023 6:42 PM
+i realized that buildroot is successfully building elfutils against our
+old glibc
+hellobox. <@310158180728700929> preliminary list of libraries present on
+webos 6 but not in br-nc4 webos defco...
+hellobox. 05/22/2023 6:06 PM
+br-nc4 is not actually that much bigger with all this stuff enabled
+Deleted User 05/22/2023 1:36 PM
+I respect your efforts massively
+hellobox. 05/22/2023 1:17 PM
+kind of
+Deleted User 05/22/2023 12:47 PM
+Did you get any further with it
+May 21, 2023
+hellobox. 05/21/2023 11:42 PM
+it looks like they are (or were?) working on webos support themselves
+05/21/2023 11:42 PM
+and not really worth working on imo
+05/21/2023 11:42 PM
+stremio is a jankfest
+[yolofant]
+yolofant 05/21/2023 11:18 PM
+wait we have gstreamer, that's nice
+[] yolofant it seems missing 
+hellobox. 05/21/2023 11:17 PM
+    BR2_PACKAGE_GSTREAMER1=y
+[yolofant]
+yolofant 05/21/2023 11:17 PM
+it seems missing 
+[] yolofant gstreamer?
+hellobox. 05/21/2023 11:17 PM
+what about it?
+hellobox. 05/21/2023 11:16 PM
+i think including all of them would make br-nc4 too big, but maybe we
+could have a single option to enable all of them?
+[yolofant]
+yolofant 05/21/2023 11:16 PM
+gstreamer?
+hellobox. 05/21/2023 11:15 PM
+@Smx preliminary list of libraries present on webos 6 but not in br-nc4
+webos defconfig:
+    webp (webpdemux, webpmux)
+    protobuf
+    protobuf-c
+    log4cplus
+    libnspr
+    exif
+    exiv2
+    nss
+    cairo
+    harfbuzz
+    mng
+    tiff
+    jansson
+    jsoncpp
+    pugixml
+    libuv
+    msgpack
+    mpg123
+    tirpc
+    libpcap
+    c-ares
+    libsamplerate
+    fdk-aac
+    gphoto2
+    qrencode
+    libsigc++
+    sbc
+    snappy
+    libwebsockets
+    wavpack
+    xmlpp
+    libsoup
+    nghttp2
+    libnl [libnl-3]
+    glibmm
+    liblzma (from xz-utils?)
+(edited)
+wsnipex 05/21/2023 10:16 AM
+disable passthrough
+[kenji_rwr]
+kenji_rwr 05/21/2023 10:08 AM
+is there any fix?
+[kenji_rwr]
+wsnipex iirc it will be available on homebrew once webos 3 and 4 are
+working
+kenji_rwr 05/21/2023 10:08 AM
+Video Playback work on WebOS 6 BUT no audio
+wsnipex 05/21/2023 9:38 AM
+iirc it will be available on homebrew once webos 3 and 4 are working
+[kenji_rwr]
+kenji_rwr 05/21/2023 9:24 AM
+nvm i saw the file on kodi mirror
+05/21/2023 9:23 AM
+I saw xbmc on webosbrew github but ain't seeing any .ipk or in homebrew
+app
+[ccarnell98]
+ccarnell98 05/21/2023 8:09 AM
+The code for 4.x hasn't been merged into master so that is the only
+version that works on your device atm
+05/21/2023 8:08 AM
+It wont
+[chercheur]
+[] jauz8888 Has anyone tried this version of kodi yet?
+chercheur 05/21/2023 8:01 AM
+The third one works for os 4.x but video is very long to come . I don’t
+know if the first (last one) will work. I will try …..
+[ccarnell98]
+[] jauz8888 Has anyone tried this version of kodi yet?
+ccarnell98 05/21/2023 7:46 AM
+To which one are you referring, there is 3.. 
+[jauz8888]
+jauz8888 05/21/2023 6:57 AM
+Has anyone tried this version of kodi yet?
+[IMG_5639.png]
+ IMG_5639.png
+612.42 KB External
+[mariotaku]
+[] chercheur Is there a place where I can find release notes of kodi
+builds ? For exemple what is inside the org....
+mariotaku 05/21/2023 3:57 AM
+Snapshot builds have a commit ID in their filename, and you can get logs
+by comparing them.
+May 20, 2023
+[chercheur]
+chercheur 05/20/2023 10:49 PM
+Is there a place where I can find release notes of kodi builds ? For
+exemple what is inside the org.xbmc.kodi_feedahead-testing_arm.ipk ?
+Thanks
+[chercheur]
+[] infowski No.
+chercheur 05/20/2023 6:11 PM
+will you ?
+[infowski]
+infowski 05/20/2023 5:21 PM
+No.
+[chercheur]
+chercheur 05/20/2023 4:42 PM
+Hi is the last org.xbmc.kodi_20230519-67b9d2a8-master_arm.ipk includes
+video drivers for os 4.x ?
+[mariotaku]
+[] pqn i'm curious, can i set pin codes for apps from my terminal?
+mariotaku 05/20/2023 1:07 PM
+I don't know. I saw some tutorials and it should be fairly easy to set
+up on TV.
+ 1
+[mariotaku]
+[] pqn hmm, Is it possible to use this option for other apps?
+mariotaku 05/20/2023 1:06 PM
+If you can make changes to appinfo.json, then it should be easy
+ 1
+[pqn]
+[] mariotaku `"removable": false`
+pqn 05/20/2023 9:40 AM
+hmm, Is it possible to use this option for other apps?
+[pqn]
+[] mariotaku By the way, do you know you can set pin code to apps? That
+would be very useful
+pqn 05/20/2023 9:37 AM
+i'm curious, can i set pin codes for apps from my terminal?
+[pqn]
+pqn 05/20/2023 6:00 AM
+ah, I just found this, hehe, thanks for all yours work 
+[mariotaku]
+mariotaku 05/20/2023 5:58 AM
+All hail our savior @infowski !
+ 1
+05/20/2023 5:56 AM
+So kids can't delete it, and if you set PIN, they can't open it either.
+05/20/2023 5:56 AM
+"removable": false
+ 1
+05/20/2023 5:55 AM
+Also you can make extra changes to disable uninstallation for homebrew
+app
+05/20/2023 5:54 AM
+By the way, do you know you can set pin code to apps? That would be very
+useful
+[pqn]
+pqn 05/20/2023 5:54 AM
+I got it, I've can access ssh server now.
+[mariotaku]
+mariotaku 05/20/2023 5:53 AM
+And you will need to revert the change by making the homebrew app
+visible again
+05/20/2023 5:53 AM
+After gaining access, you should have ssh to connect to the TV again
+05/20/2023 5:52 AM
+No.
+[pqn]
+pqn 05/20/2023 5:52 AM
+Do I need any reboot it yet?
+05/20/2023 5:52 AM
+(no content)
+[20230520_105137.jpg]
+ 20230520_105137.jpg
+926.72 KB External
+[mariotaku]
+mariotaku 05/20/2023 5:51 AM
+8 is fine too
+05/20/2023 5:51 AM
+Then you should have openssh
+05/20/2023 5:50 AM
+Press 9
+[pqn]
+pqn 05/20/2023 5:50 AM
+(no content)
+[20230520_105003.jpg]
+ 20230520_105003.jpg
+905.04 KB External
+05/20/2023 5:48 AM
+Yup, I've via crashd bug (edited)
+05/20/2023 5:47 AM
+I still have homebrew safe updater, maybe will be some workarounds exist
+[mariotaku]
+mariotaku 05/20/2023 5:46 AM
+Did you root the TV with crashd method?
+05/20/2023 5:45 AM
+Let me think about that... It's gonna be a bit tricky if you already
+reboot the TV...
+05/20/2023 5:45 AM
+By connecting with PC, I mean the openssh stuff
+[pqn]
+pqn 05/20/2023 5:44 AM
+nah, I've controlled it completely via home wi-fi.
+[mariotaku]
+mariotaku 05/20/2023 5:44 AM
+Have you connected the TV with your PC before?
+[pqn]
+[] mariotaku Oh shit. It's possible that autostart got affected because
+it's not in the launcher's list.
+pqn 05/20/2023 5:43 AM
+hmm, what should I can do now?
+[pqn]
+pqn 05/20/2023 5:42 AM
+(no content)
+[20230520_104200.jpg]
+ 20230520_104200.jpg
+626.59 KB External
+[mariotaku]
+[] pqn because Homebrew can't opreate correcly, now I can't using it
+anymore. Is there a way to reverse thi...
+mariotaku 05/20/2023 5:42 AM
+Oh shit. It's possible that autostart got affected because it's not in
+the launcher's list.
+[pqn]
+pqn 05/20/2023 5:36 AM
+hmm, crazy, it works but now I can't use open ssh server and vnc server
+remotely.
+05/20/2023 5:32 AM
+because Homebrew can't opreate correcly, now I can't using it anymore.
+Is there a way to reverse this? (edited)
+05/20/2023 5:30 AM
+I addes this config line to Homebrew channel app on my TV but maybe it's
+affected other apps depending on that. (edited)
+[pqn]
+pqn 05/20/2023 4:14 AM
+(no content)
+[image.png]
+ image.png
+111.2 KB External
+May 19, 2023
+hellobox. 05/19/2023 8:17 PM
+i'm not sure what i had to restart though
+05/19/2023 8:16 PM
+yeah, visible seems to work
+[astur3l]
+astur3l 05/19/2023 8:09 PM
+iirc restarting only SAM didnt worked for me.. had to restart WAM too
+05/19/2023 8:08 PM
+wam?
+hellobox. 05/19/2023 8:08 PM
+what do you have to restart to get it to take effect though?
+[] astur3l iirc ``"visible": false`` in ``appinfo.json`` hides it from
+launcher
+hellobox. 05/19/2023 8:08 PM
+yeah
+[astur3l]
+astur3l 05/19/2023 8:06 PM
+iirc `"visible": false in appinfo.json` hides it from launcher
+[pqn]
+pqn 05/19/2023 7:51 PM
+(no content)
+[image.png]
+ image.png
+421.43 KB External
+05/19/2023 7:51 PM
+Can I ask a question. Is there a way to hide Homebrew Channel App from
+application drawer? well, because my family have children so they naugty
+everything. I want avoid when they grok something about this. (edited)
+May 18, 2023
+hellobox. 05/18/2023 9:08 PM
+we just need the headers and stubs
+05/18/2023 9:08 PM
+the thing is, we don't really need the libraries
+05/18/2023 9:03 PM
+i needed some of them, and then i just went through and looked for more
+like that
+05/18/2023 9:01 PM
+i also found like ~~2~~ 3 dozen  libraries that are present on webos 6
+and available in buildroot but we don't have enabled (edited)
+hellobox. 05/18/2023 8:21 PM
+although we should still use the newest version on the build side
+05/18/2023 8:20 PM
+even webos 7 has libgmp.so.3, and br-nc4 has libgmp.so.10
+05/18/2023 8:20 PM
+@Smx i think we should use an older version of gmp in br-nc4
+May 17, 2023
+wsnipex 05/17/2023 5:55 PM
+don't ask about piracy addons
+ 2
+[tra1ner]
+tra1ner 05/17/2023 1:47 PM
+How do I get Kodi and it's NBA add-on
+hellobox. how do you even get to stuff?
+Deleted User 05/17/2023 10:27 AM
+On my testing I was able to get to settings/login with the webos app on
+iOS with the built in cursor but still pretty pointless
+hellobox. 05/17/2023 8:58 AM
+well, some things will work
+[] andreasilvestri gonna try this later
+hellobox. 05/17/2023 8:58 AM
+don't bother
+[andreasilvestri]
+hellobox. Click to see attachment
+andreasilvestri 05/17/2023 8:57 AM
+gonna try this later
+[infowski]
+[] thaa.d dear all i downlod vncserver on my lg webos and when i
+connected from my pc i can't get screen only ...
+infowski 05/17/2023 3:33 AM
+Which webOS version do you have? Have you taken a look at the vnc server
+readme? Theres only UI layer capture support (ie. If you open some
+movie/video playback then you will only see control UI elements, not the
+video itself), it conflicts with piccap/hyperion-webos and on certain
+5.x+ models you need to stop/kill system captureservice for it to work.
+hellobox. 05/17/2023 3:21 AM
+it just builds a library
+05/17/2023 3:20 AM
+is the rust shit totally useless?
+hellobox. 05/17/2023 2:29 AM
+(on local fs)
+05/17/2023 2:29 AM
+any ideas on using service workers from within an app btw?
+[] infowski Unless webOS is missing some key events? I am pretty sure it
+worked ~fine-ish when I played with it ...
+hellobox. 05/17/2023 2:28 AM
+i can't get to the other tabs either
+hellobox. 05/17/2023 2:27 AM
+and they use mpv on windows (in the shell) (edited)
+05/17/2023 2:26 AM
+i can't get to the settings for example
+[infowski]
+infowski 05/17/2023 2:26 AM
+Unless webOS is missing some key events? I am pretty sure it worked
+~fine-ish when I played with it with just arrows, escape and enter (all
+available on a remote)
+hellobox. 05/17/2023 2:25 AM
+how do you even get to stuff?
+[infowski]
+infowski 05/17/2023 2:25 AM
+Hm, I think it's exactly the same as on Android?
+[] infowski <@803885040827629628> <@524209969374167040> so... I am still
+not really sure where si the rust part ...
+hellobox. 05/17/2023 2:25 AM
+the web ui navigation is garbage though
+[infowski]
+infowski 05/17/2023 2:24 AM
+https://github.com/sleeyax/stremio-streaming-server/blob/main/Dockerfile#L8
+there :p
+stremio-streaming-server/Dockerfile at main · sleeyax/stremio-strea...
+Small docker image to run Stremio's streaming server standalone -
+stremio-streaming-server/Dockerfile at main ·
+sleeyax/stremio-streaming-server
+[]
+05/17/2023 2:24 AM
+@hellobox @kitsuned so... I am still not really sure where si the rust
+part used but currently web UI as you've seen is mostly working on webOS
+5.x+. "Streaming server" is nodejs based and is closed source (but just
+plain JS downloadable from one of their domains). Stremio-shell is just
+essentially something like electron, just built around Qt WebView and
+bundled (?) Nodejs. Streaming server part (nodejs) seems to work on 5.x
+too but needs static ffmpeg and a bunch of other static binaries bundled
+(with their paths specified in some environment variables - grep
+server.js for process.env to find these - I just used some generic
+ffmpeg static build from npm they use internally, but which was not
+bundled in a plain .js file obviously)
+hellobox. 05/17/2023 1:12 AM
+well, it could probably be improved relatively easily by running
+stremio-core locally
+05/17/2023 1:11 AM
+which i'm not really interested in pursuing (but i could be persuaded...
+https://ko-fi.com/throwaway96)
+05/17/2023 1:10 AM
+the best path forward would probably be making some sort of shell (like
+stremio-shell or cobalt)
+05/17/2023 1:08 AM
+(no content)
+ lol.web.stremio_0.0.1_all.ipk
+4.26 KB External
+05/17/2023 1:07 AM
+the navigation is terrible though
+05/17/2023 1:03 AM
+so it "works" i guess (this is just https://app.strem.io/ as an app)
+(edited)
+05/17/2023 1:03 AM
+(no content)
+[capture.png]
+ capture.png
+232.48 KB External
+05/17/2023 1:02 AM
+(no content)
+[capture.png]
+ capture.png
+157.55 KB External
+05/17/2023 1:01 AM
+(no content)
+[capture.png]
+ capture.png
+659.24 KB External
+hellobox. 05/17/2023 12:53 AM
+(no content)
+[image.png]
+ image.png
+27.45 KB External
+Deleted User 05/17/2023 12:42 AM
+Both of yere efforts are massively appreciated here must be said
+hellobox. 05/17/2023 12:33 AM
+it's trying (and failing) to start a service worker via file://
+05/17/2023 12:33 AM
+idk
+hellobox. and the result will be this
+Deleted User 05/17/2023 12:29 AM
+What’s the solution
+Deleted User 05/17/2023 12:23 AM
+Been trying to get it into an ipk for the last hour you might of just
+saved me a lot of time
+05/17/2023 12:22 AM
+Damn
+Deleted User How would I get this into an ipk
+hellobox. 05/17/2023 12:22 AM
+and the result will be this
+[capture.png]
+ capture.png
+1.57 KB External
+May 16, 2023
+[kitsuned]
+kitsuned 05/16/2023 11:40 PM
+then ares-package
+[kitsuned]
+Deleted User How would I get this into an ipk
+kitsuned 05/16/2023 11:40 PM
+npm build
+[] kitsuned
+https://github.com/Stremio/stremio-web/blob/development/package.json#L41
+Deleted User 05/16/2023 11:39 PM
+How would I get this into an ipk
+hellobox. 05/16/2023 11:36 PM
+where's the source for the server?
+[kitsuned]
+kitsuned 05/16/2023 11:30 PM
+xD
+05/16/2023 11:30 PM
+https://github.com/Stremio/stremio-web/blob/development/package.json#L41
+stremio-web/package.json at development · Stremio/stremio-web
+Stremio - Freedom to Stream. Contribute to Stremio/stremio-web
+development by creating an account on GitHub.
+[]
+05/16/2023 11:29 PM
+https://github.com/Stremio/stremio-web/issues/357
+Navigation with 4-way keys · Issue #357 · Stremio/stremio-web
+There are some points that the 4-way navigation (using up, down, left
+and right) don't work properly, such as: Can't access the main navbar
+Even using the mouse to click on any navbar icon,...
+[]
+hellobox. 05/16/2023 11:27 PM
+i don't think qtwebengine is available on (modern) webos
+05/16/2023 11:26 PM
+specifically, this https://github.com/Stremio/stremio-shell
+Deleted User Scratch all that I think a native ipk is the only way this
+would ever work I recall people having pl...
+hellobox. 05/16/2023 11:23 PM
+on windows it just runs the web stuff in a qtwebengine window
+hellobox. 05/16/2023 11:23 PM
+        "build-webos": "webpack -p --define process.env.TV_ENV='1' --config webpack.config.webos.js",
+Deleted User 05/16/2023 11:23 PM
+Scratch all that I think a native ipk is the only way this would ever
+work I recall people having playback issues with the browser version on
+lg
+hellobox. 05/16/2023 11:22 PM
+i think stremio-core might be the server part
+Deleted User 05/16/2023 11:21 PM
+I suppose it won’t but half the battle was the remote on the browser
+hellobox. 05/16/2023 11:21 PM
+what makes you think it'll be any faster?
+Deleted User 05/16/2023 11:20 PM
+I think the webui with navigation polyfill could be a great idea
+(edited)
+hellobox. 05/16/2023 11:19 PM
+i guess it's also running a server?
+05/16/2023 11:19 PM
+the desktop app (on windows at least) just shows the web ui
+hellobox. so what's in stremio-core vs stremio-web? (the readmes are
+useless)
+Deleted User 05/16/2023 11:18 PM
+I’d wish I knew the answer for that I have no idea
+hellobox. 05/16/2023 11:15 PM
+https://app.strem.io/shell-v4.4/
+05/16/2023 11:14 PM
+https://www.reddit.com/r/Stremio/comments/yil3wx/documentation_for_stremio/
+05/16/2023 11:13 PM
+does it just play videos in the browser? what's the rust part for?
+05/16/2023 11:09 PM
+so what's in stremio-core vs stremio-web? (the readmes are useless)
+(edited)
+Deleted User 05/16/2023 11:06 PM
+Not looking to server host content unfortunately. Another reason for
+stremio
+[kitsuned]
+kitsuned 05/16/2023 11:04 PM
+btw @Deleted User, have you tried Jellyfin?
+[kitsuned]
+Deleted User How could I go about this
+kitsuned 05/16/2023 11:02 PM
+https://www.npmjs.com/package/spatial-navigation-polyfill
+spatial-navigation-polyfill
+A polyfill for the spatial navigation. Latest version: 1.3.1, last
+published: 3 years ago. Start using spatial-navigation-polyfill in your
+project by running `npm i spatial-navigation-polyfill`. There are no
+other projects in the npm registry using spatial-navigation-polyfill.
+[]
+[] kitsuned someone can flavor this app with spatial navigation polyfill
+Deleted User 05/16/2023 11:01 PM
+How could I go about this
+hellobox. 05/16/2023 11:00 PM
+libcbe basically is chromium
+[kitsuned]
+kitsuned 05/16/2023 10:58 PM
+sort of...
+[kitsuned]
+hellobox. i think they're both using libcbe though
+kitsuned 05/16/2023 10:58 PM
+> chromium53 installed package will contain libcbe.so, that is a shared
+library used both by Chromium53 browser and by WAM.
+[kitsuned]
+kitsuned 05/16/2023 10:57 PM
+then type location.href = 'http://your_streamio_host/...';
+[] kitsuned iirc browser runtime is different from webapps runtime
+hellobox. 05/16/2023 10:57 PM
+i think they're both using libcbe though
+[kitsuned]
+kitsuned 05/16/2023 10:57 PM
+try to attach with chrome debugger to any app installed from hbchannel
+[kitsuned]
+Deleted User I’ve seen people say to use the web version on the webos
+browser but that ran awfully for me Is that...
+kitsuned 05/16/2023 10:56 PM
+iirc browser runtime is different from webapps runtime
+hellobox. do you just want the web ui as an app? (i don't know anything
+about the architecture of stremio)
+Deleted User 05/16/2023 10:54 PM
+I’ve seen people say to use the web version on the webos browser but
+that ran awfully for me Is that essentially the same thing just in app
+form
+[kitsuned]
+kitsuned 05/16/2023 10:52 PM
++ server discovery
+[kitsuned]
+Deleted User https://github.com/Stremio/stremio-web
+kitsuned 05/16/2023 10:51 PM
+someone can flavor this app with spatial navigation polyfill (edited)
+hellobox. 05/16/2023 10:50 PM
+do you just want the web ui as an app? (i don't know anything about the
+architecture of stremio)
+Deleted User 05/16/2023 10:49 PM
+Again I’m completely new to all this so I apologise in advance (edited)
+[kitsuned]
+kitsuned 05/16/2023 10:49 PM
+uh oh
+[] kitsuned it doesn't have a webui, does it?
+Deleted User 05/16/2023 10:49 PM
+https://github.com/Stremio/stremio-web
+GitHub - Stremio/stremio-web: Stremio - Freedom to Stream
+Stremio - Freedom to Stream. Contribute to Stremio/stremio-web
+development by creating an account on GitHub.
+[]
+[kitsuned]
+Deleted User Any estimate on the bounty
+kitsuned 05/16/2023 10:45 PM
+it doesn't have a webui, does it?
+hellobox. there's going to be more to it than that
+Deleted User 05/16/2023 10:33 PM
+Any estimate on the bounty
+Deleted User 05/16/2023 10:18 PM
+I dont doubt it
+Deleted User They have all the builds on the website and source code I
+just lack the know how to compile it into ...
+hellobox. 05/16/2023 10:18 PM
+there's going to be more to it than that
+hellobox. i don't know how much work it would involve
+Deleted User 05/16/2023 10:18 PM
+They have all the builds on the website and source code I just lack the
+know how to compile it into ipk
+hellobox. 05/16/2023 9:41 PM
+i don't know how much work it would involve
+hellobox. how much are you paying?
+Deleted User 05/16/2023 9:39 PM
+How much is a job like that?
+hellobox. 05/16/2023 9:38 PM
+i need help testing this (basically building stuff w/ br-nc4 that uses
+static_assert and aligned_alloc)
+https://github.com/throwaway96/glibc/tree/aligned_alloc (edited)
+[astur3l]
+astur3l 05/16/2023 9:35 PM
+how much is vlc?:D
+Deleted User Who can I pay to get stremio ported
+hellobox. 05/16/2023 9:28 PM
+how much are you paying?
+ 1
+Deleted User 05/16/2023 9:22 PM
+Who can I pay to get stremio ported
+[thaa.d]
+thaa.d 05/16/2023 5:16 PM
+dear all i downlod vncserver on my lg webos and when i connected from my
+pc i can't get screen only black screen and advice please
+[yolofant]
+yolofant 05/16/2023 1:12 AM
+merged
+ 1
+hellobox. 05/16/2023 12:49 AM
+lots of our reverse engineered headers have incorrect types and stuff
+05/16/2023 12:49 AM
+@Yolofant https://github.com/sundermann/webos-userland/pull/3
+05/16/2023 12:46 AM
+and made it match lg's headers better
+05/16/2023 12:46 AM
+well, i added the rest of the directmedia stuff
+05/16/2023 12:45 AM
+i see
+[yolofant]
+yolofant 05/16/2023 12:45 AM
+I noticed that there's not enough api while adding it to webos-userland
+so I just stopped but added what I had so far
+05/16/2023 12:42 AM
+the ndl stuff in webos-userland was never tested
+hellobox. 05/16/2023 12:42 AM
+should libNDL_directmedia in webos-userland support both APIs?
+[smx2460]
+smx2460 05/16/2023 12:33 AM
+that's about it
+05/16/2023 12:32 AM
+my modifications literally span 3 pages
+05/16/2023 12:32 AM
+see here
+05/16/2023 12:32 AM
+https://github.com/openlgtv/buildroot-nc4/commits?author=smx-smx&before=e26553a1c8bfe53f9da59ae13a4f78252fb6eb51+35
+Commits · openlgtv/buildroot-nc4
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+hellobox. 05/16/2023 12:32 AM
+        Issues resolved (http://bugs.uclibc.org):
+        #15306: glibc build fails in Docker container
+https://bugs.busybox.net/show_bug.cgi?id=15306 huh? doesn't seem like
+anything was fixed... (edited)
+[smx2460]
+smx2460 05/16/2023 12:32 AM
+[smx2460]
+hellobox. oh, so that shouldn't be too hard then
+smx2460 05/16/2023 12:31 AM
+if it was hard we wouldn't be on 2022.11 in the first place
+[smx2460]
+smx2460 05/16/2023 12:31 AM
+buildroot has not much outside of that
+hellobox. 05/16/2023 12:31 AM
+oh, so that shouldn't be too hard then
+[smx2460]
+smx2460 05/16/2023 12:31 AM
+nope (edited)
+hellobox. 05/16/2023 12:31 AM
+anything outside of the packages and defconfigs though?
+[smx2460]
+smx2460 05/16/2023 12:31 AM
+probably wayland, which i downgraded
+05/16/2023 12:30 AM
+removal of the linux headers version check (edited)
+05/16/2023 12:30 AM
+glibc
+hellobox. 05/16/2023 12:29 AM
+i'm not sure i know enough about exactly what is modified from stock br
+[smx2460]
+smx2460 05/16/2023 12:29 AM
+but i'm a bit lazy to do it now 
+05/16/2023 12:29 AM
+it's about marking some conflicts as "keep ours" (edited)
+hellobox. 05/16/2023 12:29 AM
+build system fixes and such
+[smx2460]
+smx2460 05/16/2023 12:29 AM
+updating is not that tedious
+hellobox. 05/16/2023 12:28 AM
+might be worth it for some of the other stuff though
+[smx2460]
+smx2460 05/16/2023 12:27 AM
+yep
+[] smx2460 on another note, br 2023.02.1 is out
+hellobox. 05/16/2023 12:27 AM
+we're currently using 2022.11.1?
+hellobox. 05/16/2023 12:24 AM
+New defconfigs: STM32F769 discovery hmm, i wonder if i can get linux
+working on my STM32H723
+https://community.st.com/s/question/0D50X0000Ap3znOSQQ/embedded-linux-for-stm32h7
+(edited)
+[smx2460]
+[] smx2460 on another note, br 2023.02.1 is out
+smx2460 05/16/2023 12:22 AM
+hmm not worth the update probably, gcc is the same
+[yolofant]
+yolofant 05/16/2023 12:21 AM
+api is very limited
+05/16/2023 12:21 AM
+I wanted to use ndl at first but it turned out not to be a good fit for
+kodi
+[smx2460]
+smx2460 05/16/2023 12:20 AM
+on another note, br 2023.02.1 is out
+hellobox. 05/16/2023 12:20 AM
+actually i guess it's ss4s
+05/16/2023 12:20 AM
+yeah, i already looked at that
+[smx2460]
+smx2460 05/16/2023 12:20 AM
+then we dropped it
+05/16/2023 12:20 AM
+which used to be included in br-nc4 until it started to require nodejs
+05/16/2023 12:20 AM
+i'd guess https://github.com/mariotaku/moonlight-tv
+GitHub - mariotaku/moonlight-tv: Lightweight NVIDIA GameStream Clie...
+Lightweight NVIDIA GameStream Client, for LG webOS for Raspberry Pi -
+GitHub - mariotaku/moonlight-tv: Lightweight NVIDIA GameStream Client,
+for LG webOS for Raspberry Pi
+[]
+hellobox. 05/16/2023 12:17 AM
+specifically directmedia
+05/16/2023 12:17 AM
+@Yolofant do you have anything using NDL?
+[smx2460]
+smx2460 05/16/2023 12:16 AM
+but only in webostv-defconfig
+hellobox. 05/16/2023 12:16 AM
+how big is it/how long does it take to build?
+[smx2460]
+smx2460 05/16/2023 12:16 AM
+so it might be added
+[yolofant]
+hellobox. it's not in kodi deps?
+yolofant 05/16/2023 12:16 AM
+nope
+[smx2460]
+smx2460 05/16/2023 12:16 AM
+to interface to pulse
+05/16/2023 12:16 AM
+i guess it provides libpulse-dev, kind of
+hellobox. 05/16/2023 12:16 AM
+it's not in kodi deps?
+[yolofant]
+yolofant 05/16/2023 12:16 AM
+yes
+05/16/2023 12:16 AM
+not sure
+[smx2460]
+smx2460 05/16/2023 12:16 AM
+does it provide any library?
+05/16/2023 12:15 AM
+is there any benefit in having it in?
+[yolofant]
+yolofant 05/16/2023 12:15 AM
+yes
+[smx2460]
+smx2460 05/16/2023 12:15 AM
+but
+05/16/2023 12:15 AM
+then we can add
+05/16/2023 12:15 AM
+it builds?
+[yolofant]
+yolofant 05/16/2023 12:15 AM
+I'm using it for kodi
+[smx2460]
+smx2460 05/16/2023 12:15 AM
+hmmm i remember there were some issues with it
+[yolofant]
+yolofant 05/16/2023 12:15 AM
+since that is used on webos but we don't have it in the toolchain
+[smx2460]
+hellobox. so webos and lgtv?
+smx2460 05/16/2023 12:14 AM
+yeah (edited)
+[yolofant]
+yolofant 05/16/2023 12:14 AM
+another point could be made for pulseuadio
+hellobox. 05/16/2023 12:14 AM
+so webos and lgtv?
+[smx2460]
+smx2460 05/16/2023 12:13 AM
+lol
+05/16/2023 12:13 AM
+    Fedora has moved gold from binutils into its own package due to concerns it is suffering from bitrot after Google's interest has moved to LLVM.[6] 
+05/16/2023 12:13 AM
+can do both
+hellobox. 05/16/2023 12:13 AM
+so add it to webos defconfig?
+[smx2460]
+smx2460 05/16/2023 12:13 AM
+    To specify gold in a makefile, one sets the LD or LD environmental variable to ld.gold. To specify gold through a compiler option, one can use the gcc option -fuse-ld=gold. 
+05/16/2023 12:13 AM
+then one can choose which to use at build time
+05/16/2023 12:13 AM
+it should add both
+[smx2460]
+hellobox. <@310158180728700929> should i add it?
+smx2460 05/16/2023 12:12 AM
+yeah, go for it
+[yolofant]
+yolofant 05/16/2023 12:12 AM
+I didn't benchmark it but it feels faster
+[smx2460]
+smx2460 05/16/2023 12:12 AM
+that's why i asked if it's any quicker 
+05/16/2023 12:12 AM
+    In software engineering, gold is a linker for ELF files. It became an official GNU package and was added to binutils in March 2008[1][2] and first released in binutils version 2.19. gold was developed by Ian Lance Taylor and a small team at Google.[3] The motivation for writing gold was to make a linker that is faster than the GNU linker,[3] especially for large applications coded in C++. 
+05/16/2023 12:12 AM
+i guess i learned something new today
+[smx2460]
+[] yolofant gold linker is kinda handy for kodi because linking takes
+forever with that amount of static binarie...
+smx2460 05/16/2023 12:11 AM
+is it any faster?
+[yolofant]
+yolofant 05/16/2023 12:11 AM
+toolchain -> additional binutils options
+05/16/2023 12:10 AM
+sec
+hellobox. 05/16/2023 12:10 AM
+or do you mean BR2_BINUTILS_EXTRA_CONFIG_OPTIONS?
+[] yolofant yeah it's a config option in buildroot
+hellobox. 05/16/2023 12:09 AM
+i don't see it
+[yolofant]
+yolofant 05/16/2023 12:07 AM
+so I'm using the gold linker locally
+05/16/2023 12:07 AM
+gold linker is kinda handy for kodi because linking takes forever with
+that amount of static binaries
+05/16/2023 12:06 AM
+yeah it's a config option in buildroot
+hellobox. 05/16/2023 12:01 AM
+maybe a config option
+05/16/2023 12:01 AM
+@Smx should i add it?
+[yolofant]
+yolofant 05/16/2023 12:00 AM
+maybe in binutils --enable-gold
+05/16/2023 12:00 AM
+hmm
+May 15, 2023
+hellobox. 05/15/2023 11:56 PM
+@Yolofant i already got webos-userland 0.0.7 and glibc-polyfills
+(edited)
+05/15/2023 11:56 PM
+anything that needs to be updated in br-nc4?
+[chercheur]
+chercheur 05/15/2023 12:56 PM
+Ok thanks so I keep this one
+https://mirrors.kodi.tv/test-builds/webos/org.xbmc.kodi_20230410-43388ac9-acb-rebased_arm.ipk
+[ccarnell98]
+[] chercheur Hi does this new version includes the video driver for web
+os 4.x https://mirrors.kodi.tv/nightlie...
+ccarnell98 05/15/2023 12:54 PM
+Nope
+[chercheur]
+chercheur 05/15/2023 12:54 PM
+Hi does this new version includes the video driver for web os 4.x
+https://mirrors.kodi.tv/nightlies/webos/master/org.xbmc.kodi_20230515-7acee6c7-master_arm.ipk
+?
+[yolofant]
+hellobox. <@195583665265311744> where did the ndl directmedia stuff come
+from?
+yolofant 05/15/2023 11:50 AM
+yes tv-native-apis
+[mariotaku]
+mariotaku 05/15/2023 7:19 AM
+Or they are too smart so they printf("%d\n", (unsigned int) i); (edited)
+hellobox. 05/15/2023 6:06 AM
+what if lg's sloppiness is actually some kind of 4D chess? like they're
+intentionally inconsistent in order to make reverse engineering harder
+        "[%s::%s] Sound effect buffer [avail:%d]",
+        "dmplayer.cpp",
+        "GetEffectBufferSize",
+        *a2);
+(a2 is unsigned based on name mangling) (edited)
+[mariotaku]
+hellobox. i guess tv-native-apis
+mariotaku 05/15/2023 4:34 AM
+I didn't check LG headers. Those are inferred from binaries (like
+libdile IIRC)
+hellobox. 05/15/2023 4:32 AM
+@Mariotaku did you find these type/enum names in lg headers? e.g.
+https://github.com/webosbrew/tv-native-apis/blob/main/libndl-media/include/NDL_directmedia.h#L33
+05/15/2023 4:30 AM
+i guess tv-native-apis
+hellobox. 05/15/2023 4:12 AM
+@Yolofant where did the ndl directmedia stuff come from?
+[rkars]
+rkars 05/15/2023 3:54 AM
+Also when app is restarted it goes back to 30fps even tho it's set to
+120
+[rkars]
+[] mariotaku What does the video output look like?
+rkars 05/15/2023 3:53 AM
+Looks normal but with bars on 2 sides of the screen
+ Moonlight Video Issue →
+[mariotaku]
+[] rkars <@225167450713358338> On Your Moonlight for webOS when i use
+3480x2160 res there are black bars on t...
+mariotaku 05/15/2023 3:52 AM
+What does the video output look like?
+[yolofant]
+yolofant 05/15/2023 2:44 AM
+I think I've just used the sized types throughout to make the size
+explicit
+05/15/2023 2:43 AM
+but that would be the same anyway
+hellobox. 05/15/2023 2:42 AM
+lg just uses int
+[yolofant]
+hellobox. <@195583665265311744> where did you get `int32_t` from?
+<https://github.com/sundermann/webos-userlan...
+yolofant 05/15/2023 2:42 AM
+not sure, you think it's wrong?
+hellobox. 05/15/2023 2:34 AM
+@Yolofant where did you get int32_t from?
+https://github.com/sundermann/webos-userland/blob/main/include/starfish-media-pipeline/StarfishMediaAPIs.h#L18
+May 14, 2023
+[rkars]
+rkars 05/14/2023 7:15 PM
+on an LG C1
+05/14/2023 7:15 PM
+@Mariotaku On Your Moonlight for webOS when i use 3480x2160 res there
+are black bars on the side of the screen, and when i change the bitrate
+to anything other than the default it forces fps to 30
+[chercheur]
+chercheur 05/14/2023 5:36 PM
+Very often the video starts after around 10 to 20 seconds but is fixed.
+The fact to force go ahead and back and video starts
+05/14/2023 5:31 PM
+The majority works but it seems fragile ! Video arrive after a lot of
+time. And I am not sure it uses the native highest resolution.
+Nevertheless good job
+[chercheur]
+chercheur 05/14/2023 5:22 PM
+Sorry one video is working … seems a format issue for some mkv … I will
+report the one that don’t work
+05/14/2023 5:20 PM
+Yes this is what I mean « upload the ipk file «  Kodi reports the
+version dated 11th april. It is the desired one . But no video !
+[infowski]
+infowski 05/14/2023 5:20 PM
+Well shit. It worked on 3.x for me 
+05/14/2023 5:19 PM
+Seems like it's roughly the correct one though.
+05/14/2023 5:19 PM
+No idea what you mean by "upload" - you need to install the ipk file
+[chercheur]
+chercheur 05/14/2023 5:17 PM
+(no content)
+[IMG_3482.jpg]
+ IMG_3482.jpg
+1.83 MB External
+[chercheur]
+[] infowski yeah, you can try that.
+chercheur 05/14/2023 5:16 PM
+Is it enough to upload the other ipk file ? I did but it does not work
+better …. No video.
+[infowski]
+infowski 05/14/2023 5:10 PM
+yeah, you can try that.
+[chercheur]
+[] infowski Acb-rebased build can work
+chercheur 05/14/2023 5:09 PM
+Hi this one ?
+https://mirrors.kodi.tv/test-builds/webos/org.xbmc.kodi_20230410-43388ac9-acb-rebased_arm.ipk
+[chercheur]
+[] ccarnell98 You might have to check again when <@501722020434673674>
+makes his PR
+chercheur 05/14/2023 5:07 PM
+Which pr ?
+[ccarnell98]
+ccarnell98 05/14/2023 4:57 PM
+and there is a build 
+05/14/2023 4:57 PM
+and it's merged
+05/14/2023 4:57 PM
+You might have to check again when @infowski makes his PR
+[chercheur]
+[] yolofant kodi is native so it's different
+chercheur 05/14/2023 4:50 PM
+That s true
+[yolofant]
+yolofant 05/14/2023 4:19 PM
+kodi is native so it's different
+05/14/2023 4:19 PM
+and plex and jellyfin are both webapps
+05/14/2023 4:19 PM
+yes there's something missing
+[chercheur]
+chercheur 05/14/2023 3:53 PM
+Nevertheless as Jellyfin and Plex can find a way to play video it looks
+like something missing in the Kodi code . Let’s way a miracle ….!
+05/14/2023 3:50 PM
+Thanks
+05/14/2023 3:50 PM
+Ok so I will remove Kodi !
+[yolofant]
+yolofant 05/14/2023 3:50 PM
+that is the firmware version
+[chercheur]
+chercheur 05/14/2023 3:50 PM
+How to find the os version ? It report 05.30.25
+[yolofant]
+yolofant 05/14/2023 3:49 PM
+yeah maybe it's only not working on some specific models
+[infowski]
+infowski 05/14/2023 3:49 PM
+Like some IPS one? Dunno.
+05/14/2023 3:49 PM
+It didn't on some specific TV?
+[yolofant]
+yolofant 05/14/2023 3:49 PM
+I think it didn't work on 4.x
+[infowski]
+infowski 05/14/2023 3:49 PM
+Could*
+[yolofant]
+yolofant 05/14/2023 3:49 PM
+we only support 5+ now
+[infowski]
+infowski 05/14/2023 3:49 PM
+Acb-rebased build can work
+05/14/2023 3:49 PM
+4.5
+[yolofant]
+yolofant 05/14/2023 3:49 PM
+rip
+[infowski]
+infowski 05/14/2023 3:49 PM
+B9 is 4.x
+[yolofant]
+yolofant 05/14/2023 3:48 PM
+b9 is 4.x?
+[chercheur]
+hellobox. i told you not to worry about the resolution it reports
+chercheur 05/14/2023 3:48 PM
+Yes but the reality is that when I play a movie I just have sound .
+Whatever the mkv are .
+[] chercheur And what about mine ? It seems it cannot support neither
+S/W or H/W playing Hi I have a OLED55B9PLA...
+hellobox. 05/14/2023 3:47 PM
+i told you not to worry about the resolution it reports
+[chercheur]
+chercheur 05/14/2023 3:44 PM
+And what about mine ? It seems it cannot support neither S/W or H/W
+playing Hi I have a OLED55B9PLA with OS 05.30.25. video is recognized as
+1920x1080p only while this screen supports many others I have download
+the last org.xbmc.kodi_20230513-7d0690f7-master_arm.ipk and make the cp
+/usr/lib/libwayland-egl.so
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libwayland-egl.so.1
+command. Kodi starts but can’t read any movie. I have the sound but no
+video. It looks like Kodi can’t find a video pipe. any solution ? thanks
+phil
+[yolofant]
+[] andreasilvestri i installed the kodi on my 4.9 webos tv
+yolofant 05/14/2023 3:37 PM
+4.9 will be only software decoding
+[chercheur]
+chercheur 05/14/2023 11:11 AM
+I think that this nightly release can’t recognize the resolution .
+[chercheur]
+[] andreasilvestri can you tell me what i can do with kodi? i used 5 6
+years ago only for iptv
+chercheur 05/14/2023 11:05 AM
+Mmmm it does not read any movie. Sound is ok but image is black
+[chercheur]
+[] andreasilvestri can you tell me what i can do with kodi? i used 5 6
+years ago only for iptv
+chercheur 05/14/2023 10:15 AM
+You link your movie, misic, tv series directory and it proposes a lot of
+things . It is more universal than Plex or Jellyfin but less user
+friendly ( no WAF !) let’s say it is a Swiss knife
+[chercheur]
+chercheur 05/14/2023 10:13 AM
+I had installed homebrew yesterday but there are not so many softwares
+in it . So I removed and install from VSC (edited)
+[andreasilvestri]
+[] chercheur You are far from me as I live in Northen France . Latin
+language …..! Thanks a lot for your help
+andreasilvestri 05/14/2023 10:13 AM
+can you tell me what i can do with kodi? i used 5 6 years ago only for
+iptv
+[chercheur]
+[] andreasilvestri your neighbor, Italian
+chercheur 05/14/2023 10:12 AM
+You are far from me as I live in Northen France . Latin language …..!
+Thanks a lot for your help
+[andreasilvestri]
+[] chercheur I Will see later . …. Where are you from ? ( not so many
+are interested by French language !)
+andreasilvestri 05/14/2023 10:11 AM
+your neighbor, Italian
+[chercheur]
+chercheur 05/14/2023 10:04 AM
+I Will see later . …. Where are you from ? ( not so many are interested
+by French language !)
+[] chercheur Except that is settings system it should recognize the 3840
+as it does from my firetv in which I hav...
+hellobox. 05/14/2023 10:03 AM
+i don't think kodi really knows anything about the video pipeline on
+webos (edited)
+[chercheur]
+hellobox. the gui is always 1920x1080; video resolution is controlled
+separately/automatically
+chercheur 05/14/2023 10:02 AM
+Except that is settings system it should recognize the 3840 as it does
+from my firetv in which I have kodi
+[chercheur]
+chercheur 05/14/2023 10:01 AM
+A ok . I have to set the directories and try video . Will do later …..
+05/14/2023 10:00 AM
+3840*2160 (4K UHD) is the native resolution of my TV but Kodi just gives
+1980X1080
+hellobox. 05/14/2023 10:00 AM
+the gui is always 1920x1080; video resolution is controlled
+separately/automatically (edited)
+[chercheur]
+chercheur 05/14/2023 9:59 AM
+Fine
+[bredcat2220]
+bredcat2220 05/14/2023 9:59 AM
+So i know a bit
+05/14/2023 9:59 AM
+i learnt french in highschool
+[chercheur]
+chercheur 05/14/2023 9:59 AM
+Oui I am !
+[bredcat2220]
+bredcat2220 05/14/2023 9:59 AM
+@Chercheur tu parle français?
+[] chercheur 1980 sorry . My tv can support 3880 but it is not proposed
+in the menu
+hellobox. 05/14/2023 9:59 AM
+you mean 1080?
+[chercheur]
+chercheur 05/14/2023 9:58 AM
+1980 sorry . My tv can support 3880 but it is not proposed in the menu
+[] chercheur Resolution is seen as 1940 as this TV is able to 3848
+hellobox. 05/14/2023 9:57 AM
+1940?
+[andreasilvestri]
+andreasilvestri 05/14/2023 9:57 AM
+i have small tv, thats why it's zoomed in
+05/14/2023 9:57 AM
+yeah
+[chercheur]
+chercheur 05/14/2023 9:57 AM
+I don’t have this issue of zoom in. Except the resolution that is not
+optimal for my OLed Tv
+05/14/2023 9:56 AM
+Resolution is seen as 1940 as this TV is able to 3848
+[andreasilvestri]
+[] chercheur Fantastic thanks
+andreasilvestri 05/14/2023 9:56 AM
+the app is zoomed in you have to insatall on your mobile to change the
+aspect ratio from setttings
+[chercheur]
+[] andreasilvestri run this command through ssh: cp
+/usr/lib/libwayland-egl.so /media/developer/apps/usr/palm/applicati...
+chercheur 05/14/2023 9:54 AM
+Fantastic thanks
+[andreasilvestri]
+[] chercheur it just makes nothing on my oled55
+andreasilvestri 05/14/2023 9:43 AM
+run this command through ssh: cp /usr/lib/libwayland-egl.so
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libwayland-egl.so.1
+[chercheur]
+[] andreasilvestri the build is from here
+https://mirrors.kodi.tv/nightlies/webos/master/
+chercheur 05/14/2023 9:42 AM
+it just makes nothing on my oled55
+[rkars]
+rkars 05/14/2023 4:06 AM
+I also found that setting the bitrate to anything higher than 3500 locks
+the fps to 30
+[rkars]
+rkars 05/14/2023 3:10 AM
+Anyone else had an issue with moonlight that when you use 4k there are
+black borders
+May 13, 2023
+[andreasilvestri]
+andreasilvestri 05/13/2023 8:26 PM
+the build is from here https://mirrors.kodi.tv/nightlies/webos/master/
+05/13/2023 8:25 PM
+iit's too much zoomed in
+05/13/2023 8:25 PM
+the issue is the aspect ratio (edited)
+05/13/2023 8:25 PM
+it runs fine (edited)
+[andreasilvestri]
+c1c1c1c1_ Are there plans to port
+https://github.com/xbmc/inputstream.adaptive &
+https://github.com/kodi-pvr/p...
+andreasilvestri 05/13/2023 8:25 PM
+i installed the kodi on my 4.9 webos tv
+May 12, 2023
+wsnipex 05/12/2023 5:20 PM
+they should work, but no DRM content yet and we don't yet have the
+addons for download from the repository
+c1c1c1c1_ 05/12/2023 11:10 AM
+Are there plans to port https://github.com/xbmc/inputstream.adaptive &
+https://github.com/kodi-pvr/pvr.iptvsimple to webOS? Thanks
+GitHub - xbmc/inputstream.adaptive: kodi inputstream addon for seve...
+kodi inputstream addon for several manifest types. Contribute to
+xbmc/inputstream.adaptive development by creating an account on GitHub.
+[]
+GitHub - kodi-pvr/pvr.iptvsimple: IPTV Simple client for Kodi PVR
+IPTV Simple client for Kodi PVR. Contribute to kodi-pvr/pvr.iptvsimple
+development by creating an account on GitHub.
+May 11, 2023
+[yolofant]
+yolofant 05/11/2023 9:29 PM
+the getauxval call in kodi was removed
+hellobox. 05/11/2023 9:11 PM
+without the new glibc-polyfills, it'll be rather brittle
+05/11/2023 9:10 PM
+i guess we need a release of glibc-polyfills and br-nc4
+[] infowski I'll file a PR soon
+hellobox. 05/11/2023 9:10 PM
+you mean on kodi?
+[rkars]
+rkars 05/11/2023 8:38 PM
+Someone said to clear database but idk how to do it and the LG docs
+didn't help
+05/11/2023 8:38 PM
+Not sure what to do
+05/11/2023 8:38 PM
+But that breaks the voice recognition
+05/11/2023 8:38 PM
+It works consistently if i block all LG servers using dns
+05/11/2023 8:37 PM
+My home app is still broken
+[infowski]
+infowski 05/11/2023 8:10 PM
+I'll file a PR soon
+wsnipex 05/11/2023 1:58 PM
+k
+[yolofant]
+yolofant 05/11/2023 12:42 PM
+toolchain fix just needs a release
+05/11/2023 12:42 PM
+hmm, I think acb works only on 3.x rn though there is a chance that
+removing low delay fixed it on 4.x
+wsnipex 05/11/2023 12:35 PM
+any news on acb and the toolchain fix? (edited)
+[tam5941]
+tam5941 05/11/2023 9:43 AM
+Thank you guys, trumotion is working in the latest update
+[yolofant]
+yolofant 05/11/2023 8:24 AM
+I'd imagine that is/was for apps like google stadia
+wsnipex 05/11/2023 5:49 AM
+interesting that you can enable it without the TV being in game mode
+(edited)
+[yolofant]
+yolofant 05/11/2023 1:20 AM
+I guess low latency mode is for gaming mode since that has similar
+restrictions
+05/11/2023 1:19 AM
+yeah
+[] yolofant <@547250169448628234>
+https://github.com/xbmc/xbmc/pull/23265 this should fix picture
+enhancement se...
+hellobox. 05/11/2023 1:14 AM
+so low delay mode breaks stuff?
+[yolofant]
+yolofant 05/11/2023 1:00 AM
+you can get an ipk from there to test once the build servers built the
+ipk
+05/11/2023 12:59 AM
+@tam5941 https://github.com/xbmc/xbmc/pull/23265 this should fix picture
+enhancement settings
+webos: Disable low delay mode to enable picture enhancement setting...
+Description This enables various picture enhancement settings that are
+disabled when low delay mode is present. As we don't care that much
+about latency and a lot of users want to use picture...
+[]
+ 2  1
+May 10, 2023
+[wanderatrus]
+wanderatrus 05/10/2023 7:58 PM
+Did you guys know a way to put ps1 emulator on the lg tv ?
+May 9, 2023
+[totallynotfom]
+[] fromtimes now it appears that also my developer options turned off
+totallynotfom 05/09/2023 9:02 PM
+doesnt the crashd tutorial say to delete the app once you root it?
+Deleted User 05/09/2023 1:50 AM
+https://github.com/Simon34545/lginputhook/issues/10
+The buttons do not appear in the registry, the reassignment of keys...
+#4 https://github.com/Simon34545/lginputhook/issues/4 > Same problem, in
+my case I have WebOS version: 7.3.0, with Firmware version: 03.30.71
+Version of ipk 1.4.0 ezinject-lginput2.log [/mnt/Ext...
+[]
+May 8, 2023
+hellobox. 05/08/2023 11:35 PM
+no problem
+[fromtimes]
+fromtimes 05/08/2023 11:34 PM
+anyway thanks for help
+05/08/2023 11:34 PM
+but now it works
+05/08/2023 11:34 PM
+i typed passphrase it sait it failed to verificate
+05/08/2023 11:34 PM
+webos dev manager does not worked before
+05/08/2023 11:33 PM
+but also back then
+05/08/2023 11:33 PM
+like youtube was red but without a single icon
+05/08/2023 11:32 PM
+it was red but not with icon
+05/08/2023 11:32 PM
+they were iconless
+[] fromtimes yes factory reset helped me
+hellobox. 05/08/2023 11:32 PM
+it's weird that your apps were deleted then
+[fromtimes]
+fromtimes 05/08/2023 11:32 PM
+but back then it was ---
+05/08/2023 11:32 PM
+it says 999 h remain session
+05/08/2023 11:31 PM
+thanks a lot 
+05/08/2023 11:31 PM
+yes factory reset helped me
+05/08/2023 11:31 PM
+WAIT LOL IT WORKED
+05/08/2023 11:31 PM
+yeah i saw that page but i did not understand
+hellobox. 05/08/2023 11:30 PM
+this is what it's talking about btw
+https://webostv.developer.lge.com/develop/tools/cli-installation
+[fromtimes]
+fromtimes 05/08/2023 11:30 PM
+give me a minute
+[] fromtimes should i change my account?
+hellobox. 05/08/2023 11:30 PM
+you can try that
+[fromtimes]
+fromtimes 05/08/2023 11:30 PM
+should i change my account?
+05/08/2023 11:29 PM
+oh gosh then what should i do?
+[] fromtimes it looks like i need to install webos tv cli
+hellobox. 05/08/2023 11:29 PM
+that isn't going to help
+[fromtimes]
+fromtimes 05/08/2023 11:29 PM
+ye
+hellobox. 05/08/2023 11:29 PM
+this account worked before?
+[fromtimes]
+fromtimes 05/08/2023 11:29 PM
+it looks like i need to install webos tv cli
+05/08/2023 11:29 PM
+same error
+05/08/2023 11:29 PM
+factory reset doesnt help
+hellobox. 05/08/2023 11:23 PM
+sometimes the dev mode login is kind of broken for whatever reason
+05/08/2023 11:23 PM
+it may be a different issue
+[fromtimes]
+fromtimes 05/08/2023 11:22 PM
+alright let me try to factory reset see what happens
+05/08/2023 11:22 PM
+no its off right now
+hellobox. 05/08/2023 11:21 PM
+although if devmode_enabled is a directory, you shouldn't have lost your
+apps
+05/08/2023 11:21 PM
+that will probably fix dev mode
+[fromtimes]
+fromtimes 05/08/2023 11:20 PM
+should i factory reset?
+05/08/2023 11:20 PM
+now they wont work
+05/08/2023 11:20 PM
+here it is
+05/08/2023 11:20 PM
+http://webos-forums.ru/post158462.html
+[rootmy.tv] Как получить Root права на webOS : Телевизоры LG - Обсу...
+Новая укороченная инструкция по получению рут на телевизорах LG с и
+новее с использованием эксплойта crashd: Любой из вышеперечисленных
+способов исполнит эксплойт crashd и запустит ...
+05/08/2023 11:20 PM
+there was a guide
+hellobox. 05/08/2023 11:19 PM
+you mean crashd?
+[fromtimes]
+fromtimes 05/08/2023 11:19 PM
+i used telnet to root it
+hellobox. 05/08/2023 11:19 PM
+how and when did you root it in the first place?
+[fromtimes]
+fromtimes 05/08/2023 11:19 PM
+the lights had gone
+05/08/2023 11:19 PM
+no problem
+hellobox. 05/08/2023 11:18 PM
+although how did you lose root?
+05/08/2023 11:18 PM
+you may have to factory reset
+[fromtimes]
+fromtimes 05/08/2023 11:18 PM
+can you help me?
+05/08/2023 11:18 PM
+after i press ok i press on developer mode then it restarts then it
+brings back sign in
+hellobox. 05/08/2023 11:17 PM
+don't worry about it
+[fromtimes]
+fromtimes 05/08/2023 11:17 PM
+if not you wont be able to install apps using developer mode
+05/08/2023 11:17 PM
+i dont know it just says its important
+[] fromtimes then how to get it?
+hellobox. 05/08/2023 11:17 PM
+do you need the cli tools?
+[fromtimes]
+fromtimes 05/08/2023 11:16 PM
+then how to get it?
+[] fromtimes i need to install webOS TV CLI v1.12.4 or later
+hellobox. 05/08/2023 11:16 PM
+that message just means if you're going to use the cli tools, you need
+at least that version
+[fromtimes]
+fromtimes 05/08/2023 11:16 PM
+i need to install webOS TV CLI v1.12.4 or later
+05/08/2023 11:14 PM
+it says
+05/08/2023 11:14 PM
+then i tried to log in
+05/08/2023 11:14 PM
+then i saw there was youtube but without icon+developer mode was turned
+off
+05/08/2023 11:14 PM
+suddenly my tv turned off
+05/08/2023 11:14 PM
+so today i was watching to youtube on tv
+05/08/2023 11:13 PM
+ok so let me tell you more detailed
+[] fromtimes now it appears that also my developer options turned off
+hellobox. 05/08/2023 11:02 PM
+what does?
+[fromtimes]
+fromtimes 05/08/2023 10:58 PM
+every time i turn on developer mode it justs restarts then put me back
+into sign in option
+05/08/2023 10:56 PM
+can you help me?
+05/08/2023 10:56 PM
+now it says i need to install cli
+05/08/2023 10:56 PM
+now it appears that also my developer options turned off
+05/08/2023 10:56 PM
+appearently my tv restarted then root was lost
+05/08/2023 10:55 PM
+i need help
+05/08/2023 10:55 PM
+guys
+wsnipex 05/08/2023 9:09 AM
+compile from source?
+May 7, 2023
+[shiki7793]
+shiki7793 05/07/2023 3:53 PM
+Hey guys, is there a way to create the crunchyroll app yourself and keep
+it up to date?
+[bredcat2220]
+bredcat2220 05/07/2023 6:42 AM
+Damn
+[] bredcat2220 is there anyway for a developer to make a browser based
+on the webos 3 browser, except that new cert...
+hellobox. 05/07/2023 6:32 AM
+good luck getting it to build. i doubt they included everything you'd
+need
+hellobox. 05/07/2023 6:32 AM
+anyway it probably just uses the system cert store
+[] bredcat2220 https://github.com/webosose/com.webos.app.enactbrowser
+There does seem to be a open source repo of ...
+hellobox. 05/07/2023 6:31 AM
+that is not the browser
+[bredcat2220]
+bredcat2220 05/07/2023 6:31 AM
+https://github.com/webosose/com.webos.app.enactbrowser There does seem
+to be a open source repo of webos3's browser, is there anyway to package
+a ipk with this that includes the required ssl certs
+GitHub - webosose/com.webos.app.enactbrowser: Enact Based Web Browser
+Enact Based Web Browser. Contribute to
+webosose/com.webos.app.enactbrowser development by creating an account
+on GitHub.
+[]
+05/07/2023 6:28 AM
+is there anyway for a developer to make a browser based on the webos 3
+browser, except that new certs are included with that browser? (edited)
+hellobox. 05/07/2023 6:26 AM
+you can bind mount/overlay new certs with root; i don't know the details
+though
+[bredcat2220]
+bredcat2220 05/07/2023 6:25 AM
+Or with rooting, since honestly at this point, with lg having cut off
+support for older tvs, doesn't matter anymore (edited)
+05/07/2023 6:23 AM
+without rooting
+05/07/2023 6:23 AM
+Hello everyone, is there anyway to get new ssl certs on webos 3?
+[drmartay]
+[] aabytt Issues?
+drmartay 05/07/2023 5:01 AM
+I've been noticing playback getting stuck at multiple points in videos
+lately. Can't be certain but it does sort of seem to correlate with the
+amount and spread of ads that would be in a video. Skipping 10s ahead
+will sometimes fix it.
+[yolofant]
+yolofant 05/07/2023 12:48 AM
+ui layer is always 1080p 60hz
+05/07/2023 12:48 AM
+you're mixing things up
+05/07/2023 12:48 AM
+I think the tv handles that internally
+05/07/2023 12:48 AM
+well it's the same for amazon and netflix
+[raffibaffi]
+[] bredcat2220 Wdym?
+raffibaffi 05/07/2023 12:36 AM
+jidder in videos, because no 24hz refresh rate...
+May 6, 2023
+[astur3l]
+astur3l 05/06/2023 11:55 PM
+is it unadvised to use libcurl in native services* (since it pulls
+ssl/crypto libraries)? (edited)
+[infowski]
+infowski 05/06/2023 9:57 PM
+I had little time lately to work on this, and I don't watch YouTube much
+either, so these issues don't really bother me.
+05/06/2023 9:57 PM
+PRs welcome
+[tomikaka]
+tomikaka 05/06/2023 9:13 PM
+these are the ones that come to my mind @aabytt
+05/06/2023 9:13 PM
+Like sponsorBlock being active on shorts, sometimes audio stops playing
+until you restart the app, ads next to videos
+[aabytt]
+[] drmartay Hello! I was curious if anyone could point me to a repo with
+an updated YT ad-free. Version 0.3.1 se...
+aabytt 05/06/2023 12:47 PM
+Issues?
+[drmartay]
+drmartay 05/06/2023 12:39 PM
+Hello! I was curious if anyone could point me to a repo with an updated
+YT ad-free. Version 0.3.1 seems to be having some issues.
+ 1
+May 5, 2023
+[bredcat2220]
+[] raffibaffi but refreshrate adjustment dont work on my tv
+bredcat2220 05/05/2023 12:42 PM
+Wdym?
+[raffibaffi]
+[] bredcat2220 Interesting, will see
+raffibaffi 05/05/2023 10:51 AM
+but refreshrate adjustment dont work on my tv
+[bredcat2220]
+Deleted User I’m in bredcats boat and horny for stremio
+bredcat2220 05/05/2023 9:43 AM
+I see
+[bredcat2220]
+[] raffibaffi http://mirrors.kodi.tv/nightlies/webos/master/
+bredcat2220 05/05/2023 9:43 AM
+Interesting, will see
+[raffibaffi]
+[] infowski I think there was a working build on some Kodi (nightly?)
+Mirrors listing that had acb-rebased build
+raffibaffi 05/05/2023 9:42 AM
+http://mirrors.kodi.tv/nightlies/webos/master/
+[bredcat2220]
+bredcat2220 05/05/2023 9:41 AM
+@Deleted User
+05/05/2023 9:41 AM
+(no content)
+[image0.gif]
+ image0.gif
+138.28 KB External
+05/05/2023 9:41 AM
+What was the deleted message?
+May 4, 2023
+Deleted User 05/04/2023 3:13 PM
+I’m in bredcats boat and horny for stremio
+hellobox. lol
+Deleted User 05/04/2023 3:11 PM
+Sorry completely knew to this myself jumped the gun here
+Original message was deleted
+hellobox. 05/04/2023 3:08 PM
+lol
+May 3, 2023
+[rkars]
+rkars 05/03/2023 11:31 PM
+I don't see a command
+[rkars]
+[] kitsuned https://webostv.developer.lge.com/develop/guides/db8-basic
+rkars 05/03/2023 11:31 PM
+I still don't get how to remove the data
+[kitsuned]
+[] rkars How
+kitsuned 05/03/2023 10:32 PM
+https://webostv.developer.lge.com/develop/guides/db8-basic
+DB8 Basics
+[]
+[rkars]
+[] kitsuned try to remove home app data from db8 
+rkars 05/03/2023 7:02 PM
+How
+[totallynotfom]
+hellobox. well, i have very little interest in doing it, but i could be
+persuaded <https://ko-fi.com/throwaway...
+totallynotfom 05/03/2023 4:46 PM
+oh damn i finally see who throaway96 is. I was wondering why i dont see
+you here . GG for crashd (edited)
+wsnipex buy a better tv  sony has notoriously bad android firmware
+ww8543 05/03/2023 1:04 PM
+sony or mediatek?
+wsnipex buy a better tv  sony has notoriously bad android firmware
+ww8543 05/03/2023 1:03 PM
+i bought the tv because of its panel, not its "smart" capabilities

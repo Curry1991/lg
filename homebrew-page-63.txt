@@ -1,0 +1,1503 @@
+February 28, 2023
+[smx2460]
+smx2460 02/28/2023 12:48 AM
+https://github.com/smx-smx/ezinject/blob/next/ezinject_injcode_uclibc.c#L17
+ezinject/ezinject_injcode_uclibc.c at next · smx-smx/ezinject
+Modular binary injection framework, successor of libhooker -
+ezinject/ezinject_injcode_uclibc.c at next · smx-smx/ezinject
+[]
+02/28/2023 12:47 AM
+It's hacky
+02/28/2023 12:47 AM
+I did this kind of stuff with uclibc
+hellobox. 02/28/2023 12:47 AM
+yeah, but it might be
+[smx2460]
+smx2460 02/28/2023 12:47 AM
+So it's not guaranteed to be stable
+hellobox. 02/28/2023 12:47 AM
+notice it's always accessed with GLRO()
+    #ifndef SHARED
+    # define GLRO(name) _##name
+    #else
+    # if IS_IN (rtld)
+    #  define GLRO(name) _rtld_local_ro._##name
+    # else
+    #  define GLRO(name) _rtld_global_ro._##name
+    # endif
+    struct rtld_global_ro
+    {
+    #endif
+[smx2460]
+smx2460 02/28/2023 12:47 AM
+It's internal
+hellobox. 02/28/2023 12:46 AM
+    #ifdef HAVE_AUX_VECTOR
+      /* Pointer to the auxv list supplied to the program at startup.  */
+      EXTERN ElfW(auxv_t) *_dl_auxv;
+    #endif
+02/28/2023 12:46 AM
+that's where auxv is stored
+02/28/2023 12:45 AM
+i'd like to know if the layout of struct rtld_global_ro changes between
+glibc versions
+[smx2460]
+smx2460 02/28/2023 12:45 AM
+If you have an idea, push it to the PR
+02/28/2023 12:45 AM
+Need to get up early tomorrow
+02/28/2023 12:45 AM
+I'm not gonna test stuff this night tho
+02/28/2023 12:44 AM
+We just need to add it in
+02/28/2023 12:44 AM
+It's fixed
+hellobox. 02/28/2023 12:44 AM
+although webos 1 has glibc 2.14, which doesn't even have getauxval
+[smx2460]
+smx2460 02/28/2023 12:43 AM
+After 99% of the work done? Lol (edited)
+hellobox. 02/28/2023 12:43 AM
+most of the stuff we're building with it won't even run on nc4
+02/28/2023 12:42 AM
+move to newer glibc [:cloi:]
+[smx2460]
+smx2460 02/28/2023 12:42 AM
+As long as we fix it
+02/28/2023 12:41 AM
+At this point I don't care how we do it
+hellobox. 02/28/2023 12:40 AM
+and atexit
+02/28/2023 12:40 AM
+e.g. for stat
+02/28/2023 12:40 AM
+glibc links in static stuff all the time
+02/28/2023 12:40 AM
+arm-webos-linux-gnueabi/sysroot/usr/lib/libc_nonshared.a
+02/28/2023 12:39 AM
+it's there
+02/28/2023 12:39 AM
+yeah
+02/28/2023 12:38 AM
+on some systems at least
+02/28/2023 12:38 AM
+    $ ls /usr/lib/x86_64-linux-gnu/libc_nonshared.a
+    /usr/lib/x86_64-linux-gnu/libc_nonshared.a
+[smx2460]
+smx2460 02/28/2023 12:38 AM
+It's a thing?
+hellobox. 02/28/2023 12:38 AM
+does that still exist?
+02/28/2023 12:38 AM
+libc_nonshared.a
+[smx2460]
+smx2460 02/28/2023 12:38 AM
+Which is not desirable
+02/28/2023 12:38 AM
+Unless you statically link everything with glibc
+02/28/2023 12:37 AM
+No
+hellobox. 02/28/2023 12:37 AM
+we could get it into glibc i think
+[smx2460]
+smx2460 02/28/2023 12:37 AM
+And not really linked in
+02/28/2023 12:37 AM
+Libc is shared
+02/28/2023 12:37 AM
+Hmm no it makes no sense
+02/28/2023 12:37 AM
+It's ugly tho
+02/28/2023 12:36 AM
+A post build hook could be used to hack it in
+02/28/2023 12:36 AM
+Maybe I don't need to, tho
+02/28/2023 12:35 AM
+I don't really want to edit the autotools files (edited)
+02/28/2023 12:35 AM
+Probably tedious
+02/28/2023 12:34 AM
+To include the polyfills at the source level
+02/28/2023 12:34 AM
+I guess the last alternative is a modification of glibc itself
+02/28/2023 12:33 AM
+But we should check
+02/28/2023 12:33 AM
+I guess after -final
+02/28/2023 12:32 AM
+Not sure when the toolchain wrapper is built and installed
+02/28/2023 12:32 AM
+I meam
+[smx2460]
+hellobox. so we'd need two versions?
+smx2460 02/28/2023 12:32 AM
+Hmm no
+hellobox. 02/28/2023 12:19 AM
+so we'd need two versions?
+[smx2460]
+smx2460 02/28/2023 12:16 AM
+I'd try that
+02/28/2023 12:13 AM
+BR_ADDITIONAL_CFLAGS
+02/28/2023 12:13 AM
+https://github.com/openlgtv/buildroot-nc4/blob/master/toolchain/toolchain-wrapper.c
+buildroot-nc4/toolchain-wrapper.c at master · openlgtv/buildroot-nc4
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+hellobox. 02/28/2023 12:11 AM
+you see it in the error messages
+02/28/2023 12:10 AM
+it's like _real
+[smx2460]
+smx2460 02/28/2023 12:10 AM
+I didn't check it
+hellobox. 02/28/2023 12:10 AM
+yeah
+[smx2460]
+smx2460 02/28/2023 12:10 AM
+So MAYBE the infra is already there?
+02/28/2023 12:10 AM
+And it calls gcc-real iirc
+02/28/2023 12:10 AM
+Provided by buildroot
+02/28/2023 12:10 AM
+I learned the other day that gcc is actually a wrapper
+[smx2460]
+hellobox. and make a wrapper script that turns it on
+smx2460 02/28/2023 12:10 AM
+Hm
+February 27, 2023
+hellobox. 02/27/2023 11:42 PM
+and make a wrapper script that turns it on (edited)
+02/27/2023 11:42 PM
+@Smx maybe we should have the compat stuff default to off in gcc
+[smx2460]
+hellobox. that's even uglier than having a wrapper for gcc
+smx2460 02/27/2023 11:28 PM
+XD
+[smx2460]
+smx2460 02/27/2023 11:27 PM
+Then redo it later
+02/27/2023 11:27 PM
+Compile a dummy and empty .c file into a .a
+hellobox. 02/27/2023 11:27 PM
+that's even uglier than having a wrapper for gcc
+[smx2460]
+smx2460 02/27/2023 11:27 PM
+Aka
+02/27/2023 11:27 PM
+The other concrete
+02/27/2023 11:27 PM
+Once in a dummy fashion
+[smx2460]
+hellobox. it just might be ugly
+smx2460 02/27/2023 11:27 PM
+A hack could be to build the polyfills twice
+[itsyogsothoth]
+itsyogsothoth 02/27/2023 11:20 PM
+Gotcha
+[yolofant]
+yolofant 02/27/2023 11:14 PM
+you would need to build those
+02/27/2023 11:14 PM
+yeah
+hellobox. 02/27/2023 11:08 PM
+android stuff is unlikely to work
+[itsyogsothoth]
+itsyogsothoth 02/27/2023 11:08 PM
+Or I placed it in the wrong place
+[itsyogsothoth]
+[] yolofant I didn't build the binary addons. I don't wanna look into
+that yet
+itsyogsothoth 02/27/2023 11:08 PM
+I found Android version (armv7), but that one isn't detected
+hellobox. 02/27/2023 11:03 PM
+it just might be ugly
+02/27/2023 11:03 PM
+i don't know if it's hard to fix
+[smx2460]
+hellobox. but it's not really building
+smx2460 02/27/2023 11:03 PM
+If it's hard to fix we can keep the previous patch way
+[yolofant]
+[] itsyogsothoth MORE ADDONS!!!!!1111
+yolofant 02/27/2023 11:03 PM
+I didn't build the binary addons. I don't wanna look into that yet
+[smx2460]
+smx2460 02/27/2023 11:02 PM
+Although the polyfills don't hurt
+[smx2460]
+hellobox. <@310158180728700929> i think we should have a buildroot
+config option to disable the compat stuff
+smx2460 02/27/2023 11:02 PM
+Hmm maybe
+[itsyogsothoth]
+[] yolofant I think that needs the inputstream addons
+itsyogsothoth 02/27/2023 11:02 PM
+MORE ADDONS!!!!!1111
+[yolofant]
+yolofant 02/27/2023 11:01 PM
+oh
+hellobox. 02/27/2023 11:01 PM
+but it's not really building
+[yolofant]
+yolofant 02/27/2023 11:01 PM
+hellobox. 02/27/2023 11:01 PM
+at least if you have getauxval on the target system
+02/27/2023 11:01 PM
+i think it ~works
+[yolofant]
+yolofant 02/27/2023 11:01 PM
+is that working?
+[yolofant]
+hellobox. <@310158180728700929> i think we should have a buildroot
+config option to disable the compat stuff
+yolofant 02/27/2023 11:01 PM
+what is the status btw on the getauxval stuff
+[yolofant]
+yolofant 02/27/2023 11:00 PM
+I think that needs the inputstream addons
+[itsyogsothoth]
+itsyogsothoth 02/27/2023 10:56 PM
+But hey, local video playback is working (edited)
+[itsyogsothoth]
+[] itsyogsothoth I need to give it API key to work, but hey, it's
+something
+itsyogsothoth 02/27/2023 10:49 PM
+Good news: YouTube plugin gets stuff from YouTube Bad news:
+    2023-02-27 21:47:44.052 T:23273    info <general>: [plugin.video.youtube] Running: YouTube (6.8.25+matrix.1) on O***** (Kodi-21.0) with Python 3.11.2
+                                                            Path: /play/
+                                                            Params: {'video_id': '8yOskhDn468'}
+    2023-02-27 21:47:44.699 T:23026    info <general>: VideoPlayer::OpenFile: plugin://plugin.video.youtube/play/?video_id=8yOskhDn468
+    2023-02-27 21:47:44.700 T:23315    info <general>: Creating InputStream
+    2023-02-27 21:47:44.764 T:23318 warning <general>: [plugin.video.youtube] API key set changed: Resetting client and updating access token
+    2023-02-27 21:47:44.766 T:23315   error <general>: CCurlFile::CReadState::FillBuffer - (0x8dba8e58) Failed: SSL peer certificate or SSH remote key was not OK(60)
+    2023-02-27 21:47:44.766 T:23315   error <general>: CCurlFile::Open - <https://rr2---sn-8pgbpohxqp5-cimd.googlevideo.com/videoplayback?expire=1677556065&ei=ASX9Y6zCFpODWNCgrZgH&ip=86.1.126.205&id=o-AHEcRNp93uVZUKAL5mnIpKsoTVWJFM9gkjFxtjZvGi8c&itag=18&source=youtube&requiressl=yes&mh=cW&mm=31%2C29&mn=sn-8pgbpohxqp5-cimd%2Csn-aigl6ner&ms=au%2Crdu&mv=m&mvi=2&pl=23&initcwndbps=1903750&vprv=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=153.785&lmt=1665274616194978&mt=1677534078&fvip=1&fexp=24007246&c=ANDROID&txp=5438434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRgIhAOUeRkgg5_O1zp-dVZAvgHA8hZ3mAxOY8NnnVs-lpSWmAiEAv5DXioVktd4u5zf3_BuSJj6a_VSsKrN-ssVUSdulS6w%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRAIgGh6X2zoQ2631Q2tiLZ7vGWhiTveqzSZ11ajmdpWfcjcCIDNLinLTHdtupBbFAi337aSDSzVAp_OoprFNWKE7uQyI> Failed with code 0:
+    2023-02-27 21:47:44.766 T:23315   error <general>: CFileCache::Open - <https://rr2---sn-8pgbpohxqp5-cimd.googlevideo.com/videoplayback?expire=1677556065&ei=ASX9Y6zCFpODWNCgrZgH&ip=86.1.126.205&id=o-AHEcRNp93uVZUKAL5mnIpKsoTVWJFM9gkjFxtjZvGi8c&itag=18&source=youtube&requiressl=yes&mh=cW&mm=31%2C29&mn=sn-8pgbpohxqp5-cimd%2Csn-aigl6ner&ms=au%2Crdu&mv=m&mvi=2&pl=23&initcwndbps=1903750&vprv=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=153.785&lmt=1665274616194978&mt=1677534078&fvip=1&fexp=24007246&c=ANDROID&txp=5438434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRgIhAOUeRkgg5_O1zp-dVZAvgHA8hZ3mAxOY8NnnVs-lpSWmAiEAv5DXioVktd4u5zf3_BuSJj6a_VSsKrN-ssVUSdulS6w%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRAIgGh6X2zoQ2631Q2tiLZ7vGWhiTveqzSZ11ajmdpWfcjcCIDNLinLTHdtupBbFAi337aSDSzVAp_OoprFNWKE7uQyI> failed to open
+    2023-02-27 21:47:44.767 T:23315   error <general>: CVideoPlayer::OpenInputStream - error opening [plugin://plugin.video.youtube/play/?video_id=8yOskhDn468]
+    2023-02-27 21:47:44.767 T:23315    info <general>: CVideoPlayer::OnExit()
+    2023-02-27 21:47:44.843 T:23026    info <general>: SetResolutionExternal: Kodi asked to switch mode to 1920x1080 @0.060 Hz on output "webos primary" full screen
+    2023-02-27 21:47:44.843 T:23026    info <general>: CVideoPlayer::CloseFile()
+    2023-02-27 21:47:44.843 T:23026    info <general>: VideoPlayer: waiting for threads to exit
+    2023-02-27 21:47:44.843 T:23026    info <general>: VideoPlayer: finished waiting
+hellobox. 02/27/2023 10:47 PM
+so if i want to build a toolchain with newer glibc, i can disable all of
+it
+02/27/2023 10:46 PM
+@Smx i think we should have a buildroot config option to disable the
+compat stuff
+hellobox. 02/27/2023 10:36 PM
+yeah
+[yolofant]
+yolofant 02/27/2023 10:17 PM
+drm stuff?
+hellobox. 02/27/2023 10:14 PM
+these seem to be from libplayready-4.0.so:
+      101: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_Debug_Assert
+      107: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_Random_GetBytes
+      347: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_MemAlloc
+      349: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_MemFree
+      365: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_Debug_Trace
+     3187: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_Debug_Assert
+     3193: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_Random_GetBytes
+     3433: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_MemAlloc
+     3435: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_MemFree
+     3451: 00000000      0 FUNC    GLOBAL DEFAULT    UNDEF Oem_Debug_Trace
+02/27/2023 10:11 PM
+why the hell did they include a static library though?
+02/27/2023 10:10 PM
+lol low-end devices
+[yolofant]
+yolofant 02/27/2023 10:10 PM
+for exporting the window and such
+hellobox. 02/27/2023 10:10 PM
+HawkTracer is a highly portable, low-overhead, configurable profiling tool built in Amazon Video for getting performance metrics from low-end devices.
+[yolofant]
+yolofant 02/27/2023 10:10 PM
+they use sdl in their device layer
+02/27/2023 10:10 PM
+hmm
+hellobox. 02/27/2023 10:10 PM
+https://github.com/amzn/hawktracer
+02/27/2023 10:09 PM
+why do they have a static library?
+    -rw-r--r--    1 root     5000        444068 Jul  5  2022 libhawktracer.a
+02/27/2023 10:09 PM
+are they dlopening that?
+02/27/2023 10:09 PM
+      NEEDED            Shared library: [libSDL2-2.0.so.0]
+      NEEDED            Shared library: [libcap.so.2]
+      NEEDED            Shared library: [libdile_crypto.so.0]
+      NEEDED            Shared library: [libpthread.so.0]
+      NEEDED            Shared library: [libplayready-4.0.so]
+      NEEDED            Shared library: [libjson-c.so.4]
+      NEEDED            Shared library: [libdile_svp.so.0]
+      NEEDED            Shared library: [libplayerAPIs.so.1]
+      NEEDED            Shared library: [libstdc++.so.6]
+      NEEDED            Shared library: [libm.so.6]
+      NEEDED            Shared library: [libgcc_s.so.1]
+      NEEDED            Shared library: [libc.so.6]
+      SONAME            Library soname: [libprime-video-device-layer.so]
+02/27/2023 10:09 PM
+interesting, amazon's binary uses rpath:
+      NEEDED            Shared library: [libpng16.so.16]
+      NEEDED            Shared library: [libz.so.1]
+      NEEDED            Shared library: [libjpeg.so.62]
+      NEEDED            Shared library: [libpthread.so.0]
+      NEEDED            Shared library: [libluna-service2.so.3]
+      NEEDED            Shared library: [libjson-c.so.4]
+      NEEDED            Shared library: [libglib-2.0.so.0]
+      NEEDED            Shared library: [libPmLogLib.so.3]
+      NEEDED            Shared library: [libcap.so.2]
+      NEEDED            Shared library: [libatomic.so.1]
+      NEEDED            Shared library: [libdl.so.2]
+      NEEDED            Shared library: [libstdc++.so.6]
+      NEEDED            Shared library: [libm.so.6]
+      NEEDED            Shared library: [libgcc_s.so.1]
+      NEEDED            Shared library: [libc.so.6]
+      RPATH             Library rpath: [$ORIGIN/:$ORIGIN/../lib]
+[yolofant]
+yolofant 02/27/2023 10:05 PM
+[itsyogsothoth]
+itsyogsothoth 02/27/2023 10:04 PM
+Welcome to weather forecast
+[PXL_20230227_2104075302.jpg]
+ PXL_20230227_2104075302.jpg
+468.83 KB External
+[yolofant]
+hellobox. lol netflix uses it too
+yolofant 02/27/2023 10:04 PM
+no amazon is prime-video-device-layer or smth like that
+[yolofant]
+yolofant 02/27/2023 10:04 PM
+same for amazon
+02/27/2023 10:04 PM
+ye
+hellobox. 02/27/2023 10:03 PM
+i guess they're just using sdl
+02/27/2023 10:03 PM
+      NEEDED            Shared library: [librt.so.1]
+      NEEDED            Shared library: [libpthread.so.0]
+      NEEDED            Shared library: [libpbnjson_cpp.so.2]
+      NEEDED            Shared library: [libglib-2.0.so.0]
+      NEEDED            Shared library: [libPmLogLib.so.3]
+      NEEDED            Shared library: [libplayerAPIs.so.1]
+      NEEDED            Shared library: [libdile_svp.so.0]
+      NEEDED            Shared library: [libluna-service2.so.3]
+      NEEDED            Shared library: [libdile_crypto.so.0]
+      NEEDED            Shared library: [libdile_boardinfo.so.1]
+      NEEDED            Shared library: [libSDL2-2.0.so.0]
+      NEEDED            Shared library: [libasound.so.2]
+      NEEDED            Shared library: [libstdc++.so.6]
+      NEEDED            Shared library: [libm.so.6]
+      NEEDED            Shared library: [libgcc_s.so.1]
+      NEEDED            Shared library: [libc.so.6]
+      SONAME            Library soname: [libwebosPlugin.so.1]
+02/27/2023 10:03 PM
+lol netflix uses it too
+[yolofant]
+yolofant 02/27/2023 10:03 PM
+libwebosPlugin
+02/27/2023 10:03 PM
+amazon has a webos layer
+hellobox. 02/27/2023 10:03 PM
+      NEEDED            Shared library: [libdl.so.2]
+      NEEDED            Shared library: [librt.so.1]
+      NEEDED            Shared library: [libopenh264.so.5]
+      NEEDED            Shared library: [libicuuc.so.62]
+      NEEDED            Shared library: [libwebpdemux.so.2]
+      NEEDED            Shared library: [libfreetype.so.6]
+      NEEDED            Shared library: [libjpeg.so.62]
+      NEEDED            Shared library: [libopenjp2.so.7]
+      NEEDED            Shared library: [libpng16.so.16]
+      NEEDED            Shared library: [libwebp.so.7]
+      NEEDED            Shared library: [libJavaScriptCore.so]
+      NEEDED            Shared library: [libcares.so.2]
+      NEEDED            Shared library: [libnghttp2.so.14]
+      NEEDED            Shared library: [libvorbisidec.so.1]
+      NEEDED            Shared library: [libfdk-aac.so.2]
+      NEEDED            Shared library: [libexpat.so.1]
+      NEEDED            Shared library: [libunwind.so.8]
+      NEEDED            Shared library: [libdwarf.so.1]
+      NEEDED            Shared library: [libelf.so.0]
+      NEEDED            Shared library: [liblcms2.so.2]
+      NEEDED            Shared library: [libz.so.1]
+      NEEDED            Shared library: [libcurl.so.4]
+      NEEDED            Shared library: [libssl.so.1.1]
+      NEEDED            Shared library: [libcrypto.so.1.1]
+      NEEDED            Shared library: [libwebosPlugin.so.1]
+      NEEDED            Shared library: [libbridge.so.1]
+      NEEDED            Shared library: [libplayready-4.0.so]
+      NEEDED            Shared library: [libstdc++.so.6]
+      NEEDED            Shared library: [libm.so.6]
+      NEEDED            Shared library: [libgcc_s.so.1]
+      NEEDED            Shared library: [libpthread.so.0]
+      NEEDED            Shared library: [libc.so.6]
+      NEEDED            Shared library: [ld-linux.so.3]
+      SONAME            Library soname: [libnetflix.so]
+[yolofant]
+yolofant 02/27/2023 10:03 PM
+amazon is better
+hellobox. 02/27/2023 10:02 PM
+it has some EGL-related symbols
+[yolofant]
+yolofant 02/27/2023 10:02 PM
+ye
+hellobox. 02/27/2023 10:02 PM
+they seem to put everything in a library: libnetflix.so
+02/27/2023 10:02 PM
+i'm looking at netflix
+[yolofant]
+yolofant 02/27/2023 10:01 PM
+hmm maybe playerAPIs?
+hellobox. 02/27/2023 10:01 PM
+is there anything you're linking against that'll bring it in?
+02/27/2023 10:01 PM
+true
+[yolofant]
+yolofant 02/27/2023 10:01 PM
+they have apps use qt or sdl
+02/27/2023 10:01 PM
+I guess libwayland-egl is not meant to be linked against directly
+02/27/2023 10:00 PM
+and qt
+02/27/2023 10:00 PM
+probably sdl
+hellobox. 02/27/2023 10:00 PM
+does lg stuff link against that?
+02/27/2023 9:59 PM
+but that's kind of weird
+[yolofant]
+yolofant 02/27/2023 9:59 PM
+yes
+hellobox. 02/27/2023 9:59 PM
+i mean, i guess they all seem to have the plain .so
+[yolofant]
+yolofant 02/27/2023 9:59 PM
+I'm not sure
+[] yolofant so should we just drop version/sonames from stub libs?
+hellobox. 02/27/2023 9:59 PM
+is that going to work?
+[] m.ksy webos 4.9 rtk
+hellobox. 02/27/2023 9:59 PM
+interesting that it's .1.0 and my rtk is .1.0.0
+[yolofant]
+yolofant 02/27/2023 9:58 PM
+so should we just drop version/sonames from stub libs?
+[yolofant]
+hellobox. does it depend on soc vendor?
+yolofant 02/27/2023 9:58 PM
+that might explain it
+[m.ksy]
+[] m.ksy the same for 4.9
+m.ksy 02/27/2023 9:58 PM
+webos 4.9 rtk
+[image.png]
+ image.png
+12.5 KB External
+[yolofant]
+[] itsyogsothoth Right, so I was resolving dependencies for one weather
+plugin and suddenly YouTube plugin started wo...
+yolofant 02/27/2023 9:58 PM
+nice
+hellobox. 02/27/2023 9:57 PM
+webos 4.0.0 (lx m16pp, commercial):
+    lrwxrwxrwx    1 root     root            21 Nov 28  2018 /usr/lib/libwayland-egl.so -> libwayland-egl.so.0.1
+    lrwxrwxrwx    1 root     root            21 Nov 28  2018 /usr/lib/libwayland-egl.so.0 -> libwayland-egl.so.0.1
+    -rwxr-xr-x    1 root     root          7212 Nov 28  2018 /usr/lib/libwayland-egl.so.0.1
+(edited)
+[itsyogsothoth]
+itsyogsothoth 02/27/2023 9:57 PM
+I need to give it API key to work, but hey, it's something
+02/27/2023 9:56 PM
+Right, so I was resolving dependencies for one weather plugin and
+suddenly YouTube plugin started working (?)
+hellobox. 02/27/2023 9:54 PM
+webos 6.3.2 (rtk k7lp):
+    lrwxrwxrwx    1 root     root            23 Dec 13 22:30 /usr/lib/libwayland-egl.so -> libwayland-egl.so.1.0.0
+    lrwxrwxrwx    1 root     root            23 Dec 13 22:30 /usr/lib/libwayland-egl.so.1 -> libwayland-egl.so.1.0.0
+    -rwxr-xr-x    1 root     root          8496 Dec 13 22:30 /usr/lib/libwayland-egl.so.1.0.0
+(edited)
+[] yolofant and then they downgraded again on webos 6
+hellobox. 02/27/2023 9:54 PM
+does it depend on soc vendor?
+[m.ksy]
+[] yolofant oh webos 5 has `libwayland-egl.so.1.0`
+m.ksy 02/27/2023 9:52 PM
+the same for 4.9
+[itsyogsothoth]
+[] yolofant I don't know if usb devices are accessible in jail
+itsyogsothoth 02/27/2023 9:35 PM
+That's what I though as well
+[yolofant]
+yolofant 02/27/2023 9:33 PM
+and then they downgraded again on webos 6
+02/27/2023 9:33 PM
+oh webos 5 has libwayland-egl.so.1.0
+02/27/2023 9:32 PM
+I don't know if usb devices are accessible in jail
+[itsyogsothoth]
+[] yolofant when did you connect the usb device
+itsyogsothoth 02/27/2023 9:31 PM
+before starting Kodi
+[yolofant]
+yolofant 02/27/2023 9:31 PM
+weird
+[itsyogsothoth]
+[] yolofant did you create the symlink yourself?
+itsyogsothoth 02/27/2023 9:31 PM
+Nope, just did the install
+[yolofant]
+yolofant 02/27/2023 9:31 PM
+when did you connect the usb device
+02/27/2023 9:30 PM
+did you create the symlink yourself?
+[itsyogsothoth]
+itsyogsothoth 02/27/2023 9:30 PM
+I also noticed it doesn't see USB drives, even in their mountpoints
+[yolofant]
+yolofant 02/27/2023 9:30 PM
+[itsyogsothoth]
+itsyogsothoth 02/27/2023 9:30 PM
+I'm using the first ipk you've send (the one with no symlinks)
+[yolofant]
+yolofant 02/27/2023 9:29 PM
+but nice to see that we have webos 5-7 starting
+02/27/2023 9:29 PM
+it's a first prototype I wouldn't expect anything to work tbh
+[itsyogsothoth]
+itsyogsothoth 02/27/2023 9:27 PM
+Not sure if I did something wrong or I failed somewhere during unzipping
+Kodi addons. Anyway YouTube addon doesn't work, just throws this (on
+webOS 5.3.0-2202):
+    2023-02-27 20:23:35.438 T:12764   error <general>: GetDirectory - Error getting plugin://plugin.video.youtube/
+    2023-02-27 20:23:35.453 T:12534   error <general>: CGUIMediaWindow::GetDirectory(plugin://plugin.video.youtube/) failed
+(edited)
+[infowski]
+infowski 02/27/2023 9:15 PM
+It's probably something else.
+02/27/2023 9:15 PM
+it's running in the same netns with the rest of the system.
+[kitsuned]
+kitsuned 02/27/2023 9:15 PM
+bruh
+[infowski]
+infowski 02/27/2023 9:15 PM
+I wasn't aware of jailer limiting networking whatsoever
+[kitsuned]
+[] infowski but it worked there >2023-02-27 19:43:39.508 T:18289 info
+<general>: JSONRPC Server: Successfully...
+kitsuned 02/27/2023 9:14 PM
+port is down tho
+[infowski]
+[] kitsuned Click to see attachment
+infowski 02/27/2023 9:14 PM
+but it worked there >2023-02-27 19:43:39.508 T:18289 info <general>:
+JSONRPC Server: Successfully initialized
+[yolofant]
+yolofant 02/27/2023 9:13 PM
+maybe a jail limitation?
+[kitsuned]
+kitsuned 02/27/2023 9:04 PM
+rip
+[kitsuned]
+[] kitsuned
+https://kodi.wiki/view/Web_interface#:~:text=http%3A//192.168.1.7/addons/-,Manually%20enabling%20rem...
+kitsuned 02/27/2023 9:04 PM
+    2023-02-27 20:00:27.247 T:19668   error <general>: JSONRPC Server: Failed to create serversocket(s)
+[yolofant]
+yolofant 02/27/2023 9:02 PM
+need to add some argument parser logic to drop the first argument on
+webos
+02/27/2023 9:01 PM
+ye
+[kitsuned]
+kitsuned 02/27/2023 9:01 PM
+    2023-02-27 20:00:27.283 T:19729   error <general>: CVideoPlayer::OpenInputStream - error opening [{"@system_native_app":true,"nid":"org.xbmc.kodi"}]
+xd
+[yolofant]
+yolofant 02/27/2023 9:01 PM
+sometimes it started appearing randomly after I played some videos
+02/27/2023 9:01 PM
+I tried enabling the cursor but I couldn't make it appear reliably
+(edited)
+[yolofant]
+[] kitsuned kodi cursor appears for a second when i scroll the wheel
+yolofant 02/27/2023 9:01 PM
+that's normal
+[yolofant]
+[] astur3l ```2023-02-27 18:48:09.507 T:13048 info <general>:
+UpdateResolutions: User wanted output "Default...
+yolofant 02/27/2023 9:00 PM
+that's normal
+[kitsuned]
+kitsuned 02/27/2023 8:57 PM
+https://kodi.wiki/view/Web_interface#:~:text=http%3A//192.168.1.7/addons/-,Manually%20enabling%20remote%20control,-If%20you%20have
+Web interface
+[astur3l]
+astur3l 02/27/2023 8:54 PM
+    2023-02-27 18:48:09.507 T:13048    info <general>: UpdateResolutions: User wanted output "Default", we now have "webos primary" size 0x0 mm with 1 mode(s):
+    2023-02-27 18:48:09.507 T:13048    info <general>: UpdateResolutions: - 1920x1080 @0.060 Hz pixel ratio 1.000 current
+[yolofant]
+yolofant 02/27/2023 8:52 PM
+luna-send-pub -i 'luna://com.webos.appInstallService/dev/install' '{"id":"com.ares.defaultName","ipkUrl":"/tmp/path/to/hbchannel.ipk","subscribe":true}'
+(edited)
+02/27/2023 8:51 PM
+copy it to /tmp and execute the luna service
+[maryjohanna42069]
+maryjohanna42069 02/27/2023 8:50 PM
+i assume
+[image.png]
+ image.png
+6.03 KB External
+[kitsuned]
+[] maryjohanna42069 actually nvm
+kitsuned 02/27/2023 8:48 PM
+is there enough memory on your TV?
+[maryjohanna42069]
+maryjohanna42069 02/27/2023 8:48 PM
+that one also errors
+02/27/2023 8:48 PM
+actually nvm
+[image.png]
+ image.png
+69.36 KB External
+[yolofant]
+yolofant 02/27/2023 8:46 PM
+log looks good [:c_Shrug:]
+[kitsuned]
+[] yolofant
+```/media/developer/apps/usr/palm/applications/org.xbmc.kodi/.kodi/kodi.log````
+kitsuned 02/27/2023 8:44 PM
+(no content)
+ message.txt
+29.95 KB External
+[maryjohanna42069]
+[] kitsuned try old device manager
+maryjohanna42069 02/27/2023 8:42 PM
+yup, that worked
+[yolofant]
+yolofant 02/27/2023 8:42 PM
+    /media/developer/apps/usr/palm/applications/org.xbmc.kodi/.kodi/kodi.log`
+ 1
+[kitsuned]
+[] yolofant I've not seen that happen before 
+kitsuned 02/27/2023 8:37 PM
+should i grab logs or smth?
+[astur3l]
+astur3l 02/27/2023 8:36 PM
+previos ipk was fine with devmanager (edited)
+[kitsuned]
+[] maryjohanna42069 i tried to sideload it on my tv as well to see how
+it performs, but it errors
+kitsuned 02/27/2023 8:36 PM
+try old device manager
+[infowski]
+infowski 02/27/2023 8:36 PM
+That sounds more like an issue of dev-manager-desktop
+[maryjohanna42069]
+[] yolofant ok so this ipk has the symlink included
+maryjohanna42069 02/27/2023 8:35 PM
+i tried to sideload it on my tv as well to see how it performs, but it
+errors
+[image.png]
+ image.png
+8.58 KB External
+[yolofant]
+yolofant 02/27/2023 8:32 PM
+I've not seen that happen before 
+ 1
+[kitsuned]
+[] yolofant restart it once
+kitsuned 02/27/2023 8:28 PM
+(no content)
+ PXL_20230227_192726802.TS.mp4
+3.35 MB External
+[infowski]
+infowski 02/27/2023 8:26 PM
+My name is Pointer. Mr. Pointer.
+ 2
+[astur3l]
+astur3l 02/27/2023 8:25 PM
+https://streamable.com/bdwldc
+VID_20230227_184804
+[]
+[yolofant]
+yolofant 02/27/2023 8:25 PM
+restart it once
+[kitsuned]
+kitsuned 02/27/2023 8:23 PM
+kodi cursor appears for a second when i scroll the wheel
+02/27/2023 8:22 PM
+neither keyboard nor tv remote works
+[astur3l]
+astur3l 02/27/2023 8:21 PM
+mr pointer didn't worked 4 me either but i thought that's okay
+[kitsuned]
+kitsuned 02/27/2023 8:21 PM
+input stuff totally broken for webOS 7
+[kitsuned]
+[] yolofant ok so this ipk has the symlink included
+kitsuned 02/27/2023 8:20 PM
+woah
+[yolofant]
+yolofant 02/27/2023 8:06 PM
+they are all compatible
+[ccarnell98]
+ccarnell98 02/27/2023 7:58 PM
+might be easier to symlink compatible versions
+[yolofant]
+yolofant 02/27/2023 7:37 PM
+will the linker find that lib?
+02/27/2023 7:37 PM
+so we only have libwayland-egl.so
+02/27/2023 7:37 PM
+what if we don't create the version symlinks in webos-userland
+02/27/2023 7:37 PM
+just the name is different
+02/27/2023 7:37 PM
+so all the wayland-egl libs have the same symbols in them
+[astur3l]
+[] yolofant 6.x?
+astur3l 02/27/2023 7:00 PM
+6.3 btw
+[yolofant]
+yolofant 02/27/2023 6:59 PM
+that means it requires a file in /usr/lib 
+02/27/2023 6:59 PM
+ares-package checks for the existance of the target lib though
+02/27/2023 6:59 PM
+ok so this ipk has the symlink included
+ org.xbmc.kodi_20.90.101_arm.ipk
+88.46 MB External
+[ccarnell98]
+ccarnell98 02/27/2023 6:46 PM
+How well does it run on older webos?
+[yolofant]
+yolofant 02/27/2023 6:45 PM
+ok
+[ccarnell98]
+ccarnell98 02/27/2023 6:44 PM
+Well with this shouldn't need a symlink or export a variable to get it
+to work now
+[yolofant]
+[] ccarnell98 Another PR for Kodi
+https://github.com/xbmc/xbmc/pull/22880
+yolofant 02/27/2023 6:43 PM
+I didnt create any symlink
+[yolofant]
+yolofant 02/27/2023 6:43 PM
+but is software decoding only
+02/27/2023 6:43 PM
+yes
+[astur3l]
+astur3l 02/27/2023 6:42 PM
+i was able to play some basic fhd test mp4 tho
+[ccarnell98]
+ccarnell98 02/27/2023 6:42 PM
+No longer need to symlink 
+02/27/2023 6:42 PM
+Another PR for Kodi https://github.com/xbmc/xbmc/pull/22880
+Update libxbcommon to 1.5.0 by craigcarnell · Pull Request #22880 ·...
+Description Updates libxbcommon to 1.5.0 Motivation and context The
+current version we use doesn't seem to want to use xkb-config-root which
+means I am symlinking /usr/share/X11/xkb. Following ...
+[]
+[yolofant]
+yolofant 02/27/2023 6:38 PM
+maybe add some symlinks?
+02/27/2023 6:38 PM
+but what we do about that egl library
+02/27/2023 6:37 PM
+but there is no hw accel
+02/27/2023 6:37 PM
+doesnt work for me either
+[astur3l]
+astur3l 02/27/2023 6:37 PM
+for some reason smb gives me 'invalid argument'... it is because
+password or wrong smb version?:d
+[yolofant]
+yolofant 02/27/2023 6:36 PM
+    cp /usr/lib/libwayland-egl.so.0 /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos/libwayland-egl.so.1
+[astur3l]
+astur3l 02/27/2023 6:36 PM
+started
+[yolofant]
+yolofant 02/27/2023 6:34 PM
+and rename it
+02/27/2023 6:34 PM
+maybe you can just copy that lib into lib
+02/27/2023 6:34 PM
+ok that sucks :/
+02/27/2023 6:34 PM
+    libwayland-egl.so.0.1
+[astur3l]
+astur3l 02/27/2023 6:34 PM
+    root@LGwebOSTV:~# ls -al /usr/lib/libwayland-egl.so*
+    lrwxrwxrwx    1 root     root            21 Dec 14 04:15 /usr/lib/libwayland-egl.so -> libwayland-egl.so.0.1
+    lrwxrwxrwx    1 root     root            21 Dec 14 04:15 /usr/lib/libwayland-egl.so.0 -> libwayland-egl.so.0.1
+    -rwxr-xr-x    1 root     root          5712 Dec 14 04:15 /usr/lib/libwayland-egl.so.0.1
+[yolofant]
+yolofant 02/27/2023 6:33 PM
+6.x?
+02/27/2023 6:33 PM
+which webos?=
+02/27/2023 6:33 PM
+what
+[astur3l]
+astur3l 02/27/2023 6:32 PM
+`/media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos: error while loading shared libraries: libwayland-egl.so.1: cannot open shared object file: No such file or directory`
+[yolofant]
+yolofant 02/27/2023 6:32 PM
+can you run that?
+02/27/2023 6:32 PM
+    /usr/bin/jailer -t native_devmode -i org.xbmc.kodi -p /
+    media/developer/apps/usr/palm/applications/org.xbmc.kodi /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+02/27/2023 6:31 PM
+hmm weird
+[astur3l]
+[] yolofant anyone wanna try a kodi ipk?
+astur3l 02/27/2023 6:31 PM
+doesnt launch for me 
+ debug.txt
+8.79 KB External
+[ccarnell98]
+ccarnell98 02/27/2023 6:29 PM
+my IPK is 144mb 
+[yolofant]
+yolofant 02/27/2023 6:24 PM
+can you extend the space with an usb stick like on android?
+02/27/2023 6:23 PM
+and we also need space for the library and so on
+02/27/2023 6:23 PM
+I don't think we can strip down the size anymore
+02/27/2023 6:23 PM
+oh I thought that was kodi in the background 
+[yolofant]
+[] m.ksy don't have much free space on TV to install it 
+yolofant 02/27/2023 6:10 PM
+[:POG:]
+[yolofant]
+yolofant 02/27/2023 6:10 PM
+no yet 
+[ccarnell98]
+ccarnell98 02/27/2023 6:07 PM
+@Yolofant Have you pushed up your libplayerAPI stuff?
+[m.ksy]
+[] yolofant anyone wanna try a kodi ipk?
+m.ksy 02/27/2023 6:04 PM
+don't have much free space on TV to install it 
+[image.png]
+ image.png
+54.33 KB External
+[yolofant]
+yolofant 02/27/2023 5:53 PM
+should theoretically work on webos 1
+02/27/2023 5:53 PM
+(no content)
+ org.xbmc.kodi_20.90.101_arm.ipk
+88.46 MB External
+ 3 [:pogchamp:] 4
+02/27/2023 5:53 PM
+anyone wanna try a kodi ipk?
+[ilikespeakers]
+[] mariotaku Sorry dude, I'll deal with the issue you said after that
+settled.
+ilikespeakers 02/27/2023 4:53 PM
+[mariotaku]
+[] ilikespeakers 
+mariotaku 02/27/2023 4:39 PM
+Sorry dude, I'll deal with the issue you said after that settled.
+[mariotaku]
+mariotaku 02/27/2023 4:39 PM
+Let's see what I'm facing tomorrow.
+02/27/2023 4:39 PM
+Damn it. I f-ed up read replica of company database and caused 3 hours
+downtime.
+[ilikespeakers]
+ilikespeakers 02/27/2023 3:19 PM
+[mariotaku]
+[] ilikespeakers <@225167450713358338> hello?
+mariotaku 02/27/2023 3:19 PM
+Wait a sec. Fixing something for work
+[ilikespeakers]
+ilikespeakers 02/27/2023 3:18 PM
+@Mariotaku hello?
+02/27/2023 3:16 PM
+we can continue in
+https://discord.com/channels/407937994037919756/1072464329699496056 ,
+too
+[ilikespeakers]
+[] mariotaku Hey! What's up
+ilikespeakers 02/27/2023 3:13 PM
+im back
+[ilikespeakers]
+ilikespeakers 02/27/2023 3:03 PM
+later
+02/27/2023 3:03 PM
+brb
+02/27/2023 3:03 PM
+I start a stream (in the latest version the old problem is fixed) and it
+only send the first few frames, and when does send some other is
+extremely glitchy. (edited)
+[mariotaku]
+[] ilikespeakers Hi, I'd like to ask <@225167450713358338> about IHSPlay
+(in a thread)
+mariotaku 02/27/2023 3:01 PM
+Hey! What's up
+[ilikespeakers]
+ilikespeakers 02/27/2023 3:01 PM
+Hi, I'd like to ask @Mariotaku about IHSPlay (in a thread)
+[yolofant]
+yolofant 02/27/2023 1:09 PM
+Alsa for now later through playerapi
+02/27/2023 1:09 PM
+We don't use pulse
+02/27/2023 1:09 PM
+It's not
+[ccarnell98]
+ccarnell98 02/27/2023 1:08 PM
+I think they want to switch to pipewire in the future. Might be an issue
+for us
+02/27/2023 1:07 PM
+Yes not me 
+[yolofant]
+yolofant 02/27/2023 1:00 PM
+It's really hard to see the differences in force pushes on github
+02/27/2023 1:00 PM
+Oh it's from upstream
+[ccarnell98]
+ccarnell98 02/27/2023 12:57 PM
+Their is nothing related to those in the PR
+02/27/2023 12:57 PM
+Changing python and pulseaudio stuff?
+[yolofant]
+yolofant 02/27/2023 12:55 PM
+I don't see a need for it nor is it related to a WebOS shell commit
+02/27/2023 12:53 PM
+But why are you changing python and pulseaudio stuff now
+[ccarnell98]
+ccarnell98 02/27/2023 12:44 PM
+I've made the lttng a separate PR hopefully they will merge it into
+master.. https://github.com/xbmc/xbmc/pull/22875
+Do not compile samba-gplv3 with lttng if found by craigcarnell · Pu...
+Description Removes linking samba-gplv3 with lttng Motivation and
+context When you use the tools/depends system to build the necessary
+dependencies, your buildroot system may have liblttng installe...
+[]
+02/27/2023 12:42 PM
+3rd one finally..
+02/27/2023 12:42 PM
+Patience.. about 3 e-mails. First time they removed it. Came back.
+Second time they refused calling me a spammer 
+[smx2460]
+[] ccarnell98 Discord finally lifted my restrictions 
+smx2460 02/27/2023 12:32 PM
+How xD
+[ccarnell98]
+ccarnell98 02/27/2023 12:06 PM
+Discord finally lifted my restrictions 
+hellobox. 02/27/2023 9:32 AM
+and i take care of the rest of the logic with specs
+02/27/2023 9:32 AM
+(of -t(no-)glibc-polyfill)
+02/27/2023 9:32 AM
+Negative should mean that it'll use the last one on the command line or
+something
+02/27/2023 9:31 AM
+    tglibc-polyfill
+    Driver Negative(tno-glibc-polyfill)
+02/27/2023 9:31 AM
+i think it does
+02/27/2023 9:31 AM
+well
+02/27/2023 9:31 AM
+it prevents both from being set
+ 1
+[] smx2460 <@803885040827629628> curiosity: do you need to explicitly
+test for -tno/-t presence?
+hellobox. 02/27/2023 9:31 AM
+yes
+[smx2460]
+smx2460 02/27/2023 9:30 AM
+It doesn't automatically set the inverse i mean
+02/27/2023 9:30 AM
+I guess NOT having -tno doesn't guarantee -t is set
+02/27/2023 9:30 AM
+@hellobox curiosity: do you need to explicitly test for -tno/-t
+presence?
+02/27/2023 9:28 AM
+I wonder if we'll need this elsewhere
+02/27/2023 9:27 AM
+$1 [option] $@ (edited)
+02/27/2023 9:27 AM
+Actually yeah, shift
+02/27/2023 9:26 AM
+And call $@
+02/27/2023 9:26 AM
+then bar needs to add the option (edited)
+02/27/2023 9:26 AM
+XX_CONF_ENV += "CC=bar $(TARGET_CC)" (edited)
+02/27/2023 9:23 AM
+(prepended)
+02/27/2023 9:23 AM
+The wrapper could be a shell script calling the original cc with the
+flag
+02/27/2023 9:23 AM
+I mean in glibc.mk, change the compiler to a wrapper
+hellobox. 02/27/2023 9:22 AM
+something like that
+02/27/2023 9:22 AM
+or config.make
+02/27/2023 9:22 AM
+i just added -tno-lgtv-compat to CC in one of the makefiles
+02/27/2023 9:22 AM
+that's along the lines of what i ended up doing to get glibc to build
+[smx2460]
+smx2460 02/27/2023 9:21 AM
+You should be able to override CC per package
+02/27/2023 9:21 AM
+Might not be so ugly in the end
+02/27/2023 9:21 AM
+gcc-no-compat
+02/27/2023 9:20 AM
+Like
+02/27/2023 9:20 AM
+The alternative, also ugly, is to wrap the compiler
+[smx2460]
+hellobox. would be nice to find a way to build it without hacking up the
+makefile or whatever
+smx2460 02/27/2023 9:20 AM
+There are other hacks in the patches being applied tho iirc (edited)
+[smx2460]
+hellobox. would be nice to find a way to build it without hacking up the
+makefile or whatever
+smx2460 02/27/2023 9:19 AM
+But agree
+[smx2460]
+smx2460 02/27/2023 9:19 AM
+@hellobox I'm busy at work rn. Can't check it
+[yolofant]
+yolofant 02/27/2023 9:05 AM
+does it need additional defines or includes?
+02/27/2023 9:04 AM
+it shouldn't be lib*
+02/27/2023 9:04 AM
+relocatable.c:(.text+0xa4): undefined reference to libiconv_set_relocation_prefix'`
+02/27/2023 9:04 AM
+is there actually also something different with iconv from 2.12?
+hellobox. 02/27/2023 8:55 AM
+would be nice to find a way to build it without hacking up the makefile
+or whatever
+02/27/2023 8:54 AM
+glibc is a bigger problem though
+02/27/2023 8:54 AM
+maybe
+[smx2460]
+smx2460 02/27/2023 8:42 AM
+ldflags in the .mk should work
+hellobox. 02/27/2023 8:40 AM
+    -- The C compiler identification is GNU 12.2.0
+    -- Detecting C compiler ABI info
+    -- Detecting C compiler ABI info - failed
+    -- Check for working C compiler: buildroot-nc4/output/host/bin/arm-webos-linux-gnueabi-gcc
+    -- Check for working C compiler: buildroot-nc4/output/host/bin/arm-webos-linux-gnueabi-gcc - broken
+    buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: cannot find -lglibc_polyfills: No such file or directory
+        collect2: error: ld returned 1 exit status
+(edited)
+02/27/2023 8:40 AM
+can't compile test program
+[smx2460]
+hellobox. glibc_polyfills fails to build though
+smx2460 02/27/2023 8:39 AM
+Where
+hellobox. 02/27/2023 3:24 AM
+glibc_polyfills fails to build though
+hellobox. 02/27/2023 3:08 AM
+lol it worked
+02/27/2023 3:08 AM
+oh, it reconfigured
+02/27/2023 3:07 AM
+how did it not work
+02/27/2023 3:07 AM
+wtf
+02/27/2023 3:07 AM
+for a pretty dirty hack
+02/27/2023 3:07 AM
+i have an idea
+hellobox. 02/27/2023 2:59 AM
+and now it's trying to use it for native stuff or something
+02/27/2023 2:59 AM
+i hacked it in
+02/27/2023 2:59 AM
+gcc: error: unrecognized command-line option ‘-tno-lgtv-compat’; did you mean ‘-Wno-c++-compat’?
+02/27/2023 2:55 AM
+it's not being put into config.make
+02/27/2023 2:55 AM
+oh
+02/27/2023 2:54 AM
+it's not using LDFLAGS where it should be
+02/27/2023 2:48 AM
+might have to patch the goddamn glibc makefiles or something
+02/27/2023 2:48 AM
+ugh
+hellobox. 02/27/2023 2:36 AM
+might need to set it in LDFLAGS
+02/27/2023 2:33 AM
+where <glibc> is
+buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15
+02/27/2023 2:33 AM
+the command that's failing is (roughly):
+    buildroot-nc4/output/host/bin/arm-webos-linux-gnueabi-gcc   -shared -static-libgcc -Wl,-O1  -Wl,-z,defs -Wl,-dynamic-linker=/lib/ld-linux.so.3  -B<glibc>/build/csu/  -Wl,--version-script=<glibc>/build/libBrokenLocale.map -Wl,-soname=libBrokenLocale.so.1 -Wl,-z,combreloc -Wl,-z,relro -Wl,--hash-style=both  -L<glibc>/build -L<glibc>/build/math -L<glibc>/build/elf -L<glibc>/build/dlfcn -L<glibc>/build/nss -L<glibc>/build/nis -L<glibc>/build/rt -L<glibc>/build/resolv -L<glibc>/build/crypt -L<glibc>/build/nptl -Wl,-rpath-link=<glibc>/build:<glibc>/build/math:<glibc>/build/elf:<glibc>/build/dlfcn:<glibc>/build/nss:<glibc>/build/nis:<glibc>/build/rt:<glibc>/build/resolv:<glibc>/build/crypt:<glibc>/build/nptl -o <glibc>/build/locale/libBrokenLocale.so -T <glibc>/build/shlib.lds <glibc>/build/csu/abi-note.o -Wl,--whole-archive <glibc>/build/locale/libBrokenLocale_pic.a -Wl,--no-whole-archive <glibc>/build/elf/interp.os <glibc>/build/libc.so <glibc>/build/libc_nonshared.a
+02/27/2023 2:31 AM
+    CFLAGS='-O2 -fno-lto -tno-lgtv-compat'
+    CXXFLAGS='-O2 -fno-lto -tno-lgtv-compat'
+02/27/2023 2:27 AM
+in/ld: cannot find -lglibc_polyfills: No such file or directory
+02/27/2023 2:27 AM
+: cannot find -lrt: No such file or directory
+02/27/2023 2:27 AM
+and it doesn't work
+02/27/2023 2:27 AM
+ugh
+hellobox. 02/27/2023 2:17 AM
+it's not as pretty but whatever
+02/27/2023 2:16 AM
+now patch applies
+[smx2460]
+smx2460 02/27/2023 2:13 AM
+(no content)
+[IMG_20230227_021317.jpg]
+ IMG_20230227_021317.jpg
+44.28 KB External
+ 1
+hellobox. 02/27/2023 2:11 AM
+i included the wrong patch
+02/27/2023 2:11 AM
+lol
+02/27/2023 2:11 AM
+oops
+02/27/2023 2:11 AM
+oh shit
+[smx2460]
+smx2460 02/27/2023 2:10 AM
+Not sure
+02/27/2023 2:10 AM
+Maybe it happened when updating gcc
+hellobox. 02/27/2023 2:09 AM
+it shouldn't hurt
+[smx2460]
+smx2460 02/27/2023 2:09 AM
+Not sure what broke and when
+hellobox. 02/27/2023 2:09 AM
+i don't know
+02/27/2023 2:09 AM
+but it might build other libs without those
+[smx2460]
+smx2460 02/27/2023 2:09 AM
+I remember this working tho
+hellobox. 02/27/2023 2:09 AM
+it would have trouble if it tried to build libc with -lc
+02/27/2023 2:08 AM
+i mean
+[smx2460]
+smx2460 02/27/2023 2:08 AM
+so maybe we don't even need to bother
+02/27/2023 2:08 AM
+-nostdlib -nostartfiles  (edited)
+02/27/2023 2:08 AM
+it's issuing this command
+02/27/2023 2:08 AM
+    /mnt/ExtData/buildroot-nc4/output/host/bin/arm-webos-linux-gnueabi-gcc -nostdlib -nostartfiles -static -o /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/elf/sln    /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/csu/crt1.o /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/csu/crti.o `/mnt/ExtData/buildroot-nc4/output/host/bin/arm-webos-linux-gnueabi-gcc  --print-file-name=crtbegin.o` /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/elf/sln.o  /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/libc.a -lgcc  /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/libc.a `/mnt/ExtData/buildroot-nc4/output/host/bin/arm-webos-linux-gnueabi-gcc  --print-file-name=crtend.o` /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/csu/crtn.o
+02/27/2023 2:07 AM
+it's complaining about many more symbols too
+02/27/2023 2:07 AM
+as i had this before
+02/27/2023 2:07 AM
+it might not be related to your patch
+02/27/2023 2:07 AM
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/libc.a(libc-start.o):(.ARM.exidx+0x0): undefined reference to `__aeabi_unwind_cpp_pr0'
+02/27/2023 2:04 AM
+i don't need to wait for QT to build to do it
+02/27/2023 2:04 AM
+and see what happens
+02/27/2023 2:04 AM
+i'll abort the build, nuke glibc early
+02/27/2023 2:04 AM
+it's getting late here
+02/27/2023 2:04 AM
+¯\_(ツ)_/¯ (edited)
+02/27/2023 2:04 AM
+leave it then?
+02/27/2023 2:03 AM
+    It's worth noting that the behavior of --as-needed with static libraries may differ slightly from its behavior with shared libraries. When using shared libraries, --as-needed will cause the linker to automatically drop unused shared libraries from the link command line, while with static libraries, the linker will simply ignore unused object files within the library. However, the end result is the same in both cases: only the necessary code is included in the final executable.
+02/27/2023 2:03 AM
+ChatGPT 
+02/27/2023 2:03 AM
+    Yes, the --as-needed linker option works for static libraries as well as shared libraries. When the --as-needed option is used, the linker will only include object files from a static library that resolve symbols that are not already defined at the point where the library is linked. This ensures that unnecessary object files are not included in the final executable, which can reduce its size and improve performance.
+hellobox. 02/27/2023 2:03 AM
+i can remove it now since i have to fix the "s" thing anyway
+02/27/2023 2:02 AM
+in case you decide to make a shared one or something
+02/27/2023 2:02 AM
+or should i just leave --as-needed?
+[smx2460]
+smx2460 02/27/2023 2:02 AM
+yeah
+hellobox. 02/27/2023 2:02 AM
+so --as-needed has no effect
+[smx2460]
+smx2460 02/27/2023 2:02 AM
+is if you don't use getauxval in your program
+hellobox. 02/27/2023 2:02 AM
+it's static though
+[smx2460]
+smx2460 02/27/2023 2:01 AM
+the only time when you might avoid that
+02/27/2023 2:01 AM
+whenever you reference it
+02/27/2023 2:01 AM
+so the linker would always pull the polyfills in
+02/27/2023 2:01 AM
+getauxval isn't in glibc 2.12.2
+hellobox. 02/27/2023 2:01 AM
+what do you mean?
+[smx2460]
+smx2460 02/27/2023 2:01 AM
+unless you can omit it when getauxval is not used
+02/27/2023 2:00 AM
+it should always be included because getauxval isn't in our glibc
+02/27/2023 2:00 AM
+hmmm
+02/27/2023 2:00 AM
+hm
+02/27/2023 2:00 AM
+it should always be included
+hellobox. 02/27/2023 2:00 AM
+it's polyfills
+02/27/2023 2:00 AM
+ah wait
+02/27/2023 2:00 AM
+oops, i guess i probably didn't need --as-needed for glibc polyfills
+[smx2460]
+smx2460 02/27/2023 1:59 AM
+and see what happens
+02/27/2023 1:59 AM
+would like to nuke glibc once it's done
+02/27/2023 1:59 AM
+but it's in -final still
+02/27/2023 1:59 AM
+none
+hellobox. 02/27/2023 1:59 AM
+and what options?
+[smx2460]
+smx2460 02/27/2023 1:57 AM
+using this ephemeral patch
+hellobox. 02/27/2023 1:57 AM
+i wish i could keep the host libs
+[smx2460]
+smx2460 02/27/2023 1:57 AM
+    -+    "%{shared:-lc " WEBOS_AS_NEEDED("-lrt") "} " \
+    -+    "%{!shared:%{profile:-lc_p " WEBOS_AS_NEEDED("-lrt_p") "}%{!profile:-lc " WEBOS_AS_NEEDED("-lrt") "}}" \
+    ++    "%{shared:-lc -lglibc_polyfills " WEBOS_AS_NEEDED("-lrt") "} " \
+    ++    "%{!shared:%{profile:-lc_p " WEBOS_AS_NEEDED("-lrt_p") "}%{!profile:-lc -lglibc_polyfills " WEBOS_AS_NEEDED("-lrt") "}}" \
+     +  ";:" \
+    -+    "%{shared:-lc} " \
+    ++    "%{shared:-lc -lglibc_polyfills} " \
+02/27/2023 1:57 AM
+it looks like QT is going through
+02/27/2023 1:56 AM
+hellobox. 02/27/2023 1:56 AM
+i'll make clean and rebuild so i don't miss anything when testing this
+time
+02/27/2023 1:54 AM
+i'll make a pr
+02/27/2023 1:54 AM
+all right, i'm ready to test it
+02/27/2023 1:49 AM
+(no content)
+[image.png]
+ image.png
+200.78 KB External
+02/27/2023 1:49 AM
+https://duranglers.com/ross-reels-cimarron-ii-first-look/
+[smx2460]
+smx2460 02/27/2023 1:49 AM
+there's a sleep 3
+02/27/2023 1:49 AM
+oh lol
+02/27/2023 1:49 AM
+but funny
+02/27/2023 1:49 AM
+i highlighted it, wasn't highlighted
+hellobox. 02/27/2023 1:49 AM
+interesting
+02/27/2023 1:48 AM
+this? https://github.com/hyperrealm/libconfig/blob/master/configure.ac
+[smx2460]
+smx2460 02/27/2023 1:48 AM
+(no content)
+[image.png]
+ image.png
+120.52 KB External
+hellobox. 02/27/2023 1:48 AM
+because we don't want either -lrt or -lglibc_polyfills
+[smx2460]
+smx2460 02/27/2023 1:48 AM
+    configure: libconfig - made with pride in Colorado
+hellobox. 02/27/2023 1:48 AM
+so i should add -tno-lgtv-compat to glibc extra cflags?
+[smx2460]
+smx2460 02/27/2023 1:47 AM
+to see what happens
+02/27/2023 1:47 AM
+i'm gonna try rebuilding glibc once br-nc4 finishes
+02/27/2023 1:47 AM
+i'd say yes
+hellobox. 02/27/2023 1:46 AM
+which means all i have to do is put it in the versioned dir
+02/27/2023 1:46 AM
+so we're applying the patch to both gcc passes now, right?
+[smx2460]
+smx2460 02/27/2023 1:45 AM
+yes
+hellobox. 02/27/2023 1:45 AM
+it just downloads a tarball
+02/27/2023 1:45 AM
+oh, so it doesn't use git to get stuff from github
+[smx2460]
+smx2460 02/27/2023 1:45 AM
+but i'm also building br-nc4 in parallel
+02/27/2023 1:45 AM
+my "make help" times
+02/27/2023 1:44 AM
+    real    0m19,201s
+    user    0m5,849s
+    sys     0m2,317s
+02/27/2023 1:44 AM
+too many targets
+hellobox. 02/27/2023 1:43 AM
+even when i run make help
+[smx2460]
+smx2460 02/27/2023 1:43 AM
+it might also be that it changed post cutoff (edited)
+hellobox. 02/27/2023 1:43 AM
+god, buildroot make is so slow
+[smx2460]
+smx2460 02/27/2023 1:43 AM
+because support/dependencies/dependencies.sh is real
+02/27/2023 1:43 AM
+but let's give it a pass
+02/27/2023 1:43 AM
+lol
+02/27/2023 1:43 AM
+it technically is support/dependencies/check-host-cmake.sh
+02/27/2023 1:42 AM
+    The check for the required version of CMake is carried out by the Buildroot script support/scripts/check-host-package.sh. This script is called by the support/scripts/dependencies/dependencies.sh script, which is in turn called by the support/scripts/check-host-pkg-config.sh script. This script checks for the presence of CMake and other required host packages, and installs them if necessary.
+02/27/2023 1:42 AM
+and one of them was right
+02/27/2023 1:42 AM
+it gave 2
+02/27/2023 1:42 AM
+although the name of the script was wrong
+02/27/2023 1:42 AM
+it finally gave support/scripts
+02/27/2023 1:42 AM
+after i asked him where it's checked
+hellobox. 02/27/2023 1:42 AM
+this is all pretty believable though
+[smx2460]
+smx2460 02/27/2023 1:42 AM
+it said it's controlled by BR2_PACKAGE_HOST_CMAKE
+02/27/2023 1:41 AM
+then i told him it's not the case for me
+02/27/2023 1:41 AM
+    In recent versions of Buildroot, CMake is always compiled from source, regardless of whether the version is already present on the host system or not. This is done to ensure that the build is reproducible, and that the exact same version of CMake is used every time, regardless of the host system.
+02/27/2023 1:41 AM
+then it told me
+02/27/2023 1:41 AM
+which doesn't exist
+02/27/2023 1:41 AM
+it told me it uses BR2_PACKAGE_CMAKE_USE_HOST_VERSION
+02/27/2023 1:41 AM
+or use the existing one
+02/27/2023 1:41 AM
+i asked it how buildroot determines when to build cmake
+hellobox. 02/27/2023 1:40 AM
+it makes me kind of doubt myself for a second
+02/27/2023 1:40 AM
+it writes very authoritatively
+[smx2460]
+smx2460 02/27/2023 1:39 AM
+or something similar
+02/27/2023 1:39 AM
+xD
+02/27/2023 1:39 AM
+i remember reading an article once that defined ChatGPT as a great
+bullshit generator
+hellobox. 02/27/2023 1:39 AM
+so there's that
+02/27/2023 1:39 AM
+i mean, rpm spec files also involve a lot of %s (edited)
+02/27/2023 1:38 AM
+lol
+[smx2460]
+smx2460 02/27/2023 1:38 AM
+    In the context of the GCC spec file, there is typically only one parser involved, which is the parser built into the GCC toolchain itself. This parser is responsible for parsing the spec file and generating the appropriate compiler and linker options based on the conditional expressions and other settings defined in the file.
+    However, the spec file may also be used by other tools and scripts that require information about the GCC toolchain and its configuration. For example, package managers like RPM and Debian may use the spec file to generate package descriptions and dependencies for GCC and its associated libraries.
+    In these cases, the spec file may be parsed by other tools or scripts that are not necessarily built into the GCC toolchain itself. However, the syntax and structure of the spec file is well-defined and widely understood, so any parser or script that needs to parse the file can typically do so without issue.
+    I hope this answers your question. Let me know if you have any further questions.
+02/27/2023 1:38 AM
+> how many parsers are there?
+hellobox. 02/27/2023 1:37 AM
+"most parsers"
+02/27/2023 1:37 AM
+lol
+[smx2460]
+smx2460 02/27/2023 1:37 AM
+lol
+02/27/2023 1:37 AM
+    You are correct that %{profile:-lc_p}%{!profile:-lc} and %{profile:-lc_p;:-lc} are functionally equivalent and will produce the same output in most cases. The semicolon ; is equivalent to an empty expression, so %{profile:-lc_p;:-lc} will be interpreted as %{profile:-lc_p}%{!profile:-lc} by most parsers.
+    In fact, in some cases, the semicolon syntax may even be preferred, as it can help prevent certain edge cases where the colon syntax could be misinterpreted. However, in practice, the colon syntax is more commonly used and is considered the standard way of writing conditional expressions in spec files.
+    I apologize for any confusion my previous response may have caused. Thank you for bringing this to my attention.
+02/27/2023 1:37 AM
+> aren't they identical?
+02/27/2023 1:36 AM
+probably not unless you ask some impossible stuff
+hellobox. 02/27/2023 1:35 AM
+does it ever say "i don't know"?
+[] smx2460 ``` Yes, there is a reason for using
+%{profile:-lc_p}%{!profile:-lc} instead of %{profile:-lc_p;:-lc...
+hellobox. 02/27/2023 1:34 AM
+it's kind of like a student trying to write BS because they don't know
+how to answer the question (edited)
+hellobox. 02/27/2023 1:33 AM
+i'd like to change it and see if anything breaks at some point though
+02/27/2023 1:33 AM
+i just left that stuff alone for now
+[smx2460]
+smx2460 02/27/2023 1:33 AM
+02/27/2023 1:33 AM
+    is there a reason they use %{profile:-lc_p}%{!profile:-lc} instead of %{profile:-lc_p;:-lc} in gcc source code, regarding the spec file?
+02/27/2023 1:33 AM
+question was
+hellobox. 02/27/2023 1:32 AM
+semi-subtly wrong in several ways
+[smx2460]
+smx2460 02/27/2023 1:31 AM
+XD
+02/27/2023 1:31 AM
+lol
+hellobox. 02/27/2023 1:31 AM
+what?
+02/27/2023 1:31 AM
+uh
+[smx2460]
+smx2460 02/27/2023 1:31 AM
+    Yes, there is a reason for using %{profile:-lc_p}%{!profile:-lc} instead of %{profile:-lc_p;:-lc} in the GCC spec file.
+    The GCC spec file is used to define the options and settings for the compiler and linker. In the spec file, the %{...} construct is used to evaluate a conditional expression based on the presence or absence of a macro. The : character is used to separate the expressions that are evaluated depending on whether the macro is defined or not.
+    In the case of %{profile:-lc_p}%{!profile:-lc}, the :%{!profile:-lc} part is evaluated only if the macro profile is not defined. This means that if the macro profile is defined, the expression evaluates to -lc_p, and if the macro profile is not defined, the expression evaluates to -lc.
+    On the other hand, %{profile:-lc_p;:-lc} would evaluate to -lc_p; if the macro profile is defined, and to -lc; if the macro profile is not defined. This is because the semicolon ; is evaluated as an empty expression when the macro profile is defined, which is not what is intended.
+    Therefore, %{profile:-lc_p}%{!profile:-lc} is the correct expression to use in the GCC spec file to select the appropriate linker flag based on whether the profile macro is defined or not.
+    I hope this answers your question. Let me know if you have any further questions.

@@ -1,0 +1,1390 @@
+February 7, 2023
+[smx2460]
+smx2460 02/07/2023 1:07 AM
+either way
+hellobox. 02/07/2023 1:07 AM
+i think i complained about that before
+02/07/2023 1:07 AM
+    export "CC_FOR_BUILD=ccache /usr/local/bin/gcc"
+    export "GCC_FOR_BUILD=ccache /usr/local/bin/gcc"
+    export "CXX_FOR_BUILD=ccache /usr/local/bin/g++"
+02/07/2023 1:07 AM
+although
+[smx2460]
+smx2460 02/07/2023 1:07 AM
+--host=... for autotools
+02/07/2023 1:07 AM
+i use -DCMAKE_TOOLCHAIN_FILE for CMake
+02/07/2023 1:07 AM
+i don't like it
+02/07/2023 1:07 AM
+i never use an env file
+02/07/2023 1:06 AM
+depends on your buildsystem
+hellobox. 02/07/2023 1:06 AM
+i'd rather have something that sets CC etc.
+[smx2460]
+smx2460 02/07/2023 1:06 AM
+you don't really need an env file
+hellobox. 02/07/2023 1:06 AM
+ehh
+[smx2460]
+smx2460 02/07/2023 1:06 AM
+then use it (edited)
+02/07/2023 1:06 AM
+export PATH=$PATH:$PWD
+hellobox. 02/07/2023 1:06 AM
+is there an env file?
+[smx2460]
+smx2460 02/07/2023 1:06 AM
+cd output/host/bin
+02/07/2023 1:06 AM
+no need to install it
+02/07/2023 1:06 AM
+your toolchain is in output/host
+hellobox. 02/07/2023 1:05 AM
+the toolchain
+[smx2460]
+smx2460 02/07/2023 1:05 AM
+lol
+02/07/2023 1:05 AM
+what's "everything else"
+hellobox. 02/07/2023 1:05 AM
+but idc
+02/07/2023 1:05 AM
+yeah it's pissed about missing java
+02/07/2023 1:05 AM
+how do i install everything else?
+[smx2460]
+smx2460 02/07/2023 1:05 AM
+then you're set
+hellobox. 02/07/2023 1:05 AM
+so
+02/07/2023 1:05 AM
+i mean, i don't need kodi
+[smx2460]
+smx2460 02/07/2023 1:05 AM
+then redo the command (edited)
+[smx2460]
+hellobox. ```Applying
+0001-kodi-config.cmake-use-CMAKE_FIND_ROOT_PATH-to-fix-cr.patch using
+patch: Error: dupl...
+smx2460 02/07/2023 1:05 AM
+need to rm -rf output/build/*kodi*
+hellobox. 02/07/2023 1:04 AM
+so
+02/07/2023 1:04 AM
+yeah
+02/07/2023 1:04 AM
+    Applying 0001-kodi-config.cmake-use-CMAKE_FIND_ROOT_PATH-to-fix-cr.patch using patch:
+    Error: duplicate filename '0001-kodi-config.cmake-use-CMAKE_FIND_ROOT_PATH-to-fix-cr.patch'
+[smx2460]
+smx2460 02/07/2023 1:04 AM
+you just wanted deps
+02/07/2023 1:04 AM
+but you won't need it, right?
+02/07/2023 1:04 AM
+    diff --git a/package/kodi/0001-backport-hacks.patch b/package/kodi/webos/0001-backport-hacks.patch
+    similarity index 100%
+    rename from package/kodi/0001-backport-hacks.patch
+    rename to package/kodi/webos/0001-backport-hacks.patch
+02/07/2023 1:04 AM
+it won't rebuild world
+hellobox. 02/07/2023 1:04 AM
+4ecf622eb2895775f6858b1ae38650ea624eeb31
+[smx2460]
+smx2460 02/07/2023 1:04 AM
+pull; make
+02/07/2023 1:04 AM
+i might or might not have fixed after you pulled it
+02/07/2023 1:04 AM
+no br-nc4 head
+02/07/2023 1:03 AM
+it should be 08ad64b587242ad0e4cfc9c831e04bd5b635701e
+hellobox. 02/07/2023 1:03 AM
+i haven't even checked out kodi
+[smx2460]
+smx2460 02/07/2023 1:03 AM
+what's your HEAD
+hellobox. 02/07/2023 1:03 AM
+Aborting. 'package/kodi/webos' is not a directory.
+02/07/2023 1:03 AM
+failed applying patches or something
+[smx2460]
+smx2460 02/07/2023 1:03 AM
+because of missing java?
+hellobox. 02/07/2023 1:03 AM
+lol
+02/07/2023 1:03 AM
+actually it died in kodi
+[smx2460]
+smx2460 02/07/2023 1:03 AM
+@hellobox build rolling? 
+[ccarnell98]
+ccarnell98 02/07/2023 12:54 AM
+I'll post the branch up, when I've fixed it compiling again 
+[ccarnell98]
+[] smx2460 hmm
+ccarnell98 02/07/2023 12:53 AM
+Yes it requires modification to kodi 
+hellobox. 02/07/2023 12:46 AM
+and e.g. the symbol SDL_malloc in the binary is actually a proxy loader
+thing
+02/07/2023 12:45 AM
+and i can't easily find function definitions because every goddamn
+function has this:
+    #define SDL_GetShapedWindowMode SDL_GetShapedWindowMode_REAL
+    #define SDL_malloc SDL_malloc_REAL
+    #define SDL_calloc SDL_calloc_REAL
+[smx2460]
+smx2460 02/07/2023 12:45 AM
+xD (edited)
+[smx2460]
+hellobox. ```c #define SDL_small_alloc(type, count, pisstack) (
+(*(pisstack) = ((sizeof(type)*(count)) < SDL_M...
+smx2460 02/07/2023 12:45 AM
+piss
+[yolofant]
+yolofant 02/07/2023 12:45 AM
+ah I see m_handler is actually CWinSystemWayland
+hellobox. 02/07/2023 12:44 AM
+pisstack
+02/07/2023 12:44 AM
+    #define SDL_small_alloc(type, count, pisstack) ( (*(pisstack) = ((sizeof(type)*(count)) < SDL_MAX_SMALL_ALLOC_STACKSIZE)), (*(pisstack) ? SDL_stack_alloc(type, count) : (type*)SDL_malloc(sizeof(type)*(count))) )
+[smx2460]
+smx2460 02/07/2023 12:40 AM
+while keeping the wl_shell (edited)
+02/07/2023 12:40 AM
+yeah
+hellobox. 02/07/2023 12:40 AM
+they seem to use both
+[yolofant]
+yolofant 02/07/2023 12:40 AM
+no you need both
+[smx2460]
+smx2460 02/07/2023 12:40 AM
+but maybe you need to attach the configure handler to that
+02/07/2023 12:39 AM
+you could replace that with the WebOS shell, although i think it's not
+1:1 compatible with wl_shell
+02/07/2023 12:39 AM
+      m_shellSurface = m_shell.get_shell_surface(surface);
+02/07/2023 12:39 AM
+because
+02/07/2023 12:39 AM
+ye
+[yolofant]
+yolofant 02/07/2023 12:39 AM
+but that is webos_shell
+[smx2460]
+smx2460 02/07/2023 12:39 AM
+did he really add support for the WebOS shell other than wl_shell and
+xdg_shell?
+02/07/2023 12:38 AM
+hmm
+02/07/2023 12:38 AM
+02/07/2023 12:38 AM
+https://github.com/webosose/webos-wayland-extensions/issues/2
+wl_webos_shell_surface - missing pong, ping, configure in xml? · Is...
+Hi, If you use wayland-scanner++ on
+https://github.com/webosose/webos-wayland-extensions/blob/master/protocol/webos-shell.xml,
+wl_webos_shell_surface has no methods to add listeners to, like the
+wa...
+[]
+02/07/2023 12:37 AM
+    CShellSurfaceWlShell::CShellSurfaceWlShell(IShellSurfaceHandler& handler,
+                                               CConnection& connection,
+                                               const wayland::surface_t& surface,
+                                               const std::string& title,
+                                               const std::string& class_)
+      : m_handler{handler}
+    {
+      {
+        CRegistry registry{connection};
+        registry.RequestSingleton(m_shell, 1, 1);
+        registry.Bind();
+      }
+      m_shellSurface = m_shell.get_shell_surface(surface);
+      m_surfaceState.set(STATE_ACTIVATED);
+      m_shellSurface.set_class(class_);
+      m_shellSurface.set_title(title);
+      m_shellSurface.on_ping() = [this](std::uint32_t serial)
+      {
+        m_shellSurface.pong(serial);
+      };
+      m_shellSurface.on_configure() = [this](const wayland::shell_surface_resize&, std::int32_t width,
+                                             std::int32_t height) {
+        // wl_shell does not have serials
+        m_handler.OnConfigure(0, {width, height}, m_surfaceState);
+      };
+    }
+02/07/2023 12:37 AM
+hmmm (edited)
+02/07/2023 12:37 AM
+    void CShellSurfaceWlShell::Initialize()
+    {
+      // Nothing to do here - constructor already handles it
+      // This is not a problem since the constructor is guaranteed not to call
+      // handler functions since the event loop is not running.
+    }
+02/07/2023 12:37 AM
+we have wl_shell
+02/07/2023 12:37 AM
+but we don't have xdg_shell
+02/07/2023 12:37 AM
+      m_xdgToplevel.on_configure() = [this](std::int32_t width, std::int32_t height,
+                                            const std::vector<wayland::xdg_toplevel_state>& states) {
+        m_configuredSize.Set(width, height);
+        m_configuredState.reset();
+        for (auto state : states)
+        {
+          m_configuredState.set(ConvertStateFlag(state));
+        }
+      };
+[yolofant]
+yolofant 02/07/2023 12:37 AM
+the other option is m_surface.commit();
+[smx2460]
+smx2460 02/07/2023 12:36 AM
+doesn't look like the right way to me
+02/07/2023 12:36 AM
+    int wl_display_roundtrip (struct wl_display *display)
+    Block until all pending request are processed by the server 
+02/07/2023 12:36 AM
+hm
+02/07/2023 12:36 AM
+    int display_t::roundtrip() const
+    {
+      return check_return_value(wl_display_roundtrip(*this), "wl_display_roundtrip");
+    }
+[yolofant]
+yolofant 02/07/2023 12:34 AM
+m_display.roundtrip();
+02/07/2023 12:33 AM
+we need this?
+02/07/2023 12:33 AM
+https://github.com/xbmc/xbmc/blob/19.4-Matrix/xbmc/windowing/wayland/ShellSurfaceXdgShell.cpp#L91
+xbmc/ShellSurfaceXdgShell.cpp at 19.4-Matrix · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+02/07/2023 12:33 AM
+yeah
+[smx2460]
+smx2460 02/07/2023 12:33 AM
+it's supposed to happen in Initialize then
+[ccarnell98]
+hellobox. `/tmp/usb/sdaX` or something
+ccarnell98 02/07/2023 12:33 AM
+I can see them in kodi, but they are blank for some reason. The TV reads
+the USB hard disk in its own player
+[smx2460]
+smx2460 02/07/2023 12:33 AM
+      // Just remember initial width/height for context creation in OnConfigure
+      // This is used for sizing the EGLSurface
+      m_shellSurfaceInitializing = true;
+      m_shellSurface->Initialize();
+      m_shellSurfaceInitializing = false;
+02/07/2023 12:33 AM
+hm
+[yolofant]
+yolofant 02/07/2023 12:33 AM
+no the message isn't there at all
+[smx2460]
+smx2460 02/07/2023 12:32 AM
+or you see it with 0?
+[smx2460]
+[] yolofant probably it is being called but `m_shellSurfaceInitializing`
+= false or `size` == 0?
+smx2460 02/07/2023 12:32 AM
+you don't see the message?
+[yolofant]
+yolofant 02/07/2023 12:28 AM
+also those with xdg shell
+02/07/2023 12:28 AM
+because if the method itself wasn't called that would affect all wayland
+users
+02/07/2023 12:28 AM
+probably it is being called but m_shellSurfaceInitializing = false or
+size == 0?
+hellobox. 02/07/2023 12:27 AM
+where are, repeat, where are the patches? the world wonders.
+[ccarnell98]
+ccarnell98 02/07/2023 12:27 AM
+I'm working on it
+[yolofant]
+yolofant 02/07/2023 12:27 AM
+https://github.com/xbmc/xbmc/blob/19.4-Matrix/xbmc/windowing/wayland/WinSystemWayland.cpp#L764
+[smx2460]
+smx2460 02/07/2023 12:27 AM
+and possibly update waylandhax/preloaded with it
+02/07/2023 12:27 AM
+to see what he did with wayland
+02/07/2023 12:27 AM
+i'm waiting for @Craig 's patches 
+hellobox. 02/07/2023 12:25 AM
+sdl2 reversing?
+02/07/2023 12:24 AM
+epk2extract crashes?
+02/07/2023 12:24 AM
+so, what to work on in the meantime?
+02/07/2023 12:23 AM
+or going further at least
+02/07/2023 12:22 AM
+and it's working now?
+02/07/2023 12:22 AM
+tried it again
+[smx2460]
+smx2460 02/07/2023 12:22 AM
+oh?
+hellobox. 02/07/2023 12:22 AM
+oh, looks like there was an error
+02/07/2023 12:22 AM
+then stopped
+02/07/2023 12:22 AM
+last one was libtool
+02/07/2023 12:22 AM
+we configured a couple things
+[smx2460]
+smx2460 02/07/2023 12:22 AM
+it pulls it in on its own
+hellobox. 02/07/2023 12:21 AM
+not quite
+[smx2460]
+smx2460 02/07/2023 12:21 AM
+don't use -j
+hellobox. 02/07/2023 12:21 AM
+well
+02/07/2023 12:21 AM
+hmm
+[smx2460]
+smx2460 02/07/2023 12:21 AM
+it recursively figures out it needs the world
+hellobox. 02/07/2023 12:21 AM
+great
+[smx2460]
+smx2460 02/07/2023 12:21 AM
+yes
+hellobox. 02/07/2023 12:21 AM
+is it going to build the rest of the toolchain?
+[smx2460]
+smx2460 02/07/2023 12:21 AM
+so it's gonna do whatever to get there
+hellobox. 02/07/2023 12:21 AM
+looks like it's doing something
+[smx2460]
+smx2460 02/07/2023 12:21 AM
+it's gonna configure it but not build it (and not install it)
+02/07/2023 12:20 AM
+this should do
+hellobox. 02/07/2023 12:20 AM
+well, extracted them
+[smx2460]
+smx2460 02/07/2023 12:20 AM
+make kodi-configure (edited)
+hellobox. 02/07/2023 12:20 AM
+make kodi-extract
+02/07/2023 12:20 AM
+yes
+[smx2460]
+smx2460 02/07/2023 12:20 AM
+only?
+hellobox. 02/07/2023 12:20 AM
+@Smx that just downloaded kodi archives
+[yolofant]
+yolofant 02/07/2023 12:20 AM
+/tmp for sure
+02/07/2023 12:20 AM
+yeah
+hellobox. 02/07/2023 12:20 AM
+/tmp/usb/sdaX or something
+[ccarnell98]
+ccarnell98 02/07/2023 12:20 AM
+(USB)
+02/07/2023 12:20 AM
+or flash
+02/07/2023 12:20 AM
+where does USB hard disks get mounted?
+hellobox. 02/07/2023 12:19 AM
+if something breaks, i'll fix it later
+ 1
+[yolofant]
+yolofant 02/07/2023 12:19 AM
+java is homehow used for bluray menus I think
+hellobox. 02/07/2023 12:19 AM
+i'm going to comment it the fuck out
+ 1
+[ccarnell98]
+ccarnell98 02/07/2023 12:19 AM
+I have made some other modifications, I am having to undo some first
+though to confirm other issues might not exist
+[yolofant]
+yolofant 02/07/2023 12:19 AM
+I think I know
+[smx2460]
+smx2460 02/07/2023 12:18 AM
+don't ask me why
+hellobox. 02/07/2023 12:18 AM
+was about to paste exactly that
+ 1
+[smx2460]
+smx2460 02/07/2023 12:18 AM
+02/07/2023 12:18 AM
+lol Kodi did this
+02/07/2023 12:18 AM
+    menuconfig BR2_PACKAGE_KODI
+        bool "kodi"
+        depends on BR2_INSTALL_LIBSTDCPP
+        depends on BR2_TOOLCHAIN_HAS_SYNC_4 # libass -> harfbuzz
+        depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_9 # C++14
+        depends on BR2_TOOLCHAIN_HAS_THREADS
+        depends on !BR2_TOOLCHAIN_USES_MUSL
+        depends on BR2_USE_WCHAR
+        depends on !BR2_STATIC_LIBS # gnutls, python3 and others
+        depends on BR2_PACKAGE_HAS_LIBEGL
+        depends on BR2_PACKAGE_KODI_ARCH_SUPPORTS
+        depends on BR2_PACKAGE_KODI_PLATFORM_SUPPORTS
+        depends on BR2_PACKAGE_PYTHON3
+        depends on !BR2_PACKAGE_PYTHON3_PYC_ONLY
+        select BR2_NEEDS_HOST_JAVA
+        select BR2_PACKAGE_FFMPEG
+[ccarnell98]
+ccarnell98 02/07/2023 12:18 AM
+LG C2 was released in 2022
+[yolofant]
+yolofant 02/07/2023 12:18 AM
+a bit
+[ccarnell98]
+ccarnell98 02/07/2023 12:18 AM
+wayland 1.11 was released in2016
+02/07/2023 12:18 AM
+LG a bit behind the times
+[] ccarnell98 Thing is wl_shell isn't used much anymore
+hellobox. 02/07/2023 12:17 AM
+yeah, it's deprecated/obsolete
+[yolofant]
+yolofant 02/07/2023 12:17 AM
+true
+[ccarnell98]
+ccarnell98 02/07/2023 12:17 AM
+Thing is wl_shell isn't used much anymore
+[smx2460]
+smx2460 02/07/2023 12:17 AM
+somsone set BR2_NEEDS_HOST_JAVA
+[yolofant]
+yolofant 02/07/2023 12:17 AM
+that seems like a general bug in kodi?
+[] smx2460 what for
+hellobox. 02/07/2023 12:17 AM
+it's going to install 340mb of fucking x shit
+[yolofant]
+yolofant 02/07/2023 12:17 AM
+[ccarnell98]
+[] yolofant <@1051573528522133655> any hints on what was the issue?
+ccarnell98 02/07/2023 12:17 AM
+void CWinSystemWayland::OnConfigure was never called, so the surface was
+never initialized
+hellobox. 02/07/2023 12:16 AM
+    You must install 'java' on your build machine
+    make: *** [support/dependencies/dependencies.mk:27: dependencies] Error 1
+[smx2460]
+smx2460 02/07/2023 12:16 AM
+what for
+[smx2460]
+hellobox. why do i need rsync and java?
+smx2460 02/07/2023 12:16 AM
+???
+hellobox. 02/07/2023 12:16 AM
+ugh, what java should i install?
+02/07/2023 12:16 AM
+why do i need rsync and java?
+[yolofant]
+yolofant 02/07/2023 12:14 AM
+@Craig any hints on what was the issue?
+02/07/2023 12:13 AM
+yes
+hellobox. 02/07/2023 12:12 AM
+hmm, kodi supports pulseaudio?
+02/07/2023 12:11 AM
+@Smx i'm going to try make kodi-extract
+hellobox. 02/07/2023 12:04 AM
+arm-starfish-linux-gnueabi/ arm-starfishmllib32-linux-gnueabi/
+[smx2460]
+smx2460 02/07/2023 12:03 AM
+or maybe that's the kernel toolchain
+02/07/2023 12:03 AM
+so it's kinda wrong?
+02/07/2023 12:03 AM
+but userland is 32bit
+hellobox. 02/07/2023 12:03 AM
+that's one of them
+[smx2460]
+smx2460 02/07/2023 12:03 AM
+package/webos
+hellobox. 02/07/2023 12:03 AM
+well
+02/07/2023 12:03 AM
+the official triple is aarch64-starfish-linux
+[smx2460]
+smx2460 02/07/2023 12:03 AM
+we could handle this in the new webos meta package i added
+02/07/2023 12:02 AM
+> webos-legacy > webos ?
+02/07/2023 12:02 AM
+so we could change it for 2 configs
+02/07/2023 12:01 AM
+it comes from
+    BR2_TOOLCHAIN_BUILDROOT_VENDOR="webos"
+02/07/2023 12:01 AM
+is our current name
+02/07/2023 12:01 AM
+    arm-webos-linux-gnueabi
+02/07/2023 12:00 AM
+you could change the sysroot name in both builds
+February 6, 2023
+02/06/2023 11:59 PM
+but
+02/06/2023 11:59 PM
+i suspect stuff would break
+02/06/2023 11:59 PM
+and then rename the sysroots
+02/06/2023 11:59 PM
+what if you were to buildroot x2
+02/06/2023 11:59 PM
+but
+02/06/2023 11:59 PM
+i don't think so
+02/06/2023 11:59 PM
+hmmm
+hellobox. 02/06/2023 11:59 PM
+can buildroot do something fancy like one toolchain with multiple
+sysroots?
+[smx2460]
+smx2460 02/06/2023 11:59 PM
+you'd have 2 defconfigs (edited)
+02/06/2023 11:59 PM
+pretty much
+[smx2460]
+hellobox. would it mean multiple separate toolchains?
+smx2460 02/06/2023 11:59 PM
+yeah
+[smx2460]
+smx2460 02/06/2023 11:59 PM
+which wasn't immediately obvious to spot from the original commit
+message
+hellobox. 02/06/2023 11:58 PM
+would it mean multiple separate toolchains?
+[smx2460]
+smx2460 02/06/2023 11:58 PM
+this was the backport of the C++11 math fix (edited)
+02/06/2023 11:58 PM
+https://github.com/openlgtv/buildroot-nc4/commit/1ee9cc39e5ba41f5cdee285b69479284b81351ef
+glibc: fix for c++11 math breakage · openlgtv/buildroot-nc4@1ee9cc3
+[]
+02/06/2023 11:58 PM
+mostly moral support 
+02/06/2023 11:58 PM
+if someone feels like giving a hand, we can add multiple
+02/06/2023 11:58 PM
+(no content)
+[image.png]
+ image.png
+34.35 KB External
+02/06/2023 11:58 PM
+but i removed the others to keep it simple
+02/06/2023 11:57 PM
+package/glibc supports multiple versions
+02/06/2023 11:57 PM
+but it's work, and i didn't feel like doing it
+02/06/2023 11:57 PM
+yes, theoretically
+hellobox. 02/06/2023 11:57 PM
+can we have multiple builds targeting different minimum webos versions?
+[smx2460]
+smx2460 02/06/2023 11:57 PM
+by cherry picking the relevant commits
+02/06/2023 11:57 PM
+headers and such can be upgraded freely
+02/06/2023 11:57 PM
+what i wanna keep is glibc 2.12 ABI
+02/06/2023 11:57 PM
+and was skipping generating proper c++ headers
+hellobox. 02/06/2023 11:56 PM
+webos 5/6 is built with c++14 i believe
+[smx2460]
+smx2460 02/06/2023 11:56 PM
+g++ thought our glibc was not C++11 compliant
+02/06/2023 11:56 PM
+which wasn't working at all
+02/06/2023 11:56 PM
+keep in mind i already backported some header fixes for C++11 math
+hellobox. 02/06/2023 11:56 PM
+that they fixed in 2.18 or something
+[] smx2460 64bit offsets aren't in 2.12?
+hellobox. 02/06/2023 11:56 PM
+there's something broken with the headers
+[smx2460]
+smx2460 02/06/2023 11:55 PM
+maybe it could be backported
+02/06/2023 11:55 PM
+auxv is indeed annoying
+02/06/2023 11:55 PM
+64bit offsets aren't in 2.12?
+hellobox. 02/06/2023 11:55 PM
+and other stuff i can't remember
+02/06/2023 11:55 PM
+64-bit offsets
+02/06/2023 11:54 PM
+e.g. missing auxv
+02/06/2023 11:54 PM
+also all the problems arising from ancient kernel headers and glibc
+[smx2460]
+smx2460 02/06/2023 11:54 PM
+then we should solve it 
+hellobox. 02/06/2023 11:54 PM
+but it's one of the things preventing me from switching entirely to
+br-nc4
+[smx2460]
+smx2460 02/06/2023 11:54 PM
+not urgent
+[] smx2460 if you're down to it, we can gather some details
+hellobox. 02/06/2023 11:54 PM
+not right now
+[parkerlreed]
+parkerlreed 02/06/2023 11:54 PM
+:)
+[smx2460]
+smx2460 02/06/2023 11:54 PM
+if you're down to it, we can gather some details
+[parkerlreed]
+parkerlreed 02/06/2023 11:54 PM
+So 0%
+[parkerlreed]
+hellobox. ```root@LGwebOSTV[k7lp 6.3.2]:~# ls -al
+/sys/class/power_supply/ total 0 drwxr-xr-x 2 root ro...
+parkerlreed 02/06/2023 11:54 PM
+Exactly no battery
+[smx2460]
+smx2460 02/06/2023 11:54 PM
+this is kinda vague
+02/06/2023 11:53 PM
+    idk readline (maybe ncurses/terminal stuff in general) doesn't work right with br-nc4
+    less and bash have problems as well
+    they work with my "lg ndk" though
+    haven't investigated why really
+[parkerlreed]
+parkerlreed 02/06/2023 11:53 PM
+    $ ls /sys/class/power_supply/
+    ACAD  BAT1  hidpp_battery_1
+    (deck@steamdeck Salesforce)$ 
+[] parkerlreed /sys/class/power_supply?
+hellobox. 02/06/2023 11:53 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# ls -al /sys/class/power_supply/
+    total 0
+    drwxr-xr-x    2 root     root             0 Feb  6 17:53 .
+    drwxr-xr-x   87 root     root             0 Feb  3 18:42 ..
+[smx2460]
+smx2460 02/06/2023 11:53 PM
+try debugging it
+[parkerlreed]
+parkerlreed 02/06/2023 11:53 PM
+Like on any Linux system with a battery lol
+[smx2460]
+smx2460 02/06/2023 11:53 PM
+that is shipped
+[parkerlreed]
+hellobox. i wonder where the hell it's trying to get that from
+parkerlreed 02/06/2023 11:53 PM
+/sys/class/power_supply?
+[smx2460]
+smx2460 02/06/2023 11:53 PM
+so it uses the same exact ncurses library
+02/06/2023 11:53 PM
+ah LG toolchain
+02/06/2023 11:53 PM
+no idea
+hellobox. 02/06/2023 11:52 PM
+but why does it work with the lg toolchain? (edited)
+[smx2460]
+smx2460 02/06/2023 11:52 PM
+then you can export TERM=xterm
+02/06/2023 11:52 PM
+and export the TERMCAP variable accordingly
+02/06/2023 11:52 PM
+you're supposed to copy the termcap files
+02/06/2023 11:51 PM
+i wanna know about it
+02/06/2023 11:51 PM
+never heard
+hellobox. 02/06/2023 11:51 PM
+i mentioned it before
+02/06/2023 11:51 PM
+idk, something with readline i think
+[smx2460]
+smx2460 02/06/2023 11:50 PM
+wut
+hellobox. 02/06/2023 11:50 PM
+when building with br-nc4
+02/06/2023 11:50 PM
+bash and less, among other things, are broken
+02/06/2023 11:50 PM
+i forget exactly
+[smx2460]
+smx2460 02/06/2023 11:50 PM
+what terminal stuff
+hellobox. 02/06/2023 11:50 PM
+i'd switch to this over lg's toolchain 100%
+[smx2460]
+hellobox. once we've fixed whatever terminal stuff is broken in br-nc4
+smx2460 02/06/2023 11:50 PM
+???
+hellobox. 02/06/2023 11:50 PM
+and maybe added options for newer kernel/glibc
+[smx2460]
+smx2460 02/06/2023 11:50 PM
+then disable it
+02/06/2023 11:50 PM
+then enable kodi -> exit (save)
+hellobox. 02/06/2023 11:50 PM
+once we've fixed whatever terminal stuff is broken in br-nc4
+[smx2460]
+smx2460 02/06/2023 11:50 PM
+enable python3 with pyc files in interpreted languages
+02/06/2023 11:49 PM
+that should leave deps
+hellobox. 02/06/2023 11:49 PM
+i just want to get a toolchain that includes all kodi deps
+[smx2460]
+smx2460 02/06/2023 11:49 PM
+or enable it and then disable it
+02/06/2023 11:49 PM
+so you could enable it but not really build it
+02/06/2023 11:49 PM
+but not building it
+02/06/2023 11:49 PM
+it will build everything until extracting kodi (included)
+02/06/2023 11:49 PM
+maybe make kodi-extract ? (edited)
+hellobox. 02/06/2023 11:48 PM
+without building the included one
+[smx2460]
+smx2460 02/06/2023 11:48 PM
+what you could do is...
+hellobox. 02/06/2023 11:48 PM
+i mean enable everything i'd need to build it out of tree
+[smx2460]
+smx2460 02/06/2023 11:48 PM
+ah yes
+02/06/2023 11:48 PM
+uhhh what do you mean
+hellobox. 02/06/2023 11:48 PM
+and not enable kodi?
+02/06/2023 11:48 PM
+can i enable all the kodi deps manually?
+02/06/2023 11:47 PM
+i guess i could start it building
+02/06/2023 11:47 PM
+finishing something first
+02/06/2023 11:47 PM
+not yet
+[smx2460]
+smx2460 02/06/2023 11:47 PM
+@hellobox are you building br-nc4?
+hellobox. 02/06/2023 11:46 PM
+well, webos was originally for phones
+02/06/2023 11:46 PM
+i wonder where the hell it's trying to get that from
+02/06/2023 11:46 PM
+lol
+[parkerlreed]
+[] ccarnell98 Click to see attachment
+parkerlreed 02/06/2023 11:38 PM
+Silly, you have to charge the battery to play video
+[smx2460]
+smx2460 02/06/2023 11:14 PM
+zlib
+02/06/2023 11:14 PM
+ah no (edited)
+02/06/2023 11:14 PM
+isn't SDL2 LGPL?
+hellobox. 02/06/2023 11:14 PM
+webos 6 seems to be 2.0.10
+[smx2460]
+smx2460 02/06/2023 11:14 PM
+@Yolofant 's library
+02/06/2023 11:13 PM
+    /usr/src/debug/lib32-libsdl2-webos/2.0.14-90.webos4tv.28-r25/git/src/render/opengles2/SDL_render_gles2.c
+hellobox. 02/06/2023 11:13 PM
+2.0.10, i think
+02/06/2023 11:13 PM
+what version was it again?
+[smx2460]
+smx2460 02/06/2023 11:13 PM
+        <request name="set_state">
+          <description summary="sets the surface state">
+            The client requests its surface state to the compositor.
+          </description>
+          <arg name="state" type="uint"/>
+        </request>
+hellobox. 02/06/2023 11:13 PM
+i need to look at the sdl source
+02/06/2023 11:13 PM
+ugh
+[smx2460]
+smx2460 02/06/2023 11:13 PM
+opcode 1 in the context of wl_shell is...
+02/06/2023 11:13 PM
+so
+02/06/2023 11:12 PM
+    static struct wl_interface *wl_proxy_interface(struct wl_proxy *proxy){
+        if(proxy == NULL) return NULL;
+        // proxy->object -- const struct wl_interface *interface;
+        return *(struct wl_interface **)proxy;
+    }
+    struct wl_interface *intf = wl_proxy_interface(proxy);
+    const struct wl_message *method = &intf->methods[opcode];
+(edited)
+02/06/2023 11:11 PM
+methods are stored in a vtable
+02/06/2023 11:11 PM
+indexed by opcodes
+02/06/2023 11:11 PM
+it calls methods on interfaces
+02/06/2023 11:11 PM
+wayland works similarly to COM
+02/06/2023 11:11 PM
+it depends on the receiving object
+hellobox. 02/06/2023 11:10 PM
+for wl_proxy_marshal
+02/06/2023 11:10 PM
+what's opcode 1?
+02/06/2023 11:10 PM
+it doesn't like the stupid sdl dynamic loading thing
+02/06/2023 11:09 PM
+well, the hex rays plugin
+02/06/2023 11:08 PM
+ida
+[smx2460]
+smx2460 02/06/2023 11:08 PM
+?
+hellobox. 02/06/2023 11:08 PM
+what the fuck
+02/06/2023 11:06 PM
+ida kinda sucks
+[smx2460]
+smx2460 02/06/2023 11:04 PM
+aka yes
+02/06/2023 11:04 PM
+    #define WL_WEBOS_SHELL_SURFACE_SET_LOCATION_HINT    0
+    #define WL_WEBOS_SHELL_SURFACE_SET_STATE    1
+    #define WL_WEBOS_SHELL_SURFACE_SET_PROPERTY    2
+    #define WL_WEBOS_SHELL_SURFACE_SET_KEY_MASK    3
+    #define WL_WEBOS_SHELL_SURFACE_SET_ADDON    4
+    #define WL_WEBOS_SHELL_SURFACE_RESET_ADDON    5
+02/06/2023 11:04 PM
+    /**
+     * @ingroup iface_wl_webos_shell_surface
+     *
+     * The client sets the surface property to the compositor. The property
+     * is given by a string pair (name, value).
+     */
+    static inline void
+    wl_webos_shell_surface_set_property(struct wl_webos_shell_surface *wl_webos_shell_surface, const char *name, const char *value)
+    {
+        wl_proxy_marshal((struct wl_proxy *) wl_webos_shell_surface,
+                 WL_WEBOS_SHELL_SURFACE_SET_PROPERTY, name, value);
+    }
+[infowski]
+infowski 02/06/2023 11:04 PM
+well then
+[smx2460]
+smx2460 02/06/2023 11:04 PM
+wait
+02/06/2023 11:04 PM
+yes
+[infowski]
+infowski 02/06/2023 11:04 PM
+was set window property request id 2? 
+02/06/2023 11:03 PM
+you mean - window property thing _WEBOS_ACCESS_POLICY_KEYS_BACK = true?
+[smx2460]
+smx2460 02/06/2023 11:03 PM
+passed to wl_proxy_marshal
+02/06/2023 11:02 PM
+_WEBOS_ACCESS_POLICY_KEYS_EXIT
+02/06/2023 11:02 PM
+_WEBOS_ACCESS_POLICY_KEYS_BACK
+ 1
+[ccarnell98]
+[] infowski any ideas on how to make <@1051573528522133655>'s messages
+not show up as spam? 
+ccarnell98 02/06/2023 11:02 PM
+I submitted a support request to discord, but they haven't answered
+[infowski]
+infowski 02/06/2023 11:02 PM
+thank you discord, very nice
+02/06/2023 11:01 PM
+any ideas on how to make @Craig's messages not show up as spam? 
+(edited)
+[ccarnell98]
+ccarnell98 02/06/2023 11:01 PM
+I need a video 
+[infowski]
+infowski 02/06/2023 11:01 PM
+let me dive into sdl
+02/06/2023 11:00 PM
+that's probably how you do it on webOS TV
+02/06/2023 11:00 PM
+"string property based key filtering" 
+[smx2460]
+smx2460 02/06/2023 11:00 PM
+        <request name="set_key_mask">
+          <description summary="sets the key mask for this surface">
+            A value of '1' in the mask indicates that the respective key event (both press and release)
+            will be delivered to the client. Bitwise XOR operation against the default mask value and
+            a supported individual values will result in that key not being delivered to the client.
+            Notice that the default value omits certain keys.
+            The compositor is free to ignore certain keys even if set to '1' depending on the overall
+            system UI behaviour, most commonly this will mean the HOME key.
+            NOTE: This protocol will eventually replace the string property based key filtering.
+          </description>
+          <arg name="webos_key" type="uint"/>
+        </request>
+[infowski]
+infowski 02/06/2023 10:59 PM
+just the tip
+[:cloi:] 1
+02/06/2023 10:58 PM
+a little bit, okay?
+ 1
+[ccarnell98]
+ccarnell98 02/06/2023 10:58 PM
+meh I crashed it
+hellobox. 02/06/2023 10:58 PM
+we're going to have to dive back into sdl?
+02/06/2023 10:58 PM
+christ
+[infowski]
+infowski 02/06/2023 10:58 PM
+        SDL_SetHint(SDL_HINT_WEBOS_ACCESS_POLICY_KEYS_BACK, "true");
+        SDL_SetHint(SDL_HINT_WEBOS_ACCESS_POLICY_KEYS_EXIT, "true");
+[smx2460]
+hellobox. sounds a bit janky
+smx2460 02/06/2023 10:58 PM
+what
+[infowski]
+infowski 02/06/2023 10:58 PM
+implemented via SDL hint in... sdl.
+02/06/2023 10:58 PM
+and there was something else for native apps...
+hellobox. 02/06/2023 10:57 PM
+(no content)
+[image.png]
+ image.png
+33.83 KB External
+[infowski]
+hellobox. look at appinfo.json settings
+infowski 02/06/2023 10:57 PM
+Actually I may be mistaken here. "disableBackHistoryAPI": true i think
+this one affects WAM
+hellobox. 02/06/2023 10:57 PM
+disableBackHistoryAPI?
+[smx2460]
+smx2460 02/06/2023 10:57 PM
+the alternative is to update kodi.mk but it's more involved and patches
+would break
+hellobox. 02/06/2023 10:57 PM
+sounds a bit janky
+[smx2460]
+smx2460 02/06/2023 10:57 PM
+then do the same
+[] ccarnell98 how?
+hellobox. 02/06/2023 10:57 PM
+look at appinfo.json settings
+[smx2460]
+smx2460 02/06/2023 10:57 PM
+wait until kodi 19.4 starts building and abort it
+02/06/2023 10:56 PM
+or
+02/06/2023 10:56 PM
+as they were used to build kodi 19.4
+02/06/2023 10:56 PM
+this guarantees all dependencies are already there
+02/06/2023 10:56 PM
+and use the output/host/bin as your toolchain to build it
+[ccarnell98]
+hellobox. yeah, you can disable that
+ccarnell98 02/06/2023 10:56 PM
+how?
+[smx2460]
+smx2460 02/06/2023 10:56 PM
+then clone master kodi somewhere else
+02/06/2023 10:56 PM
+building 19.4
+02/06/2023 10:56 PM
+wait until kodi is compiled, or have it finish to the very end
+02/06/2023 10:56 PM
+what you could do is
+hellobox. 02/06/2023 10:56 PM
+how would i go about using git master instead?
+02/06/2023 10:56 PM
+well
+[smx2460]
+smx2460 02/06/2023 10:56 PM
+depends what you mean by in-place
+hellobox. 02/06/2023 10:56 PM
+can i update it to master in place?
+[smx2460]
+smx2460 02/06/2023 10:55 PM
+19.4
+hellobox. 02/06/2023 10:55 PM
+what version of kodi?
+[smx2460]
+hellobox. it has the wayland stubs and gl headers?
+smx2460 02/06/2023 10:55 PM
+yes, everything is in
+[smx2460]
+smx2460 02/06/2023 10:55 PM
+5) make
+02/06/2023 10:55 PM
+4) make oldconfig (and spam enter) (edited)
+02/06/2023 10:55 PM
+3)
+    echo BR2_PACKAGE_PYTHON3=y >> .config
+    echo BR2_PACKAGE_PYTHON3_PY_PYC=y >> .config
+    echo BR2_PACKAGE_KODI=y >> .config
+hellobox. 02/06/2023 10:55 PM
+yeah, you can disable that
+[ccarnell98]
+[] infowski as in - it opens webOS home screen? I think that behaviour
+is controlled in appinfo.json
+ccarnell98 02/06/2023 10:55 PM
+Back button asks me to close the app. I would prefer if it went
+backwards up the kodi menu tree
+hellobox. 02/06/2023 10:54 PM
+it has the wayland stubs and gl headers?
+[smx2460]
+smx2460 02/06/2023 10:54 PM
+2) make webos_tv_defconfig
+02/06/2023 10:54 PM
+1) clone buildroot-nc4
+hellobox. 02/06/2023 10:54 PM
+modulo whatever hax @Craig did
+[smx2460]
+smx2460 02/06/2023 10:54 PM
+i just pushed a missing file a moment ago
+02/06/2023 10:54 PM
+yes
+hellobox. 02/06/2023 10:54 PM
+@Smx is br-nc4 master all set up for building kodi?
+[infowski]
+[] ccarnell98 lol the back button tries to quit the app so I can't get
+out the menus 
+infowski 02/06/2023 10:54 PM
+as in - it opens webOS home screen? I think that behaviour is controlled
+in appinfo.json
+[ccarnell98]
+ccarnell98 02/06/2023 10:53 PM
+lol the back button tries to quit the app so I can't get out the menus
+rippmaster 02/06/2023 10:53 PM
+root status ok. ssh on. everythings fine. thank you hellobox, couldnt
+have done it without you!
+[smx2460]
+smx2460 02/06/2023 10:52 PM
+so i gues you incorporated the webos_shell in it
+[ccarnell98]
+ccarnell98 02/06/2023 10:52 PM
+gonna try a video 
+02/06/2023 10:52 PM
+nope
+[smx2460]
+smx2460 02/06/2023 10:52 PM
+are you still using preloaded.so in this?
+[ccarnell98]
+ccarnell98 02/06/2023 10:51 PM
+I spent ages debugging kodi itself
+[smx2460]
+smx2460 02/06/2023 10:51 PM
+because we've spent quite some time dumping Wayland calls
+[ccarnell98]
+ccarnell98 02/06/2023 10:51 PM
+(no content)
+[rn_image_picker_lib_temp_fda11df9-dd4c-4932-b837-0efbf6f57855.jpg]
+ rn_image_picker_lib_temp_fda11df9-dd4c-4932-b837-0efbf6f57855.jpg
+291.5 KB External
+[smx2460]
+smx2460 02/06/2023 10:50 PM
+than having say the binary xD (edited)
+[smx2460]
+[] ccarnell98 I need to undo about a million CLog calls and I'll push up
+the code 
+smx2460 02/06/2023 10:50 PM
+i'm curious more about how you got it fixed
+hellobox. 02/06/2023 10:50 PM
+without a ton of effort
+02/06/2023 10:50 PM
+although i'm not convinced video playback will ever work
+02/06/2023 10:50 PM
+maybe i'll actually try to build kodi now
+[ccarnell98]
+ccarnell98 02/06/2023 10:50 PM
+I need to undo about a million CLog calls and I'll push up the code 
+[smx2460]
+smx2460 02/06/2023 10:49 PM
+lol
+[ccarnell98]
+ccarnell98 02/06/2023 10:49 PM
+02/06/2023 10:49 PM
+I'll take it to my grave
+[smx2460]
+smx2460 02/06/2023 10:48 PM
+@hellobox 
+02/06/2023 10:48 PM
+what did you do
+hellobox. 02/06/2023 10:48 PM
+what did you do?
+[smx2460]
+[] ccarnell98 Click to see attachment
+smx2460 02/06/2023 10:48 PM
+wait what?!
+[ccarnell98]
+ccarnell98 02/06/2023 10:48 PM
+I haven't tried yet. literally just had this 
+hellobox. 02/06/2023 10:48 PM
+does it play video? lol
+02/06/2023 10:48 PM
+great
+[ccarnell98]
+ccarnell98 02/06/2023 10:47 PM
+master - 2days
+hellobox. 02/06/2023 10:47 PM
+what version is that?
+02/06/2023 10:47 PM
+nice
+[ccarnell98]
+ccarnell98 02/06/2023 10:47 PM
+(no content)
+[rn_image_picker_lib_temp_4662a4b2-043c-4ffd-8b67-0ad42bae8f07.jpg]
+ rn_image_picker_lib_temp_4662a4b2-043c-4ffd-8b67-0ad42bae8f07.jpg
+330.62 KB External
+Deleted User 02/06/2023 10:47 PM
+theres like 1000 messages i need to catch up on in here
+[ccarnell98]
+ccarnell98 02/06/2023 10:46 PM
+Uhm guys......
+rippmaster ok got some error in the ends. anything to worry bout?
+hellobox. 02/06/2023 10:40 PM
+no
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#why-am-i-seeing-ld_preload-errors-while-rooting
+rippmaster 02/06/2023 10:40 PM
+(no content)
+[image.png]
+ image.png
+117.54 KB External
+02/06/2023 10:40 PM
+ok got some error in the ends. anything to worry bout?
+02/06/2023 10:37 PM
+ woha. thanx. im sorry im such a n00b. but ill buy you a coffe later
+hellobox. 02/06/2023 10:36 PM
+now move on to the next steps
+02/06/2023 10:36 PM
+good
+rippmaster 02/06/2023 10:36 PM
+7084 it gave me now
+hellobox. 02/06/2023 10:36 PM
+and you're going to uninstall the dev mode app soon
+02/06/2023 10:36 PM
+you already have the key
+02/06/2023 10:36 PM
+you don't need the keyserver
+02/06/2023 10:36 PM
+run pgrep telnetd
+02/06/2023 10:36 PM
+you don't
+rippmaster 02/06/2023 10:36 PM
+now i ran touch /var/log/crashd/"x;telnetd -l sh" and it did not get all
+black. it just shows the line
+02/06/2023 10:35 PM
+my key server is "off" inside dev app upon rebooting . how do i save
+keyserver on
+hellobox. 02/06/2023 10:33 PM
+shouldn't matter
+rippmaster 02/06/2023 10:33 PM
+renew session first? or that dosnt matter?
+hellobox. 02/06/2023 10:33 PM
+yes
+rippmaster 02/06/2023 10:32 PM
+touch /var/log/crashd/"x;telnetd -l sh"
+02/06/2023 10:32 PM
+should i try running this again
+hellobox. 02/06/2023 10:32 PM
+the fact that the screen was cleared when you ran it kind of hints that
+something wasn't right
+rippmaster 02/06/2023 10:31 PM
+(no content)
+[20230206_223047.jpg]
+ 20230206_223047.jpg
+388.37 KB External
+hellobox. 02/06/2023 10:30 PM
+well, try it again then
+rippmaster 02/06/2023 10:30 PM
+all of them were greenlit so im assuming accepted before
+hellobox. 02/06/2023 10:30 PM
+they were all accepted before?
+rippmaster 02/06/2023 10:30 PM
+all of them
+hellobox. 02/06/2023 10:29 PM
+the first two?
+rippmaster 02/06/2023 10:28 PM
+they seemed to be checked
+hellobox. 02/06/2023 10:26 PM
+check the EULAs first
+02/06/2023 10:26 PM
+since i'd likely have to walk you through converting the key and stuff
+02/06/2023 10:26 PM
+probably not
+rippmaster 02/06/2023 10:26 PM
+hellobox, hmm that sounds hard. (connecting with putty)? do you think i
+should do that?
+hellobox. 02/06/2023 10:25 PM
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#why-isnt-telnetd-starting
+02/06/2023 10:25 PM
+it's all in the guide
+02/06/2023 10:25 PM
+if you entered the touch command correctly
+02/06/2023 10:25 PM
+yeah, check EULAs
+02/06/2023 10:25 PM
+you have to convert the key into the putty ppk format
+[infowski]
+infowski 02/06/2023 10:25 PM
+EULAs?
+hellobox. 02/06/2023 10:25 PM
+you can connect with putty, but it'll take some work
+02/06/2023 10:25 PM
+that's the dev mode ssh port
+rippmaster 02/06/2023 10:25 PM
+(so i can connect in putty)
+02/06/2023 10:24 PM
+oh what was the port? 9922? something?
+hellobox. 02/06/2023 10:24 PM
+hmm
+rippmaster 02/06/2023 10:24 PM
+like silence
+02/06/2023 10:24 PM
+(no content)
+[image.png]
+ image.png
+3.03 KB External
+02/06/2023 10:24 PM
+restarted and go this
+hellobox. 02/06/2023 10:22 PM
+just try to connect with putty
+02/06/2023 10:22 PM
+forget it
+rippmaster 02/06/2023 10:22 PM
+i closed the devicemanager for webos. hmm. how do i find where its
+installed on my pc so i can run pgrep telnetd ?
+hellobox. 02/06/2023 10:19 PM
+kinda weird
+rippmaster 02/06/2023 10:19 PM
+(no content)
+[image.png]
+ image.png
+138.74 KB External
+hellobox. 02/06/2023 10:18 PM
+run pgrep telnetd to see if it worked
+02/06/2023 10:18 PM
+what do you mean complete black?
+rippmaster 02/06/2023 10:18 PM
+(no congrats or anything`?)  am i done?
+02/06/2023 10:18 PM
+everything went compleate black in the promt
+02/06/2023 10:17 PM
+ok now i did it
+02/06/2023 10:17 PM
+di dont think so ill try 2 times again
+02/06/2023 10:16 PM
+maby i misspelled
+hellobox. 02/06/2023 10:16 PM
+did you use backspace or something on the first try?
+02/06/2023 10:16 PM
+yeah, so it exists
+rippmaster 02/06/2023 10:16 PM
+-l is a
+[image.png]
+ image.png
+34.94 KB External
+hellobox. 02/06/2023 10:15 PM
+try just touch
+02/06/2023 10:15 PM
+try again
+rippmaster 02/06/2023 10:15 PM
+(no content)
+[image.png]
+ image.png
+18.52 KB External
+hellobox. 02/06/2023 10:15 PM
+screenshot
+rippmaster 02/06/2023 10:14 PM
+touch /var/log/crashd/"x;telnetd -l sh" i get sh: Touch: not found ?
+hellobox. 02/06/2023 10:13 PM
+i don't think you can paste, but yes
+rippmaster 02/06/2023 10:13 PM
+touch /var/log/crashd/"x;telnetd -l sh" is what i paste in then
+hellobox. 02/06/2023 10:13 PM
+if you already deleted jail_app.conf and rebooted, run the touch command
+rippmaster 02/06/2023 10:12 PM
+yeah now i got jail_app.config.sig and log tmp
+hellobox. 02/06/2023 10:12 PM
+anyway, you're connected
+rippmaster 02/06/2023 10:12 PM
+sorry
+02/06/2023 10:12 PM
+ah its a 1
+hellobox. 02/06/2023 10:12 PM
+it should be LS
+02/06/2023 10:11 PM
+is that a one or lowercase L?
+rippmaster 02/06/2023 10:11 PM
+(no content)
+[image.png]
+ image.png
+11.2 KB External
+hellobox. 02/06/2023 10:11 PM
+i think sometimes there are (invisible?) garbage characters at the start
+of the terminal session
+02/06/2023 10:11 PM
+try again
+rippmaster 02/06/2023 10:10 PM
+"not found" the terminal says
+hellobox. 02/06/2023 10:10 PM
+and see if you get output
+02/06/2023 10:10 PM
+type ls or something in the terminal
+rippmaster 02/06/2023 10:10 PM
+ok but how do i reconnect? i think it may be connected because i see the
+"files" under files
+hellobox. 02/06/2023 10:10 PM
+i don't know if 1.9 shares settings with 1.8
+02/06/2023 10:09 PM
+and you don't need to install hbchannel again
+02/06/2023 10:09 PM
+if it's already there, you don't need to add it again
+rippmaster 02/06/2023 10:09 PM
+k
+hellobox. 02/06/2023 10:09 PM
+wait
+rippmaster 02/06/2023 10:09 PM
+and add device again?
+02/06/2023 10:09 PM
+ok so ill remove device
+hellobox. 02/06/2023 10:09 PM
+you need to enter the ip and connect
+rippmaster 02/06/2023 10:08 PM
+ok i got into the terminal now  (1.8.2) do i need to enter ip and
+install everything again or is it just to type toch /var/log.... in the
+terminal right now?
+hellobox. 02/06/2023 10:06 PM
+somebody needs to buy @Mariotaku a dev board

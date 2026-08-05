@@ -1,0 +1,1539 @@
+February 11, 2023
+hellobox. 02/11/2023 8:32 PM
+do i have to rm -rf output/?
+02/11/2023 8:29 PM
+how does my wsl2 clock get so fucked up?
+[yolofant]
+yolofant 02/11/2023 8:27 PM
+yes
+hellobox. 02/11/2023 8:27 PM
+i assume i need latest buildroot if i want to try this?
+02/11/2023 8:27 PM
+shouldn't be hard to fix
+[yolofant]
+yolofant 02/11/2023 8:26 PM
+ETH_P_TSN was added in 4.3.x
+02/11/2023 8:26 PM
+                     from /home/ssundermann/Sourcecode/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/include/stdlib.h:43,
+                     from ../spa/plugins/avb/avb-pcm.c:26:
+    ../spa/plugins/avb/avb-pcm.c: In function ‘setup_socket’:
+    ../spa/plugins/avb/avb-pcm.c:559:64: error: ‘ETH_P_TSN’ undeclared (first use in this function); did you mean ‘ETH_P_DSA’?
+      559 |         fd = socket(AF_PACKET, SOCK_DGRAM|SOCK_NONBLOCK, htons(ETH_P_TSN));
+          |                                                                ^~~~~~~~~
+    ../spa/plugins/avb/avb-pcm.c:559:64: note: each undeclared identifier is reported only once for each function it appears in
+    ../spa/plugins/avb/avb-pcm.c:580:36: error: storage size of ‘txtime_cfg’ isn’t known
+      580 |                 struct sock_txtime txtime_cfg;
+          |                                    ^~~~~~~~~~
+    ../spa/plugins/avb/avb-pcm.c:590:38: error: ‘CLOCK_TAI’ undeclared (first use in this function)
+      590 |                 txtime_cfg.clockid = CLOCK_TAI;
+          |                                      ^~~~~~~~~
+    ../spa/plugins/avb/avb-pcm.c:592:50: error: ‘SO_TXTIME’ undeclared (first use in this function)
+      592 |                 res = setsockopt(fd, SOL_SOCKET, SO_TXTIME, &txtime_cfg,
+          |                                                  ^~~~~~~~~
+    ../spa/plugins/avb/avb-pcm.c:580:36: warning: unused variable ‘txtime_cfg’ [-Wunused-variable]
+      580 |                 struct sock_txtime txtime_cfg;
+          |                                    ^~~~~~~~~~
+    ../spa/plugins/avb/avb-pcm.c: In function ‘setup_msg’:
+    ../spa/plugins/avb/avb-pcm.c:678:34: error: ‘SCM_TXTIME’ undeclared (first use in this function); did you mean ‘LC_TIME’?
+      678 |         state->cmsg->cmsg_type = SCM_TXTIME;
+          |                                  ^~~~~~~~~~
+          |                                  LC_TIME
+    In file included from ../spa/include/spa/pod/builder.h:43,
+                     from ../spa/include/spa/pod/filter.h:40,
+                     from ../spa/plugins/avb/avb-pcm.c:38:
+    ../spa/plugins/avb/avb-pcm.c: In function ‘set_timers’:
+    ../spa/plugins/avb/avb-pcm.c:1097:65: error: ‘CLOCK_TAI’ undeclared (first use in this function)
+     1097 |         if ((res = spa_system_clock_gettime(state->data_system, CLOCK_TAI, &now)) < 0)
+          |                                                                 ^~~~~~~~~
+    ../spa/include/spa/utils/hook.h:214:56: note: in definition of macro ‘spa_callbacks_call_res’
+      214 |                 res = _f->method((callbacks)->data, ## __VA_ARGS__);
+      \
+          |                                                        ^~~~~~~~~~~
+    ../spa/include/spa/support/system.h:124:9: note: in expansion of macro ‘spa_interface_call_res’
+      124 |         spa_interface_call_res(&_o->iface,                              \
+          |         ^~~~~~~~~~~~~~~~~~~~~~
+    ../spa/include/spa/support/system.h:136:49: note: in expansion of macro ‘spa_system_method_r’
+      136 | #define spa_system_clock_gettime(s,...)         spa_system_method_r(s,clock_gettime,0,__VA_ARGS__)
+          |                                                 ^~~~~~~~~~~~~~~~~~~
+    ../spa/plugins/avb/avb-pcm.c:1097:20: note: in expansion of macro ‘spa_system_clock_gettime’
+     1097 |         if ((res = spa_system_clock_gettime(state->data_system, CLOCK_TAI, &now)) < 0)
+          |                    ^~~~~~~~~~~~~~~~~~~~~~~~
+[ccarnell98]
+ccarnell98 02/11/2023 8:26 PM
+it wont compile just because of some missing header defines
+hellobox. 02/11/2023 8:26 PM
+how?
+[yolofant]
+yolofant 02/11/2023 8:26 PM
+pipewire
+hellobox. 02/11/2023 8:26 PM
+what exactly breaks on older kernels?
+[ccarnell98]
+ccarnell98 02/11/2023 8:25 PM
+was pipewire or pulseaudio can't remember
+02/11/2023 8:25 PM
+there was a minimum kernel version to build, it was 4.xx something. I
+lost the information somewhere
+hellobox. 02/11/2023 8:22 PM
+as i've been saying lol
+[yolofant]
+yolofant 02/11/2023 8:22 PM
+we just need another buildroot profile with something more reasonable
+(edited)
+[ccarnell98]
+ccarnell98 02/11/2023 8:22 PM
+You don't need such a high version
+02/11/2023 8:22 PM
+kernel 5.4 is only because I was compiling for my C2
+hellobox. 02/11/2023 8:22 PM
+so, is there anything i can work on?
+02/11/2023 8:21 PM
+although i guess that's not likely to get upstreamed
+[yolofant]
+yolofant 02/11/2023 8:21 PM
+yeah 
+hellobox. 02/11/2023 8:21 PM
+or hacking out
+[yolofant]
+yolofant 02/11/2023 8:21 PM
+and those also need backporting
+02/11/2023 8:20 PM
+if you go though kodi's depends buildsystem it will actually build a lot
+more optional dependencies
+02/11/2023 8:20 PM
+but there's a patch for it
+02/11/2023 8:20 PM
+no
+hellobox. 02/11/2023 8:20 PM
+and 19.4 will build with old kernel/libc and git head won't?
+[yolofant]
+yolofant 02/11/2023 8:20 PM
+and it's not as straightforward as changing the version number to 21.x
+02/11/2023 8:19 PM
+but that will then only give you 19.4
+02/11/2023 8:19 PM
+unless you just use the buildroot recipe
+02/11/2023 8:19 PM
+it's not that easy
+02/11/2023 8:19 PM
+well building kodi is the problem
+hellobox. 02/11/2023 8:19 PM
+if you have a repo i can build easily
+02/11/2023 8:19 PM
+i can work on backporting i guess
+02/11/2023 8:19 PM
+to backport whatever
+02/11/2023 8:18 PM
+how difficult are the changes?
+02/11/2023 8:18 PM
+which they stuck with through 6
+02/11/2023 8:18 PM
+i believe 4.0 moved to 4.4.84
+[yolofant]
+yolofant 02/11/2023 8:17 PM
+the code in question won't compile until at least 4.3
+02/11/2023 8:17 PM
+meh
+hellobox. 02/11/2023 8:17 PM
+anyway, 3.2.0 (m2) has kernel 3.10.23-73 and glibc 2.19-r31 (edited)
+[yolofant]
+yolofant 02/11/2023 8:14 PM
+I don't have access
+02/11/2023 8:14 PM
+I remember we had a list somewhere
+hellobox. 02/11/2023 8:14 PM
+@Yolofant snuper it
+[yolofant]
+yolofant 02/11/2023 8:14 PM
+which kernel is webos 3
+hellobox. 02/11/2023 8:14 PM
+7 is not reasonable
+ 1
+02/11/2023 8:14 PM
+i think cutting off compatibility at webos ~3 would be reasonable
+ 1
+[yolofant]
+yolofant 02/11/2023 8:10 PM
+2.31 and 5.4 are not a good idea though
+[ccarnell98]
+ccarnell98 02/11/2023 8:09 PM
+https://github.com/openlgtv/buildroot-nc4/commit/df08b6da0247d2375fec648e98c3c178b753bc3b
+Update glibc to 2.31 and kernel to 5.4.96 · openlgtv/buildroot-nc4@...
+[]
+02/11/2023 8:08 PM
+change it 
+[yolofant]
+yolofant 02/11/2023 8:01 PM
+the depends build works now but of course now I'm running into the old
+kernel / glibc stuff
+[smx2460]
+smx2460 02/11/2023 7:33 PM
+gp(x) = netcast(x-1)? 
+02/11/2023 7:33 PM
+Maybe you're right
+02/11/2023 7:33 PM
+Hm
+hellobox. 02/11/2023 7:23 PM
+wouldn't it be gp4?
+[smx2460]
+smx2460 02/11/2023 7:19 PM
+But i don't know
+[smx2460]
+hellobox. so wtf is nc3?
+smx2460 02/11/2023 7:19 PM
+gp3, I'd guess
+[yolofant]
+yolofant 02/11/2023 6:32 PM
+but you don't want to build the pipeline yourself
+02/11/2023 6:31 PM
+as I said lg uses gstreamer internally
+02/11/2023 6:31 PM
+12 years ago
+[ccarnell98]
+ccarnell98 02/11/2023 6:31 PM
+regarding gstreamer, there is an abandoned project here:
+https://github.com/theuni/xbmc/tree/cex-abandoned/xbmc/cores/gstplayer
+xbmc/xbmc/cores/gstplayer at cex-abandoned · theuni/xbmc
+XBMC Main Repository. Contribute to theuni/xbmc development by creating
+an account on GitHub.
+[]
+02/11/2023 6:30 PM
+    lrwxrwxrwx    1 root     root            26 Dec 16 02:16 libv4l2-camera-plugin.so -> libv4l2-camera-plugin.so.1
+    lrwxrwxrwx    1 root     root            28 Dec 16 02:16 libv4l2-camera-plugin.so.1 -> libv4l2-camera-plugin.so.1.0
+    -rwxr-xr-x    1 root     root         38296 Dec 16 02:16 libv4l2-camera-plugin.so.1.0
+    lrwxrwxrwx    1 root     root            16 Dec  1 05:56 libv4l2.so.0 -> libv4l2.so.0.0.0
+    -rwxr-xr-x    1 root     root         43248 Dec  1 05:56 libv4l2.so.0.0.0
+    lrwxrwxrwx    1 root     root            22 Dec  1 05:56 libv4lconvert.so.0 -> libv4lconvert.so.0.0.0
+    -rwxr-xr-x    1 root     root        112208 Dec  1 05:56 libv4lconvert.so.0.0.0
+[yolofant]
+yolofant 02/11/2023 6:29 PM
+there might be support
+02/11/2023 6:29 PM
+not sure
+[ccarnell98]
+ccarnell98 02/11/2023 6:21 PM
+what about V4L2 ?
+[yolofant]
+yolofant 02/11/2023 6:20 PM
+https://github.com/mariotaku/ss4s/tree/main/modules/smp/src
+ss4s/modules/smp/src at main · mariotaku/ss4s
+Simple Sink For Streaming. Contribute to mariotaku/ss4s development by
+creating an account on GitHub.
+[]
+02/11/2023 6:20 PM
+@Mariotaku is integrating libplayerapis
+ 1
+02/11/2023 6:20 PM
+we should use ss4s
+02/11/2023 6:18 PM
+that would also be incompatible across different vendors
+02/11/2023 6:18 PM
+you don't want to be building the pipeline yourself
+02/11/2023 6:18 PM
+yes but it's not that simple
+[ccarnell98]
+ccarnell98 02/11/2023 6:17 PM
+    lxvideosink:  lxvideosink: LG BSP Video Sink
+    lxvideosink:  omx_lxvideosink: LG BSP Video Sink
+    lxvideodec:  dvbin: Dolby-Vision splitter, metaparser, decoder
+    lxvideodec:  lxvideodec: LG LX Video Decoder
+    lxvideodec:  omx_lxvideodec: LG LX Video Decoder
+    lxtiled2linear:  lxtiled2linear: LXTiled2Linear
+    lxmjpegdec_cmn:  lxmjpegdec_cmn: LG LX Video Decoder
+    lxmjpegdec:  lxmjpegdec: LG LX Video Decoder
+02/11/2023 6:17 PM
+gstreamer:
+[yolofant]
+yolofant 02/11/2023 6:02 PM
+it seems complicated if you look at libplayerapis and libpf
+02/11/2023 6:02 PM
+but you don't want to build the pipeline yourself
+[yolofant]
+[] ccarnell98 hmm could we use gstreamer instead of ffmpeg in kodi?
+yolofant 02/11/2023 6:02 PM
+yes it will use gstreamer
+[ccarnell98]
+[] yolofant starfish-media-apis
+ccarnell98 02/11/2023 5:55 PM
+Thanks 
+[ccarnell98]
+ccarnell98 02/11/2023 5:55 PM
+hmm could we use gstreamer instead of ffmpeg in kodi?
+[] smx2460 NC4 was supposed to be GP5
+hellobox. 02/11/2023 5:53 PM
+so wtf is nc3?
+[yolofant]
+yolofant 02/11/2023 5:44 PM
+but of course it's missing some functions
+02/11/2023 5:44 PM
+libplayerAPIs is present even on webos 1.0
+02/11/2023 5:43 PM
+compat-checker to the rescue 
+02/11/2023 5:43 PM
+I'm not sure how API stable those are between webos versions
+02/11/2023 5:41 PM
+starfish-media-apis
+[ccarnell98]
+ccarnell98 02/11/2023 5:39 PM
+I meant, where would I find the headers for libplayerAPIs in that github
+[yolofant]
+yolofant 02/11/2023 5:37 PM
+https://github.com/webosbrew/tv-native-apis
+GitHub - webosbrew/tv-native-apis: Headers and API stubs not includ...
+Headers and API stubs not included in OSE. Contribute to
+webosbrew/tv-native-apis development by creating an account on GitHub.
+[]
+02/11/2023 5:37 PM
+it's no folder
+[ccarnell98]
+ccarnell98 02/11/2023 5:34 PM
+Also, I might help you compile with NDL
+02/11/2023 5:34 PM
+Which folder? 
+[yolofant]
+yolofant 02/11/2023 5:24 PM
+there are some in tv-native-apis
+02/11/2023 5:24 PM
+not in webos-userland
+[ccarnell98]
+ccarnell98 02/11/2023 5:24 PM
+https://github.com/webosbrew/tv-native-apis -> do we have libPlayerAPIs
+headers?
+GitHub - webosbrew/tv-native-apis: Headers and API stubs not includ...
+Headers and API stubs not included in OSE. Contribute to
+webosbrew/tv-native-apis development by creating an account on GitHub.
+[]
+02/11/2023 5:20 PM
+I don't. Is it in target->webos->webos?
+[yolofant]
+yolofant 02/11/2023 5:18 PM
+in webos-userland
+02/11/2023 5:18 PM
+from buildroot
+02/11/2023 5:18 PM
+you should have those
+[ccarnell98]
+ccarnell98 02/11/2023 5:16 PM
+Where do I get PC_NDL_directmedia NDL_directmedia ?
+02/11/2023 5:14 PM
+at least until someone complains when they read the PR 
+02/11/2023 5:14 PM
+TARGET_WEBOS is now WAYLANDPROTOCOLSWEBOS_FOUND (nice big mouthful...)
+[yolofant]
+yolofant 02/11/2023 5:14 PM
+but it would fail synchronizing with the audio
+[ccarnell98]
+ccarnell98 02/11/2023 5:14 PM
+I agree
+[yolofant]
+yolofant 02/11/2023 5:13 PM
+the ndl stuff should still work
+02/11/2023 5:13 PM
+but I'd rather get something to compile first
+02/11/2023 5:13 PM
+probably
+[ccarnell98]
+[] yolofant as I said the NDL is probably not enough
+ccarnell98 02/11/2023 5:12 PM
+so we need to use libplayerAPIs ?
+[smx2460]
+smx2460 02/11/2023 5:12 PM
+hmm
+02/11/2023 5:11 PM
+https://github.com/lattera/glibc/commit/c7683a6d02f3ed59f5cd119b3e8547f45a15912f
+Add and getauxval. · lattera/glibc@c7683a6
+[]
+02/11/2023 5:11 PM
+sounds easily backportable
+[ccarnell98]
+ccarnell98 02/11/2023 5:10 PM
+I've had lots of fun with that.. 
+[smx2460]
+smx2460 02/11/2023 5:10 PM
+@hellobox
+02/11/2023 5:10 PM
+(no content)
+[image.png]
+ image.png
+89.4 KB External
+[yolofant]
+yolofant 02/11/2023 5:10 PM
+it doesn't add the ndl as dependency
+02/11/2023 5:10 PM
+due to some kodi buildsystem weirdness
+02/11/2023 5:10 PM
+and I couldn't make it link
+02/11/2023 5:10 PM
+as I said the NDL is probably not enough
+02/11/2023 5:10 PM
+umm yes, but 
+[ccarnell98]
+ccarnell98 02/11/2023 5:09 PM
+@Yolofant I think what you're doing in your branch is the right thing,
+no way ffmpeg is going to work for us as we don't have VDPAU, VAAPI etc.
+02/11/2023 5:06 PM
+think I'm using my system cmake
+[smx2460]
+smx2460 02/11/2023 5:06 PM
+for every webos package you build
+02/11/2023 5:06 PM
+you need to use this trick
+[ccarnell98]
+[] yolofant let me just remove cmake from the depends stuff
+ccarnell98 02/11/2023 5:06 PM
+it may be you have more packages in buildroot-nc4 enabled than I do
+[yolofant]
+yolofant 02/11/2023 5:06 PM
+however, I'm not sure why kodi cannot just install it
+[smx2460]
+smx2460 02/11/2023 5:06 PM
+    define WEBOS_WAYLAND_EXTENSIONS_LINK_CMAKE_MODULES
+        ln -snf $(STAGING_DIR)/usr/local/webos/Modules/webOS $(@D)/webOS
+    endef
+[yolofant]
+yolofant 02/11/2023 5:06 PM
+yeah but I think he's referring to when it's being built by kodi
+[smx2460]
+[] ccarnell98 not really compatible
+smx2460 02/11/2023 5:05 PM
+yes, it's compatible. i added the webos cmake modules
+[smx2460]
+[] ccarnell98
+https://github.com/webosose/webos-wayland-extensions/blob/master/client/CMakeLists.txt
+smx2460 02/11/2023 5:05 PM
+already in br-nc4
+[smx2460]
+smx2460 02/11/2023 5:04 PM
+TL;DR: use arm-webos-linux-gnueabi and you'll be safer
+[ccarnell98]
+ccarnell98 02/11/2023 5:04 PM
+I used* that to shorten paths
+[smx2460]
+smx2460 02/11/2023 5:04 PM
+then you might have another arm-linux
+02/11/2023 5:04 PM
+but if you append to path
+[ccarnell98]
+ccarnell98 02/11/2023 5:04 PM
+I did that to shorten paths
+[yolofant]
+yolofant 02/11/2023 5:04 PM
+but it should build cmake using x64 anyway
+[smx2460]
+smx2460 02/11/2023 5:04 PM
+ah.
+[ccarnell98]
+[] smx2460 this seems wrong
+ccarnell98 02/11/2023 5:03 PM
+it works, there is a symlink in buildroot-nc4 already
+[smx2460]
+smx2460 02/11/2023 5:03 PM
+it maybe fell back to x64 build silently
+02/11/2023 5:03 PM
+and if you don't have that toolchain
+02/11/2023 5:03 PM
+so he used another toolchain and happened to work for some luck (edited)
+02/11/2023 5:03 PM
+if you're using br-nc4, you will never have that host
+02/11/2023 5:03 PM
+ok but it's wrong regardless 
+[yolofant]
+yolofant 02/11/2023 5:02 PM
+I agree but it worked for @Craig
+[smx2460]
+smx2460 02/11/2023 5:02 PM
+host should be arm-webos-linux-gnueabi
+02/11/2023 5:02 PM
+this seems wrong
+02/11/2023 5:02 PM
+    ./configure     --prefix=/media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-deps --host=arm-linux \
+[yolofant]
+[] ccarnell98 I've just added buildroot-nc4 to my path:
+yolofant 02/11/2023 5:01 PM
+this
+[yolofant]
+yolofant 02/11/2023 5:01 PM
+me neither
+[smx2460]
+[] yolofant let me just remove cmake from the depends stuff
+smx2460 02/11/2023 5:00 PM
+not totally sure what you're doing 
+[infowski]
+infowski 02/11/2023 4:54 PM
+...and webOS supports quite a lot of formats that are not available in
+normal browsers.
+02/11/2023 4:54 PM
+Well, because WebApps on webOS can use all supported video formats.
+[yolofant]
+yolofant 02/11/2023 4:54 PM
+hmm?
+[ccarnell98]
+ccarnell98 02/11/2023 4:54 PM
+but I may be wrong
+02/11/2023 4:54 PM
+i.e. native decoding
+02/11/2023 4:54 PM
+I think someone looked into it and it wasn't transcoding video
+[yolofant]
+yolofant 02/11/2023 4:53 PM
+you can look at netflix or ignition (amazon)
+02/11/2023 4:52 PM
+it's probably just a web app
+[infowski]
+[] ccarnell98 Shame plex is closed source, that
+infowski 02/11/2023 4:52 PM
+Plex is just a webapp, isn't i?
+[ccarnell98]
+ccarnell98 02/11/2023 4:52 PM
+is available for webos
+02/11/2023 4:52 PM
+Shame plex is closed source, that
+[yolofant]
+yolofant 02/11/2023 4:51 PM
+it can use the system cmake
+02/11/2023 4:51 PM
+let me just remove cmake from the depends stuff
+[ccarnell98]
+ccarnell98 02/11/2023 4:51 PM
+-Wl,-rpath,/home/ssundermann/Sourcecode/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/lib
+-> should not be there
+[yolofant]
+yolofant 02/11/2023 4:50 PM
+I did what you suggested
+[yolofant]
+[] ccarnell98 <@195583665265311744> did you source the environment file?
+It might confuse kodi's build process
+yolofant 02/11/2023 4:50 PM
+nope
+[ccarnell98]
+ccarnell98 02/11/2023 4:50 PM
+@Yolofant did you source the environment file? It might confuse kodi's
+build process
+[smx2460]
+smx2460 02/11/2023 4:50 PM
+any opinion?
+02/11/2023 4:49 PM
+that is probably even better
+02/11/2023 4:49 PM
+similar to WINVER in Windows headers
+02/11/2023 4:49 PM
+-DWEBOS_VER=XXX
+02/11/2023 4:49 PM
+if we decide the convention is to pass
+02/11/2023 4:49 PM
+but
+02/11/2023 4:49 PM
+i might be tempted to say make a CMakeLists.txt that checks the presence
+of a symbol in the .so to know if i can use it or not
+02/11/2023 4:49 PM
+well
+[mariotaku]
+mariotaku 02/11/2023 4:49 PM
+Oh, we can use _v1 suffix for headers.
+[smx2460]
+smx2460 02/11/2023 4:49 PM
+hmmm
+[yolofant]
+yolofant 02/11/2023 4:49 PM
+additional symbols shouldn't hurt
+02/11/2023 4:49 PM
+why not include all of them?
+[smx2460]
+smx2460 02/11/2023 4:48 PM
+/usr/include/webos-[ver] /usr/lib/webos-[ver] ? (edited)
+02/11/2023 4:48 PM
+hmmm can we make multiple folders?
+[yolofant]
+yolofant 02/11/2023 4:48 PM
+but the kodi build is a mess
+[yolofant]
+[] smx2460 why not use br ones?
+yolofant 02/11/2023 4:48 PM
+I would do that
+[mariotaku]
+[] smx2460 <@225167450713358338> btw we are adding NDL_DirectMedia in
+buildroot (through webos-userland) here: ...
+mariotaku 02/11/2023 4:48 PM
+Very nice. There is one thing I'm concerning, is that on webOS 4 and 5
+NDL has different functions but same SONAME. How do you deal with that?
+[smx2460]
+[] yolofant compiling tools/depends
+smx2460 02/11/2023 4:48 PM
+why not use br ones?
+[smx2460]
+smx2460 02/11/2023 4:47 PM
+why
+02/11/2023 4:47 PM
+x86_64-linux
+02/11/2023 4:47 PM
+    /home/ssundermann/Sourcecode/kodi/tools/depends/native/cmake/x86_64-linux-native
+[yolofant]
+yolofant 02/11/2023 4:47 PM
+yeah
+[smx2460]
+smx2460 02/11/2023 4:47 PM
+is it like wrong architecture?
+02/11/2023 4:47 PM
+    file /home/ssundermann/Sourcecode/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/lib/libcurl.so
+[yolofant]
+yolofant 02/11/2023 4:47 PM
+(or not build cmake at all)
+02/11/2023 4:47 PM
+but it should be using the host's libcurl
+02/11/2023 4:46 PM
+it's finding libcurl from buildroot
+02/11/2023 4:46 PM
+    [ 82%] Linking CXX executable ../bin/cmake
+    cd /home/ssundermann/Sourcecode/kodi/tools/depends/native/cmake/x86_64-linux-native/Source && /home/ssundermann/Sourcecode/kodi/tools/depends/native/cmake/x86_64-linux-native/Bootstrap.cmk/cmake -E cmake_link_script CMakeFiles/cmake.dir/link.txt --verbose=1
+    /usr/bin/clang++ -I/home/ssundermann/Sourcecode/buildroot-nc4/output/target/home/root/kodi/x86_64-linux-gnu-native/include -O3 -DNDEBUG -L/home/ssundermann/Sourcecode/buildroot-nc4/output/target/home/root/kodi/x86_64-linux-gnu-native/lib CMakeFiles/cmake.dir/cmakemain.cxx.o CMakeFiles/cmake.dir/cmcmd.cxx.o -o ../bin/cmake  -Wl,-rpath,/home/ssundermann/Sourcecode/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/lib libCMakeLib.a kwsys/libcmsys.a ../Utilities/std/libcmstd.a ../Utilities/cmexpat/libcmexpat.a ../Utilities/cmlibarchive/libarchive/libcmlibarchive.a -lz ../Utilities/cmliblzma/libcmliblzma.a ../Utilities/cmzstd/libcmzstd.a ../Utilities/cmbzip2/libcmbzip2.a /home/ssundermann/Sourcecode/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/lib/libcurl.so ../Utilities/cmjsoncpp/libcmjsoncpp.a ../Utilities/cmlibuv/libcmlibuv.a -ldl -lrt ../Utilities/cmlibrhash/libcmlibrhash.a
+    /usr/bin/ld: /home/ssundermann/Sourcecode/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/lib/libcurl.so: error adding symbols: file in wrong format
+[ccarnell98]
+ccarnell98 02/11/2023 4:46 PM
+whats the error?
+[yolofant]
+yolofant 02/11/2023 4:46 PM
+compiling tools/depends
+[ccarnell98]
+ccarnell98 02/11/2023 4:45 PM
+@Yolofant i have libcurl installed in buildroot as well, not sure why
+its not working for you. What part are you doing?
+[yolofant]
+yolofant 02/11/2023 4:44 PM
+yeah I can add the rest
+ 1
+[smx2460]
+smx2460 02/11/2023 4:44 PM
+other libraries might/will likely follow suit
+02/11/2023 4:44 PM
+pulled in from here:
+https://github.com/openlgtv/buildroot-nc4/tree/master/package/webos-userland
+02/11/2023 4:44 PM
+@Mariotaku btw we are adding NDL_DirectMedia in buildroot (through
+webos-userland) here:
+https://github.com/sundermann/webos-userland/blob/main/src/NDL_directmedia.lds
+[yolofant]
+yolofant 02/11/2023 4:44 PM
+but it's not complete
+02/11/2023 4:43 PM
+I've seen your headers
+[mariotaku]
+mariotaku 02/11/2023 4:43 PM
+For webOS 4 and 5 I managed to utilize it
+[yolofant]
+yolofant 02/11/2023 4:43 PM
+@Craig anything specific you did about depends building cmake? It fails
+for me because it's trying to link against buildroot's libcurl
+[mariotaku]
+[] yolofant yeah I think we need to use libplayerAPIs
+mariotaku 02/11/2023 4:43 PM
+I'm making an SS4S module with libplayerAPIs too
+[smx2460]
+smx2460 02/11/2023 4:42 PM
+and this is inter-wined (edited)
+02/11/2023 4:42 PM
+the GPL doesn't say anything about static/dynamic linking
+[yolofant]
+[] mariotaku That's too unfortunate. libplayerAPIs has PTS parameter
+IIRC
+yolofant 02/11/2023 4:42 PM
+yeah I think we need to use libplayerAPIs
+[smx2460]
+smx2460 02/11/2023 4:42 PM
+they are dlopening the GPU library
+02/11/2023 4:41 PM
+it's not even RPC
+[mariotaku]
+[] yolofant it needs the frametime I think
+mariotaku 02/11/2023 4:41 PM
+That's too unfortunate. libplayerAPIs has PTS parameter IIRC
+[smx2460]
+smx2460 02/11/2023 4:41 PM
+i wonder if this is a GPL violation
+[mariotaku]
+[] smx2460 ``` LG GPUDDI Driver (DEVMEM) LG Electronics Inc.
+GPUDDI(DEVMEM) librpc4dtv.so.1 RPC_OpenDDI_GPU RPC...
+mariotaku 02/11/2023 4:41 PM
+Looks like another SDL render thingy
+[yolofant]
+[] mariotaku I thought PTS is when you feed something to the decoder but
+not getting from it?
+yolofant 02/11/2023 4:41 PM
+it needs the frametime I think
+[smx2460]
+smx2460 02/11/2023 4:40 PM
+theoretically i could reuse these for some kind of accelerated drawing
+02/11/2023 4:40 PM
+    LG GPUDDI Driver (DEVMEM)
+    LG Electronics Inc.
+    GPUDDI(DEVMEM)
+    librpc4dtv.so.1
+    RPC_OpenDDI_GPU
+    RPC_CloseDDI_GPU
+    DDI_GPU_Initialize
+    DDI_GPU_GetDeviceCapability
+    DDI_GPU_InitSurfacePool
+    DDI_GPU_InitLayer
+    DDI_GPU_Finalize
+    DDI_GPU_GetLayerRegionInfo
+    DDI_GPU_SetLayerRegion
+    DDI_GPU_FlipLayerRegion
+    DDI_GPU_UpdateLayerRegion
+    DDI_GPU_IndicateLayerUpdate
+    DDI_GPU_AllocSurface
+    DDI_GPU_SetSurfacePalette
+    DDI_GPU_DeallocSurface
+    DDI_GPU_Blit
+    DDI_GPU_StretchBlit
+    DDI_GPU_FillRectangle
+    DDI_GPU_DrawRectangle
+    DDI_GPU_DrawLine
+    DDI_GPU_SyncGraphic
+    DDI_GPU_TrapezoidBlit
+    DDI_GPU_DecodeImage
+[yolofant]
+yolofant 02/11/2023 4:40 PM
+    All I wanted to say: we have both approaches inside kodi
+    15:16 Uhr
+    Some thing to keep in mind: The Render abstraction. Kodi's videoplayer actively manages frames based on PTS and delays. It has some requirements towards a decoder
+    15:16 Uhr
+    in the sense of Flush and drain
+    15:17 Uhr
+    MediaCodec Surface is a kind of "bypass" codec, which still nicely reports its vsync / frametimes, so that VideoPlayer is aware and can adjust the audio clock of the audio stream
+    15:17 Uhr
+    So don't be surprised: VP is managing two clocks video and audio separately and sync them on PTS values. This is extremely relevant later on as it does not act like a "Just start video" and let it run - it will be good - approach :leichtes_lächeln:
+[smx2460]
+smx2460 02/11/2023 4:40 PM
+    LG GPUDDI Driver
+02/11/2023 4:39 PM
+    LG GPUDDI Drawing Engine
+[yolofant]
+[] mariotaku I thought PTS is when you feed something to the decoder but
+not getting from it?
+yolofant 02/11/2023 4:39 PM
+I thought so too
+[smx2460]
+smx2460 02/11/2023 4:39 PM
+has this custom driver for directfb
+02/11/2023 4:39 PM
+    libdirectfb_gpuddi.so
+[mariotaku]
+[] yolofant something the NDL won't give 
+mariotaku 02/11/2023 4:39 PM
+I thought PTS is when you feed something to the decoder but not getting
+from it?
+[smx2460]
+smx2460 02/11/2023 4:39 PM
+pinging @hellobox for the historical factor
+02/11/2023 4:38 PM
+before they changed the name
+02/11/2023 4:38 PM
+NC4 was supposed to be GP5 (edited)
+[yolofant]
+yolofant 02/11/2023 4:38 PM
+something the NDL won't give 
+[smx2460]
+smx2460 02/11/2023 4:38 PM
+interesting (edited)
+[yolofant]
+[] mariotaku Yes. The idea is to demux the media, but let the library to
+handle the element stream
+yolofant 02/11/2023 4:38 PM
+yes, kodi does the demuxing but it also needs information on pts and
+other stuff
+[smx2460]
+smx2460 02/11/2023 4:38 PM
+    /usr/local/lib:/vol/users/jinhyuk.hong/work/gp5_main_new_trunk/src/common/directfb/../output/mtk5398/freetype/lib
+[yolofant]
+yolofant 02/11/2023 4:38 PM
+I think so
+[smx2460]
+smx2460 02/11/2023 4:38 PM
+yeah
+[infowski]
+infowski 02/11/2023 4:38 PM
+I think whether or not OMX is present depends on the platform/bsp they
+use? (edited)
+[mariotaku]
+mariotaku 02/11/2023 4:37 PM
+However I can't find them anywhere after
+02/11/2023 4:37 PM
+I noticed OMX was there in webOS 1.2.0
+[smx2460]
+smx2460 02/11/2023 4:37 PM
+i wouldn't be surprised if this LGNC impl used OMX internally
+02/11/2023 4:37 PM
+my SoC supports OMX besides LGNC
+02/11/2023 4:36 PM
+    omx_h263dec,
+      type=GstOmxH263Dec,
+      library-name=libmtkomx.so,
+      component-name=OMX.MTK.Video.Decoder.MPEG4,
+      rank=256;
+    omx_h264dec,
+      type=GstOmxH264Dec,
+      library-name=libmtkomx.so,
+      component-name=OMX.MTK.Video.Decoder.H264,
+      rank=256;
+    omx_mpeg4dec,
+      type=GstOmxMpeg4Dec,
+      library-name=libmtkomx.so,
+      component-name=OMX.MTK.Video.Decoder.MPEG4,
+      rank=256;
+02/11/2023 4:36 PM
+aka stuff using opensource/community libraries
+02/11/2023 4:36 PM
+i have this file in the "open" partition
+02/11/2023 4:36 PM
+(no content)
+ gst-openmax.conf
+3.83 KB External
+02/11/2023 4:35 PM
+but play the video using LGNC
+02/11/2023 4:35 PM
+if all it needs to do is draw the UI
+02/11/2023 4:35 PM
+which...might not be an issue
+02/11/2023 4:35 PM
+through directfb
+02/11/2023 4:35 PM
+it probably was using swraster tho
+02/11/2023 4:35 PM
+i did compile SDL for NC4 and it was working too
+02/11/2023 4:35 PM
+but...that's not a problem
+[mariotaku]
+mariotaku 02/11/2023 4:35 PM
+But maintaining it was PITA so I eventually gave up lol
+[smx2460]
+smx2460 02/11/2023 4:34 PM
+i don't think it has SDL at all
+[mariotaku]
+mariotaku 02/11/2023 4:34 PM
+In the very beginning I made an SDL-free moonlight
+02/11/2023 4:34 PM
+Does it have SDL2?
+02/11/2023 4:34 PM
+Might be using too old SDL or something
+[smx2460]
+smx2460 02/11/2023 4:34 PM
+but it was crashing on startup
+02/11/2023 4:34 PM
+i remember i compiled moonlight for NC4
+02/11/2023 4:33 PM
+it's probably the same
+02/11/2023 4:33 PM
+    0000bd78 T LGNC_DIRECTAUDIO_CheckBuffer
+    0000bfa0 T LGNC_DIRECTAUDIO_Close
+    0000c004 T LGNC_DIRECTAUDIO_CloseSub
+    0000bde0 T LGNC_DIRECTAUDIO_Open
+    0000be4c T LGNC_DIRECTAUDIO_OpenSub
+    0000c068 T LGNC_DIRECTAUDIO_Pause
+    0000beb8 T LGNC_DIRECTAUDIO_Play
+    0000bf2c T LGNC_DIRECTAUDIO_PlaySub
+    0000c0cc T LGNC_DIRECTAUDIO_Resume
+    0000c130 T LGNC_DIRECTVIDEO_CheckIsInitialized
+    0000c270 T LGNC_DIRECTVIDEO_Close
+    0000c190 T LGNC_DIRECTVIDEO_Open
+    0000c1fc T LGNC_DIRECTVIDEO_Play
+[mariotaku]
+mariotaku 02/11/2023 4:33 PM
+It's possible working actually
+02/11/2023 4:33 PM
+I can't test but yeah
+[smx2460]
+smx2460 02/11/2023 4:33 PM
+02/11/2023 4:33 PM
+    liblgncinapi.so.2.01.02
+    liblgncopenapi.so.2.01.02
+[infowski]
+infowski 02/11/2023 4:32 PM
+There's LGNC
+[smx2460]
+[] mariotaku webOS 1
+smx2460 02/11/2023 4:32 PM
+NC4  
+[ccarnell98]
+ccarnell98 02/11/2023 4:31 PM
+Need a cuppa
+02/11/2023 4:31 PM
+Oh, getting mixed up 
+[yolofant]
+[] ccarnell98 But I thought we just said 7 didn't have ndl?
+yolofant 02/11/2023 4:30 PM
+where did we say that 
+[mariotaku]
+[] yolofant yeah but kodi unfortunately needs more than that 
+mariotaku 02/11/2023 4:30 PM
+Yes. The idea is to demux the media, but let the library to handle the
+element stream
+[ccarnell98]
+ccarnell98 02/11/2023 4:30 PM
+But I thought we just said 7 didn't have ndl?
+[yolofant]
+[] ccarnell98 So what decoder would it load for WebOS 7? I
+yolofant 02/11/2023 4:30 PM
+ndl
+[yolofant]
+yolofant 02/11/2023 4:29 PM
+yeah but kodi unfortunately needs more than that 
+[ccarnell98]
+ccarnell98 02/11/2023 4:29 PM
+So what decoder would it load for WebOS 7? I
+[mariotaku]
+mariotaku 02/11/2023 4:29 PM
+And the only thing you need is to feed it H264 and PCM stream. I'll be
+adding more codecs (if the systems supports it), based on your need.
+02/11/2023 4:28 PM
+It attempts to load different decoders based on system version
+[mariotaku]
+[] ccarnell98 <@225167450713358338> ok what is SS4S ?
+mariotaku 02/11/2023 4:28 PM
+https://github.com/mariotaku/ss4s
+GitHub - mariotaku/ss4s: Simple Sink For Streaming
+Simple Sink For Streaming. Contribute to mariotaku/ss4s development by
+creating an account on GitHub.
+[]
+[ccarnell98]
+ccarnell98 02/11/2023 4:28 PM
+@Mariotaku ok what is SS4S ?
+[mariotaku]
+[] infowski ...which works consistently down to webOS... 3? Or older?
+mariotaku 02/11/2023 4:27 PM
+webOS 1
+ 3
+[infowski]
+[] mariotaku I managed to make ihsplay and moonlight both work with SS4S
+this week
+infowski 02/11/2023 4:27 PM
+...which works consistently down to webOS... 3? Or older?
+[mariotaku]
+mariotaku 02/11/2023 4:27 PM
+I managed to make ihsplay and moonlight both work with SS4S this week
+[] ccarnell98 How do you find out what is being used then?
+ww8543 02/11/2023 4:26 PM
+@Mariotaku is the guy you should be asking about this
+[mariotaku]
+mariotaku 02/11/2023 4:26 PM
+Life is short, use SS4S
+ 2
+[yolofant]
+yolofant 02/11/2023 4:26 PM
+ndl_directmedia is pretty highlevel
+02/11/2023 4:25 PM
+eventually it will use gstreamer
+[infowski]
+infowski 02/11/2023 4:25 PM
+Long long chain.
+[yolofant]
+yolofant 02/11/2023 4:25 PM
+ndl -> ndl_impl -> libplayerapis -> libpf
+[ccarnell98]
+ccarnell98 02/11/2023 4:24 PM
+oh, well that sucks
+[yolofant]
+yolofant 02/11/2023 4:24 PM
+not on LX
+[ccarnell98]
+ccarnell98 02/11/2023 4:24 PM
+Have you managed to fix your linking issues?
+[infowski]
+infowski 02/11/2023 4:24 PM
+NDL is a high(?)-level playback API that interacts with the kernel(? -
+of course it depends on the specific platform) which in turn interacts
+with hardware video decoder.
+[yolofant]
+yolofant 02/11/2023 4:23 PM
+Well yes
+[ccarnell98]
+ccarnell98 02/11/2023 4:22 PM
+Is ndl some sort of LG wrapper that calls lxvdec internally?
+[yolofant]
+yolofant 02/11/2023 4:22 PM
+We have headers for some
+02/11/2023 4:22 PM
+Of course not
+[ccarnell98]
+ccarnell98 02/11/2023 4:21 PM
+Do we have source for any of those?
+[yolofant]
+yolofant 02/11/2023 4:21 PM
+you can use ndl-directmedia, libplayerapis or libpf
+02/11/2023 4:15 PM
+lxvdec
+02/11/2023 4:15 PM
+on LX they use their own hw decoder
+02/11/2023 4:14 PM
+the implementation itself is proprietary
+02/11/2023 4:14 PM
+there's different layers of hw acceleration
+[ccarnell98]
+ccarnell98 02/11/2023 4:14 PM
+How do you find out what is being used then?
+[yolofant]
+yolofant 02/11/2023 4:14 PM
+that's right
+[ccarnell98]
+ccarnell98 02/11/2023 4:14 PM
+I'm just digging through old messages :
+02/11/2023 4:14 PM
+You mentioned that OMX is not being used on the C2
+[yolofant]
+yolofant 02/11/2023 4:11 PM
+yes it's me
+[ccarnell98]
+ccarnell98 02/11/2023 4:11 PM
+Yolofant?
+02/11/2023 4:11 PM
+which one is sunderman? 
+[yolofant]
+yolofant 02/11/2023 4:10 PM
+what do you mean
+[ccarnell98]
+ccarnell98 02/11/2023 4:10 PM
+How do I find out how hardware accelerated video is currently handled on
+the C2?
+02/11/2023 4:07 PM
+it
+02/11/2023 4:07 PM
+nvm I fixed i
+[ccarnell98]
+ccarnell98 02/11/2023 3:58 PM
+was working last time 
+02/11/2023 3:58 PM
+hmm my remote isn't working, with the exception of the scroll wheel
+[yolofant]
+yolofant 02/11/2023 3:39 PM
+but there is one for the server and client libs
+02/11/2023 3:39 PM
+yes there is no .pc file for the protocols (edited)
+[smx2460]
+smx2460 02/11/2023 3:38 PM
+i remember you said something about missing .pc files too
+[yolofant]
+yolofant 02/11/2023 3:38 PM
+no idea 
+[smx2460]
+smx2460 02/11/2023 3:38 PM
+then what's the issue
+[yolofant]
+yolofant 02/11/2023 3:38 PM
+installed by webos-wayland-extensions
+[smx2460]
+smx2460 02/11/2023 3:38 PM
+???
+[yolofant]
+yolofant 02/11/2023 3:38 PM
+it's already there
+02/11/2023 3:38 PM
+@Smx we don't need that
+[smx2460]
+smx2460 02/11/2023 3:37 PM
+02/11/2023 3:37 PM
+i'm half-sick (flu) so i'd rather do the least amount of work
+[smx2460]
+[] ccarnell98 <@310158180728700929> Could you add
+wayland-webos-client.pc to buildroot-nc4 please? I want it to be...
+smx2460 02/11/2023 3:37 PM
+can i pull it from somewhere?
+[ccarnell98]
+ccarnell98 02/11/2023 3:31 PM
+    cd tools/depends
+    ./bootstrap
+    ./configure     --prefix=/media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-deps --host=arm-linux \
+            --with-rendersystem=gles --enable-debug=no \
+            --with-target-cflags='-march=armv7-a -mfloat-abi=softfp -mfpu=neon' \
+            --with-target-cxxflags='-static-libstdc++' \
+                    --with-webos-wayland-extensions=yes
+    make VERBOSE=1
+    # in kodi root
+    make -C tools/depends/target/cmakebuildsys BUILD_DIR=/home/developer/apps/usr/palm/applications/org.xbmc.kodi \
+        CMAKE_EXTRA_ARGUMENTS="-DENABLE_DBUS=OFF -DENABLE_CEC=OFF -DENABLE_PIPEWIRE=OFF -DHAVE_LINUX_UDMABUF=OFF"
+    # in /media/developer/apps/usr/palm/applications/org.xbmc.kodi
+    make VERBOSE=1
+02/11/2023 3:31 PM
+Then did:
+02/11/2023 3:31 PM
+    export SDK_PATH="/home/developer/buildroot-nc4/output/host"
+    #if [ -d "$SDK_PATH=/bin" ]; then
+      export "PATH=$PATH:$SDK_PATH/bin:$SDK_PATH/sbin"
+    #fi
+02/11/2023 3:31 PM
+I've just added buildroot-nc4 to my path:
+[yolofant]
+yolofant 02/11/2023 3:28 PM
+make sdk, then source the environment file?
+02/11/2023 3:27 PM
+so what did you do to build the master branch
+02/11/2023 3:27 PM
+hmm ok 
+[ccarnell98]
+ccarnell98 02/11/2023 3:25 PM
+I don't want webos_build_library etc
+02/11/2023 3:25 PM
+not really compatible
+02/11/2023 3:25 PM
+https://github.com/webosose/webos-wayland-extensions/blob/master/client/CMakeLists.txt
+webos-wayland-extensions/CMakeLists.txt at master · webosose/webos-...
+Wayland protocol extensions for webOS. Contribute to
+webosose/webos-wayland-extensions development by creating an account on
+GitHub.
+[]
+[yolofant]
+[] ccarnell98 it worked 
+yolofant 02/11/2023 3:25 PM
+[yolofant]
+yolofant 02/11/2023 3:24 PM
+the package can be installed using cmake
+02/11/2023 3:24 PM
+you shouldn't be doing that
+02/11/2023 3:23 PM
+@Craig reading the depends make file for webos-extensions I am wondering
+why you create the .pc file and copy the procols manually
+[ccarnell98]
+ccarnell98 02/11/2023 3:23 PM
+it worked 
+[yolofant]
+yolofant 02/11/2023 3:13 PM
+ok 
+[ccarnell98]
+ccarnell98 02/11/2023 3:13 PM
+I'm just compiling all those changes I had to make. Hopefully it didn't
+break anything 
+02/11/2023 3:12 PM
+Possibly
+[yolofant]
+yolofant 02/11/2023 3:09 PM
+pass a modified version of these variables to cmake?
+https://github.com/openlgtv/buildroot-nc4/blob/master/package/kodi/kodi.mk#L85
+02/11/2023 3:09 PM
+I'm interested in how you compile master kodi with the buildroot though
+02/11/2023 3:04 PM
+@Craig I think -DDEPENDS_PATH=$(STAGING_DIR)/usr \ makes the stuff work
+in buildroot btw
+02/11/2023 3:02 PM
+hmm, ok 
+[ccarnell98]
+ccarnell98 02/11/2023 3:02 PM
+automagically
+02/11/2023 3:02 PM
+Thanks, I'm just using it fetch the dependencies down
+[yolofant]
+yolofant 02/11/2023 3:01 PM
+but keep in mind that the included kodi still targets the default 19.4
+repo
+02/11/2023 3:01 PM
+.py and .pyc
+02/11/2023 3:01 PM
+change that to include both
+02/11/2023 3:00 PM
+python3 module format to install
+02/11/2023 3:00 PM
+navigate to python
+02/11/2023 3:00 PM
+interpreter languages and scripting
+[ccarnell98]
+ccarnell98 02/11/2023 3:00 PM
+have the man flu so brain only 50% 
+02/11/2023 2:59 PM
+Where is that option?
+[yolofant]
+yolofant 02/11/2023 2:54 PM
+you should see kodi if you enable .py and .pyc in the python interpreter
+config
+02/11/2023 2:54 PM
+just use find_file
+02/11/2023 2:54 PM
+@Craig see my comments
+[ccarnell98]
+ccarnell98 02/11/2023 2:52 PM
+I want to test compilation without tools/depends system
+02/11/2023 2:50 PM
+I can't see kodi in Target Packages->Audio and Visual also
+[ccarnell98]
+ccarnell98 02/11/2023 2:43 PM
+@Smx Could you add wayland-webos-client.pc to buildroot-nc4 please? I
+want it to be compatible with my kodi PR
+[yolofant]
+yolofant 02/11/2023 1:21 PM
+[smx2460]
+smx2460 02/11/2023 1:13 PM
+@Yolofant yo
+February 10, 2023
+hellobox. 02/10/2023 4:28 PM
+depends why they're not supporting webos 5 (edited)
+02/10/2023 4:28 PM
+probably not easily
+[pinheadi]
+pinheadi 02/10/2023 4:26 PM
+Will this be possible to be ported for 2020 TVs when released?
+[Screenshot_20230210_172512_Reddit.jpg]
+ Screenshot_20230210_172512_Reddit.jpg
+186.49 KB External
+[smx2460]
+smx2460 02/10/2023 3:55 PM
+Probably host (edited)
+02/10/2023 3:55 PM
+Not sure if that's nodejs on the host or target
+02/10/2023 3:54 PM
+https://github.com/openlgtv/buildroot-nc4/pull/7
+Fix broken dependency message_queue for moonlight-tv by GuillaumeSm...
+I was able to find the code for the broken dependency on moonlight-tv:
+https://github.com/GuillaumeSmaha/message_queue (2 files) I found a way
+to fix it by using git config --global: GuillaumeSmaha...
+[]
+02/10/2023 3:54 PM
+Actually nvm
+[smx2460]
+[] infowski Has anyone here built V8 via buildroot in wsl yet? Sounds
+like it tries to use qemu (????)
+smx2460 02/10/2023 3:53 PM
+nodejs can be built, but i didn't try in WSL
+Deleted User 02/10/2023 8:52 AM
+it was taking annoyingly long to build though, so i gave up
+02/10/2023 8:51 AM
+i had been writing some instructions for building nodejs, which i was in
+the process of testing across different node versions
+ buildnode.txt
+5.65 KB External
+02/10/2023 8:48 AM
+its using ninja and stuff
+02/10/2023 8:48 AM
+though the way this is being built seems a lot different
+02/10/2023 8:47 AM
+and i dont remember it using qemu
+[] infowski Has anyone here built V8 via buildroot in wsl yet? Sounds
+like it tries to use qemu (????)
+Deleted User 02/10/2023 8:47 AM
+ive tried to build nodejs normally
+[infowski]
+infowski 02/10/2023 8:43 AM
+Has anyone here built V8 via buildroot in wsl yet? Sounds like it tries
+to use qemu (????)
+02/10/2023 8:42 AM
+U-huh
+02/10/2023 8:42 AM
+>v8-qemu-wrapper
+Deleted User 02/10/2023 8:40 AM
+tried to restart it and it happened even earlier
+[image.png]
+ image.png
+47.18 KB External
+02/10/2023 8:37 AM
+bruh
+02/10/2023 8:37 AM
+(no content)
+[image.png]
+ image.png
+42.88 KB External
+[yolofant]
+yolofant 02/10/2023 12:47 AM
+then I just download the sources myself
+02/10/2023 12:47 AM
+do you have a tv model which has those?
+hellobox. 02/10/2023 12:45 AM
+i don't know which ones you want
+02/10/2023 12:45 AM
+there are a bunch of headers, and they're not all in a single directory
+02/10/2023 12:45 AM
+you don't have the package for webos 5 or 6?
+[yolofant]
+yolofant 02/10/2023 12:44 AM
+can you send me those headers?
+02/10/2023 12:43 AM
+I've included the request for the chromium source in my last kernel
+source request but probably the just ignored it
+02/10/2023 12:43 AM
+maybe I should ask for them again
+02/10/2023 12:42 AM
+yeah LG didn't release chromium sources for o22
+hellobox. 02/10/2023 12:42 AM
+probably some chromium deps tarball
+02/10/2023 12:42 AM
+idk
+[yolofant]
+yolofant 02/10/2023 12:42 AM
+in which toolchain?
+hellobox. 02/10/2023 12:41 AM
+the pf_export.hpp it's talking about is in player-factory/
+[yolofant]
+yolofant 02/10/2023 12:41 AM
+that looks interesting
+hellobox. 02/10/2023 12:41 AM
+there's a mediainfo.hpp with stuff like this:
+    enum StarfishMediaPipelineEvent {
+      // PF_EVENT_MAX = 10000 in pf_export.hpp
+      // Do not use SMP_EVENT_TYPE_START
+      SMP_EVENT_TYPE_START = 10000,
+      SMP_EVENT_TYPE_STR_STATE_UPDATE__SERVICE_CONNECTED = 10001,
+      SMP_EVENT_TYPE_STR_STATE_UPDATE__SERVICE_DISCONNECTED = 10002,
+    };
+    enum StarfishMediaPipelineError {
+[yolofant]
+yolofant 02/10/2023 12:41 AM
+I've traced libndl to libndl_directmedia_impl -> libplayerAPIs -> libpf
+hellobox. 02/10/2023 12:40 AM
+there's a mediaAPIs.hpp
+[yolofant]
+yolofant 02/10/2023 12:40 AM
+hmm
+hellobox. 02/10/2023 12:40 AM
+although it doesn't include anything about starfish
+02/10/2023 12:40 AM
+i believe player-factory is what you're looking for
+[yolofant]
+yolofant 02/10/2023 12:39 AM
+libplayerAPIs should include starfishmediaapis
+02/10/2023 12:39 AM
+libpf might be player-factory
+02/10/2023 12:39 AM
+not sure what the file name might be
+hellobox. 02/10/2023 12:38 AM
+player-factory?
+02/10/2023 12:38 AM
+i don't think i've seen those
+02/10/2023 12:38 AM
+what would they be named?
+[yolofant]
+yolofant 02/10/2023 12:37 AM
+@hellobox can you check for libplayerAPIs or libpf headers in your
+toolchains?
+Deleted User 02/10/2023 12:06 AM
+(no content)
+ hostapd.log
+34.23 KB External
+02/10/2023 12:05 AM
+i told it to output to a log file
+02/10/2023 12:04 AM
+shortly after running it, putty disconnects and the tv complains about
+network errors
+02/10/2023 12:04 AM
+i know infowski mentioned building hostapd once, but i seem to be the
+only person to actually try using it
+hellobox. why are you building so much stuff you don't need?
+Deleted User 02/10/2023 12:01 AM
+just stuff i decided i wanted as well
+Deleted User 02/10/2023 12:01 AM
+maybe it wont completely break the wifi on the tv when i try to create
+an ap on it
+hellobox. 02/10/2023 12:01 AM
+why are you building so much stuff you don't need?
+Deleted User 02/10/2023 12:01 AM
+i wonder if these patches really fix anything..
+[image.png]
+ image.png
+13.64 KB External
+February 9, 2023
+Deleted User 02/09/2023 11:47 PM
+x is building...
+[image.png]
+ image.png
+148.22 KB External
+Deleted User 02/09/2023 10:53 PM
+and have the script uninstall the crashd app as well
+02/09/2023 10:53 PM
+maybe register the app as an input, so when it reboots it automatically
+picks up where it left off and continues the rooting process
+02/09/2023 10:51 PM
+though you could probably just rm it from the app itself, and reboot,
+right?
+02/09/2023 10:51 PM
+forgot about the jail_conf stuff
+Deleted User hopefully when this is done the procedure looks something
+like this ``` (accept all EULAs) enable de...
+Deleted User 02/09/2023 10:51 PM
+oh right
+Deleted User 02/09/2023 10:50 PM
+hmm
+[image.png]
+ image.png
+45.31 KB External
+hellobox. 02/09/2023 10:50 PM
+yeah
+Deleted User 02/09/2023 10:49 PM
+hopefully when this is done the procedure looks something like this
+    (accept all EULAs)
+    enable devmode
+    install dev-manager
+    add device
+    install crashd app
+    run crashd app
+    (app does stuff)
+    tv prompts you to reboot
+    you are rooted!
+hellobox. 02/09/2023 10:46 PM
+i don't think so. try it
+Deleted User 02/09/2023 10:45 PM
+maybe this is would work
+luna-send -n 1 'luna://com.webos.appInstallService/remove' '{"id":"com.palmdts.devmode.service"}'
+?
+hellobox. what do you mean?
+Deleted User 02/09/2023 10:44 PM
+figuring out whatever service call is used to uninstall it
+hellobox. 02/09/2023 10:43 PM
+somewhere
+02/09/2023 10:43 PM
+i already have a script that does all that
+02/09/2023 10:43 PM
+yeah
+hellobox. i guess if we verify that everything is set up correctly
+Deleted User 02/09/2023 10:43 PM
+so, /var/luna/preferences/devmode_enabled should be a directory,
+hbchannel should be installed and elevated, and
+/var/lib/webosbrew/startup.sh should exist?
+hellobox. 02/09/2023 10:42 PM
+what do you mean?
+Deleted User 02/09/2023 10:42 PM
+then use that
+02/09/2023 10:42 PM
+maybe run ls-monitor, uninstall the dev mode app and see what pops up?
+hellobox. 02/09/2023 10:41 PM
+i guess if we verify that everything is set up correctly
+02/09/2023 10:41 PM
+might be risky
+02/09/2023 10:41 PM
+hmm
+Deleted User 02/09/2023 10:40 PM
+the last thing id like to have in the script is a command the uninstalls
+the dev mode app
+02/09/2023 10:38 PM
+i guess we could use wget then
+[image.png]
+ image.png
+21.8 KB External
+hellobox. 02/09/2023 10:38 PM
+wget works though
+02/09/2023 10:37 PM
+< content-length: 0
+02/09/2023 10:37 PM
+it's getting 0 length
+02/09/2023 10:37 PM
+curl isn't working on webos 6
+Deleted User 02/09/2023 10:37 PM
+wget works though.. which it didnt last time i tried
+[image.png]
+ image.png
+16.08 KB External
+02/09/2023 10:37 PM
+4.4.2
+hellobox. 02/09/2023 10:36 PM
+what webos version is that?
+Deleted User 02/09/2023 10:36 PM
+    root@LGwebOSTV:~# curl https://github.com/webosbrew/webos-homebrew-channel/releases/download/v0.5.1/org.webosbrew.hbchannel_0.5.1_all.ipk
+    curl: (60) SSL certificate problem: certificate is not yet valid
+    More details here: https://curl.haxx.se/docs/sslcerts.html
+hellobox. 02/09/2023 10:35 PM
+i have to find it though
+02/09/2023 10:35 PM
+and logging
+02/09/2023 10:35 PM
+although it had more error checking
+02/09/2023 10:35 PM
+i wrote a script somewhat like that
+Deleted User 02/09/2023 10:34 PM
+let me test it
+hellobox. 02/09/2023 10:34 PM
+although i don't know what the status is now
+02/09/2023 10:34 PM
+github was broken at one point, but it started working again
+Deleted User 02/09/2023 10:34 PM
+it just gives empty responses
+hellobox. 02/09/2023 10:34 PM
+so i guess we should make sure that 4.0 has wget/curl with https support
+hellobox. although `wget`/`curl` are janky on some old webos versions
+Deleted User 02/09/2023 10:34 PM
+yeah wget and curl refuse to download anything from github
+hellobox. 02/09/2023 10:34 PM
+this only needs to run on 4.0+ though
+Deleted User 02/09/2023 10:34 PM
+i guess since we have root at that point
+hellobox. 02/09/2023 10:33 PM
+although wget/curl are janky on some old webos versions
+Deleted User 02/09/2023 10:33 PM
+well nvm
+hellobox. 02/09/2023 10:33 PM
+well, you don't have to
+02/09/2023 10:33 PM
+why?
+Deleted User 02/09/2023 10:33 PM
+oh wait, i probably shouldnt be using luna download manager
+hellobox. 02/09/2023 10:33 PM
+i last worked on it months ago
+Deleted User 02/09/2023 10:33 PM
+this is the shell script i was talking about
+ crashd.sh
+3.58 KB External
+hellobox. 02/09/2023 10:32 PM
+i forget
+Deleted User 02/09/2023 10:32 PM
+no i mean how does it execute commands
+hellobox. 02/09/2023 10:32 PM
+like that
+Deleted User 02/09/2023 10:32 PM
+how does the app execute it again?
+hellobox. 02/09/2023 10:32 PM
+that's the point of the app
+Deleted User 02/09/2023 10:32 PM
+oh
+hellobox. 02/09/2023 10:32 PM
+the app just executes it
+02/09/2023 10:32 PM
+yeah, but you don't need to type it
+Deleted User 02/09/2023 10:32 PM
+touch '/var/log/crashd/x;echo BASE64-ENCODED-PAYLOAD|base64 -d|sh'
+(edited)
+02/09/2023 10:31 PM
+what?
+hellobox. 02/09/2023 10:31 PM
+nobody needs to type out a base64 string..?
+Deleted User 02/09/2023 10:31 PM
+i dont think people are going to type out a long base64 string perfectly
+without like 10 attempts
+hellobox. 02/09/2023 10:31 PM
+that's what i want to avoid
+02/09/2023 10:31 PM
+you see how often people fuck that up
+Deleted User 02/09/2023 10:31 PM
+might have to wait for copy/paste to work though...
+02/09/2023 10:30 PM
+couldnt they just directly run the touch command which runs the script,
+in the terminal?
+02/09/2023 10:30 PM
+i was also thinking, if someone is going to use dev-manager to install
+the crashd tool
+hellobox. 02/09/2023 10:30 PM
+i guess my tool is designed more for development/experimentation than
+ease of use
+02/09/2023 10:29 PM
+and also has buttons for running elevate-service and creating the
+devmode_enabled dir
+Deleted User 02/09/2023 10:29 PM
+i was thinking we could just use stage3.sh with a few modifications
+02/09/2023 10:29 PM
+using base64
+hellobox. 02/09/2023 10:29 PM
+to run arbitrary stuff that you enter
+Deleted User 02/09/2023 10:29 PM
+well, curling it and piping it to sh
+hellobox. 02/09/2023 10:29 PM
+currently my (non-working because of enact shit) tool uses base64
+02/09/2023 10:28 PM
+that's an option
+Deleted User 02/09/2023 10:28 PM
+yes
+hellobox. 02/09/2023 10:28 PM
+what, running a script?
+Deleted User 02/09/2023 10:28 PM
+what about what infowski suggested
+hellobox. 02/09/2023 10:28 PM
+you overcomplicated it
+02/09/2023 10:28 PM
+yeah
+Deleted User 02/09/2023 10:28 PM
+@hellobox did you see the stuff about the crashd automation?
+Deleted User 02/09/2023 10:12 PM
+ffmpeg i enabled
+[yolofant]
+yolofant 02/09/2023 10:06 PM
+I bet that all because of the jdk
+Deleted User 02/09/2023 10:05 PM
+ffmpeg

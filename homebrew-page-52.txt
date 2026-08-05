@@ -1,0 +1,1535 @@
+April 2, 2023
+[infowski]
+infowski 04/02/2023 3:32 PM
+did you test it on 4.x? 
+[yolofant]
+yolofant 04/02/2023 3:32 PM
+yeah you could argue that it's only needed on webOS 3
+[infowski]
+[] yolofant hmm true, but I think we'd better off not implementing that
+as a part of the PR
+infowski 04/02/2023 3:31 PM
+Absolutely, IMO leaving it exactly as it is with that dummy on_done is
+absolutely correct in case of webOS
+[infowski]
+infowski 04/02/2023 3:31 PM
+I totally didn't follow any developments for the past 2 weeks, that's
+why I am asking.
+[yolofant]
+[] infowski <@195583665265311744> `I can't think of a super easy way of
+retrieving the webOS version at runtime....
+yolofant 04/02/2023 3:31 PM
+hmm true, but I think we'd better off not implementing that as a part of
+the PR
+[yolofant]
+[] infowski did we have any progress in regards to static
+libwayland-client build?
+yolofant 04/02/2023 3:30 PM
+hmm I think we only build the waylandpp stuff static now but the normal
+client is still shared
+ww8543 i think thats an older webos version like 2 probably,
+unfortunately crashd wont work there
+Deleted User 04/02/2023 3:30 PM
+How do I get getmein?
+ww8543 i think thats an older webos version like 2 probably,
+unfortunately crashd wont work there
+Deleted User 04/02/2023 3:28 PM
+Yeah it’s web os 2 :/
+[infowski]
+infowski 04/02/2023 3:27 PM
+@Yolofant
+I can't think of a super easy way of retrieving the webOS version at runtime. Usually one would query it from the Luna Bus but that'd involved adding more library dependencies -
+well, /var/run/nyx is a thing too, though these JSON files are also
+corrupted on some mstar boards 
+[infowski]
+infowski 04/02/2023 2:57 PM
+did we have any progress in regards to static libwayland-client build?
+(edited)
+04/02/2023 2:57 PM
+fyi rebased my acb changes over current feature/webOS and rebuilding
+deps...
+[infowski]
+infowski 04/02/2023 2:28 PM
+yep.
+[yolofant]
+yolofant 04/02/2023 2:27 PM
+fair enough
+04/02/2023 2:27 PM
+ok, so LG has a broken compositor
+[infowski]
+infowski 04/02/2023 2:27 PM
+so it is v2
+04/02/2023 2:27 PM
+yep, that's on 3.x 
+[yolofant]
+yolofant 04/02/2023 2:27 PM
+https://gist.github.com/Informatic/50d6160d3c08cabfad99d6cd6f69e5fd#file-kodi-log-L156
+this maybe?
+[infowski]
+infowski 04/02/2023 2:27 PM
+let me launch kodi to check what it says.
+04/02/2023 2:26 PM
+it's wayland compositor offering wl_output v2, but ihsplay/sdl
+requesting v1
+04/02/2023 2:26 PM
+ah shit, indeed, that's ihsplay logfile I had saved.
+04/02/2023 2:26 PM
+actually, hm, i am probably looking at a wrong logfile...
+[yolofant]
+yolofant 04/02/2023 2:26 PM
+is it? could also be requesting v2 but then it responds with v1?
+04/02/2023 2:25 PM
+hmm
+[infowski]
+infowski 04/02/2023 2:25 PM
+so, version 2?
+04/02/2023 2:25 PM
+well, i don't have a working kodi build on hand, but I see this in my
+logs:
+    [2023-03-01T20:19:19.486565Z][4275059.826][pid:26725][tid:0x96fbe210]  wl_registry@2.global(3, "wl_output", 2)
+    [2023-03-01T20:19:19.486594Z][4275059.855][pid:26725][tid:0x96fbe210]   -> wl_registry@2.bind(3, "wl_output", 1, new id [unknown]@5)
+[yolofant]
+yolofant 04/02/2023 2:20 PM
+thanks!
+[infowski]
+infowski 04/02/2023 2:20 PM
+give me a second. 
+[yolofant]
+yolofant 04/02/2023 2:18 PM
+@infowski can you check on your webOS 3 TV what the logs say about the
+wl_output version?
+    2023-04-02 13:39:54.533 T:3367    debug <general>: Binding Wayland protocol wl_output version 2 (server has version 2)  
+on mine
+April 1, 2023
+[astur3l]
+astur3l 04/01/2023 9:53 PM
+@wsnipex are u familiar with kodi upnp client? for some reason kodi
+thinks my `object.item.videoItem` is a folder and when i want to play i
+got
+    2023-04-01 19:28:58.777 T:4254    error <general>: CUPnPDirectory::GetResource - unable to find object 68D846810315C28B81E8B764FC19F17D
+    2023-04-01 19:28:58.777 T:4254    error <general>: Playlist Player: skipping unplayable item: 0, path [upnp://6a01a8c0-0000-0000-0000-000000000001/68D846810315C28B81E8B764FC19F17D/]
+(68D846810315C28B81E8B764FC19F17D = the videoitem id), but in browser it
+looks fine (shows as videofile with correct title..) actual soap
+response for browse https://jsonformatter.org/xml-formatter/955169
+(edited)
+Best XML Formatter and XML Beautifier
+Online XML Formatter will format xml data, helps to validate, and works
+as XML Converter. Save and Share XML.
+[]
+ww8543 04/01/2023 9:13 PM
+maybe getmein could work
+wsnipex see crashd in <#822443030761046017> pins
+ww8543 04/01/2023 9:13 PM
+i think thats an older webos version like 2 probably, unfortunately
+crashd wont work there
+[astur3l]
+[] yolofant <@433352458694033428>
+https://jenkins.kodi.tv/job/webos-docker/200/
+astur3l 04/01/2023 9:06 PM
+omg it works perfectly even dovi from mkv is recognized 
+ 1
+[yolofant]
+yolofant 04/01/2023 8:38 PM
+@asturel https://jenkins.kodi.tv/job/webos-docker/200/
+ 1
+Deleted User Can anyone help me, I’ve got an LG UF850v. I tried rooting
+it but this just happens nothing else
+wsnipex 04/01/2023 6:01 PM
+see crashd in # unknown-channel pins
+Deleted User 04/01/2023 5:46 PM
+Can anyone help me, I’ve got an LG UF850v. I tried rooting it but this
+just happens nothing else (edited)
+[96199DB4-F85C-4418-B525-BDD98C1D925B.jpg]
+ 96199DB4-F85C-4418-B525-BDD98C1D925B.jpg
+3.83 MB External
+[yolofant]
+yolofant 04/01/2023 3:17 AM
+no idea why it happened
+[f1ftyx]
+f1ftyx 04/01/2023 3:16 AM
+Okay ill Check
+[yolofant]
+yolofant 04/01/2023 3:16 AM
+though you shouldn't had lost root when updating
+04/01/2023 3:16 AM
+crashd in # unknown-channel pins
+ 1
+04/01/2023 3:16 AM
+if hb channel root status is unelevated now you have to reroot
+04/01/2023 3:15 AM
+anyway, something weird happened
+[f1ftyx]
+[] yolofant did you update initially through the safe updater or the hb
+channel?
+f1ftyx 04/01/2023 3:15 AM
+idk Any more
+[yolofant]
+yolofant 04/01/2023 3:15 AM
+yeah it's been patched
+[f1ftyx]
+f1ftyx 04/01/2023 3:15 AM
+(no content)
+[IMG_2430.jpg]
+ IMG_2430.jpg
+678.06 KB External
+[yolofant]
+yolofant 04/01/2023 3:14 AM
+did you update initially through the safe updater or the hb channel?
+04/01/2023 3:14 AM
+and you lost root now?
+[f1ftyx]
+f1ftyx 04/01/2023 3:14 AM
+i used picap etc.
+04/01/2023 3:13 AM
+yea
+[yolofant]
+yolofant 04/01/2023 3:13 AM
+hmm, was it rooted before?
+[f1ftyx]
+f1ftyx 04/01/2023 3:13 AM
+ah okay but iam Not Able to Root My tv
+[yolofant]
+yolofant 04/01/2023 3:12 AM
+then you won't need the safe updater
+[f1ftyx]
+f1ftyx 04/01/2023 3:12 AM
+and firmware 05.30.25
+04/01/2023 3:12 AM
+Webos 4.9.0
+[yolofant]
+yolofant 04/01/2023 3:11 AM
+is that a 2022 (webos 7/22) tv? (edited)
+[f1ftyx]
+f1ftyx 04/01/2023 3:10 AM
+(no content)
+[IMG_2428.jpg]
+ IMG_2428.jpg
+2.16 MB External
+[smx2460]
+smx2460 04/01/2023 1:48 AM
+[:reko:]
+March 31, 2023
+[infowski]
+infowski 03/31/2023 9:09 AM
+Ghidra ftw
+[astur3l]
+astur3l 03/31/2023 1:02 AM
+but there's bunch of luna calls (for changing display properties), and
+didn't saw anything interesting related to sysfs :d (edited)
+03/31/2023 1:01 AM
+for some reason ai brightness just turns off for me on every start (it
+required by pqcontroller ), so im curious where it gets the light sensor
+data :d
+hellobox. 03/31/2023 1:00 AM
+they're both bad in different ways
+[astur3l]
+astur3l 03/31/2023 1:00 AM
+i know the first 2 but never used on arm :d so idk which can generate
+the most human compatible code :d
+hellobox. 03/31/2023 12:57 AM
+ida or ghidra... or reko
+[astur3l]
+astur3l 03/31/2023 12:57 AM
+what's the best tool to dasm WebOS binary and generate some pseudo/c
+code?
+hellobox. 03/31/2023 12:49 AM
+maybe we should use gnulib...
+https://www.gnu.org/software/gnulib/manual/html_node/uchar_002eh.html
+03/31/2023 12:49 AM
+if i want to add uchar.h, we need mbrtoc{16,32} and c{16,32}rtomb in
+polyfills
+03/31/2023 12:48 AM
+hmm
+03/31/2023 12:46 AM
+the current version has basically no c11 support
+03/31/2023 12:46 AM
+i'm trying to get the stuff that only touches the headers
+03/31/2023 12:40 AM
+there's got to be a better way
+03/31/2023 12:40 AM
+it's a shitton of work
+03/31/2023 12:40 AM
+ugh, this backporting is never going to really work
+Deleted User 03/31/2023 12:30 AM
+and the error still popped up
+03/31/2023 12:30 AM
+i commented out all the make cctest stuff
+03/31/2023 12:30 AM
+@hellobox bruh!
+hellobox. 03/31/2023 12:10 AM
+but i don't really understand it
+03/31/2023 12:10 AM
+i think i'm running into this
+https://github.com/microsoft/vscode/issues/162309
+Deleted User 03/31/2023 12:01 AM
+(no content)
+[image.png]
+ image.png
+7.65 KB External
+03/31/2023 12:01 AM
+im guessing because i left -pipe in the flags
+03/31/2023 12:01 AM
+oh
+[smx2460]
+smx2460 03/31/2023 12:01 AM
+You're running out of memory
+Deleted User 03/31/2023 12:01 AM
+or something
+[smx2460]
+smx2460 03/31/2023 12:01 AM
+Oom
+Deleted User 03/31/2023 12:00 AM
+seems unstable when running >8 jobs
+[image.png]
+ image.png
+111.6 KB External
+March 30, 2023
+hellobox. 03/30/2023 11:55 PM
+did we ever make a list of what glibc version each webos version has?
+03/30/2023 11:53 PM
+if we had a webos version macro we could put aligned_alloc behind it
+03/30/2023 11:53 PM
+https://sourceware.org/legacy-ml/libc-alpha/2000-08/msg00053.html
+[smx2460]
+smx2460 03/30/2023 11:46 PM
+XD
+03/30/2023 11:46 PM
+Then fixed again
+03/30/2023 11:46 PM
+Then broken by drepper (edited)
+03/30/2023 11:46 PM
+It was fixed
+hellobox. 03/30/2023 11:46 PM
+ulrich drepper has a bit of a reputation
+[smx2460]
+smx2460 03/30/2023 11:46 PM
+Ah
+03/30/2023 11:45 PM
+    That build failure is in C++03 code, not C++11
+    gets() needs to be defined for C++ even when _GNU_SOURCE is defined.
+    I suggest checking whether __cplusplus <= 201103L
+03/30/2023 11:44 PM
+    With this change:
+    ...
+        [BZ #13528]
+        * libio/stdio.h: Do not declare gets for ISO C11 and _GNU_SOURCE.
+    ...
+    gets is no longer defined for C++11, while it should be. This causes breakage when building libstdc++. See also discussion at http://gcc.gnu.org/ml/gcc/2012-01/msg00041.html .
+03/30/2023 11:44 PM
+Ah
+hellobox. 03/30/2023 11:43 PM
+is him breaking something
+03/30/2023 11:43 PM
+the second commit
+[smx2460]
+hellobox. ulrich drepper fucked it up
+smx2460 03/30/2023 11:43 PM
+??
+[smx2460]
+smx2460 03/30/2023 11:42 PM
+Like this basically
+03/30/2023 11:42 PM
+https://github.com/smx-smx/glibc-polyfills/blob/master/src/2.16/getauxval.c
+glibc-polyfills/getauxval.c at master · smx-smx/glibc-polyfills
+Contribute to smx-smx/glibc-polyfills development by creating an account
+on GitHub.
+[]
+hellobox. 03/30/2023 11:41 PM
+or i can include it anyway so the changelog looks closer to the original
+03/30/2023 11:41 PM
+anyway, i guess we don't need his commit (and therefore the reversion)
+03/30/2023 11:40 PM
+ulrich drepper fucked it up
+03/30/2023 11:39 PM
+lol check this out:
+https://github.com/bminor/glibc/commit/8ecd6b2a1283a28bcf56cfe48099fafa412a3929
+https://github.com/bminor/glibc/commit/c3a87236702cb73be1dada3438bbd3c3934e83f8
+https://github.com/bminor/glibc/commit/c6e013c15e0091edc49affd6ce26562845000dcd
+https://sourceware.org/bugzilla/show_bug.cgi?id=13566 (edited)
+[smx2460]
+smx2460 03/30/2023 11:37 PM
+Or proxies to memalign
+03/30/2023 11:36 PM
+We need a polyfill that calls that existing symbol if it exists
+03/30/2023 11:36 PM
+Won't work
+03/30/2023 11:36 PM
+Yeah
+03/30/2023 11:36 PM
+Probably we should do it in polyfills, passing the call to "memalign"
+hellobox. 03/30/2023 11:36 PM
+ 1282: 0004a44d 10 FUNC WEAK DEFAULT 13 aligned_alloc@@GLIBC_2.16
+03/30/2023 11:36 PM
+hmm
+[smx2460]
+smx2460 03/30/2023 11:35 PM
+Because it'd be defined at the source level but not when the program is
+ran
+03/30/2023 11:35 PM
+That might cause linker errors at runtime
+03/30/2023 11:35 PM
+Because if we declare an alias, we are saying that we expect the symbol
+to be exported
+03/30/2023 11:34 PM
+Actually that might not work
+03/30/2023 11:34 PM
+If it's just simple aliasing to existing functions, we should be able to
+do it but...
+hellobox. 03/30/2023 11:34 PM
+they're not big changes
+[smx2460]
+smx2460 03/30/2023 11:33 PM
+It would be bad if some package saw "aligned_alloc" and assumed C11
+compliance
+03/30/2023 11:33 PM
+Which happened to be C11 compliant in glibc already
+03/30/2023 11:32 PM
+I would be surprised if they are all as nice as aligned_alloc
+03/30/2023 11:32 PM
+Are they all easily emulatable?
+hellobox. 03/30/2023 11:31 PM
+i'd like to add them all, but some of them had subsequent changes
+03/30/2023 11:31 PM
+there were several c11 features added in glibc 2.16
+Deleted User 03/30/2023 11:24 PM
+i already did make clean
+03/30/2023 11:23 PM
+too late now
+03/30/2023 11:23 PM
+but
+03/30/2023 11:23 PM
+i commented it all out but it was still giving the rror
+hellobox. 03/30/2023 11:23 PM
+not necessarily
+Deleted User 03/30/2023 11:23 PM
+probably have to restart the build since it was already in the middle of
+making cctest
+03/30/2023 11:22 PM
+alright
+hellobox. 03/30/2023 11:22 PM
+because it's the default anyway
+03/30/2023 11:22 PM
+you might not
+Deleted User 03/30/2023 11:21 PM
+so if this is fixed in br-nc4 would i no longer need  -std=gnu++17?
+[smx2460]
+smx2460 03/30/2023 11:20 PM
+We could cherry pick it
+03/30/2023 11:20 PM
+Yeah
+[smx2460]
+hellobox. along with the header stuff
+smx2460 03/30/2023 11:20 PM
+In glibc?
+[smx2460]
+smx2460 03/30/2023 11:19 PM
+It sounds like a trivial fix
+hellobox. 03/30/2023 11:19 PM
+along with the header stuff
+[smx2460]
+[] smx2460 ``` Versions The functions memalign(), valloc(), and
+pvalloc() have been available in all Linux lib...
+smx2460 03/30/2023 11:19 PM
+Considering the "memalign has been present since day 0" comment here
+hellobox. 03/30/2023 11:19 PM
+should i add it to br-nc4?
+[smx2460]
+smx2460 03/30/2023 11:19 PM
+    weak_alias (__libc_memalign, memalign)
+(edited)
+Deleted User the makefile is huge so im not sure where it actually is
+getting called from
+Deleted User 03/30/2023 11:18 PM
+i mean i dont know how it compares to the average makefile but its a lot
+of lines
+Deleted User 03/30/2023 11:18 PM
+the makefile is huge so im not sure where it actually is getting called
+from
+03/30/2023 11:18 PM
+i think it should be gone
+[image.png]
+ image.png
+34.87 KB External
+03/30/2023 11:17 PM
+im commenting out every instance of $(MAKE) cctest
+[smx2460]
+smx2460 03/30/2023 11:17 PM
+It seems to be a simple alias
+Deleted User 03/30/2023 11:17 PM
+im trying to figure that out now
+[smx2460]
+smx2460 03/30/2023 11:17 PM
+    /* For ISO C11.  */
+    weak_alias (__libc_memalign, aligned_alloc)
+    libc_hidden_def (__libc_memalign)
+03/30/2023 11:16 PM
+Otherwise it's glibc-polyfills time
+03/30/2023 11:16 PM
+Considering this is just a test, I'd check for how to exclude it
+03/30/2023 11:15 PM
+Projects were smart enough to test for its presence
+03/30/2023 11:15 PM
+Hmm probably not
+hellobox. 03/30/2023 11:14 PM
+didn't we come across this before?
+03/30/2023 11:14 PM
+oh yeah, he's using br-nc4
+[smx2460]
+smx2460 03/30/2023 11:14 PM
+@hellobox @Deleted User
+03/30/2023 11:13 PM
+    Versions
+    The functions memalign(), valloc(), and pvalloc() have been available in all Linux libc libraries.
+    The function aligned_alloc() was added to glibc in version 2.16.
+    The function posix_memalign() is available since glibc 2.1.91. 
+hellobox. 03/30/2023 11:08 PM
+go into the makefile or whatever and comment out/remove it
+Deleted User 03/30/2023 11:07 PM
+i feel like this shouldnt even be necessary to compile if its a test
+thing, but i dont see an option to disable it in the configure script
+03/30/2023 11:07 PM
+(no content)
+[image.png]
+ image.png
+8.31 KB External
+03/30/2023 11:07 PM
+not with the <>
+03/30/2023 11:07 PM
+yes but also
+03/30/2023 11:07 PM
+uh
+03/30/2023 11:07 PM
+oh
+hellobox. 03/30/2023 11:06 PM
+does the file include <cstdlib>?
+Deleted User 03/30/2023 11:06 PM
+@hellobox it seems to be getting passed -std=gnu++17 so...
+Deleted User 03/30/2023 10:57 PM
+    export CC_host="gcc -m32"
+    export CXX_host="g++ -m32"
+    export CFLAGS_host="-pipe"
+    export CXXFLAGS_host="-pipe -std=gnu++17"
+    export CFLAGS="$CFLAGS -pipe"
+    export CXXFLAGS="$CXXFLAGS -pipe -std=gnu++17"
+    export PYTHON=/usr/bin/python3
+hellobox. 03/30/2023 10:56 PM
+which should be in cstdlib when you're using c11 or c++17
+Deleted User 03/30/2023 10:56 PM
+i edited the second file but im seeing that
+03/30/2023 10:56 PM
+wait what
+[image.png]
+ image.png
+199.67 KB External
+hellobox. 03/30/2023 10:56 PM
+you don't need -fpermissive (at least based on that), you just need
+aligned_alloc
+Deleted User 03/30/2023 10:54 PM
+i guess i need to add the include to all those files?
+03/30/2023 10:54 PM
+thats different file
+03/30/2023 10:54 PM
+oh wait
+03/30/2023 10:53 PM
+so i need -fpermissive AND that?
+03/30/2023 10:53 PM
+@hellobox
+[image.png]
+ image.png
+123.46 KB External
+hellobox. 03/30/2023 10:11 PM
+yeah, put it in CXXFLAGS
+03/30/2023 10:10 PM
+it should be the default though
+03/30/2023 10:10 PM
+sorry, i meant gnu++17
+hellobox. try `-std=gnu17`
+Deleted User 03/30/2023 10:10 PM
+just for CXXFLAGS/CXXFLAGS_host?
+Deleted User 03/30/2023 10:08 PM
+i did that hoping it would fix it but it didnt
+03/30/2023 10:08 PM
+should i remove -fpermissive?
+03/30/2023 10:08 PM
+    -      o['libraries'] += ['-static']
+    +      o['libraries'] += ['-static', '-Wl,--whole-archive', '-lpthread', '-Wl,--no-whole-archive']
+hellobox. 03/30/2023 10:08 PM
+try -std=gnu17
+Deleted User 03/30/2023 10:08 PM
+otherwise some other error would pop up
+03/30/2023 10:08 PM
+theres also this patch i had to make the the configure script
+hellobox. 03/30/2023 10:07 PM
+ah, it's in c++17
+Deleted User 03/30/2023 10:07 PM
+export CXXFLAGS="$CXXFLAGS -pipe -fpermissive"
+hellobox. 03/30/2023 10:07 PM
+what flags are you passing to g++?
+03/30/2023 10:06 PM
+i don't know if it's in any version of the C++ standard
+03/30/2023 10:06 PM
+it has to be C11
+hellobox. or, i guess, `cstdlib`
+Deleted User 03/30/2023 10:06 PM
+im including that now
+[image.png]
+ image.png
+31.28 KB External
+Deleted User 03/30/2023 10:03 PM
+but now it takes me like only 30 minutes or less to get to this point
+(which otherwise take hours) (edited)
+03/30/2023 10:03 PM
+gave up on it because it was taking too long
+03/30/2023 10:03 PM
+yes
+hellobox. 03/30/2023 10:03 PM
+build node?
+hellobox. what are you trying to do?
+Deleted User 03/30/2023 10:03 PM
+same as usual
+hellobox. 03/30/2023 9:56 PM
+       Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+    ...
+           aligned_alloc():
+               _ISOC11_SOURCE
+03/30/2023 9:55 PM
+or, i guess, cstdlib
+Deleted User i am once again asking for help with this error
+hellobox. 03/30/2023 9:55 PM
+did you include stdlib.h?
+hellobox. 03/30/2023 9:54 PM
+what are you trying to do?
+Deleted User 03/30/2023 9:51 PM
+which, instead of having a cpu that is according to him is "equivalent
+to a core 2 duo from 2006" has an intel i9-11900
+03/30/2023 9:50 PM
+my friend is letting me remote desktop into his other pc
+03/30/2023 9:50 PM
+i gave up on it until now
+03/30/2023 9:50 PM
+i am once again asking for help with this error
+[image.png]
+ image.png
+28.7 KB External
+March 29, 2023
+[] rkars i could not get neofetch, this is good enough for now
+Deleted User 03/29/2023 7:59 PM
+(no content)
+[image.png]
+ image.png
+39.2 KB External
+March 28, 2023
+hellobox. 03/28/2023 11:45 PM
+lm21an has it
+03/28/2023 11:45 PM
+hmm, lm18a has nothing in /sys/firmware. no devicetree?
+hellobox. 03/28/2023 11:30 PM
+is this the same one we looked at a while back?
+[image.png]
+ image.png
+256.9 KB External
+03/28/2023 11:29 PM
+looks like H15
+03/28/2023 11:28 PM
+interesting, lx cortex-a57
+https://discord.com/channels/407937994037919756/413498235307425802/587684945745674267
+03/28/2023 11:25 PM
+on m16pp i get LG Electronics, DTV SoC LG1313 rev.C0 (AArch32)
+[] rkars which i got from `cat /sys/firmware/devicetree/base/model`
+hellobox. 03/28/2023 11:25 PM
+it doesn't have a revision?
+[rkars]
+rkars 03/28/2023 11:22 PM
+i could not get neofetch, this is good enough for now
+[image.png]
+ image.png
+61.32 KB External
+03/28/2023 11:20 PM
+makes sense
+hellobox. 03/28/2023 11:19 PM
+pretty bad
+[rkars]
+rkars 03/28/2023 11:17 PM
+need to know how bad it is (or good, idk)
+03/28/2023 11:17 PM
+wen get geekbench on this
+hellobox. 03/28/2023 11:16 PM
+so it's quad cortex-a55
+03/28/2023 11:16 PM
+that makes more sense
+[rkars]
+rkars 03/28/2023 11:15 PM
+root@LGwebOSTV:~# cat /proc/cpuinfo processor : 0 BogoMIPS : 100.00
+Features : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics CPU
+implementer : 0x41 CPU architecture: 8 CPU variant : 0x2 CPU part :
+0xd05 CPU revision : 0 processor : 1 BogoMIPS : 100.00 Features : fp
+asimd evtstrm aes pmull sha1 sha2 crc32 atomics CPU implementer : 0x41
+CPU architecture: 8 CPU variant : 0x2 CPU part : 0xd05 CPU revision : 0
+processor : 2 BogoMIPS : 100.00 Features : fp asimd evtstrm aes pmull
+sha1 sha2 crc32 atomics CPU implementer : 0x41 CPU architecture: 8 CPU
+variant : 0x2 CPU part : 0xd05 CPU revision : 0 processor : 3 BogoMIPS :
+100.00 Features : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics CPU
+implementer : 0x41 CPU architecture: 8 CPU variant : 0x2 CPU part :
+0xd05 CPU revision : 0 '
+03/28/2023 11:15 PM
+idk why it didn't show before
+03/28/2023 11:15 PM
+uh i ran it again and it has core 3 now
+[rkars]
+hellobox. is this the whole thing?
+rkars 03/28/2023 11:15 PM
+yes
+[] rkars root@LGwebOSTV:~# cat /proc/cpuinfo processor : 0 BogoMIPS :
+100.00 Features : f...
+hellobox. 03/28/2023 11:15 PM
+is this the whole thing?
+[rkars]
+rkars 03/28/2023 11:14 PM
+i though it was 4
+[rkars]
+hellobox. only 3 cores?
+rkars 03/28/2023 11:13 PM
+i think so
+[rkars]
+hellobox. also see if you have
+`/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_max_freq` (probably
+doesn't ex...
+rkars 03/28/2023 11:13 PM
+does not exist
+[] rkars root@LGwebOSTV:~# cat /proc/cpuinfo processor : 0 BogoMIPS :
+100.00 Features : f...
+hellobox. 03/28/2023 11:13 PM
+only 3 cores?
+hellobox. 03/28/2023 11:13 PM
+also see if you have
+/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_max_freq (probably
+doesn't exist)
+[rkars]
+hellobox. can you paste the contents of `/proc/cpuinfo` please?
+rkars 03/28/2023 11:12 PM
+root@LGwebOSTV:~# cat /proc/cpuinfo processor : 0 BogoMIPS : 100.00
+Features : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics CPU
+implementer : 0x41 CPU architecture: 8 CPU variant : 0x2 CPU part :
+0xd05 CPU revision : 0 processor : 1 BogoMIPS : 100.00 Features : fp
+asimd evtstrm aes pmull sha1 sha2 crc32 atomics CPU implementer : 0x41
+CPU architecture: 8 CPU variant : 0x2 CPU part : 0xd05 CPU revision : 0
+processor : 2 BogoMIPS : 100.00 Features : fp asimd evtstrm aes pmull
+sha1 sha2 crc32 atomics CPU implementer : 0x41 CPU architecture: 8 CPU
+variant : 0x2 CPU part : 0xd05 CPU revision : 0
+hellobox. 03/28/2023 11:12 PM
+or run the linker manually
+[] rkars still says it's not found so i would need to compile
+hellobox. 03/28/2023 11:12 PM
+you can run readelf on it to check what linker it's looking for
+hellobox. 03/28/2023 11:12 PM
+can you paste the contents of /proc/cpuinfo please?
+[rkars]
+rkars 03/28/2023 11:11 PM
+still says it's not found so i would need to compile
+hellobox. 03/28/2023 11:11 PM
+all webos userspace is 32-bit
+03/28/2023 11:11 PM
+yes
+03/28/2023 11:11 PM
+that's not going to work
+[rkars]
+rkars 03/28/2023 11:10 PM
+is this armv7?
+[rkars]
+hellobox. is it an arm binary?
+rkars 03/28/2023 11:10 PM
+aarch64
+hellobox. 03/28/2023 11:10 PM
+is it an arm binary?
+[rkars]
+hellobox. what are you trying to run?
+rkars 03/28/2023 11:10 PM
+adb , i don't think this has the drivers for it either but idk
+hellobox. 03/28/2023 11:09 PM
+patchelf might work, assuming everything else is right
+03/28/2023 11:09 PM
+what are you trying to run?
+[rkars]
+rkars 03/28/2023 11:09 PM
+i don wanna setup br-nc4 rn
+03/28/2023 11:09 PM
+but uhh
+03/28/2023 11:09 PM
+i could build it
+hellobox. 03/28/2023 11:08 PM
+it probably has the wrong linker
+[rkars]
+rkars 03/28/2023 11:08 PM
+it's in the same dir and has executable perms
+03/28/2023 11:07 PM
+it says it's not found
+03/28/2023 11:07 PM
+i'm trying to run a binary
+hellobox. 03/28/2023 11:04 PM
+how many cores does it have?
+03/28/2023 11:04 PM
+also it's interesting that LG1212 is o20n
+03/28/2023 11:04 PM
+i don't know if there's anything stopping you from doing it on an lg/lx
+soc... @Smx?
+03/28/2023 11:04 PM
+i'm pretty sure the ones i'm aware of were done on mstar
+[rkars]
+hellobox. `nyx-cmd DeviceInfo query device_name`
+rkars 03/28/2023 11:03 PM
+o20n
+hellobox. 03/28/2023 11:02 PM
+nyx-cmd DeviceInfo query device_name
+[rkars]
+rkars 03/28/2023 11:01 PM
+which i got from cat /sys/firmware/devicetree/base/model
+[rkars]
+hellobox. on certain socs, yes
+rkars 03/28/2023 11:00 PM
+any luck on "DTV SoC LG1212"
+hellobox. 03/28/2023 11:00 PM
+on certain socs, yes
+[rkars]
+rkars 03/28/2023 10:59 PM
+Has anyone booted a custom kernel from usb though?
+03/28/2023 10:56 PM
+if i can even get that far
+03/28/2023 10:56 PM
+and then open steam
+03/28/2023 10:55 PM
+idk, i run box64 and box86 for the funnies
+[rkars]
+[] yolofant i.e no video acceleration
+rkars 03/28/2023 10:55 PM
+oof
+[rkars]
+[] yolofant not sure how useful a plain firefox really would be
+rkars 03/28/2023 10:55 PM
+the built in web browser is not very good
+[yolofant]
+yolofant 03/28/2023 10:55 PM
+i.e no video acceleration
+03/28/2023 10:55 PM
+not sure how useful a plain firefox really would be
+[rkars]
+rkars 03/28/2023 10:54 PM
+firefox and stuff
+03/28/2023 10:54 PM
+but yeah running x11 apps would be really kool
+[infowski]
+infowski 03/28/2023 10:53 PM
+I did a quick look around how xorg/xwayland works under the hood a while
+ago
+[rkars]
+[] infowski I *think* you could patch up xserver-xwayland driver
+bullshit to use wl_webos_shell, and then just u...
+rkars 03/28/2023 10:53 PM
+i was planning just to use vnc
+[infowski]
+infowski 03/28/2023 10:53 PM
+I think you could patch up xserver-xwayland driver bullshit to use
+wl_webos_shell, and then just use your usual X11 apps? 
+[yolofant]
+yolofant 03/28/2023 10:52 PM
+yes
+[rkars]
+rkars 03/28/2023 10:52 PM
+i assume they do cause it's illegal not to
+[rkars]
+hellobox. you wouldn't be modifying the kernel in emmc, you'd be booting
+one from usb or something
+rkars 03/28/2023 10:52 PM
+does lg even release kernel sources?
+[] rkars I think i heard somewhere that modifying kernel and system
+stuff will brick
+hellobox. 03/28/2023 10:52 PM
+you wouldn't be modifying the kernel in emmc, you'd be booting one from
+usb or something
+hellobox. 03/28/2023 10:51 PM
+if you want to use gui stuff you'd need to patch it so that webos won't
+kill it
+[rkars]
+rkars 03/28/2023 10:51 PM
+I think i heard somewhere that modifying kernel and system stuff will
+brick
+03/28/2023 10:51 PM
+no new kernel or anything
+[rkars]
+hellobox. are you talking about booting your own kernel (or at least
+init) or using a running webos system?
+rkars 03/28/2023 10:51 PM
+I mean chroot inside webos
+hellobox. 03/28/2023 10:50 PM
+are you talking about booting your own kernel (or at least init) or
+using a running webos system?
+[yolofant]
+yolofant 03/28/2023 10:50 PM
+but it is horribly broken
+03/28/2023 10:50 PM
+you can enable it
+[rkars]
+rkars 03/28/2023 10:49 PM
+also is bash included in br-nc4? i don't see it
+03/28/2023 10:48 PM
+Would 3d accel work?
+hellobox. 03/28/2023 10:48 PM
+similar stuff, anyway
+03/28/2023 10:48 PM
+it's been done
+[rkars]
+rkars 03/28/2023 10:48 PM
+03/28/2023 10:48 PM
+and then i have lg compooter
+03/28/2023 10:47 PM
+and vnc
+03/28/2023 10:47 PM
+and i install kde
+03/28/2023 10:47 PM
+what if i setup fakeroot or chroot
+03/28/2023 10:47 PM
+so i have this stupid idea
+03/28/2023 10:47 PM
+ok
+hellobox. 03/28/2023 10:13 PM
+i guess lg still has a backlog for app approval
+https://www.lgwebos.com/topic/9424-webos-smart-tv-app-approval/
+hellobox. 03/28/2023 9:37 PM
+yeah i gave up when i saw how detailed the logs were
+[yolofant]
+yolofant 03/28/2023 9:35 PM
+starting kodi just with LD_DEBUG=all already takes like 1 min
+[smx2460]
+[] yolofant I had to stop it after 6h
+smx2460 03/28/2023 9:31 PM
+Wow lol
+hellobox. 03/28/2023 9:21 PM
+i doubt it would run well
+03/28/2023 9:21 PM
+although maybe i could take another look at it
+03/28/2023 9:21 PM
+yeah, or that
+[yolofant]
+yolofant 03/28/2023 9:20 PM
+ppsspp for ANY NEW HOMEBREW
+ 1
+hellobox. 03/28/2023 9:15 PM
+other than shit like web browsers
+03/28/2023 9:15 PM
+anyone have ideas for software to port to webos?
+March 27, 2023
+[yolofant]
+yolofant 03/27/2023 11:42 PM
+but calling that directly would need a this ptr to the base class
+03/27/2023 11:40 PM
+    _ZN13mediapipeline12CustomPlayer7feedSpiEPhjy20MEDIA_DATA_CHANNEL_T
+    _ZN13mediapipeline14AbstractPlayer4feedEPhjyj
+those symbols are also exported in libpf
+[yolofant]
+yolofant 03/27/2023 10:54 PM
+there's a few functions that might come in handy for audio playback
+03/27/2023 10:54 PM
+hmm can we somehow call into CustomPlayer's functions?
+03/27/2023 10:53 PM
+probably AbstractPlayer -> CustomPlayer -> StarfishMediaAPIs
+03/27/2023 10:52 PM
+    #0  0xf65671e8 in mediapipeline::CustomPlayer::feedSpi(unsigned char*, unsigned int, unsigned long long, MEDIA_DATA_CHANNEL_T) () from /usr/lib/libpf-1.0.so.1
+    #1  0xf7b39488 in StarfishMediaAPIs::Feed[abi:cxx11](char const*) () from /usr/lib/libplayerAPIs.so.1
+03/27/2023 10:52 PM
+seems like it's indeed a subclass of AbstractPlayer or CustomPlayer
+03/27/2023 10:51 PM
+    #0  0xf6517dac in mediapipeline::AbstractPlayer::feed(unsigned char*, unsigned int, unsigned long long, unsigned int)
+        () from /usr/lib/libpf-1.0.so.1
+    #1  0xf7b39488 in StarfishMediaAPIs::Feed[abi:cxx11](char const*) () from /usr/lib/libplayerAPIs.so.1
+[yolofant]
+yolofant 03/27/2023 7:17 PM
+this would be a lot easier if the library had rtti information
+hellobox. 03/27/2023 6:21 PM
+i don't know what the comment means because i'm not really familiar with
+ghidra though
+03/27/2023 6:17 PM
+if it's a vtable you're going to have ~300 methods, so...
+[yolofant]
+yolofant 03/27/2023 5:33 PM
+that means all the functions must be there and in the right order
+03/27/2023 5:32 PM
+hmm, if we wanted to call the base class functions we'd need our headers
+to have a correct vtable I guess
+hellobox. 03/27/2023 5:15 PM
+could also be a std::function or similar i guess
+[] yolofant I'm wondering if ```C++ uVar1 = (**(code **)(*(int
+*)param_1[0x13] + 0x124))(); ``` might be a call ...
+hellobox. 03/27/2023 5:11 PM
+possibly, but those are kind of weird offsets
+[yolofant]
+yolofant 03/27/2023 3:46 PM
+I'm wondering if
+    uVar1 = (**(code **)(*(int *)param_1[0x13] + 0x124))();
+might be a call into the base class using the vtable?
+03/27/2023 3:46 PM
+(no content)
+[javaw_DjZ9CDYOf9.png]
+ javaw_DjZ9CDYOf9.png
+27.2 KB External
+03/27/2023 3:46 PM
+and I see a lot of code like this where ghidra cannot resolve the
+function call properly
+03/27/2023 3:45 PM
+I'm wondering because I don't see calls to libpf even though smp should
+be using libpf internally
+03/27/2023 3:45 PM
+hmm how likely is that StarfishMediaAPIs is actually a subclass of one
+of the classes from libpf?
+wsnipex 03/27/2023 9:15 AM
+image running it through valgrind
+03/27/2023 9:15 AM
+lol
+[yolofant]
+yolofant 03/27/2023 9:10 AM
+I had to stop it after 6h
+wsnipex 03/27/2023 8:53 AM
+did that ever finish?
+March 26, 2023
+[yolofant]
+yolofant 03/26/2023 8:20 PM
+combination of sw breakpoints and LD_DEBUG=all
+[infowski]
+infowski 03/26/2023 8:08 PM
+lol
+[yolofant]
+yolofant 03/26/2023 7:56 PM
+still loading 
+[yolofant]
+yolofant 03/26/2023 5:35 PM
+this is gonna take forever xd
+[yolofant]
+yolofant 03/26/2023 5:00 PM
+still loading libs
+[yolofant]
+yolofant 03/26/2023 4:27 PM
+seems to be going very slowly now
+03/26/2023 4:27 PM
+hmm I think it loaded now and I added the breakpoint
+[smx2460]
+smx2460 03/26/2023 4:25 PM
+once the library is loaded, we replace all of it with breakpoints and we
+see where we land
+03/26/2023 4:25 PM
+well, we could also do that ourselves
+03/26/2023 4:25 PM
+unless gdb replaces everything with sw breakpoints
+03/26/2023 4:24 PM
+    If you use GDB 7.4 together with Valgrind 3.7.0, then you have unlimited "emulated" hardware watchpoints.
+    Start your program under Valgrind, giving the arguments --vgdb=full --vgdb-error=0 then use GDB to connect to it (target remote | vgdb). Then you can e.g. watch or awatch or rwatch a memory range by doing rwatch (char[100]) *0x5180040
+03/26/2023 4:24 PM
+not too sure
+03/26/2023 4:24 PM
+you probably need valgrind to do that
+03/26/2023 4:24 PM
+hm
+03/26/2023 4:22 PM
+watch *(char [<libcrypto size>]*)<libcrypto addr>
+03/26/2023 4:22 PM
+and trace it
+03/26/2023 4:22 PM
+so we could use that to break when the first instruction of the library
+is executed
+03/26/2023 4:22 PM
+you can instruct gdb to break when the memory is accessed
+03/26/2023 4:21 PM
+with an arbitrary address cast to array
+03/26/2023 4:21 PM
+yeah not with gbuf
+[yolofant]
+yolofant 03/26/2023 4:21 PM
+No symbol "gbuf" in current context.
+[smx2460]
+smx2460 03/26/2023 4:21 PM
+apparently you can do this (edited)
+03/26/2023 4:21 PM
+    watch *(char [100]*)&gbuf
+[yolofant]
+yolofant 03/26/2023 4:20 PM
+seems it's still the jailer only
+03/26/2023 4:20 PM
+I don't think kodi has started yet
+03/26/2023 4:20 PM
+    (gdb) info sharedlibrary
+    From        To          Syms Read   Shared Object Library
+    0xf7fc5b80  0xf7fd9990  Yes         /lib/ld-linux.so.3
+    0xf7fb1bf0  0xf7fb338c  No          /lib/libSegFault.so
+    0xf7ed26d8  0xf7f2a014  No          /usr/lib/libglib-2.0.so.0
+    0xf7e696e8  0xf7e986ac  No          /usr/lib/libssl.so.1.1
+[smx2460]
+smx2460 03/26/2023 4:20 PM
+it doesn't necessarily have to be tho
+03/26/2023 4:19 PM
+was 0xf5ab3000
+03/26/2023 4:19 PM
+hmm is the addr same?
+03/26/2023 4:19 PM
+yeah
+[yolofant]
+yolofant 03/26/2023 4:18 PM
+I guess this is one libcrypto
+03/26/2023 4:18 PM
+          4048:       dynamic: 0xf7eb86f0  base: 0xf7e58000   size: 0x00063ce8
+          4048:         entry: 0xf7e696e8  phdr: 0xf7e58034  phnum:          7
+          4048:
+          4048:
+          4048:     file=libcrypto.so.1.1 [0];  needed by /usr/bin/jailer [0]
+          4048:     find library=libcrypto.so.1.1 [0]; searching
+          4048:      search path=/mnt/license/usr/lib               (LD_LIBRARY_PATH)
+          4048:       trying file=/mnt/license/usr/lib/libcrypto.so.1.1
+          4048:      search cache=/etc/ld.so.cache
+          4048:       trying file=/usr/lib/libcrypto.so.1.1
+          4048:
+          4048:     file=libcrypto.so.1.1 [0];  generating link map
+    Breakpoint 1, __mmap (addr=0x0, len=len@entry=1776188, prot=prot@entry=5, flags=flags@entry=2050, fd=3, offset=0)
+        at ../sysdeps/unix/sysv/linux/mmap.c:38
+    38      in ../sysdeps/unix/sysv/linux/mmap.c
+[smx2460]
+smx2460 03/26/2023 4:17 PM
+we probably need glibc symbols to debug this properly
+03/26/2023 4:17 PM
+not sure how to filter for libcrypto
+03/26/2023 4:16 PM
+we'll have many
+03/26/2023 4:16 PM
+hmm
+[yolofant]
+yolofant 03/26/2023 4:16 PM
+          4048:     transferring control: /bin/sh
+          4048:
+          4048:     symbol=__vdso_clock_gettime;  lookup in file=linux-vdso.so.1 [0]
+          4048:     binding file linux-vdso.so.1 [0] to linux-vdso.so.1 [0]: normal symbol `__vdso_clock_gettime' [LINUX_2.6]
+          4048:     symbol=__vdso_clock_gettime64;  lookup in file=linux-vdso.so.1 [0]
+          4048:     binding file linux-vdso.so.1 [0] to linux-vdso.so.1 [0]: normal symbol `__vdso_clock_gettime64' [LINUX_2.6]
+          4048:     symbol=__vdso_gettimeofday;  lookup in file=linux-vdso.so.1 [0]
+          4048:     binding file linux-vdso.so.1 [0] to linux-vdso.so.1 [0]: normal symbol `__vdso_gettimeofday' [LINUX_2.6]
+    Breakpoint 1, __mmap (addr=0x0, len=len@entry=8192, prot=prot@entry=3, flags=flags@entry=34, fd=fd@entry=-1, offset=0)
+        at ../sysdeps/unix/sysv/linux/mmap.c:38
+    38      ../sysdeps/unix/sysv/linux/mmap.c: No such file or directory.
+03/26/2023 4:16 PM
+ok it reached mmap
+03/26/2023 4:13 PM
+I did that before and it was producing a very very large log
+[smx2460]
+smx2460 03/26/2023 4:13 PM
+before running Kodi
+03/26/2023 4:12 PM
+please set LD_DEBUG=all in the environment
+03/26/2023 4:12 PM
+also
+03/26/2023 4:12 PM
+to see if the new memory map is the soon-to-be faulting library (edited)
+03/26/2023 4:12 PM
+you could break on mmap then retrieve the maps
+03/26/2023 4:11 PM
+actually hm
+03/26/2023 4:11 PM
+this is tricky
+03/26/2023 4:11 PM
+what i would probably do, is set a breakpoint on mmap
+[yolofant]
+yolofant 03/26/2023 4:11 PM
+let me just recompile with getauxval in again
+[smx2460]
+smx2460 03/26/2023 4:11 PM
+@hellobox too
+[yolofant]
+yolofant 03/26/2023 4:11 PM
+yeah
+[smx2460]
+smx2460 03/26/2023 4:11 PM
+@Yolofant can you set a breakpoint ?
+[yolofant]
+yolofant 03/26/2023 4:10 PM
+yes
+wsnipex 03/26/2023 4:08 PM
+didn't gdb also indicate stack corruption? (edited)
+[yolofant]
+yolofant 03/26/2023 4:04 PM
+hmm weird
+[smx2460]
+smx2460 03/26/2023 3:53 PM
+it looks like 0x74 is the offset of the 2nd PHDR
+03/26/2023 3:53 PM
+or maybe the stack frame is corrupted
+03/26/2023 3:53 PM
+it's like calling into the ELF header?
+03/26/2023 3:50 PM
+this is wrong and definitely going to crash
+03/26/2023 3:50 PM
+unless i'm doing something wrong (i'm quite sick rn so i'm not at my
+fullest)
+[smx2460]
+[] yolofant anyway this is the gdb backtrace ```(gdb) bt #0 0x00000000
+in ?? () #1 0xf5ab304a in ?? () from /u...
+smx2460 03/26/2023 3:50 PM
+    > 0xf5ab304a - 0xf5ab3000
+    74
+hellobox. 03/26/2023 12:14 PM
+it may require gles 3
+03/26/2023 12:11 PM
+and/or not worth it due to input issues
+03/26/2023 12:11 PM
+it may end up being too much work though
+03/26/2023 12:10 PM
+making progress on opengl for duke nukem 3d
+March 25, 2023
+[yolofant]
+yolofant 03/25/2023 8:45 PM
+device specific
+[ccarnell98]
+[] yolofant so you need the library to talk to it
+ccarnell98 03/25/2023 8:15 PM
+Do we have the headers for that?
+[infowski]
+[] commissionerg Hi I've searched but not found a clear answer - is it
+possible to connect a ps4 controller to rooted...
+infowski 03/25/2023 9:19 AM
+It is possible on webOS 3 and up.
+https://github.com/webosbrew/apps-repo/issues/20 we've documented the
+API needed for configuration, you can theoretically set it up once and
+forget.
+[IDEA] Bluetooth HID manager · Issue #20 · webosbrew/apps-repo
+Please read conditions below carefully, and don't delete this part.
+Invalid issues will be closed. No apps related to piracy or intellectual
+property infringement is allowed. We can't guara...
+[]
+March 24, 2023
+[commissionerg]
+commissionerg 03/24/2023 11:28 PM
+also, I noticed this but it looks dead?
+https://github.com/Superd22/webos-gamepad
+03/24/2023 11:26 PM
+Hi I've searched but not found a clear answer - is it possible to
+connect a ps4 controller to rooted B8 (WebOS 4.4.0) either with USB or
+(preferably) bluetooth? I have this IHSplay for Steam Link and wanted to
+try it out but pretty screwed without a controller. Thanks
+[yolofant]
+yolofant 03/24/2023 9:01 PM
+but if you have to use that it's getting even more complicated as you
+now have device specific kadaptor and pipeline
+03/24/2023 9:00 PM
+so you need the library to talk to it
+03/24/2023 9:00 PM
+DE is in the kernel
+03/24/2023 9:00 PM
+libkadaptor
+[ccarnell98]
+ccarnell98 03/24/2023 8:58 PM
+kadaptor?
+[yolofant]
+yolofant 03/24/2023 8:54 PM
+another device specific thing
+[yolofant]
+[] ccarnell98 Tried but failed. Apparently it can only go up to 3
+yolofant 03/24/2023 8:54 PM
+probably kadaptor
+[ccarnell98]
+[] yolofant _window_id_xyz
+ccarnell98 03/24/2023 8:46 PM
+Tried but failed. Apparently it can only go up to 3
+[yolofant]
+yolofant 03/24/2023 7:08 PM
+_window_id_xyz
+[ccarnell98]
+[] yolofant the approach is fundamentally flawed unless you want to
+create another libpf
+ccarnell98 03/24/2023 7:07 PM
+never said it was perfect 
+[ccarnell98]
+[] yolofant probably just parse it
+ccarnell98 03/24/2023 7:06 PM
+what do you mean by parse it?
+[yolofant]
+yolofant 03/24/2023 7:03 PM
+you're going to need to implement that as well
+03/24/2023 7:03 PM
+and libplayerAPIs is talking to several luna endpoints under the hood
+03/24/2023 7:02 PM
+but you never do it directly
+03/24/2023 7:02 PM
+you use libpf
+03/24/2023 7:02 PM
+if you want to access gstreamer
+03/24/2023 7:01 PM
+you don't want to do that
+03/24/2023 7:01 PM
+other properties
+[ccarnell98]
+ccarnell98 03/24/2023 7:01 PM
+well on other socs they might have a different sink to use
+[yolofant]
+yolofant 03/24/2023 7:01 PM
+he has to
+hellobox. 03/24/2023 7:01 PM
+especially if you're using lxvideosink
+[yolofant]
+yolofant 03/24/2023 7:01 PM
+the approach is fundamentally flawed unless you want to create another
+libpf
+hellobox. 03/24/2023 7:00 PM
+yeah, it's not going to work on other socs
+[yolofant]
+yolofant 03/24/2023 7:00 PM
+but I don't think you're supposed to use gstreamer directly
+03/24/2023 7:00 PM
+probably just parse it
+[ccarnell98]
+ccarnell98 03/24/2023 6:57 PM
+it's an integer
+03/24/2023 6:57 PM
+to get video output from gstreamer on webOS you need to pass a window-id
+(DE) to lxvideosink
+[yolofant]
+yolofant 03/24/2023 6:51 PM
+in which context?
+[ccarnell98]
+ccarnell98 03/24/2023 6:46 PM
+I want to get that output from DE and need to pass a DE window-id
+03/24/2023 6:45 PM
+What do we know about DE (display engine)? it accepts a window-id from 0
+to n (integer). I'm writing some code and I've looked at how @Yolofant
+exports a wayland window to libPlayer, but that accepts a string, but DE
+only accepts integers
+[xedator]
+xedator 03/24/2023 5:42 PM
+Hello! Just came here after discovering i can't download moonlight in my
+tv, how should i get started? I'm a bit of a brick in hacking or
+rooting...
+[] wsnipex started a thread: wsnipex 2705 ``` Key webOS Blue XBMCK. See
+all threads. 3/24/23, 2:16 PM
+[] yolofant ```f5a6d000-f5bf4000 r-xp 00000000 b3:1b 36027
+/var/palm/jail/org.xbmc....
+wsnipex 03/24/2023 2:15 PM
+awesome, thanks!
+hellobox. 03/24/2023 1:54 PM
+not sure i have the right address though
+03/24/2023 1:54 PM
+tried to set a watchpoint on .init_array, but it didn't work
+[yolofant]
+yolofant 03/24/2023 1:52 PM
+probably aslr isn't that effective on 32 bit anyway
+[] yolofant no aslr on webos?
+hellobox. 03/24/2023 1:52 PM
+no aslr
+[smx2460]
+smx2460 03/24/2023 1:52 PM
+¯\_(ツ)_/¯
+[yolofant]
+yolofant 03/24/2023 1:51 PM
+no aslr on webos?
+[smx2460]
+smx2460 03/24/2023 1:51 PM
+I'll dasm it in 15 minutes or so
+03/24/2023 1:51 PM
+f5ab304a-f5ab3000 = file offset of the faulting instruction
+[yolofant]
+yolofant 03/24/2023 1:50 PM
+it's from the same
+[smx2460]
+smx2460 03/24/2023 1:50 PM
+Ok then
+03/24/2023 1:50 PM
+Lol
+hellobox. 03/24/2023 1:50 PM
+it doesn't
+[smx2460]
+smx2460 03/24/2023 1:50 PM
+The load address can change at every restart
+03/24/2023 1:50 PM
+I need that + the backtrace at once
+03/24/2023 1:50 PM
+But
+[smx2460]
+[] yolofant ```f5a6d000-f5bf4000 r-xp 00000000 b3:1b 36027
+/var/palm/jail/org.xbmc....
+smx2460 03/24/2023 1:49 PM
+Yes this is proper
+[smx2460]
+smx2460 03/24/2023 1:49 PM
+Hmm
+hellobox. 03/24/2023 1:42 PM
+i think it's something in .init_array
+[yolofant]
+yolofant 03/24/2023 1:39 PM
+basically webos 6+
+03/24/2023 1:39 PM
+yeah and it seems that it only crashes on tvs that have a
+libcrypto.so.1.1
+hellobox. 03/24/2023 1:36 PM
+kodi is using openssl 1.1.1n
+[yolofant]
+yolofant 03/24/2023 1:35 PM
+but kodi links its own libcrypto statically
+03/24/2023 1:35 PM
+hmm my tv only has libcrypto.so.1.1
+hellobox. 03/24/2023 1:34 PM
+i think the problem is that two versions of openssl are being loaded
+[yolofant]
+yolofant 03/24/2023 1:33 PM
+    f5a6d000-f5bf4000 r-xp 00000000 b3:1b 36027                              /var/palm/jail/org.xbmc.kodi/usr/lib/libcrypto.so.1.1
+    f5bf4000-f5c03000 ---p 00187000 b3:1b 36027                              /var/palm/jail/org.xbmc.kodi/usr/lib/libcrypto.so.1.1
+    f5c03000-f5c1a000 r--p 00186000 b3:1b 36027                              /var/palm/jail/org.xbmc.kodi/usr/lib/libcrypto.so.1.1
+    f5c1a000-f5c1b000 rw-p 0019d000 b3:1b 36027                              /var/palm/jail/org.xbmc.kodi/usr/lib/libcrypto.so.1.1
+this is from root@LGwebOSTV:~# cat /proc/$(pgrep kodi)/maps
+03/24/2023 1:30 PM
+0xf5ab3000 0xf5ba5fd0 Yes (*) /usr/lib/libcrypto.so.1.1 from info
+sharedlibrary
+[smx2460]
+smx2460 03/24/2023 1:29 PM
+You see that from the process maps
+03/24/2023 1:29 PM
+Aka f5xxxx
+[yolofant]
+yolofant 03/24/2023 1:28 PM
+anyway this is the gdb backtrace
+    (gdb) bt
+    #0  0x00000000 in ?? ()
+    #1  0xf5ab304a in ?? () from /usr/lib/libcrypto.so.1.1
+    #2  0xf7fd0d80 in call_init (l=<optimized out>, argc=argc@entry=1, argv=argv@entry=0xfffef424,
+        env=env@entry=0xfffef42c) at dl-init.c:72
+    #3  0xf7fd0e22 in call_init (env=<optimized out>, argv=<optimized out>, argc=<optimized out>, l=<optimized out>)
+        at dl-init.c:30
+    #4  _dl_init (main_map=0xf7fef960, argc=1, argv=0xfffef424, env=0xfffef42c) at dl-init.c:119
+    #5  0xf7fc5bc4 in _dl_start_user () from /lib/ld-linux.so.3
+    Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+[smx2460]
+smx2460 03/24/2023 1:28 PM
+You need to subtract the load address of the library base
+hellobox. 03/24/2023 1:28 PM
+here are both of mine
+    0x94070000  0x9414b798  Yes (*)     /usr/openssl-1.1/lib/libcrypto.so.1.1
+    0x93105dc0  0x9318d8a0  Yes (*)     /usr/lib/libcrypto.so.1.0.2
+    #0  0x00000000 in ?? ()
+    #1  0x94070046 in ?? () from /usr/openssl-1.1/lib/libcrypto.so.1.1
+    #2  0x96fe283c in call_init (l=<optimized out>, argc=argc@entry=1, argv=argv@entry=0x9efff474, env=env@entry=0x9efff47c) at dl-init.c:72
+    #3  0x96fe2904 in call_init (env=<optimized out>, argv=<optimized out>, argc=<optimized out>, l=<optimized out>) at dl-init.c:30
+    #4  _dl_init (main_map=0x96fff910, argc=1, argv=0x9efff474, env=0x9efff47c) at dl-init.c:119
+    #5  0x96fd9a84 in _dl_start_user () from /lib/ld-linux.so.3
+(edited)
+ libcrypto.so.1.0.2
+1.08 MB External
+ libcrypto.so.1.1
+1.52 MB External
+[smx2460]
+smx2460 03/24/2023 1:28 PM
+That's the address in memory
+03/24/2023 1:28 PM
+No
+[yolofant]
+yolofant 03/24/2023 1:28 PM
+is that from the gdb backtrace?
+[smx2460]
+smx2460 03/24/2023 1:28 PM
+Or you can give me the offset directly
+03/24/2023 1:27 PM
+Load address?
+[yolofant]
+[] smx2460 Yes
+yolofant 03/24/2023 1:27 PM
+(no content)
+ libcrypto.so.1.1
+1.62 MB External
+[yolofant]
+yolofant 03/24/2023 1:27 PM
+those are the same as in the xkb map
+03/24/2023 1:26 PM
+yeah
+[] yolofant <@985035470708826122> ``` { Key_webOS_Blue, XBMCK_BLUE }, {
+Key_webOS_Green, XBMCK_GREEN }, { K...
+hellobox. 03/24/2023 1:26 PM
+are those keys actually correct?
+[yolofant]
+yolofant 03/24/2023 1:25 PM
+@wsnipex
+      { Key_webOS_Blue, XBMCK_BLUE },
+      { Key_webOS_Green, XBMCK_GREEN },
+      { Key_webOS_Yellow, XBMCK_YELLOW },
+      { Key_webOS_Red, XBMCK_RED },
+      { Key_webOS_Blue, XBMCK_BLUE },
+      { Key_webOS_Back, XBMCK_ESCAPE },
+fixed buttons 
+https://github.com/webosose/qt-features-webos/blob/75651a8a78b916b1bcd777dcf47abaa4fa21c051/include/qweboskeyextension.h#L38
+ Kodi →
+[smx2460]
+smx2460 03/24/2023 1:25 PM
+Yes
+[yolofant]
+yolofant 03/24/2023 1:22 PM
+the lib from the tv?
+[smx2460]
+smx2460 03/24/2023 1:21 PM
+And trace it in code
+03/24/2023 1:21 PM
+So i can see the exact instruction that faulted
+03/24/2023 1:21 PM
+@Yolofant i want the openssl lib and load address (base address of the
+lib in memory)
+03/24/2023 1:20 PM
+Hmm
+hellobox. 03/24/2023 1:18 PM
+https://github.com/bminor/glibc/blob/db9b47e9f996bbdb831580ff7343542a017c80ee/elf/dl-init.c#L26
+[smx2460]
+smx2460 03/24/2023 1:18 PM
+Since I'm on leave today (edited)
+03/24/2023 1:17 PM
+I'm finishing lunch, will look after
+hellobox. 03/24/2023 1:17 PM
+yeah, it's init stuff
+ 1
+[smx2460]
+smx2460 03/24/2023 1:17 PM
+It's the ctor in the worst case
+03/24/2023 1:17 PM
+There has to be
+[] smx2460 You need to find what function of libcrypto is being called
+hellobox. 03/24/2023 1:17 PM
+nothing is being called
+[smx2460]
+smx2460 03/24/2023 1:17 PM
+Forgot exactly
+03/24/2023 1:17 PM
+Or maybe there's "info maps" in gdb
+03/24/2023 1:16 PM
+Along with the backtrace, i need a copy of /proc/pid/maps
+03/24/2023 1:16 PM
+You need to find what function of libcrypto is being called
+[yolofant]
+yolofant 03/24/2023 1:15 PM
+but that might as well be because then it links in additional stuff
+03/24/2023 1:15 PM
+thing is that it only starts happening once I use getauxval in kodi
+[yolofant]
+hellobox. webos 6 ```(gdb) bt #0 0x00000000 in ?? () #1 0x94070046 in ??
+() from /usr/openssl-1.1/lib/libcry...
+yolofant 03/24/2023 1:15 PM
+here
+[yolofant]
+yolofant 03/24/2023 1:14 PM
+crashing pre main
+03/24/2023 1:14 PM
+it doesn't
+[smx2460]
+smx2460 03/24/2023 1:14 PM
+Or later after calling it?
+03/24/2023 1:14 PM
+Does it crash at getauxval
+[yolofant]
+[] smx2460 <@195583665265311744> getauxval segfault??
+yolofant 03/24/2023 1:14 PM
+backtrace isn't useful 
+[yolofant]
+[] ccarnell98 <@195583665265311744> <@985035470708826122> Still having
+issues with webOS 7? I've just finished rec...
+yolofant 03/24/2023 1:14 PM
+you're only affected if you have the glibc polyfills
+[smx2460]
+smx2460 03/24/2023 1:13 PM
+getauxval
+03/24/2023 1:13 PM
+But why does it work when commented
+hellobox. 03/24/2023 1:12 PM
+probably doing stuff with the same symbols

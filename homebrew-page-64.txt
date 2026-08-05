@@ -1,0 +1,1419 @@
+February 27, 2023
+[smx2460]
+smx2460 02/27/2023 1:31 AM
+asked that to chatgpt
+02/27/2023 1:30 AM
+good question
+hellobox. 02/27/2023 1:27 AM
+same with shared
+02/27/2023 1:24 AM
+is there a reason they use %{profile:-lc_p}%{!profile:-lc} instead of
+%{profile:-lc_p;:-lc}?
+hellobox. 02/27/2023 1:14 AM
+i guess if you set Common it might be accepted by cc1
+02/27/2023 1:14 AM
+    $ libexec/gcc/arm-webos-linux-gnueabi/12.2.0/cc1 -tno-webos-compat
+    cc1: error: command-line option ‘-tno-webos-compat’ is valid for the driver but not for C
+02/27/2023 1:12 AM
+but it's not super clear what it does
+02/27/2023 1:12 AM
+CL_COMMON is used in the option code
+[smx2460]
+smx2460 02/27/2023 1:10 AM
+    -target-help
+    Common Driver
+    Display target specific command line options (including assembler and linker options).
+(edited)
+02/27/2023 1:09 AM
+maybe it's just a description thing
+hellobox. 02/27/2023 1:09 AM
+i don't know if it matters
+02/27/2023 1:09 AM
+lol
+[smx2460]
+smx2460 02/27/2023 1:09 AM
+Target Common 
+hellobox. 02/27/2023 1:08 AM
+arm/arm/opt:
+    mverbose-cost-dump
+    Common Undocumented Var(arm_verbose_cost) Init(0)
+    Enable more verbose RTX cost dumps during debug.  For GCC developers use only.
+02/27/2023 1:08 AM
+this is in darwin.opt:
+    mdynamic-no-pic
+    Target Common Mask(MACHO_DYNAMIC_NO_PIC)
+    Generate code suitable for executables (NOT shared libs).
+02/27/2023 1:08 AM
+idk but
+[smx2460]
+smx2460 02/27/2023 1:07 AM
+how is the target controlled
+02/27/2023 1:07 AM
+what does "target-specific" mean
+02/27/2023 1:07 AM
+hmm
+hellobox. 02/27/2023 1:07 AM
+should i just set Common?
+[smx2460]
+smx2460 02/27/2023 1:05 AM
+or absolute path
+02/27/2023 1:05 AM
+only with -lglibc_polyfills
+02/27/2023 1:05 AM
+doesn't work
+hellobox. 02/27/2023 1:04 AM
+    Common
+    The option is available for all languages and targets.
+    Target
+    The option is available for all languages but is target-specific.
+02/27/2023 1:04 AM
+it needs Common...?
+02/27/2023 1:04 AM
+although
+02/27/2023 1:03 AM
+and not have to do as much specs garbage
+02/27/2023 1:03 AM
+i might just be able to use that
+02/27/2023 1:03 AM
+    EnabledBy(opt || opt2)
+    EnabledBy(opt && opt2)
+    If not explicitly set, the option is set to the value of -opt; multiple options can be given, separated by ||. The third form using && specifies that the option is only set if both opt and opt2 are set. The options opt and opt2 must have the Common property; otherwise, use LangEnabledBy.
+[smx2460]
+smx2460 02/27/2023 1:01 AM
+let me check
+02/27/2023 1:01 AM
+hm
+02/27/2023 1:01 AM
+if you give the full path, i think
+hellobox. 02/27/2023 1:01 AM
+like libglibc_polyfills.a? (edited)
+02/27/2023 1:01 AM
+can you link with the name of the library?
+[smx2460]
+smx2460 02/27/2023 12:59 AM
+¯\_(ツ)_/¯
+hellobox. 02/27/2023 12:59 AM
+eventually we may have lg-specific
+[smx2460]
+smx2460 02/27/2023 12:59 AM
+yeah that's too generic
+hellobox. 02/27/2023 12:59 AM
+well
+[smx2460]
+smx2460 02/27/2023 12:58 AM
+hm
+02/27/2023 12:58 AM
+no-glibc-compat?
+hellobox. 02/27/2023 12:58 AM
+-tno-lgtv-compat?
+02/27/2023 12:58 AM
+and what should the combined one be?
+02/27/2023 12:58 AM
+or something
+ 1
+02/27/2023 12:58 AM
+i'll just make it -t(no-)librt-compat
+[smx2460]
+smx2460 02/27/2023 12:58 AM
+yea
+hellobox. 02/27/2023 12:58 AM
+i guess it's all glibc
+[smx2460]
+smx2460 02/27/2023 12:57 AM
+but whatever is fine i guess
+02/27/2023 12:57 AM
+although it's more lgtv- than webos-
+hellobox. 02/27/2023 12:56 AM
+-t(no-)webos-compat-librt?
+02/27/2023 12:56 AM
+and what should the librt one be?
+02/27/2023 12:55 AM
+i guess
+02/27/2023 12:55 AM
+around it
+02/27/2023 12:55 AM
+!tno-glibc-polyfill
+02/27/2023 12:55 AM
+but also
+[smx2460]
+smx2460 02/27/2023 12:54 AM
+so !tno-webos-compat|tglibc-polyfill (edited)
+hellobox. 02/27/2023 12:54 AM
+except for the one explicitly enabled
+02/27/2023 12:53 AM
+where the first would disable everything
+02/27/2023 12:53 AM
+or something
+02/27/2023 12:53 AM
+but i wanted to be able to do like -tno-webos-compat -tglibc-polyfill
+02/27/2023 12:53 AM
+yeah
+[smx2460]
+smx2460 02/27/2023 12:53 AM
+shared|pie (edited)
+hellobox. 02/27/2023 12:53 AM
+what? the or?
+[smx2460]
+smx2460 02/27/2023 12:52 AM
+which is |
+02/27/2023 12:52 AM
+i just noticed this
+02/27/2023 12:52 AM
+    #define STARTFILE_SPEC \
+      "%{!shared:crt1%O%s} crti%O%s %{shared|pie:crtbeginS.o%s;:crtbegin.o%s}"
+02/27/2023 12:52 AM
+yea it's a bit cumbersome
+hellobox. 02/27/2023 12:52 AM
+but really ugly
+02/27/2023 12:52 AM
+i guess that's possible in specs logic
+02/27/2023 12:52 AM
+i want separate options but also one that will disable all of them
+[smx2460]
+smx2460 02/27/2023 12:51 AM
+because it doesn't use QT
+02/27/2023 12:51 AM
+lgtv succeeded
+02/27/2023 12:51 AM
+https://cirrus-ci.com/build/5299099797291008
+Cirrus CI
+Cirrus CI makes your development cycle fast, efficient, and secure by
+leveraging modern cloud technologies.
+[]
+02/27/2023 12:50 AM
+what do you recommend?
+02/27/2023 12:50 AM
+hm
+hellobox. 02/27/2023 12:48 AM
+do we want separate options for librt and polyfills?
+02/27/2023 12:48 AM
+let me think
+02/27/2023 12:47 AM
+well
+02/27/2023 12:47 AM
+also
+[smx2460]
+smx2460 02/27/2023 12:47 AM
+hm
+hellobox. 02/27/2023 12:47 AM
+we'd have to figure out what we're going to define and when
+02/27/2023 12:47 AM
+something like that
+[smx2460]
+smx2460 02/27/2023 12:47 AM
+stuff like this i guess
+02/27/2023 12:47 AM
+    #undef TARGET_OS_CPP_BUILTINS
+    #define TARGET_OS_CPP_BUILTINS()         \
+      do                         \
+        {                        \
+          builtin_define ("__uClinux__");        \
+          builtin_define_std ("linux");             \
+          builtin_define_std ("unix");              \
+          builtin_assert ("system=linux");          \
+          builtin_assert ("system=unix");           \
+          builtin_assert ("system=posix");          \
+        }                        \
+      while (false)
+hellobox. 02/27/2023 12:45 AM
+or vice versa
+[smx2460]
+smx2460 02/27/2023 12:45 AM
+hm
+hellobox. 02/27/2023 12:45 AM
+in headers
+02/27/2023 12:45 AM
+and have -tno-webos-compat define something that prevents getauxval from
+showing up
+[smx2460]
+smx2460 02/27/2023 12:45 AM
+    +#ifdef HAVE_LD_AS_NEEDED
+    +# define WEBOS_AS_NEEDED(_LIB) LD_AS_NEEDED_OPTION " " _LIB " " LD_NO_AS_NEEDED_OPTION
+    +#else
+    +# define WEBOS_AS_NEEDED(_LIB) _LIB
+    +#endif
+    +
+    +#undef GNU_USER_TARGET_NO_PTHREADS_LIB_SPEC
+    +#define GNU_USER_TARGET_NO_PTHREADS_LIB_SPEC \
+    +  "%{!tno-webos-compat:" \
+    +    "%{shared:-lc -lglibc_polyfills " WEBOS_AS_NEEDED("-lrt") "} " \
+    +    "%{!shared:%{profile:-lc_p " WEBOS_AS_NEEDED("-lrt_p") "}%{!profile:-lc -lglibc_polyfills " WEBOS_AS_NEEDED("-lrt") "}}" \
+    +  ";:" \
+    +    "%{shared:-lc -lglibc_polyfills} " \
+    +    "%{!shared:%{profile:-lc_p}%{!profile:-lc}}" \
+    +  "}"
+hellobox. 02/27/2023 12:45 AM
+we could always do some preprocessor fuckery
+02/27/2023 12:45 AM
+well...
+[] smx2460 we might need it even in the `-no-webos-compat case tho`
+hellobox. 02/27/2023 12:44 AM
+when?
+hellobox. 02/27/2023 12:44 AM
+hmm
+02/27/2023 12:44 AM
+ah
+02/27/2023 12:44 AM
+so...
+[smx2460]
+smx2460 02/27/2023 12:44 AM
+because of usable headers
+02/27/2023 12:44 AM
+because software that was previously not seeing getauxval, now is
+hellobox. 02/27/2023 12:44 AM
+let me see
+02/27/2023 12:43 AM
+i'm still building
+[smx2460]
+smx2460 02/27/2023 12:43 AM
+we might need it even in the -no-webos-compat case tho (edited)
+02/27/2023 12:43 AM
+i'll change the patch to be -lc -lglibc_polyfills (edited)
+02/27/2023 12:42 AM
+but won't link without the poly
+02/27/2023 12:42 AM
+QT now recognizes a usable getauxval
+02/27/2023 12:41 AM
+we're now failing in QT 
+02/27/2023 12:41 AM
+@hellobox
+    /tmp/cirrus-ci-build/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: .obj/qrandom.o: in function `fallback_fill(unsigned int*, int)':
+    qrandom.cpp:(.text.unlikely+0x80): undefined reference to `getauxval'
+    /tmp/cirrus-ci-build/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: qrandom.cpp:(.text.unlikely+0xc0): undefined reference to `getauxval'
+    /tmp/cirrus-ci-build/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: qrandom.cpp:(.text.unlikely+0xd0): undefined reference to `getauxval'
+[smx2460]
+smx2460 02/27/2023 12:32 AM
+there we go
+02/27/2023 12:32 AM
+    -- Installing: /tmp/cirrus-ci-build/output/target/usr/lib/libglibc_polyfills.a
+[smx2460]
+smx2460 02/27/2023 12:07 AM
+or it will pick the buildroot defaults
+02/27/2023 12:07 AM
+i think i need to specify STATIC explicitly
+02/27/2023 12:07 AM
+crap
+02/27/2023 12:07 AM
+    PATH="/tmp/cirrus-ci-build/output/host/bin:/tmp/cirrus-ci-build/output/host/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"  /usr/bin/make -j33  DESTDIR=/tmp/cirrus-ci-build/output/target install/fast -C /tmp/cirrus-ci-build/output/build/glibc-polyfills-ca5962d45507132648fb47223652d44f7073119a/
+    make[1]: Entering directory '/tmp/cirrus-ci-build/output/build/glibc-polyfills-ca5962d45507132648fb47223652d44f7073119a'
+    Install the project...
+    -- Install configuration: "Release"
+    -- Installing: /tmp/cirrus-ci-build/output/target/usr/lib/libglibc_polyfills.so
+02/27/2023 12:00 AM
+i'd like to ask him
+02/27/2023 12:00 AM
+i never asked him
+02/27/2023 12:00 AM
+i don't know if GuillaumeSmaha is among us
+hellobox. 02/27/2023 12:00 AM
+should we try glibc with -Os?
+February 26, 2023
+02/26/2023 11:59 PM
+so that comment is just saying glibc can't be built with -Ofast
+02/26/2023 11:59 PM
+and down to -O2 by glibc
+[smx2460]
+smx2460 02/26/2023 11:59 PM
+lol
+hellobox. 02/26/2023 11:59 PM
+it's just set to -O3 by systemd, probably because it breaks
+[smx2460]
+smx2460 02/26/2023 11:59 PM
+hm
+hellobox. 02/26/2023 11:59 PM
+that's that it does, actually
+02/26/2023 11:58 PM
+    ifeq ($(BR2_OPTIMIZE_0),y)
+    TARGET_OPTIMIZATION = -O0
+    endif
+    ifeq ($(BR2_OPTIMIZE_1),y)
+    TARGET_OPTIMIZATION = -O1
+    endif
+    ifeq ($(BR2_OPTIMIZE_2),y)
+    TARGET_OPTIMIZATION = -O2
+    endif
+    ifeq ($(BR2_OPTIMIZE_3),y)
+    TARGET_OPTIMIZATION = -O3
+    endif
+    ifeq ($(BR2_OPTIMIZE_G),y)
+    TARGET_OPTIMIZATION = -Og
+    endif
+    ifeq ($(BR2_OPTIMIZE_S),y)
+    TARGET_OPTIMIZATION = -Os
+    endif
+    ifeq ($(BR2_OPTIMIZE_FAST),y)
+    TARGET_OPTIMIZATION = -Ofast
+    endif
+[smx2460]
+smx2460 02/26/2023 11:58 PM
+but now i'm questioning myself (edited)
+02/26/2023 11:58 PM
+it was working before for me
+hellobox. 02/26/2023 11:58 PM
+is rebuilding glibc even supported?
+02/26/2023 11:58 PM
+should we still make the planned changes?
+02/26/2023 11:58 PM
+well
+[smx2460]
+smx2460 02/26/2023 11:57 PM
+i'll just push in parallel so CI can munch
+02/26/2023 11:57 PM
+and need to rebuild again, ooof
+02/26/2023 11:57 PM
+i'm baffled
+02/26/2023 11:57 PM
+then i don't know why glibc had failed building
+02/26/2023 11:57 PM
+i totally forgot
+02/26/2023 11:56 PM
+that's why the flag didn't work before
+02/26/2023 11:56 PM
+i hadn't pulled your patch locally
+02/26/2023 11:56 PM
+oh lol
+hellobox. 02/26/2023 11:55 PM
+it looks like elsewhere that sets -O3
+[smx2460]
+smx2460 02/26/2023 11:53 PM
+that's why i guess
+02/26/2023 11:53 PM
+    BR2_OPTIMIZE_S=y
+    # BR2_OPTIMIZE_FAST is not set
+02/26/2023 11:52 PM
+i missed that
+02/26/2023 11:52 PM
+hm
+hellobox. 02/26/2023 11:51 PM
+https://github.com/openlgtv/buildroot-nc4/commit/ce434f0f5216294c99b974de1b04023c21758dd7
+[smx2460]
+smx2460 02/26/2023 11:50 PM
+or the produced code crashes
+02/26/2023 11:50 PM
+chances are either the old compiler was crashing
+02/26/2023 11:50 PM
+it wasn't me
+02/26/2023 11:50 PM
+hmm
+hellobox. 02/26/2023 11:50 PM
+is there a reason for this?
+    # glibc can't be built with Optimize for fast
+    ifeq ($(BR2_OPTIMIZE_FAST),y)
+    GLIBC_CFLAGS += -O2
+    endif
+    GLIBC_CFLAGS = -O2
+[smx2460]
+smx2460 02/26/2023 11:44 PM
+but only if !nolibc, aka libc used (edited)
+02/26/2023 11:44 PM
+%L pulls in the chain (including your rule)
+02/26/2023 11:44 PM
+it inhibits it
+02/26/2023 11:44 PM
+so in theory...
+02/26/2023 11:43 PM
+    /* This is overridable by the target in case they need to specify the
+       -lgcc and -lc order specially, yet not require them to override all
+       of LINK_COMMAND_SPEC.  */
+    #ifndef LINK_GCC_C_SEQUENCE_SPEC
+    #define LINK_GCC_C_SEQUENCE_SPEC "%G %{!nolibc:%L %G}"
+    #endif
+hellobox. 02/26/2023 11:43 PM
+is the lib spec
+02/26/2023 11:43 PM
+%L
+[smx2460]
+smx2460 02/26/2023 11:43 PM
+    %G
+        Process the libgcc spec. This is a spec string for deciding which GCC support library is included on the command line to the linker.
+hellobox. 02/26/2023 11:43 PM
+that's just libgcc
+02/26/2023 11:43 PM
+wait
+[smx2460]
+smx2460 02/26/2023 11:43 PM
+ah
+hellobox. 02/26/2023 11:43 PM
+probably
+02/26/2023 11:43 PM
+%G
+[smx2460]
+smx2460 02/26/2023 11:42 PM
+it has to be tho
+02/26/2023 11:42 PM
+hmm
+02/26/2023 11:42 PM
+it appears LINK_GCC_C_SEQUENCE_SPEC is not influenced by
+GNU_USER_TARGET_NO_PTHREADS_LIB_SPEC
+02/26/2023 11:42 PM
+    #define GNU_USER_TARGET_NO_PTHREADS_LIB_SPEC \
+      "%{shared:-lc} \
+       %{!shared:%{profile:-lc_p}%{!profile:-lc}}"
+    #define GNU_USER_TARGET_LIB_SPEC \
+      "%{pthread:-lpthread} " \
+      GNU_USER_TARGET_NO_PTHREADS_LIB_SPEC
+    #undef  LIB_SPEC
+    #define LIB_SPEC GNU_USER_TARGET_LIB_SPEC
+    #if defined(HAVE_LD_EH_FRAME_HDR)
+    #define LINK_EH_SPEC "%{!static|static-pie:--eh-frame-hdr} "
+    #endif
+    #define GNU_USER_TARGET_LINK_GCC_C_SEQUENCE_SPEC \
+      "%{static|static-pie:--start-group} %G %{!nolibc:%L} \
+       %{static|static-pie:--end-group}%{!static:%{!static-pie:%G}}"
+    #undef LINK_GCC_C_SEQUENCE_SPEC
+    #define LINK_GCC_C_SEQUENCE_SPEC GNU_USER_TARGET_LINK_GCC_C_SEQUENCE_SPEC
+hellobox. 02/26/2023 11:41 PM
+when is LINK_PLUGIN_SPEC used though?
+[smx2460]
+smx2460 02/26/2023 11:40 PM
+LINK_GCC_C_SEQUENCE_SPEC
+02/26/2023 11:39 PM
+    #define LINK_PLUGIN_SPEC \
+        "%{" PLUGIN_COND": \
+        -plugin %(linker_plugin_file) \
+        -plugin-opt=%(lto_wrapper) \
+        -plugin-opt=-fresolution=%u.res \
+        " LTO_PLUGIN_SPEC "\
+        %{flinker-output=*:-plugin-opt=-linker-output-known} \
+        %{!nostdlib:%{!nodefaultlibs:%:pass-through-libs(%(link_gcc_c_sequence))}} \
+        }" PLUGIN_COND_CLOSE
+    #else
+    /* The linker used doesn't support -plugin, reject -fuse-linker-plugin.  */
+    #define LINK_PLUGIN_SPEC "%{fuse-linker-plugin:\
+        %e-fuse-linker-plugin is not supported in this configuration}"
+    #endif
+hellobox. 02/26/2023 11:39 PM
+because -lrt goes right next to -lc
+[smx2460]
+smx2460 02/26/2023 11:39 PM
+let me find it
+02/26/2023 11:39 PM
+well it's not magic, it's a conditional in the specs
+hellobox. 02/26/2023 11:39 PM
+i assume it just doesn't include any of the lib stuff
+02/26/2023 11:39 PM
+i'm not sure what happens
+[smx2460]
+smx2460 02/26/2023 11:38 PM
+because it's custom
+hellobox. 02/26/2023 11:38 PM
+well
+02/26/2023 11:38 PM
+hmm
+[smx2460]
+smx2460 02/26/2023 11:38 PM
+but your flag is probably not susceptible to that (edited)
+02/26/2023 11:38 PM
+-nodefaultlib should inhibit everything
+02/26/2023 11:38 PM
+hm
+02/26/2023 11:38 PM
+actually
+02/26/2023 11:38 PM
+i was about to ask how the normal gcc handles building glibc
+02/26/2023 11:37 PM
+nvm
+02/26/2023 11:37 PM
+but wait hmm
+02/26/2023 11:36 PM
+once the build finishes
+02/26/2023 11:36 PM
+i'm going to push soon with glibc's github and the polyfills
+02/26/2023 11:36 PM
+i have this block
+02/26/2023 11:36 PM
+    ## FIXME
+    #ifeq ($(BR2_PACKAGE_LGTV),y)
+    #GLIBC_EXTRA_CFLAGS += -tno-webos-compat
+    #endif
+02/26/2023 11:36 PM
+you can do it yourself if you want
+02/26/2023 11:36 PM
+not pushed yet
+02/26/2023 11:36 PM
+i added it commented
+hellobox. 02/26/2023 11:36 PM
+did you add -tno-webos-compat to glibc or should i?
+[smx2460]
+smx2460 02/26/2023 11:36 PM
+i'd say yes
+hellobox. 02/26/2023 11:35 PM
+so should i move the gcc patch back?
+[smx2460]
+smx2460 02/26/2023 11:35 PM
+maybe later if/as they appear (edited)
+02/26/2023 11:35 PM
+not for now
+02/26/2023 11:35 PM
+so now we need to update the specfile
+hellobox. 02/26/2023 11:35 PM
+do you have plans for other polyfills?
+[smx2460]
+smx2460 02/26/2023 11:35 PM
+i'll try to bump the number to 101 to silence the warning later
+02/26/2023 11:34 PM
+because it does this
+02/26/2023 11:34 PM
+    bool _glibc_polyfill_debug = false;
+    static void
+    __attribute__((constructor(0)))
+    glibc_polyfill_init(){
+        char *env = getenv("GLIBC_POLYFILL_DEBUG");
+        _glibc_polyfill_debug = (env && *env == '1');
+    }
+02/26/2023 11:34 PM
+this must run first
+02/26/2023 11:34 PM
+i have multiple constructors
+02/26/2023 11:34 PM
+basically
+02/26/2023 11:34 PM
+maybe i should use 101
+02/26/2023 11:34 PM
+well
+02/26/2023 11:34 PM
+    static void
+    __attribute__((constructor(0)))
+    glibc_polyfill_init(){
+02/26/2023 11:34 PM
+you need to use this form
+hellobox. 02/26/2023 11:33 PM
+what's the thing about ctor priorities?
+[smx2460]
+smx2460 02/26/2023 11:33 PM
+and before host-gcc-final
+02/26/2023 11:33 PM
+appears to have worked
+02/26/2023 11:33 PM
+(no content)
+[image.png]
+ image.png
+225.29 KB External
+02/26/2023 11:33 PM
+@hellobox
+[smx2460]
+smx2460 02/26/2023 11:11 PM
+i'll comment it for now and do a clean build
+02/26/2023 11:11 PM
+want to add this to glibc (edited)
+02/26/2023 11:11 PM
+    ifeq ($(BR2_PACKAGE_LGTV),y)
+    GLIBC_EXTRA_CFLAGS += -tno-webos-compat
+    endif
+02/26/2023 11:11 PM
+yes
+hellobox. 02/26/2023 11:11 PM
+and apply the patch to both gccs
+[smx2460]
+smx2460 02/26/2023 11:11 PM
+probably yes
+hellobox. 02/26/2023 11:11 PM
+so we need to go back to the way it was before
+[smx2460]
+smx2460 02/26/2023 11:10 PM
+i'm not a big fan of that
+02/26/2023 11:10 PM
+it will be defined later when the patch is applied in final
+02/26/2023 11:10 PM
+when first building glibc, that option will be undefined
+02/26/2023 11:10 PM
+the issue is
+hellobox. 02/26/2023 11:10 PM
+yeah, it's working
+02/26/2023 11:09 PM
+wtf
+02/26/2023 11:09 PM
+actually
+[smx2460]
+smx2460 02/26/2023 11:08 PM
+rebuilding
+02/26/2023 11:07 PM
+hm
+hellobox. 02/26/2023 11:06 PM
+it worked for me
+[smx2460]
+smx2460 02/26/2023 11:06 PM
+don't you like need custom handling in gcc/c-family/c-opts.c to make it
+real?
+hellobox. 02/26/2023 11:06 PM
+hmm
+[smx2460]
+smx2460 02/26/2023 11:05 PM
+    arm-webos-linux-gnueabi-gcc.br_real: error: unrecognized command-line option '-tno-webos-compat'; did you mean '-Wno-c++-compat'?
+02/26/2023 11:05 PM
+    configure: error: cannot compute suffix of object files: cannot compile
+hellobox. 02/26/2023 11:03 PM
+yeah
+[smx2460]
+smx2460 02/26/2023 11:03 PM
+i guess i need to add the flag
+02/26/2023 11:03 PM
+:/
+02/26/2023 11:03 PM
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/libc.a(libc-start.o):(.ARM.exidx+0x0): undefined reference to `__aeabi_unwind_cpp_pr0'
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/libc.a(bsearch.o):(.ARM.exidx+0x0): undefined reference to `__aeabi_unwind_cpp_pr0'
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/libc.a(msort.o):(.ARM.exidx+0x0): undefined reference to `__aeabi_unwind_cpp_pr0'
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/libc.a(fprintf.o):(.ARM.exidx+0x0): undefined reference to `__aeabi_unwind_cpp_pr1'
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/libc.a(printf.o):(.ARM.exidx+0x0): undefined reference to `__aeabi_unwind_cpp_pr1'
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/buildroot-nc4/output/build/glibc-54b91396c8cf89433adbb2ff2e5a80f4edde3d15/build/libc.a(iofclose.o): in function `_IO_new_fclose':
+    iofclose.c:(.text+0x30c): undefined reference to `_Unwind_Resume'
+02/26/2023 11:03 PM
+@hellobox rebuilding glibc once gcc-final is installed fails
+02/26/2023 11:02 PM
+i appended this to the gcc-final dependencies
+02/26/2023 11:02 PM
+    ################################################################################
+    #
+    # glibc-polyfills
+    #
+    ################################################################################
+    GLIBC_POLYFILLS_VERSION = ca5962d45507132648fb47223652d44f7073119a
+    GLIBC_POLYFILLS_SITE = $(call github,smx-smx,glibc-polyfills,$(GLIBC_POLYFILLS_VERSION))
+    $(eval $(cmake-package))
+02/26/2023 11:02 PM
+doing a test run
+[smx2460]
+smx2460 02/26/2023 10:48 PM
+maybe this
+02/26/2023 10:48 PM
+    menu "Development tools"
+02/26/2023 10:48 PM
+not sure where it should go lol
+hellobox. 02/26/2023 10:42 PM
+i guess that's true
+[smx2460]
+smx2460 02/26/2023 10:42 PM
+it's actually not specific to lgtv tho
+02/26/2023 10:42 PM
+hmm
+hellobox. 02/26/2023 10:40 PM
+or lgtv
+02/26/2023 10:40 PM
+i'd prefer to have webos in the name
+[smx2460]
+smx2460 02/26/2023 10:36 PM
+additional package before gcc-final?
+02/26/2023 10:36 PM
+how could we do this? 
+02/26/2023 10:36 PM
+and i don't think any other library will have the same name
+[smx2460]
+hellobox. it's static, right?
+smx2460 02/26/2023 10:36 PM
+it will be static only
+[smx2460]
+smx2460 02/26/2023 10:36 PM
+there shouldn't be absolute paths in the specfile
+02/26/2023 10:36 PM
+i mean
+02/26/2023 10:35 PM
+not sure if it's a good thing tho
+02/26/2023 10:35 PM
+you could pass the path to the .a directly
+02/26/2023 10:35 PM
+yes
+hellobox. 02/26/2023 10:35 PM
+it's static, right?
+[smx2460]
+smx2460 02/26/2023 10:34 PM
+now we need to get -lglibc_polyfills into the specs flie
+02/26/2023 10:33 PM
+https://github.com/smx-smx/glibc-polyfills/commit/41346168f628c56e52db67abbd88ce092a8889e2
+Fixed /proc/self/auxv reading. Added GLIBC_POLYFILL_DEBUG debug var...
+[]
+02/26/2023 10:27 PM
+    $ arm-webos-linux-gnueabi-gcc /mnt/ExtData/buildroot-nc4/output/test.c -o test -L. -lglibc_polyfills -ldl && cat test | ssh mtk5398 'cat > test_auxv; chmod +x test_auxv; ./test_auxv 6'
+    INIT
+    op
+    v: 4096
+02/26/2023 10:27 PM
+@hellobox
+[smx2460]
+smx2460 02/26/2023 10:03 PM
+need to retest on NC4
+02/26/2023 10:03 PM
+fixed
+[smx2460]
+smx2460 02/26/2023 9:56 PM
+ElfW(foo)
+02/26/2023 9:56 PM
+lol
+02/26/2023 9:56 PM
+i used Elf32 instead of ElfX
+02/26/2023 9:56 PM
+sure is
+02/26/2023 9:55 PM
+heh
+02/26/2023 9:55 PM
+8 bytes each
+02/26/2023 9:55 PM
+it's unsigned long
+[smx2460]
+[] smx2460 ```cpp #ifdef __linux__ #include <unistd.h> #include
+<fcntl.h> #include <elf.h> static void __attri...
+smx2460 02/26/2023 9:55 PM
+this is wrong
+[smx2460]
+smx2460 02/26/2023 9:55 PM
+yeah it's not the same type
+02/26/2023 9:55 PM
+    00000000  21 00 00 00 00 00 00 00  00 50 1b 0c fe 7f 00 00  |!........P......|
+02/26/2023 9:55 PM
+dafuck
+02/26/2023 9:55 PM
+    0x21 -> 0x0
+    0x601a0000 -> 0x7ffc
+02/26/2023 9:55 PM
+    AT_SYSINFO_EHDR:      0x7ffc601a0000
+    AT_MINSIGSTKSZ:       1776
+02/26/2023 9:54 PM
+there's something wrong
+02/26/2023 9:54 PM
+actually no
+02/26/2023 9:53 PM
+it's in reverse
+02/26/2023 9:53 PM
+oh lol
+02/26/2023 9:47 PM
+you need to read it one shot
+02/26/2023 9:47 PM
+it just doesn't work that way
+02/26/2023 9:47 PM
+the answer is that, as i experimented last time, you can't read
+/proc/self/auxv pair by pair
+[smx2460]
+smx2460 02/26/2023 9:35 PM
+let's see
+02/26/2023 9:35 PM
+from libitm
+02/26/2023 9:35 PM
+    #ifdef __linux__
+    #include <unistd.h>
+    #include <fcntl.h>
+    #include <elf.h>
+    static void __attribute__((constructor))
+    init_gtm_hwcap(void)
+    {
+      int fd = open ("/proc/self/auxv", O_RDONLY);
+      if (fd < 0)
+        return;
+      Elf32_auxv_t pairs[512];
+      ssize_t rlen = read (fd, pairs, sizeof(pairs));
+      close (fd);
+      if (rlen < 0)
+        return;
+      size_t n = (size_t)rlen / sizeof(pairs[0]);
+      for (size_t i = 0; i < n; ++i)
+        if (pairs[i].a_type == AT_HWCAP)
+          {
+            GTM_hwcap = pairs[i].a_un.a_val;
+            return;
+          }
+    }
+    #endif
+02/26/2023 9:32 PM
+that might explain why i got some missing values on x64 tho
+02/26/2023 9:32 PM
+which is good
+02/26/2023 9:32 PM
+well it'd be 32bit on nc4
+02/26/2023 9:32 PM
+oh right that's a microsoft shit
+hellobox. 02/26/2023 9:32 PM
+https://discord.com/channels/407937994037919756/835489130967859251/1076316688179540078
+02/26/2023 9:32 PM
+no it's not
+[smx2460]
+smx2460 02/26/2023 9:31 PM
+it's 32bit even on x64
+02/26/2023 9:31 PM
+it's unsigned long size
+hellobox. 02/26/2023 9:31 PM
+on 32-bit webos
+02/26/2023 9:31 PM
+yeah, but the size is different
+[smx2460]
+hellobox. did you use the right struct?
+smx2460 02/26/2023 9:31 PM
+it works on x64
+[smx2460]
+smx2460 02/26/2023 9:30 PM
+i'll check again later
+02/26/2023 9:30 PM
+i tried briefly on NC4 and it didn't work (returned 0)
+02/26/2023 9:30 PM
+on his TV that has getauxval
+02/26/2023 9:30 PM
+@meep checked it works
+hellobox. 02/26/2023 9:30 PM
+did you use the right struct?
+[] smx2460 hmm 0
+hellobox. 02/26/2023 9:30 PM
+it doesn't work?
+[smx2460]
+smx2460 02/26/2023 9:29 PM
+_libc_init appears to be a hook
+02/26/2023 9:29 PM
+interesting
+02/26/2023 9:29 PM
+    /* This is the canonical entry point, usually the first thing in the text
+       segment.
+        Note that the code in the .init section has already been run.
+        This includes _init and _libc_init
+        At this entry point, most registers' values are unspecified, except:
+       a1        Contains a function pointer to be registered with `atexit'.
+            This is how the dynamic linker arranges to have DT_FINI
+            functions called for shared libraries that have been loaded
+            before this code runs.
+       sp        The stack contains the arguments and environment:
+            0(sp)            argc
+            4(sp)            argv[0]
+            ...
+            (4*argc)(sp)        NULL
+            (4*(argc+1))(sp)    envp[0]
+            ...
+                        NULL
+    */
+02/26/2023 9:28 PM
+we could probably just hook that
+02/26/2023 9:27 PM
+in glibc (edited)
+02/26/2023 9:27 PM
+    ports/sysdeps/arm/elf/start.S
+02/26/2023 9:21 PM
+hm
+02/26/2023 9:21 PM
+    ../gcc-11.2.0/libgcc/config/arm/crtn.S
+    ../gcc-11.2.0/libgcc/config/arm/crtfastmath.c
+    ../gcc-11.2.0/libgcc/config/arm/crti.S
+02/26/2023 9:21 PM
+    %{!mandroid|tno-android-ld:%{shared:;      pg|p|profile:%{static-pie:grcrt1.o%s;:gcrt1.o%s};      static:crt1.o%s;      static-pie:rcrt1.o%s;      pie:Scrt1.o%s;      :crt1.o%s} crti.o%s    %{static:crtbeginT.o%s;      shared|static-pie|pie:crtbeginS.o%s;      :crtbegin.o%s}    %{fvtable-verify=none:%s;      fvtable-verify=preinit:vtv_start_preinit.o%s;      fvtable-verify=std:vtv_start.o%s} ;:%{shared: crtbegin_so%O%s;:  %{static: crtbegin_static%O%s;: crtbegin_dynamic%O%s}}}
+02/26/2023 9:17 PM
+@hellobox interested to check out the crt (startfile) trick too
+[smx2460]
+smx2460 02/26/2023 8:35 PM
+let's add some debugging
+02/26/2023 8:35 PM
+hmm this is not gud
+02/26/2023 8:34 PM
+dafuk
+02/26/2023 8:34 PM
+hmm 0
+02/26/2023 8:34 PM
+let's try AT_PAGESZ
+02/26/2023 8:34 PM
+    #include <stdio.h>
+    #include <sys/auxv.h>
+    int main(int argc, char *argv[]){
+            unsigned v = getauxval(AT_SECURE);
+            printf("v: %u\n", v);
+            return 0;
+    }
+02/26/2023 8:34 PM
+source
+02/26/2023 8:33 PM
+    arm-webos-linux-gnueabi-gcc /mnt/ExtData/buildroot-nc4/output/test.c -o test -L. -lglibc_polyfills -ldl
+02/26/2023 8:33 PM
+compiled with
+02/26/2023 8:33 PM
+@hellobox
+02/26/2023 8:33 PM
+02/26/2023 8:32 PM
+    $ cat test | ssh mtk5398 'cat > test_auxv; chmod +x test_auxv; ./test_auxv'
+    v: 0
+02/26/2023 8:32 PM
+screw that , i'll try it myself
+02/26/2023 8:26 PM
+can someone try this?
+02/26/2023 8:26 PM
+(no content)
+ test
+8.53 KB External
+[smx2460]
+smx2460 02/26/2023 8:00 PM
+Thanks 
+02/26/2023 8:00 PM
+@hellobox merged
+[yolofant]
+yolofant 02/26/2023 7:39 PM
+the good thing is that indeed the libttng dependency is gone
+02/26/2023 7:38 PM
+praise [100%] Built target kodi
+hellobox. 02/26/2023 7:38 PM
+it seems to work
+02/26/2023 7:38 PM
+i just opened another terminal
+[smx2460]
+smx2460 02/26/2023 7:37 PM
+You can always resume it later
+02/26/2023 7:37 PM
+Set PATH and build a sample binary
+02/26/2023 7:36 PM
+Go to output/host
+[smx2460]
+hellobox. i think it worked, since i'm building util-linux
+smx2460 02/26/2023 7:36 PM
+Abort it
+hellobox. 02/26/2023 7:28 PM
+unless the patch didn't even get applied
+02/26/2023 7:28 PM
+i think it worked, since i'm building util-linux
+[smx2460]
+smx2460 02/26/2023 7:26 PM
+^ this is fixed by polyfills
+02/26/2023 7:26 PM
+now we're good
+02/26/2023 7:25 PM
+    $ arm-webos-linux-gnueabi-gcc test.c -o test
+    /mnt/ExtData/buildroot-nc4/output/host/lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /tmp/ccmgHZTT.o: in function `main':
+    test.c:(.text+0x18): undefined reference to `getauxval'
+    collect2: error: ld returned 1 exit status
+02/26/2023 7:25 PM
+unless we backport other crap
+02/26/2023 7:25 PM
+ok should be __attribute__ ((__const__))
+02/26/2023 7:23 PM
+dafuck
+02/26/2023 7:23 PM
+umpf
+02/26/2023 7:23 PM
+    /mnt/ExtData/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/include/sys/auxv.h:31:11: error: expected ‘,’ or ‘;’ before ‘__attribute_const__’
+       31 |   __THROW __attribute_const__;
+          |           ^~~~~~~~~~~~~~~~~~~
+[yolofant]
+yolofant 02/26/2023 7:21 PM
+but in fact I should have just copied that library into the ipk
+02/26/2023 7:21 PM
+I thought maybe cleaning up the dependencies would solve that
+02/26/2023 7:21 PM
+my binary was still depending on libttng-ust.so
+[smx2460]
+smx2460 02/26/2023 7:21 PM
+why?
+[yolofant]
+yolofant 02/26/2023 7:21 PM
+I should not have done that
+02/26/2023 7:20 PM
+I made a very bad decision and decided to rebuild the dependencies
+hellobox. 02/26/2023 7:02 PM
+i guess i can just push it
+02/26/2023 7:02 PM
+well
+02/26/2023 7:02 PM
+testing now
+02/26/2023 7:02 PM
+let's see
+02/26/2023 7:02 PM
+    $ make oldconfig
+    *
+    * Restart config...
+    *
+    *
+    * LGTV
+    *
+    lgtv (BR2_PACKAGE_LGTV) [N/y/?] (NEW) y
+ 1
+[smx2460]
+smx2460 02/26/2023 7:00 PM
+it should actually work
+02/26/2023 7:00 PM
+    #ifndef _SYS_AUXV_H
+    #define _SYS_AUXV_H 1
+    #include <elf.h>
+    #include <bits/hwcap.h>
+    __BEGIN_DECLS
+    /* Return the value associated with an Elf*_auxv_t type from the auxv list
+       passed to the program on startup.  If __type was not present in the auxv
+       list, returns zero.  */
+    extern unsigned long getauxval (unsigned long __type)
+      __THROW __attribute_const__;
+    __END_DECLS
+    #endif /* sys/auxv.h */
+02/26/2023 7:00 PM
+    elf/elf.h:#define       AT_SECURE       23              /* Boolean, was exec setuid-like?  */
+02/26/2023 7:00 PM
+apparently in glibc, nice
+02/26/2023 7:00 PM
+or is it provided in kernel headers
+02/26/2023 7:00 PM
+is it provided in glibc i wonder
+02/26/2023 6:59 PM
+for example, let's say someone wants to lookup AT_SECURE
+02/26/2023 6:59 PM
+something tells me they aren't
+02/26/2023 6:59 PM
+i'm not sure if the headers are complete tho
+02/26/2023 6:58 PM
+what glibc now provides is the headers with the definitions of getauxval
+02/26/2023 6:58 PM
+by hacking the specs
+02/26/2023 6:58 PM
+i need to see if i can build something that uses getauxval
+02/26/2023 6:58 PM
+actually, i can do this without your patch
+02/26/2023 6:57 PM
+then build gcc-final
+02/26/2023 6:57 PM
+once you fixed it
+02/26/2023 6:57 PM
+i want to merge your patch
+02/26/2023 6:57 PM
+only locally here
+02/26/2023 6:57 PM
+not yet
+hellobox. 02/26/2023 6:57 PM
+but it's not set up to use that?
+[smx2460]
+smx2460 02/26/2023 6:56 PM
+it builds locally
+02/26/2023 6:56 PM
+this should be also good
+02/26/2023 6:56 PM
+https://github.com/openlgtv/glibc/commits/master
+Commits · openlgtv/glibc
+Contribute to openlgtv/glibc development by creating an account on
+GitHub.
+[]
+02/26/2023 6:56 PM
+yes
+hellobox. 02/26/2023 6:55 PM
+so commit 8690c92 is good?
+[smx2460]
+smx2460 02/26/2023 6:55 PM
+fixed
+02/26/2023 6:54 PM
+fcked up
+02/26/2023 6:54 PM
+no wait
+02/26/2023 6:54 PM
+i just pushed tho
+02/26/2023 6:54 PM
+yes
+hellobox. 02/26/2023 6:54 PM
+can i test it by just adding BR2_PACKAGE_LGTV=y to .config?
+[smx2460]
+smx2460 02/26/2023 6:52 PM
+time to push some stuff to br-nc4
+02/26/2023 6:52 PM
+yes (edited)
+hellobox. 02/26/2023 6:52 PM
+    HOST_GCC_FINAL_POST_PATCH_HOOKS += HOST_GCC_APPLY_PATCHES
+    define HOST_GCC_FINAL_APPLY_WEBOS_LIBRT_PATCH
+            $(APPLY_PATCHES) $(@D) package/gcc/gcc-final 0001-webOS-compat-auto-librt.patch || exit 1
+    endef
+    ifeq ($(BR2_PACKAGE_LGTV),y)
+    HOST_GCC_FINAL_POST_PATCH_HOOKS += HOST_GCC_APPLY_WEBOS_LIBRT_PATCH
+    endif
+(edited)
+[smx2460]
+smx2460 02/26/2023 6:51 PM
+to keep the lgtv-any and lgtv-webos patches separate
+02/26/2023 6:51 PM
+and i'll add both to the defconfig
+02/26/2023 6:51 PM
+WebOS will depend on LGTV
+02/26/2023 6:51 PM
+no
+02/26/2023 6:51 PM
+so you can check for BR2_PACKAGE_LGTV,y
+hellobox. 02/26/2023 6:51 PM
+so i should check for both?
+[smx2460]
+smx2460 02/26/2023 6:51 PM
+i'll call it BR2_PACKAGE_LGTV
+02/26/2023 6:50 PM
+    menu "LGTV"
+            source "package/lgtv/Config.in"
+    endmenu
+    menu "WebOS"
+            source "package/webos/Config.in"
+            source "package/cmake-modules-webos/Config.in"
+            source "package/hyperion-webos/Config.in"
+            source "package/pmloglib/Config.in"
+            source "package/libpbnjson/Config.in"
+            source "package/libwebosi18n/Config.in"
+            source "package/luna-service2/Config.in"
+            source "package/umediaserver/Config.in"
+            source "package/webos-wayland-extensions/Config.in"
+            source "package/webos-userland/Config.in"
+    endmenu
+02/26/2023 6:50 PM
+it's easy
+02/26/2023 6:50 PM
+adding a meta package
+02/26/2023 6:48 PM
+it=the patch
+02/26/2023 6:48 PM
+but it's desirable to have it in both
+02/26/2023 6:48 PM
+so if you check for that, it won't get pulled in
+02/26/2023 6:48 PM
+the -lgtv preset doesn't include BR2_PACKAGE_WEBOS
+hellobox. 02/26/2023 6:48 PM
+what do you mean by lgtv?
+[smx2460]
+smx2460 02/26/2023 6:48 PM
+while my evil side is telling me to just leave it as is
+02/26/2023 6:47 PM
+but my good side is telling me to make it clean lol
+02/26/2023 6:47 PM
+not sure if we'd ever use this outside of lgtv
+02/26/2023 6:47 PM
+and you just check ifeq (that,y)
+hellobox. 02/26/2023 6:47 PM
+doesn't matter to me
+[smx2460]
+smx2460 02/26/2023 6:47 PM
+if you don't like it, i'll make a meta package
+hellobox. 02/26/2023 6:46 PM
+so add an option for just this patch?
+[smx2460]
+smx2460 02/26/2023 6:46 PM
+start by making it configurable for now
+02/26/2023 6:46 PM
+or, alternatively
+02/26/2023 6:46 PM
+which applies to both?
+02/26/2023 6:46 PM
+should i add a BR2_PACKAGE_LGTV meta package? (edited)
+hellobox. 02/26/2023 6:46 PM
+i guess i can do that
+[smx2460]
+smx2460 02/26/2023 6:46 PM
+which we could remove
+02/26/2023 6:46 PM
+also we have these scattered around
+02/26/2023 6:45 PM
+    ifeq ($(BR2_PACKAGE_WEBOS),y)
+    LIBNFS_CONF_ENV += LDFLAGS="$(TARGET_LDFLAGS) -lrt"
+    endif
+02/26/2023 6:45 PM
+but the idea is that adding it includes stuff like pbnjson, luna, etc.
+02/26/2023 6:45 PM
+and it enables all webos patches
+02/26/2023 6:45 PM
+you can just enable that
+02/26/2023 6:45 PM
+to avoid adding configuration options for all patches
+02/26/2023 6:45 PM
+basically i added BR2_PACKAGE_WEBOS as a meta package
+02/26/2023 6:44 PM
+i get it now
+02/26/2023 6:44 PM
+ah
+hellobox. 02/26/2023 6:44 PM
+what do you mean?
+[smx2460]
+smx2460 02/26/2023 6:44 PM
+p.s. glibc now builds
+02/26/2023 6:44 PM
+the problem is that it doesn't apply to lgtv
+02/26/2023 6:44 PM
+we have BR2_PACKAGE_WEBOS)
+hellobox. 02/26/2023 6:43 PM
+should there be a configure option for this patch?
+[smx2460]
+smx2460 02/26/2023 6:42 PM
+(if, glob must be escaped) (edited)
+02/26/2023 6:42 PM
+    $(APPLY_PATCHES) <where are the sources to patch?> <where are the patches?> <which patch|patches?>
+(edited)
+02/26/2023 6:41 PM
+this is another example
+02/26/2023 6:41 PM
+    ifneq ($(CVS_PATCH),)
+    define CVS_DEBIAN_PATCHES
+        if [ -d $(@D)/debian/patches ]; then \
+            (cd $(@D)/debian/patches && for i in *; \
+             do $(SED) 's,^\+\+\+ .*cvs-$(CVS_VERSION)/,+++ cvs-$(CVS_VERSION)/,' $i; \
+             done; \
+            ); \
+            $(APPLY_PATCHES) $(@D) $(@D)/debian/patches \*; \
+        fi
+    endef
+    endif
+02/26/2023 6:41 PM
+you can also use globbing instead of a filename
+02/26/2023 6:40 PM
+    #### LG NETCAST Patches
+    ifeq ($(BR2_PACKAGE_DIRECTFB_LGNETCAST),y)
+    define DIRECTFB_LG_PRE_PATCH
+            @$(call MESSAGE,"Applying LG Patch")
+            $(APPLY_PATCHES) $(@D) package/directfb lg-netcast.diff
+    endef
+    DIRECTFB_PRE_PATCH_HOOKS += DIRECTFB_LG_PRE_PATCH
+    # Install the LG DTV Library Headers
+    define DIRECTFB_PRECONFIGURE
+        cp $(@D)/dtv_lib/*.h $(STAGING_DIR)/usr/include
+    endef
+    DIRECTFB_PRE_CONFIGURE_HOOKS += DIRECTFB_PRECONFIGURE
+    DIRECTFB_CONF_OPTS += --disable-werror
+    endif
+02/26/2023 6:40 PM
+sec i have an example for you
+02/26/2023 6:40 PM
+former
+hellobox. 02/26/2023 6:40 PM
+or just patch
+02/26/2023 6:39 PM
+should i use $(APPLY_PATCHES)?
+[smx2460]
+smx2460 02/26/2023 6:37 PM
+you can (edited)
+02/26/2023 6:37 PM
+yes
+hellobox. 02/26/2023 6:37 PM
+and create another hook
+02/26/2023 6:37 PM
+    HOST_GCC_FINAL_POST_PATCH_HOOKS += HOST_GCC_APPLY_PATCHES
+02/26/2023 6:36 PM
+can i just put it in gcc-final?
+02/26/2023 6:36 PM
+oh wait
+02/26/2023 6:36 PM
+the same ones for gcc-initial and gcc-final
+02/26/2023 6:36 PM
+it applies all the patches
+02/26/2023 6:36 PM
+that's in package/gcc/gcc.mk
+02/26/2023 6:36 PM
+    # gcc is a special package, not named gcc, but gcc-initial and
+    # gcc-final, but patches are nonetheless stored in package/gcc in the
+    # tree, and potentially in BR2_GLOBAL_PATCH_DIR directories as well.
+    define HOST_GCC_APPLY_PATCHES
+            for patchdir in \
+                package/gcc/$(GCC_VERSION) \
+                $(addsuffix /gcc/$(GCC_VERSION),$(call qstrip,$(BR2_GLOBAL_PATCH_DIR))) \
+                $(addsuffix /gcc,$(call qstrip,$(BR2_GLOBAL_PATCH_DIR))) ; do \
+                    if test -d ${patchdir}; then \
+                            $(APPLY_PATCHES) $(@D) ${patchdir} \*.patch || exit 1; \
+                    fi; \
+            done
+            $(HOST_GCC_APPLY_POWERPC_PATCH)
+    endef
+02/26/2023 6:30 PM
+hmm
+[smx2460]
+hellobox. so everything built with gcc-initial should have
+`-tno-webos-compat`
+smx2460 02/26/2023 6:30 PM
+not sure how you'd do this
+[smx2460]
+hellobox. or... just not apply the patch to gcc-initial?
+smx2460 02/26/2023 6:29 PM
+this is probably easier
+[smx2460]
+smx2460 02/26/2023 6:29 PM
+almost
+02/26/2023 6:29 PM
+    make[3]: *** No rule to make target '/mnt/ExtData/buildroot-nc4/output/host/arm-webos-linux-gnueabi/sysroot/usr/include/bits/hwcap.h', needed by 'install-headers-nosubdir'.  Stop.
+hellobox. 02/26/2023 6:29 PM
+which would you prefer?
+[smx2460]
+smx2460 02/26/2023 6:28 PM
+that would also work
+02/26/2023 6:28 PM
+yeah
+hellobox. 02/26/2023 6:28 PM
+or... just not apply the patch to gcc-initial? (edited)
+02/26/2023 6:28 PM
+can we do that?
+02/26/2023 6:28 PM
+right?
+02/26/2023 6:28 PM
+so everything built with gcc-initial should have -tno-webos-compat
+[smx2460]
+smx2460 02/26/2023 6:27 PM
+but it doesn't have glibc
+02/26/2023 6:27 PM
+it's a cross compiler like the final one
+02/26/2023 6:27 PM
+it targets build
+02/26/2023 6:27 PM
+no sorry i'm stupid
+02/26/2023 6:27 PM
+the host aka arm
+02/26/2023 6:27 PM
+yes
+02/26/2023 6:27 PM
+no
+hellobox. 02/26/2023 6:26 PM
+gcc-initial targets the host?
+[smx2460]
+smx2460 02/26/2023 6:26 PM
+such as libgcc and libstdc++
+hellobox. 02/26/2023 6:26 PM
+wait...
+[smx2460]
+smx2460 02/26/2023 6:26 PM
+with the parts that depend on glibc
+02/26/2023 6:26 PM
+then the final gcc is built
+02/26/2023 6:26 PM
+then that gcc is used to compile gcc
+02/26/2023 6:26 PM
+gcc-initial is gcc without glibc
+hellobox. 02/26/2023 6:26 PM
+so we should add it to that?
+[smx2460]
+smx2460 02/26/2023 6:26 PM
+to bootstrap glibc
+hellobox. 02/26/2023 6:26 PM
+what is gcc-initial used for?
+[smx2460]
+smx2460 02/26/2023 6:26 PM
+but hm
+02/26/2023 6:26 PM
+    # MIPS64 defaults to n32 so pass the correct -mabi if
+    # we are using a different ABI. OABI32 is also used
+    # in MIPS so we pass -mabi=32 in this case as well
+    # even though it's not strictly necessary.
+    ifeq ($(BR2_MIPS_NABI64),y)
+    GLIBC_EXTRA_CFLAGS += -mabi=64
+    else ifeq ($(BR2_MIPS_OABI32),y)
+    GLIBC_EXTRA_CFLAGS += -mabi=32
+    endif
+    ifeq ($(BR2_ENABLE_DEBUG),y)
+    GLIBC_EXTRA_CFLAGS += -g
+    endif
+    # glibc explicitly requires compile barriers between files
+    ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_4_7),y)
+    GLIBC_EXTRA_CFLAGS += -fno-lto
+    endif
+02/26/2023 6:25 PM
+as for the flags...
+02/26/2023 6:25 PM
+checking
+02/26/2023 6:25 PM
+first, i should have fixed the glibc build failure
+02/26/2023 6:25 PM
+wait
+hellobox. 02/26/2023 6:25 PM
+how do i do that?
+02/26/2023 6:23 PM
+need to build glibc with -tno-webos-compat
+[smx2460]
+smx2460 02/26/2023 6:22 PM
+(no content)
+ message.txt
+2.06 KB External
+02/26/2023 6:22 PM
+link cmd
+hellobox. 02/26/2023 6:22 PM
+shit
+[smx2460]
+smx2460 02/26/2023 6:22 PM
+    /tmp/cirrus-ci-build/output/host/lib/gcc/arm-lgtv-linux-gnueabi/12.2.0/../../../../arm-lgtv-linux-gnueabi/bin/ld: cannot find -lrt: No such file or directory
+02/26/2023 6:22 PM
+    collect2: error: ld returned 1 exit status
+02/26/2023 6:21 PM
+the glibc repo change is not in yet
+02/26/2023 6:21 PM
+no
+hellobox. 02/26/2023 6:21 PM
+is that why my pr failed?
+[smx2460]
+smx2460 02/26/2023 6:20 PM
+pf
+02/26/2023 6:20 PM
+i forgot these

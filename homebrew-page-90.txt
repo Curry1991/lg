@@ -1,0 +1,1658 @@
+January 23, 2023
+[yolofant]
+[] smx2460 I don't even know if we have o22 epk key
+yolofant 01/23/2023 8:41 PM
+we do
+[smx2460]
+smx2460 01/23/2023 8:41 PM
+I guess not?
+[yolofant]
+yolofant 01/23/2023 8:41 PM
+hmm SDL either calls registerApp or registerNativeApp
+[Bildschirmfoto_2023-01-23_um_20.41.02.png]
+ Bildschirmfoto_2023-01-23_um_20.41.02.png
+260.61 KB External
+[smx2460]
+smx2460 01/23/2023 8:41 PM
+I don't even know if we have o22 epk key
+[infowski]
+infowski 01/23/2023 8:41 PM
+@Craig I think you need to start hacking on kodi's kode at this point.
+[ccarnell98]
+ccarnell98 01/23/2023 8:41 PM
+yup WebOS 7
+01/23/2023 8:41 PM
+kodi continues to run in the background
+[smx2460]
+smx2460 01/23/2023 8:41 PM
+WebOS 7
+01/23/2023 8:41 PM
+@infowski he has o22
+[infowski]
+infowski 01/23/2023 8:40 PM
+Hmmmmm... That kinda looks like webOS 6.x launching spinner 
+01/23/2023 8:40 PM
+It's the same as on webOS OSE
+[ccarnell98]
+ccarnell98 01/23/2023 8:40 PM
+(no content)
+[thumbnail_20230123_192419.jpg]
+ thumbnail_20230123_192419.jpg
+33.06 KB External
+[infowski]
+infowski 01/23/2023 8:40 PM
+https://www.webosose.org/docs/reference/luna-service2-library/luna-service2-library-api-reference/
+there is an example on how to use the library
+luna-service2 Library API Reference
+API Summary Luna-service2 (LS2) provides a bus-based IPC mechanism used
+between components in webOS. It is composed of: Client library: Provides
+APIs to register a service on the Luna bus. Also, provides APIs for
+services to communicate with other components. Central hub daemon:
+Provides a central clearing house for all communication. It includ...
+[]
+01/23/2023 8:39 PM
+Huh, I think they actually check the sending app id, so luna-send-pub
+won't work.
+01/23/2023 8:38 PM
+@Craig can you show us the splash screen you are talking about?
+01/23/2023 8:38 PM
+at least all the ones I cared about (success/failure on
+install/uninstall) match
+01/23/2023 8:38 PM
+Yeah! They actually copied it over from webOS TV, which is nice.
+hellobox. 01/23/2023 8:37 PM
+nice, a list of status values:
+https://www.webosose.org/docs/reference/ls2-api/com-webos-appinstallservice/#subscription-returns-2
+[infowski]
+infowski 01/23/2023 8:36 PM
+ls-hubd/libluna-service2 doesn't care about it at all
+01/23/2023 8:36 PM
+it may be handled by the service, it may not
+01/23/2023 8:36 PM
+subscribe is just customary
+01/23/2023 8:36 PM
+it doesn't mean it won't
+01/23/2023 8:36 PM
+the service may not send any further messages on that channel
+hellobox. 01/23/2023 8:35 PM
+but what happens when you use subscribe:false?
+[infowski]
+hellobox. it doesn't even have a `subscribe` param, because it always
+subscribes i guess
+infowski 01/23/2023 8:35 PM
+on webOS every call can be/is a subscription, if the client doesn't
+cancel the call  (edited)
+[infowski]
+[] infowski I *think*, if you are already running your own wrapper
+script, add something like this to that scrip...
+infowski 01/23/2023 8:34 PM
+To do it properly, you'll need to patch up kodi to connect to luna bus
+on startup and send an apropriate call, kinda like so:
+https://github.com/webosbrew/hyperion-webos/blob/main/src/service.c#L487-L521
+(edited)
+hellobox. 01/23/2023 8:34 PM
+it doesn't even have a subscribe param, because it always subscribes i
+guess
+[smx2460]
+smx2460 01/23/2023 8:34 PM
+XD (edited)
+01/23/2023 8:34 PM
+"Should"
+[ccarnell98]
+ccarnell98 01/23/2023 8:34 PM
+Still get the grey screen
+[infowski]
+infowski 01/23/2023 8:34 PM
+But I think it should still work fine if we just send that call.
+hellobox. 01/23/2023 8:34 PM
+"This method should be called by launched native application to indicate
+if it is ready to receive several events."
+[infowski]
+infowski 01/23/2023 8:33 PM
+You're supposed to, yeah.
+hellobox. 01/23/2023 8:33 PM
+or at least you're supposed to
+01/23/2023 8:33 PM
+i think you have to subscribe?
+[infowski]
+[] ccarnell98 is there an example I can look at on how to do this?
+infowski 01/23/2023 8:32 PM
+Sadly there's none. We've only done stuff via SDL, and LGs SDL fork
+automatically does that for us. The TL;DR is that you need to register
+on luna bus (webOS equivalent of DBUS) and tell application manager that
+"yes, the app has finally launched, you can show its windows and all"
+hellobox. 01/23/2023 8:32 PM
+webos ose is not exactly the same, but it's similar:
+https://www.webosose.org/docs/reference/ls2-api/com-webos-service-applicationmanager/#registerapp
+ 1
+[smx2460]
+smx2460 01/23/2023 8:32 PM
+That would involve the Luna2 native APIs tho
+01/23/2023 8:31 PM
+Maybe it needs to he done by the same program, me wonders
+[infowski]
+infowski 01/23/2023 8:31 PM
+I don't think it does.
+[smx2460]
+smx2460 01/23/2023 8:31 PM
+At the PID level
+hellobox. 01/23/2023 8:31 PM
+hmm
+https://github.com/webosose/qml-webos-framework/commit/ae56b82a23c15ba13708c74a97bd59aaaf99a708
+[smx2460]
+smx2460 01/23/2023 8:31 PM
+Does the sender matter?
+[infowski]
+infowski 01/23/2023 8:31 PM
+Yes.
+[ccarnell98]
+ccarnell98 01/23/2023 8:31 PM
+Is that needed every time you launch?
+[infowski]
+infowski 01/23/2023 8:30 PM
+I *think*, if you are already running your own wrapper script, add
+something like this to that script:
+luna-send-pub -n 1 'luna://com.webos.applicationManager/registerNativeApp' '{"id": "org.xbmc.kodi"}'
+(edited)
+[ccarnell98]
+ccarnell98 01/23/2023 8:30 PM
+is there an example I can look at on how to do this?
+01/23/2023 8:30 PM
+Where does registerNative fit in?
+[infowski]
+infowski 01/23/2023 8:29 PM
+https://github.com/openlgtv/buildroot-nc4/issues/12#issuecomment-1399276227
+I am referring to that comment.
+CWinSystemWayland::InitWindowSystem - WAYLAND_DISPLAY env not set ·...
+So I&#39;ve managed to using the toolchain compile kodi from sources
+with a few little patches. I&#39;ve uploaded kodi.bin and it&#39;s libs
+to /media/developer. lib sub-folder which is...
+[]
+01/23/2023 8:29 PM
+Sure, hold up. 
+[ccarnell98]
+ccarnell98 01/23/2023 8:29 PM
+@infowski sorry - registerNative, can you explain in a bit more detail?
+Sorry if you've mentioned it before, got a million tabs, a few kodi
+branches with patches to upstream eventually and keeping an eye out on
+issues i've raised 
+Deleted User 01/23/2023 8:29 PM
+and the setInterval would have another async function
+01/23/2023 8:28 PM
+actually yes
+01/23/2023 8:28 PM
+not everything
+01/23/2023 8:28 PM
+well
+01/23/2023 8:28 PM
+and await that function
+01/23/2023 8:28 PM
+and then wrapped everything else up in this
+    (async function() {
+      // code
+    })();
+[infowski]
+Deleted User <@501722020434673674> what if i just had this function
+```js async function get(url) { try { r...
+infowski 01/23/2023 8:27 PM
+Yes, that's technically correct.
+Deleted User 01/23/2023 8:27 PM
+@infowski what if i just had this function
+    async function get(url) {
+      try {
+        return await (await fetch(url)).text();
+      catch {
+        return '';
+      }
+    }
+(edited)
+[infowski]
+[] ccarnell98 <@310158180728700929> I have org.xbmc.kodi now launching
+from the web os short cut bar, I can hear k...
+infowski 01/23/2023 8:27 PM
+Ohhh, I think you may be missing registerNative call i mentioned before.
+hellobox. 01/23/2023 8:25 PM
+fyi you can disable the loading screen with a setting in appinfo.json i
+beleive
+[ccarnell98]
+ccarnell98 01/23/2023 8:25 PM
+seems it was needing libcrypt (which was not needed in ssh)..
+01/23/2023 8:24 PM
+@Smx I have org.xbmc.kodi now launching from the web os short cut bar, I
+can hear kodi startup sounds. But I get a grey screen with a icon (some
+sort of loading screen)
+[] infowski For services to work? I think it is.
+Deleted User 01/23/2023 7:46 PM
+alright, i think i moved everything where it needs to go...
+[image.png]
+ image.png
+14.42 KB External
+Deleted User 01/23/2023 7:43 PM
+okay
+Deleted User my icon is a screenshot of this thing i made
+rembihnutur 01/23/2023 7:43 PM
+I could use the Layout from this remote if you want. I wrote you a DM.
+Maybe its better to continue there
+[infowski]
+infowski 01/23/2023 7:42 PM
+if I change manifestUrl to be absolute it works
+01/23/2023 7:42 PM
+repo url → relative manifestUrl works, but repo url → relative
+manifestUrl → relative ipk url doesn't
+01/23/2023 7:41 PM
+btw just noticed a bug in homebrew channel repo url resolution 
+01/23/2023 7:38 PM
+For services to work? I think it is.
+[] infowski
+https://github.com/Informatic/webos-webpack-template/blob/main/webpack.config.js#L23
+Deleted User 01/23/2023 7:37 PM
+is services.json required?
+[infowski]
+infowski 01/23/2023 7:33 PM
+adjust it as you like
+01/23/2023 7:33 PM
+https://github.com/Informatic/webos-webpack-template/blob/main/webpack.config.js#L23
+webos-webpack-template/webpack.config.js at main · Informatic/webos...
+minimal webOS frontend + service webpack template (probably) supporting
+webOS1.x+... (tested on 3.x) - webos-webpack-template/webpack.config.js
+at main · Informatic/webos-webpack-template
+[]
+[infowski]
+Deleted User would this work considering the interface is stored in the
+service directory?
+infowski 01/23/2023 7:33 PM
+I am pretty sure it would - as long as you set it up to output all the
+artifacts into service directory.
+[] infowski <https://github.com/Informatic/webos-webpack-template>
+Deleted User 01/23/2023 7:32 PM
+would this work considering the interface is stored in the service
+directory?
+[infowski]
+infowski 01/23/2023 7:30 PM
+and service-side of homebrew channel
+01/23/2023 7:30 PM
+It's what webos-vncserver frontend is based on.
+01/23/2023 7:29 PM
+https://github.com/Informatic/webos-webpack-template (edited)
+[infowski]
+Deleted User Click to see attachment
+infowski 01/23/2023 7:29 PM
+use more shims
+hellobox. 01/23/2023 7:29 PM
+i guess it's less clear what it does though
+01/23/2023 7:29 PM
+i think this should work:
+test -d /var/lib/webosbrew/eim || cp -r /var/lib/eim /var/lib/webosbrew/eim; findmnt /var/lib/eim || mount --bind /var/lib/webosbrew/eim /var/lib/eim
+Deleted User 01/23/2023 7:28 PM
+(no content)
+[image.png]
+ image.png
+6.18 KB External
+01/23/2023 7:28 PM
+like on webos 3 or 1 or something
+01/23/2023 7:27 PM
+do we know what the oldest chromium version that webos uses?
+hellobox. 01/23/2023 7:27 PM
+    #if ENABLE_ASH_TEST
+        { BUILTIN_REGULAR       "["       , testcmd    },
+    #endif
+    #if BASH_TEST2
+        { BUILTIN_REGULAR       "[["      , testcmd    },
+    #endif
+[infowski]
+infowski 01/23/2023 7:27 PM
+Probably, I am no *sh expert 
+hellobox. 01/23/2023 7:27 PM
+i don't think [[ is any different than [ in ash
+[infowski]
+infowski 01/23/2023 7:26 PM
+Yep. And worst case we can then even jump to actual last launched app by
+reading /var/lib/eim/lastinput
+[jclsn]
+jclsn 01/23/2023 7:25 PM
+happy to test!
+hellobox. 01/23/2023 7:25 PM
+it's not super elegant, but it's better than having to launch hbchannel
+i guess
+[infowski]
+infowski 01/23/2023 7:25 PM
+Let me release it on a private repo for @jclsn to test out lol (edited)
+01/23/2023 7:24 PM
+I just POCed it on my 3.x TV and it just works.
+hellobox. 01/23/2023 7:24 PM
+but it took too long to find it with discord search
+[] infowski https://gist.github.com/cc76c4bddab6ece818a405a00355be4b
+Hmmmm, this seems to work fairly well for s...
+hellobox. 01/23/2023 7:24 PM
+i was going to link @jclsn to where you had been talking about that
+[infowski]
+infowski 01/23/2023 7:24 PM
+I guess I could also fetch what's the actual last launched app.
+01/23/2023 7:23 PM
+https://gist.github.com/cc76c4bddab6ece818a405a00355be4b Hmmmm, this
+seems to work fairly well for startup app...
+index.js
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+Deleted User 01/23/2023 7:20 PM
+which i then scaled down and rotated
+01/23/2023 7:20 PM
+my icon is a screenshot of this thing i made
+[image.png]
+ image.png
+50.81 KB External
+01/23/2023 7:19 PM
+@Rembihnutur sure
+[] infowski you need to write android agent for Magic4PC.
+pho9574 01/23/2023 7:15 PM
+wow again. never knew that even existed-- this already helps heaps
+https://github.com/Wouterdek/magic4pc
+GitHub - Wouterdek/magic4pc: Allows you to use the magic remote on ...
+Allows you to use the magic remote on your LG tv as a mouse for your
+PC. - GitHub - Wouterdek/magic4pc: Allows you to use the magic remote on
+your LG tv as a mouse for your PC.
+[]
+[infowski]
+infowski 01/23/2023 7:10 PM
+heh, funny.
+Deleted User 01/23/2023 7:10 PM
+and it seems the newlines are actually created, they just dont show
+01/23/2023 7:10 PM
+@infowski when i remove that, it shows newlines
+01/23/2023 7:06 PM
+its one of the styles though causing it
+01/23/2023 7:06 PM
+its closed... but the textarea does have white-space: nowrap;
+[infowski]
+infowski 01/23/2023 7:06 PM
+I don't think that's it.
+Deleted User 01/23/2023 7:05 PM
+(no content)
+[image.png]
+ image.png
+23.74 KB External
+[infowski]
+infowski 01/23/2023 7:04 PM
+"modifier keys"
+[infowski]
+Deleted User and if the next button doesnt match any keybinds, reset it
+back to the first keybinds list?
+infowski 01/23/2023 7:04 PM
+yeah, something like that maybe.
+[] infowski though definitely we could do some key combos - eg. if you
+press button X we'll apply a different ke...
+Deleted User 01/23/2023 7:03 PM
+and if the next button doesnt match any keybinds, reset it back to the
+first keybinds list? (edited)
+[jclsn]
+hellobox. mr is bt
+jclsn 01/23/2023 7:03 PM
+Okay didn't know that
+[infowski]
+infowski 01/23/2023 7:03 PM
+magic remote is kinda fucky too with multiple keypresses
+[jclsn]
+[] infowski though definitely we could do some key combos - eg. if you
+press button X we'll apply a different ke...
+jclsn 01/23/2023 7:02 PM
+Yes that might work
+hellobox. 01/23/2023 7:02 PM
+mr is bt
+[infowski]
+infowski 01/23/2023 7:02 PM
+though definitely we could do some key combos - eg. if you press button
+X we'll apply a different keybinds list for next press
+Deleted User 01/23/2023 7:02 PM
+what?
+01/23/2023 7:02 PM
+magic ir remote?
+[jclsn]
+jclsn 01/23/2023 7:02 PM
+The "magic" one
+Deleted User 01/23/2023 7:01 PM
+i had bluetooth remotes in mind, though i dont know if they do the same
+[jclsn]
+jclsn 01/23/2023 7:01 PM
+Yes
+Deleted User 01/23/2023 7:01 PM
+youre using an ir remote, right?
+[jclsn]
+jclsn 01/23/2023 7:01 PM
+So no key combos I fear...
+[jclsn]
+Deleted User and only see `id => 0` when you release the button
+jclsn 01/23/2023 7:01 PM
+It also flips back to 0 when you press any other button
+[infowski]
+infowski 01/23/2023 7:01 PM
+@Deleted User it's more complicated than that - IR remotes do not
+support multiple keypresses.
+Deleted User 01/23/2023 7:00 PM
+and only see id => 0 when you release the button
+01/23/2023 6:59 PM
+if you hold the button down, do you see id => 1 in the logs?
+01/23/2023 6:59 PM
+wait
+[jclsn]
+Deleted User i think this might be possible
+jclsn 01/23/2023 6:59 PM
+Seems like every key always flips back to zero though
+Deleted User 01/23/2023 6:57 PM
+it probably wouldnt work for ir remotes though, so id need someone to
+test
+01/23/2023 6:56 PM
+since every button seems to have a seperate event for button down /
+button up, i would assume we can keep track of what buttons are down
+[] jclsn Would be nice if it also supported key combinations. Then I
+could press some button + volume up to s...
+Deleted User 01/23/2023 6:56 PM
+i think this might be possible
+Deleted User 01/23/2023 6:55 PM
+on firefox
+01/23/2023 6:55 PM
+it seems one of the css styles is preventing new lines
+[] jclsn Would be nice if it also supported key combinations. Then I
+could press some button + volume up to s...
+hellobox. 01/23/2023 6:55 PM
+i don't know if the bt remotes support that, but i'm 99% sure ir ones
+don't
+Deleted User im not sure why but its specific to the interface?
+Deleted User 01/23/2023 6:55 PM
+(no content)
+[image.png]
+ image.png
+131.55 KB External
+[jclsn]
+[] infowski Let me see what I can do.
+jclsn 01/23/2023 6:55 PM
+No hurry, I have been living with this for months now
+[jclsn]
+jclsn 01/23/2023 6:55 PM
+Would be nice if it also supported key combinations. Then I could press
+some button + volume up to send a command to WLED to increase and
+decrease brightness
+[infowski]
+infowski 01/23/2023 6:54 PM
+Let me see what I can do.
+[jclsn]
+jclsn 01/23/2023 6:53 PM
+Now I only need the autostart fix and I am a happy customer again ^^
+01/23/2023 6:53 PM
+Yes it works. Nice
+[infowski]
+infowski 01/23/2023 6:52 PM
+@jclsn ↑ here, a oneliner that works for me.
+Deleted User 01/23/2023 6:52 PM
+but only on firefox
+[infowski]
+infowski 01/23/2023 6:52 PM
+whoops, typo.
+01/23/2023 6:51 PM
+if luna-send -n 1 'luna://org.webosbrew.piccap.service/status' '{}' | grep '"isRunning":true'; then luna-send -n 1 'luna://org.webosbrew.piccap.service/stop' '{}' ; else luna-send -n 1 'luna://org.webosbrew.piccap.service/start' '{}' ; fi
+Deleted User i can also confirm the firefox doesnt allow newlines
+Deleted User 01/23/2023 6:51 PM
+im not sure why but its specific to the interface?
+[jclsn]
+jclsn 01/23/2023 6:51 PM
+Does it not use systemd?
+01/23/2023 6:50 PM
+Oh it is javascript. Guess I would need bash
+[infowski]
+infowski 01/23/2023 6:50 PM
+@jclsn hold up, let me write a oneliner.
+Deleted User 01/23/2023 6:50 PM
+specifically any keypresses made while its fetching the logs
+01/23/2023 6:50 PM
+and also ignores half of my keypresses
+[jclsn]
+jclsn 01/23/2023 6:50 PM
+Tried to paste the script from Piccap On/Off, but it also does nothing
+Deleted User 01/23/2023 6:50 PM
+i can also confirm the firefox doesnt allow newlines
+[infowski]
+infowski 01/23/2023 6:49 PM
+notgreat.js
+hellobox. 01/23/2023 6:49 PM
+fucking js
+[infowski]
+infowski 01/23/2023 6:49 PM
+so it sums up to ~120ms stutter here every second.
+Deleted User all the `XMLHttpRequest`s are synchronous
+Deleted User 01/23/2023 6:49 PM
+which i did it this way so that i could have a simple get(url) function
+which would return the text response of whatever url
+[infowski]
+Deleted User because it fetches 3 of those, every second or so
+infowski 01/23/2023 6:48 PM
+In that regards it does matter, because it blocks the whole js main
+loop, until it returns.
+[infowski]
+infowski 01/23/2023 6:48 PM
+oh yeah, newlines are fucked only on firefox.
+Deleted User 01/23/2023 6:47 PM
+because it fetches 3 of those, every second or so
+Deleted User all the `XMLHttpRequest`s are synchronous
+Deleted User 01/23/2023 6:47 PM
+dont think this matters except for when it fetches the logs
+[infowski]
+infowski 01/23/2023 6:47 PM
+i am using firefox here, let's try chrome.
+Deleted User 01/23/2023 6:46 PM
+really?
+[image.png]
+ image.png
+12.83 KB External
+[infowski]
+infowski 01/23/2023 6:46 PM
+I can't make a new line in script textarea either xD (edited)
+Deleted User 01/23/2023 6:46 PM
+but it hasnt ignored anything for me
+01/23/2023 6:46 PM
+although in my case it simply means that the input box kind of lags
+[infowski]
+infowski 01/23/2023 6:45 PM
+oh god, that too probably.
+Deleted User but... it *might* have something to do with the fact that
+uhhh....
+Deleted User 01/23/2023 6:45 PM
+all the XMLHttpRequests are synchronous
+[jclsn]
+[] infowski Why are you even trying to remap key id? You can just
+start/stop piccap directly in a script, *or* l...
+jclsn 01/23/2023 6:45 PM
+How would I restart Piccap in a script?
+[infowski]
+infowski 01/23/2023 6:45 PM
+wait are you rebuilding whole ui on every keypress? O_o
+Deleted User 01/23/2023 6:45 PM
+but... it might have something to do with the fact that uhhh....
+[] infowski I have LG Input Hook configuration UI open on my laptop. I
+am trying to write in a script prompt and...
+Deleted User 01/23/2023 6:44 PM
+hmm, so far it hasnt ignored any for me
+[infowski]
+infowski 01/23/2023 6:43 PM
+I have LG Input Hook configuration UI open on my laptop. I am trying to
+write in a script prompt and it just... ignores some keypresses.
+[] infowski <@456226577798135808> i have no idea what is going on, but
+UI keeps missing my key presses lol
+Deleted User 01/23/2023 6:43 PM
+wdym?
+Deleted User 01/23/2023 6:43 PM
+https://github.com/Bahoue/OnOff-Remote/blob/main/app/index.html
+[infowski]
+infowski 01/23/2023 6:43 PM
+@Deleted User i have no idea what is going on, but UI keeps missing my
+key presses lol
+[jclsn]
+[] infowski Why are you even trying to remap key id? You can just
+start/stop piccap directly in a script, *or* l...
+jclsn 01/23/2023 6:42 PM
+Ah great will try
+[infowski]
+infowski 01/23/2023 6:41 PM
+Why are you even trying to remap key id? You can just start/stop piccap
+directly in a script, or launch ui30 app (that's what the "rakuten"
+button /piccaponoff app is)
+[jclsn]
+Deleted User and this doesnt work?
+jclsn 01/23/2023 6:40 PM
+No, I tried it (edited)
+[] jclsn Yeh
+Deleted User 01/23/2023 6:40 PM
+and this doesnt work?
+[image.png]
+ image.png
+7.97 KB External
+[jclsn]
+jclsn 01/23/2023 6:40 PM
+Ah okay
+hellobox. 01/23/2023 6:40 PM
+when you launch hbchannel
+[jclsn]
+jclsn 01/23/2023 6:39 PM
+So when you launch any app? So I would have to open YouTube or something
+to execute the script?
+[jclsn]
+[] infowski There are some fixes. One is going to be release with
+Homebrew Channel v0.5.2 - we'll launch startup...
+jclsn 01/23/2023 6:38 PM
+Halleluyah!
+[jclsn]
+Deleted User so, all you want to do is remap the amazon prime button, to
+launch the "rakuten" app (which in this ...
+jclsn 01/23/2023 6:38 PM
+Yeh
+[infowski]
+infowski 01/23/2023 6:38 PM
+There are some fixes. One is going to be release with Homebrew Channel
+v0.5.2 - we'll launch startup script on app launch.
+Deleted User 01/23/2023 6:38 PM
+so, all you want to do is remap the amazon prime button, to launch the
+"rakuten" app (which in this case is actually piccap on/off)
+[jclsn]
+Deleted User you mean your autostart is broken?
+jclsn 01/23/2023 6:37 PM
+Yes, no fix in sight unfortunately
+[jclsn]
+Deleted User is that it?! why would you need that on your tv
+jclsn 01/23/2023 6:37 PM
+I don’t need that at all. I don’t even use Netflix. I would happily
+remap those buttons to something more useful
+[jclsn]
+jclsn 01/23/2023 6:35 PM
+But for Germans the name Rakuten sounds a bit retarded I guess, so it is
+not so popular here ^^
+Deleted User 01/23/2023 6:35 PM
+okay the streaming service
+01/23/2023 6:35 PM
+oh
+01/23/2023 6:35 PM
+is that it?! why would you need that on your tv
+[] jclsn It is a shop like Amazon and also has a streaming service
+hellobox. 01/23/2023 6:35 PM
+oh
+Deleted User 01/23/2023 6:34 PM
+this? https://www.rakuten.com/
+Earn Cash Back at stores you 
+Join Rakuten for free and get a $10 Welcome Bonus.
+[]
+[jclsn]
+Deleted User i have no idea what rakuten is
+jclsn 01/23/2023 6:34 PM
+It is a shop like Amazon and also has a streaming service
+hellobox. 01/23/2023 6:34 PM
+wtf? https://www.rakuten.com/
+[jclsn]
+Deleted User does your tv even support rakuten? like is it in the app
+store
+jclsn 01/23/2023 6:34 PM
+Yeah the app is there, I just have a 2019 remote
+Deleted User 01/23/2023 6:34 PM
+i have no idea what rakuten is
+[] jclsn No, there is a Piccap On/Off app that only works with the
+Rakuten button. I never understood why onl...
+rembihnutur 01/23/2023 6:33 PM
+I think the Rakuten button was used because nobody uses Rakuten  btw.
+What is rakuten?
+Deleted User 01/23/2023 6:33 PM
+due to an update
+[] jclsn Buuut since my apps don’t start automatically anymore, I would
+have to manually start the input hook...
+Deleted User 01/23/2023 6:33 PM
+you mean your autostart is broken?
+[jclsn]
+hellobox. is that the `ui30` thing?
+jclsn 01/23/2023 6:33 PM
+Yeah I guess
+[jclsn]
+jclsn 01/23/2023 6:32 PM
+Buuut since my apps don’t start automatically anymore, I would have to
+manually start the input hook app as well I think 
+Deleted User 01/23/2023 6:32 PM
+does your tv even support rakuten? like is it in the app store
+01/23/2023 6:32 PM
+so basically, you cant use the on/off app because you dont have a
+rakuten button?
+01/23/2023 6:32 PM
+i was about to say that
+hellobox. 01/23/2023 6:32 PM
+it just replaces the rakuten app
+01/23/2023 6:32 PM
+is that the ui30 thing?
+[jclsn]
+Deleted User so you want to remap the prime key to both rakuten and
+toggling piccap?
+jclsn 01/23/2023 6:31 PM
+No, there is a Piccap On/Off app that only works with the Rakuten
+button. I never understood why only that key works, but well. If I can
+map the Prime key to do the same, I won’t need this app
+Deleted User 01/23/2023 6:30 PM
+so you want to remap the prime key to both rakuten and toggling piccap?
+[] jclsn Yeah, but I could just map the command to toggle Piccap
+directly
+Deleted User 01/23/2023 6:30 PM
+wait, im getting confused now
+[infowski]
+infowski 01/23/2023 6:29 PM
+you can probably return main UI page on / directly, or do a redirect.
+[jclsn]
+Deleted User i dont know
+jclsn 01/23/2023 6:29 PM
+Yeah, but I could just map the command to toggle Piccap directly
+Deleted User 01/23/2023 6:29 PM
+yeah i want to fix the ui sometime soon
+[infowski]
+infowski 01/23/2023 6:28 PM
+UI is not pretty - dark blue link on grey background is unreadable xD
+Deleted User 01/23/2023 6:28 PM
+if remapping to that doesnt work, it probably wont work
+01/23/2023 6:28 PM
+the button id is 1044
+[] jclsn My remote doesn't have the Rakuten key, that is why I want to
+remap the Amazon Prime key to it and u...
+Deleted User 01/23/2023 6:28 PM
+i dont know
+[infowski]
+infowski 01/23/2023 6:28 PM
+LG Input Hook on webOS 3.8 → so far seems to launch.
+hellobox. even if they use 16 bits for button IDs, it's not like there's
+a shortage of them
+Deleted User 01/23/2023 6:18 PM
+maybe they will release a remote with 65536 buttons
+[yolofant]
+[] ccarnell98 I could try, but
+https://www.webosose.org/docs/guides/core-topics/graphics-input/graphics-input-over...
+yolofant 01/23/2023 6:15 PM
+yes, but not through mesa
+[infowski]
+pho9574 next step: make magic remote (airmouse) work with kodi running
+on a chromecast/fireTV , pretty pleas...
+infowski 01/23/2023 6:13 PM
+you need to write android agent for Magic4PC.
+[ccarnell98]
+[] yolofant you shouldn't use mesa, can you not use rendersystem=gl?
+https://github.com/xbmc/xbmc/blob/master/to...
+ccarnell98 01/23/2023 6:10 PM
+I could try, but
+https://www.webosose.org/docs/guides/core-topics/graphics-input/graphics-input-overview/
+specifically mentions Open GLES
+Graphics and Input
+To handle graphics operations as well as input events and weld them into
+seamless user experience, a software platform requires a set of
+well-defined mechanisms to manage graphics and input. In webOS, Luna
+Surface Manager (LSM) is the component that manages graphics and input.
+LSM is fully compliant with the Wayland protocol, which is the state-...
+[]
+pho9574 01/23/2023 6:06 PM
+next step: make magic remote (airmouse) work with kodi running on a
+chromecast/fireTV , pretty please 
+[yolofant]
+[] ccarnell98 any idea how to fix this? libEGL warning: MESA-LOADER:
+failed to open swrast: /usr/lib/libstdc++.so....
+yolofant 01/23/2023 6:06 PM
+you shouldn't use mesa, can you not use rendersystem=gl?
+https://github.com/xbmc/xbmc/blob/master/tools/depends/target/Makefile#L105
+xbmc/Makefile at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[infowski]
+infowski 01/23/2023 6:04 PM
+You can do anything basically.
+[infowski]
+pho9574 wow very cool! can "execute" be used to issue a CURL command and
+execute a home assistant function o...
+infowski 01/23/2023 6:04 PM
+Yes.
+ 1
+pho9574 01/23/2023 5:59 PM
+wow very cool! can "execute" be used to issue a CURL command and execute
+a home assistant function on a remote pi?
+rembihnutur 01/23/2023 5:54 PM
+Why do you need the command for piccap? I thought you want to open
+Rakuten
+[jclsn]
+rembihnutur Click to see attachment
+jclsn 01/23/2023 5:53 PM
+Yes, but I need the command to toggle Piccap. I don't want to turn off
+the screen
+rembihnutur 01/23/2023 5:52 PM
+You can select execute here
+[] jclsn Ah okay will try
+rembihnutur 01/23/2023 5:52 PM
+(no content)
+[IMG_3136.jpg]
+ IMG_3136.jpg
+2.2 MB External
+[jclsn]
+jclsn 01/23/2023 5:46 PM
+But I guess I would have to find out the command for toggling Piccap
+first. It is not started with systemd I assume ^^
+01/23/2023 5:45 PM
+Ah okay will try
+[] jclsn I can't ssh into my TV unfortunately. As long as the startup
+issue I mentioned in <#4134982353074258...
+rembihnutur 01/23/2023 5:45 PM
+But you have Input hook installed? Input hook can execute commands.
+hellobox. 01/23/2023 5:44 PM
+even if they use 16 bits for button IDs, it's not like there's a
+shortage of them
+[jclsn]
+rembihnutur But it should work with a command. I remapped the Alexa
+button to turn off the display with luna-sen...
+jclsn 01/23/2023 5:44 PM
+I can't ssh into my TV unfortunately. As long as the startup issue I
+mentioned in # unknown-channel is not fixed, I won't bother doing
+anything like that
+[jclsn]
+hellobox. why would they distribute different versions of `lginput2` (or
+whatever) though?
+jclsn 01/23/2023 5:43 PM
+No idea, but seems like they do. Mapping the Prime button to one of
+those mentioned above, results in a dead button
+rembihnutur Of course it doesnt work. You can remapp a button only with
+a button you already have.
+hellobox. 01/23/2023 5:42 PM
+why would they distribute different versions of lginput2 (or whatever)
+though?
+rembihnutur 01/23/2023 5:41 PM
+But it should work with a command. I remapped the Alexa button to turn
+off the display with luna-send -n 1
+'luna://com.webos.service.tvpower/power/turnOffScreen' '{}' Something
+similar should exist to open specific apps. (edited)
+[jclsn]
+jclsn 01/23/2023 5:41 PM
+Ah okay, pity
+rembihnutur 01/23/2023 5:40 PM
+Of course it doesnt work. You can remapp a button only with a button you
+already have. (edited)
+[jclsn]
+jclsn 01/23/2023 5:40 PM
+Yeah I am trying that, but 1044 does not work
+rembihnutur 01/23/2023 5:39 PM
+It should be possible to open an app with a command
+01/23/2023 5:39 PM
+You could use Input Hook.
+https://repo.webosbrew.org/apps/org.webosbrew.inputhook
+hellobox. 01/23/2023 5:37 PM
+if the remote that came with the tv doesn't have a rakuten button, will
+the tv have support for it?
+[jclsn]
+rembihnutur That depends on your remote control. On the magic Remote
+from 2021 TVs its 1044. Alexa is 1086
+jclsn 01/23/2023 5:35 PM
+My remote doesn't have the Rakuten key, that is why I want to remap the
+Amazon Prime key to it and use it for toggling Piccap
+[] jclsn Can someone tell me the number of the Rakuten button? I would
+like to remap the Amazon Prime button ...
+rembihnutur 01/23/2023 5:35 PM
+That depends on your remote control. On the magic Remote from 2021 TVs
+its 1044. Alexa is 1086
+[jclsn]
+[] ccarnell98 Sorry my question was aimed <@310158180728700929> . I'm
+doing some digging. It is homebrew, well it ...
+jclsn 01/23/2023 5:31 PM
+Oh, that would be nice. Someone else here was also working on it, but
+only on Kodi 9 I think
+[ccarnell98]
+ccarnell98 01/23/2023 5:21 PM
+Sorry my question was aimed @Smx . I'm doing some digging. It is
+homebrew, well it will be eventually if I can ever get kodi to work on
+lg web os
+ 1
+[jclsn]
+[] ccarnell98 any idea how to fix this? libEGL warning: MESA-LOADER:
+failed to open swrast: /usr/lib/libstdc++.so....
+jclsn 01/23/2023 5:18 PM
+You will probably have more luck asking in a buildroot IRC channel than
+here or in a mesa channel (edited)
+[jclsn]
+[] infowski Not an expert but I don't think you're supposed to build
+mesa here? 
+jclsn 01/23/2023 5:17 PM
+He probably thought he was on the Libretro server. Ah no, he is actually
+building it for webOS with buildroot hmm (edited)
+[jclsn]
+jclsn 01/23/2023 5:16 PM
+Can someone tell me the number of the Rakuten button? I would like to
+remap the Amazon Prime button (1038) to it
+[ccarnell98]
+ccarnell98 01/23/2023 5:08 PM
+mesa is one of the dependencies for kodi
+[infowski]
+infowski 01/23/2023 5:00 PM
+Not an expert but I don't think you're supposed to build mesa here? 
+[ccarnell98]
+ccarnell98 01/23/2023 4:56 PM
+it does use g++ in several other places however
+01/23/2023 4:56 PM
+seems to be using gcc to compile libgallium_dri and therefore does not
+use -static-libstdc++
+01/23/2023 4:55 PM
+"command":
+"/home/developer/toolchain/arm-webos-linux-gnueabi_sdk-buildroot/bin/arm-webos-linux-gnueabi-gcc
+-Isrc/gallium/targets/dri/libgallium_dri.so.p
+01/23/2023 4:55 PM
+compile_commands.json
+01/23/2023 4:55 PM
+build.ninja: build src/gallium/targets/dri/swrast_dri.so: CUSTOM_COMMAND
+src/gallium/targets/dri/libgallium_dri.so | /usr/bin/ln COMMAND =
+/usr/bin/ln -f src/gallium/targets/dri/libgallium_dri.so
+src/gallium/targets/dri/swrast_dri.so description = Generating$
+devenv_swrast_dri.so$ with$ a$ custom$ command
+01/23/2023 4:55 PM
+I did some digging in to see what it generates
+01/23/2023 4:54 PM
+./configure
+--prefix=/media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-depends
+--host=arm-webos-linux-gnueabi \ --with-rendersystem=gles
+--enable-debug=no --with-target-cflags='-march=armv7-a
+-mfloat-abi=softfp -mfpu=neon' \
+--with-target-cxxflags='-static-libstdc++'
+01/23/2023 4:54 PM
+I already have -static-libstdc++ in configure
+01/23/2023 4:54 PM
+any idea how to fix this? libEGL warning: MESA-LOADER: failed to open
+swrast: /usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.29' not found
+(required by
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-depends/
+[infowski]
+infowski 01/23/2023 4:23 PM
+I dunno.
+01/23/2023 4:21 PM
+I see an unexported function that seems to be called
+mrcu_button_event_callback in lginput2... (edited)
+[astur3l]
+astur3l 01/23/2023 4:17 PM
+i thought most buttons sending ir codes, despite the bt connection 
+(usually bt works where ir not)
+[infowski]
+infowski 01/23/2023 4:14 PM
+Oh, I think they may be short-circuiting this, since stb power/stb menu
+is actually sending ir codes 
+[infowski]
+infowski 01/23/2023 3:59 PM
+There's a chance they handle these buttons differently, and thus... we
+probably need to hook them earlier on.
+[aabytt]
+aabytt 01/23/2023 10:27 AM
+yeah, yesterday got the same behaviour on these buttons
+Deleted User 01/23/2023 9:20 AM
+issue on the input hook application
+01/23/2023 9:20 AM
+@infowski know anything about this?
+[image.png]
+ image.png
+22.82 KB External
+ww8543 01/23/2023 7:55 AM
+if not, you can just enable it in the menu, and it will build it no
+problem
+hellobox. you can just use br-nc4 to build them
+ww8543 01/23/2023 7:54 AM
+dont the releases of br-nc4 already come with a compiled gdbserver and
+strace?
+hellobox. 01/23/2023 4:22 AM
+so i reversed a little bit of the cdbg stuff, and it doesn't look that
+interesting
+[ccarnell98]
+ccarnell98 01/23/2023 3:53 AM
+I'll look into downloading the wayland egl sample and see if that works
+from cmd line or from app launcher
+hellobox. 01/23/2023 3:53 AM
+they're just the standard headers though
+[ccarnell98]
+ccarnell98 01/23/2023 3:53 AM
+Ah yes it was @Smx
+hellobox. 01/23/2023 3:52 AM
+i also have GLES3 headers from lg
+01/23/2023 3:52 AM
+and egl
+01/23/2023 3:51 AM
+at least gles and gles2 (edited)
+01/23/2023 3:51 AM
+looks like it
+01/23/2023 3:51 AM
+i don't know if br-nc4 has gl headers
+01/23/2023 3:51 AM
+wasn't me
+[ccarnell98]
+ccarnell98 01/23/2023 3:50 AM
+if I want to compile the wayland samples you linked earlier, i'm
+assuming I need to do the same to get the headers for compilation?
+hellobox. 01/23/2023 3:50 AM
+i downloaded the source
+01/23/2023 3:50 AM
+i may have had problems building strace with br-nc4
+[ccarnell98]
+ccarnell98 01/23/2023 3:49 AM
+is there a particular command or did you just download the source? new
+to buildroot 
+hellobox. 01/23/2023 3:49 AM
+i also built gdbserver with br-nc4
+01/23/2023 3:49 AM
+i built gdbserver and strace with the lg toolchain
+01/23/2023 3:49 AM
+presumably
+01/23/2023 3:49 AM
+you can just use br-nc4 to build them
+[ccarnell98]
+ccarnell98 01/23/2023 3:49 AM
+or would it be quicker to download the source and compile them
+01/23/2023 3:48 AM
+how do I go about adding gdb and strace to buildroot so that it makes me
+some nice arm binary for them?
+hellobox. 01/23/2023 3:19 AM
+i don't think it's causing any real problems
+01/23/2023 3:19 AM
+that cdbg stuff seems to just mean certain debug output won't work
+01/23/2023 3:17 AM
+and probably egl
+01/23/2023 3:17 AM
+ugh, i'm going to have to make ida type libraries for gles (edited)
+[ccarnell98]
+ccarnell98 01/23/2023 2:55 AM
+(no content)
+ c2oled2.tar.xz
+6.4 MB External
+01/23/2023 2:55 AM
+(no content)
+ c2oled.tar.xz
+251.58 KB External
+[ccarnell98]
+ccarnell98 01/23/2023 2:38 AM
+/usr/lib $ cat /var/run/nyx/* { "board_type": "O22_DVB", "device_name":
+"o22", "hardware_id": "HE_DTV_W22O_AFABATAA", "hardware_revision":
+"BOARD_DV_1ST", "keyboard_type": "virtual", "modem_present": "N",
+"product_id": "OLED65C24LA", "ram_size": "2.5 GB", "storage_size": "8
+GB" } { "core_os_kernel_version": "5.4.96-266.mlt4tv.1", "core_os_name":
+"Rockhopper", "core_os_release": "7.2.0-47", "core_os_release_codename":
+"mullet-marine", "encryption_key_type": "prodkey",
+"webos_build_datetime": "20221207040929", "webos_build_id": "47",
+"webos_imagename": "lib32-starfish-global-secured",
+"webos_manufacturing_version": "03.21.45", "webos_name": "webOS TV",
+"webos_prerelease": "", "webos_release": "7.2.0",
+"webos_release_codename": "mullet-marine", "webos_release_platformcode":
+"7" }
+01/23/2023 2:36 AM
+/usr/lib $ strings libmali.so.0.28.0 | grep mali_cdbg_channels In file:
+../cdbg/src/mali_cdbg_channels.c line: 571 In file:
+../cdbg/src/mali_cdbg_channels.c line: 647 mali_cdbg_channels.c
+mali_cdbg_channels_utils.c
+[smx2460]
+smx2460 01/23/2023 2:35 AM
+we'll need to RE the relevant functions to see what they do and why they
+fail
+hellobox. 01/23/2023 2:34 AM
+unfortunately it looks like the source for libmali hasn't leaked onto
+github
+[smx2460]
+smx2460 01/23/2023 2:34 AM
+(this is a sample)
+01/23/2023 2:34 AM
+these 4 are the most important
+01/23/2023 2:34 AM
+        "hardware_id": "HE_DTV_W18H_AFADABAA",
+        "product_id": "OLED65B87LC",
+        "board_type": "M16P_DVB",
+        "webos_release": "4.4.0",
+[ccarnell98]
+ccarnell98 01/23/2023 2:33 AM
+one mo
+01/23/2023 2:33 AM
+Mali-G52 apparently
+[smx2460]
+smx2460 01/23/2023 2:33 AM
+we want the HEDTV otaID
+[ccarnell98]
+ccarnell98 01/23/2023 2:32 AM
+Cortex A76
+ 1
+[smx2460]
+[] smx2460 (`cat /var/run/nyx/*` and remove serial numbers from output)
+smx2460 01/23/2023 2:32 AM
+@Craig
+[ccarnell98]
+ccarnell98 01/23/2023 2:32 AM
+WebOS is 7.2.0-47
+hellobox. 01/23/2023 2:32 AM
+pretty big
+    root@LGwebOSTV[k7lp 6.3.2]:/usr/lib# ls -l libmali.so.0.17.0
+    -rwxr-xr-x    1 root     root      28815640 Dec 13 22:30 libmali.so.0.17.0
+[ccarnell98]
+hellobox. <@1051573528522133655> what version of webos and soc are you
+working on?
+ccarnell98 01/23/2023 2:32 AM
+Linux LGwebOSTV 5.4.96-266.mlt4tv.1 #1 SMP PREEMPT Fri Nov 25 04:25:18
+UTC 2022 aarch64 GNU/Linux
+hellobox. 01/23/2023 2:32 AM
+    root@LGwebOSTV[k7lp 6.3.2]:/usr/lib# strings libmali.so.0.17.0 | grep mali_cdbg_channels
+    In file: cdbg/src/mali_cdbg_channels.c  line: 611
+    In file: cdbg/src/mali_cdbg_channels.c  line: 688
+[smx2460]
+smx2460 01/23/2023 2:30 AM
+but yeah better post the full info
+[smx2460]
+hellobox. <@1051573528522133655> what version of webos and soc are you
+working on?
+smx2460 01/23/2023 2:29 AM
+i know it's an LX
+[smx2460]
+smx2460 01/23/2023 2:29 AM
+(cat /var/run/nyx/* and remove serial numbers from output)
+hellobox. 01/23/2023 2:29 AM
+    root@LGwebOSTV[k7lp 6.3.2]:/usr/lib# grep 'cdbgp_channel_open' libmali.so.0.17.0
+    cdbgp_channel_open
+[smx2460]
+smx2460 01/23/2023 2:28 AM
+(and preferrably OTA ID too)
+hellobox. 01/23/2023 2:28 AM
+@Craig what version of webos and soc are you working on?
+[smx2460]
+smx2460 01/23/2023 2:27 AM
+post them here. me or someone else can check them if they feel like
+(edited)
+01/23/2023 2:27 AM
+but i'll look later, i gotta go
+01/23/2023 2:26 AM
+you can do a grep -R cdbgp_channel_init on the lib folder to see which
+library it is
+01/23/2023 2:26 AM
+me/us (edited)
+01/23/2023 2:26 AM
+we need to RE them
+[smx2460]
+[] ccarnell98 Can't find anything online about cdbgp_channel_open or
+cdbgp_channel_init
+smx2460 01/23/2023 2:25 AM
+send me the EGL libs
+hellobox. 01/23/2023 2:24 AM
+worst case, you'd have to swap a board
+[ccarnell98]
+ccarnell98 01/23/2023 2:24 AM
+It's a 65 inch TV, and I live up 2 floors and it's not easy to replace
+if I mess it up  But rooting is something I will probably end up doing
+hellobox. 01/23/2023 2:07 AM
+suit yourself; i just don't understand why anyone would want to do
+development in such a restricted environment when there's a simple
+alternative
+01/23/2023 2:05 AM
+it's not necessary to unroot for firmware updates, and they generally
+add very little value anyway
+[ccarnell98]
+hellobox. why would you need to undo it?
+ccarnell98 01/23/2023 2:05 AM
+Firmware updates
+hellobox. 01/23/2023 1:58 AM
+and delete /var/luna/preferences/devmode_enabled i guess
+01/23/2023 1:58 AM
+if you're using homebrew channel, all you'd have to do is uninstall it
+[] ccarnell98 I've also considered that there is very little information
+about undoing root mode
+hellobox. 01/23/2023 1:57 AM
+why would you need to undo it?
+[ccarnell98]
+ccarnell98 01/23/2023 1:57 AM
+I've also considered that there is very little information about undoing
+root mode
+[ccarnell98]
+hellobox. <@1051573528522133655> is there a reason you haven't rooted
+your tv?
+ccarnell98 01/23/2023 1:56 AM
+Because I can ssh, copy files, compile and upload, has a good developer
+mode. If only LG / WebOS was more open about wayland. But I guess it's
+closed tech as it just implements some protocols
+[ccarnell98]
+ccarnell98 01/23/2023 1:55 AM
+Can't find anything online about cdbgp_channel_open or
+cdbgp_channel_init
+January 22, 2023
+hellobox. 01/22/2023 10:47 PM
+you can use PmLogCtl to control what gets logged, but you may have to
+enable dev logs and/or be rooted
+01/22/2023 10:44 PM
+most of the logs are in /var/log (edited)
+01/22/2023 10:43 PM
+@Craig is there a reason you haven't rooted your tv?
+[ccarnell98]
+ccarnell98 01/22/2023 10:43 PM
+Do find it odd that it continues to run in the background. Not sure why
+I can't get it to run from the menu as it calls the same kodi.sh script
+to at least write to some logs
+01/22/2023 10:41 PM
+I started kodi.bin --debug, has some more information in there, will
+have a look at that tomorrow
+01/22/2023 10:41 PM
+Does web os write logs somewhere ?
+[infowski]
+infowski 01/22/2023 10:34 PM
+yep, that's defaults for devmode apps...
+[ccarnell98]
+ccarnell98 01/22/2023 10:33 PM
+drwxrwxrwx 8 1000 1000 4096 Jan 22 20:52 org.xbmc.kodi
+01/22/2023 10:33 PM
+permissions look pretty open
+01/22/2023 10:31 PM
+nothing in there also
+01/22/2023 10:31 PM
+I compiled with ./configure
+--prefix=/media/developer/apps/usr/palm/applications/org.xbmc.kodi/xbmc-depends
+01/22/2023 10:31 PM
+.kodi doesn't exist in in
+/media/developer/apps/usr/palm/applications/org.xbmc.kodi
+[infowski]
+infowski 01/22/2023 10:30 PM
+nah, it's usual webOS logs.
+hellobox. 01/22/2023 10:30 PM
+along with a lot of not-so-useful shit
+01/22/2023 10:30 PM
+or maybe most of it is from DEBUG
+01/22/2023 10:30 PM
+in general you get a lot of useful shit with dev logs
+[ccarnell98]
+ccarnell98 01/22/2023 10:30 PM
+oops 
+01/22/2023 10:30 PM
+pwd
+[infowski]
+infowski 01/22/2023 10:30 PM
+that's where HOME is.
+[infowski]
+[] ccarnell98 when launching from ssh it's in /media/developer/.kodi
+infowski 01/22/2023 10:29 PM
+check /media/developer/apps/usr/palm/applications/APP.ID/.kodi
+[ccarnell98]
+ccarnell98 01/22/2023 10:29 PM
+but when launching from web os menu, nothing is written
+[infowski]
+hellobox. you should probably enable dev logs
+infowski 01/22/2023 10:29 PM
+That won't make any difference, since we are just looking for logs of
+the app itself.
+[ccarnell98]
+ccarnell98 01/22/2023 10:29 PM
+when launching from ssh it's in /media/developer/.kodi
+[infowski]
+infowski 01/22/2023 10:29 PM
+where is kodi.log stored? is it saved to a relative path? if so, that
+might be the issue.
+hellobox. 01/22/2023 10:29 PM
+you should probably enable dev logs
+[ccarnell98]
+ccarnell98 01/22/2023 10:28 PM
+would they be written anywhere else?
+01/22/2023 10:28 PM
+luna-send-pub -n 1 palm://com.palm.applicationManager/launch
+'{"id":"org.xbmc.kodi"}' {"returnValue":true}
+[smx2460]
+smx2460 01/22/2023 10:28 PM
+not even Mali errors?
+[ccarnell98]
+ccarnell98 01/22/2023 10:27 PM
+but sadly nothing in kodi.log.
+[ccarnell98]
+[] infowski `luna-send-pub -n 1
+palm://com.palm.applicationManager/launch '{"id":"org.xbmc.kodi"}'`
+ccarnell98 01/22/2023 10:26 PM
+Interesting .Now get a blank screen
+[smx2460]
+smx2460 01/22/2023 10:26 PM
+notice eglGetPlatformDisplayEXT uses wayland to get the display
+01/22/2023 10:25 PM
+with both gbm and wayland (edited)
+01/22/2023 10:25 PM
+here's where we were looking into EGL on WebOS (edited)
+01/22/2023 10:25 PM
+https://discord.com/channels/407937994037919756/413498235307425802/1017226658060705812
+[infowski]
+infowski 01/22/2023 10:24 PM
+you need to correctly escape it, otherwise bash catches " and it leads
+to invalid JSON message (ie. missing "s)
+01/22/2023 10:24 PM
+luna-send-pub -n 1 palm://com.palm.applicationManager/launch '{"id":"org.xbmc.kodi"}'
+[ccarnell98]
+ccarnell98 01/22/2023 10:24 PM
+do you know the correct format?
+01/22/2023 10:23 PM
+luna-send-pub -n 1 palm://com.palm.applicationManager/launch
+{"id":"org.xbmc.kodi"}
+{"errorCode":2,"returnValue":false,"errorText":"invalid parameters"}
+[smx2460]
+smx2460 01/22/2023 10:23 PM
+the rectangle that holds the graphics
+01/22/2023 10:23 PM
+to basically, afaik, acquire the drawable region
+01/22/2023 10:22 PM
+so it must hook into Wayland/X11/surfaceflinger(Android) (edited)
+01/22/2023 10:22 PM
+but EGL relies on the window system to output graphics
+01/22/2023 10:22 PM
+it's the lower layer
+01/22/2023 10:22 PM
+hmm yeah
+hellobox. 01/22/2023 10:21 PM
+but egl serves the same purpose
+01/22/2023 10:21 PM
+i know
+[smx2460]
+smx2460 01/22/2023 10:21 PM
+so we don't have it here
+01/22/2023 10:21 PM
+and GLX is an extension for X11
+hellobox. 01/22/2023 10:21 PM
+yes
+[smx2460]
+smx2460 01/22/2023 10:21 PM
+isn't WGL windows?
+hellobox. 01/22/2023 10:20 PM
+i.e., a layer between the opengl api and window system
+[smx2460]
+smx2460 01/22/2023 10:20 PM
+which prepares those commands by using the kernel interface (edited)
+01/22/2023 10:20 PM
+and the userland EGL implementation
+hellobox. 01/22/2023 10:20 PM
+isn't egl more like glx or wgl?
+[smx2460]
+smx2460 01/22/2023 10:20 PM
+a graphic driver is made of 2 parts: a kernel driver that sends and
+receives commands from the GPU
+01/22/2023 10:20 PM
+but i wouldn't trust them here until you know the stock/proprietary one
+works
+01/22/2023 10:19 PM
+on embedded, some implementation exist
+01/22/2023 10:19 PM
+on PC, the community is big enough that you have opensource
+NVidia/AMD/Intel drivers
+01/22/2023 10:19 PM
+NVidia, AMD, Intel, Mali, ImgTech (PowerVR)
+01/22/2023 10:19 PM
+the vendors (all of them) provide their own
+01/22/2023 10:19 PM
+so you could say Mesa is a reference implementation
+01/22/2023 10:18 PM
+libEGL and libGLES are in turn implementations of OpenGL
+01/22/2023 10:18 PM
+libEGL and libGLES
+[infowski]
+infowski 01/22/2023 10:18 PM
+eglgears*
+[smx2460]
+smx2460 01/22/2023 10:18 PM
+like
+01/22/2023 10:18 PM
+Mesa is an opensource EGL implementation
+[infowski]
+infowski 01/22/2023 10:18 PM
+I have absolutely no practical knowledge about linux graphics subsystem
+but I have a feeling mesa is only used with "normal" kernel graphics
+drivers, and we are relying on ARM Mali proprietary libegl and friends,
+right?
+[smx2460]
+smx2460 01/22/2023 10:18 PM
+i would first try to run a simple mesa3d demo like glxgears
+ 1
+01/22/2023 10:17 PM
+this isn't an SDL app tho, so i'm less sure
+[infowski]
+[] smx2460 so those Mali errors might be permission denials
+infowski 01/22/2023 10:17 PM
+We can run native SDL apps from inside the jail, so I don't think that's
+the issue here.
+[infowski]
+infowski 01/22/2023 10:16 PM
+then you need to use luna-send-pub but that command above is essentially
+what happens when you launch app via home app list.
+[smx2460]
+smx2460 01/22/2023 10:16 PM
+so those Mali errors might be permission denials
+01/22/2023 10:16 PM
+ah.
+[ccarnell98]
+ccarnell98 01/22/2023 10:16 PM
+non-rooted
+[infowski]
+infowski 01/22/2023 10:16 PM
+@Craig just to clarify - you're running on a non-rooted webOS device?
+[smx2460]
+smx2460 01/22/2023 10:15 PM
+that will probably fails because it's used by Wayland server
+01/22/2023 10:15 PM
+if it's trying to acquire EGL directly and for itself
+[ccarnell98]
+ccarnell98 01/22/2023 10:15 PM
+I tried one of the suggestions in that thread, luna-send -n 1
+palm://com.palm.applicationManager/launch {"id":"org.xbmc.kodi"} but all
+I get is permission denied
+[smx2460]
+smx2460 01/22/2023 10:15 PM
+it depends on what backend Kodi is trying to use
+01/22/2023 10:15 PM
+but, thinking about it
+01/22/2023 10:15 PM
+i would first try to see why you have those Mali EGL errors
+01/22/2023 10:14 PM
+unlike SDL that pulls it in at runtime
+[ccarnell98]
+ccarnell98 01/22/2023 10:14 PM
+They had the problem with a black screen too, suggested it was down to
+the sandbox?
+[smx2460]
+smx2460 01/22/2023 10:14 PM
+and the problem is that you need it at build time
+01/22/2023 10:14 PM
+to use wayland directly, you need a matching wayland client
+01/22/2023 10:14 PM
+exactly
+[infowski]
+infowski 01/22/2023 10:14 PM
+(background for @Craig: pretty much all native graphical software we
+built currently working on webOS is just built on SDL which sets up
+wayland surfaces and EGL contexts for us) (edited)
+[ccarnell98]
+ccarnell98 01/22/2023 10:14 PM
+There is a very old thread from 2018 where this was attempted before.
+https://forum.xda-developers.com/t/native-programming-of-webos-lg-tvs-using-qt-5-2-1.3760795/
+Native programming of webos LG TVs using Qt 5.2.1
+I'm not sure if many are aware, but LG TVs running webos (under webos
+2.x here) probably contain a *full* installation of Qt ( in my case full
+Qt 5.2.1 is installed). When I said full, I mean that all Qt quick,
+declarative, webKit, gui, network...
+[]
+[smx2460]
+smx2460 01/22/2023 10:14 PM
+(no content)
+[IMG_20140921_134356.jpg]
+ IMG_20140921_134356.jpg
+2.15 MB External
+01/22/2023 10:14 PM
+(no content)
+[IMG_20140910_223606.jpg]
+ IMG_20140910_223606.jpg
+1.26 MB External
+01/22/2023 10:13 PM
+yes, we did, on WebOS 1
+[infowski]
+infowski 01/22/2023 10:13 PM
+Did we manage to build anything that interacts with wayland on webOS
+directly?
+[smx2460]
+smx2460 01/22/2023 10:13 PM
+just don't remember if it was with Mali
+01/22/2023 10:13 PM
+without doing that
+01/22/2023 10:13 PM
+i remember someone here got it compiled and running
+01/22/2023 10:13 PM
+but i think it's different nowadays
+01/22/2023 10:12 PM
+and I ended up having to do a dirty patch to the wayland client (edited)
+01/22/2023 10:12 PM
+@Craig back when we did this, we had to guess the Wayland version used
+(i did some binary comparisons too)
+[smx2460]
+smx2460 01/22/2023 10:04 PM
+(no content)
+[IMG_20140922_000844.jpg]
+ IMG_20140922_000844.jpg
+2.29 MB External
+01/22/2023 10:04 PM
+(no content)
+[IMG_20140922_001624.jpg]
+ IMG_20140922_001624.jpg
+3 MB External
+01/22/2023 10:04 PM
+(no content)
+[IMG_20140922_000920.jpg]
+ IMG_20140922_000920.jpg
+2.13 MB External
+01/22/2023 10:04 PM
+(which is when we attempted this stunt)
+01/22/2023 10:03 PM
+in WebOS 1 it wasn't
+01/22/2023 10:03 PM
+i don't remember if it's explicitly written in the .so
+[ccarnell98]
+ccarnell98 01/22/2023 10:03 PM
+currently
+01/22/2023 10:03 PM
+I couldn't figure out what version of wayland is in use
+[smx2460]
+smx2460 01/22/2023 10:03 PM
+toggling it will likely pull in a version too new
+01/22/2023 10:02 PM
+and buildroot won't enable wayland unless it's toggled
+01/22/2023 10:02 PM
+    ifeq ($(BR2_PACKAGE_WAYLAND),y)
+    MESA3D_DEMOS_DEPENDENCIES += wayland
+    MESA3D_DEMOS_CONF_OPTS += --enable-wayland
+    else
+    MESA3D_DEMOS_CONF_OPTS += --disable-wayland
+    endif
+01/22/2023 10:02 PM
+the problem with using Wayland is that you need to pick a version close
+enough to the server
+01/22/2023 10:02 PM
+so it might conflict if you try to use it
+01/22/2023 10:02 PM
+but LG uses Wayland
+[ccarnell98]
+ccarnell98 01/22/2023 10:02 PM
+It does, the default for cross-compilation is both atm
+[smx2460]
+smx2460 01/22/2023 10:02 PM
+gbm should be simpler to interface with (edited)
+01/22/2023 10:01 PM
+as an alternative to Wayland
+01/22/2023 10:01 PM
+now, i noticed your EGL also exposes gbm
+01/22/2023 10:01 PM
+perfect
+01/22/2023 10:01 PM
+    ifeq ($(BR2_PACKAGE_XORG7)$(BR2_PACKAGE_HAS_LIBGL),yy)
+    MESA3D_DEMOS_DEPENDENCIES += libgl libglew libglu xlib_libX11 xlib_libXext
+    MESA3D_DEMOS_CONF_OPTS += --enable-gl --enable-x11
+    else
+    MESA3D_DEMOS_CONF_OPTS += --disable-gl --disable-x11
+    endif
+01/22/2023 10:01 PM
+just by enabling mesa3d-demos
+01/22/2023 10:01 PM
+so it might actually work
+01/22/2023 10:01 PM
+        select BR2_PACKAGE_XLIB_LIBX11 if BR2_PACKAGE_XORG7 && BR2_PACKAGE_HAS_LIBGL
+        select BR2_PACKAGE_XLIB_LIBXEXT if BR2_PACKAGE_XORG7 && BR2_PACKAGE_HAS_LIBGL
+01/22/2023 10:01 PM
+it looks like they updated it to make it optional
+01/22/2023 10:01 PM
+actually
+[ccarnell98]
+ccarnell98 01/22/2023 10:01 PM
+Sounds like a good idea 
+[smx2460]
+smx2460 01/22/2023 10:00 PM
+which isn't really required in our case
+01/22/2023 10:00 PM
+you need a little bit of hacking to remove X11 as a dependency
+01/22/2023 10:00 PM
+i previously tried to enable/build this for @Yolofant
+01/22/2023 10:00 PM
+https://github.com/openlgtv/buildroot-nc4/blob/2cfd1c1b52886b379b97e60d0f03af8f5624ec98/package/mesa3d-demos/Config.in
+buildroot-nc4/Config.in at 2cfd1c1b52886b379b97e60d0f03af8f5624ec98...
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+01/22/2023 9:59 PM
+any of these
+01/22/2023 9:59 PM
+https://github.com/JoakimSoderberg/mesademos/tree/master/src/xdemos
+(edited)
+mesademos/src/xdemos at master · JoakimSoderberg/mesademos
+OSMesa Demos. Contribute to JoakimSoderberg/mesademos development by
+creating an account on GitHub.
+[]
+01/22/2023 9:58 PM
+as i imagine debugging Kodi is harder
+01/22/2023 9:58 PM
+so it will be easy for you to debug
+01/22/2023 9:58 PM
+or really something trivial
+01/22/2023 9:58 PM
+like glxgears
+01/22/2023 9:58 PM
+is to build a simple EGL demo
+01/22/2023 9:58 PM
+another thing you could do
+01/22/2023 9:56 PM
+which is 100 in binary so it's indicating it wants to open the 3rd
+resource, but what it is...i don't know (edited)
+01/22/2023 9:56 PM
+that indicates what to open
+01/22/2023 9:56 PM
+0x4 is some kind of bitmask
+[ccarnell98]
+ccarnell98 01/22/2023 9:55 PM
+Yup still getting those errors  I'll do some more digging
+[smx2460]
+smx2460 01/22/2023 9:53 PM
+without succeeding
+01/22/2023 9:53 PM
+i suspect it's trying to acquire some IPC resource or a file
+01/22/2023 9:53 PM
+i would use strace to see what happens around those calls
+01/22/2023 9:53 PM
+you should try to figure out where the call to
+cdbgp_channel_init/cdbgp_channel_open comes from
+01/22/2023 9:52 PM
+which is supposedly closed source, although some info can be found on
+Github repos
+01/22/2023 9:52 PM
+i suspect they come from the Mali EGL library
+01/22/2023 9:52 PM
+and i would try to debug those errors above
+01/22/2023 9:52 PM
+so stick to the standard EGL for now
+01/22/2023 9:51 PM
+and, even if you were successful in getting swraster working, you'd have
+0 acceleration (edited)
+01/22/2023 9:51 PM
+and the GPUs that end up in TVs might be customized
+01/22/2023 9:51 PM
+as we don't know if it supports your GPU
+01/22/2023 9:51 PM
+for starters, i wouldn't use other EGL implementations (edited)
+[ccarnell98]
+ccarnell98 01/22/2023 9:51 PM
+Just trying now, just undoing a change as I made things worse
+[smx2460]
+smx2460 01/22/2023 9:50 PM
+do you still get these?
+01/22/2023 9:50 PM
+    ==>[INIT] (kodi.bin) CDBG: In file: ../cdbg/src/mali_cdbg_channels.c  line: 571 cdbgp_channel_init
+    Initing shared dests 0xb: failed to init 0x8. Some debug output may not appear due to this
+    ==>[INIT] (kodi.bin) CDBG: In file: ../cdbg/src/mali_cdbg_channels.c  line: 647 cdbgp_channel_open
+    Initing dest bitpattern 0x4 for channel 1: failed dests bitpattern is 0x4. Some debug output may not appear from this channel.
+    ==>[INIT] (kodi.bin) CDBG: In file: ../cdbg/src/mali_cdbg_channels.c  line: 647 cdbgp_channel_open
+    Initing dest bitpattern 0x4 for channel 2: failed dests bitpattern is 0x4. Some debug output may not appear from this channel.
+    ==>[INIT] (kodi.bin) CDBG: In file: ../cdbg/src/mali_cdbg_channels.c  line: 647 cdbgp_channel_open
+    Initing dest bitpattern 0x4 for channel 3: failed dests bitpattern is 0x4. Some debug output may not appear from this channel.
+01/22/2023 9:49 PM
+as it involves debugging Mali EGL and it's kind of offtopic for
+buildroot-nc4
+01/22/2023 9:49 PM
+but your specific issue is hard to address by writing "letter" like
+messages (edited)
+01/22/2023 9:49 PM
+it is not an issue, since Discord can also be used with temporary
+accounts
+[ccarnell98]
+ccarnell98 01/22/2023 9:48 PM
+I don't use discord normally. I've come over from github we have bene
+communicating about your tool chain
+[smx2460]
+smx2460 01/22/2023 9:48 PM
+do you still have Mali EGL errors?
+01/22/2023 9:48 PM
+@Craig i didn't know the username

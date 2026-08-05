@@ -1,0 +1,1381 @@
+March 16, 2023
+[infowski]
+infowski 03/16/2023 11:51 PM
+terminate called after throwing an instance of 'std::bad_function_call'
+03/16/2023 11:51 PM
+rofl, acbapi also leaks out c++ exceptions xD
+[yolofant]
+yolofant 03/16/2023 11:15 PM
+yeah that is needed unfortunately
+[infowski]
+infowski 03/16/2023 11:15 PM
+sorry, I am already tired
+03/16/2023 11:15 PM
+oh yeah, I meanc cmake/modules/...
+[tbsniller]
+[] smx2460 And it broke for <@430448040080572424> because he used Buster
+tbsniller 03/16/2023 11:15 PM
+I used Bullseye
+[yolofant]
+yolofant 03/16/2023 11:15 PM
+cmake stuff?
+[infowski]
+infowski 03/16/2023 11:14 PM
+ffs, all the boilerplate in xbmc/modules/...
+[infowski]
+infowski 03/16/2023 11:07 PM
+anyways...
+03/16/2023 11:07 PM
+yeah, this was literally easier than pulling the .so file and moving it
+around
+[yolofant]
+yolofant 03/16/2023 11:06 PM
+though it doesn't work on the json files 
+03/16/2023 11:06 PM
+    nm -D libplayerAPIs.so.1 | grep " T " | cut -d ' ' -f3- | perl -pe 's/^(.*)$/\"$1\" = \"dummy\";/g'
+is what @Smx came up with
+ 1
+[infowski]
+infowski 03/16/2023 11:05 PM
+jq is love, jq is life
+03/16/2023 11:05 PM
+curl -L https://github.com/webosbrew/compat-checker/raw/master/data/3.8.0/libAcbAPI.so.1.0.0.json | jq -r '.symbols[] | select(.|startswith("AcbAPI_")) | "\"\(.)\" = \"dummy\";"' > AcbAPI.lds
+AMA
+[yolofant]
+yolofant 03/16/2023 10:59 PM
+I doubt you'd have a nice kodi experience on webos 1
+[infowski]
+infowski 03/16/2023 10:55 PM
+ (edited)
+[yolofant]
+yolofant 03/16/2023 10:55 PM
+let's not support 1.X 
+[infowski]
+infowski 03/16/2023 10:54 PM
+acb has been introduced in webOS 2.x
+03/16/2023 10:54 PM
+wonder how they rendered video on webOS 1.x? 
+[yolofant]
+yolofant 03/16/2023 10:54 PM
+Then in StarfishRenderer::Configure it could set up the media id
+03/16/2023 10:53 PM
+I think that could work
+[infowski]
+infowski 03/16/2023 10:50 PM
+mhm
+[yolofant]
+yolofant 03/16/2023 10:49 PM
+it's pretty much unused right now because the starfish API doesn't have
+this concept of returning decoded buffers
+03/16/2023 10:46 PM
+hmm maybe we can put the media id in the starfishbuffer (edited)
+[infowski]
+infowski 03/16/2023 10:45 PM
+ugh, I don't think I'll be able to put everything ACB-related in
+renderer since it seems to need some deeper plumbing :/
+https://github.com/mariotaku/moonlight-tv/blob/main/modules/decoder/smp/src/AVStreamPlayer.cpp#L332-L337
+[yolofant]
+yolofant 03/16/2023 10:41 PM
+nice
+[infowski]
+infowski 03/16/2023 10:39 PM
+just no video output yet.
+03/16/2023 10:38 PM
+yey, and seeking seems to work too here.
+03/16/2023 10:35 PM
+seems to work
+03/16/2023 10:35 PM
+https://gist.github.com/36065afae2f409cf0509f65b7f58fcea 
+0001-webos-support-3.x-SMP.patch
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+[yolofant]
+yolofant 03/16/2023 10:15 PM
+I think
+https://github.com/webosbrew/tv-native-apis/blob/main/appswitching-control-block/include/AcbAPI.h#L64
+this is the equivalent of the set_crop_region call
+tv-native-apis/AcbAPI.h at main · webosbrew/tv-native-apis
+Headers and API stubs not included in OSE. Contribute to
+webosbrew/tv-native-apis development by creating an account on GitHub.
+[]
+03/16/2023 10:14 PM
+[infowski]
+infowski 03/16/2023 10:14 PM
+I've just rebuilt tools/depends/target/webos-wayland-extensions and it's
+ok now.
+[yolofant]
+yolofant 03/16/2023 10:14 PM
+because that was one of the changes from yesterday
+03/16/2023 10:14 PM
+could have been also something wrong with my code 
+[infowski]
+infowski 03/16/2023 10:14 PM
+not sure how.
+03/16/2023 10:14 PM
+yeah, I had wrong version indeed.
+[yolofant]
+yolofant 03/16/2023 10:14 PM
+[infowski]
+infowski 03/16/2023 10:14 PM
+03/16/2023 10:14 PM
+indeed, I fucked something up
+[yolofant]
+yolofant 03/16/2023 10:13 PM
+it should be in xbmc-build root folder
+03/16/2023 10:13 PM
+maybe check the generated header
+[infowski]
+infowski 03/16/2023 10:13 PM
+let me just refetch that dependencey
+03/16/2023 10:13 PM
+I don't tihnk so.
+[yolofant]
+yolofant 03/16/2023 10:13 PM
+did you maybe generate with the webos 3 protocols?
+[infowski]
+infowski 03/16/2023 10:12 PM
+I fucked something up then indeed.
+[yolofant]
+yolofant 03/16/2023 10:12 PM
+https://github.com/webosose/webos-wayland-extensions/blob/master/protocol/webos-foreign.xml#L97
+[infowski]
+infowski 03/16/2023 10:12 PM
+Huh 
+[yolofant]
+yolofant 03/16/2023 10:11 PM
+but they have that
+[infowski]
+infowski 03/16/2023 10:10 PM
+but I still see webos-wayland-extensions uses webosose ones
+03/16/2023 10:09 PM
+unless I fucked something up?
+03/16/2023 10:09 PM
+    /app/xbmc/windowing/wayland/WinSystemWaylandWebOS.cpp:95:24: error: 'class wayland::webos_exported_t' has no member named 'set_crop_region'
+       95 |     m_exported_surface.set_crop_region(origRegion, srcRegion, dstRegion);
+sadge @Yolofant
+03/16/2023 10:03 PM
+no dlsym :___DDD
+[yolofant]
+yolofant 03/16/2023 10:03 PM
+I don't think we can get better than that
+[infowski]
+infowski 03/16/2023 10:02 PM
+absolutely disgusting
+03/16/2023 10:02 PM
+(strcpy as an example, if I enter an inexistent symbol it'll do the
+other option)
+[yolofant]
+yolofant 03/16/2023 10:02 PM
+nice
+[infowski]
+infowski 03/16/2023 10:01 PM
+https://gist.github.com/Informatic/83bd7fd168eeb51a0a7bd5c99b02423f
+@Yolofant that works lol
+shite.cpp
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+[yolofant]
+yolofant 03/16/2023 9:54 PM
+I've never used weak symbols 
+03/16/2023 9:54 PM
+doesn't the linker need to know at compile time if the symbol is weak?
+[infowski]
+infowski 03/16/2023 9:54 PM
+Hmmm, I don't think that matters? hmmmmm
+[yolofant]
+yolofant 03/16/2023 9:53 PM
+I think we can add a weak dummy_weak function prototype in
+webos-userland (edited)
+[infowski]
+infowski 03/16/2023 9:52 PM
+That is a pretty good idea too.
+03/16/2023 9:52 PM
+hmmmm...
+[yolofant]
+yolofant 03/16/2023 9:52 PM
+not sure if it works in c++ though
+[infowski]
+infowski 03/16/2023 9:52 PM
+and populate use_legacy based on dlsym check
+[yolofant]
+yolofant 03/16/2023 9:52 PM
+if we make it a weak symbol maybe we can check if the function is null
+[infowski]
+infowski 03/16/2023 9:50 PM
+with something like
+std::string result = use_legacy ? FeedLegacy(m_starfishMediaAPI.get(), payload.dump().c_str()).get() : m_starfishMediaAPI->Feed(payload.dump().c_str());
+[yolofant]
+yolofant 03/16/2023 9:49 PM
+there should be an overload for unique_ptr<T[]>
+[infowski]
+infowski 03/16/2023 9:49 PM
+And this way we can have just a single extra compile unit
+[yolofant]
+yolofant 03/16/2023 9:49 PM
+at least from the destruction side
+03/16/2023 9:49 PM
+yes I think that works
+[infowski]
+infowski 03/16/2023 9:48 PM
+and it's kinda cleaner than passing char* as I did in my original poc
+03/16/2023 9:47 PM
+unique_ptr will get destructed automatically when leaving the caller
+scope, right? (edited)
+03/16/2023 9:47 PM
+@Yolofant
+https://gist.github.com/Informatic/83bd7fd168eeb51a0a7bd5c99b02423f
+wdyt? I think this is pretty much memory safe?
+shite.cpp
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+[rkars]
+rkars 03/16/2023 8:23 PM
+Anyone know if the c1 has bt le?
+[rkars]
+rkars 03/16/2023 8:16 PM
+Maybe the c1 has no bt le
+03/16/2023 8:16 PM
+It won't even pair
+[rkars]
+rkars 03/16/2023 8:09 PM
+can i do it manually without that app ? (edited)
+03/16/2023 8:08 PM
+https://github.com/webosbrew/apps-repo/issues/77
+[IDEA] Gamepad Tester/SDL button mapping editor · Issue #77 · webos...
+Please read conditions below carefully, and don&#39;t delete this part.
+Invalid issues will be closed. No apps related to piracy or intellectual
+property infringement is allowed. We can&#39...
+[]
+03/16/2023 8:08 PM
+any updates on this?
+[smx2460]
+smx2460 03/16/2023 5:21 PM
+To be good citizen
+03/16/2023 5:21 PM
+We have to keep that then
+[smx2460]
+hellobox. <https://wiki.debian.org/LTS>
+smx2460 03/16/2023 5:21 PM
+Oof it's lts
+[yolofant]
+yolofant 03/16/2023 5:14 PM
+only saw this  https://wiki.debian.org/DebianReleases
+hellobox. 03/16/2023 5:12 PM
+https://wiki.debian.org/LTS
+[] yolofant buster is EOL though
+joekri 03/16/2023 5:12 PM
+Oldstable 
+[yolofant]
+yolofant 03/16/2023 5:10 PM
+buster is EOL though (edited)
+[smx2460]
+smx2460 03/16/2023 5:08 PM
+And would still recompile it from src
+03/16/2023 5:08 PM
+Since the CMake in buster is older than the one buildroot considers
+usable
+03/16/2023 5:08 PM
+I guess i need to keep it at Buster... And build cmake from source
+03/16/2023 5:07 PM
+And it broke for @TBSniller because he used Buster
+03/16/2023 5:07 PM
+Aka 10 to 11
+03/16/2023 5:06 PM
+I upgraded it to Bullseye
+hellobox. 03/16/2023 5:06 PM
+stretch is 9, buster is 10
+[smx2460]
+smx2460 03/16/2023 5:06 PM
+The image was Buster
+03/16/2023 5:06 PM
+Stupid debian names
+03/16/2023 5:06 PM
+Ok erase what i said
+03/16/2023 5:06 PM
+It's on buster not stretch
+hellobox. 03/16/2023 5:06 PM
+it doesn't work on buster?
+[smx2460]
+smx2460 03/16/2023 5:06 PM
+Actually sorry
+03/16/2023 5:05 PM
+I guess i need to consider keeping it on Stretch for maximum
+compatibility...
+03/16/2023 5:05 PM
+Heh
+03/16/2023 5:02 PM
+But on his host
+03/16/2023 5:02 PM
+Same issue that we have in LG xD
+03/16/2023 5:01 PM
+Because it used a new glibc
+03/16/2023 5:01 PM
+There was someone that told me the toolchain didn't run
+hellobox. 03/16/2023 5:01 PM
+no, i'm on unstable or something
+[smx2460]
+smx2460 03/16/2023 5:01 PM
+Iirc it Was you
+hellobox. 03/16/2023 5:01 PM
+stretch?
+03/16/2023 5:01 PM
+no
+[smx2460]
+smx2460 03/16/2023 5:01 PM
+XD
+03/16/2023 5:01 PM
+You
+hellobox. 03/16/2023 5:01 PM
+do we have anyone using it?
+[smx2460]
+smx2460 03/16/2023 5:01 PM
+Ok,N
+[] smx2460 Y/N? 
+hellobox. 03/16/2023 5:00 PM
+i don't need it
+[smx2460]
+hellobox. eh, its EOL was last june
+smx2460 03/16/2023 5:00 PM
+Y/N? 
+[yolofant]
+yolofant 03/16/2023 4:56 PM
+does it have multiple threads?
+hellobox. 03/16/2023 4:47 PM
+stack looks odd
+03/16/2023 4:46 PM
+i've been using it
+[yolofant]
+yolofant 03/16/2023 4:36 PM
+gdb is not an option?
+hellobox. 03/16/2023 4:34 PM
+it's an sdl application
+03/16/2023 4:34 PM
+i'm getting mali.{err,warn} files, but they're empty
+03/16/2023 4:33 PM
+@Yolofant any ideas about what could be causing opengl crashes and/or
+how to debug?
+[] smx2460 However, i cannot do this if you, <@803885040827629628> ,
+want to retain compatibility with Stretch
+hellobox. 03/16/2023 4:23 PM
+eh, its EOL was last june
+[smx2460]
+smx2460 03/16/2023 1:03 PM
+So it sees it as installed and won't need to build it
+03/16/2023 1:03 PM
+Where we build cmake from source BEFORE br
+03/16/2023 1:03 PM
+The alternative is to make a docker image with stretch
+03/16/2023 1:02 PM
+But cmake is shipped because not installed (or new enough) in Stretch
+03/16/2023 1:02 PM
+Ideally you'd want to prefer the system cmake if you can
+03/16/2023 1:02 PM
+Such as @infowski reporting CMake cannot download from SSL sources
+03/16/2023 1:01 PM
+Which is also the reason why prepending path causes issues (edited)
+03/16/2023 1:01 PM
+Otherwise we'll keep it shipped
+03/16/2023 1:01 PM
+And install recent perl/cmake
+03/16/2023 1:01 PM
+If you're ok with me dropping it, i will update the base debian image
+03/16/2023 12:56 PM
+However, i cannot do this if you, @hellobox , want to retain
+compatibility with Stretch
+03/16/2023 12:56 PM
+And saves time
+03/16/2023 12:56 PM
+So they aren't built by br
+03/16/2023 12:56 PM
+We should also install perl and cmake
+03/16/2023 12:56 PM
+If we are to fix it
+03/16/2023 12:56 PM
+But the build ends up working regardless so i never do
+03/16/2023 12:56 PM
+I always tell to myself
+[smx2460]
+hellobox. i guess locales aren't set up right? ``` perl: warning:
+Setting locale failed. perl: warning: Please...
+smx2460 03/16/2023 12:56 PM
+I should fix it
+hellobox. 03/16/2023 12:03 PM
+i don't know if it's even worth running a CI build for the other PR,
+since the package it modifies isn't built in the default configs
+03/16/2023 12:01 PM
+i guess locales aren't set up right?
+    perl: warning: Setting locale failed.
+    perl: warning: Please check that your locale settings:
+        LANGUAGE = (unset),
+        LC_ALL = (unset),
+        LANG = "en_US.UTF-8"
+        are supported and installed on your system.
+    perl: warning: Falling back to the standard locale ("C").
+03/16/2023 12:00 PM
+watching the cirrusCI logs...
+    configure: WARNING: unrecognized options: --disable-gtk-doc, --disable-gtk-doc-html, --disable-doc, --disable-docs, --disable-documentation, --with-xmlto, --with-fop, --enable-ipv6, --disable-nls
+    checking for tput... /tmp/cirrus-ci-build/output/host/bin/tput
+    ./configure: line 22722: test: -eq: unary operator expected
+    The product of a collaboration between Champ Libre and Boréale, this farmhouse 
+    IPA is brewed with Kveik yeast and Québec-grown barley, oats and juniper 
+    branches. The result is a remarkable fruity hazy golden IPA that offers a 
+    balanced touch of resinous and woodsy bitterness.
+    System
+    arm
+[smx2460]
+smx2460 03/16/2023 11:50 AM
+Only freebsd builds are slower because they don't run containerized
+03/16/2023 11:49 AM
+I also don't use that much ram and cpu there
+03/16/2023 11:49 AM
+ezinject builds are always scheduled within 10 seconds
+03/16/2023 11:49 AM
+The repo surely has a low score given the high build time
+03/16/2023 11:49 AM
+Ok then it's just not busy
+hellobox. 03/16/2023 11:48 AM
+it wasn't earlier
+[smx2460]
+smx2460 03/16/2023 11:48 AM
+Vs my main commits being slower
+03/16/2023 11:48 AM
+I'm kind of joking but I've seek your PRs scheduled very quickly
+03/16/2023 11:48 AM
+03/16/2023 11:47 AM
+"oh it's a PR, therefore it's another guy contributing to the repo.
+Being a guy that doesn't commit very often, we need to impress him by
+showing how quickly CirrusCI schedules jobs. Priority *= 9"
+03/16/2023 11:47 AM
+I think the logic is
+hellobox. 03/16/2023 11:47 AM
+oh wow
+[smx2460]
+smx2460 03/16/2023 11:46 AM
+It's halfway through
+03/16/2023 11:46 AM
+Talking about the current one
+03/16/2023 11:46 AM
+What do you mean
+hellobox. 03/16/2023 11:44 AM
+if it even runs by then...
+[smx2460]
+smx2460 03/16/2023 11:44 AM
+I guess I'll merge post lunch once it finishes
+[] smx2460 Separate?
+hellobox. 03/16/2023 11:43 AM
+yeah i made another one
+[smx2460]
+hellobox. what hash does it use?
+smx2460 03/16/2023 11:43 AM
+.dl/xxx/yyy (edited)
+[smx2460]
+hellobox. i have another change i need to put in a PR too
+smx2460 03/16/2023 11:43 AM
+Separate?
+hellobox. 03/16/2023 11:19 AM
+i have another change i need to put in a PR too
+03/16/2023 11:19 AM
+@Smx should be fixed
+03/16/2023 11:14 AM
+downloading the tar.gz
+03/16/2023 11:14 AM
+what hash does it use?
+03/16/2023 11:13 AM
+last time i looked it had been queued for over an hour
+03/16/2023 11:13 AM
+the CI builds finally ran
+03/16/2023 11:12 AM
+hmm
+[smx2460]
+smx2460 03/16/2023 11:12 AM
+https://github.com/openlgtv/buildroot-nc4/commit/6c89177cd7268e70d95c74267df61a33d401d0ab
+update glibc to commit ddbe440 · openlgtv/buildroot-nc4@6c89177
+This commit includes updated Linux kernel clock support and installs the
+bits/timex.h header.
+[]
+03/16/2023 11:11 AM
+@hellobox need to update the .hash file
+hellobox. 03/16/2023 11:10 AM
+maybe there's some kind of memory corruption causing various weird
+issues (edited)
+hellobox. 03/16/2023 10:52 AM
+huh. i thought it might be just crashing on any gl* function, but it's
+not. i commented out that one, and it gets through other ones
+hellobox. 03/16/2023 10:44 AM
+is there some kind of gl/egl initialization the program should be doing
+that maybe it's not?
+03/16/2023 10:44 AM
+it's crashing in glBindSampler
+hellobox. 03/16/2023 10:10 AM
+time for some good old-fashioned printf debugging
+hellobox. 03/16/2023 9:21 AM
+needs -static-libstdc++ somewhere
+03/16/2023 9:20 AM
+ugh
+    gdbserver: /usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by gdbserver)
+hellobox. 03/16/2023 8:54 AM
+SDL_DEBUG doesn't seem to give me anything additional
+03/16/2023 8:49 AM
+how do i enable sdl/mali debug logs?
+Deleted User 03/16/2023 7:10 AM
+something is going wrong
+03/16/2023 7:10 AM
+but the input hook is actually broken now
+03/16/2023 7:10 AM
+the failsafe mode thing idk
+03/16/2023 7:10 AM
+well
+03/16/2023 7:10 AM
+there are no logs
+[tejassreenivas]
+Deleted User but the update is kinda old according to hellobox
+tejassreenivas 03/16/2023 7:08 AM
+Not getting anything in logs?
+Deleted User 03/16/2023 7:05 AM
+but the update is kinda old according to hellobox
+03/16/2023 7:05 AM
+mine got updated 3 days ago i think
+[tejassreenivas]
+tejassreenivas 03/16/2023 7:04 AM
+Mine is on webos 6 updated 2 weeks back
+[tejassreenivas]
+Deleted User this is weird and im not sure what to blame it on
+tejassreenivas 03/16/2023 7:04 AM
+It's happening suddenly but not right after an update
+Deleted User 03/16/2023 7:03 AM
+this is weird and im not sure what to blame it on
+03/16/2023 7:03 AM
+yeah idk
+[tejassreenivas]
+Deleted User i mean, i dont have **auto**start at the moment because it
+updated and im on webos 4
+tejassreenivas 03/16/2023 7:01 AM
+Yeah sometimes it's working and sometimes shud hard reboot for the app
+to work
+Deleted User 03/16/2023 4:56 AM
+but suddenly its not working
+03/16/2023 4:55 AM
+im not sure then
+hellobox. that's over 6 months old i think
+Deleted User 03/16/2023 4:55 AM
+well
+Deleted User im on `05.50.10` right now
+hellobox. 03/16/2023 4:38 AM
+that's over 6 months old i think
+Deleted User 03/16/2023 4:24 AM
+im on 05.50.10 right now
+03/16/2023 4:24 AM
+but
+hellobox. what update?
+Deleted User 03/16/2023 4:24 AM
+not sure which exact update might have caused it
+Deleted User i think an update LG did broke the input hook app
+hellobox. 03/16/2023 4:15 AM
+what update?
+Deleted User 03/16/2023 3:25 AM
+and now theres no logs for hookfactory/inputhook
+03/16/2023 3:24 AM
+and its getting an illegal instruction now as well
+03/16/2023 3:24 AM
+i decided to check the input hook app
+03/16/2023 3:24 AM
+but failsafe mode keeps getting tripped
+03/16/2023 3:24 AM
+i mean, i dont have autostart at the moment because it updated and im on
+webos 4 (edited)
+03/16/2023 3:24 AM
+i was trying to figure out why the autostart is absolutely fucked right
+now
+03/16/2023 3:23 AM
+i think an update LG did broke the input hook app
+03/16/2023 3:23 AM
+@Smx !
+[dustyangel47]
+dustyangel47 03/16/2023 2:55 AM
+yeahhhhhhhhhhh i didn't think so but idk LG has so many TVs there's
+bound to be one that has like 32 gigabytes of internal storage for no
+real reason (edited)
+[yolofant]
+yolofant 03/16/2023 1:53 AM
+I don't think any tv has that much space
+[dustyangel47]
+dustyangel47 03/16/2023 1:10 AM
+(patch i used if anyone wants to compile it themselves)
+ webos.patch
+1.89 KB External
+03/16/2023 1:07 AM
+but the smallest model is "only" 12 gigs in total
+03/16/2023 1:06 AM
+i am morbidly curious as to how https://github.com/ggerganov/llama.cpp
+performs natively
+GitHub - ggerganov/llama.cpp: Port of Facebook's LLaMA model in C/C++
+Port of Facebook's LLaMA model in C/C++. Contribute to
+ggerganov/llama.cpp development by creating an account on GitHub.
+[]
+03/16/2023 1:05 AM
+does anyone here have a TV with ~13gib free (lol) and willing to try
+something for me? (ik i can plug in a USB stick but then I have to
+figure out where the port is and reach to my TV mounted on the wall and
+bleh)
+[yolofant]
+yolofant 03/16/2023 12:48 AM
+@infowski your proto webos 5 came in handy once more. Confirmed that
+set_crop_region is available on all webos-foreign devices so we can now
+support video stretching/zooming etc. very useful for old 3d movies
+March 14, 2023
+[infowski]
+infowski 03/14/2023 7:32 PM
+I failed even at just calling a non-cxx11 symbol from cxx11 code, so
+can't tell you
+[yolofant]
+yolofant 03/14/2023 7:28 PM
+memcpy or smth
+03/14/2023 7:28 PM
+it must be possible somehow
+hellobox. 03/14/2023 7:28 PM
+what are the actual differences?
+[yolofant]
+yolofant 03/14/2023 7:28 PM
+hmm I thought we could do some magic to convert non cxx11 string to
+std::string
+[infowski]
+infowski 03/14/2023 7:26 PM
+the thing is that it builds, and works - and we can call old cxxabi
+symbol (feed on webos3) from cxx11 abi (rest of kodi codebase) (edited)
+03/14/2023 7:25 PM
+just copy over DVDVideoCodecStarfishWebOS3 a
+DVDVideoCodecStarfishWebOS4, remove define, rename feed3 to feed4, and
+add dlsym runtime check to determine if we should call Feed3 or Feed4
+03/14/2023 7:25 PM
+not yet
+hellobox. 03/14/2023 7:25 PM
+it doesn't seem to use dlsym?
+[infowski]
+infowski 03/14/2023 7:25 PM
+yeah - it's a poc
+hellobox. 03/14/2023 7:24 PM
+your gist only does the webos 3 version?
+[infowski]
+infowski 03/14/2023 7:24 PM
+and we can't convert cxx11 string to older abi (edited)
+03/14/2023 7:24 PM
+the issue is that Feed returns different std::strings depending on cxx
+abi (edited)
+[yolofant]
+yolofant 03/14/2023 7:23 PM
+if we make both feeds in webos-userland weak
+[infowski]
+infowski 03/14/2023 7:23 PM
+...can we?
+[yolofant]
+yolofant 03/14/2023 7:23 PM
+but then we could do it with weak symbols as well
+[infowski]
+infowski 03/14/2023 7:23 PM
+yep
+[yolofant]
+yolofant 03/14/2023 7:23 PM
+so it resolves the first time the function is called?
+[infowski]
+infowski 03/14/2023 7:21 PM
+and you can't really reimport stdcxx headers...
+03/14/2023 7:21 PM
+yep
+hellobox. 03/14/2023 7:21 PM
+no, you need to do it before headers
+03/14/2023 7:21 PM
+what does the api method actually do?
+[infowski]
+infowski 03/14/2023 7:21 PM
+hmmm, I don't think that'll work
+[yolofant]
+yolofant 03/14/2023 7:21 PM
+    #define _GLIBCXX_USE_CXX11_ABI 0 ... #undef _GLIBCXX_USE_CXX11_ABI
+?
+[infowski]
+infowski 03/14/2023 7:20 PM
+we could probably keep Feed3/Feed4 as a single source file, just
+compiled with different -D_GLIBCXX_USE_CXX11_ABI values, and with
+different function names via ifdefs (edited)
+03/14/2023 7:19 PM
+cxx-dependent symbol is resolved on actual call
+03/14/2023 7:19 PM
+and respective implementations are built as separate compilation unit -
+one with _GLIBCXX_USE_CXX11_ABI=1, and the other with
+_GLIBCXX_USE_CXX11_ABI=0
+03/14/2023 7:18 PM
+but feed3/feed4 are symbols which are cxx-abi cross-compatible since
+they just are static methods with basic types
+03/14/2023 7:18 PM
+...with one extra source code file. this needs to be cleaned up and all
+of course
+03/14/2023 7:17 PM
+updated the gist.
+03/14/2023 7:16 PM
+wait shit
+03/14/2023 7:16 PM
+I think i've already mentioned this
+03/14/2023 7:16 PM
+https://gist.github.com/53ffabc6b026b68b0c1681b163fde531 just for a
+quick gist of it
+shit.diff
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+03/14/2023 7:14 PM
+hang on.
+[yolofant]
+yolofant 03/14/2023 7:14 PM
+that's easy
+[infowski]
+infowski 03/14/2023 7:14 PM
+As long as you dynamically choose a different function depending on
+WebOS version (...or dlsym symbol check)
+[yolofant]
+yolofant 03/14/2023 7:14 PM
+[infowski]
+infowski 03/14/2023 7:14 PM
+In a kinda disgusting way that builds and runs on all webos, yeah
+03/14/2023 7:13 PM
+Hang on.
+[yolofant]
+yolofant 03/14/2023 7:13 PM
+in a way that works on all webos?
+[infowski]
+[] yolofant hmm, how can we handle the cxx11 abi / non cxx11 abi
+symbols? basically `_ZN17StarfishMediaAPIs4Feed...
+infowski 03/14/2023 7:13 PM
+I handled it in my local fork.
+[yolofant]
+yolofant 03/14/2023 6:07 PM
+webos 9 is still one year away [:Prayge:]
+hellobox. 03/14/2023 6:07 PM
+i don't think 8 is much different than 7
+03/14/2023 6:07 PM
+i guess you should hope lg doesn't break something in webos 9
+[yolofant]
+yolofant 03/14/2023 6:07 PM
+and it would run on webOS 4 but no video would show (edited)
+03/14/2023 6:06 PM
+right now it's webos 5+
+03/14/2023 6:06 PM
+I guess webos 3?
+03/14/2023 6:06 PM
+hellobox. 03/14/2023 6:06 PM
+what versions are you aiming for now?
+03/14/2023 6:06 PM
+i guess you could theoretically drop support for older webos versions at
+some point
+[yolofant]
+yolofant 03/14/2023 6:06 PM
+but that is relatively straightforward
+03/14/2023 6:06 PM
+we also have to add libacb for < webos 5
+03/14/2023 6:05 PM
+I know 
+hellobox. 03/14/2023 6:05 PM
+because lg doesn't care about any kind of compatibility
+03/14/2023 6:05 PM
+i think you should expect to find more of these problems if you want to
+maintain a relatively complex piece of software across multiple webos
+versions
+03/14/2023 6:03 PM
+thx [:lg:]
+[yolofant]
+yolofant 03/14/2023 6:03 PM
+but that also sucks
+03/14/2023 6:03 PM
+the other option is to have two binaries
+hellobox. 03/14/2023 6:03 PM
+i don't know if they'll accept it upstream
+03/14/2023 6:02 PM
+among other things
+[yolofant]
+yolofant 03/14/2023 6:02 PM
+dlsym?
+hellobox. 03/14/2023 6:02 PM
+but it's going to be ugly
+[yolofant]
+yolofant 03/14/2023 6:02 PM
+fortunately the api uses char* everywhere else
+hellobox. 03/14/2023 6:02 PM
+i might be able to come up with something
+[yolofant]
+yolofant 03/14/2023 6:02 PM
+I don't think we need any of the other ones
+03/14/2023 6:01 PM
+yeah
+hellobox. 03/14/2023 6:01 PM
+is that the only function with this issue?
+[yolofant]
+yolofant 03/14/2023 6:01 PM
+make the old one a plain c function and marshal the return value
+hellobox. 03/14/2023 6:01 PM
+i guess just pass it from one function to another as a c string
+03/14/2023 6:00 PM
+well
+03/14/2023 6:00 PM
+how?
+[yolofant]
+yolofant 03/14/2023 6:00 PM
+but that should be easy
+03/14/2023 6:00 PM
+yeah
+hellobox. 03/14/2023 6:00 PM
+so you need code that handles both c++11 and old std::strings
+[yolofant]
+yolofant 03/14/2023 6:00 PM
+but the issue is that I need to use the cxx11 abi version on webos 4 and
+the non cxx11 one on webos 3
+03/14/2023 5:59 PM
+std::string
+hellobox. 03/14/2023 5:59 PM
+what kind of value do you ultimately need?
+[yolofant]
+yolofant 03/14/2023 5:59 PM
+or we invoke it like a c function and convert the return value ourselves
+03/14/2023 5:58 PM
+it's not a huge problem because we can wrap the webos 3 version in
+_GLIBCXX_USE_CXX11_ABI=0
+hellobox. 03/14/2023 5:58 PM
+if kodi is expecting c++11 behavior and it's not, what will happen?
+[yolofant]
+yolofant 03/14/2023 5:58 PM
+and Feed returns std::string that's why it's flagged cxx11
+03/14/2023 5:57 PM
+I think it's because in c++11 something about std::string was changed
+hellobox. 03/14/2023 5:57 PM
+are functions with it called differently?
+03/14/2023 5:57 PM
+so what does the cxx11 abi tag actually mean?
+[yolofant]
+yolofant 03/14/2023 5:57 PM
+then that won't work I guess (edited)
+03/14/2023 5:57 PM
+hmm
+hellobox. 03/14/2023 5:56 PM
+hmm
+03/14/2023 5:55 PM
+i guess so
+03/14/2023 5:55 PM
+do weak symbols have any effect after linking?
+[] yolofant when are the symbols actually resolved?
+hellobox. 03/14/2023 5:54 PM
+when it's loaded, i think
+[yolofant]
+yolofant 03/14/2023 3:57 PM
+when you call the function the first time?
+03/14/2023 3:57 PM
+when are the symbols actually resolved?
+03/14/2023 3:56 PM
+and then check for its presence at runtime
+03/14/2023 3:56 PM
+yeah that's why I thought maybe we can make the webos 3 symbol weak
+[mariotaku]
+[] yolofant wouldn't that break then on webos 4+?
+mariotaku 03/14/2023 3:55 PM
+Yes. In that case you may need to find some way to dynamically load
+it...
+[yolofant]
+yolofant 03/14/2023 3:55 PM
+wouldn't that break then on webos 4+?
+[mariotaku]
+[] yolofant hmm, how can we handle the cxx11 abi / non cxx11 abi
+symbols? basically `_ZN17StarfishMediaAPIs4Feed...
+mariotaku 03/14/2023 3:54 PM
+add definition: _GLIBCXX_USE_CXX11_ABI=0
+[yolofant]
+yolofant 03/14/2023 3:51 PM
+though br-nc4 has the ibm437 lib
+03/14/2023 3:50 PM
+idk
+03/14/2023 3:50 PM
+or does it link statically
+03/14/2023 3:50 PM
+so depends on if the ibm437 module is there
+03/14/2023 3:50 PM
+the gconv stuff depends though on the installed version on the tv
+[ccarnell98]
+ccarnell98 03/14/2023 3:49 PM
+still need to update my buildroot-nc4 to latest version
+03/14/2023 3:48 PM
+thats just my local version 
+[yolofant]
+yolofant 03/14/2023 3:42 PM
+that will limit compat to webos 7
+03/14/2023 3:42 PM
+but why 2.31?
+[ccarnell98]
+[] yolofant it's possible that it needs glibc-gconv-ibm437
+ccarnell98 03/14/2023 3:40 PM
+Just rebuilt and it seems change not needed with glibc 2.31
+[blacklua]
+blacklua 03/14/2023 3:32 PM
+Thanks you
+[bowsertm]
+bowsertm 03/14/2023 3:30 PM
+https://gist.github.com/Fr4nzz/def9142a9aaa33c89560ee2cf4476066
+This script allows android users to share a link to Termux and Term...
+This script allows android users to share a link to Termux and Termux
+sends a command to your LG webos rooted TV to open it in the web
+browser. Make sure to change the ip adress to the ip of your T...
+[]
+[blacklua]
+[] bowsertm Hi. I made an script in termux to share links from like
+google chrome to termux and termux sends a c...
+blacklua 03/14/2023 3:24 PM
+Upload the script to Github so it's easier[:klass:]
+[bowsertm]
+bowsertm 03/14/2023 3:07 PM
+Maybe someone can improve the script. It was a pain to handle the quotes
+03/14/2023 3:05 PM
+Hi. I made an script in termux to share links from like google chrome to
+termux and termux sends a command to your rooted LG TV and opens it in
+the web browser https://pastebin.com/J2uGTsDb
+[yolofant]
+yolofant 03/14/2023 2:47 PM
+it's possible that it needs glibc-gconv-ibm437
+03/14/2023 2:41 PM
+yes
+[ccarnell98]
+ccarnell98 03/14/2023 2:41 PM
+but he has also uploaded wayland-webos-extensions to kodi mirror which
+is a good sign
+03/14/2023 2:39 PM
+wsnipex has made some comments so I've made some minor changes and
+pushed
+[yolofant]
+yolofant 03/14/2023 2:37 PM
+probably we can set GCONV_PATH and ship the needed file
+[ccarnell98]
+ccarnell98 03/14/2023 2:35 PM
+Compiling --with-toolchain now so I'll see 
+[yolofant]
+yolofant 03/14/2023 2:34 PM
+probably depends on the glib version
+[ccarnell98]
+[] infowski you: b-but libiconv doesn't build me: ``` diff --git
+a/xbmc/filesystem/ZipManager.cpp b/xbmc/filesys...
+ccarnell98 03/14/2023 2:33 PM
+Is this still required?
+[yolofant]
+yolofant 03/14/2023 2:29 PM
+then we wrap _ZN17StarfishMediaAPIs4FeedEPKc in an extern "C" block in
+the headers and before we call Feed we check if
+_ZN17StarfishMediaAPIs4FeedEPKcis not null (edited)
+03/14/2023 2:28 PM
+what if we add _ZN17StarfishMediaAPIs4FeedEPKc as a weak symbol in
+webos-userland
+03/14/2023 2:28 PM
+hmm, how can we handle the cxx11 abi / non cxx11 abi symbols? basically
+_ZN17StarfishMediaAPIs4FeedEPKc on webos 3 vs
+_ZN17StarfishMediaAPIs4FeedB5cxx11EPKc from 4+ onwards
+[yolofant]
+yolofant 03/14/2023 2:44 AM
+[:Bedge:]
+[smx2460]
+smx2460 03/14/2023 2:43 AM
+Good night
+03/14/2023 2:43 AM
+Ttyl
+03/14/2023 2:43 AM
+Many thanks for the help, @Yolofant
+03/14/2023 2:43 AM
+So we don't use return
+03/14/2023 2:43 AM
+if() else() big_block_converted_to_macro() endif()
+03/14/2023 2:42 AM
+Like
+03/14/2023 2:42 AM
+Using more macros to flatten them
+03/14/2023 2:42 AM
+A ugly workaround is to use a big if() block instead of return
+03/14/2023 2:40 AM
+2 levels up
+03/14/2023 2:40 AM
+To pass -> pass the variables
+03/14/2023 2:40 AM
+Or replicate them in the caller
+03/14/2023 2:40 AM
+We cannot convert macros to functions unless we change export_var
+03/14/2023 2:40 AM
+And go straight in the linker logic
+03/14/2023 2:39 AM
+But macOS does because we need libc to "return"
+03/14/2023 2:39 AM
+It happens to not break like this elsewhere
+03/14/2023 2:39 AM
+Silly me
+03/14/2023 2:39 AM
+Heh
+03/14/2023 2:39 AM
+It returns from the function the macro is in
+[yolofant]
+yolofant 03/14/2023 2:39 AM
+oh
+[smx2460]
+smx2460 03/14/2023 2:38 AM
+Doesn't return from the macro (edited)
+03/14/2023 2:38 AM
+return() in the libc macro
+03/14/2023 2:38 AM
+I see why
+03/14/2023 2:38 AM
+Fuck
+[yolofant]
+yolofant 03/14/2023 2:38 AM
+yeah idk
+[smx2460]
+[] yolofant I've put `message(FATAL_ERROR "Unsupported C library")` in
+the beginning and cmake doesn't fail
+smx2460 03/14/2023 2:38 AM
+Wut
+[smx2460]
+smx2460 03/14/2023 2:37 AM
+But i have no idea why it isn't
+03/14/2023 2:37 AM
+It should reach this
+03/14/2023 2:37 AM
+``elseif(EZ_TARGET_DARWIN) # libdyld.dylib is a virtual library set(DYN_LINKER_NAME "libdyld.dylib") export_var(DYN_LINKER_NAME) endif()|`
+03/14/2023 2:36 AM
+Where the macro lives
+[yolofant]
+yolofant 03/14/2023 2:36 AM
+I've put message(FATAL_ERROR "Unsupported C library") in the beginning
+and cmake doesn't fail
+[smx2460]
+smx2460 03/14/2023 2:36 AM
+And the scope is the scope of the autodetect function
+03/14/2023 2:36 AM
+Because the export_var macro exports functions in the parent scope
+03/14/2023 2:35 AM
+Note that it's a macro
+03/14/2023 2:35 AM
+How not
+[yolofant]
+yolofant 03/14/2023 2:35 AM
+linker_type_autodetect
+03/14/2023 2:35 AM
+yeah the macro is never run
+[smx2460]
+smx2460 03/14/2023 2:31 AM
+That sets the variable
+03/14/2023 2:31 AM
+There's some not-taken IF
+03/14/2023 2:30 AM
+Pfff
+[yolofant]
+yolofant 03/14/2023 2:29 AM
+    /Users/stephan/Sourcecode/ezinject/os/darwin/libc_darwin.c:23:44: error: use of undeclared identifier 'DYN_LINKER_NAME'
+                    .local  = (uintptr_t) get_base(getpid(), DYN_LINKER_NAME, NULL),
+03/14/2023 2:29 AM
+ah no
+03/14/2023 2:28 AM
+but it doesn't compile anything it seems
+03/14/2023 2:28 AM
+then it seems to pass cmake
+[smx2460]
+smx2460 03/14/2023 2:26 AM
+before the error
+03/14/2023 2:26 AM
+        if(EZ_TARGET_DARWIN)
+            return()
+        endif()
+03/14/2023 2:25 AM
+but see what happens if you make the libc check return
+03/14/2023 2:25 AM
+i'll sign off shortly, i guess i need like 1 extra full day to reinstall
+macOS for the nth time
+[yolofant]
+yolofant 03/14/2023 2:25 AM
+maybe other place for libc?
+03/14/2023 2:24 AM
+ /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1319.0.0)
+[smx2460]
+smx2460 03/14/2023 2:24 AM
+lovely, can't download xcode tools anymore in macOS 10.12
+03/14/2023 2:24 AM
+it's handled in linker_type_autodetect (edited)
+03/14/2023 2:24 AM
+i think darwin just needs a return
+03/14/2023 2:24 AM
+ok so
+03/14/2023 2:23 AM
+not for Darwin
+03/14/2023 2:23 AM
+the if(DYN_LINKER in glibc is meant for uClibc
+03/14/2023 2:23 AM
+no they are intertwined
+[yolofant]
+yolofant 03/14/2023 2:23 AM
+maybe
+[smx2460]
+smx2460 03/14/2023 2:23 AM
+first should be linker_type_autodetect followed by libc_type_autodetect
+03/14/2023 2:22 AM
+so it's swapped
+03/14/2023 2:22 AM
+oh
+03/14/2023 2:22 AM
+it should be set in linker_type_autodetect
+03/14/2023 2:19 AM
+my 13.0 boots and crashes randomly
+[yolofant]
+yolofant 03/14/2023 2:19 AM
+I have 13.0
+[smx2460]
+smx2460 03/14/2023 2:19 AM
+(no content)
+[image.png]
+ image.png
+2.78 MB External
+03/14/2023 2:19 AM
+but i have a 10.12 that works
+03/14/2023 2:18 AM
+ok so macOS 13 is fucked (edited)
+[yolofant]
+yolofant 03/14/2023 2:18 AM
+but that is not set in find libc
+03/14/2023 2:18 AM
+so the detection needs DYN_LINKER_NAME
+[smx2460]
+smx2460 03/14/2023 2:15 AM
+maybe i should just drop Apple support and fuck it
+03/14/2023 2:14 AM
+just so i can port stuff to Apple machines
+03/14/2023 2:14 AM
+i'm really tired of having to do workarounds to get macOS VMs (edited)
+[yolofant]
+yolofant 03/14/2023 2:14 AM
+but it never gets there
+[smx2460]
+smx2460 03/14/2023 2:01 AM
+(same as on Android)
+03/14/2023 2:01 AM
+and libdyld just exposes pointers/exports
+03/14/2023 2:01 AM
+the real symbols are in dyld itself
+03/14/2023 2:01 AM
+or was, last time i checked
+03/14/2023 2:01 AM
+which is a virtual library
+03/14/2023 2:01 AM
+so theoretically this
+03/14/2023 2:01 AM
+        elseif(EZ_TARGET_DARWIN)
+            # libdyld.dylib is a virtual library
+            set(DYN_LINKER_NAME "libdyld.dylib")
+            export_var(DYN_LINKER_NAME)
+        endif()
+03/14/2023 2:00 AM
+it's offered by the linker
+03/14/2023 2:00 AM
+i didn't change it
+03/14/2023 2:00 AM
+well it's the same
+03/14/2023 2:00 AM
+https://github.com/smx-smx/ezinject/blob/next/os/darwin/libc_darwin.c
+ezinject/libc_darwin.c at next · smx-smx/ezinject
+Modular binary injection framework, successor of libhooker -
+ezinject/libc_darwin.c at next · smx-smx/ezinject
+[]
+03/14/2023 2:00 AM
+oops
+03/14/2023 2:00 AM
+https://github.com/smx-smx/ezinject/blob/master/os/darwin/libc_darwin.c
+ezinject/libc_darwin.c at master · smx-smx/ezinject
+Modular binary injection framework, successor of libhooker -
+ezinject/libc_darwin.c at master · smx-smx/ezinject
+[]
+[yolofant]
+yolofant 03/14/2023 2:00 AM
+because the 3 libs in /usr/lib/system don't have it
+03/14/2023 2:00 AM
+where should dlopen be?
+[smx2460]
+smx2460 03/14/2023 1:59 AM
+it uses mach APIs for most things
+03/14/2023 1:59 AM
+because really, Darwin has no special C library checks
+03/14/2023 1:58 AM
+    if(NOT EZ_TARGET_DARWIN)
+        message(FATAL_ERROR "Unsupported C library")
+    endif()
+03/14/2023 1:58 AM
+what if you change CMakeLists to be (edited)
+03/14/2023 1:58 AM
+i lost that EZ_TARGET_DARWIN
+03/14/2023 1:58 AM
+        if(NOT EZ_TARGET_ANDROID
+        AND NOT HAVE_LIBC_DLOPEN_MODE
+        AND NOT HAVE_DL_LOAD_SHARED_LIBRARY
+        AND NOT HAVE_LIBDL_IN_LIBC
+        AND NOT EZ_TARGET_DARWIN
+        )
+            message(FATAL_ERROR "Unsupported C library")
+        endif()
+03/14/2023 1:57 AM
+hm
+03/14/2023 1:56 AM
+but i'm not totally sure why
+03/14/2023 1:56 AM
+i broke it with this merge
+03/14/2023 1:56 AM
+https://github.com/smx-smx/ezinject/commit/c33667e7196a4c301175ee392f6907b29928ea0chttps://github.com/smx-smx/ezinject/commit/c33667e7196a4c301175ee392f6907b29928ea0c
+[yolofant]
+yolofant 03/14/2023 1:56 AM
+so dlopen is no longer in /usr/lib/system?
+[smx2460]
+smx2460 03/14/2023 1:56 AM
+(a move i disagree with, but heh... it's the free tier so i can't
+complain) (edited)
+03/14/2023 1:56 AM
+but they dismissed Intel Macs
+03/14/2023 1:55 AM
+the only alternative was to use Cirrus CI's instance to debug
+03/14/2023 1:55 AM
+so it's quite unusable
+03/14/2023 1:54 AM
+03/14/2023 1:54 AM
+this VM randomly crashes since i updated it
+03/14/2023 1:54 AM
+oh now i remember
+03/14/2023 1:51 AM
+lol it's still booting
+03/14/2023 1:50 AM
+every time i boot it, there's a new macOS version lol
+03/14/2023 1:49 AM
+booting...
+[image.png]
+ image.png
+110.1 KB External
+03/14/2023 1:48 AM
+something is going south in my hacky CMakeLists.txt detection
+[yolofant]
+yolofant 03/14/2023 1:48 AM
+    -- Looking for __libc_dlopen_mode in /usr/lib/system/libsystem_kernel.dylib
+    -- Looking for __libc_dlopen_mode in /usr/lib/system/libsystem_kernel.dylib - not found
+    -- Looking for dlopen in /usr/lib/system/libsystem_kernel.dylib
+    -- Looking for dlopen in /usr/lib/system/libsystem_kernel.dylib - not found
+    -- Looking for dlopen in /usr/lib/system/libsystem_kernel.dylib
+    -- Looking for dlopen in /usr/lib/system/libsystem_kernel.dylib - not found
+[smx2460]
+smx2460 03/14/2023 1:47 AM
+that's the regression
+03/14/2023 1:47 AM
+yep
+[yolofant]
+yolofant 03/14/2023 1:47 AM
+    CMake Error at CMakeLists.txt:334 (message):
+      Unsupported C library
+    Call Stack (most recent call first):
+      CMakeLists.txt:378 (libc_type_autodetect)
+      CMakeLists.txt:385 (libc_autodetect)
+03/14/2023 1:47 AM
+yep
+[smx2460]
+smx2460 03/14/2023 1:47 AM
+git checkout next (edited)
+03/14/2023 1:47 AM
+i should delete it (master) (edited)
+03/14/2023 1:47 AM
+use next
+03/14/2023 1:47 AM
+it's old old old
+[yolofant]
+yolofant 03/14/2023 1:47 AM
+master
+[smx2460]
+smx2460 03/14/2023 1:47 AM
+wait which branch
+03/14/2023 1:47 AM
+i had a build error on Cirrus CI
+[yolofant]
+yolofant 03/14/2023 1:47 AM
+some warnings
+[smx2460]
+smx2460 03/14/2023 1:47 AM
+strange
+[yolofant]
+yolofant 03/14/2023 1:47 AM
+ye
+[smx2460]
+smx2460 03/14/2023 1:46 AM
+really?
+[yolofant]
+yolofant 03/14/2023 1:46 AM
+so it built
+[smx2460]
+smx2460 03/14/2023 1:46 AM
+but haven't tested it without in a while
+03/14/2023 1:46 AM
+in theory capstone is optional
+[yolofant]
+yolofant 03/14/2023 1:46 AM
+    Running `brew update --auto-update`...
+ 1
+03/14/2023 1:45 AM
+ye
+[smx2460]
+smx2460 03/14/2023 1:45 AM
+    brew install pkg-config cmake capstone
+03/14/2023 1:45 AM
+deps
+[yolofant]
+yolofant 03/14/2023 1:45 AM
+so it wants capstone
+03/14/2023 1:45 AM
+ok
+[smx2460]
+smx2460 03/14/2023 1:45 AM
+that's it
+03/14/2023 1:45 AM
+./build.sh
+[yolofant]
+yolofant 03/14/2023 1:45 AM
+or just plain cmake
+03/14/2023 1:45 AM
+is there any special build instruction for macß
+[smx2460]
+smx2460 03/14/2023 1:43 AM
+and right now it's refusing to
+03/14/2023 1:43 AM
+i boot it once every blue moon
+03/14/2023 1:43 AM
+i'm looking to fixup my macOS VM
+03/14/2023 1:43 AM
+i broke the CMakeLists.txt
+03/14/2023 1:43 AM
+but i'm pretty sure it doesn't rn
+03/14/2023 1:43 AM
+so it should build and run
+03/14/2023 1:42 AM
+(in case you didn't know)
+[yolofant]
+yolofant 03/14/2023 1:42 AM
+yes
+[smx2460]
+smx2460 03/14/2023 1:42 AM
+well, i support macOS in ezinject
+03/14/2023 1:42 AM
+x64 ?
+[yolofant]
+yolofant 03/14/2023 1:42 AM
+what do you need?
+03/14/2023 1:42 AM
+I have 2 macbooks
+[smx2460]
+smx2460 03/14/2023 1:39 AM
+but the glibc 2.34 support branch made macOS sad (edited)
+03/14/2023 1:39 AM
+i just merged 2 branches in next
+03/14/2023 1:38 AM
+i don't wanna re-fix my macOS VM just for this (edited)
+03/14/2023 1:38 AM
+who has macOS handy
+03/14/2023 1:38 AM
+pfff
+Deleted User 03/14/2023 1:33 AM
+also hello from ubuntu!
+[image.png]
+ image.png
+285.53 KB External

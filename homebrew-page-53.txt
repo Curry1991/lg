@@ -1,0 +1,1543 @@
+March 24, 2023
+hellobox. 03/24/2023 1:12 PM
+i think it's the two copies of libcrypto
+03/24/2023 1:12 PM
+i'm not sure it's actually related to getauxval
+[smx2460]
+smx2460 03/24/2023 1:12 PM
+What...
+[] smx2460 <@195583665265311744> getauxval segfault??
+hellobox. 03/24/2023 1:12 PM
+it's dying in the library init stuff
+[smx2460]
+smx2460 03/24/2023 1:12 PM
+Maybe i did a silly mistake
+03/24/2023 1:11 PM
+Now i really want a backtrace
+03/24/2023 1:11 PM
+@Yolofant getauxval segfault?? (edited)
+wsnipex 03/24/2023 12:55 PM
+what's needed for glibc?
+[ccarnell98]
+ccarnell98 03/24/2023 12:49 PM
+(older buildoot with updated glibc of course still)
+03/24/2023 12:49 PM
+@Yolofant @wsnipex Still having issues with webOS 7? I've just finished
+recompiling rebased from wsnipex/webos7 branch and it's running on mine
+ 1
+wsnipex 03/24/2023 9:38 AM
+does it work?
+March 23, 2023
+[yolofant]
+yolofant 03/23/2023 6:24 PM
+yeah else it wouldn't compile
+hellobox. 03/23/2023 6:09 PM
+br-nc4 has a hacked getauxval
+wsnipex 03/23/2023 6:03 PM
+if that's the culprit, we can probably just hardcode neon
+[yolofant]
+yolofant 03/23/2023 6:00 PM
+no libplayerapis pulls in stuff
+wsnipex 03/23/2023 5:58 PM
+The getauxval() function was added to glibc in version 2.16.
+03/23/2023 5:55 PM
+huh? that's checking hardware capabilities, why would that pull in
+gstreamer?
+[yolofant]
+yolofant 03/23/2023 5:40 PM
+but then still the question remains why the getauxval call apparently
+breaks stuff
+03/23/2023 5:40 PM
+it brings in gstreamer and a lot more I guess
+03/23/2023 5:39 PM
+maybe
+[] yolofant it's weird though that it only starts crashing once we pull
+in libplayerAPIs additionally
+hellobox. 03/23/2023 5:27 PM
+does that bring in one of the libcryptos?
+[] yolofant maybe <@803885040827629628> can reproduce this just remove
+the getauxval call in `CPUInfoLinux.cpp` ...
+hellobox. 03/23/2023 5:26 PM
+i can test in a couple hours
+wsnipex 03/23/2023 4:55 PM
+that's blue
+03/23/2023 4:54 PM
+if you enable debug logging, you'll see:
+    2023-03-23 16:53:39.125 T:2016     info <general>: key: 401, state: 1
+    2023-03-23 16:53:39.125 T:2370    debug <general>: Thread Timer start, auto delete: false
+    2023-03-23 16:53:39.188 T:1958    debug <general>: Keyboard: scancode: 0x0, sym: 0x00, unicode: 0x00, modifier: 0x0
+    2023-03-23 16:53:39.188 T:1958    debug <general>: GetActionCode: Trying Hardy keycode for 0xf200
+    2023-03-23 16:53:39.188 T:1958     info <general>: Skipped 1 duplicate messages..
+    2023-03-23 16:53:39.188 T:1958    debug <general>: HandleKey: long-0 (0x100f200, obc-16838913) pressed, window 10004, action is Back
+03/23/2023 4:51 PM
+but nothing is found
+03/23/2023 4:51 PM
+it calls CButtonTranslator::GetActionCode
+[infowski]
+infowski 03/23/2023 4:51 PM
+but it's probably still a wrong keymap or something?
+03/23/2023 4:50 PM
+[2023-03-01T20:19:20.660239Z][4276233.501][pid:26725][tid:0x96fbe210] wl_keyboard@24.keymap(1, fd 14, 58962)
+looking at some old logs
+03/23/2023 4:50 PM
+oh well, it is 
+03/23/2023 4:49 PM
+and thus there's no keymap loaded and it defaults to something stupid.
+03/23/2023 4:49 PM
+m_keyboard.on_keymap is probably never called
+wsnipex 03/23/2023 4:49 PM
+yeah, kodi sees those, e.g blue as 409
+[infowski]
+infowski 03/23/2023 4:49 PM
+Ha! I know.
+03/23/2023 4:44 PM
+hmmm
+    root@lgwebostv:~# grep -i blue /usr/share/X11/xkb/symbols/lg_vndr/remotes 
+         key <IR_KEY_BLUE>               { [ 0x01200014 ] }; // Qt::Key_webOS_Blue  
+03/23/2023 4:43 PM
+OK! So I think we have keycodes defined in
+/usr/share/X11/xkb/keycodes/lg but not the symbols
+[yolofant]
+yolofant 03/23/2023 4:40 PM
+      { XKB_KEY_XF86Red, XBMCK_RED },
+      { XKB_KEY_XF86Green, XBMCK_GREEN },
+      { XKB_KEY_XF86Yellow, XBMCK_YELLOW },
+      { XKB_KEY_XF86Blue, XBMCK_BLUE },
+wsnipex 03/23/2023 4:39 PM
+there is even a binary addon that for adding all kinds of peripherals:
+https://github.com/xbmc/peripheral.joystick/
+GitHub - xbmc/peripheral.joystick: Kodi joystick support (drivers a...
+Kodi joystick support (drivers and button maps). Contribute to
+xbmc/peripheral.joystick development by creating an account on GitHub.
+[]
+[infowski]
+[] yolofant hmm shouldn't it load keymaps from /usr/share/xkb?
+infowski 03/23/2023 4:38 PM
+Gotta check if they are actually correct
+[infowski]
+infowski 03/23/2023 4:38 PM
+I think input here comes from Wayland/windowing system directly, and the
+issue is either in missing entries in xkb (?) or mapping/handling in
+https://github.com/xbmc/xbmc/blob/master/xbmc/windowing/wayland/XkbcommonKeymap.cpp
+xbmc/XkbcommonKeymap.cpp at master · xbmc/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+wsnipex 03/23/2023 4:36 PM
+not my area at all, so I don't really know how it works
+03/23/2023 4:36 PM
+kodi supports all kinds of input, libinput, udev, lirc (edited)
+[yolofant]
+yolofant 03/23/2023 4:36 PM
+hmm shouldn't it load keymaps from /usr/share/xkb?
+[infowski]
+infowski 03/23/2023 4:33 PM
+Also ffs, GitHub search doesn't work, Google search returns random
+repos. Great.
+03/23/2023 4:33 PM
+Hm, no.
+03/23/2023 4:32 PM
+https://github.com/cisco-open-source/kodi/blob/master/xbmc/input/linux/XKBCommonKeymap.cpp#L371
+so... Entries needed here maybe? No idea.
+kodi/XKBCommonKeymap.cpp at master · cisco-open-source/kodi
+Kodi port on Tizen. Contribute to cisco-open-source/kodi development by
+creating an account on GitHub.
+[]
+03/23/2023 4:31 PM
+>CXkbcommonKeymap
+[infowski]
+wsnipex that's not it, e.g. the color buttons or play and pause send key
+ids >200, which kodi sees, but scan...
+infowski 03/23/2023 4:25 PM
+I mean, the key IDs is everything we get from Wayland - question is what
+translates that to scan codes that Kodi uses? Kodi uses xkbmap maybe?
+[yolofant]
+yolofant 03/23/2023 4:21 PM
+probably sdl has the answer
+03/23/2023 4:21 PM
+though I've tried that and it didn't seem to work
+03/23/2023 4:20 PM
+https://gist.github.com/Informatic/35a8732564515ada0db918e574b87ea8#file-proto-webos5-xml-L366
+proto-webos3.xml
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+wsnipex 03/23/2023 4:17 PM
+that's not it, e.g. the color buttons or play and pause send key
+ids >200, which kodi sees, but scan codes are all 0 and it all falls
+back to "back"
+[yolofant]
+[] infowski Yep. Needed to ignore dummy 1199/1198 keycodes (cursor
+show/hide... seen that in SDL iirc) too, sinc...
+yolofant 03/23/2023 4:15 PM
+this
+[yolofant]
+yolofant 03/23/2023 4:14 PM
+let me see
+03/23/2023 4:14 PM
+I think we've discussed it before
+wsnipex 03/23/2023 4:14 PM
+any pointers how the magic remote translates to input events? Any media
+button just translates to "back"
+[yolofant]
+yolofant 03/23/2023 3:53 PM
+it's weird though that it only starts crashing once we pull in
+libplayerAPIs additionally
+03/23/2023 3:53 PM
+maybe @hellobox can reproduce this just remove the getauxval call in
+CPUInfoLinux.cpp the header include can actually stay in
+03/23/2023 3:49 PM
+does that maybe change the linking order?
+03/23/2023 3:47 PM
+wtf
+03/23/2023 3:47 PM
+if I uncomment those stuff it works
+03/23/2023 3:47 PM
+but if we call getauxval in kodi it segfaults
+03/23/2023 3:47 PM
+ok so I can use the new toolchain
+03/23/2023 3:46 PM
+oh
+wsnipex 03/23/2023 3:40 PM
+[yolofant]
+yolofant 03/23/2023 2:29 PM
+hmm, if I switch to the new toolchain for just building kodi only, it
+still works
+03/23/2023 2:23 PM
+that works
+03/23/2023 2:23 PM
+I've rebuilt everything with the pre glibc getauxval polyfill toolchain
+03/23/2023 2:23 PM
+ok I'm giga confused now
+03/23/2023 2:20 PM
+@hellobox and @asturel
+wsnipex 03/23/2023 1:56 PM
+can anyone reproduce this?
+wsnipex 03/23/2023 1:36 PM
+which package was the last that worked?
+03/23/2023 1:36 PM
+well that's weird, cause that is as "vanilla" as it gets
+[yolofant]
+yolofant 03/23/2023 1:20 PM
+and the debug information isn't doing anything because it's crashing pre
+main
+[yolofant]
+wsnipex kodi master debug build:
+https://jenkins.kodi.tv/job/webos-docker/94/
+yolofant 03/23/2023 1:20 PM
+doesn't work
+ww8543 03/23/2023 10:46 AM
+libwvcdm_shared.so
+wsnipex anyone knows where the widevine cdm is located on webos?
+ww8543 03/23/2023 10:46 AM
+/usr/lib/ usually
+ 1
+wsnipex 03/23/2023 10:45 AM
+anyone knows where the widevine cdm is located on webos?
+wsnipex 03/23/2023 7:43 AM
+kodi master debug build: https://jenkins.kodi.tv/job/webos-docker/94/
+03/23/2023 7:42 AM
+what a mess 
+03/23/2023 7:41 AM
+and why are there 2 different ones?
+[:lg:] 1
+03/23/2023 7:40 AM
+so what pulls in openssl from system? we link our own statically
+(edited)
+hellobox. 03/23/2023 7:26 AM
+         23945:     find library=libcrypto.so.1.1 [0]; searching
+         23945:       trying file=/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libcrypto.so.1.1
+         23945:       trying file=/home/root/tools/lib/libcrypto.so.1.1
+         23945:       trying file=/mnt/license/usr/lib/libcrypto.so.1.1
+         23945:       trying file=/usr/openssl-1.1/lib/libcrypto.so.1.1
+         23945:     find library=libcrypto.so.1.0.2 [0]; searching
+         23945:       trying file=/media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib/libcrypto.so.1.0.2
+         23945:       trying file=/home/root/tools/lib/libcrypto.so.1.0.2
+         23945:       trying file=/mnt/license/usr/lib/libcrypto.so.1.0.2
+         23945:       trying file=/usr/lib/libcrypto.so.1.0.2
+         23945:     calling init: /usr/lib/libcrypto.so.1.0.2
+         23945:     calling init: /usr/openssl-1.1/lib/libcrypto.so.1.1
+03/23/2023 7:26 AM
+and they're both being loaded
+03/23/2023 7:25 AM
+    -rwxr-xr-x    1 root     root       1589688 Dec 13 22:26 /usr/openssl-1.1/lib/libcrypto.so.1.1
+    -rwxr-xr-x    1 root     root       1127336 Dec 13 22:26 /usr/lib/libcrypto.so.1.0.2
+[] yolofant ``` 2923: 2923: calling init: /usr/lib/libcrypto.so.1.1
+2923: Program received...
+hellobox. 03/23/2023 7:24 AM
+same
+wsnipex
+https://download.kodi.tv/test-builds/webos/org.xbmc.kodi_20.90.101_webos7_new-toolchain_arm.ipk
+this...
+hellobox. 03/23/2023 7:16 AM
+webos 6
+    (gdb) bt
+    #0  0x00000000 in ?? ()
+    #1  0x94070046 in ?? () from /usr/openssl-1.1/lib/libcrypto.so.1.1
+    #2  0x96fe283c in call_init (l=<optimized out>, argc=argc@entry=1, argv=argv@entry=0x9efff454, env=env@entry=0x9efff45c) at dl-init.c:72
+    #3  0x96fe2904 in call_init (env=<optimized out>, argv=<optimized out>, argc=<optimized out>, l=<optimized out>) at dl-init.c:30
+    #4  _dl_init (main_map=0x96fff910, argc=1, argv=0x9efff454, env=0x9efff45c) at dl-init.c:119
+    #5  0x96fd9a84 in _dl_start_user () from /lib/ld-linux.so.3
+(edited)
+wsnipex 03/23/2023 7:07 AM
+so: not even the build of
+https://github.com/webosbrew/xbmc/commits/feature/webOS ==
+https://jenkins.kodi.tv/job/webos-docker/86/artifact/org.xbmc.kodi_20230319-9dc5eaa1-9dc5eaa1b1a3b22000030e43a1aef19ec672c248_arm.ipk
+works?
+Commits · webosbrew/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[yolofant]
+yolofant 03/23/2023 12:40 AM
+ok so build 78 and 79 and also 90 from ci
+March 22, 2023
+[astur3l]
+astur3l 03/22/2023 11:48 PM
+ty, already turned off the tv :d there's kodi userdata also with lot of
+thumb :d probably it also eat up the space , i had like 1.2/2 gb free
+iirc
+hellobox. 03/22/2023 11:47 PM
+    -rw-rw-r--    1 root     root     259719674 Nov 29  2020 01_Elba_1120_UHD_U_A1_V1_03.lge
+    -rw-rw-r--    1 root     root     369515880 Oct 14  2020 02_Swiss_U_A1_V2_01.lge
+03/22/2023 11:47 PM
+check /media/preload/storedemo
+[astur3l]
+astur3l 03/22/2023 11:46 PM
+nope :d can i?
+[] astur3l i thought its just WebOS 7, the 250 MB build is like over 600
+mb and can't install it:d guess gdb in...
+hellobox. 03/22/2023 11:46 PM
+have you deleted lg's preloaded garbage?
+[astur3l]
+astur3l 03/22/2023 11:45 PM
+i thought its just WebOS 7, the 250 MB build is like over 600 mb and
+can't install it:d guess gdb ing the stripped makes no sense
+[yolofant]
+yolofant 03/22/2023 11:44 PM
+just to make sure it's crashing at the same place
+03/22/2023 11:44 PM
+LD_LIBRARY_PATH=lib LD_DEBUG=libs ./kodi-webos
+03/22/2023 11:43 PM
+yeah webos 6 also has libcrypto.so.1.1
+[astur3l]
+astur3l 03/22/2023 11:37 PM
+didn't worked on my WebOS 6 either (didn't tried the last one), segfault
+(edited)
+[yolofant]
+yolofant 03/22/2023 11:30 PM
+any idea how to debug this though?
+[yolofant]
+wsnipex this should work, plain webosbrew feature branch:
+https://jenkins.kodi.tv/job/webos-docker/86/artifa...
+yolofant 03/22/2023 11:03 PM
+doesn't work either no idea what's going on
+wsnipex 03/22/2023 8:07 PM
+this should work, plain webosbrew feature branch:
+https://jenkins.kodi.tv/job/webos-docker/86/artifact/org.xbmc.kodi_20230319-9dc5eaa1-9dc5eaa1b1a3b22000030e43a1aef19ec672c248_arm.ipk
+wsnipex 03/22/2023 7:53 PM
+not from my side, but others might still come up with some paint for the
+shed 
+[yolofant]
+yolofant 03/22/2023 7:51 PM
+btw is this missing anything? https://github.com/xbmc/xbmc/pull/23007
+wsnipex 03/22/2023 7:49 PM
+https://jenkins.kodi.tv/job/webos-docker/85/console webosbrew feature
+branch
+[yolofant]
+yolofant 03/22/2023 7:33 PM
+I don' think it's the hw accel stuff because it was working before
+03/22/2023 7:32 PM
+yes
+wsnipex 03/22/2023 7:31 PM
+does webos7 even use starfish?
+wsnipex 03/22/2023 7:16 PM
+likely related to hw accel (edited)
+03/22/2023 7:15 PM
+[yolofant]
+yolofant 03/22/2023 7:13 PM
+I don't get it
+03/22/2023 7:13 PM
+both crash
+wsnipex 03/22/2023 7:07 PM
+https://jenkins.kodi.tv/job/webos-docker/84/artifact/org.xbmc.kodi_20230322-74256171-webos7_arm.ipk
+old toolchain, without static patch
+[yolofant]
+yolofant 03/22/2023 7:07 PM
+installing
+wsnipex 03/22/2023 7:00 PM
+https://download.kodi.tv/test-builds/webos/org.xbmc.kodi_20.90.101_webos7_new-toolchain_arm.ipk
+this is with the new toolchain and the static patch again, probably
+broken?
+03/22/2023 6:55 PM
+new build with that reverted:
+https://jenkins.kodi.tv/job/webos-docker/84/console (edited)
+03/22/2023 6:53 PM
+then it's likely the wayland static patch
+[yolofant]
+yolofant 03/22/2023 6:50 PM
+hmm crashes
+wsnipex 03/22/2023 6:48 PM
+@Yolofant
+https://jenkins.kodi.tv/job/webos-docker/83/artifact/org.xbmc.kodi_20230322-a4931b8e-webos7_arm.ipk
+wsnipex 03/22/2023 6:34 PM
+single threaded works
+03/22/2023 6:33 PM
+pft, it's a race with verify-libs, when running make -j32 ipk
+wsnipex 03/22/2023 6:22 PM
+that's interesting
+03/22/2023 6:19 PM
+meh, it failed packaging (edited)
+[yolofant]
+yolofant 03/22/2023 6:11 PM
+oh nice that is with hw accel
+wsnipex 03/22/2023 6:09 PM
+https://jenkins.kodi.tv/job/webos-docker/82/console
+03/22/2023 6:08 PM
+for reference: https://github.com/wsnipex/xbmc/commits/webos7 (edited)
+Commits · wsnipex/xbmc
+XBMC Main Repository. Contribute to wsnipex/xbmc development by creating
+an account on GitHub.
+[]
+03/22/2023 6:07 PM
+let's build my branch with the old toolchain
+[yolofant]
+yolofant 03/22/2023 6:07 PM
+yeah but then it seems that it's either the new toolchain or maybe some
+leftovers in your deps?
+03/22/2023 6:06 PM
+I have the libwayland-egl.so.1
+wsnipex 03/22/2023 6:06 PM
+and that build is kodi master, not webosbrew/feature branch
+03/22/2023 6:05 PM
+without an fuzzing with libwayland-egl?
+[yolofant]
+yolofant 03/22/2023 6:04 PM
+that one works
+03/22/2023 6:03 PM
+yeah it's installing
+wsnipex 03/22/2023 6:02 PM
+can you try that in the meantime? ipk is there
+03/22/2023 6:02 PM
+https://jenkins.kodi.tv/job/webos-docker/77/ is my PR with the old
+toolchain
+03/22/2023 6:01 PM
+ah, that still uses the old toolchain
+03/22/2023 6:00 PM
+better yet, I'll let jenkins do it
+03/22/2023 5:59 PM
+but let me do a clean build
+03/22/2023 5:58 PM
+probably, otherwise we'd see missing krb stuff
+[yolofant]
+yolofant 03/22/2023 5:57 PM
+did you recompile mariadbclient?
+03/22/2023 5:57 PM
+though there shoudn't be any related changes
+03/22/2023 5:57 PM
+hmm probably still the old toolchain
+wsnipex 03/22/2023 5:57 PM
+which branch did that build and did it use that toolchain from above?
+[yolofant]
+yolofant 03/22/2023 5:56 PM
+I've tested the ci one
+wsnipex 03/22/2023 5:55 PM
+let's test without that commit
+[yolofant]
+yolofant 03/22/2023 5:55 PM
+but why it started breaking when linking waylandpp statically?
+wsnipex 03/22/2023 5:55 PM
+we have our own curl
+03/22/2023 5:55 PM
+hmm
+03/22/2023 5:55 PM
+the only lib in the toolchain that needs libssl is curl...
+[infowski]
+[] wetter1 im new in this stuff.. I wonder if there are more apps..
+infowski 03/22/2023 5:54 PM
+Not really, there aren't. There's a bunch of random webOS apps that are
+not packaged for homebrew channel (like magic4pc) or still in
+development, but no other repositories.
+wsnipex 03/22/2023 5:53 PM
+anyway, looks like the stack is completely corrupt
+[wetter1]
+wetter1 03/22/2023 5:53 PM
+im new in this stuff.. I wonder if there are more apps..
+[] wetter1 someone can share more repository ? only know .club
+wsnipex 03/22/2023 5:52 PM
+will a linux repository do?
+ 1
+[infowski]
+infowski 03/22/2023 5:51 PM
+someone can develop more homebrew? only know people around here
+[wetter1]
+wetter1 03/22/2023 5:51 PM
+someone can share more repository ? only know .club
+[infowski]
+infowski 03/22/2023 5:50 PM
+OK.
+03/22/2023 5:50 PM
+I am not sure how ld works internally.
+wsnipex 03/22/2023 5:50 PM
+we have libssl and libcrypto linked statically
+[infowski]
+infowski 03/22/2023 5:50 PM
+Hmmm, I am not sure but why is init/loading of libssl/libcrypto since
+it's a system library that should probably work? Do we have a static
+build in our binary that somehow conflicts with this?
+wsnipex 03/22/2023 5:47 PM
+something is pulling in libssl, which most certainly pull crypto
+03/22/2023 5:47 PM
+find library=libssl.so.1.1
+[yolofant]
+yolofant 03/22/2023 5:41 PM
+doesn't seem to give more information
+03/22/2023 5:41 PM
+https://paste.ee/p/X4XRl
+View Paste X4XRl
+Paste.ee - View Paste X4XRl
+[]
+wsnipex 03/22/2023 5:36 PM
+maybe this gives more info, still not a debug build though
+03/22/2023 5:36 PM
+https://download.kodi.tv/test-builds/webos/org.xbmc.kodi_20.90.101_no-strip_arm.ipk
+wsnipex 03/22/2023 5:20 PM
+you probably need an ipk without stripping to get some info
+[yolofant]
+yolofant 03/22/2023 5:20 PM
+          2923:     find library=libcrypto.so.1.1 [0]; searching
+          2923:      search path=           (LD_LIBRARY_PATH)
+          2923:      search path=/usr/lib           (system search path)
+          2923:       trying file=/usr/lib/libcrypto.so.1.1
+03/22/2023 5:19 PM
+          2923:     calling init: /usr/lib/libcrypto.so.1.1
+          2923:
+    Program received signal SIGSEGV, Segmentation fault.
+    0x00000000 in ?? ()
+wsnipex 03/22/2023 5:17 PM
+LD_DEBUG=libs kodi-webos
+[yolofant]
+yolofant 03/22/2023 5:15 PM
+not by default
+wsnipex 03/22/2023 5:14 PM
+is there ltrace?
+03/22/2023 5:13 PM
+none of those should be used by kodi...
+03/22/2023 5:12 PM
+    wuff@elitebook:/opt/tools/webos/arm-webos-linux-gnueabi_sdk-buildroot/arm-webos-linux-gnueabi/sysroot$ find . -name "lib*.so*" -print  | while read LIB; do echo -n ${LIB}:; readelf -a $LIB | grep NEED |grep crypto; echo;  done 2>/dev/null | grep NEED
+    ./usr/lib/libkmod.so.2.4.0: 0x00000001 (NEEDED)                     Shared library: [libcrypto.so.1.1]
+    ./usr/lib/libkmod.so: 0x00000001 (NEEDED)                     Shared library: [libcrypto.so.1.1]
+    ./usr/lib/libcurl.so: 0x00000001 (NEEDED)                     Shared library: [libcrypto.so.1.1]
+    ./usr/lib/libkmod.so.2: 0x00000001 (NEEDED)                     Shared library: [libcrypto.so.1.1]
+    ./usr/lib/libcurl.so.4: 0x00000001 (NEEDED)                     Shared library: [libcrypto.so.1.1]
+    ./usr/lib/libcurl.so.4.8.0: 0x00000001 (NEEDED)                     Shared library: [libcrypto.so.1.1]
+    ./usr/lib/libssl.so.1.1: 0x00000001 (NEEDED)                     Shared library: [libcrypto.so.1.1]
+    ./usr/lib/libssl.so: 0x00000001 (NEEDED)                     Shared library: [libcrypto.so.1.1]
+03/22/2023 5:12 PM
+the toolchain has a couple of references:
+03/22/2023 5:11 PM
+yes, cause it's none of our depends
+[yolofant]
+yolofant 03/22/2023 5:00 PM
+the ones on my tv?
+wsnipex 03/22/2023 4:58 PM
+can you check if wayland* libs might link it?
+03/22/2023 4:58 PM
+nope
+[yolofant]
+yolofant 03/22/2023 4:58 PM
+yeah but has that changed in your build?
+wsnipex 03/22/2023 4:58 PM
+we also link a static libcrypo
+[yolofant]
+yolofant 03/22/2023 4:58 PM
+previously it was libgssapi_krb5 pulling it in
+03/22/2023 4:57 PM
+because there's no direct dependency on libcrypto in your build
+03/22/2023 4:57 PM
+and apparently something is not compatible with the system one though I
+don't know which library pulls libcrypto in
+03/22/2023 4:56 PM
+they updated it in webos 6
+03/22/2023 4:56 PM
+yeah 5 doesn't have libcrypto.so.1.1 in /usr/lib
+wsnipex 03/22/2023 4:56 PM
+it works for me on 5
+[yolofant]
+yolofant 03/22/2023 4:56 PM
+7/22
+wsnipex 03/22/2023 4:56 PM
+which webos version?
+[yolofant]
+yolofant 03/22/2023 4:55 PM
+the latest ipk from ci works
+wsnipex 03/22/2023 4:55 PM
+hmm
+[yolofant]
+yolofant 03/22/2023 4:50 PM
+    Program received signal SIGSEGV, Segmentation fault.
+    0x00000000 in ?? ()
+    (gdb) bt
+    #0  0x00000000 in ?? ()
+    #1  0xf5c3404a in ?? () from /usr/lib/libcrypto.so.1.1
+    #2  0xf7fd0d80 in call_init (l=<optimized out>, argc=argc@entry=1, argv=argv@entry=0xfffef434,
+        env=env@entry=0xfffef43c) at dl-init.c:72
+    #3  0xf7fd0e22 in call_init (env=<optimized out>, argv=<optimized out>, argc=<optimized out>, l=<optimized out>)
+        at dl-init.c:30
+    #4  _dl_init (main_map=0xf7fef960, argc=1, argv=0xfffef434, env=0xfffef43c) at dl-init.c:119
+    #5  0xf7fc5bc4 in _dl_start_user () from /lib/ld-linux.so.3
+    Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+wsnipex 03/22/2023 4:46 PM
+yes, it's already merged in master
+[yolofant]
+yolofant 03/22/2023 4:43 PM
+hmm, has that binary already the mariadb gssapi fixes?
+wsnipex 03/22/2023 4:10 PM
+https://download.kodi.tv/test-builds/webos/org.xbmc.kodi_20.90.101_arm.ipk
+03/22/2023 4:05 PM
+http://mirrors.xbmc.org/test-builds/webos/org.xbmc.kodi_20.90.101_arm.ipk?mirrorlist
+will take a couple of mins to be available
+03/22/2023 4:04 PM
+I'll upload to our mirrors
+[yolofant]
+yolofant 03/22/2023 4:04 PM
+rip
+wsnipex 03/22/2023 4:03 PM
+it says 8mb 
+[yolofant]
+yolofant 03/22/2023 4:03 PM
+yeah there's a limit of 50mb for free discord accounts 
+wsnipex 03/22/2023 4:02 PM
+hm, can't upload here, moment
+03/22/2023 4:01 PM
+just building one that also includes proper binary stripping
+[yolofant]
+yolofant 03/22/2023 3:59 PM
+sure I can test
+03/22/2023 3:57 PM
+that is the better fix anyway
+wsnipex 03/22/2023 3:57 PM
+want the ipk to test?
+[yolofant]
+yolofant 03/22/2023 3:57 PM
+wsnipex 03/22/2023 3:57 PM
+anyway toolchain from above + https://github.com/xbmc/xbmc/pull/23028
+results in [libwayland-egl.so]
+compile waylandpp static by wsnipex · Pull Request #23028 · xbmc/xb...
+Description Compile and link waylandpp static. On webos we prefer to
+link wayland libs from the toolchain instead of our own Motivation and
+context Removes the need to copy wayland++ shared lib...
+[]
+[yolofant]
+yolofant 03/22/2023 3:57 PM
+there are some jailer* files in /etc which show what's mapped in jailer
+wsnipex 03/22/2023 3:56 PM
+ok, good to know.
+[yolofant]
+yolofant 03/22/2023 3:56 PM
+I used the symlink fix in one of the test ipk to fix that particular
+problem for some users
+03/22/2023 3:55 PM
+/usr/lib is accessible from jail
+[yolofant]
+wsnipex I still suspect that symlinks outside of home might not work due
+to jailer. At least if it's worth i...
+yolofant 03/22/2023 3:55 PM
+it works
+hellobox.
+<https://api.cirrus-ci.com/v1/artifact/task/5846992971104256/sdk/output/images/arm-webos-linux-gnuea...
+wsnipex 03/22/2023 3:52 PM
+looks good:
+    $ readelf -a kodi-webos |grep NEEDED | grep wayland
+     0x00000001 (NEEDED)                     Shared library: [libwayland-client.so.0]
+     0x00000001 (NEEDED)                     Shared library: [libwayland-cursor.so.0]
+     0x00000001 (NEEDED)                     Shared library: [libwayland-egl.so]
+wsnipex 03/22/2023 3:21 PM
+I still suspect that symlinks outside of home might not work due to
+jailer. At least if it's worth it's name
+[infowski]
+[] yolofant ares-package unfortunately checks the existance of symlink
+targets :/
+infowski 03/22/2023 1:27 PM
+Reminder that ipks are actually opkg/deb packages. We can probably use
+their tooling directly.
+[yolofant]
+yolofant 03/22/2023 1:04 PM
+we've also removed the krb5 stuff from the toolchain
+03/22/2023 1:01 PM
+it will do it in future
+03/22/2023 1:01 PM
+yeah
+hellobox. 03/22/2023 1:01 PM
+https://api.cirrus-ci.com/v1/artifact/task/5846992971104256/sdk/output/images/arm-webos-linux-gnueabi_sdk-buildroot.tar.gz
+(edited)
+wsnipex 03/22/2023 12:56 PM
+if the toolchain would only provide the unversioned .so it should work
+ootb
+wsnipex 03/22/2023 12:42 PM
+indeed, it ignores that symlink 
+[yolofant]
+yolofant 03/22/2023 12:41 PM
+that approach works, we've already tested it before but it kind of sucks
+to create a file in /usr/lib on the host
+03/22/2023 12:39 PM
+outside of the package
+wsnipex 03/22/2023 12:39 PM
+I have severyl symlinks in lib, so that doesn't seem to be an issue? or
+do you mean symlinks to outside of the package?
+[yolofant]
+yolofant 03/22/2023 12:36 PM
+ares-package unfortunately checks the existance of symlink targets :/
+[:lg:] 1
+[yolofant]
+wsnipex why don't we add $HOME/lib/libwayland-egl.so.1 ->
+/lib/libwayland-egl.so symlink?
+yolofant 03/22/2023 12:36 PM
+that is possible but it requires the symlink to be present at packaging
+time
+hellobox. 03/22/2023 12:34 PM
+the former should work; the latter i'm not sure
+wsnipex 03/22/2023 12:31 PM
+or just ship our libwayland-egl.so.1
+03/22/2023 12:30 PM
+why don't we add $HOME/lib/libwayland-egl.so.1 -> /lib/libwayland-egl.so
+symlink?
+03/22/2023 12:29 PM
+ok, so it still has libwayland-egl.so.1
+03/22/2023 12:24 PM
+meh, wrong branch
+[yolofant]
+yolofant 03/22/2023 12:23 PM
+on some devices wayland-egl doesn't provide any functions but just pulls
+in libmali
+hellobox. 03/22/2023 12:22 PM
+      NEEDED            Shared library: [libwayland-egl.so.1]
+      NEEDED            Shared library: [libwayland-client.so.0]
+      NEEDED            Shared library: [libm.so.6]
+      NEEDED            Shared library: [libgcc_s.so.1]
+      NEEDED            Shared library: [libc.so.6]
+      NEEDED            Shared library: [ld-linux.so.3]
+      SONAME            Library soname: [libwayland-egl++.so.0]
+[yolofant]
+yolofant 03/22/2023 12:22 PM
+but it should call the stuff from libwayland-egl
+03/22/2023 12:22 PM
+libwayland-egl++ is from waylandpp
+hellobox. 03/22/2023 12:22 PM
+it's libwayland-egl++ that needs it (edited)
+[yolofant]
+yolofant 03/22/2023 12:22 PM
+I think that wayland-egl is provided by mali
+wsnipex 03/22/2023 12:21 PM
+was about to test 
+[yolofant]
+yolofant 03/22/2023 12:21 PM
+does that work?
+wsnipex 03/22/2023 12:21 PM
+no wayland-egl at all
+03/22/2023 12:21 PM
+    wuff@elitebook:~/src/xbmc/build$ readelf -a kodi-webos |grep NEEDED
+     0x00000001 (NEEDED)                     Shared library: [libasound.so.2]
+     0x00000001 (NEEDED)                     Shared library: [libdl.so.2]
+     0x00000001 (NEEDED)                     Shared library: [libpthread.so.0]
+     0x00000001 (NEEDED)                     Shared library: [libm.so.6]
+     0x00000001 (NEEDED)                     Shared library: [libatomic.so.1]
+     0x00000001 (NEEDED)                     Shared library: [libutil.so.1]
+     0x00000001 (NEEDED)                     Shared library: [librt.so.1]
+     0x00000001 (NEEDED)                     Shared library: [libresolv.so.2]
+     0x00000001 (NEEDED)                     Shared library: [libcrypt.so.1]
+     0x00000001 (NEEDED)                     Shared library: [libnsl.so.1]
+     0x00000001 (NEEDED)                     Shared library: [libwayland-client++.so.0]
+     0x00000001 (NEEDED)                     Shared library: [libwayland-cursor++.so.0]
+     0x00000001 (NEEDED)                     Shared library: [libwayland-egl++.so.0]
+     0x00000001 (NEEDED)                     Shared library: [libdrm.so.2]
+     0x00000001 (NEEDED)                     Shared library: [libGLESv2.so.2]
+     0x00000001 (NEEDED)                     Shared library: [libEGL.so.1]
+     0x00000001 (NEEDED)                     Shared library: [libshairplay.so.0]
+     0x00000001 (NEEDED)                     Shared library: [libgcc_s.so.1]
+     0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+     0x00000001 (NEEDED)                     Shared library: [ld-linux.so.3]
+[yolofant]
+yolofant 03/22/2023 12:20 PM
+the problem is that on some tvs we have libwayland-egl.so.0
+[yolofant]
+wsnipex jailer set LD_LIBRARY_PATH to /lib:/usr/lib:$HOME/lib, correct?
+yolofant 03/22/2023 12:19 PM
+yes
+hellobox. 03/22/2023 12:19 PM
+the goal is to get the soname it looks for to be libwayland-egl.so
+wsnipex 03/22/2023 12:19 PM
+jailer set LD_LIBRARY_PATH to /lib:/usr/lib:$HOME/lib, correct?
+03/22/2023 12:18 PM
+not sure I follow anymore
+03/22/2023 12:17 PM
+why wouldn't you want to use the one on the target device?
+03/22/2023 12:17 PM
+atm wayland-egl from depends is used, my PR changes that
+hellobox. 03/22/2023 12:13 PM
+that has the benefit of not depending on the toolchain providing the
+right wayland-egl, but it adds the requirement for toolchain to provide
+wayland-cursor
+03/22/2023 12:11 PM
+if you build wayland with --disable-libraries, does webos-userland's
+wayland-egl (the one in depends) get used instead?
+03/22/2023 12:06 PM
+can you just force install the webos-userland version over the wayland
+one?
+[yolofant]
+yolofant 03/22/2023 12:06 PM
+hmm I guess it just falls back to the toolchain files, no?
+03/22/2023 12:04 PM
+yeah but the toolchain also provides those
+hellobox. 03/22/2023 12:01 PM
+why isn't the libwayland-egl.so from kodi's webos-userland installed?
+wsnipex 03/22/2023 11:56 AM
+webos-userland is used from https://github.com/sundermann/webos-userland
+GitHub - sundermann/webos-userland
+Contribute to sundermann/webos-userland development by creating an
+account on GitHub.
+[]
+[yolofant]
+yolofant 03/22/2023 11:53 AM
+because the current release still has a too old version of
+webos-userland
+03/22/2023 11:52 AM
+I think that will only start working though once the toolchain is
+updated as well
+hellobox. 03/22/2023 10:39 AM
+what's actually used from the wayland built by kodi? is it necessary if
+wayland is provided by the toolchain? (edited)
+wsnipex 03/22/2023 10:37 AM
+PR updated
+wsnipex 03/22/2023 9:34 AM
+I can perfer to look for those in the toolchain
+hellobox. 03/22/2023 6:14 AM
+wayland-cursor from kodi:
+      NEEDED            Shared library: [libwayland-client.so.0]
+      NEEDED            Shared library: [libpthread.so.0]
+      NEEDED            Shared library: [libc.so.6]
+    and br-nc4 (older glibc):
+      NEEDED            Shared library: [libwayland-client.so.0]
+      NEEDED            Shared library: [librt.so.1]
+      NEEDED            Shared library: [libm.so.6]
+      NEEDED            Shared library: [libpthread.so.0]
+      NEEDED            Shared library: [libc.so.6]
+i guess it's fine, since we already have/need those anyway
+03/22/2023 6:09 AM
+maybe with NO_DEFAULT_PATH
+03/22/2023 6:07 AM
+however the issue could also be resolved by making libwayland-egl++
+prefer to link against the br-nc4 libwayland-egl rather than kodi's
+03/22/2023 6:06 AM
+that will also stop libwayland-cursor from being built, but we have that
+in br-nc4 so i guess it's fine
+03/22/2023 6:05 AM
+@Yolofant's solution is to have it not build wayland-egl
+(--disable-libraries)
+03/22/2023 6:04 AM
+webos-userland's stub libwayland-egl.so has an unversioned soname, but
+kodi links against the one it builds
+03/22/2023 6:01 AM
+but lg left an unversioned symlink for some reason
+03/22/2023 6:01 AM
+we need to look for libwayland-egl.so rather than libwayland-egl.so.1
+because on mstar it's libwayland-egl.so.0
+[wetter1]
+wetter1 03/22/2023 6:00 AM
+Hi, where I can find more ipk?
+hellobox. <@985035470708826122> does your static wayland PR fix the
+libwayland-egl soname issue?
+wsnipex 03/22/2023 5:59 AM
+it gets rid of needing to copy any Wayland++ libs. What egl issue are
+you referring to?
+March 21, 2023
+hellobox. 03/21/2023 11:49 PM
+i suppose
+[yolofant]
+yolofant 03/21/2023 11:49 PM
+hmm, I think the solution is actually --disable-libraries in wayland
+hellobox. 03/21/2023 11:43 PM
+could we make it use the webos-userland one by changing this?
+https://github.com/xbmc/xbmc/pull/23028/files#diff-fd351908994e8a94cfb79ff0fa38380b63186d460195113788f2269246f604ccR49
+03/21/2023 11:42 PM
+which wayland-egl is it linking against?
+03/21/2023 11:42 PM
+@wsnipex does your static wayland PR fix the libwayland-egl soname
+issue?
+hellobox. 03/21/2023 11:20 PM
+both webos 4.0
+03/21/2023 11:20 PM
+it's on lm18a too
+03/21/2023 11:19 PM
+never noticed /old_root before
+    /dev/root               778496    778496         0 100% /old_root
+    devtmpfs                411516         0    411516   0% /old_root/dev
+    /dev/mmcblk0p30          21504     21504         0 100% /old_root/mnt/bsppart
+03/21/2023 11:19 PM
+there's ~500mb for /mnt/lg/cmn_data
+03/21/2023 11:18 PM
+yeah, i'm checking the other partitions
+[yolofant]
+yolofant 03/21/2023 11:18 PM
+maybe they've allocated the memory to other locations?
+hellobox. 03/21/2023 11:17 PM
+well, ~128mb
+03/21/2023 11:16 PM
+lol my commercial m16pp board only has ~100mb for /media
+[infowski]
+infowski 03/21/2023 10:59 PM
+Oh no
+hellobox. 03/21/2023 10:50 PM
+c++ template hell?
+[infowski]
+hellobox. unless there's an option somewhere
+infowski 03/21/2023 10:49 PM
+I've seen some part that was supposed to import these. Don't remember
+where though. Also recall some signed .tgz extraction... Hmmmmm
+wsnipex 03/21/2023 10:33 PM
+but first we should ask nicely
+03/21/2023 10:33 PM
+we can try public shaming 
+[:ahegao:] 1
+[yolofant]
+yolofant 03/21/2023 10:33 PM
+and their last response was already 2 weeks ago
+03/21/2023 10:32 PM
+unless they decide to help us
+03/21/2023 10:32 PM
+yep, that's gonna be an issue
+wsnipex 03/21/2023 10:32 PM
+I kinda doubt that
+03/21/2023 10:31 PM
+built with reversed unofficial tools?
+[yolofant]
+yolofant 03/21/2023 10:31 PM
+well they don't publish their sdk
+wsnipex 03/21/2023 10:30 PM
+are native apps even admissible?
+03/21/2023 10:29 PM
+all stores do, some make you jump through hoops
+[yolofant]
+yolofant 03/21/2023 10:26 PM
+the problem is that probably nobody has submitted a native app
+hellobox. 03/21/2023 10:26 PM
+they'd make you change the icon
+[yolofant]
+yolofant 03/21/2023 10:26 PM
+they seem to actually review the apps submitted in the store
+hellobox. 03/21/2023 10:25 PM
+yeah lm18a only has ~550mb total for /media
+[yolofant]
+yolofant 03/21/2023 10:24 PM
+I got almost 4gb on mine
+wsnipex 03/21/2023 10:24 PM
+we're in several stores already though
+hellobox. 03/21/2023 10:24 PM
+my k7lp (~2gb) has these:
+    -rw-rw-r--    1 root     root     259719674 Nov 29  2020 01_Elba_1120_UHD_U_A1_V1_03.lge
+    -rw-rw-r--    1 root     root     369515880 Oct 14  2020 02_Swiss_U_A1_V2_01.lge
+(edited)
+[yolofant]
+yolofant 03/21/2023 10:24 PM
+https://github.com/jellyfin/jellyfin-webos/issues/99
+hellobox. is anyone trying to get this in the lg store?
+wsnipex 03/21/2023 10:23 PM
+we would, but have no idea what that involves
+wsnipex 03/21/2023 10:22 PM
+should be enough
+03/21/2023 10:22 PM
+my 55bx has 2gb in /media
+hellobox. 03/21/2023 10:21 PM
+is anyone trying to get this in the lg store?
+03/21/2023 10:21 PM
+some of that might have been other apps, but i don't have that many
+[yolofant]
+yolofant 03/21/2023 10:20 PM
+[:lg:]
+hellobox. 03/21/2023 10:19 PM
+unless there's an option somewhere
+03/21/2023 10:19 PM
+and i think you have to be root to delete it
+[yolofant]
+yolofant 03/21/2023 10:18 PM
+[:monkaS:]
+wsnipex 03/21/2023 10:18 PM
+then it won't get any smaller without removing features
+hellobox. 03/21/2023 10:18 PM
+i think my lm18a (55UK6200PUA) only had ~100mb free on /media before
+deleting the preinstalled video (edited)
+wsnipex 03/21/2023 10:18 PM
+ok
+hellobox. 03/21/2023 10:18 PM
+already did
+wsnipex 03/21/2023 10:17 PM
+try stripping everything in lib (edited)
+hellobox. 03/21/2023 10:16 PM
+~fresh install, stripped
+    1.1M    ./.kodi
+    41.8M   ./addons
+    78.6M   ./lib
+    4.9M    ./media
+    1.7M    ./system
+    20.0K   ./userdata
+    12.0K   ./.config
+    186.6M  .
+wsnipex 03/21/2023 10:16 PM
+fresh install size is minor compared to media library
+[yolofant]
+yolofant 03/21/2023 10:15 PM
+same folder
+hellobox. 03/21/2023 10:15 PM
+where does it save that stuff now?
+03/21/2023 10:15 PM
+oh, i meant as installed
+wsnipex 03/21/2023 10:14 PM
+at least over time
+03/21/2023 10:14 PM
+nah, user data will grow much more, DBs, thumbs..
+[yolofant]
+yolofant 03/21/2023 10:13 PM
+not until you start scraping some media files
+hellobox. 03/21/2023 10:13 PM
+the libs and binary account for the vast majority of the size
+[yolofant]
+yolofant 03/21/2023 10:12 PM
+I guess you'd only need the libs and binary on the package itself, but
+resources and libraries could be on a usb device
+03/21/2023 10:12 PM
+what changing KODI_HOME to a usb stick?
+03/21/2023 10:11 PM
+at least not the shared one
+hellobox. 03/21/2023 10:11 PM
+so removing kerberos should be ~3mb
+[yolofant]
+yolofant 03/21/2023 10:10 PM
+no
+hellobox. 03/21/2023 10:10 PM
+do we need libcrypto if we remove krb5?
+wsnipex 03/21/2023 10:10 PM
+bit more
+03/21/2023 10:10 PM
+that would be about the same as on linux
+hellobox. 03/21/2023 10:10 PM
+yes
+wsnipex 03/21/2023 10:09 PM
+hard to read on phone, is that 60Mb after?
+hellobox. 03/21/2023 10:07 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# ls -l /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+    -rwxr-xr-x    1 1000     1000      90381936 Mar 20 09:01 /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+    root@LGwebOSTV[k7lp 6.3.2]:~# eu-strip /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+    root@LGwebOSTV[k7lp 6.3.2]:~# ls -l /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+    -rwxr-xr-x    1 1000     1000      61299036 Mar 21 17:07 /media/developer/apps/usr/palm/applications/org.xbmc.kodi/kodi-webos
+wsnipex 03/21/2023 10:07 PM
+Hey
+hellobox. 03/21/2023 10:07 PM
+stripped
+78.7M /media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib
+[smx2460]
+wsnipex heh
+smx2460 03/21/2023 10:06 PM
+Oh hey! , welcome! (edited)
+hellobox. 03/21/2023 10:06 PM
+80.3M /media/developer/apps/usr/palm/applications/org.xbmc.kodi/lib
+hellobox. does it build those by default?
+wsnipex 03/21/2023 10:06 PM
+no, not even sure it works yet
+hellobox. 03/21/2023 10:06 PM
+my kodi-webos is ~90mb
+wsnipex 03/21/2023 10:05 PM
+didn't look at that yet
+wsnipex without any binary add-ons 
+hellobox. 03/21/2023 10:05 PM
+does it build those by default?
+[astur3l]
+[] yolofant the ci build `kodi-webos` binary roughly 600mb after
+extraction
+astur3l 03/21/2023 10:05 PM
+but it was ok until #21
+wsnipex 03/21/2023 10:05 PM
+I guess it's not stripped
+[yolofant]
+yolofant 03/21/2023 10:05 PM
+the ci build kodi-webos binary roughly 600mb after extraction
+hellobox. 03/21/2023 10:04 PM
+216.0M /media/developer/apps/usr/palm/applications/org.xbmc.kodi
+wsnipex 03/21/2023 10:04 PM
+without any binary add-ons 
+hellobox. 03/21/2023 10:04 PM
+i used --enable-debug=no
+03/21/2023 10:03 PM
+the ipk is ~90mb, but installed it's >200mb
+wsnipex 03/21/2023 10:03 PM
+200mb smells of debug
+[yolofant]
+yolofant 03/21/2023 10:03 PM
+the ci one is like 300mb
+wsnipex 03/21/2023 10:03 PM
+about the same as android apk
+[yolofant]
+yolofant 03/21/2023 10:03 PM
+I guess debug build?
+wsnipex 03/21/2023 10:02 PM
+my ipk is -90mb
+03/21/2023 10:02 PM
+it's all still very much work in progress
+[astur3l]
+hellobox. i think the current ipk is too big for some tvs
+astur3l 03/21/2023 10:02 PM
+but it was like ~85MB until build #21.. then it grow to 220+ MB (edited)
+wsnipex 03/21/2023 10:01 PM
+you can disable some depends to make it smaller and we should make sure
+to strip the binary
+03/21/2023 10:00 PM
+Kodi is a big app
+hellobox. 03/21/2023 10:00 PM
+unless there's a (non-root) way to delete lg's preinstalled 300mb video
+wsnipex 03/21/2023 9:59 PM
+same, I'd like to get rid of those dylibs
+hellobox. 03/21/2023 9:59 PM
+i think the current ipk is too big for some tvs
+03/21/2023 9:58 PM
+oh, good. i didn't like the multiple libdrms
+wsnipex 03/21/2023 9:57 PM
+no, it follows and creates symlinks
+wsnipex was just surprised to see my avatar, literally the first thing
+after joining this discord 
+hellobox. 03/21/2023 9:56 PM
+is this packaging two copies of each library?
+https://github.com/xbmc/xbmc/pull/23018
+wsnipex 03/21/2023 9:54 PM
+was just surprised to see my avatar, literally the first thing after
+joining this discord 
+wsnipex 03/21/2023 9:22 PM
+heh
+ 4
+[yolofant]
+yolofant 03/21/2023 6:49 PM
+https://github.com/xbmc/xbmc/pull/23028/files hmm this might actually
+also work regarding the libwayland-egl and libwayland-client stuff
+compile waylandpp static by wsnipex · Pull Request #23028 · xbmc/xb...
+Description Compile and link waylandpp static. Motivation and context
+Removes the need to copy wayland++ shared libs on embedded platforms,
+e.g. webos How has this been tested? compile and r...
+[]
+[pinheadi]
+pinheadi 03/21/2023 5:48 PM
+since GeForce now works just fine even on 2020 TV's
+03/21/2023 5:47 PM
+can this be back ported for WebOS 5?
+03/21/2023 5:47 PM
+https://us.lgappstv.com/main/tvapp/detail?appId=1202498&catCode1=&moreYn=N&cateYn=N&orderType=0&headerName=&appRankCode=&sellrUsrNo=
+LG CONTENT STORE
+LG Content Store, Check and find immediate solutions to problems you are
+experiencing. Before submitting a 1:1 Inquiry, please visit the FAQ or
+the Self Troubleshooting sections for answers to problems you are
+experiencing.
+[yolofant]
+hellobox. if kodi actually cared about gssapi support, they'd have
+libkrb5 in deps
+yolofant 03/21/2023 2:53 PM
+exactly, that's why I think it doesn't really matter if we build it
+hellobox. 03/21/2023 1:02 PM
+if kodi actually cared about gssapi support, they'd have libkrb5 in deps
+03/21/2023 1:01 PM
+maybe the first is some kind of server-side thing?
+03/21/2023 1:00 PM
+/CMakeLists.txt has
+      IF(NOT AUTH_GSSAPI_PLUGIN_TYPE MATCHES "OFF")
+        INCLUDE(${CC_SOURCE_DIR}/cmake/FindGSSAPI.cmake)
+but plugins/auth/CMakeLists.txt also includes FindGSSAPI.cmake
+[yolofant]
+yolofant 03/21/2023 12:56 PM
+hmm that's odd
+hellobox. 03/21/2023 12:56 PM
+well, i guess it disabled one gssapi thing, but there was still
+something else using krb5
+03/21/2023 12:55 PM
+apparently. the other one didn't work though
+[yolofant]
+hellobox. you're using `-DCLIENT_PLUGIN_AUTH_GSSAPI_CLIENT=OFF`
+yolofant 03/21/2023 12:55 PM
+yes that will make it ignore any libkrb5 stuff
+[] yolofant it should work, I'll check the ipk from ci
+hellobox. 03/21/2023 12:47 PM
+you're using -DCLIENT_PLUGIN_AUTH_GSSAPI_CLIENT=OFF
+[] smx2460
+https://github.com/webosbrew/xbmc/commit/f7c22dcf49b46fbc1c97a44eaca5df6b8a6bc534
+hellobox. 03/21/2023 12:41 PM
+i didn't realize there was already a PR for it
+https://github.com/xbmc/xbmc/pull/23026 (edited)
+[yolofant]
+yolofant 03/21/2023 9:29 AM
+and it was needed on webos because we had it in the toolchain
+[yolofant]
+hellobox. why are they specifically enabling this on osx and
+webos?```cmake if(CORE_SYSTEM_NAME STREQUAL osx...
+yolofant 03/21/2023 9:29 AM
+probably because osx comes with kerberos by default
+[yolofant]
+[] smx2460 Done
+yolofant 03/21/2023 8:49 AM
+[yolofant]
+yolofant 03/21/2023 8:49 AM
+yeah it worked in the ci build
+[yolofant]
+hellobox. <@195583665265311744> `-DAUTH_GSSAPI_PLUGIN_TYPE=OFF`?
+(doesn't work; still gets pulled in by anothe...
+yolofant 03/21/2023 8:40 AM
+it should work, I'll check the ipk from ci
+[yolofant]
+hellobox. why are they specifically enabling this on osx and
+webos?```cmake if(CORE_SYSTEM_NAME STREQUAL osx...
+yolofant 03/21/2023 8:40 AM
+https://github.com/xbmc/xbmc/pull/23026
+[yolofant]
+hellobox. but it wouldn't be enabled if it's not found in their
+toolchain, and i guess they're relying on that
+yolofant 03/21/2023 8:39 AM
+yeah, they don't build libkrb5
+[smx2460]
+smx2460 03/21/2023 8:20 AM
+Nice
+[smx2460]
+[] smx2460 But if you could disable it in Kodi in parallel, it's better
+smx2460 03/21/2023 8:20 AM
+https://github.com/webosbrew/xbmc/commit/f7c22dcf49b46fbc1c97a44eaca5df6b8a6bc534
+webos: disable GSSAPI auth in MariaDB · webosbrew/xbmc@f7c22dc
+This prevents a dependency on libkrb5.
+[]
+[smx2460]
+smx2460 03/21/2023 8:17 AM
+Done
+03/21/2023 8:16 AM
+But if you could disable it in Kodi in parallel, it's better
+03/21/2023 8:15 AM
+@hellobox @Yolofant fair enough, i guess i can disable kerberos
+hellobox. 03/21/2023 4:45 AM
+this guy was building kodi for webos ose
+https://github.com/xbmc/xbmc/pull/14216
+03/21/2023 4:43 AM
+interesting that this guy mentions webos
+https://github.com/xbmc/xbmc/pull/12937#issuecomment-359793478 (edited)
+03/21/2023 4:42 AM
+oh, i see you already submitted a PR
+03/21/2023 4:36 AM
+but it wouldn't be enabled if it's not found in their toolchain, and i
+guess they're relying on that (edited)
+03/21/2023 4:36 AM
+i don't see anything preventing it from using gssapi on android
+03/21/2023 4:33 AM
+why are they specifically enabling this on osx and webos?
+      if(CORE_SYSTEM_NAME STREQUAL osx OR CORE_PLATFORM_NAME STREQUAL webos)
+        list(APPEND DEPLIBS "-lgssapi_krb5")
+      endif()
+hellobox. 03/21/2023 4:13 AM
+we could do this, although it would only matter for webos 1 (and even
+then maybe only if you try to use whatever needs them) since webos 2 has
+glibc 2.19
+    ifeq ($(TARGET_PLATFORM),appletvos)
+      PLUGIN_BUILD_FLAGS+=-DHAVE_UCONTEXT_H= -DHAVE_FILE_UCONTEXT_H=
+    endif
+03/21/2023 4:11 AM
+are you sure android doesn't have it though?
+03/21/2023 4:10 AM
+@Yolofant -DAUTH_GSSAPI_PLUGIN_TYPE=OFF? (doesn't work; still gets
+pulled in by another cmake file) (edited)
+03/21/2023 4:09 AM
+maybe we should remove or change the warnings
+03/21/2023 4:09 AM
+i guess it's fine to use them as long as you're running on glibc 2.16 or
+newer
+03/21/2023 4:08 AM
+the first version of glibc-ports that has it is 2.16
+03/21/2023 4:06 AM
+so it might be non-trivial to merge that patch on glibc 2.12
+03/21/2023 4:05 AM
+for 2.17-2.19, it was ports/sysdeps/unix/sysv/linux/arm
+03/21/2023 4:05 AM
+sysdeps/unix/sysv/linux/arm didn't exist until 2.20
+03/21/2023 4:05 AM
+they merged glibc-ports into glibc in 2.16/2.17
+03/21/2023 4:00 AM
+i'm not sure it matters much either way
+03/21/2023 4:00 AM
+which is the case now anyway
+03/21/2023 4:00 AM
+plus if you tried to run a dynamically linked program using them on nc4
+or maybe ancient webos, you'd get ENOSYS
+03/21/2023 3:59 AM
+we could backport them, but i guess that would only matter for static
+linking
+03/21/2023 3:58 AM
+lol i think the br-nc4 glibc is too old to have those (edited)
+03/21/2023 3:57 AM
+https://sourceware.org/git/?p=glibc-ports.git;a=commit;h=402a76b62dded0ee93cfec0471aaeccb989196d2
+03/21/2023 3:55 AM
+even though the ucontext functions exist, i don't think we should be
+using them
+03/21/2023 3:54 AM
+hmm
+    $ cat 01-android.patch
+    --- a/cmake/CheckIncludeFiles.cmake
+    +++ b/cmake/CheckIncludeFiles.cmake
+    @@ -50,4 +50,11 @@
+     CHECK_INCLUDE_FILES (ucontext.h HAVE_FILE_UCONTEXT_H)
+     IF(NOT HAVE_FILE_UCONTEXT_H)
+       CHECK_INCLUDE_FILES (sys/ucontext.h HAVE_FILE_UCONTEXT_H)
+    +  CHECK_FUNCTION_EXISTS (getcontext HAVE_GETCONTEXT)
+    +  CHECK_FUNCTION_EXISTS (makecontext HAVE_MAKECONTEXT)
+    +  CHECK_FUNCTION_EXISTS (setcontext HAVE_SETCONTEXT)
+    +  CHECK_FUNCTION_EXISTS (swapcontext HAVE_SWAPCONTEXT)
+    +  IF(NOT HAVE_GETCONTEXT OR NOT HAVE_MAKECONTEXT OR NOT HAVE_SETCONTEXT OR NOT HAVE_SWAPCONTEXT)
+    +    SET(HAVE_UCONTEXT_H 0 CACHE INTERNAL "")
+    +  ENDIF()
+     ENDIF()
+    --- a/cmake/CheckTypes.cmake
+    +++ b/cmake/CheckTypes.cmake
+    @@ -21,7 +21,6 @@
+     CHECK_TYPE_SIZE(size_t SIZEOF_SIZE_T)
+     SET(CMAKE_EXTRA_INCLUDE_FILES sys/types.h)
+     CHECK_TYPE_SIZE(uint SIZEOF_UINT)
+    -CHECK_TYPE_SIZE(uint SIZEOF_USHORT)
+     CHECK_TYPE_SIZE(ulong SIZEOF_ULONG)
+     CHECK_TYPE_SIZE(int8 SIZEOF_INT8)
+     CHECK_TYPE_SIZE(uint8 SIZEOF_UINT8)
+03/21/2023 3:53 AM
+are you sure it's not just statically linked on android?
+03/21/2023 3:47 AM
+@Yolofant we should probably resolve the kodi issue anyway though
+03/21/2023 3:46 AM
+https://github.com/openlgtv/buildroot-nc4/pull/31
+[] smx2460 <@195583665265311744> not too keen on disabling things to fix
+broken build scripts
+hellobox. 03/21/2023 3:37 AM
+i agree, but i don't think these are used by anyone
+hellobox. 03/21/2023 3:36 AM
+i guess not
+03/21/2023 3:35 AM
+did @Smx know anything about why libkrb5 was enabled?
+03/21/2023 3:32 AM
+BR2_PACKAGE_LIBOSIP2:
+    - BR2_PACKAGE_LIBEXOSIP2 [=n] && BR2_USE_MMU [=y]
+    - BR2_PACKAGE_SIPROXD [=n] && BR2_USE_MMU [=y] && BR2_TOOLCHAIN_HAS_THREADS [=y]
+03/21/2023 3:31 AM
+nothing selects BR2_PACKAGE_LIBEXOSIP2
+03/21/2023 3:30 AM
+like which packages?
+[mariotaku]
+mariotaku 03/21/2023 3:30 AM
+OK. I have no idea, is it possible to find who's using that?
+hellobox. 03/21/2023 3:29 AM
+i guess i'll submit a PR disabling them and krb5 if nobody knows why
+they were enabled
+03/21/2023 3:28 AM
+@Mariotaku any idea why BR2_PACKAGE_LIBEXOSIP2 and BR2_PACKAGE_LIBOSIP2
+are enabled?
+03/21/2023 3:24 AM
+    Selected by [n]:
+    - BR2_PACKAGE_LIBTIRPC_GSS [=n] && BR2_USE_MMU [=y] && !BR2_STATIC_LIBS [=n] && BR2_PACKAGE_LIBTIRPC [=n]
+    - BR2_PACKAGE_LIGHTTPD_KRB5 [=n] && BR2_PACKAGE_LIGHTTPD [=n]
+[mariotaku]
+[] yolofant
+https://github.com/openlgtv/buildroot-nc4/commit/de58de5061886154d21d152b20e112107b297251#diff-cd25f...
+mariotaku 03/21/2023 3:23 AM
+I didn't remember either, it's probably requested by some other
+libraries?
+[yolofant]
+yolofant 03/21/2023 3:09 AM
+and yeah we use it for the magic remote I think
+03/21/2023 3:09 AM
+I think it's used in kodi
+hellobox. 03/21/2023 3:08 AM
+do we use wayland-cursor?
+03/21/2023 3:08 AM
+that's true
+[yolofant]
+yolofant 03/21/2023 3:08 AM
+hmm I think passing --disable-libraries should stop building wayland-egl
+and we should still have wayland-cursor from br-nc4
+03/21/2023 3:06 AM
+interesting 
+hellobox. 03/21/2023 3:05 AM
+https://en.wikipedia.org/wiki/USS_Adhara
+    The ship received jury patching at Espiritu Santo and then steamed to Australia for repairs.
+03/21/2023 3:05 AM
+i know what he means; i've just never heard anyone say it before
+[] yolofant no, what is that? 
+hellobox. 03/21/2023 3:05 AM
+https://github.com/xbmc/xbmc/pull/23021#issuecomment-1475713285
+[yolofant]
+yolofant 03/21/2023 3:03 AM
+no, what is that? 
+hellobox. 03/21/2023 3:02 AM
+have you ever heard the term "jury patching"?
+[yolofant]
+yolofant 03/21/2023 3:01 AM
+you could have it somewhere else and I think also share it between
+multiple kodi instances
+hellobox. 03/21/2023 3:01 AM
+https://kodi.wiki/view/MySQL (edited)
+[yolofant]
+yolofant 03/21/2023 3:01 AM
+so it's not on the filesystem
+03/21/2023 3:01 AM
+you can use mariadb as a storage for your library
+hellobox. 03/21/2023 3:01 AM
+what is mariadb used for by kodi?
+[yolofant]
+yolofant 03/21/2023 3:00 AM
+but I don't think they have that on android either
+03/21/2023 3:00 AM
+apparently some standardized protocol
+03/21/2023 3:00 AM
+gssapi
+hellobox. 03/21/2023 2:59 AM
+what is that using it for?
+03/21/2023 2:59 AM
+oh
+[yolofant]
+yolofant 03/21/2023 2:57 AM
+apparently it was used by mariadbclient
+03/21/2023 2:57 AM
+they build the heimdall backend
+03/21/2023 2:57 AM
+samba has it's own kerberos stuff
+hellobox. 03/21/2023 2:56 AM
+how common is kerberos auth for smb?
+[yolofant]
+yolofant 03/21/2023 2:56 AM
+though that also disables cursor not sure if that might be a problem
+03/21/2023 2:56 AM
+it seems there is a library option here
+https://github.com/freedesktop/wayland/blob/main/meson.build#LL118C18-L118C18
+03/21/2023 2:55 AM
+but kodi has a newer one where they introduced it
+03/21/2023 2:55 AM
+br-nc4 has a wayland that doesn't yet have wayland-egl
+03/21/2023 2:55 AM
+or we disable it
+hellobox. 03/21/2023 2:55 AM
+so we get the one with the hacked soname
+[] yolofant you're right that is indeed from the bundled wayland :/
+hellobox. 03/21/2023 2:54 AM
+maybe we could override the path for linking
+[yolofant]
+yolofant 03/21/2023 2:54 AM
+https://github.com/openlgtv/buildroot-nc4/commit/de58de5061886154d21d152b20e112107b297251#diff-cd25f962d31a927fac427ab3162a9c529fabedcc7cde3e4dfb18ec1517ff52aeR2251
+added webos_tv defconfig · openlgtv/buildroot-nc4@de58de5
+[]
+03/21/2023 2:53 AM
+yeah
+[mariotaku]
+mariotaku 03/21/2023 2:53 AM
+Oh. It's in builtroot-nc4?
+[yolofant]
+hellobox. <@195583665265311744> i'm still getting `libwayland-egl++.so`
+linked against `libwayland-egl.so.1`
+yolofant 03/21/2023 2:53 AM
+you're right that is indeed from the bundled wayland :/
+[yolofant]
+[] mariotaku Cortex A9 stuff?
+yolofant 03/21/2023 2:53 AM
+libkrb5
+[mariotaku]
+[] yolofant <@225167450713358338> brought it in maybe he knows
+mariotaku 03/21/2023 2:49 AM
+Cortex A9 stuff?
+hellobox. 03/21/2023 2:30 AM
+it's for my PR
+03/21/2023 2:30 AM
+this is the latest one
+https://jenkins.kodi.tv/view/Linux/job/webos-docker/55/
+03/21/2023 2:30 AM
+downloading from their jenkins is slow as hell
+03/21/2023 2:27 AM
+my br-nc4 only has libwayland-egl.so
+      SONAME            Library soname: [libwayland-egl.so]
+03/21/2023 2:26 AM
+i guess because kodi is building a libwayland-egl.so.1
+03/21/2023 2:25 AM
+@Yolofant i'm still getting libwayland-egl++.so linked against
+libwayland-egl.so.1
+hellobox. 03/21/2023 2:04 AM
+sometimes buttons don't seem to work over ssap
+03/21/2023 2:04 AM
+janky over ssap
+[capture.png]
+ capture.png
+329.44 KB External
+hellobox. 03/21/2023 1:47 AM
+it may work well enough now, depending on your webos version and what
+you want to do with it (edited)
+[25xcent]
+25xcent 03/21/2023 1:46 AM
+Any eta for kodi?
+hellobox. 03/21/2023 12:31 AM
+i wonder if it'll be vulnerable to crashd
+[yolofant]
+yolofant 03/21/2023 12:30 AM
+let's see what they break in 8.0.0 
+hellobox. 03/21/2023 12:28 AM
+which is unlikely i guess
+03/21/2023 12:28 AM
+unless lg decides to remove the libwayland-egl.so symlink
+[yolofant]
+yolofant 03/21/2023 12:28 AM
+but since we link with -lwayland-egl it just works 
+03/21/2023 12:28 AM
+yeah, sounds reasonable
+hellobox. 03/21/2023 12:27 AM
+and use the soname from whatever that points to
+03/21/2023 12:27 AM
+but when you link with -lwhatever, it'll look for libwhatever.so
+[] yolofant I thought the linker would try to resolve the .so.XY first
+then a specific version and then the unsp...
+hellobox. 03/21/2023 12:27 AM
+i'm pretty sure it just looks for the soname, which is usually
+libwhatever.so.n
+[yolofant]
+yolofant 03/21/2023 12:27 AM
+https://github.com/xbmc/xbmc/pull/23026 this fixes pulling in the krb5
+stuff
+[yolofant]
+hellobox. <@195583665265311744> i wonder if this is related to your
+libcrypto crashes:``` ld: kodi-deps/arm-we...
+yolofant 03/21/2023 12:26 AM
+hmm maybe, the stacktrace wasn't very helpful unfortunately
+[yolofant]
+hellobox. usually the `.so` is only needed at link time
+yolofant 03/21/2023 12:26 AM
+I thought the linker would try to resolve the .so.XY first then a
+specific version and then the unspecific one
+hellobox. 03/21/2023 12:18 AM
+@Yolofant i wonder if this is related to your libcrypto crashes:
+    ld: kodi-deps/arm-webos-linux-gnueabi-release/lib/libcrypto.a(async_posix.o): in function `ASYNC_is_capable':
+    async_posix.c:(.text+0xc): warning: warning: getcontext is not implemented and will always fail
+    ld: kodi-deps/arm-webos-linux-gnueabi-release/lib/libcrypto.a(async.o): in function `async_fibre_swapcontext.constprop.0':
+    async.c:(.text+0x114): warning: warning: setcontext is not implemented and will always fail
+    ld: kodi-deps/arm-webos-linux-gnueabi-release/lib/libcrypto.a(async_posix.o): in function `async_fibre_makecontext':
+    async_posix.c:(.text+0xb4): warning: warning: makecontext is not implemented and will always fail
+    ld: kodi-deps/arm-webos-linux-gnueabi-release/lib/mariadb/libmariadbclient.a(ma_context.c.o): in function `my_context_continue':
+    xbmc/tools/depends/target/mariadb/arm-webos-linux-gnueabi-release/libmariadb/ma_context.c:76: warning: warning: swapcontext is not implemented and will always fail
+03/21/2023 12:15 AM
+these are the same people who do stuff like:
+    lrwxrwxrwx    1 root     root            22 Nov 18  2018 libdile_boardinfo.so.0 -> libdile_boardinfo.so.1
+    lrwxrwxrwx    1 root     root            27 Nov 18  2018 libdile_boardinfo.so.1 -> libdile_boardinfo.so.1.0.15
+03/21/2023 12:10 AM
+but since it's lg, they probably just didn't realize it's unnecessary
+and/or left it in accidentally
+03/21/2023 12:09 AM
+usually the .so is only needed at link time
+[] yolofant so we just don't generate the soname libs and link against
+.so directly
+hellobox. 03/21/2023 12:08 AM
+i wonder if this was intentional on lg's part
+March 20, 2023
+hellobox. 03/20/2023 11:02 PM
+https://github.com/openlgtv/epk2extract/blob/master/keys/AES.key#L39
+[rkars]
+rkars 03/20/2023 11:01 PM
+I'll try from o22 c2 (edited)
+hellobox. 03/20/2023 11:01 PM
+and/or what's the filename of the firmware you tried extracting

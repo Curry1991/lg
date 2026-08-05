@@ -1,0 +1,1463 @@
+March 14, 2023
+[] smx2460 Click to see attachment
+Deleted User 03/14/2023 1:33 AM
+nice
+[smx2460]
+smx2460 03/14/2023 1:32 AM
+althouth i did a lot of refactoring to limit or prevent that
+03/14/2023 1:32 AM
+i'm a bit worried that compiler optimizations could cause unpredictable
+issues
+03/14/2023 1:32 AM
+so they've always been there
+03/14/2023 1:32 AM
+but i never shipped a Release build of ezinject
+03/14/2023 1:32 AM
+by #if DEBUG
+03/14/2023 1:32 AM
+in theory many of those DBGPTR calls are guarded
+03/14/2023 1:31 AM
+    sudo ./build/ezinject -v d `pidof target` ./build/samples/dummy/libdummy.so -v d -- -v d 1 2
+03/14/2023 1:31 AM
+    Hello World from main
+    argv[0] = /mnt/ExtData/ezpatch/clean/build/samples/dummy/libdummy.so
+    argv[1] = -v
+    argv[2] = d
+    argv[3] = 1
+    argv[4] = 2
+03/14/2023 1:31 AM
+works as-is (edited)
+03/14/2023 1:31 AM
+yep
+03/14/2023 1:30 AM
+or maybe not
+03/14/2023 1:30 AM
+    getopts implements the standard option processing, which means that it stops looking for options when it either sees an argument that's not an option, or if it sees the argument --, which explicitly terminates the list of options. (That first point is different from the GNU custom which looks for options on the whole command line.)
+03/14/2023 1:30 AM
+i need to implement --
+03/14/2023 1:30 AM
+i cannot pass -v D to the arguments
+03/14/2023 1:30 AM
+there is a pretty stupid bug
+03/14/2023 1:29 AM
+    $ sudo ./build/ezinject -v D `pidof target` ./build/samples/dummy/libdummy.so 1 2
+(edited)
+03/14/2023 1:29 AM
+                    case 'v':;
+                        switch(toupper(*optarg)){
+                            case 'D':
+                                verbosity = V_DBG;
+                                break;
+                        }
+                        break;
+03/14/2023 1:24 AM
+probably easier to do -v [level] (edited)
+03/14/2023 1:24 AM
+whetever
+03/14/2023 1:24 AM
+-l debug
+03/14/2023 1:24 AM
+-vvvv -v debug
+hellobox. 03/14/2023 1:24 AM
+unless you're worried about bugs not being reproducible
+[smx2460]
+smx2460 03/14/2023 1:24 AM
+what's better
+hellobox. 03/14/2023 1:24 AM
+so if a user has a problem, you can have them rerun it with debug logs
+enabled
+03/14/2023 1:23 AM
+that's what i meant
+[smx2460]
+smx2460 03/14/2023 1:22 AM
+that should be easy (edited)
+03/14/2023 1:22 AM
+also yeah i could think about configuring the log verbosity at runtime
+03/14/2023 1:22 AM
+my concern is being able to figure out if something went south from the
+user logs
+hellobox. 03/14/2023 1:22 AM
+for normal usage when you're not doing development/debugging, it's fine
+[smx2460]
+smx2460 03/14/2023 1:21 AM
+it's a bit basic tho
+hellobox. 03/14/2023 1:21 AM
+looks pretty good
+[smx2460]
+smx2460 03/14/2023 1:21 AM
+with new status messages (edited)
+03/14/2023 1:21 AM
+@hellobox only INFO log
+03/14/2023 1:21 AM
+(no content)
+ log.txt
+3.2 KB External
+[smx2460]
+smx2460 03/14/2023 1:14 AM
+    #ifdef LOG_USE_FILE
+    #define LOG_RESERVED_HANDLE __ghLog
+    #else
+    #define LOG_RESERVED_HANDLE stdout
+    #endif
+    #define __LOG_DECLARE_VERBOSITY(verb) \
+        enum verbosity_level verbosity = verb
+    #ifdef LOG_USE_FILE
+    #include <stdlib.h>
+    extern FILE *LOG_RESERVED_HANDLE;
+    #define LOG_SETUP(verb) \
+        FILE *LOG_RESERVED_HANDLE; \
+        __LOG_DECLARE_VERBOSITY(verb)
+    #define LOG_INIT(filePath) do { \
+        LOG_RESERVED_HANDLE = fopen(filePath, "w+"); \
+        if(LOG_RESERVED_HANDLE == NULL){ \
+            fprintf(stderr, "Cannot open log file '%s' for writing\n", filePath); \
+            abort(); \
+        } \
+        setvbuf(LOG_RESERVED_HANDLE, NULL, _IONBF, 0); \
+    } while(0);
+    #define LOG_FINI() fclose(LOG_RESERVED_HANDLE);
+    #else
+    #define LOG_SETUP(verb) __LOG_DECLARE_VERBOSITY(verb)
+    #define LOG_INIT(filePath)
+    #define LOG_FINI()
+    #endif
+03/14/2023 1:13 AM
+it's hardcoded tho
+03/14/2023 1:13 AM
+    LOG_SETUP(V_DBG);
+03/14/2023 1:13 AM
+in theory we already have this
+03/14/2023 1:13 AM
+    extern enum verbosity_level
+    {
+        V_ERR = 0,
+        V_WARN,
+        V_INFO,
+        V_DBG
+    } verbosity
+    #ifdef EZ_TARGET_POSIX
+    __attribute__((weak))
+    #endif
+    ;
+03/14/2023 1:13 AM
+hmm
+hellobox. 03/14/2023 1:12 AM
+like an lg-style mask
+03/14/2023 1:12 AM
+i think you need finer-grained control
+03/14/2023 1:11 AM
+that helps a bit
+[smx2460]
+smx2460 03/14/2023 1:11 AM
+and a ==== separator between the calls
+03/14/2023 1:11 AM
+i added the missing prints
+03/14/2023 1:11 AM
+@hellobox @Deleted User any better?
+03/14/2023 1:11 AM
+(no content)
+ log.txt
+12.45 KB External
+March 13, 2023
+[yolofant]
+yolofant 03/13/2023 10:52 PM
+Ah nfs
+03/13/2023 10:52 PM
+Userspace smb is enough
+03/13/2023 10:51 PM
+It doesnt need
+[astur3l]
+astur3l 03/13/2023 10:51 PM
+not sure if wsl kernel have nfs server support (?) :d
+[astur3l]
+[] yolofant Wsl2 ? Xd
+astur3l 03/13/2023 10:49 PM
+https://hub.docker.com/r/erichough/nfs-server/ !
+[astur3l]
+astur3l 03/13/2023 10:49 PM
+another suggestion was that mount the smb outside of kodi..cifs + smbv2
+kinda freezed my whole tv at mount.. smbv3 didnt worked 
+[yolofant]
+yolofant 03/13/2023 10:48 PM
+Wsl2 ? Xd
+ 1
+[astur3l]
+astur3l 03/13/2023 10:47 PM
+ah  i dont know what could be the option for windows.. would be nice
+to have options 
+[yolofant]
+yolofant 03/13/2023 10:47 PM
+I'm running a linux server
+[astur3l]
+astur3l 03/13/2023 10:46 PM
+yeah few years ago on my rpi3 it worked fine
+[yolofant]
+yolofant 03/13/2023 10:46 PM
+Although I never had issues with smb and kodi
+[astur3l]
+astur3l 03/13/2023 10:46 PM
+are u going to run iis?:D
+[yolofant]
+yolofant 03/13/2023 10:45 PM
+Nfs or webdav works
+[astur3l]
+astur3l 03/13/2023 10:43 PM
+also its very "unstable" for me.. like going back to library 3/1 results
+freeze for minutes.. i guess due to smb locking but i cant do shit
+except force kill the app or wait few mins...  meanwhile i could
+easily stream 4k video on my phone via smb (edited)
+03/13/2023 10:40 PM
+> SMB not working has been a pressing issue on Kodi recently, especially
+after the release of Kodi 19. Kodi 18 didn’t have any issues with SMB
+but a lot of Kodi 19 users had trouble with using Kodi for folder share.
+03/13/2023 10:38 PM
+well dont have to google too much to see its not rare
+https://forum.kodi.tv/showthread.php?tid=368121  i'll try smb1 , just
+it requires reboot.. (no wonder windows) but i dont get hoped too much
+ (edited)
+[yolofant]
+yolofant 03/13/2023 10:36 PM
+hmm weird
+[astur3l]
+astur3l 03/13/2023 10:36 PM
+ it wasnt that good quality.. but even 720p sometimes triggered
+buffering.... 
+[yolofant]
+yolofant 03/13/2023 10:34 PM
+frame stuttering [:monkaS:]
+03/13/2023 10:34 PM
+xD
+[astur3l]
+[] yolofant but software decoding is kind of unusable
+astur3l 03/13/2023 10:32 PM
+i watched hours of pr0n without issue  (well not counting the slow smb
+but thats not related) (edited)
+ 1
+[yolofant]
+yolofant 03/13/2023 10:20 PM
+it should be easy to implement if we have luna access
+03/13/2023 10:19 PM
+yeah
+[infowski]
+infowski 03/13/2023 10:16 PM
+I guess there still could be some situations where it'd make sense to
+properly prevent screensaver - eg. photo slideshow or music
+playback/normal UI navigation with remote control using a phone?
+(edited)
+[yolofant]
+yolofant 03/13/2023 10:13 PM
+but software decoding is kind of unusable
+03/13/2023 10:12 PM
+if you don't well, then not 
+03/13/2023 10:12 PM
+so if you use hw acceleration the screensaver works as intended
+03/13/2023 10:09 PM
+so we just let kodi transcode to ac3 
+03/13/2023 10:08 PM
+5.1 pcm not sure, I don't have an e-arc device and don't feel like
+buying one
+03/13/2023 10:08 PM
+that works for 2.0
+03/13/2023 10:08 PM
+because for pcm you might as well just use alsa or pulse
+03/13/2023 10:08 PM
+and I don't plan on trying to add pcm again until the passthrough stuff
+is complete at least
+03/13/2023 10:07 PM
+at least right now
+03/13/2023 10:07 PM
+passthrough
+03/13/2023 10:07 PM
+no libplayer is only for raw audio
+[infowski]
+infowski 03/13/2023 10:07 PM
+Unless we always use libplayerAPIs for audio, which will always keep
+screensaver off, maybe?
+[ccarnell98]
+ccarnell98 03/13/2023 10:07 PM
+well I did have a working branch with luna2-service pulled in, but I
+think I lost that
+[infowski]
+infowski 03/13/2023 10:07 PM
+Maybe we should have luna for screensaver prevention in these cases?
+03/13/2023 10:06 PM
+How likely is it that someone will use pure software playback?
+[yolofant]
+yolofant 03/13/2023 10:06 PM
+glib
+03/13/2023 10:06 PM
+ah ye
+03/13/2023 10:06 PM
+probably could as well read it from nyx
+[infowski]
+infowski 03/13/2023 10:06 PM
+glib*
+[yolofant]
+yolofant 03/13/2023 10:06 PM
+we need to query at least the webos version
+03/13/2023 10:06 PM
+then the question is do we use libhelper and avoid pulling in glibc and
+other stuff or do we do it natively
+[] yolofant but we probably need luna at some point
+hellobox. 03/13/2023 10:06 PM
+yeah, if you want it to be a well-behaved webos app
+[yolofant]
+yolofant 03/13/2023 10:05 PM
+but we probably need luna at some point
+03/13/2023 10:05 PM
+was not needed
+03/13/2023 10:05 PM
+no
+[ccarnell98]
+ccarnell98 03/13/2023 10:05 PM
+@Yolofant Did the luna stuff have to be solved to use libPlayer in the
+end or was that a dead end
+03/13/2023 10:04 PM
+ta
+hellobox. 03/13/2023 10:03 PM
+i'll look into it later
+03/13/2023 10:03 PM
+i think -mfpu=neon will override parts of -mtune=cortex-a9
+[ccarnell98]
+ccarnell98 03/13/2023 10:03 PM
+would that be the same?
+03/13/2023 10:03 PM
+they use -march=armv7-a -mtune=cortex-a9 -mfloat-abi=softfp -mfpu=neon
+for android build of kodi
+hellobox. 03/13/2023 9:58 PM
+i just checked that it's the case on br-nc4's gcc (12.2.0), and i
+believe it was also true on lg's webos 5/6 toolchain (gcc 8.2.0)
+03/13/2023 9:55 PM
+there it has a value of 7
+03/13/2023 9:55 PM
+https://developer.arm.com/documentation/dui0774/e/Other-Compiler-specific-Features/Predefined-macros
+03/13/2023 9:54 PM
+the arm documentation is often confusing
+03/13/2023 9:54 PM
+i'm describing the behavior of gcc (edited)
+[ccarnell98]
+hellobox. it also sets `__ARM_NEON_FP` to 6, unlike `mfpu=neon` which
+sets it to 4
+ccarnell98 03/13/2023 9:53 PM
+I thought it was either off or on?
+https://developer.arm.com/documentation/102467/0100/Program-conventions
+[yolofant]
+yolofant 03/13/2023 9:49 PM
+and it's gone
+[ccarnell98]
+ccarnell98 03/13/2023 9:49 PM
+the original branch on mine anyway
+03/13/2023 9:49 PM
+it's only called feature/webOS7 because git hates me and I messed up
+feature/webOS originally
+[yolofant]
+yolofant 03/13/2023 9:48 PM
+it can be deleted
+03/13/2023 9:48 PM
+yeah
+hellobox. 03/13/2023 9:48 PM
+so feature/webOS7 is old
+[yolofant]
+yolofant 03/13/2023 9:48 PM
+I've made the wayland stuff optional just now
+[infowski]
+infowski 03/13/2023 9:47 PM
+I should probably just sit down, implement it in some shitty way, and
+then just refactor stuff out whenever I get this working.
+03/13/2023 9:47 PM
+Not sure how to pipe it up in parallel to wl_foreign stuff (though
+didn't start looking deeply into it) (edited)
+03/13/2023 9:46 PM
+I didn't start playing with this yet, sorry.
+03/13/2023 9:46 PM
+Yeah, it needs relevant ACB patches
+[yolofant]
+yolofant 03/13/2023 9:46 PM
+@infowski had it working and the pipeline was playing but was just not
+visible
+03/13/2023 9:45 PM
+the only problem is that the symbol name for feed is different
+03/13/2023 9:45 PM
+hmm I think it is possible
+hellobox. 03/13/2023 9:44 PM
+i was hoping i could run this (at least for testing purposes) on webos
+3+
+03/13/2023 9:44 PM
+feature/webOS7 seems to have non-webos 7 stuff on it
+[yolofant]
+yolofant 03/13/2023 9:44 PM
+feature/webOS (edited)
+hellobox. 03/13/2023 9:44 PM
+what branch should i be using?
+03/13/2023 9:42 PM
+we're not allowed to add webos-specific stuff to configure?
+03/13/2023 9:39 PM
+does --with-target-cxxflags include the stuff from --with-target-cflags?
+03/13/2023 9:38 PM
+yeah
+[yolofant]
+[] ccarnell98 just have to careful force pushing..
+yolofant 03/13/2023 9:38 PM
+you can always squash later though
+[yolofant]
+hellobox. so this is what i should be using?
+<https://github.com/webosbrew/xbmc>
+yolofant 03/13/2023 9:37 PM
+yes use that
+[ccarnell98]
+ccarnell98 03/13/2023 9:33 PM
+just have to careful force pushing..
+03/13/2023 9:32 PM
+they wont merge stuff with lots of commits
+[ccarnell98]
+hellobox. <@1051573528522133655> did you force push/rewrite history?
+ccarnell98 03/13/2023 9:31 PM
+yup
+[ccarnell98]
+hellobox. this is only true of certain platforms: `webOS currently
+operates with a 32-bit OS but the kernel is...
+ccarnell98 03/13/2023 9:31 PM
+removed 
+hellobox. 03/13/2023 9:31 PM
+@Craig did you force push/rewrite history?
+03/13/2023 9:31 PM
+i can't find the part about 64-bit kernels
+[smx2460]
+smx2460 03/13/2023 9:25 PM
+Even MT5398 is A9
+hellobox. 03/13/2023 9:25 PM
+so -mcpu=cortex-a9 is safe
+[smx2460]
+hellobox. does anyone know what arm core webos 1 socs had?
+smx2460 03/13/2023 9:25 PM
+A9
+[ccarnell98]
+ccarnell98 03/13/2023 9:24 PM
+that was merged into master
+03/13/2023 9:24 PM
+scrub that
+03/13/2023 9:24 PM
+and to build on less < webos7
+03/13/2023 9:24 PM
+If you want h/w decoding
+[smx2460]
+hellobox. <@310158180728700929> we really need to investigate whether
+using newer kernel headers will cause an...
+smx2460 03/13/2023 9:24 PM
+Ok
+hellobox. 03/13/2023 9:22 PM
+so this is what i should be using? https://github.com/webosbrew/xbmc
+[yolofant]
+yolofant 03/13/2023 9:18 PM
+userland is always 32 bit but kernel can be either
+03/13/2023 9:18 PM
+yeye
+[ccarnell98]
+ccarnell98 03/13/2023 9:17 PM
+like I did to start off with 
+03/13/2023 9:17 PM
+as long as you don't try to build a 64-bit one
+[yolofant]
+yolofant 03/13/2023 9:17 PM
+the kernel bitness doesn't really matter
+03/13/2023 9:16 PM
+you can probably strip that completely
+[ccarnell98]
+ccarnell98 03/13/2023 9:16 PM
+which are?
+hellobox. 03/13/2023 9:16 PM
+this is only true of certain platforms:
+webOS currently operates with a 32-bit OS but the kernel is 64-bit.
+[ccarnell98]
+ccarnell98 03/13/2023 9:16 PM
+kodi runs better on my TV than it does on my firestick 4k max
+[yolofant]
+yolofant 03/13/2023 9:15 PM
+but it could work
+03/13/2023 9:15 PM
+but we need to expose the video window differently on < 5.x
+03/13/2023 9:15 PM
+3+ potentially
+hellobox. 03/13/2023 9:15 PM
+since it doesn't run on really old webos anyway, right?
+[yolofant]
+yolofant 03/13/2023 9:15 PM
+I don't think it matters too much
+[ccarnell98]
+ccarnell98 03/13/2023 9:15 PM
+it's a generic build guide anyway
+hellobox. 03/13/2023 9:14 PM
+you can maybe go to A53
+[ccarnell98]
+ccarnell98 03/13/2023 9:14 PM
+couldnt remember
+[yolofant]
+yolofant 03/13/2023 9:14 PM
+a76 btw on o22 
+[] ccarnell98 why not cortext-a77? 
+hellobox. 03/13/2023 9:14 PM
+to support older TVs
+[ccarnell98]
+ccarnell98 03/13/2023 9:14 PM
+why not cortext-a77? 
+[yolofant]
+yolofant 03/13/2023 9:14 PM
+-mcpu=cortex-a9 -mfloat-abi=softfp -mfpu=neon this is from hyperion
+hellobox. 03/13/2023 9:14 PM
+it also sets __ARM_NEON_FP to 6, unlike mfpu=neon which sets it to 4
+[ccarnell98]
+ccarnell98 03/13/2023 9:14 PM
+as there is many make files that check arch
+hellobox. 03/13/2023 9:14 PM
+yes
+[ccarnell98]
+ccarnell98 03/13/2023 9:13 PM
+does it set arch for you?
+hellobox. 03/13/2023 9:13 PM
+all you need is -mcpu=cortex-a9 -mfloat-abi=softfp
+[ccarnell98]
+hellobox. for cflags you should probably be using `-mcpu=cortex-a9` and
+not `-march`
+ccarnell98 03/13/2023 9:13 PM
+I did look at that before, but I ended up with what worked because
+cross-compiling kodi was a PITA
+hellobox. 03/13/2023 9:12 PM
+does anyone know what arm core webos 1 socs had?
+[yolofant]
+yolofant 03/13/2023 9:10 PM
+https://github.com/Informatic/xbmc/blob/feature/webOS/build-webos.sh
+xbmc/build-webos.sh at feature/webOS · Informatic/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+hellobox. 03/13/2023 9:09 PM
+for cflags you should probably be using -mcpu=cortex-a9 and not -march
+(edited)
+[yolofant]
+yolofant 03/13/2023 9:09 PM
+I think @infowski had a buildscript in his branch
+[ccarnell98]
+ccarnell98 03/13/2023 9:09 PM
+either way, do that or download 2.0.0
+[yolofant]
+yolofant 03/13/2023 9:08 PM
+but w/e it works
+[ccarnell98]
+ccarnell98 03/13/2023 9:08 PM
+that just builds 2.0.0
+[yolofant]
+yolofant 03/13/2023 9:08 PM
+or something like that
+03/13/2023 9:08 PM
+make -C native/flatc
+03/13/2023 9:08 PM
+you can build the one from depends
+03/13/2023 9:07 PM
+it doesnt
+hellobox. 03/13/2023 9:07 PM
+what about 2.0.8?
+03/13/2023 9:07 PM
+does flatc have to be exactly 2.0.0?
+[ccarnell98]
+ccarnell98 03/13/2023 9:07 PM
+I'll have to update then
+[yolofant]
+yolofant 03/13/2023 9:07 PM
+you can just pull an artifact
+[ccarnell98]
+ccarnell98 03/13/2023 9:07 PM
+cool
+03/13/2023 9:07 PM
+I haven't updated
+[yolofant]
+yolofant 03/13/2023 9:07 PM
+yes
+[ccarnell98]
+ccarnell98 03/13/2023 9:07 PM
+does it work with the current buildoot-nc4 master?
+[yolofant]
+yolofant 03/13/2023 9:07 PM
+the only thing that is a bit annoying is the random libpng build failure
+03/13/2023 9:06 PM
+building is now pretty much straightforward with br-nc4 thanks to @Smx
+and @hellobox work
+[ccarnell98]
+ccarnell98 03/13/2023 9:06 PM
+to buildroot
+[yolofant]
+yolofant 03/13/2023 9:06 PM
+yeye
+[ccarnell98]
+ccarnell98 03/13/2023 9:06 PM
+my documentation was written before a lot of changes have been made in
+last 3 ish weeks
+hellobox. 03/13/2023 9:05 PM
+what about default br-nc4 glibc?
+[yolofant]
+yolofant 03/13/2023 9:05 PM
+after they merged my PR
+03/13/2023 9:05 PM
+it works with the old ones
+03/13/2023 9:05 PM
+you don't need kernel headers for kodi btw
+[infowski]
+infowski 03/13/2023 9:05 PM
+I mean - it'd be best if we used something new  but I don't have any
+practical knowledge if this will screw us or not. (edited)
+[ccarnell98]
+ccarnell98 03/13/2023 9:04 PM
+I'll put buildroot-nc4 before LG 
+[infowski]
+hellobox. any thoughts re: newer kernel header compatibility
+<@501722020434673674>?
+infowski 03/13/2023 9:04 PM
+No opinions tbh
+[yolofant]
+yolofant 03/13/2023 9:04 PM
+[:SadgeCry:]
+[ccarnell98]
+ccarnell98 03/13/2023 9:04 PM
+I know 
+[yolofant]
+yolofant 03/13/2023 9:04 PM
+they don't accept the PR anyway right now 
+ 1
+hellobox. 03/13/2023 9:04 PM
+any thoughts re: newer kernel header compatibility @infowski?
+[ccarnell98]
+ccarnell98 03/13/2023 9:03 PM
+Documentation isn't perfect, but they wouldn't accept my PR without it
+hellobox. 03/13/2023 9:03 PM
+@Smx we really need to investigate whether using newer kernel headers
+will cause any problems
+[yolofant]
+yolofant 03/13/2023 9:03 PM
+anyone wants to setup ci? 
+[ccarnell98]
+hellobox. <@1051573528522133655> `[Download and setup a compatible
+toolchain to compile kodi]. Suitable toolch...
+ccarnell98 03/13/2023 9:02 PM
+Well it does say download AND setup 
+hellobox. 03/13/2023 9:02 PM
+the only libs/headers lg's toolchains provide are basically those from
+glibc
+[] infowski (I'm not an author of that, but that's *the* place you
+should probably report these issues)
+sudupe 03/13/2023 9:02 PM
+Thanks. I did my first comment in GitHub.
+hellobox. 03/13/2023 9:00 PM
+at least not without adding a bunch of stuff to it
+03/13/2023 8:59 PM
+@Craig
+[Download and setup a compatible toolchain to compile kodi]. Suitable toolchains can be found on the LG OpenSource website: https://opensource.lge.com/.
+that's not going to work
+[infowski]
+infowski 03/13/2023 8:58 PM
+(I'm not an author of that, but that's the place you should probably
+report these issues)
+sudupe 03/13/2023 8:57 PM
+Thanks
+03/13/2023 8:57 PM
+Ok
+[infowski]
+infowski 03/13/2023 8:56 PM
+Note software version and webOS version you have
+03/13/2023 8:56 PM
+@Sudupe I would report this on
+https://github.com/WillinuX-Code/webos-tvheadend/issues/21
+Not opening in webos 6.10.30 · Issue #21 · WillinuX-Code/webos-tvhe...
+I have installed it the through developer mode but can't be opened.
+[]
+sudupe 03/13/2023 8:53 PM
+With webos 3.4.2
+03/13/2023 8:53 PM
+And I get black screen
+[astur3l]
+astur3l 03/13/2023 8:53 PM
+there's lot of thread in kodi forums with slow smb performance, 90%
+solution is -> use smb1 or forget samba  (edited)
+sudupe 03/13/2023 8:52 PM
+I downloaded a new app called TVheadend client from homebrew channel
+[infowski]
+infowski 03/13/2023 8:51 PM
+well, if it was running remotely you may be exhausting the network that
+way
+[ccarnell98]
+ccarnell98 03/13/2023 8:51 PM
+Kodi is not really ready to be used yet
+[ccarnell98]
+[] rkars Idk how to build Kodi from source as there are no instructions
+for webos
+ccarnell98 03/13/2023 8:51 PM
+https://github.com/craigcarnell/xbmc/blob/feature/webOS7/docs/README.webOS.md
+xbmc/README.webOS.md at feature/webOS7 · craigcarnell/xbmc
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[astur3l]
+astur3l 03/13/2023 8:50 PM
+why? but yeah.. but video wasnt captured that time (turned off) (edited)
+[infowski]
+infowski 03/13/2023 8:50 PM
+are you running hyperhdr/hyperion.ng on the TV directly? 
+[astur3l]
+astur3l 03/13/2023 8:49 PM
+sometimes kodi smbv3 performance is soo bad that even 720p movie starts
+to buffering.. and the screensaver activates before my directory loads
+[infowski]
+infowski 03/13/2023 8:48 PM
+yes, SMP handles screensaver under the hood
+ 1
+[astur3l]
+astur3l 03/13/2023 8:48 PM
+btw does the hardware decoding solves the screensaver activating issue?
+i turned off hwdec by restoring 'old' settings xml and screensaver
+activates 
+[infowski]
+infowski 03/13/2023 8:47 PM
+oops
+[astur3l]
+[] yolofant so that it eats up space relatively quickly
+astur3l 03/13/2023 8:47 PM
+    -rwxrwxrwx    1 5507     5000     141193216 Feb 27 18:43 core.11968
+    -rwxrwxrwx    1 5507     5000     136515584 Feb 28 22:47 core.15567
+    -rwxrwxrwx    1 5507     5000     148250624 Feb 28 22:51 core.16196
+    -rwxrwxrwx    1 5507     5000     148205568 Feb 28 22:53 core.17212
+[rkars]
+rkars 03/13/2023 8:37 PM
+I didn't find it in readme
+[infowski]
+infowski 03/13/2023 8:36 PM
+It's documented in our kodi fork somewhere.
+hellobox. 03/13/2023 8:36 PM
+you'll have to configure it first
+[rkars]
+rkars 03/13/2023 8:36 PM
+The make command i mean
+03/13/2023 8:36 PM
+Then what do i use to build
+03/13/2023 8:36 PM
+K
+hellobox. 03/13/2023 8:36 PM
+just extract it somewhere, run the relocate script, and source the
+environment file (although @Smx doesn't recommend that last one)
+(edited)
+[rkars]
+rkars 03/13/2023 8:36 PM
+If some nice person here wants to build an updated binary I'd appreciate
+it
+[rkars]
+hellobox. start by setting up br-nc4
+rkars 03/13/2023 8:35 PM
+Which also has no instructions...
+hellobox. 03/13/2023 8:35 PM
+@infowski did it
+[] rkars Idk how to build Kodi from source as there are no instructions
+for webos
+hellobox. 03/13/2023 8:35 PM
+start by setting up br-nc4
+[infowski]
+infowski 03/13/2023 8:35 PM
+Yes.
+[rkars]
+[] infowski HDR *will* be None.
+rkars 03/13/2023 8:35 PM
+Does it work tho
+[infowski]
+infowski 03/13/2023 8:34 PM
+HDR will be None.
+[rkars]
+rkars 03/13/2023 8:34 PM
+Idk how to build Kodi from source as there are no instructions for webos
+03/13/2023 8:34 PM
+I used the updated binary
+Deleted User 03/13/2023 8:34 PM
+you should probably wait for a new ipk
+[rkars]
+rkars 03/13/2023 8:33 PM
+And no hdr
+03/13/2023 8:33 PM
+(no content)
+[20230313_163330.jpg]
+ 20230313_163330.jpg
+450.9 KB External
+03/13/2023 8:32 PM
+This is the Kodi error i get on launch
+03/13/2023 8:32 PM
+(no content)
+[20230313_163208.jpg]
+ 20230313_163208.jpg
+968.18 KB External
+hellobox. 03/13/2023 7:50 PM
+or is there more to it than that?
+03/13/2023 7:50 PM
+i think that just means when you build against newer headers, you might
+use a feature that isn't available on older kernels, which obviously
+would cause problems
+03/13/2023 7:50 PM
+https://www.kernel.org/doc/html/latest/kbuild/headers_install.html
+    Kernel headers are backwards compatible, but not forwards compatible. This means that a program built against a C library using older kernel headers should run on a newer kernel (although it may not have access to new features), but a program built against newer kernel headers may not work on an older kernel.
+[yolofant]
+hellobox. try ulimit i guess
+yolofant 03/13/2023 7:47 PM
+I'll check the next time I'll produce a segfault 
+[infowski]
+infowski 03/13/2023 7:41 PM
+I think they're produced by libsegfault
+→ https://github.com/webosose/crashd/blob/master/src/libSegFault/libSegFault.c.in
+crashd/libSegFault.c.in at master · webosose/crashd
+crashd and libSegFault implementation for crash report generation -
+crashd/libSegFault.c.in at master · webosose/crashd
+[]
+hellobox. 03/13/2023 7:40 PM
+try ulimit i guess
+[yolofant]
+yolofant 03/13/2023 7:40 PM
+so that it eats up space relatively quickly
+03/13/2023 7:40 PM
+but they are named like coreXYZ and are 200mb roughly
+hellobox. 03/13/2023 7:40 PM
+or lg crash log things
+[yolofant]
+yolofant 03/13/2023 7:39 PM
+no idea
+hellobox. 03/13/2023 7:39 PM
+are they actually core dumps?
+03/13/2023 7:39 PM
+ulimit -c 0?
+[yolofant]
+yolofant 03/13/2023 7:39 PM
+maybe I just add a startup script 
+03/13/2023 7:39 PM
+I mean it's not a major issue, but it bugs me having to clean those core
+dumps regularly
+hellobox. 03/13/2023 7:39 PM
+depending on what process you're talking about
+03/13/2023 7:38 PM
+lg might already be doing that
+[infowski]
+infowski 03/13/2023 7:38 PM
+https://github.com/stass/libsegfault/blob/master/libsegfault.c#L213
+can't you just rewrite signal handlers like so?
+libsegfault/libsegfault.c at master · stass/libsegfault
+FreeBSD libsegfault. Contribute to stass/libsegfault development by
+creating an account on GitHub.
+[]
+[yolofant]
+yolofant 03/13/2023 7:37 PM
+yikes
+[infowski]
+infowski 03/13/2023 7:37 PM
+yeah.
+[yolofant]
+yolofant 03/13/2023 7:37 PM
+that would only work if I ran it from the command line right?
+03/13/2023 7:37 PM
+hmm but I can't set that when I launch the app through the launcher
+[infowski]
+infowski 03/13/2023 7:33 PM
+SEGFAULT_SIGNALS= (empty string) iirc
+03/13/2023 7:32 PM
+let me check...
+03/13/2023 7:32 PM
+If you can set an environment variable before launch - yes
+[yolofant]
+yolofant 03/13/2023 7:32 PM
+Is there an option to disable the creation of core dumps?
+[e99.tuxuser]
+e99.tuxuser 03/13/2023 7:13 PM
+That's the origin of the saying, it's like "who cares anyway?"
+ 1
+03/13/2023 7:12 PM
+https://www.mundmische.de/bedeutung/1720-Wayne
+Wayne
+Wayne bedeutet: Die Ursprungsformen von " Wayne " waren " Wayne
+interessiert's " bzw. "Vain interessiert's". Diese wurden von T. P.
+Kreidler und S. Faaß im nördlichen Baden-Württemberg in den 1990ern in
+den Uml .... Beispiel: Beispiel(e) > Aussage: Schau mal die süße
+Schnecke da drüben... Antwort: Wayne/Vain interessiert's? oder Frage:
+Hast...
+ 1
+hellobox. 03/13/2023 7:06 PM
+VT_DRIVER should be opaque
+03/13/2023 7:05 PM
+although i doubt anyone will ever try to use it
+03/13/2023 7:05 PM
+i think the wayne stuff is wrong
+[infowski]
+infowski 03/13/2023 7:04 PM
+03/13/2023 7:04 PM
+https://github.com/webosbrew/tv-native-apis/blob/main/libvtcapture/include/vtcapture/vtCaptureApi_c.h#L17
+wayne who
+Deleted User 03/13/2023 6:16 PM
+it changes every reboot
+[] bowsertm Can I watch lginputhook password with ssh? I forgot my
+password 
+Deleted User 03/13/2023 6:16 PM
+curl localhost:1842/password/
+[m.ksy]
+[] bowsertm Can I watch lginputhook password with ssh? I forgot my
+password 
+m.ksy 03/13/2023 6:15 PM
+open lginputhook app on TV
+[bowsertm]
+bowsertm 03/13/2023 6:14 PM
+Can I watch lginputhook password with ssh? I forgot my password 
+March 12, 2023
+[smx2460]
+smx2460 03/12/2023 8:59 PM
+It enables the removal of unused functions only
+03/12/2023 8:59 PM
+If the library is built with -fdata-segments/-fcode-segments or
+something like that
+03/12/2023 8:58 PM
+The latter removes unused sections and might cause harm with some apps
+03/12/2023 8:58 PM
+The former pulls in the library at the first use
+03/12/2023 8:58 PM
+I think not
+03/12/2023 8:58 PM
+I'm not sure if --as-needed is equivalent to gc-sections
+hellobox. 03/12/2023 8:55 PM
+maybe a linker script or something
+[smx2460]
+smx2460 03/12/2023 8:54 PM
+And just shove it in all builds
+03/12/2023 8:54 PM
+Unless you can use --as-needed
+03/12/2023 8:54 PM
+It would be unfortunate to have it dynamic, since it's just a shim
+03/12/2023 8:53 PM
+Which explicitly chooses what to leave out
+03/12/2023 8:53 PM
+Like i did with ezinject+frida
+03/12/2023 8:53 PM
+Doing something in between requires a custom build system
+03/12/2023 8:53 PM
+Or all dynamic
+03/12/2023 8:53 PM
+Typically you build all static
+hellobox. 03/12/2023 8:53 PM
+not sure exactly how the ABI is broken
+[smx2460]
+smx2460 03/12/2023 8:53 PM
+But it might be tricky
+03/12/2023 8:52 PM
+Ideally you would instruct them to use the static variant of the library
+hellobox. 03/12/2023 8:52 PM
+further explanation
+https://github.com/pypa/manylinux/issues/305#issuecomment-489332594
+[smx2460]
+smx2460 03/12/2023 8:52 PM
+By "decide" i mean that you must decide how you'll build the apps
+03/12/2023 8:51 PM
+And decide when you want to include it or not (edited)
+03/12/2023 8:51 PM
+@hellobox you would need to make a shim of the library in static form
+hellobox. 03/12/2023 8:37 PM
+and for kodi they're shipping libcrypt.so.1
+03/12/2023 8:37 PM
+python 3.10 also depends on libcrypt
+03/12/2023 8:33 PM
+https://github.com/besser82/libxcrypt/blob/develop/NEWS#LL489-L495
+    * New configure option --disable-obsolete-api removes the above
+      functions from the library.  Since this breaks compatibility with
+      glibc's libcrypt, when this option is used the shared library will
+      be libcrypt.so.2 instead of libcrypt.so.1, and all of the
+      compatibility symbol versions for the crypt* functions will be
+      omitted.  This option is the default on all operating systems where
+      there is no GNU C Library to be compatible with.
+03/12/2023 8:31 PM
+they stopped using --enable-obsolete-api
+03/12/2023 8:31 PM
+it's what webos 7 is using
+[smx2460]
+smx2460 03/12/2023 8:31 PM
+Is that a substitute?
+03/12/2023 8:30 PM
+Hm
+03/12/2023 8:30 PM
+I mean
+hellobox. 03/12/2023 8:30 PM
+https://github.com/besser82/libxcrypt
+[smx2460]
+smx2460 03/12/2023 8:30 PM
+That warranted such bump (edited)
+hellobox. 03/12/2023 8:30 PM
+not much
+[smx2460]
+smx2460 03/12/2023 8:30 PM
+What changed
+03/12/2023 8:30 PM
+But why is the soversion different in the first place
+hellobox. 03/12/2023 8:29 PM
+the input hook thing
+03/12/2023 8:29 PM
+more than that
+[smx2460]
+smx2460 03/12/2023 8:29 PM
+Dropbear?
+03/12/2023 8:29 PM
+What's the use case
+03/12/2023 8:28 PM
+Hmm
+hellobox. 03/12/2023 8:28 PM
+@Smx do you think we could add something to br-nc4 to dynamically load
+libcrypt?
+[] franartorias Yeah, but the only problem with that is that when I
+finish the root process I uninstalled the dev mo...
+hellobox. 03/12/2023 8:03 PM
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#why-cant-i-connect-to-my-tv-with-dev-manager-after-uninstalling-the-lg-developer-mode-app
+hellobox. 03/12/2023 8:02 PM
+you need to set it up to use hbchannel ssh
+[franartorias]
+franartorias 03/12/2023 8:02 PM
+Yeah, but the only problem with that is that when I finish the root
+process I uninstalled the dev mode app from the tv and from that moment
+the WebOS manager can't connect with the tv
+hellobox. 03/12/2023 7:59 PM
+is it jailed? (edited)
+[infowski]
+infowski 03/12/2023 7:59 PM
+That's the directory accessible to retroarch
+03/12/2023 7:59 PM
+Just dump them in
+/media/developer/apps/usr/palm/applications/com.retroarch or something
+03/12/2023 7:58 PM
+Yes, you can do that too.
+[franartorias]
+[] infowski You can connect a USB drive and it'll be visible in
+/tmp/usb. You may need to do a full system reboo...
+franartorias 03/12/2023 7:58 PM
+Can I send to the roms through the WebOS dev manager?
+[infowski]
+infowski 03/12/2023 7:54 PM
+You can connect a USB drive and it'll be visible in /tmp/usb. You may
+need to do a full system reboot (homebrew channel -> settings -> reboot)
+after plugging/unplugging it though due to a ~bug in jailer (edited)
+ 1
+[franartorias]
+franartorias 03/12/2023 7:49 PM
+I installed RetroArch in my LG C1, but how I can add games? And other
+cores?
+[franartorias]
+hellobox. only the webosapp.club one
+franartorias 03/12/2023 7:48 PM
+Uh ok thanks
+[] franartorias Are there more repository?
+hellobox. 03/12/2023 7:48 PM
+only the webosapp.club one
+[franartorias]
+franartorias 03/12/2023 7:47 PM
+Are there more repository?
+03/12/2023 7:46 PM
+Hi, I have 2 questions
+hellobox. 03/12/2023 7:38 PM
+probably close to impossible without help from lg if you want to have
+e.g. video support
+03/12/2023 7:37 PM
+because you have nothing to base it on
+[] rkars Also If i were to port a browser it would be Firefox with just
+the desktop ui
+hellobox. 03/12/2023 7:37 PM
+that would be substantially more work
+[rkars]
+rkars 03/12/2023 7:36 PM
+Also If i were to port a browser it would be Firefox with just the
+desktop ui
+[bennie8186]
+bennie8186 03/12/2023 7:36 PM
+Yes it did
+hellobox. 03/12/2023 7:35 PM
+did it fix your problem with the browser?
+03/12/2023 7:34 PM
+but you'd have to do it manually
+03/12/2023 7:34 PM
+well, you could go to 04.30.58
+ 1
+[bennie8186]
+bennie8186 03/12/2023 7:33 PM
+I’ll won’t thanks 
+hellobox. 03/12/2023 7:33 PM
+don't update any further
+[bennie8186]
+bennie8186 03/12/2023 7:33 PM
+An ran rootmyv 2.0 and it works
+03/12/2023 7:33 PM
+So I just updated to 04.30.10
+[rkars]
+rkars 03/12/2023 7:32 PM
+I mean it might run GameCube with franeskip at native res
+[bennie8186]
+bennie8186 03/12/2023 7:32 PM
+I installed dev mode and it uninstalled homebrew
+[] bennie8186 I kinda messed up and just updated it works with rootmytv
+hellobox. 03/12/2023 7:32 PM
+to what?
+[bennie8186]
+bennie8186 03/12/2023 7:32 PM
+Thx for your help hellobox
+[] rkars I mean of it can decode 4k 60 HDR Dolby vision it has to be
+reasonably powerful right ?
+hellobox. 03/12/2023 7:31 PM
+that's done in hardware
+[bennie8186]
+bennie8186 03/12/2023 7:31 PM
+I kinda messed up and just updated it works with rootmytv
+[rkars]
+rkars 03/12/2023 7:31 PM
+I mean of it can decode 4k 60 HDR Dolby vision it has to be reasonably
+powerful right ?
+[rkars]
+[] yolofant then you'd have a more recent browser
+rkars 03/12/2023 7:31 PM
+Don't care, i want dolphin
+hellobox. 03/12/2023 7:31 PM
+BogoMIPS : 24.00 (lm21a) BogoMIPS : 1988.60 (lm21an) (edited)
+03/12/2023 7:30 PM
+ooh, lm21a has a 32-bit kernel but lm21an's is 64
+[yolofant]
+yolofant 03/12/2023 7:28 PM
+I only figured out it was 4x cortex a76
+03/12/2023 7:28 PM
+cpu freq is a mystery on o22 as well
+hellobox. 03/12/2023 7:28 PM
+on my k7lp (rtk) board i can get the max cpu freq from
+/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq, but not on mstar
+[yolofant]
+yolofant 03/12/2023 7:28 PM
+then you'd have a more recent browser
+[rkars]
+[] yolofant at that point you might as well backport the newer webos
+chromium to your device
+rkars 03/12/2023 7:28 PM
+What does that have to do
+[ccarnell98]
+ccarnell98 03/12/2023 7:27 PM
+maybe one day
+03/12/2023 7:27 PM
+never used it though
+03/12/2023 7:27 PM
+kodi has a retroarch frontend.. 
+[yolofant]
+yolofant 03/12/2023 7:27 PM
+at that point you might as well backport the newer webos chromium to
+your device
+[rkars]
+[] ccarnell98 retroarch? doubt it would run gamecube though
+rkars 03/12/2023 7:27 PM
+There is a dolphin core for RetroArch
+[rkars]
+hellobox. go ahead then
+rkars 03/12/2023 7:26 PM
+I mean the dolphin core for RetroArch could work but it has lower
+performance
+[ccarnell98]
+ccarnell98 03/12/2023 7:26 PM
+retroarch? doubt it would run gamecube though
+[yolofant]
+yolofant 03/12/2023 7:26 PM
+don't do it
+03/12/2023 7:26 PM
+[:monkaW:]
+[] rkars I think dolphin shouldn't even be that hard to port to web os
+hellobox. 03/12/2023 7:25 PM
+go ahead then
+[rkars]
+rkars 03/12/2023 7:23 PM
+I think dolphin shouldn't even be that hard to port to web os
+[rkars]
+hellobox. run some benchmarks
+rkars 03/12/2023 7:23 PM
+Idk how to
+hellobox. 03/12/2023 7:23 PM
+you can check /proc/cpuinfo to find the type and number of cores
+(edited)
+[rkars]
+rkars 03/12/2023 7:22 PM
+Can it emulate GameCube or is it underpowered
+hellobox. 03/12/2023 7:22 PM
+run some benchmarks
+[rkars]
+rkars 03/12/2023 7:22 PM
+How powerful is it tho
+03/12/2023 7:22 PM
+Probably is
+hellobox. 03/12/2023 7:21 PM
+might be o20n
+03/12/2023 7:21 PM
+you can find out from /var/run/nyx/device_info.json
+[rkars]
+hellobox. what soc is it?
+rkars 03/12/2023 7:20 PM
+Idk the actual name but the LG name is a9 gen 4
+hellobox. 03/12/2023 7:19 PM
+what soc is it?
+[rkars]
+rkars 03/12/2023 7:17 PM
+Gpu?
+03/12/2023 7:17 PM
+Like Geekbench score
+03/12/2023 7:17 PM
+Btw how powerful is the soc in the oled c1
+hellobox. 03/12/2023 7:15 PM
+don't install the dev mode app (edited)
+[bennie8186]
+bennie8186 03/12/2023 7:14 PM
+When in try to run dev mode on lg tv it also says need update
+hellobox. 03/12/2023 7:01 PM
+go to /var/run/nyx
+03/12/2023 7:01 PM
+you can download the file with dev manager
+[bennie8186]
+bennie8186 03/12/2023 6:59 PM
+Never used ssh or telnet
+03/12/2023 6:58 PM
+I have no idea how to do that >.<
+hellobox. 03/12/2023 6:56 PM
+you'd type cat /var/run/nyx/device_info.json
+03/12/2023 6:55 PM
+or dev manager (also has a file browser thing)
+03/12/2023 6:55 PM
+ssh/telnet
+03/12/2023 6:55 PM
+it'll look like HE_DTV_W20O_AFABATAA
+[bennie8186]
+bennie8186 03/12/2023 6:55 PM
+Sorry I’m al little bit noobie where do I typ in the command ?
+hellobox. 03/12/2023 6:54 PM
+which you can find in /var/run/nyx/device_info.json (edited)
+03/12/2023 6:54 PM
+i can find the firmware image if you give me the otaid
+03/12/2023 6:53 PM
+it looks like 04.35.10 is vulnerable to rootmytv v2
+[] bennie8186 Any steps how to do or just let it run ota?
+hellobox. 03/12/2023 6:53 PM
+you'd have to do it manually
+[bennie8186]
+bennie8186 03/12/2023 6:53 PM
+Any steps how to do or just let it run ota?
+hellobox. 03/12/2023 6:52 PM
+and also the ability to downgrade
+[bennie8186]
+bennie8186 03/12/2023 6:52 PM
+Will that work ?
+hellobox. 03/12/2023 6:52 PM
+you could update somewhat and maintain rootmytv v2
+[bennie8186]
+bennie8186 03/12/2023 6:51 PM
+Not that big of a deal
+03/12/2023 6:51 PM
+Can’t run normal browser anymore because it needs update
+hellobox. 03/12/2023 6:51 PM
+oh, i see it
+[bennie8186]
+bennie8186 03/12/2023 6:51 PM
+Just rooted out of the box
+[smx2460]
+smx2460 03/12/2023 6:50 PM
+i didn't gather anyone interested in the port
+03/12/2023 6:50 PM
+so i am sure we can on WebOS too
+[bennie8186]
+hellobox. how old is that?
+bennie8186 03/12/2023 6:50 PM
+Ehh q4 2020
+[smx2460]
+smx2460 03/12/2023 6:50 PM
+and you could on NC4
+03/12/2023 6:50 PM
+xD
+[smx2460]
+[] astur3l you can run .net core on webos?:D
+smx2460 03/12/2023 6:50 PM
+on my BCM63138 modem you can
+[] bennie8186 03.11.25
+hellobox. 03/12/2023 6:50 PM
+how old is that?
+[bennie8186]
+hellobox. what fw version are you currently running?
+bennie8186 03/12/2023 6:49 PM
+03.11.25
+hellobox. 03/12/2023 6:14 PM
+like if you want to use CLOCK_BOOTTIME but would settle for
+CLOCK_MONOTONIC, you can just call the function again with that on
+EINVAL
+03/12/2023 6:12 PM
+anyway, if someone is using a flag that isn't actually necessary for
+them and may be rejected by an earlier kernel, they should be able to
+fall back to not using it
+[astur3l]
+[] smx2460 i had to do that same treatement for dotnet core
+astur3l 03/12/2023 6:12 PM
+you can run .net core on webos?:D
+hellobox. 03/12/2023 6:12 PM
+i don't like systemd
+[smx2460]
+smx2460 03/12/2023 6:11 PM
+03/12/2023 6:11 PM
+that says "fuck this shit, i only support latest"
+03/12/2023 6:11 PM
+and then there's systemd
+03/12/2023 6:11 PM
+i had to do that same treatement for dotnet core
+03/12/2023 6:11 PM
+besides Kodi needing headers compat fixes
+03/12/2023 6:11 PM
+wouldn't be surprising
+hellobox. 03/12/2023 6:10 PM
+or at least not designed for that kind of compatibility
+03/12/2023 6:10 PM
+well, they're poorly written
+[smx2460]
+smx2460 03/12/2023 6:10 PM
+or build but not run (edited)
+03/12/2023 6:10 PM
+because then some programs might no longer build on WOS1
+03/12/2023 6:10 PM
+if it exists, i can use it
+hellobox. 03/12/2023 6:10 PM
+i don't think there is one
+[smx2460]
+smx2460 03/12/2023 6:10 PM
+or
+03/12/2023 6:10 PM
+is there a special macro/flag
+03/12/2023 6:10 PM
+like
+[smx2460]
+hellobox. just use `--enable-kernel=3.10.19`
+smx2460 03/12/2023 6:10 PM
+what is the recommended way to check if a kernel function is available
+tho
+[smx2460]
+smx2460 03/12/2023 6:09 PM
+and one for WebOS4
+03/12/2023 6:09 PM
+a defconfig with 3.10 headers (WebOS1)
+hellobox. 03/12/2023 6:09 PM
+just use --enable-kernel=3.10.19
+03/12/2023 6:09 PM
+why?
+[smx2460]
+smx2460 03/12/2023 6:09 PM
+having 3 configs to maintain is not super awesome
+03/12/2023 6:08 PM
+you need 2 defconfigs tho
+03/12/2023 6:08 PM
+yeah
+03/12/2023 6:08 PM
+hm
+hellobox. 03/12/2023 6:08 PM
+and still build old glibc
+03/12/2023 6:08 PM
+can't we just update the headers?
+[smx2460]
+smx2460 03/12/2023 6:08 PM
+can't think of any other way
+03/12/2023 6:08 PM
+flags?
+[smx2460]
+hellobox. do you want to maintain kernel header backports too?
+smx2460 03/12/2023 6:08 PM
+how do we make it work for both WebOS 1 and 4
+hellobox. 03/12/2023 6:05 PM
+do you want to maintain kernel header backports too?
+03/12/2023 6:05 PM
+in particular, i'm thinking of the additions to
+include/uapi/linux/mmc/ioctl.h in
+https://github.com/torvalds/linux/commit/a5f5774c55a2e3ed75f4d6c5556b7bfcb726e6f0,
+but i'm sure this isn't the only issue
+03/12/2023 6:04 PM
+@Smx what should we do about stuff missing from kernel headers? (edited)
+hellobox. 03/12/2023 5:42 PM
+what fw version are you currently running?
+[bennie8186]
+bennie8186 03/12/2023 5:40 PM
+Thx won’t upgrade then..:)
+hellobox. 03/12/2023 5:11 PM
+and you won't be able to root it again if something goes wrong
+[] bennie8186 Hey,I have cx77 can i upgrade to most recent version
+04.30.10 or will i lose root ?
+hellobox. 03/12/2023 5:11 PM
+if you have hbchannel 0.5.1+, you won't lose root, but it won't work as
+well
+[bennie8186]
+bennie8186 03/12/2023 3:08 PM
+Or where I can check ?
+03/12/2023 3:07 PM
+Hey,I have cx77 can i upgrade to most recent version 04.30.10 or will i
+lose root ?
+[yolofant]
+yolofant 03/12/2023 3:05 PM
+kodi transcodes on the fly to ac3 so we actually get proper multichannel
+ 4
+03/12/2023 3:04 PM
+pcm will go through alsa (usually ui sounds only)
+03/12/2023 3:04 PM
+av sync seems good after some manual tuning
+03/12/2023 3:04 PM
+kodi ac3 passthrough is pretty much working
+hellobox. 03/12/2023 6:39 AM
+i should probably set up some kind of CI on my own repo so i don't have
+to keep submitting a PR to run a test build
+03/12/2023 6:34 AM
+webos 7 also has libtinfo.so.5
+03/12/2023 6:29 AM
+so we have libtinfo, but it's libtinfo.so.6
+03/12/2023 6:28 AM
+trying to rebuild ncurses now
+03/12/2023 6:26 AM
+that only seems to be used for adding symlinks from the the w versions
+to the non-wide ones
+03/12/2023 6:26 AM
+i guess not
+03/12/2023 6:22 AM
+do i have to add the new libs here?
+    NCURSES_LIBS = ncurses menu panel form
+03/12/2023 6:18 AM
+tgetent is in there as well
+03/12/2023 6:18 AM
+tgoto is in libncursesw.so.6, but i guess less wants it broken out in
+libtinfo
+03/12/2023 6:17 AM
+this is what i'm getting when configuring less:
+    checking for tgoto in -ltinfo... no
+    checking for tgoto in -ltinfow... no
+    checking for initscr in -lxcurses... no
+    checking for initscr in -lncursesw... yes
+    checking for initscr in -lncurses... yes
+    checking for initscr in -lcurses... yes
+    checking for tgetent in -ltermcap... no
+    checking for tgetent in -ltermlib... no
+03/12/2023 6:16 AM
+we have to configure ncurses to provide libtinfo as well
+03/12/2023 6:12 AM
+br-nc4 has libreadline.so.8; webos 6 has libreadline.so.5
+03/12/2023 6:09 AM
+didn't link against readline
+03/12/2023 6:09 AM
+it's still not working great though
+03/12/2023 6:08 AM
+got it to run with a symlink
+03/12/2023 6:08 AM
+it's libncursesw.so.5 on webos 6
+03/12/2023 6:08 AM
+bash: error while loading shared libraries: libncursesw.so.6: cannot open shared object file: No such file or directory
+03/12/2023 6:06 AM
+hoping that enabling readline and ncurses helps
+03/12/2023 6:06 AM
+i'm trying bash now
+03/12/2023 6:05 AM
+elfutils is still broken because of the _FILE_OFFSET_BITS stuff
+[yolofant]
+yolofant 03/12/2023 12:49 AM
+the display engine takes care of merging the ui with the video
+03/12/2023 12:48 AM
+or let's say the ui is non hdr
+03/12/2023 12:48 AM
+display is non hdr but the video can be hdr
+03/12/2023 12:48 AM
+you probably didnt replace the settings.xml

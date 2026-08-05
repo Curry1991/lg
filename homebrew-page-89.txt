@@ -1,0 +1,1625 @@
+January 24, 2023
+[infowski]
+infowski 01/24/2023 12:07 AM
+wl_webos_shell_surface_set_property(g_pstWebosShellSurface, "appId",
+(getenv("APP_ID") ? getenv("APP_ID") : "com.sample.waylandegl")); 
+[ccarnell98]
+ccarnell98 01/24/2023 12:07 AM
+whats the difference between native and externa native
+[infowski]
+infowski 01/24/2023 12:07 AM
+https://github.com/xbmc/xbmc/tree/54703a9a753e32eff935ebc5534fd13a12f36b78/xbmc/windowing
+s d l
+xbmc/xbmc/windowing at 54703a9a753e32eff935ebc5534fd13a12f36b78 · x...
+Kodi is an award-winning free and open source home theater/media center
+software and entertainment hub for digital media. With its beautiful
+interface and powerful skinning engine, it&#39;s ava...
+[]
+[ccarnell98]
+ccarnell98 01/24/2023 12:06 AM
+https://www.webosose.org/docs/tutorials/native-apps/developing-external-native-apps/
+Developing External Native Apps
+External native apps are 3rd party native apps that must be installed on
+the webOS target device. This page describes the steps to develop an
+external native app using Sample Code Repository and CLI. For detailed
+information on the CLI commands used in this tutorial, see CLI commands.
+Developing an external native app requires the following step...
+[]
+[smx2460]
+smx2460 01/24/2023 12:06 AM
+SDL_WINDOW_HIDDEN: window is not visible
+01/24/2023 12:06 AM
+or create it, show it, hide it
+[ccarnell98]
+ccarnell98 01/24/2023 12:05 AM
+Which api framework will work?
+[smx2460]
+smx2460 01/24/2023 12:05 AM
+i could create a window and hide it maybe
+01/24/2023 12:05 AM
+what about say Kodi
+[infowski]
+infowski 01/24/2023 12:05 AM
+since you there's no standard to "hand over control"
+[smx2460]
+smx2460 01/24/2023 12:05 AM
+well not really
+[infowski]
+infowski 01/24/2023 12:05 AM
+well, at this point you can just fucking patch the software
+[smx2460]
+smx2460 01/24/2023 12:04 AM
+then hand over control to <whatever>
+01/24/2023 12:04 AM
+the idea is to use SDL to make a window
+[infowski]
+infowski 01/24/2023 12:04 AM
+duh, we should've just used sdl :^)
+[smx2460]
+smx2460 01/24/2023 12:04 AM
+yep
+[infowski]
+infowski 01/24/2023 12:04 AM
+wait, that's moonlight?
+hellobox. 01/24/2023 12:04 AM
+all this shit just to create a window?
+01/24/2023 12:04 AM
+god, webos really sucks
+[smx2460]
+smx2460 01/24/2023 12:04 AM
+yes
+01/24/2023 12:04 AM
+    SDL_Window *app_create_window() {
+        Uint32 win_flags = SDL_WINDOW_RESIZABLE;
+        int win_x = SDL_WINDOWPOS_UNDEFINED, win_y = SDL_WINDOWPOS_UNDEFINED,
+                win_width = 1920, win_height = 1080;
+        if (app_configuration->fullscreen) {
+            win_flags |= APP_FULLSCREEN_FLAG;
+            SDL_DisplayMode mode;
+            SDL_GetDisplayMode(0, 0, &mode);
+            if (mode.w > 0 && mode.h > 0) {
+                win_width = mode.w;
+                win_height = mode.h;
+            }
+        } else {
+            win_x = app_configuration->window_state.x;
+            win_y = app_configuration->window_state.y;
+            win_width = app_configuration->window_state.w;
+            win_height = app_configuration->window_state.h;
+        }
+        SDL_Window *win = SDL_CreateWindow("Moonlight", win_x, win_y, win_width, win_height, win_flags);
+        SDL_assert(win != NULL);
+        SDL_Surface *winicon = IMG_Load_RW(SDL_RWFromConstMem(lv_sdl_img_data_logo_96.data.constptr,
+                                                              (int) lv_sdl_img_data_logo_96.data_len), SDL_TRUE);
+        SDL_SetWindowIcon(win, winicon);
+        SDL_FreeSurface(winicon);
+        SDL_SetWindowMinimumSize(win, 640, 480);
+        int w = 0, h = 0;
+        SDL_GetWindowSize(win, &w, &h);
+        SDL_assert(w > 0 && h > 0);
+        ui_display_size(w, h);
+        return win;
+    }
+[infowski]
+infowski 01/24/2023 12:03 AM
+does it call sdl in the end?
+[smx2460]
+smx2460 01/24/2023 12:03 AM
+    void module_init(int argc, char *argv[]) {
+        // LGNC requires init before window created, don't put this after app_window_create!
+        decoder_init(app_configuration->decoder, argc, argv);
+        // If decoder_info is valid, initialize audio as well
+        if (decoder_check_info(decoder_current, decoder_current_libidx)) {
+            audio_init(app_configuration->audio_backend, argc, argv);
+        }
+    }
+[infowski]
+infowski 01/24/2023 12:03 AM
+>app_create_window (edited)
+[smx2460]
+smx2460 01/24/2023 12:03 AM
+contains implementations of the Netcast APIs adapted to WebOS
+01/24/2023 12:03 AM
+yeah, basically
+hellobox. 01/24/2023 12:03 AM
+audio is kinda choppy
+01/24/2023 12:03 AM
+compat library for netcast?
+01/24/2023 12:02 AM
+what's LGNC?
+[smx2460]
+smx2460 01/24/2023 12:02 AM
+interesting comment
+01/24/2023 12:02 AM
+        int ret = app_init(argc, argv);
+        if (ret != 0) {
+            return ret;
+        }
+        app_init_locale();
+        module_init(argc, argv);
+        backend_init();
+        // DO not init video subsystem before NDL/LGNC initialization
+        app_init_video();
+        applog_i("APP", "UI locale: %s (%s)", i18n_locale(), locstr("[Localized Language]"));
+        app_window = app_create_window();
+01/24/2023 12:01 AM
+    int app_init(int argc, char *argv[]) {
+        (void) argc;
+        (void) argv;
+        app_configuration = settings_load();
+    #if TARGET_WEBOS
+        SDL_SetHint(SDL_HINT_WEBOS_ACCESS_POLICY_KEYS_BACK, "true");
+        SDL_SetHint(SDL_HINT_WEBOS_ACCESS_POLICY_KEYS_EXIT, "true");
+        SDL_SetHint(SDL_HINT_WEBOS_CURSOR_SLEEP_TIME, "5000");
+    #endif
+        return 0;
+    }
+01/24/2023 12:01 AM
+oh.
+01/24/2023 12:01 AM
+k
+[infowski]
+infowski 01/24/2023 12:01 AM
+fuck it, later.
+01/24/2023 12:01 AM
+still closes lol
+[smx2460]
+smx2460 01/24/2023 12:00 AM
+personal stuff happened and i got "distracted" 
+hellobox. 01/24/2023 12:00 AM
+what happened to that nice tv you were looking at?
+[infowski]
+infowski 01/24/2023 12:00 AM
+at this point
+01/24/2023 12:00 AM
+lol i can give you ssh + vnc
+hellobox. 01/24/2023 12:00 AM
+@Smx you need to get a webos dev board
+January 23, 2023
+[smx2460]
+smx2460 01/23/2023 11:59 PM
+lol
+01/23/2023 11:59 PM
+export X_SDL_LIBRARY=<path>
+01/23/2023 11:59 PM
+(no content)
+ es2gears
+38.32 KB External
+hellobox. 01/23/2023 11:58 PM
+just libSDL2-2.0.so.0
+01/23/2023 11:58 PM
+there is no libSDL2-2.0.so
+[smx2460]
+smx2460 01/23/2023 11:58 PM
+if it doesn't work
+01/23/2023 11:58 PM
+i can make it use an env var lol
+01/23/2023 11:58 PM
+eeeh
+[infowski]
+infowski 01/23/2023 11:58 PM
+/usr/lib/libSDL2-2.0.so.0
+[smx2460]
+smx2460 01/23/2023 11:58 PM
+or the full path
+01/23/2023 11:58 PM
+in full
+01/23/2023 11:57 PM
+i guess it wants libSDL2-2.0.so.0.14.0
+01/23/2023 11:57 PM
+make a symlink in $PWD
+01/23/2023 11:57 PM
+oof
+[infowski]
+infowski 01/23/2023 11:57 PM
+dlopen failed lol
+[smx2460]
+smx2460 01/23/2023 11:57 PM
+01/23/2023 11:57 PM
+really desperate at this point
+01/23/2023 11:57 PM
+        void *sdl = dlopen("libSDL2-2.0.so", RTLD_LAZY);
+        if(sdl == NULL){
+            printf("dlopen() failed\n"); return EXIT_FAILURE;
+        }
+        pfnSdlInit SDL_Init = (pfnSdlInit) dlsym(sdl, "SDL_Init");
+        pfnSdlRegisterEvents SDL_RegisterEvents = (pfnSdlRegisterEvents) dlsym(sdl, "SDL_RegisterEvents");
+        if(SDL_Init == NULL || SDL_RegisterEvents == NULL){
+            printf("dlsym() failed\n"); return EXIT_FAILURE;
+        }
+        if(SDL_Init(SDL_INIT_VIDEO) != 0){
+            printf("SDL_Init() failed\n");
+            return EXIT_FAILURE;
+        }
+        // This will occupy SDL_USEREVENT
+        SDL_RegisterEvents(1);
+        struct thread_args args = {
+            .argc = argc,
+            .argv = argv,
+            .loop = NULL
+        };
+        return (int)ClientProc(&args);
+[infowski]
+infowski 01/23/2023 11:57 PM
+k
+[smx2460]
+smx2460 01/23/2023 11:56 PM
+@infowski last one of the day? ^^
+01/23/2023 11:56 PM
+(no content)
+ es2gears
+38.28 KB External
+[infowski]
+infowski 01/23/2023 11:54 PM
+ok, gotta go. cya.
+[infowski]
+infowski 01/23/2023 11:39 PM
+https://github.com/webosose/webos-wayland-extensions/blob/master/protocol/webos-shell.xml
+hmmmm...
+[] infowski
+https://github.com/webosose/chromium79/blob/57b21279f43f265bf0476d2ebf8fe11c8dee4bba/src/ui/ozone/pl...
+hellobox. 01/23/2023 11:38 PM
+probably easier to use that than try to reverse libsdl2
+[infowski]
+infowski 01/23/2023 11:37 PM
+https://github.com/webosose/chromium79/blob/57b21279f43f265bf0476d2ebf8fe11c8dee4bba/src/ui/ozone/platform/wayland/extensions/webos/host/webos_shell_surface_wrapper.cc
+chromium79/webos_shell_surface_wrapper.cc at 57b21279f43f265bf0476d...
+Contribute to webosose/chromium79 development by creating an account on
+GitHub.
+[]
+hellobox. 01/23/2023 11:33 PM
+sdl also has goofy wrappers for many libc functions
+[yolofant]
+yolofant 01/23/2023 11:31 PM
+NDLSetLSHandle
+hellobox. 01/23/2023 11:25 PM
+i'm looking at the webos 6 one
+[infowski]
+infowski 01/23/2023 11:22 PM
+oh god xD
+hellobox. 01/23/2023 11:20 PM
+lg probably only left it enabled because they didn't know about it
+01/23/2023 11:20 PM
+jesus... https://github.com/bminor/SDL/blob/master/docs/README-dynapi.md
+[smx2460]
+smx2460 01/23/2023 11:17 PM
+(no content)
+ es2gears
+38.75 KB External
+hellobox. 01/23/2023 11:16 PM
+with all its dynamic shit
+01/23/2023 11:16 PM
+god, what is libsdl2 doing?
+[yolofant]
+yolofant 01/23/2023 11:15 PM
+(no content)
+ libSDL2-2.0.so.0.14.0
+802.15 KB External
+[smx2460]
+smx2460 01/23/2023 11:10 PM
+(no content)
+ es2gears
+38.75 KB External
+[infowski]
+infowski 01/23/2023 11:07 PM
+2023-01-23T22:07:01.478962Z [16833.355126889] user.err sam [] SAM APP_LAUNCH_ERR {"app_id":"org.webosbrew.gears","reason":"invalid_life_status_to_connect_nativeapp","runtime_status":0}
+01/23/2023 11:06 PM
+<= {"errorCode":1,"returnValue":false,"errorText":"invalid_status"} 
+[smx2460]
+smx2460 01/23/2023 11:05 PM
+(no content)
+ es2gears
+38.72 KB External
+01/23/2023 11:01 PM
+(no content)
+ es2gears
+38.68 KB External
+hellobox. 01/23/2023 10:59 PM
+and the gears don't show up at all
+[ccarnell98]
+ccarnell98 01/23/2023 10:59 PM
+*/usr/lib/libffi.so.7.1.0
+hellobox. 01/23/2023 10:59 PM
+just trying to run it with a made-up APPID gives me that error
+[ccarnell98]
+[] smx2460 Click to see attachment
+ccarnell98 01/23/2023 10:58 PM
+Does that work with ls /usr/lib/libffi 7?
+hellobox. 01/23/2023 10:58 PM
+the new binaries don't work for me, although i'm not running them as an
+app
+Deleted User 01/23/2023 10:57 PM
+and notification sounds for that stream starting (edited)
+01/23/2023 10:56 PM
+im not in it
+01/23/2023 10:56 PM
+why am i getting notification sounds when someone joins that development
+voice channel (edited)
+01/23/2023 10:56 PM
+wtf
+hellobox. 01/23/2023 10:51 PM
+what APPID do i use?
+01/23/2023 10:51 PM
+haven't really been following
+01/23/2023 10:51 PM
+also
+LUNASERVICE ERROR -1027: Invalid permissions for (null) (_LSTransportRequestName @ transport.c:2080)
+[smx2460]
+smx2460 01/23/2023 10:49 PM
+(no content)
+ es2gears
+38.62 KB External
+01/23/2023 10:47 PM
+(no content)
+ es2gears
+38.62 KB External
+[infowski]
+infowski 01/23/2023 10:43 PM
+# unknown-channel btw :^)
+[infowski]
+[] yolofant why does it not have permissions though
+infowski 01/23/2023 10:43 PM
+You need to package it up into an app.
+[yolofant]
+yolofant 01/23/2023 10:40 PM
+why does it not have permissions though
+01/23/2023 10:37 PM
+LUNASERVICE ERROR -1027: Invalid permissions for (null) (_LSTransportRequestName @ transport.c:2173)
+(edited)
+01/23/2023 10:36 PM
+still fades away after 1 second
+[smx2460]
+smx2460 01/23/2023 10:35 PM
+(no content)
+ es2gears
+38.4 KB External
+Deleted User 01/23/2023 10:34 PM
+"password_ipcontrol": "828"
+01/23/2023 10:34 PM
+enableIpControl
+01/23/2023 10:33 PM
+theres quite a few interesting settings in here
+01/23/2023 10:30 PM
+(option category)
+01/23/2023 10:30 PM
+its on, on both tv's
+01/23/2023 10:30 PM
+whats the demoMode setting?
+01/23/2023 10:27 PM
+lock category is interesting
+[image.png]
+ image.png
+39.37 KB External
+01/23/2023 10:25 PM
+oh
+[infowski]
+infowski 01/23/2023 10:24 PM
+There are other settings in db8
+01/23/2023 10:24 PM
+I don't think that's really true
+Deleted User 01/23/2023 10:24 PM
+i had been wishing there was a way to know all the available categories
+01/23/2023 10:23 PM
+ive only just realized all the settings are stored in
+/mnt/lg/cmn_data/var/luna/preferences/
+[infowski]
+hellobox. Click to see attachment
+infowski 01/23/2023 10:20 PM
+https://www.youtube.com/watch?v=stdyhfeYxxI
+hellobox. 01/23/2023 10:16 PM
+beautiful
+[yolofant]
+yolofant 01/23/2023 10:16 PM
+maybe background apps run at a capped framerate
+hellobox. 01/23/2023 10:16 PM
+(no content)
+[image.png]
+ image.png
+169.65 KB External
+[yolofant]
+yolofant 01/23/2023 10:16 PM
+Hmm could also just be a side effect of not being registered
+hellobox. 01/23/2023 10:15 PM
+and ~33 for lx
+01/23/2023 10:15 PM
+i wonder why it's capped at 40fps
+[yolofant]
+yolofant 01/23/2023 10:15 PM
+LX is clearly inferior
+hellobox. 01/23/2023 10:15 PM
+[:rtk:]
+01/23/2023 10:14 PM
+i'm getting a pretty solid 40fps
+[yolofant]
+yolofant 01/23/2023 10:14 PM
+    root@LGwebOSTV:/tmp# LD_LIBRARY_PATH=. ./es2gears
+    EGL_VERSION = 1.4 Bifrost-"r28p0-01eac0"
+    egl_unified_query 94 : status 0
+    egl_unified_query 94 : status 0
+    vertex shader info:
+    fragment shader info:
+    info:
+    161 frames in 5.0 seconds = 32.116 FPS
+    167 frames in 5.0 seconds = 33.393 FPS
+    167 frames in 5.0 seconds = 33.274 FPS
+    167 frames in 5.0 seconds = 33.400 FPS
+    167 frames in 5.0 seconds = 33.267 FPS
+    167 frames in 5.0 seconds = 33.400 FPS
+    167 frames in 5.0 seconds = 33.267 FPS
+[smx2460]
+smx2460 01/23/2023 10:14 PM
+i'll use the one you pointed
+01/23/2023 10:14 PM
+okokok
+01/23/2023 10:14 PM
+do you then need a customized launcher?
+hellobox. 01/23/2023 10:14 PM
+need to registerApp
+[infowski]
+[] smx2460 i'm lazy, i'll just copy the hyperion code
+infowski 01/23/2023 10:14 PM
+That won't work - service doesn't actually use that
+[smx2460]
+smx2460 01/23/2023 10:14 PM
+but
+hellobox. 01/23/2023 10:14 PM
+for a second
+01/23/2023 10:14 PM
+works on rtk webos 6 (edited)
+[infowski]
+infowski 01/23/2023 10:14 PM
+haha gears go brrrrrrr
+[image.png]
+ image.png
+4.79 KB External
+[smx2460]
+smx2460 01/23/2023 10:14 PM
+https://github.com/webosbrew/hyperion-webos/blob/main/src/service.c
+hyperion-webos/service.c at main · webosbrew/hyperion-webos
+hyperion.ng video grabber for webOS. Contribute to
+webosbrew/hyperion-webos development by creating an account on GitHub.
+[]
+[yolofant]
+yolofant 01/23/2023 10:13 PM
+I see gears for like 2 seconds
+[smx2460]
+smx2460 01/23/2023 10:13 PM
+i'm lazy, i'll just copy the hyperion code (edited)
+[infowski]
+infowski 01/23/2023 10:13 PM
+@Smx tbh use this →
+https://www.webosose.org/docs/reference/luna-service2-library/luna-service2-library-api-reference/
+luna-service2 Library API Reference
+API Summary Luna-service2 (LS2) provides a bus-based IPC mechanism used
+between components in webOS. It is composed of: Client library: Provides
+APIs to register a service on the Luna bus. Also, provides APIs for
+services to communicate with other components. Central hub daemon:
+Provides a central clearing house for all communication. It includ...
+[]
+[yolofant]
+yolofant 01/23/2023 10:13 PM
+same
+[smx2460]
+smx2460 01/23/2023 10:13 PM
+i can do a uber hack of loading luna2 at runtime lol
+hellobox. 01/23/2023 10:13 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# ./es2gears
+    EGL_VERSION = 1.4 Bifrost-"r17p0-01rel0"
+    vertex shader info:
+    fragment shader info:
+    info:
+    148 frames in 5.0 seconds = 29.565 FPS
+    200 frames in 5.0 seconds = 40.000 FPS
+[smx2460]
+smx2460 01/23/2023 10:13 PM
+lemme find it
+01/23/2023 10:13 PM
+hyperion
+01/23/2023 10:13 PM
+can you give me the URL again?
+[infowski]
+infowski 01/23/2023 10:13 PM
+that's because of missing luna code.
+[smx2460]
+smx2460 01/23/2023 10:13 PM
+let me add the luna2 code?
+[infowski]
+infowski 01/23/2023 10:13 PM
+at least when running as root, on webOS 5.x
+[smx2460]
+smx2460 01/23/2023 10:13 PM
+ok
+01/23/2023 10:13 PM
+[infowski]
+infowski 01/23/2023 10:13 PM
+but then the window closes.
+01/23/2023 10:13 PM
+holy shit it works for a second
+[yolofant]
+yolofant 01/23/2023 10:12 PM
+ye sec
+[smx2460]
+smx2460 01/23/2023 10:12 PM
+libffi is not THAT important
+01/23/2023 10:12 PM
+LD_LIBRARY_PATH=$PWD
+01/23/2023 10:12 PM
+and use
+01/23/2023 10:12 PM
+just put the one you sent me next to the binary
+01/23/2023 10:12 PM
+oh well
+[yolofant]
+yolofant 01/23/2023 10:12 PM
+yeah probably shouldn't have used the libraries from the mali builtroot
+[smx2460]
+smx2460 01/23/2023 10:12 PM
+so they updated it
+01/23/2023 10:12 PM
+ffs.
+[yolofant]
+yolofant 01/23/2023 10:12 PM
+ls /usr/lib/libffi* /usr/lib/libffi.so.7 /usr/lib/libffi.so.7.1.0
+[smx2460]
+smx2460 01/23/2023 10:11 PM
+try LD_LIBRARY_PATH ? (edited)
+01/23/2023 10:11 PM
+i used yours
+[yolofant]
+yolofant 01/23/2023 10:11 PM
+that's weird
+01/23/2023 10:11 PM
+./es2gears: error while loading shared libraries: libffi.so.6: cannot
+open shared object file: No such file or directory
+[smx2460]
+smx2460 01/23/2023 10:11 PM
+unless you do actually have libwayland-egl.so (edited)
+01/23/2023 10:11 PM
+i don't think it will even load on RTK
+01/23/2023 10:10 PM
+especially on Realtek
+01/23/2023 10:10 PM
+i DO expect crashes 
+01/23/2023 10:10 PM
+(no content)
+ es2gears
+37.9 KB External
+[infowski]
+infowski 01/23/2023 10:10 PM
+gibe binary, let's see how hilariously does it crash
+ 1
+01/23/2023 10:10 PM
+eglut
+[smx2460]
+smx2460 01/23/2023 10:09 PM
+    #!/usr/bin/env bash
+    set -e
+    HOST=arm-webos-linux-gnueabi
+    AR=${HOST}-ar
+    CC=${HOST}-gcc
+    LD=${HOST}-ld
+    TOP=/mnt/ExtData/mesa-demos
+    EGLUT=${TOP}/src/egl/eglut
+    LG=${TOP}/lg
+    $CC \
+        -I${EGLUT} -I${LG}/include \
+        ${EGLUT}/eglut.c \
+        ${EGLUT}/eglut_wayland.c \
+        es2gears.c \
+        glibc_wrap.c glibc_wrap.lds \
+        -lEGL -lGLESv2 \
+        -L${LG}/lib -lwayland-client -lwayland-egl \
+        -lffi -lm
+01/23/2023 10:09 PM
+    #include <fcntl.h>
+    int __wrap_fcntl(int fd, int cmd, int arg){
+        return fcntl(fd, cmd, arg);
+    }
+01/23/2023 10:09 PM
+and a dummy function to pull it in
+[infowski]
+infowski 01/23/2023 10:09 PM
+lol
+[smx2460]
+smx2460 01/23/2023 10:09 PM
+    "fcntl@GLIBC_2.28" = "fcntl";
+01/23/2023 10:09 PM
+solved it with a linker script
+[yolofant]
+yolofant 01/23/2023 10:02 PM
+I've used it to avoid compiling stub libraries
+[infowski]
+infowski 01/23/2023 10:01 PM
+or rather ...-in-shared-libs
+[yolofant]
+yolofant 01/23/2023 10:01 PM
+yeah that works
+[infowski]
+infowski 01/23/2023 10:01 PM
+dirty, but... should work 
+01/23/2023 10:01 PM
+-Wl,--unresolved-symbols=ignore-in-object-files isn't that the solution?
+[smx2460]
+smx2460 01/23/2023 9:58 PM
+    $ nm -D /mnt/ExtData/arm-webos-linux-gnueabi_sdk-buildroot/arm-webos-linux-gnueabi/sysroot/lib/libc.so.6 | grep fcntl
+    000b7ef4 W __fcntl@@GLIBC_2.4
+    000b7ef4 W fcntl@@GLIBC_2.4
+hellobox. 01/23/2023 9:57 PM
+probably irrelevant here
+01/23/2023 9:56 PM
+sometimes they change semantics though
+[yolofant]
+yolofant 01/23/2023 9:56 PM
+yeah it shouldn't change
+[smx2460]
+smx2460 01/23/2023 9:56 PM
+as fnctl() prototype is defined by POSIX.1-2001
+01/23/2023 9:55 PM
+it's just done "for safety"
+01/23/2023 9:55 PM
+i'm not even sure it changes signature
+01/23/2023 9:55 PM
+https://stackoverflow.com/a/8862631
+Linking against older symbol version in a .so file
+Using gcc and ld on x86_64 linux I need to link against a newer version
+of a library (glibc 2.14) but the executable needs to run on a system
+with an older version (2.5). Since the only incompatible
+[]
+01/23/2023 9:54 PM
+could try that
+01/23/2023 9:54 PM
+hm right
+hellobox. 01/23/2023 9:54 PM
+there's patchelf
+01/23/2023 9:54 PM
+ugh
+[smx2460]
+smx2460 01/23/2023 9:54 PM
+anyone knows of a linker trick to force it to use the older one?
+[yolofant]
+yolofant 01/23/2023 9:53 PM
+:/
+[smx2460]
+smx2460 01/23/2023 9:53 PM
+hmpf
+01/23/2023 9:53 PM
+only this error now
+01/23/2023 9:53 PM
+    /mnt/ExtData/arm-webos-linux-gnueabi_sdk-buildroot/bin/../lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/mesa-demos/lg/lib/libwayland-client.so: undefined reference to `fcntl@GLIBC_2.28'
+[yolofant]
+yolofant 01/23/2023 9:53 PM
+hellobox. 01/23/2023 9:53 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# eu-nm -D /usr/lib/libwayland-egl.so.1.0.0
+    Symbols from /usr/lib/libwayland-egl.so.1.0.0:
+    Name                        Value    Class  Type     Size     Line Section
+    _ITM_deregisterTMCloneTable|        |WEAK  |NOTYPE  |        |    |UNDEF
+    _ITM_registerTMCloneTable  |        |WEAK  |NOTYPE  |        |    |UNDEF
+    __aeabi_unwind_cpp_pr0     |        |GLOBAL|FUNC    |        |    |UNDEF
+    __aeabi_unwind_cpp_pr1     |        |GLOBAL|FUNC    |        |    |UNDEF
+    __bss_start                |00002028|GLOBAL|NOTYPE  |00000000|    |.fini_array
+    __cxa_finalize             |        |WEAK  |FUNC    |        |    |UNDEF
+    __gmon_start__             |        |WEAK  |NOTYPE  |        |    |UNDEF
+    _edata                     |00002028|GLOBAL|NOTYPE  |00000000|    |.fini_array
+    _end                       |00002029|GLOBAL|NOTYPE  |00000000|    |.fini_array
+[smx2460]
+smx2460 01/23/2023 9:53 PM
+i was implying i should be using that
+01/23/2023 9:53 PM
+yeah seen
+[yolofant]
+yolofant 01/23/2023 9:53 PM
+I posted it above
+[smx2460]
+smx2460 01/23/2023 9:53 PM
+let's copy that too
+01/23/2023 9:53 PM
+yeah i also need your libffi as the one from buildroot is not compatible
+01/23/2023 9:52 PM
+    $ nm -D libwayland-egl.so
+             U __aeabi_unwind_cpp_pr0@GCC_3.5
+             U __aeabi_unwind_cpp_pr1@GCC_3.5
+    00002038 D __bss_start
+             w __cxa_finalize@GLIBC_2.4
+    00002038 D _edata
+    00002039 D _end
+             U free@GLIBC_2.4
+             w __gmon_start__
+             w _ITM_deregisterTMCloneTable
+             w _ITM_registerTMCloneTable
+             U malloc@GLIBC_2.4
+             U memset@GLIBC_2.4
+    00000699 T wl_egl_window_create
+    000006d1 T wl_egl_window_destroy
+    000006e1 T wl_egl_window_get_attached_size
+    00000685 T wl_egl_window_resize
+hellobox. 01/23/2023 9:52 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# ls -l  /usr/lib/libwayland-egl.so.1.0.0
+    -rwxr-xr-x    1 root     root          8496 Dec 13 22:30 /usr/lib/libwayland-egl.so.1.0.0
+[yolofant]
+yolofant 01/23/2023 9:51 PM
+fgrep -e 'wl_egl_window_create' *.so  INT ✘  21:49:18  Binary file
+libQt5WaylandClient.so matches Binary file libwayland-egl.so matches
+hellobox. 01/23/2023 9:51 PM
+my libwayland-egl has very little in it
+[yolofant]
+yolofant 01/23/2023 9:51 PM
+it might also just be the mali toolchain
+[smx2460]
+smx2460 01/23/2023 9:51 PM
+gorgeous (edited)
+01/23/2023 9:51 PM
+different implementation between Realtek and LX
+01/23/2023 9:50 PM
+heh
+01/23/2023 9:50 PM
+but loads the original library in the CTOR
+[yolofant]
+yolofant 01/23/2023 9:50 PM
+(no content)
+ libwayland-egl.so.0.1
+5.51 KB External
+ 1
+[smx2460]
+smx2460 01/23/2023 9:50 PM
+that exports the same symbols
+01/23/2023 9:50 PM
+maybe i could get away by making a shim
+[yolofant]
+yolofant 01/23/2023 9:50 PM
+it's not in libmali for me
+01/23/2023 9:50 PM
+umm
+[smx2460]
+smx2460 01/23/2023 9:50 PM
+just 2 (edited)
+hellobox. 01/23/2023 9:50 PM
+use libmali from webos 6?
+[smx2460]
+smx2460 01/23/2023 9:50 PM
+it's not many symbols
+01/23/2023 9:50 PM
+    /mnt/ExtData/arm-webos-linux-gnueabi_sdk-buildroot/bin/../lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: warning: libffi.so.6, needed by /mnt/ExtData/mesa-demos/lg/lib/libwayland-client.so, not found (try using -rpath or -rpath-link)
+    /mnt/ExtData/arm-webos-linux-gnueabi_sdk-buildroot/bin/../lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /tmp/ccSPbXLS.o: in function `_eglutNativeInitWindow':
+    eglut_wayland.c:(.text+0x760): undefined reference to `wl_egl_window_create'
+    /mnt/ExtData/arm-webos-linux-gnueabi_sdk-buildroot/bin/../lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /tmp/ccSPbXLS.o: in function `_eglutNativeFiniWindow':
+    eglut_wayland.c:(.text+0x7c8): undefined reference to `wl_egl_window_destroy'
+    /mnt/ExtData/arm-webos-linux-gnueabi_sdk-buildroot/bin/../lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/mesa-demos/lg/lib/libwayland-client.so: undefined reference to `fcntl@GLIBC_2.28'
+    collect2: error: ld returned 1 exit status
+01/23/2023 9:49 PM
+i think i did this last time too
+01/23/2023 9:49 PM
+i'll have to change the code to load it dynamically
+01/23/2023 9:49 PM
+we can't link libmali without breaking glibc ABI
+01/23/2023 9:49 PM
+goddamnit
+01/23/2023 9:49 PM
+    /mnt/ExtData/arm-webos-linux-gnueabi_sdk-buildroot/bin/../lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/mesa-demos/lg/lib/libmali.so: undefined reference to `log2@GLIBC_2.29'
+hellobox. 01/23/2023 9:48 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# eu-readelf -a /usr/lib/libmali.so| fgrep wl_egl
+      576: 001c47a1    100 FUNC    GLOBAL DEFAULT       12 wl_egl_window_resize
+     1024: 001c4681    108 FUNC    GLOBAL DEFAULT       12 wl_egl_window_create
+     1058: 001c4781      8 FUNC    GLOBAL DEFAULT       12 wl_egl_window_destroy
+     1306: 001c4821     48 FUNC    GLOBAL DEFAULT       12 wl_egl_window_get_attached_size
+     1328: 001c4741     46 FUNC    GLOBAL DEFAULT       12 wl_egl_window_release
+     1682: 001c4701     50 FUNC    GLOBAL DEFAULT       12 wl_egl_window_retain
+      [  d1fd]  wl_egl_window_get_attached_size
+      [  d21d]  wl_egl_window_resize
+      [  d232]  wl_egl_window_destroy
+      [  d248]  wl_egl_window_release
+      [  d25e]  wl_egl_window_retain
+      [  d273]  wl_egl_window_create
+[smx2460]
+smx2460 01/23/2023 9:48 PM
+as long as it has the symbol
+01/23/2023 9:48 PM
+should be good enough, it's just a hint for loading it at runtime
+anyways
+01/23/2023 9:48 PM
+have libmali.so.0.28.0 from @Yolofant
+[infowski]
+infowski 01/23/2023 9:48 PM
+fuckin hell
+[smx2460]
+smx2460 01/23/2023 9:48 PM
+xD
+01/23/2023 9:48 PM
+see @infowski ?
+01/23/2023 9:48 PM
+ah.
+hellobox. 01/23/2023 9:47 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# fgrep -e 'wl_egl_window_create' /usr/lib/libmali.so
+    wl_egl_window_create
+[yolofant]
+yolofant 01/23/2023 9:47 PM
+(no content)
+ libffi.so.6.0.4
+21.31 KB External
+[smx2460]
+smx2460 01/23/2023 9:47 PM
+do a little grep on *wayland*.so please
+01/23/2023 9:47 PM
+not sure where this is from
+01/23/2023 9:46 PM
+    eglut_wayland.c:(.text+0x760): undefined reference to `wl_egl_window_create'
+01/23/2023 9:46 PM
+yeah
+01/23/2023 9:46 PM
+maybe i can link it against the buildroot one, hold on
+01/23/2023 9:46 PM
+hm
+01/23/2023 9:46 PM
+    /mnt/ExtData/arm-webos-linux-gnueabi_sdk-buildroot/bin/../lib/gcc/arm-webos-linux-gnueabi/12.2.0/../../../../arm-webos-linux-gnueabi/bin/ld: /mnt/ExtData/mesa-demos/lg/lib/libwayland-client.so: undefined reference to `ffi_type_pointer'
+01/23/2023 9:46 PM
+@Yolofant need libffi too
+[yolofant]
+yolofant 01/23/2023 9:45 PM
+/* Generated by wayland-scanner 1.11.0 */
+[infowski]
+infowski 01/23/2023 9:45 PM
+I thought it had a pretty stable ABI, heh.
+[smx2460]
+smx2460 01/23/2023 9:45 PM
+as long as you don't break the ABI, yes
+[infowski]
+infowski 01/23/2023 9:44 PM
+EGL uses libwayland-client, sure, but libwayland-client can be
+completely separate, can't it?
+[smx2460]
+smx2460 01/23/2023 9:44 PM
+if you upgrade wayland to some incompatible version, you break EGL
+01/23/2023 9:44 PM
+you can't consider EGL without wayland
+[infowski]
+infowski 01/23/2023 9:44 PM
+isn't wayland-client just wayland protocol client?
+[smx2460]
+smx2460 01/23/2023 9:44 PM
+that they are all bound together
+01/23/2023 9:44 PM
+what i am saying is
+01/23/2023 9:44 PM
+well yeah
+[infowski]
+infowski 01/23/2023 9:44 PM
+but that's different to wayland-client
+[smx2460]
+smx2460 01/23/2023 9:44 PM
+or something similar
+01/23/2023 9:44 PM
+you will see it has wsegl_waylandegl.so (edited)
+01/23/2023 9:43 PM
+and for example on PowerVR
+01/23/2023 9:43 PM
+the EGL implementation uses wayland
+01/23/2023 9:43 PM
+i totally do
+[infowski]
+[] smx2460 technically EGL/GLES/wayland* are all part of the GPU blobs
+infowski 01/23/2023 9:43 PM
+wait, wayland-client too? I don't think so 
+[yolofant]
+yolofant 01/23/2023 9:43 PM
+that file is actually from 2019 
+[smx2460]
+smx2460 01/23/2023 9:43 PM
+wayland is a bit more complicated due to not having the same uniform
+APIs
+01/23/2023 9:43 PM
+but while EGL/GLES can be stubbed from the Raspberry PI GPU
+01/23/2023 9:42 PM
+technically EGL/GLES/wayland* are all part of the GPU blobs
+[yolofant]
+yolofant 01/23/2023 9:42 PM
+(no content)
+ libwayland-client.so.0.3.0
+33.68 KB External
+[smx2460]
+smx2460 01/23/2023 9:42 PM
+i think so, yes
+[yolofant]
+yolofant 01/23/2023 9:42 PM
+only libwayland-client?
+[smx2460]
+smx2460 01/23/2023 9:42 PM
+to link against it
+01/23/2023 9:41 PM
+i need the .so too
+[yolofant]
+yolofant 01/23/2023 9:41 PM
+wayland-webos*
+01/23/2023 9:41 PM
+because it had more wayland files
+01/23/2023 9:41 PM
+that's from the mali source
+[smx2460]
+smx2460 01/23/2023 9:41 PM
+seems to be fine
+[yolofant]
+yolofant 01/23/2023 9:40 PM
+so I just zipped wayland*
+[smx2460]
+smx2460 01/23/2023 9:40 PM
+will copy them and see what happens
+01/23/2023 9:40 PM
+yeah yeah
+[yolofant]
+yolofant 01/23/2023 9:40 PM
+wayland-client.h just pulls in more headers
+[smx2460]
+smx2460 01/23/2023 9:40 PM
+thanks 
+[yolofant]
+yolofant 01/23/2023 9:40 PM
+it might be missing some
+01/23/2023 9:39 PM
+(no content)
+ wayland.zip
+126.72 KB External
+ 1
+[smx2460]
+smx2460 01/23/2023 9:39 PM
+"if you sell this software or use it as part of a product, you must
+release sources" lol (edited)
+01/23/2023 9:39 PM
+or maybe a clause
+01/23/2023 9:38 PM
+vendors shouldn't have this level of freedom
+01/23/2023 9:38 PM
+this is one of those cases where i actually think the GPL is nice
+01/23/2023 9:38 PM
+they do 
+hellobox. 01/23/2023 9:38 PM
+because it was huge
+[smx2460]
+smx2460 01/23/2023 9:38 PM
+but since Wayland is not copyleft
+hellobox. 01/23/2023 9:38 PM
+i think the only thing i removed was boost
+[smx2460]
+smx2460 01/23/2023 9:38 PM
+and surely LG updates it from time to time
+01/23/2023 9:37 PM
+i mean it's surely different from WebOS1 
+[] smx2460 > include-stripped.zip ?
+hellobox. 01/23/2023 9:37 PM
+probably
+hellobox. 01/23/2023 9:37 PM
+replied to wrong message
+[yolofant]
+yolofant 01/23/2023 9:37 PM
+let me just diff the ones I have to see if they are the same
+hellobox. 01/23/2023 9:37 PM
+oops
+01/23/2023 9:37 PM
+should be in there
+[] yolofant not sure if it's any different
+hellobox. 01/23/2023 9:37 PM
+probably
+[smx2460]
+smx2460 01/23/2023 9:37 PM
+since he also has o22
+[smx2460]
+[] yolofant I can send the webos 7 one
+smx2460 01/23/2023 9:37 PM
+do that
+[smx2460]
+smx2460 01/23/2023 9:37 PM
+> include-stripped.zip ?
+[yolofant]
+yolofant 01/23/2023 9:37 PM
+not sure if it's any different
+01/23/2023 9:37 PM
+I can send the webos 7 one
+01/23/2023 9:36 PM
+./gstreamer_172926_173016_173026/target_sysroot_dependencies/usr/include/wayland-client.h
+./webos22_sic_o22_opensource/GPL_2.0/target_sysroot/usr/include/wayland-client.h
+./maliit-framework-webos-1.1.0-86/lib32-recipe-sysroot/usr/include/wayland-client.h
+./connman/target_sysroot/usr/include/wayland-client.h
+hellobox. 01/23/2023 9:36 PM
+already did
+[smx2460]
+smx2460 01/23/2023 9:36 PM
+cool, send me
+[yolofant]
+yolofant 01/23/2023 9:36 PM
+you can find it in the toolchain
+hellobox. 01/23/2023 9:36 PM
+idk, but i have the wayland headers for webos5/6
+[yolofant]
+yolofant 01/23/2023 9:36 PM
+hmm
+[smx2460]
+smx2460 01/23/2023 9:36 PM
+and i had to guess + diff binary builds
+01/23/2023 9:36 PM
+we couldn't when we tried in WebOS1
+01/23/2023 9:36 PM
+@hellobox can you find some cluses in wayland libraries about versions?
+01/23/2023 9:35 PM
+but in WebOS1 we had to guess
+01/23/2023 9:35 PM
+the closest to the LG wayland, the better
+01/23/2023 9:35 PM
+and we need to be careful with what version we pull in
+[smx2460]
+hellobox. why don't you just use `wayland-client.h`?
+smx2460 01/23/2023 9:35 PM
+it's not included in br-nc4
+[smx2460]
+smx2460 01/23/2023 9:34 PM
+it only needs a few symbols from it (edited)
+hellobox. 01/23/2023 9:34 PM
+why don't you just use wayland-client.h?
+[smx2460]
+smx2460 01/23/2023 9:34 PM
+buuuut
+01/23/2023 9:34 PM
+and using GBM only
+01/23/2023 9:34 PM
+last time i had worked around this by not using it
+01/23/2023 9:34 PM
+we don't really know what version of wayland to use
+[yolofant]
+yolofant 01/23/2023 9:34 PM
+@Craig undefine HAVE_LINUX_UDMABUF
+[smx2460]
+smx2460 01/23/2023 9:34 PM
+right, this is an issue
+01/23/2023 9:34 PM
+    /mnt/ExtData/mesa-demos/src/egl/eglut/eglut_wayland.c:1:10: fatal error: wayland-client.h: File o directory non esistente
+        1 | #include <wayland-client.h>
+          |          ^~~~~~~~~~~~~~~~~~
+    compilation terminated.
+Deleted User 01/23/2023 9:32 PM
+actually this is offtopic for this channel
+01/23/2023 9:32 PM
+oh nvm its 3.9
+01/23/2023 9:30 PM
+why would a webos 3.5 tv have ssh stop working on it?
+[smx2460]
+smx2460 01/23/2023 9:30 PM
+and that's likely what i did last time lol
+01/23/2023 9:30 PM
+it's quicker
+01/23/2023 9:30 PM
+actually i think i'll just use gcc
+01/23/2023 9:29 PM
+patching..
+01/23/2023 9:29 PM
+    set (targets
+        es2_info
+        es2tri
+    )
+    if (X11_FOUND)
+        foreach (target ${targets})
+            add_executable (${target} ${target}.c)
+            target_link_libraries (${target} ${EGL_LIBRARIES} ${GLESV2_LIBRARIES} ${X11_X11_LIB})
+            install (TARGETS ${target} DESTINATION ${subdir})
+        endforeach (target)
+    endif ()
+01/23/2023 9:28 PM
+and i had to remove it
+01/23/2023 9:28 PM
+because for some stupid reason the egl demo doesn't build without X11
+01/23/2023 9:28 PM
+and i also remember this
+01/23/2023 9:28 PM
+now make in the egl directory does nothing
+01/23/2023 9:28 PM
+i'm retracing my steps
+hellobox. 01/23/2023 9:27 PM
+i was going to try es2gears once i'm done what i'm working on
+01/23/2023 9:27 PM
+here's eglinfo
+https://gitlab.freedesktop.org/mesa/demos/-/tree/main/src/egl/opengl
+[smx2460]
+smx2460 01/23/2023 9:27 PM
+we were trying this last time, weren't we? (edited)
+[smx2460]
+hellobox.
+<https://gitlab.freedesktop.org/mesa/demos/-/tree/main/src/egl/opengles2>
+smx2460 01/23/2023 9:27 PM
+ah yeah
+[smx2460]
+[] infowski Can't you use something like `eglgears` or whatever was the
+tool name?
+smx2460 01/23/2023 9:27 PM
+hm.
+hellobox. 01/23/2023 9:27 PM
+https://gitlab.freedesktop.org/mesa/demos/-/tree/main/src/egl/opengles2
+[smx2460]
+smx2460 01/23/2023 9:27 PM
+commented these for now
+01/23/2023 9:27 PM
+    #find_package (OpenGL REQUIRED)
+    #find_package (GLUT REQUIRED)
+    #    pkg_check_modules (GLEW REQUIRED glew>=1.5.4)
+Deleted User 01/23/2023 9:26 PM
+so just delete it?
+ 1
+[infowski]
+infowski 01/23/2023 9:26 PM
+I think it was eglut-based
+Deleted User 01/23/2023 9:26 PM
+(no content)
+[image.png]
+ image.png
+8.68 KB External
+[infowski]
+[] smx2460 i think the issue is that glx* uses glx
+infowski 01/23/2023 9:26 PM
+Can't you use something like eglgears or whatever was the tool name?
+[infowski]
+Deleted User i wonder why it keeps complaining about this though `ERROR
+in Conflict: Multiple assets emit differe...
+infowski 01/23/2023 9:26 PM
+you have services.json file somewhere, while that webpack.config.js
+automatically creates that file (edited)
+[smx2460]
+smx2460 01/23/2023 9:26 PM
+hmm don't think i tried it
+hellobox. 01/23/2023 9:24 PM
+does eglut work?
+[smx2460]
+smx2460 01/23/2023 9:24 PM
+and i had to remove the "X" out of it (edited)
+01/23/2023 9:24 PM
+aka X11
+01/23/2023 9:23 PM
+i think the issue is that glx* uses glx
+[yolofant]
+yolofant 01/23/2023 9:23 PM
+only glxinfo
+01/23/2023 9:23 PM
+yeah I have the binaries but we didn't test glxgears
+[smx2460]
+smx2460 01/23/2023 9:23 PM
+the binaries maybe
+[yolofant]
+[] smx2460 i must have lost it
+yolofant 01/23/2023 9:23 PM
+is it maybe in the discord discussion we had some months ago?
+[] infowski (`webostvjs` there is an npm package you need to add too via
+`npm install webostvjs --save`)
+Deleted User 01/23/2023 9:22 PM
+i wonder why it keeps complaining about this though
+ERROR in Conflict: Multiple assets emit different content to the same filename services.json
+[smx2460]
+smx2460 01/23/2023 9:21 PM
+i must have lost it
+01/23/2023 9:21 PM
+but i can't find it
+01/23/2023 9:21 PM
+in mesa3d demos
+01/23/2023 9:21 PM
+there was a patch i had done to disable the dependency on GL/X11
+01/23/2023 9:21 PM
+hmmm
+Deleted User 01/23/2023 9:15 PM
+oh
+[infowski]
+infowski 01/23/2023 9:15 PM
+(webostvjs there is an npm package you need to add too via
+npm install webostvjs --save)
+01/23/2023 9:14 PM
+Oh, that could work too probably.
+Deleted User 01/23/2023 9:14 PM
+im guessing that worked
+[infowski]
+infowski 01/23/2023 9:14 PM
+https://github.com/Informatic/webos-vncserver/blob/main/frontend/App.js#L3
+webos-vncserver/App.js at main · Informatic/webos-vncserver
+An extremely hacky VNC server for WebOS - Works by reading directly from
+the GPU's framebuffer. - webos-vncserver/App.js at main ·
+Informatic/webos-vncserver
+[]
+Deleted User 01/23/2023 9:14 PM
+(no content)
+[image.png]
+ image.png
+6.92 KB External
+[] infowski *or* even better - import it as an npm package, like I do in
+webos-vncserver.
+Deleted User 01/23/2023 9:14 PM
+?
+[image.png]
+ image.png
+7.93 KB External
+[smx2460]
+smx2460 01/23/2023 9:11 PM
+Going to my desktop
+[ccarnell98]
+hellobox. "stock" as in what's on the TV (right?)
+ccarnell98 01/23/2023 9:10 PM
+Yes stock as in whats on the TV 
+[infowski]
+infowski 01/23/2023 9:10 PM
+or even better - import it as an npm package, like I do in
+webos-vncserver.
+[infowski]
+Deleted User wait, how do i get `frontend/webOSTVjs-1.2.4/*` to be
+included
+infowski 01/23/2023 9:09 PM
+you can use CopyPlugin
+[infowski]
+infowski 01/23/2023 9:09 PM
+Also - surprisingly - having a rooted TV makes testing a little bit
+easier, since you can directly launch the app via jailer ie. in an
+actual final runtime jail as-is.
+[ccarnell98]
+ccarnell98 01/23/2023 9:09 PM
+I wasted a lot of time with aarch64 only to find out it was a 32-bit OS
+ 2
+Deleted User 01/23/2023 9:08 PM
+wait, how do i get frontend/webOSTVjs-1.2.4/* to be included
+[ccarnell98]
+ccarnell98 01/23/2023 9:08 PM
+Yes please 
+[smx2460]
+smx2460 01/23/2023 9:08 PM
+If you need help with that, I can provide the binaries
+[ccarnell98]
+ccarnell98 01/23/2023 9:08 PM
+I will do just that 
+[ccarnell98]
+[] smx2460 And start with glxinfo + glxheads
+ccarnell98 01/23/2023 9:08 PM
+I've spent most of my time a) getting a tool chain working b) making
+patches to kodi
+[ccarnell98]
+[] infowski <@1051573528522133655> have you documented build
+setup/patches anywhere?
+ccarnell98 01/23/2023 9:07 PM
+That would be appreciated
+[smx2460]
+smx2460 01/23/2023 9:07 PM
+And start with glxinfo + glxheads
+01/23/2023 9:07 PM
+Build the Mesa3d demos
+01/23/2023 9:07 PM
+If he wants to get anywhere, he needs to put Kodi and Mesa aside
+01/23/2023 9:07 PM
+And he wants to jump to Mesa, opensource drivers, and Kodi
+[ccarnell98]
+ccarnell98 01/23/2023 9:06 PM
+I've documented almost everything from scratch
+[smx2460]
+smx2460 01/23/2023 9:06 PM
+He hasn't even gotten a triangle rendering yet (via glxheads)
+[infowski]
+infowski 01/23/2023 9:06 PM
+I could try helping with luna stuff if you want.
+01/23/2023 9:06 PM
+@Craig have you documented build setup/patches anywhere?
+hellobox. 01/23/2023 9:05 PM
+"stock" as in what's on the TV (right?) (edited)
+[yolofant]
+yolofant 01/23/2023 9:05 PM
+The advice is to not look into mesa any further
+[ccarnell98]
+ccarnell98 01/23/2023 9:05 PM
+I am using the stock EGL 
+[infowski]
+infowski 01/23/2023 9:05 PM
+I think the log message above is already using stock EGL 
+[smx2460]
+smx2460 01/23/2023 9:04 PM
+Good luck
+01/23/2023 9:04 PM
+I'm not gonna help further, it's the third time i tell you to use the
+stock EGL
+[ccarnell98]
+ccarnell98 01/23/2023 9:04 PM
+and with libasound with kodi it cannot find a sound device
+01/23/2023 9:04 PM
+with latest mesa I get libEGL warning: MESA-LOADER: failed to open
+swrast: /usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.29' not found
+[smx2460]
+[] yolofant at least it doesn't fail instantly talking to egl
+smx2460 01/23/2023 9:04 PM
+    RetroPlayer[RENDER]: Registering renderer factory for DMA
+    2023-01-23 19:43:41.558 T:15372    info <general>: RetroPlayer[RENDER]: Registering renderer factory for OpenGLES
+    2023-01-23 19:43:41.558 T:15372   debug <general>: CUDMABufferObject::Register - unable to open /dev/udmabuf: No such file or directory
+[ccarnell98]
+ccarnell98 01/23/2023 9:03 PM
+That is using stock EGL/GLES and libasound
+[yolofant]
+yolofant 01/23/2023 9:03 PM
+so it might in fact be only missing the registerNativeApp call
+[infowski]
+infowski 01/23/2023 9:03 PM
+yeah, looks promising 
+[yolofant]
+yolofant 01/23/2023 9:02 PM
+at least it doesn't fail instantly talking to egl
+01/23/2023 9:02 PM
+hmm doesn't look that bad
+[] infowski <@456226577798135808>
+<https://gist.github.com/398190b4db1606fc814a427df7f71f51> missed these
+two in...
+Deleted User 01/23/2023 9:02 PM
+(no content)
+[image.png]
+ image.png
+6.94 KB External
+[ccarnell98]
+ccarnell98 01/23/2023 9:01 PM
+This is my current kodi.log: https://pastebin.com/UQs0m7HQ
+2023-01-23 19:43:41.283 T:15372 info : -------------------------...
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[smx2460]
+smx2460 01/23/2023 9:01 PM
+Both had Mali GPUs, but it was behaving differently
+01/23/2023 9:01 PM
+When debugging Mali EGL with glxinfo
+01/23/2023 9:00 PM
+That's what @hellobox and @Yolofant did
+01/23/2023 9:00 PM
+And check the EGL error codes in case
+01/23/2023 9:00 PM
+That's why you should use a simple application where you can easily see
+what's going on
+01/23/2023 8:59 PM
+Either using something not implemented or broken
+01/23/2023 8:59 PM
+If you use the stock EGL, you know it's the application doing it wrong
+at least
+hellobox. 01/23/2023 8:59 PM
+indeed
+[smx2460]
+smx2460 01/23/2023 8:58 PM
+Or the application code
+01/23/2023 8:58 PM
+Or Mesa
+01/23/2023 8:58 PM
+As we can't really know if it's the kernel at fault
+01/23/2023 8:58 PM
+And if it doesn't work, you're largely on your own
+01/23/2023 8:58 PM
+It looks like a big masochist move to use Mesa, imo
+01/23/2023 8:58 PM
+Is the LG kernel even using a compatible interface?
+[ccarnell98]
+ccarnell98 01/23/2023 8:57 PM
+That is something is also on my TODO list.. possibly the kernel is too
+old
+[smx2460]
+smx2460 01/23/2023 8:57 PM
+Like
+01/23/2023 8:57 PM
+But how does it talk to the kernel side
+[ccarnell98]
+hellobox. how were you going to use a stock mesa?
+ccarnell98 01/23/2023 8:57 PM
+stock mesa has drivers for the mali GPU. However it is software for 2D
+(swrast_dri), but 3D acceleration using bitfrost.
+[smx2460]
+smx2460 01/23/2023 8:56 PM
+But it's much easier to test and debug
+[infowski]
+infowski 01/23/2023 8:56 PM
+@Deleted User https://gist.github.com/398190b4db1606fc814a427df7f71f51
+missed these two in service config, I'll commit that to the repo in a
+minute... (edited)
+[smx2460]
+smx2460 01/23/2023 8:56 PM
+There's no point continuing if glxgears doesn't work (edited)
+01/23/2023 8:56 PM
+Versus using huge kodi
+01/23/2023 8:55 PM
+I'd do it first
+[ccarnell98]
+[] smx2460 Have you tried glxinfo or glxgears first?
+ccarnell98 01/23/2023 8:55 PM
+That is on my TO DO list
+[smx2460]
+smx2460 01/23/2023 8:55 PM
+Because the only other alternative is swraster lol
+[smx2460]
+hellobox. how were you going to use a stock mesa?
+smx2460 01/23/2023 8:55 PM
+He planned to use bifrost i think, or how it was called
+[ccarnell98]
+ccarnell98 01/23/2023 8:55 PM
+It all requires different combinations of libraries already installed on
+the TV along with wayland libraries that come with kodi
+[smx2460]
+[] ccarnell98 The other plan was to compile mesa, but I got stuck with a
+stupid linking issue
+smx2460 01/23/2023 8:55 PM
+Have you tried glxinfo or glxgears first?
+hellobox. 01/23/2023 8:55 PM
+how were you going to use a stock mesa?
+[yolofant]
+[] ccarnell98 The other plan was to compile mesa, but I got stuck with a
+stupid linking issue
+yolofant 01/23/2023 8:55 PM
+we don't have gallium drivers for the tv
+[yolofant]
+hellobox. and i killed it
+yolofant 01/23/2023 8:54 PM
+abort mission
+[ccarnell98]
+ccarnell98 01/23/2023 8:54 PM
+The other plan was to compile mesa, but I got stuck with a stupid
+linking issue
+hellobox. 01/23/2023 8:54 PM
+and i killed it
+[infowski]
+infowski 01/23/2023 8:54 PM
+or engine
+[] yolofant decompiling 100mb libcbe <a:aPES_Sleep:513527329738194954>
+hellobox. 01/23/2023 8:54 PM
+i tried to use FLIRT on it; it ran over 24 hours
+[ccarnell98]
+ccarnell98 01/23/2023 8:54 PM
+@Yolofant I had two plans for this. One is to use the built in mesa
+(libEGL/libGLES) ? which works with libmali. This is the one I'm
+currently using.
+[infowski]
+infowski 01/23/2023 8:54 PM
+common browser environment? 
+[smx2460]
+smx2460 01/23/2023 8:54 PM
+Convoluted Base Environment 
+[yolofant]
+yolofant 01/23/2023 8:54 PM
+    ./rootfs.pak.unsquashfs/usr/lib/libSDL2-2.0.so.0.14.0
+    luna://com.webos.applicationManager/registerNativeApp
+    ./rootfs.pak.unsquashfs/usr/lib/libcbe.so
+    palm://com.webos.applicationManager/registerNativeApp
+    ./rootfs.pak.unsquashfs/usr/lib/libginga-cbe.so
+    palm://com.webos.applicationManager/registerNativeApp
+hellobox. 01/23/2023 8:54 PM
+it's chromium (edited)
+[yolofant]
+yolofant 01/23/2023 8:53 PM
+no idea
+[smx2460]
+smx2460 01/23/2023 8:53 PM
+What's even "cbe" for
+[yolofant]
+yolofant 01/23/2023 8:53 PM
+decompiling 100mb libcbe [:aPES_Sleep:]
+[smx2460]
+smx2460 01/23/2023 8:53 PM
+So it would work only when using the LG SDL .so
+[yolofant]
+yolofant 01/23/2023 8:53 PM
+there's also some references in libcbe, I'm checking those rn
+[smx2460]
+smx2460 01/23/2023 8:53 PM
+I guess not
+01/23/2023 8:53 PM
+In br-nc4?
+01/23/2023 8:52 PM
+Wait do we have that as a patch to SDL?
+[yolofant]
+yolofant 01/23/2023 8:52 PM
+and they also check if SDL was initialized before
+[smx2460]
+smx2460 01/23/2023 8:52 PM
+Lol
+[yolofant]
+yolofant 01/23/2023 8:52 PM
+it's not
+[smx2460]
+smx2460 01/23/2023 8:52 PM
+He could just call that if so
+[smx2460]
+[] yolofant ye that's from SDL
+smx2460 01/23/2023 8:52 PM
+Uhhm is it exported?
+[yolofant]
+yolofant 01/23/2023 8:52 PM
+@Craig did you fix the mesa stuff eventually?
+[infowski]
+infowski 01/23/2023 8:51 PM
+@Deleted User Hmmm, I think there's indeed something wrong. Let me try
+playing with this for a minute.
+Deleted User 01/23/2023 8:50 PM
+and in frontend config i commented out the index.js
+hellobox. 01/23/2023 8:50 PM
+https://www.webosose.org/docs/tutorials/native-apps/developing-built-in-native-apps/
+Deleted User 01/23/2023 8:50 PM
+in the service config, its  service: './service/inputhook_service.js',
+01/23/2023 8:49 PM
+i changed 2 lines
+[infowski]
+infowski 01/23/2023 8:49 PM
+aren't you trying to build the service using frontend config?
+[infowski]
+Deleted User Click to see attachment
+infowski 01/23/2023 8:49 PM
+You broke the config somehow. 
+hellobox. 01/23/2023 8:48 PM
+https://github.com/webosose/samples/blob/master/native-services/built-in/com.example.service.native/main.cpp
+Deleted User 01/23/2023 8:48 PM
+(no content)
+[image.png]
+ image.png
+47.65 KB External
+[infowski]
+[] infowski and also need to drop the wrapper script, since it
+*probably* breaks luna permissions.
+infowski 01/23/2023 8:47 PM
+Another potential minor obstacle: webOS puts launch params JSON in
+argv[1] (kinda like this:
+{"@system_native_app":true,"nid":"org.mariotaku.ihsplay"}) - you can
+safely ignore it for now, but kodi may be angry about getting some
+random JSON on argv
+[yolofant]
+hellobox. what are they looking at to choose which one?
+yolofant 01/23/2023 8:47 PM
+not sure need to dig deeper
+hellobox. 01/23/2023 8:46 PM
+and avoid having to use pthreads directly (edited)
+01/23/2023 8:46 PM
+you can probably start the thread with a glib function too
+[infowski]
+infowski 01/23/2023 8:46 PM
+I am pretty sure you can.
+hellobox. 01/23/2023 8:45 PM
+can you put the glib main loop on a separate thread?
+[yolofant]
+yolofant 01/23/2023 8:45 PM
+ye that's from SDL
+[infowski]
+infowski 01/23/2023 8:45 PM
+Forgot about it.
+01/23/2023 8:44 PM
+i like APPID getenv lookup
+[infowski]
+[] yolofant hmm SDL either calls registerApp or registerNativeApp
+infowski 01/23/2023 8:44 PM
+btw is that sdl by any chance?
+[infowski]
+infowski 01/23/2023 8:44 PM
+probably even more 
+hellobox. 01/23/2023 8:44 PM
+sounds like a similar amount of trouble to just using luna
+[smx2460]
+smx2460 01/23/2023 8:43 PM
+Provided you use execv+exec
+01/23/2023 8:43 PM
+This will allow you to jump to shell while retaining the exe name, do
+something, and jump to Kodi
+01/23/2023 8:43 PM
+Then use "exec" in sh
+[] yolofant hmm SDL either calls registerApp or registerNativeApp
+hellobox. 01/23/2023 8:43 PM
+what are they looking at to choose which one?
+[smx2460]
+smx2460 01/23/2023 8:43 PM
+Without fork
+01/23/2023 8:43 PM
+Just execv into the script
+01/23/2023 8:43 PM
+Nvm
+01/23/2023 8:43 PM
+fork + execv
+01/23/2023 8:43 PM
+Ok so
+[infowski]
+[] smx2460 What would happen if you used fork() to run the script
+instead
+infowski 01/23/2023 8:42 PM
+ugh. they look at /proc/XXX/exe
+[smx2460]
+smx2460 01/23/2023 8:42 PM
+Then execv into kodi
+[smx2460]
+[] infowski and also need to drop the wrapper script, since it
+*probably* breaks luna permissions.
+smx2460 01/23/2023 8:42 PM
+What would happen if you used fork() to run the script instead
+[infowski]
+infowski 01/23/2023 8:42 PM
+and also need to drop the wrapper script, since it probably breaks luna
+permissions.
+[yolofant]
+yolofant 01/23/2023 8:41 PM
+I dumped mine
+ 1

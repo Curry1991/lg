@@ -1,0 +1,1690 @@
+December 13, 2022
+[pbatard]
+pbatard 12/13/2022 1:00 AM
+At least the toolchain is devised to be compatible with as many TV as
+possible.
+[infowski]
+infowski 12/13/2022 1:00 AM
+I guess I can test this on my TVs.
+[pbatard]
+pbatard 12/13/2022 1:00 AM
+My understanding, from the toolchain, is that the libraries I built
+should apply to more than CX models.
+12/13/2022 12:59 AM
+Plus I fixed an issue where I was sending all the rear right channels to
+front left instead of front right (D'oh!)
+[infowski]
+infowski 12/13/2022 12:59 AM
+...or - even better - are gstreamer plugins abi-stable? 
+[pbatard]
+pbatard 12/13/2022 12:59 AM
+So if someone wants to write a webos app, they can allow the user to set
+their own downmix if they wish.
+[infowski]
+infowski 12/13/2022 12:59 AM
+Or does LG use the same gstreamer source on all platforms?
+12/13/2022 12:58 AM
+I am guessing nobody tried porting/rebuilding these for different webOS
+series besides CX?
+[pbatard]
+pbatard 12/13/2022 12:58 AM
+And I have also added readout of the downmix coefficients from
+/etc/gst/gstcool.conf
+12/13/2022 12:58 AM
+So it was really just a toggle to switch in the code.
+ 1
+[infowski]
+infowski 12/13/2022 12:57 AM
+Sweet!
+[pbatard]
+pbatard 12/13/2022 12:57 AM
+The problem was not that some DTS tracks are floating point, but that
+the default from the decoder for regular DTS track (i.e. non DTS-MA) was
+to output floating point.
+12/13/2022 12:56 AM
+DTS support for standard tracks (the issue we mentioned above) should
+now be fixed in v3:
+https://github.com/RootMyTV/RootMyTV.github.io/issues/72#issuecomment-1347543431
+It would be nice to be able to add DTS support. · Issue #72 · RootM...
+LG OLED CX and later TVs do not support DTS anymore. It would be nice to
+add it back.
+[]
+ 1
+December 12, 2022
+Deleted User 12/12/2022 5:15 PM
+but nvidia gamestreaming or whatever it was called didn't pick up my
+games and didn't send them to moonlight
+12/12/2022 5:15 PM
+I tried that, actually
+Deleted User all I'm trying to do is capture a game on my pc's screen
+and send that footage over to the tv downst...
+ww8543 12/12/2022 5:15 PM
+then just use the moonlight app?
+Deleted User 12/12/2022 5:15 PM
+so a mirror, not an actually usable connected screen
+12/12/2022 5:14 PM
+I don't really need it to be interactable, so long as it can watch
+what's happening on the screen
+12/12/2022 5:14 PM
+all I'm trying to do is capture a game on my pc's screen and send that
+footage over to the tv downstairs
+12/12/2022 5:13 PM
+might as well just run a private vdo.ninja stream or whatever
+12/12/2022 5:13 PM
+I think that's a little too much effort for what I'm trying to
+accomplish here
+12/12/2022 5:13 PM
+yeah
+hellobox. 12/12/2022 5:13 PM
+but that could vary by soc vendor
+12/12/2022 5:13 PM
+if you can figure out the right gstreamer sink, it may just render to
+the screen
+Deleted User 12/12/2022 5:11 PM
+seems pretty interesting
+hellobox. 12/12/2022 5:10 PM
+and media playback is accomplish using multiple versions of ndl
+(depending on webos version, apparently) or smp (starfish media
+pipeline)
+12/12/2022 5:08 PM
+looks like this is using sdl to create windows
+https://github.com/mariotaku/moonlight-tv/blob/main/modules/decoder/smp/src/AVStreamPlayer.cpp
+Deleted User 12/12/2022 5:07 PM
+I don't really feel like writing something at this level just to hook up
+a tv to my pc over ethernet
+12/12/2022 5:07 PM
+yeah this looks like something where I'd have to conjure something up
+myself
+hellobox. 12/12/2022 5:06 PM
+you probably want something higher level though
+12/12/2022 5:06 PM
+i guess that's roughly how to create windows on webos
+12/12/2022 5:05 PM
+https://events19.linuxfoundation.org/wp-content/uploads/2018/07/ALS2019-webOS-LSM-for-Automotive_v2.pdf
+LSM = luna surface manager (edited)
+12/12/2022 5:04 PM
+https://gstreamer.freedesktop.org/data/events/gstreamer-conference/2018/Jimmy%20Ohn%20-%20GStreamer%20pipeline%20on%20webOS%20OSE%20(Lightning%20Talk).pdf
+Deleted User 12/12/2022 4:52 PM
+I think at that point it'd just be easier to hook up a webpage player to
+my rtmp server and just watch off of that
+12/12/2022 4:49 PM
+damn
+hellobox. 12/12/2022 4:49 PM
+https://github.com/webosose/g-media-pipeline
+12/12/2022 4:49 PM
+no idea
+Deleted User 12/12/2022 4:47 PM
+so how do I use it then
+12/12/2022 4:46 PM
+oh I c
+hellobox. 12/12/2022 4:46 PM
+    root@LGwebOSTV[k7lp 6.3.1]:/usr/lib/gstreamer-1.0# gst-inspect-1.0 | grep 264
+    videoparsersbad:  h264parse: H.264 parser
+    video4linux2:  v4l2h264dec: V4L2 H264 Decoder
+    rtp:  rtph264depay: RTP H264 depayloader
+    rtp:  rtph264pay: RTP H264 payloader
+    omx:  omxh264dec: OpenMAX H.264 Video Decoder
+    libav:  avdec_h264: libav H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 decoder
+12/12/2022 4:46 PM
+no, it's part of webos
+Deleted User 12/12/2022 4:46 PM
+I assume I gotta install it on my tv?
+12/12/2022 4:46 PM
+so how would I set up gstreamer?
+12/12/2022 4:45 PM
+rtsp should work
+hellobox. 12/12/2022 4:43 PM
+    root@LGwebOSTV[k7lp 6.3.1]:/usr/lib/gstreamer-1.0# ls -1 *rtp* *rtsp* *hls* *dash*
+    libgstdashdemux.so
+    libgstdvrdashdemux.so
+    libgstdvrdashsink.so
+    libgsthls.so
+    libgstrtp.so
+    libgstrtpmanager.so
+    libgstrtponvif.so
+    libgstrtsp.so
+12/12/2022 4:39 PM
+looks like there's rtsp support; don't know if that would work for you
+12/12/2022 4:35 PM
+i would start by looking into gstreamer
+Deleted User 12/12/2022 4:32 PM
+would hls work? or does webos not even have h264 or x264 support
+(edited)
+12/12/2022 4:32 PM
+so I thought of just using rtmp and obs
+12/12/2022 4:32 PM
+the end goal for this would be to screenshare my monitor upstairs to my
+tv downstairs
+12/12/2022 4:31 PM
+that's a pain
+12/12/2022 4:31 PM
+damn
+[infowski]
+infowski 12/12/2022 4:18 PM
+Heck, even RetroArch which doesn't use any hardware video decoding still
+needed some patching to make it work reliably on webOS. (and that's one
+of better "portable" pieces of software I've seen...) (edited)
+12/12/2022 4:18 PM
+So you can't "just" build VLC for webOS.
+12/12/2022 4:17 PM
+Keep in mind any kind of video decoding would need to be implemented
+there as well, since webOS doesn't really use anything "common".
+12/12/2022 4:17 PM
+Nobody did that yet.
+12/12/2022 4:17 PM
+You'd need to port VLC 
+Deleted User 12/12/2022 4:14 PM
+@infowski any ideas?
+Deleted User 12/12/2022 2:15 PM
+so what would be a good way to do this then
+12/12/2022 2:15 PM
+hmm
+hellobox. 12/12/2022 2:14 PM
+plus it wouldn't use the hardware decoding
+Deleted User how do I install vlc on my tv
+hellobox. 12/12/2022 2:14 PM
+i don't believe there is a build of vlc for webos
+Deleted User 12/12/2022 2:06 PM
+I need something to look at an rtmp stream
+12/12/2022 2:06 PM
+I already rooted it and it has homebrew installed
+12/12/2022 2:06 PM
+how do I install vlc on my tv
+December 11, 2022
+[pbatard]
+pbatard 12/11/2022 10:36 PM
+But the LG player will not insert the audioresample / audioconvert
+elements on its own.
+12/11/2022 10:35 PM
+Basically, gst-play will resolve to running something like
+gst-launch-1.0 filesrc location=track.dts ! dcaparse ! dtsdec ! audioresample ! audioconvert ! pulsesink
+12/11/2022 10:33 PM
+I think gst-play tries to resolve caps negotiation. For instance, if the
+output from one element of the chain is F32 (32-bit float) and the sink
+only accepts S16 (16-bit signed integer) it'll try to insert a
+downsampler in between to make the chain work. The default LG chain on
+the other hand doesn't do that. I do remember playing F32 DTS tracks
+without issues using gst-play as well (though they always downmixed to
+stereo), but that doesn't help us much if the LG player has been
+deliberately neutered not to be as smart...
+ 1
+[aabytt]
+aabytt 12/11/2022 9:17 PM
+I applied your patch and then disabled /usr/lib/libreformatter.so.2
+(have no idea what it is for, got this result accidentally before) and
+then ran gst-play-1.0 /tmp/dts.mkv
+[aabytt]
+[] pbatard Yeah, since you used LG libraries, they'd downsample and
+downmix as required by the limitations of t...
+aabytt 12/11/2022 9:12 PM
+I just tried to do the same with your libs and it works as well. DTS
+track that normally fails to start is played with gst-play with downmix.
+[pbatard]
+pbatard 12/11/2022 3:32 PM
+Sadly it's proprietary, so we won't be able to get its source from LG
+12/11/2022 3:32 PM
+libgstlxaudiosink.so is quite large as a binary, so it shouldn't be that
+dumb...
+12/11/2022 3:30 PM
+It does seem to indicate that it's not the audiosink doing the downmix
+(which is what one would expect) unless, again, the LG native libraries
+know some way to talk or set up the sink beforehand so that it can
+handle F32 and full multichannel. In other words, there might be a
+default "dumb" audiosink mode where it defaults to integer/stereo and
+with some tricks, such as telling it that there's passthrough to an amp,
+it might be possible to switch the sink to a more capable mode. (edited)
+[pbatard]
+pbatard 12/11/2022 3:19 PM
+Yeah, since you used LG libraries, they'd downsample and downmix as
+required by the limitations of their output sink. Right now we're using
+a default codec, that expects an output sink with more capabilities than
+what the LG one provides.
+[aabytt]
+[] pbatard Ah yes, there we go, I see them too.
+aabytt 12/11/2022 2:23 PM
+Just FYI sometime ago I was playing with swapping C9/CX gst libs and I
+could play dts track (audio only no video) of the same file launching it
+in shell with gst-play. The output was downmixed. @SaulGoodman did the
+same with C1 and soundbar, and soundbar was reporting the audio as
+stereo pcm
+[pbatard]
+pbatard 12/11/2022 1:42 PM
+I still suspect that there's some way to get the audiosink accept F32LE
+(especially as passthrough should accept it as most amps should grok
+that), just like there's probably a way to get the default to accept
+multichannel, which we (hopefully) just haven't figured out yet.
+12/11/2022 1:40 PM
+Same issue as I had with the other DTS codec. F32LE will not work. It
+needs to be downsampled to integer.
+12/11/2022 1:39 PM
+Ah yes, there we go, I see them too.
+[aabytt]
+[] pbatard If you see anything with `audio/x-raw` and `F32` on the same
+line, that's most likely the issue
+aabytt 12/11/2022 1:36 PM
+there are lines containing both audio/x-raw and F32LE
+0:00:27.517537320 3466 0x1c30d20 DEBUG audiodecoder gstaudiodecoder.c:678:gst_audio_decoder_negotiate_default:<avdec_dca0> ALLOCATION (1) params: allocation query: 0x1b9e8c0, GstQueryAllocation, caps=(GstCaps)"audio/x-raw\,\ format\=\(string\)F32LE\,\ layout\=\(string\)interleaved\,\ rate\=\(int\)48000\,\ channels\=\(int\)6\,\ channel-mask\=\(bitmask\)0x0000000000000c0f", need-pool=(boolean)true, allocator=(GArray)NULL;
+[pbatard]
+pbatard 12/11/2022 1:35 PM
+Seems to be a negotiation error
+(basesrc gstbasesrc.c:3204:gst_base_src_loop:<source> error: streaming stopped, reason not-negotiated (-4))
+but I can't see much else for now
+12/11/2022 1:28 PM
+Nah, that's fine, I found one.
+[aabytt]
+[] pbatard Of course, I'll see if I can locate some DTS files that
+exhibit the same issue.
+aabytt 12/11/2022 1:09 PM
+I can share a part of a file if required
+[aabytt]
+[] pbatard You should be able to find out if it's a negotiation issue
+between DTS source codec and audiosink if...
+aabytt 12/11/2022 1:08 PM
+let me try do that
+[pbatard]
+pbatard 12/11/2022 1:06 PM
+Of course, I'll see if I can locate some DTS files that exhibit the same
+issue.
+12/11/2022 1:04 PM
+If you see anything with audio/x-raw and F32 on the same line, that's
+most likely the issue
+12/11/2022 1:04 PM
+You should be able to find out if it's a negotiation issue between DTS
+source codec and audiosink if you change DEBUG_MODE=disable to
+DEBUG_MODE=enable in /etc/gst/gstcool.conf. Then when you play a file,
+you will get a couple of gst.log.# files generated in /tmp with very
+verbose output about the whole playout process.
+12/11/2022 12:59 PM
+To properly handle those, we'd have to convert them to integer, which I
+guess is doable but will be an annoyance...
+[pbatard]
+[] aabytt Works fine for files not having dts track at first position in
+the list. If file has only dts tracks...
+pbatard 12/11/2022 12:58 PM
+Could be a floating point DTS track. I haven't added downmix for those,
+though I'd still expect a minimum (non-downmixed) output. Or it may be
+that DTS source codec and audio sink can't agree on a format. For
+instance, when I experimented with the non libav DTS codec, its default
+was set to output 32-bit float data whereas the audio sink could only
+accept integer. If you have a floating point DTS track, it may be trying
+to negotiate floating point output and fail, hence the playout error.
+[aabytt]
+ww8543 dts master audio?
+aabytt 12/11/2022 12:02 PM
+DTS-HD Master Audio tracks are fine, tracks that are shown as just DTS
+are not
+[] aabytt Works fine for files not having dts track at first position in
+the list. If file has only dts tracks...
+ww8543 12/11/2022 11:58 AM
+dts master audio?
+[aabytt]
+[] pbatard Here's a link to v2 of the overridden libraries to restore
+DTS playback, that downmixes multichannel...
+aabytt 12/11/2022 10:00 AM
+Works fine for files not having dts track at first position in the list.
+If file has only dts tracks or dts is first in the list - “this file
+cannot be recognised” error comes in webos player. CX 04.30.58 upd.
+Seems the reason is not the track order but some particular dts track
+type. (edited)
+[smx2460]
+smx2460 12/11/2022 12:49 AM
+maybe a theatre
+[smx2460]
+[] pbatard officially DTS goes up to 28 channels, but I doubt many
+people will use that
+smx2460 12/11/2022 12:49 AM
+28 channels lol
+[pbatard]
+pbatard 12/11/2022 12:11 AM
+Alternatively, since we need to override /tmp/gst/gstcool.conf anyway, I
+could read the coefficients from there if they exist
+12/11/2022 12:06 AM
+My understanding is that they only do this on fw update
+12/11/2022 12:06 AM
+/lib/systemd/system/scripts/gst-registry.sh is how LG officially updates
+the GStreamer registry
+12/11/2022 12:04 AM
+officially DTS goes up to 28 channels, but I doubt many people will use
+that
+12/11/2022 12:03 AM
+One thing I didn't mention is that the downmix goes no further than 7.1,
+or rather FL, FR, C, LFE, RL, RR, RL2, RR2
+12/11/2022 12:02 AM
+If downmix to stereo is the best we can do, I'd like to have an app
+where the user can alter default downmixing coefs to their liking. Then
+we could read a conf file during dca_init() in the library
+December 10, 2022
+12/10/2022 11:59 PM
+wrt 2, it seems to be on its own partition. I picked up how LG updates
+it from a script I found (don't have the location where I found it atm).
+12/10/2022 11:57 PM
+Yeah, with regards to 1, that's a carry over from wanting to be able to
+replace any lib while experimenting, and it can indeed be improved.
+[infowski]
+[] pbatard Here's a link to v2 of the overridden libraries to restore
+DTS playback, that downmixes multichannel...
+infowski 12/10/2022 11:55 PM
+Looking at the script... 1. Unless I am missing something, you could get
+away with not copying over gst libs into /tmp and creating /tmp/work
+like so:
+https://www.webosbrew.org/pages/filesystem-overlays.html#adding-files-to-an-existing-directory
+(assuming you don't need /usr/lib/gstreamer-1.0 to be writable, and just
+want add/replace some files) 2. I have no idea how gstreamer
+registry/cache works in that case - if rolling back was problematic, we
+could build the cache in some alternative path and bind mount over it,
+so that no changes are permanent. 3. FYI we have a special directory for
+boot hook scripts in /var/lib/webosbrew/init.d
+(https://www.webosbrew.org/pages/filesystem-overlays.html#keeping-overlays-persistent,
+if you didn't come across it before in other random docs we have...)
+If/when there's public interest in this, we could wrap everything up in
+a simple homebrew app too. (I am offering to help/do this - wouldn't be
+surprised if you didn't care about that part :D)
+ 1
+[pbatard]
+pbatard 12/10/2022 11:34 PM
+This should be a bit closer to what we really want, especially if you
+only use the TV speakers.
+12/10/2022 11:33 PM
+Here's a link to v2 of the overridden libraries to restore DTS playback,
+that downmixes multichannel to stereo:
+https://github.com/RootMyTV/RootMyTV.github.io/issues/72#issuecomment-1345399004
+It would be nice to be able to add DTS support. · Issue #72 · RootM...
+LG OLED CX and later TVs do not support DTS anymore. It would be nice to
+add it back.
+[]
+ 2
+openlguser8309 12/10/2022 8:22 PM
+Hi, anyone here added any other repositories to their homebrew lg webos
+tv
+hellobox. 12/10/2022 1:47 AM
+but i believe uboot sets it automatically
+12/10/2022 1:47 AM
+and i think linux does get debugstatus from cmdline
+12/10/2022 1:46 AM
+3 is the value you want
+[pbatard]
+pbatard 12/10/2022 1:43 AM
+Or do you just enable debugMode=6 or higher in /proc/cmdline at startup?
+12/10/2022 1:42 AM
+Do you have a link on how to do that? Might come handy (though I hope
+not).
+[smx2460]
+smx2460 12/10/2022 1:42 AM
+well with DEBUG you can access bootloader and reflash the partitions
+yourself
+[pbatard]
+pbatard 12/10/2022 1:41 AM
+I actually do I have a (rather convoluted) script to enable ExpertMode.
+Thought I might need it if I screwed up my firmware again, since LG
+doesn't allow reflash of same version.
+12/10/2022 1:40 AM
+I think I enabled DEBUG once when I was trying to set ExpertMode for
+firmware downgrade.
+12/10/2022 1:38 AM
+Now I'm leaving startup.sh well alone...
+12/10/2022 1:37 AM
+coz I have a perfect storm of startup shell script issue + stuff that
+filled the filesystem
+[smx2460]
+[] pbatard The first lib I compiled was 50 MB, and I almost bricked my
+firmware because of it
+smx2460 12/10/2022 1:36 AM
+it might be a good idea to enable DEBUG mode if you plan to do more
+development
+[smx2460]
+smx2460 12/10/2022 1:36 AM
+not sure if LTO/LTCG might help
+[pbatard]
+pbatard 12/10/2022 1:36 AM
+The first lib I compiled was 50 MB, and I almost bricked my firmware
+because of it
+12/10/2022 1:36 AM
+I'm more interested in reducing the size of libgstlibav.so ATM, coz it's
+10 MB vs LG's < 2 MB
+[smx2460]
+smx2460 12/10/2022 1:36 AM
+and they run without chroot, because of the glibc compatibility (edited)
+12/10/2022 1:35 AM
+and with buildroot, you can also enable additional tools you want to
+have on the TV
+12/10/2022 1:35 AM
+some software might need little tweaks to build, but it's not that
+widespread
+12/10/2022 1:34 AM
+under the hood i'm achieving that by using Linux 3.0 headers with glibc
+2.12.2, which are found on Netcast 4
+[pbatard]
+pbatard 12/10/2022 1:34 AM
+Yeah, I appreciate that, because I wasn't aware of it.
+[smx2460]
+smx2460 12/10/2022 1:34 AM
+sure, i'm just pointing it out
+[pbatard]
+pbatard 12/10/2022 1:33 AM
+Still, audio is not that critical in terms of speed.
+12/10/2022 1:33 AM
+OK. I may upgrade when I'm done with current downstream replacement.
+[smx2460]
+smx2460 12/10/2022 1:33 AM
+you can expect to get faster code with that due to the newer gccs 
+(edited)
+12/10/2022 1:33 AM
+but has -lgtv (generic) and -webostv (specific) profiles
+12/10/2022 1:32 AM
+it's called -nc4 because it's compatible with Netcast 4
+12/10/2022 1:32 AM
+there's a gcc 11 release if you prefer
+12/10/2022 1:32 AM
+it's set to prerelease just for safety
+12/10/2022 1:32 AM
+this is the latest prerelease (gcc 12)
+12/10/2022 1:32 AM
+https://github.com/openlgtv/buildroot-nc4/releases/tag/webos-2974f83
+Release 2022.08.1 - gcc 12 · openlgtv/buildroot-nc4
+updated to buildroot 2022.08.1 gcc 12.1
+[]
+[pbatard]
+pbatard 12/10/2022 1:31 AM
+Interesting...
+hellobox. 12/10/2022 1:31 AM
+aeon is definitely used for audio, at least on older socs
+[smx2460]
+smx2460 12/10/2022 1:31 AM
+this is the new one
+12/10/2022 1:31 AM
+https://github.com/openlgtv/buildroot-nc4/
+GitHub - openlgtv/buildroot-nc4
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+12/10/2022 1:31 AM
+just so you know, the webosbrew toolchain is "deprecated"
+[pbatard]
+pbatard 12/10/2022 1:31 AM
+I was actually pleasantly surprised at how well it worked.
+[smx2460]
+smx2460 12/10/2022 1:31 AM
+(we're not yet sure if it's also used for VPU purposes)
+12/10/2022 1:30 AM
+and MStar uses Openrisc derivate coprocessors
+[pbatard]
+pbatard 12/10/2022 1:30 AM
+Well, the homebrew toolchain is working fine for our purposes so far...
+[smx2460]
+smx2460 12/10/2022 1:30 AM
+Realtek for example uses Lexra (Mips derivate with SIMD) for its VPUs
+(edited)
+12/10/2022 1:30 AM
+better to check that (about the Linux aspect) but i'm almost sure it's
+xtensa (edited)
+[pbatard]
+pbatard 12/10/2022 1:29 AM
+I didn't know that. Thx.
+[smx2460]
+smx2460 12/10/2022 1:29 AM
+i remember seeing an xtensa-linux toolchain in one of the LX GPL
+archives
+12/10/2022 1:29 AM
+but depends on the model(s) (edited)
+12/10/2022 1:29 AM
+iirc it even runs xtensa-linux
+12/10/2022 1:29 AM
+just so you know, your VPU (adec/vdec, venc/aenc) is a Xtensa CPU
+12/10/2022 1:28 AM
+bug [:lg:] is sometimes kind of nonsensical
+12/10/2022 1:27 AM
+it would surprise me if there wasn't
+12/10/2022 1:27 AM
+or rather
+12/10/2022 1:27 AM
+wouldn't surprise me
+[pbatard]
+pbatard 12/10/2022 1:27 AM
+I haven't tested to see if there was an omx_lxaudiosink
+[smx2460]
+smx2460 12/10/2022 1:27 AM
+LX, aka LG SOC
+12/10/2022 1:26 AM
+yeah lxvideosink really sounds like it
+[pbatard]
+pbatard 12/10/2022 1:26 AM
+yeah, /etc/gst/gstcool.conf has:
+    [default_sink]
+    video=omx_lxvideosink
+    audio=audiosink
+[smx2460]
+smx2460 12/10/2022 1:26 AM
+there's a nice deal of custom code to interface them directly to the
+output
+12/10/2022 1:26 AM
+basically TVs have what we call VPU, which LG calls adec and vdec in
+kernel code/interfaces
+12/10/2022 1:25 AM
+audiosink sounds like a software generic sink (without looking in depth)
+12/10/2022 1:25 AM
+i would guess multichannel audio goes through adec somehow
+[pbatard]
+pbatard 12/10/2022 1:24 AM
+It goes to what looks to be a default audiosink... that does 2.0 only
+[smx2460]
+smx2460 12/10/2022 1:23 AM
+or does so differently?
+[smx2460]
+[] pbatard The DTS decoder is definitely producing all the channels, so
+if it wasn't for the stupid audiosink, ...
+smx2460 12/10/2022 1:23 AM
+so multichannel audio doesn't go through audiosink? (edited)
+[pbatard]
+pbatard 12/10/2022 1:22 AM
+Oh and we can drop the requirement to replace libgstaudioparsers.so if
+we have libgstlibav.so since it can include a DTS parser.
+12/10/2022 1:20 AM
+The DTS decoder is definitely producing all the channels, so if it
+wasn't for the stupid audiosink, we'd pretty much be done by now.
+12/10/2022 1:19 AM
+I'm also not entirely sure what the deal is about the audiosink. Maybe I
+just haven't figured out a way to hit an audiosink that does full
+multichannel
+12/10/2022 1:18 AM
+Getting full 5.1/7.1 is likely to be a PITA though
+12/10/2022 1:18 AM
+Yeah, I've been lurking a bit 
+[smx2460]
+smx2460 12/10/2022 1:18 AM
+and we didn't notice XD
+hellobox. 12/10/2022 1:18 AM
+oh, you've been here for a couple weeks
+[pbatard]
+pbatard 12/10/2022 1:17 AM
+Just so you know, I should be able to publish a version that does
+downmix to 2.0 soon..ish (1-3 days)
+[smx2460]
+smx2460 12/10/2022 1:17 AM
+welcome 
+[smx2460]
+[] pbatard Well, Hello there...
+smx2460 12/10/2022 1:16 AM
+hi!
+[pbatard]
+hellobox. would be nice to see him on the discord
+pbatard 12/10/2022 1:16 AM
+Well, Hello there...
+ 1
+December 9, 2022
+[yolofant]
+yolofant 12/09/2022 8:38 PM
+[:KEKWlaugh:]
+[smx2460]
+smx2460 12/09/2022 6:45 PM
+    ./make_homebrew.sh --language=python
+[yoguysmaanbro]
+yoguysmaanbro 12/09/2022 6:44 PM
+How
+[] yoguysmaanbro I only use homebrew and i only know how to code python
+Deleted User 12/09/2022 6:33 PM
+make a homebrew with python
+[yoguysmaanbro]
+yoguysmaanbro 12/09/2022 6:23 PM
+So dont say 'Make it'
+12/09/2022 6:23 PM
+I only use homebrew and i only know how to code python
+12/09/2022 6:23 PM
+???
+12/09/2022 6:23 PM
+New homebrew
+[] smx2460 try asking him, but Discord is proprietary :d
+ww8543 12/09/2022 8:29 AM
+could ask to at least have him on matrix 
+ 1
+[aabytt]
+aabytt 12/09/2022 8:07 AM
+ping @SaulGoodman
+12/09/2022 8:07 AM
+wow, glad that somebody made it work. I was playing around with OLEDC9
+libs on CX and only could play dts thru gst-play.
+hellobox. 12/09/2022 12:45 AM
+the
+The fundamental design comes from the video pipeline at Oregon Graduate
+part
+12/09/2022 12:45 AM
+lg took the second half from the existing readme i believe
+[astur3l]
+astur3l 12/09/2022 12:45 AM
+(no content)
+ README.txt
+12.52 KB External
+12/09/2022 12:42 AM
+    GStreamer 1.8.0 with LGE specific development series
+    WHAT IT IS
+    ----------
+    This is GStreamer, a framework for streaming media.
+    COMPILING FROM SOURCE
+    ---------------------
+    - Make sure that you really need to install from source with LGE specific plugins!
+      to build GStreamer gst-omx, gst-plugins
+      tool chain inforamtion:
+        arm-starfish-linux-gnueabi - LGE provides the toolchain for webOS TV SW upon email request to opensource@lge.com.
+    - You can modify "starfish_toolchain.lg" file as your toolchain path.
+      ex) SDKTARGETSYSROOT="<YOUR_TOOLCHAIN_PATH>/sysroots/ca9v1-starfish-linux-gnueabi"
+      source starfish_toolchain.lg
+      make clean-gst-omx
+      make gst-omx
+      make clean-mvsink
+      make mvsink
+    PLUG-IN DEPENDENCIES AND LICENSES
+    ---------------------------------
+    GStreamer is developed under the terms of the LGPL (see LICENSE file for
+    details). Some of our plug-ins however rely on libraries which are available
+    under other licenses. This means that if you are distributing an application
+    which has a non-GPL compatible license (for instance a closed-source
+    application) with GStreamer, you have to make sure not to distribute GPL-linked
+    plug-ins.
+    When using GPL-linked plug-ins, GStreamer is for all practical reasons
+    under the GPL itself.
+    HISTORY
+    -------
+    The fundamental design comes from the video pipeline at Oregon Graduate
+    Institute, as well as some ideas from DirectMedia.  It's based on plug-ins that
+    will provide the various codec and other functionality.  The interface
+    hopefully is generic enough for various companies (ahem, Apple) to release
+    binary codecs for Linux, until such time as they get a clue and release the
+    source.
+[yolofant]
+yolofant 12/09/2022 12:19 AM
+gst-cool-play-1.0 even has an option for --unsupported-audio-codec
+December 8, 2022
+[yolofant]
+yolofant 12/08/2022 11:58 PM
+I do
+hellobox. 12/08/2022 11:58 PM
+do you have the packages they took down?
+[yolofant]
+yolofant 12/08/2022 11:58 PM
+no idea
+hellobox. 12/08/2022 11:58 PM
+did they realize they released too much?
+[yolofant]
+yolofant 12/08/2022 11:58 PM
+o22
+hellobox. 12/08/2022 11:58 PM
+wtf?
+[yolofant]
+yolofant 12/08/2022 11:58 PM
+oled77c28lb for instance
+12/08/2022 11:58 PM
+c2/g2
+[] yolofant I asked them again for the kernel sources for the most
+recent firmwares and a couple days later they...
+hellobox. 12/08/2022 11:57 PM
+which ones?
+[yolofant]
+yolofant 12/08/2022 11:55 PM
+I like how they call their plugins gst-plugins-cool 
+12/08/2022 11:53 PM
+I asked them again for the kernel sources for the most recent firmwares
+and a couple days later they just removed the sources alltogether
+12/08/2022 11:53 PM
+even though they teared down the 2022 sources now
+hellobox. 12/08/2022 11:52 PM
+some packages contain more than others
+[yolofant]
+yolofant 12/08/2022 11:52 PM
+ye, it's there
+hellobox. 12/08/2022 11:52 PM
+i think i've seen most of the gstreamer source
+[yolofant]
+[] smx2460 > Wait, what? LG is going to give us the source for some of
+the libraries they nerfed?
+yolofant 12/08/2022 11:52 PM
+They released their gstreamer sources for the 2022 tvs and those have a
+similar chipset as his CX. Even including some of the gstlx stuff
+[smx2460]
+smx2460 12/08/2022 11:08 PM
+but so is Github :d
+12/08/2022 11:08 PM
+try asking him, but Discord is proprietary :d (edited)
+hellobox. 12/08/2022 11:08 PM
+would be nice to see him on the discord
+[smx2460]
+smx2460 12/08/2022 11:07 PM
+interesting to see him here
+hellobox. 12/08/2022 11:07 PM
+among other things
+[smx2460]
+smx2460 12/08/2022 11:07 PM
+@infowski he's the guy that wrote Rufus
+hellobox. 12/08/2022 11:07 PM
+wow
+[smx2460]
+smx2460 12/08/2022 10:58 PM
+typical
+12/08/2022 10:58 PM
+[:lg:]
+12/08/2022 10:58 PM
+    LG having shoved their feature-complete audiosink (multichannel with passthrough) behind their proprietary audio decoder library
+12/08/2022 10:57 PM
+xD
+12/08/2022 10:57 PM
+> Wait, what? LG is going to give us the source for some of the
+libraries they nerfed?
+12/08/2022 10:57 PM
+12/08/2022 10:57 PM
+    Basically, we replace all the GStreamer libraries that LG has deliberately nerfed with "unnerfed" versions (and if you are interested in recompiling your own version, rather than use the ones I provide, I'm describing how to do that below). Especially, we:
+[infowski]
+infowski 12/08/2022 10:55 PM
+https://github.com/RootMyTV/RootMyTV.github.io/issues/72#issuecomment-1343204028
+absolute madman
+It would be nice to be able to add DTS support. · Issue #72 · RootM...
+LG OLED CX and later TVs do not support DTS anymore. It would be nice to
+add it back.
+[]
+ 4  1
+[] Fares started a thread: Enabling subtitles. See all threads. 12/8/22,
+6:03 PM
+[niledevil]
+niledevil 12/08/2022 5:41 PM
+OLED65C22LB
+[mariotaku]
+[] niledevil awesome I am programmer myself.
+mariotaku 12/08/2022 5:26 PM
+Fantastic. Which TV model do you own? If you can program it will help a
+lot to troubleshoot the decoder issue.
+[niledevil]
+niledevil 12/08/2022 4:32 PM
+I would be happy to help or test.
+[niledevil]
+[] mariotaku Working on it
+niledevil 12/08/2022 4:31 PM
+awesome I am programmer myself.
+December 7, 2022
+[m.ksy]
+hellobox. does the router support dd-wrt or anything?
+m.ksy 12/07/2022 5:54 PM
+nope, this is mesh system halo s12
+https://www.mercusys.com/en/product/details/halo-s12
+[] m.ksy the electricity supply in my town is cut off quite often, so an
+update request constantly appears wh...
+hellobox. 12/07/2022 5:29 PM
+does the router support dd-wrt or anything?
+[infowski]
+[] m.ksy the electricity supply in my town is cut off quite often, so an
+update request constantly appears wh...
+infowski 12/07/2022 5:23 PM
+remove touch /var/luna/preferences/webosbrew_failsafe line from
+/var/lib/webosbrew/startup.sh - but don't come crying if something goes
+wrong 
+ 1  1
+[m.ksy]
+m.ksy 12/07/2022 5:19 PM
+the electricity supply in my town is cut off quite often, so an update
+request constantly appears when the TV is turned on, and the router does
+not have functionality for blocking sites
+[m.ksy]
+m.ksy 12/07/2022 5:10 PM
+how to completely disable failsafe functionality? i don't want it to
+check my tv proper boot status
+[astur3l]
+astur3l 12/07/2022 3:06 PM
+seems like adb 1.0.3 is from 2018?:D i remember i had to update
+platform-tools (adb) to my phone current android version always..
+because it 'didnt worked' (dont remember the exact issue)  (edited)
+[raicuparta]
+raicuparta 12/07/2022 2:37 PM
+im guessing if I wanted a more recent version, I'd have to build it
+myself? although I'm not sure why such a small version difference would
+matter
+[raicuparta]
+[] astur3l maybe adb is too old?
+raicuparta 12/07/2022 2:05 PM
+might be, I compared the versions and they were slightly different. The
+one on my PC which works is adb 1.0.41 and the one in entware reported
+itself as 1.0.3 or something around that. Here it says version
+android.5.0.2_r1-3, but dunno what that's about:
+https://bin.entware.net/armv7sf-k3.2/Packages.html
+[astur3l]
+[] raicuparta installed adb on webos, and it is able to find the devices
+connected via USB or Wifi, but for whatev...
+astur3l 12/07/2022 1:59 PM
+maybe adb is too old?
+[raicuparta]
+raicuparta 12/07/2022 4:13 AM
+so I think it has reached my "more effort than I'm willing to put in"
+limit
+12/07/2022 4:12 AM
+also, chromecast tv complains and refuses to boot if it's powered by the
+TV USB instead of the power brick. Since it only has a single usb port,
+I'd have to get a powered hub or something like that for this to work.
+[raicuparta]
+[] raicuparta ok so entware is a package repo. I'm guessing I could also
+just manually install that adb ipk? Havin...
+raicuparta 12/07/2022 4:04 AM
+installed adb on webos, and it is able to find the devices connected via
+USB or Wifi, but for whatever reason it does not trigger the
+authorization dialog on the Chromecast  Works fine when using ADB from
+anywhere else though (edited)
+[mariotaku]
+[] niledevil Does someone already tried to get steam link running on
+webos?
+mariotaku 12/07/2022 1:13 AM
+Working on it
+[astur3l]
+[] raicuparta ok so entware is a package repo. I'm guessing I could also
+just manually install that adb ipk? Havin...
+astur3l 12/07/2022 1:04 AM
+https://discord.com/channels/407937994037919756/413498235307425802/1038877696530325544
+ 1
+December 6, 2022
+[raicuparta]
+[] infowski Yes exactly what I mean.
+raicuparta 12/06/2022 11:59 PM
+ok so entware is a package repo. I'm guessing I could also just manually
+install that adb ipk? Having a hard time finding information about these
+things. Gonna look into it
+[niledevil]
+niledevil 12/06/2022 11:39 PM
+Does someone already tried to get steam link running on webos?
+[raicuparta]
+raicuparta 12/06/2022 11:38 PM
+I'm not familiar with entware, not really sure what it is even. What I'm
+understanding is: entware running on webos, which allows us to run adb
+commands to the chromecast, which is connected to the TV via USB. This
+should also allow us to skip the wifi portion of Magic4PC entirely and
+just pass the cursor data directly via USB too I presume?
+[infowski]
+infowski 12/06/2022 11:25 PM
+Yes exactly what I mean.
+[raicuparta]
+raicuparta 12/06/2022 11:24 PM
+if the device were rooted, an app could run adb commands from within the
+device itself, right?
+[infowski]
+infowski 12/06/2022 11:23 PM
+(we can use entware on most webOS devices)
+12/06/2022 11:23 PM
+https://github.com/Entware/Entware/blob/5fcecd7e413c46f44422d982c66480117da005e4/package/utils/adb/Makefile
+Hey - entware even has adb package in there.
+Entware/Makefile at 5fcecd7e413c46f44422d982c66480117da005e4 · Entw...
+Ultimate repo for embedded devices. Contribute to Entware/Entware
+development by creating an account on GitHub.
+[]
+12/06/2022 11:22 PM
+Run adb (client) on webOS directly to connect over USB to the chromecast
+and launch your android-side payload that'll listen to Magic4PC packets
+and simulate input (normal apps can't do that, but adb shell can - see
+how scrcpy does that) (edited)
+12/06/2022 11:21 PM
+Running over USB is probably best? I don't think you can keep adb over
+wifi enabled?
+[raicuparta]
+raicuparta 12/06/2022 11:21 PM
+Oh i see what you mean
+[raicuparta]
+[] infowski I... think we could just run `adb` directly on webOS, can't
+we?
+raicuparta 12/06/2022 11:20 PM
+What do you mean adb on WebOS?
+[raicuparta]
+raicuparta 12/06/2022 11:20 PM
+Pretty sure I can adb into it via WiFi yeah
+[infowski]
+infowski 12/06/2022 11:20 PM
+I... think we could just run adb directly on webOS, can't we?
+12/06/2022 11:20 PM
+Plug the device to the computer with a USB cable to configure the connection
+12/06/2022 11:19 PM
+https://developers.google.com/cast/docs/android_tv_receiver/debugging#using_adb_with_a_usb_cable
+Android TV with Google Cast  |  Google Developers
+Prepare a development environment to test Cast applications with Android
+TV using the Android Debug Bridge.
+[]
+12/06/2022 11:18 PM
+If you can set up adb there... You can forward mouse movements.
+[raicuparta]
+raicuparta 12/06/2022 11:18 PM
+These are full android and can run normal apks if you sideload them
+12/06/2022 11:18 PM
+Yeah i think this one is called Chrowmcast TV or something like that,
+the old ones are just Chromecast
+[infowski]
+infowski 12/06/2022 11:18 PM
+Never had one, sorry. Only used one of the first "dumb" ones a couple
+long years ago a little bit...
+12/06/2022 11:17 PM
+I think some recent chromecast had android, yes.
+[raicuparta]
+raicuparta 12/06/2022 11:17 PM
+Chromecast TV is android, no?
+[infowski]
+infowski 12/06/2022 11:17 PM
+I think android + adb could be doable (edited)
+[raicuparta]
+raicuparta 12/06/2022 11:16 PM
+I'm guessing not easy since that would be q security flaw
+[infowski]
+infowski 12/06/2022 11:16 PM
+Chromecast or Android? Both... would be pretty non-trivial I think :/
+[raicuparta]
+[] infowski This is *exactly* what Magic4PC does - renders HDMI input
+and passes through remote controls over th...
+raicuparta 12/06/2022 11:16 PM
+Oh, perfect. Now just gotta figure out how hard it would be to make a
+client for Chromecast 
+[infowski]
+infowski 12/06/2022 11:04 PM
+It could do that in the background, but then you could only receive
+magic remote moves, not button presses, and it'd break normal menu
+controls.
+[infowski]
+[] raicuparta Maybe running in the foreground is ok, if theres some way
+to render the video from one of the hdmi i...
+infowski 12/06/2022 11:04 PM
+This is exactly what Magic4PC does - renders HDMI input and passes
+through remote controls over the network.
+desascha 12/06/2022 6:17 PM
+Hello all I saw there is now a stable release of Hyperion NG 2.0.14
+stable. How can i update this on my LG TV. Currently I have 2.0.14 Beta1
+installed. Thanks
+[raicuparta]
+raicuparta 12/06/2022 2:37 PM
+A bit hard for me to find the time to look into this, but at least I
+have somewhere to start, thanks
+12/06/2022 2:36 PM
+Maybe running in the foreground is ok, if theres some way to render the
+video from one of the hdmi inputs inside an app
+12/06/2022 2:35 PM
+Right, gotcha
+[mariotaku]
+mariotaku 12/06/2022 2:35 PM
+I wish we could have a bigger list. That will require more contributors
+though...
+[raicuparta]
+[] mariotaku https://github.com/Wouterdek/magic4pc
+raicuparta 12/06/2022 2:34 PM
+Interesting, I'll look into this. Although it looks like this one has to
+run in the foreground. I've been having a hard time finding homebrew
+apps like this, the ones that aren't in a repository. Do we have a list
+of these somewhere?
+[mariotaku]
+[] raicuparta Do you guys think it would be feasible to make homebrew
+that runs in the background sending the magi...
+mariotaku 12/06/2022 2:22 PM
+https://github.com/Wouterdek/magic4pc
+GitHub - Wouterdek/magic4pc: Allows you to use the magic remote on ...
+Allows you to use the magic remote on your LG tv as a mouse for your
+PC. - GitHub - Wouterdek/magic4pc: Allows you to use the magic remote on
+your LG tv as a mouse for your PC.
+[]
+ 2
+[raicuparta]
+raicuparta 12/06/2022 7:04 AM
+Do you guys think it would be feasible to make homebrew that runs in the
+background sending the magic remote cursor positions over the network?
+I'm thinking something like this could be used to control a mouse cursor
+on other devices like the Chromecast. I know moonlight does this to
+control the mouse on PC, but that one is running in the foreground.
+December 5, 2022
+[obecnycintorin]
+obecnycintorin 12/05/2022 11:09 PM
+wow great
+[infowski]
+infowski 12/05/2022 11:08 PM
+let's see if it works...
+[image.png]
+ image.png
+51.58 KB External
+12/05/2022 11:07 PM
+Ah, simple! 
+[infowski]
+infowski 12/05/2022 10:58 PM
+let me do a little bit of debugging...
+12/05/2022 10:58 PM
+this is so sad. it used to work, but errors out on something else this
+time around 
+12/05/2022 10:56 PM
+let me test it if it actually works.
+12/05/2022 10:56 PM
+including blackjack, hookers and DIAL server, so you can control it from
+the phone
+[obecnycintorin]
+obecnycintorin 12/05/2022 10:50 PM
+oh so you made something like that that would be awesome (edited)
+[infowski]
+infowski 12/05/2022 10:43 PM
+Eh dammit, let me find my backups.
+12/05/2022 10:42 PM
+Yes, it's fairly simple to fake webOS APIs in electron via preload
+script. (edited)
+[obecnycintorin]
+obecnycintorin 12/05/2022 10:41 PM
+nothing in console tho
+12/05/2022 10:41 PM
+yeah tou can get widevine in electron but that would still require
+fooling the spotify web app to think the webos calls work, because as it
+is even when you just open that url with the auth key it just show up
+some error code
+[infowski]
+infowski 12/05/2022 10:38 PM
+No - just used "plain" electron (actually some fork/build that had
+widevine built in/was able to load up chrome's widevine binary)
+[obecnycintorin]
+obecnycintorin 12/05/2022 10:36 PM
+so you modded the simulator so that it has widevine?
+[infowski]
+[] obecnycintorin probably would be even possible to get it running in
+normal chrome if the webos.js calls are patched...
+infowski 12/05/2022 10:34 PM
+iirc it is, you just need widevine set up iirc. I think I managed to get
+it running in electron some long ago, but... would need to find it in
+some backusp.
+[] kraiwit007 Can I add other F-Driod repo orther than
+repo.webosbrew.org?
+hellobox. 12/05/2022 2:29 AM
+it's not f-droid
+[kraiwit007]
+kraiwit007 12/05/2022 12:42 AM
+Can I add other F-Driod repo orther than repo.webosbrew.org?
+December 4, 2022
+[obecnycintorin]
+obecnycintorin 12/04/2022 12:20 PM
+probably would be even possible to get it running in normal chrome if
+the webos.js calls are patched to return some dummy values and that has
+widevine so it would probably even play
+[obecnycintorin]
+obecnycintorin 12/04/2022 12:05 PM
+just doesnt play because the simulator doesnt have widevine
+12/04/2022 12:04 PM
+it loads the spotify web app in the simulator, I can login and
+everything shows up
+12/04/2022 12:04 PM
+wow thanks that actually worked
+hellobox. 12/04/2022 11:59 AM
+you're lucky i wrote a tool to decrypt ncg files within the past few
+hours
+12/04/2022 11:59 AM
+    <!DOCTYPE html>
+    <html>
+    <head>
+            <script>location.href='https://api-partner.spotify.com/tvapp?platform=webos#auth=M2UyOWNiMThjNGMzNGQ2MDgzN2VjOTRjZjMxZTlmM2U6NDZiYWQwZjE3MDVmNGU5MjllMmViOGU3YTM1YjQ5Mzk';</script>
+    </head>
+    <body>
+    </body>
+    </html>
+[obecnycintorin]
+obecnycintorin 12/04/2022 11:59 AM
+oh thanks
+hellobox. 12/04/2022 11:53 AM
+i'll get it for you
+12/04/2022 11:53 AM
+oh, maybe
+12/04/2022 11:51 AM
+doubtful. it's probably trying to get it via luna
+[obecnycintorin]
+obecnycintorin 12/04/2022 11:51 AM
+i was just thinking whether it passes some url parameter or something
+with the client secret
+12/04/2022 11:50 AM
+but that doesn't even throw errors just stays on loading screen
+hellobox. 12/04/2022 11:50 AM
+i doubt the contents of index.html are going to be useful
+[obecnycintorin]
+obecnycintorin 12/04/2022 11:50 AM
+there's also probably some old version on
+http://tv.scdn.co/webos/index.html
+12/04/2022 11:49 AM
+but that just shows the spotify logo when I try to run it in the
+simulator and complains about some client secret not being found in the
+inspector console
+12/04/2022 11:48 AM
+I suppose it just loads some url most probably
+http://api-partner.spotify.com/tvapp?platform=webos
+12/04/2022 11:48 AM
+i got a spotif-beehive ipk and there is just some images which are
+unencrypted and an encrypted index.html
+12/04/2022 11:47 AM
+hi, would it be possible to get the decrypted spotify index.html, I'm
+trying to get the webapp running in the simulator
+December 3, 2022
+kolerovkatimur is any ideas why i can't select the playback speed in the
+settings youtube AdFree, it's disappeared....
+Deleted User 12/03/2022 10:13 PM
+because youtube adfree is a regular webapp, and the official youtube app
+uses a custom chromium build
+kolerovkatimur 12/03/2022 12:42 PM
+is any ideas why i can't select the playback speed in the settings
+youtube AdFree, it's disappeared. LG TV. Yesterday work's
+[inuckles]
+inuckles 12/03/2022 1:00 AM
+someone know if there is any app like popcorn time to watch movies on
+tv?
+December 2, 2022
+kalosmani 12/02/2022 8:10 PM
+Any apps that use realdebrid to stream movies and TV shows
+[shelbygt25]
+shelbygt25 12/02/2022 4:06 PM
+Yeah working. Great guide
+[yolofant]
+yolofant 12/02/2022 11:44 AM
+ignore that error
+ 1
+[shelbygt25]
+shelbygt25 12/02/2022 10:59 AM
+(no content)
+ crashd.txt
+12.86 KB External
+12/02/2022 10:57 AM
+i have test the crashd but get error (edited)
+[shelbygt25]
+shelbygt25 12/02/2022 9:46 AM
+i have installed extend time but not help
+[ggiuliano93]
+[] shelbygt25 i use non root (my firmware can not root LG C1 latest
+firmware) and my dev account is logged out alw...
+ggiuliano93 12/02/2022 9:15 AM
+I have lg C1 latest Fw (eu) and rooted with crashd, for the Dev u Need
+to extend time every time, u can use a script (edited)
+[shelbygt25]
+shelbygt25 12/02/2022 8:20 AM
+i use non root (my firmware can not root LG C1 latest firmware) and my
+dev account is logged out always after days. how can i fix this?
+[inuckles]
+inuckles 12/02/2022 4:07 AM
+Not sure what happened
+12/02/2022 4:07 AM
+It worked!! 
+12/02/2022 4:06 AM
+Still doesnt work when trying to connect
+12/02/2022 4:06 AM
+logged in, and enabled dev mode (i restarted again)
+12/02/2022 4:06 AM
+ok, now I restarted the app
+[] inuckles if my TV returns "Hello world" on port 3000, what does that
+means?
+hellobox. 12/02/2022 4:03 AM
+that's just ssap
+[inuckles]
+inuckles 12/02/2022 4:02 AM
+if my TV returns "Hello world" on port 3000, what does that means?
+12/02/2022 4:02 AM
+Imma try that
+hellobox. 12/02/2022 3:57 AM
+did you reboot the tv after enabling dev mode?
+[inuckles]
+inuckles 12/02/2022 3:57 AM
+Maybe Im missing a step?
+12/02/2022 3:56 AM
+But when I try to connect to my TV, it doesnt work
+[image.png]
+ image.png
+27.99 KB External
+12/02/2022 3:56 AM
+Also, Key Server is on
+12/02/2022 3:56 AM
+I have my TV's IP (wireless), a Passphrase, and Dev Mode Status is On
+12/02/2022 3:55 AM
+I installed Developer Mode, and logged in.
+12/02/2022 3:55 AM
+Anyways, dev-manager is not working for me
+hellobox. 12/02/2022 3:54 AM
+i don't know anything about moonlight, but you can install most things
+that way
+[inuckles]
+inuckles 12/02/2022 3:53 AM
+Starting from zero, could I install it using Developer Mode and
+connecting with dev-manager?
+12/02/2022 3:53 AM
+Im trying to install Moonlight
+12/02/2022 3:53 AM
+appearantly not yet.. (but the app i'm trying to install doesn't require
+root)
+[] inuckles hey, somehow i installed homebrew, but install button is
+disabled in all apps.. why?
+hellobox. 12/02/2022 3:52 AM
+is it rooted?
+[inuckles]
+inuckles 12/02/2022 3:34 AM
+hey, somehow i installed homebrew, but install button is disabled in all
+apps.. why? (edited)
+December 1, 2022
+[newlinersseries]
+newlinersseries 12/01/2022 5:54 AM
+Is there a screen recorder for HDMI of sorts without having to buy an
+expensive capture card
+November 30, 2022
+[smx2460]
+[] yolofant any NEW homebrew?
+smx2460 11/30/2022 3:10 AM
+New version of busybox
+November 29, 2022
+[astur3l]
+[] yoguysmaanbro I bet in 4 months no new hombrew
+astur3l 11/29/2022 11:02 PM
+any ombre :/
+[] yoguysmaanbro And there never will be
+hellobox. 11/29/2022 10:58 PM
+because you haven't started working on anything yet
+ 1
+Deleted User 11/29/2022 8:25 PM
+any old homebrew?
+[yoguysmaanbro]
+yoguysmaanbro 11/29/2022 7:37 PM
+I bet in 4 months no new hombrew
+11/29/2022 7:37 PM
+And there never will be
+11/29/2022 7:37 PM
+No
+[yolofant]
+yolofant 11/29/2022 7:36 PM
+any NEW homebrew?
+[yoguysmaanbro]
+yoguysmaanbro 11/29/2022 7:33 PM
+Any way to controll LED strip with homebrew
+[vk_darts]
+vk_darts 11/29/2022 10:09 AM
+Tv broke after 4 months 
+[vk_darts]
+hellobox. which does crashd for you
+vk_darts 11/29/2022 10:09 AM
+What do you mean it does it for you? Is it an easier way to do the
+crashd exploit? It was such a struggle the other day now I got a new tv
+and need to do it again (edited)
+November 28, 2022
+[dumbledick420]
+dumbledick420 11/28/2022 10:31 PM
+i also noticed the ad free youtube outputs dolby digital instead of PCM.
+[luizborges]
+luizborges 11/28/2022 5:41 PM
+Just rooted my tv and installed YouTube and Crunchyroll. YouTube seems
+to be working find without ads, although the interface feels a tad less
+snappier than the original app. This is visible when scrolling down. The
+Crunchyroll app "worked" but I'm getting some strange errors. It stop
+responding to commands, or in one show I moved to ep2 and now I can't go
+back to ep1, it says that cannot retrieve media and the app basically
+stops working.
+hellobox. 11/28/2022 3:20 PM
+i guess i need to fire up ezinject again
+11/28/2022 3:20 PM
+hmm, same on the lm18a
+[smx2460]
+smx2460 11/28/2022 3:19 PM
+Means "fuck you" by LG
+11/28/2022 3:19 PM
+Exactly
+hellobox. 11/28/2022 3:19 PM
+Access USB is NOT opened!!!
+[smx2460]
+smx2460 11/28/2022 3:19 PM
+Type "debug" enter
+hellobox. 11/28/2022 3:19 PM
+haven't done it yet
+11/28/2022 3:19 PM
+i was hoping i'd get lucky again
+[smx2460]
+smx2460 11/28/2022 3:19 PM
+Debug status?
+hellobox. 11/28/2022 3:18 PM
+with pl2303 on m16p, i get USB To Serial CONNECTED but no debug access
+[smx2460]
+smx2460 11/28/2022 3:16 PM
+Should be already enabled
+hellobox. 11/28/2022 3:16 PM
+turns out it's ncurses, not termcap
+[smx2460]
+hellobox. <@310158180728700929> can you add termcap?
+smx2460 11/28/2022 3:15 PM
+I don't see why not
+[smx2460]
+smx2460 11/28/2022 3:14 PM
+Could be (edited)
+hellobox. 11/28/2022 3:13 PM
+is this because of lg fucking with signals and stuff?
+11/28/2022 3:12 PM
+why is ctrl+c not working on webos 3.8?
+[smx2460]
+smx2460 11/28/2022 3:11 PM
+My touchscreen is making it impossible to write
+11/28/2022 3:11 PM
+God fucking xiaomi
+hellobox. 11/28/2022 3:11 PM
+i guess i could take a look at what glibc did
+[smx2460]
+smx2460 11/28/2022 3:10 PM
+Would be cool if you could address that
+11/28/2022 3:10 PM
+I have already backported some glibc fixes (edited)
+hellobox. 11/28/2022 3:10 PM
+it shouldn't matter for elfutils
+11/28/2022 3:10 PM
+i can probably get around it by just building with 32-bit offsets
+[smx2460]
+smx2460 11/28/2022 3:09 PM
+But don't introduce new syscalls
+11/28/2022 3:09 PM
+If it's just header issues in glibc, you can backport
+11/28/2022 3:08 PM
+Or else we break NC4 or WebOS 1 compatibility (edited)
+11/28/2022 3:08 PM
+You need to fix the software to work with it
+[smx2460]
+hellobox. ancient glibc... ```In file included from
+../../elfutils-0.188/libdwfl/linux-kernel-modules.c:36: /o...
+smx2460 11/28/2022 3:08 PM
+It's on purpose
+[smx2460]
+smx2460 11/28/2022 3:07 PM
+Ah
+hellobox. 11/28/2022 3:07 PM
+using br-nc4 to build bash
+[smx2460]
+smx2460 11/28/2022 3:07 PM
+Or what
+11/28/2022 3:07 PM
+building buildroot?
+11/28/2022 3:07 PM
+Oh really?
+[] smx2460 .
+hellobox. 11/28/2022 3:07 PM
+because it tries to run ccache /usr/local/bin/gcc
+[smx2460]
+smx2460 11/28/2022 3:07 PM
+Why is it an issue
+[smx2460]
+hellobox. my compilers aren't in `/usr/local/bin`
+smx2460 11/28/2022 3:06 PM
+.
+[smx2460]
+smx2460 11/28/2022 3:06 PM
+@hellobox
+11/28/2022 3:06 PM
+I don't get why it matters
+hellobox. 11/28/2022 2:43 PM
+my improved lg webos 5/6 toolchain is pretty good though
+11/28/2022 2:42 PM
+lg's toolchain doesn't have zlib
+11/28/2022 2:42 PM
+god, building anything for webos is a pain in the ass
+hellobox. 11/28/2022 2:19 PM
+looks like this was fixed in 2.23
+https://sourceware.org/bugzilla/show_bug.cgi?id=11460
+11/28/2022 2:14 PM
+the automatic fix (adding -DBAD_FTS=1 to CFLAGS) doesn't work
+11/28/2022 2:12 PM
+ancient glibc...
+    In file included from ../../elfutils-0.188/libdwfl/linux-kernel-modules.c:36:
+    /opt/arm-webos-linux-gnueabi_sdk-buildroot/arm-webos-linux-gnueabi/sysroot/usr/include/fts.h:41:3: error: #error "<fts.h> cannot be used with -D_FILE_OFFSET_BITS==64"
+       41 | # error "<fts.h> cannot be used with -D_FILE_OFFSET_BITS==64"
+          |   ^~~~~
+11/28/2022 2:07 PM
+at least this is an easy fix:
+    In file included from ../../strace-6.0/src/epoll.c:34:
+    ../../strace-6.0/src/xlat/epollevents.h:113:25: error: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Werror=sign-compare]
+      113 | static_assert((EPOLLET) == (0x80000000), "EPOLLET != 0x80000000");
+          |                         ^~
+    cc1: all warnings being treated as errors
+11/28/2022 2:07 PM
+or not
+11/28/2022 2:05 PM
+in the meantime, i should be able to use br-nc4 for building
+non-terminal-related stuff
+11/28/2022 2:05 PM
+i guess i have to figure out ncurses versions for ancient webos
+11/28/2022 2:04 PM
+this caused problems for bash as well as less
+hellobox. 11/28/2022 1:55 PM
+(on webos 4.0, anyway)
+11/28/2022 1:55 PM
+so ncurses 5.9
+11/28/2022 1:54 PM
+it's tinfo that's used
+11/28/2022 1:54 PM
+ugh the lg ndk doesn't have them either
+11/28/2022 1:50 PM
+or tinfo i guess
+11/28/2022 1:49 PM
+@Smx can you add termcap?
+hellobox. 11/28/2022 1:20 PM
+i just edited the environment file
+[smx2460]
+hellobox. i can change it manually
+smx2460 11/28/2022 1:19 PM
+???
+hellobox. 11/28/2022 12:55 PM
+i can change it manually
+11/28/2022 12:55 PM
+my compilers aren't in /usr/local/bin
+[smx2460]
+smx2460 11/28/2022 12:49 PM
+We use ccache so that it doesn't hit too hard on the CI
+11/28/2022 12:49 PM
+I mean
+[smx2460]
+hellobox. it's trying to use `ccache`... did the old version do this?
+smx2460 11/28/2022 12:11 PM
+Yes, is that an issue?
+hellobox. 11/28/2022 12:02 PM
+those _FOR_BUILD vars are used when building bash
+11/28/2022 12:00 PM
+i guess it did
+11/28/2022 11:59 AM
+export "CC_FOR_BUILD=ccache /usr/local/bin/gcc"
+[] smx2460
+https://github.com/openlgtv/buildroot-nc4/releases/tag/webos-2974f83
+hellobox. 11/28/2022 11:59 AM
+it's trying to use ccache... did the old version do this?
+November 27, 2022
+[yolofant]
+yolofant 11/27/2022 12:30 PM
+it's included with hyperHDR now
+[yolofant]
+yolofant 11/27/2022 11:16 AM
+no idea why you want that though, it's heavily outdated
+[enigmacarpc]
+enigmacarpc 11/27/2022 1:24 AM
+Does anyone know what repo has backendsHDR.ipk if any?
+[smx2460]
+smx2460 11/27/2022 12:34 AM
+https://github.com/openlgtv/buildroot-nc4/releases/tag/webos-2974f83
+Release 2022.08.1 - gcc 12 · openlgtv/buildroot-nc4
+updated to buildroot 2022.08.1 gcc 12.1
+November 26, 2022
+[smx2460]
+smx2460 11/26/2022 3:52 PM
+Colorado
+11/26/2022 3:52 PM
+    checking whether make supports nested variables... yes
+    checking whether make supports nested variables... (cached) yes
+    configure: libconfig - made with pride in Colorado
+    checking for style of include used by make... GNU
+    checking for arm-lgtv-linux-gnueabi-gcc... /mnt/ExtData/buildroot-nc4/output/host/bin/arm-lgtv-linux-gnueabi-gcc
+[smx2460]
+smx2460 11/26/2022 3:12 PM
+https://community.arm.com/arm-community-blogs/b/tools-software-ides-blog/posts/gcc-12
+New performance features and improvements in GCC 12
+Read about the new architecture and performance feature in GCC 12 for
+the Arm CPUs. From vectorization to instructions to optimize memory
+operations.
+[]
+11/26/2022 3:11 PM
+if it builds, it'll be available for you to test 
+11/26/2022 3:11 PM
+to all homebrewers: testing gcc12 in buildroot-nc4 (edited)
+[smx2460]
+smx2460 11/26/2022 12:17 PM
+lol
+[yolofant]
+yolofant 11/26/2022 11:17 AM
+[yoguysmaanbro]
+yoguysmaanbro 11/26/2022 9:31 AM
+have to wait 3 yrs for that
+11/26/2022 9:30 AM
+when i hav a job
+11/26/2022 9:30 AM
+i WOULD
+hellobox. 11/26/2022 9:30 AM
+2000 what? i thought you didn't have any money
+[yoguysmaanbro]
+yoguysmaanbro 11/26/2022 9:29 AM
+if someone invents android on web os than i would pay them 2000 (edited)
+11/26/2022 9:28 AM
+ahhhh ok
+hellobox. 11/26/2022 9:28 AM
+is the point
+[] yoguysmaanbro so whs the point
+hellobox. 11/26/2022 9:28 AM
+creating shit yourself
+[yoguysmaanbro]
+yoguysmaanbro 11/26/2022 9:27 AM
+so whs the point
+November 25, 2022
+[yolofant]
+yolofant 11/25/2022 11:45 PM
+I don't think so
+[dumbledick420]
+dumbledick420 11/25/2022 11:20 PM
+is there any homebrew not included in the default repo that's a must
+have/useful?
+November 23, 2022
+[talentshow]
+talentshow 11/23/2022 12:06 PM
+It’s working now… Thank you so much!!!
+ 1
+hellobox. 11/23/2022 12:04 PM
+port 22, username root password alpine
+11/23/2022 12:03 PM
+reboot
+[talentshow]
+talentshow 11/23/2022 12:03 PM
+Still not able to connect though from device manager
+11/23/2022 12:01 PM
+I didn’t do a thing
+11/23/2022 12:01 PM
+With 0.5.1.
+11/23/2022 12:00 PM
+Oh crap. Root status just went to ok now.
+hellobox. 11/23/2022 12:00 PM
+all you should need to do, when you get the root shell (with the #
+prompt) is run
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service
+[:lg:] 1
+[talentshow]
+talentshow 11/23/2022 11:59 AM
+So, when I redo this, do I need to do anything special? Or, just follow
+it again?
+hellobox. 11/23/2022 11:59 AM
+also need to add a note that it's been patched for a while now
+[yolofant]
+yolofant 11/23/2022 11:57 AM
+yes
+ 1
+hellobox. 11/23/2022 11:57 AM
+does it still use 0.5.0?
+[yolofant]
+yolofant 11/23/2022 11:57 AM
+the instructions do not delete the 0.5.0 ipk
+[talentshow]
+talentshow 11/23/2022 11:57 AM
+And did this.
+11/23/2022 11:57 AM
+I did a rootmytv attempt to start. When this didn’t work, I saw the info
+on the exploit
+hellobox. 11/23/2022 11:56 AM
+old rootmytv attempt?
+[yolofant]
+yolofant 11/23/2022 11:56 AM
+leftovers from rootmytv attempt
+[talentshow]
+talentshow 11/23/2022 11:56 AM
+I followed the instructions.
+11/23/2022 11:56 AM
+I was going to ask you this
+hellobox. 11/23/2022 11:56 AM
+how did you end up with 0.5.0?
+[talentshow]
+talentshow 11/23/2022 11:55 AM
+Thanks
+11/23/2022 11:55 AM
+Ugh. Ok then
+hellobox. 11/23/2022 11:55 AM
+which does crashd for you
+11/23/2022 11:55 AM
+or add the https://repo.webosapp.club repo and use the root.telnet app
+11/23/2022 11:54 AM
+you'll have to do the crashd exploit again
+11/23/2022 11:54 AM
+that's not supposed to happen
+[talentshow]
+talentshow 11/23/2022 11:52 AM
+Root status is now unelevated
+11/23/2022 11:51 AM
+Nvm. I found it. So dumb
+hellobox. 11/23/2022 11:50 AM
+and it's version 0.5.0, right?
+[talentshow]
+talentshow 11/23/2022 11:49 AM
+The only access I have to hb is via the tv
+hellobox. 11/23/2022 11:48 AM
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/README.md#updating
+[talentshow]
+talentshow 11/23/2022 11:46 AM
+See a Block system Updates option
+11/23/2022 11:45 AM
+Hmm. Not seeing that option.
+[yolofant]
+yolofant 11/23/2022 11:44 AM
+click update in hb channel
+[talentshow]
+talentshow 11/23/2022 11:43 AM
+Ok. How do I do this?
+hellobox. 11/23/2022 11:42 AM
+you need to update hbchannel to 0.5.1
+11/23/2022 11:42 AM
+the webos version is 6.x
+11/23/2022 11:42 AM
+that's also not the webos version, but that's the wrong version of
+hbchannel
+[talentshow]
+talentshow 11/23/2022 11:42 AM
+0.5.0
+11/23/2022 11:42 AM
+I did that too
+11/23/2022 11:41 AM
+Oh. That’s the manager
+hellobox. 11/23/2022 11:41 AM
+do you have quick start+ disabled?
+[talentshow]
+talentshow 11/23/2022 11:41 AM
+Yeah. 4 times
+hellobox. 11/23/2022 11:41 AM
+that's not the webos version
+11/23/2022 11:41 AM
+did you reboot the tv after enabling it?
+[talentshow]
+talentshow 11/23/2022 11:41 AM
+Webos is 1.8.2
+[talentshow]
+hellobox. well, what's the model of the tv?
+talentshow 11/23/2022 11:40 AM
+I did enable ssh. Model tv is 77C1AUB
+hellobox. 11/23/2022 11:39 AM
+and did you enable ssh in hbchannel settings?
+11/23/2022 11:36 AM
+well, what's the model of the tv?
+[] talentshow took me a couple hours, but was finally able to root my tv
+via the crashd exploit procedure. now i w...
+hellobox. 11/23/2022 11:36 AM
+what version of webos?
+[talentshow]
+talentshow 11/23/2022 11:27 AM
+telnet not connecting
+[talentshow]
+ww8543 does telnet still work?
+talentshow 11/23/2022 11:14 AM
+I have no idea. Sorry, total noob here. No idea what telnet even is. I
+just followed the instructions not really knowing what each step
+actually does. How do I check telnet?
+ww8543 11/23/2022 11:12 AM
+does telnet still work?
+[] talentshow Ok, so what does this mean I need to do to connect it to
+the device manager then?
+ww8543 11/23/2022 11:12 AM
+depending on your webos version, it could be that the ssh server from
+homebrew channel is incompatible and does not run
