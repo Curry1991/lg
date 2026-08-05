@@ -1,0 +1,1962 @@
+May 12, 2021
+[retr0id]
+retr0id 05/12/2021 4:39 PM
+Hm, this kinda "security UX" is a hard problem, I will do some more
+research/thinking
+[mariotaku]
+mariotaku 05/12/2021 4:38 PM
+and store them
+05/12/2021 4:38 PM
+Or, we let user trust each pubkey before first installation
+[retr0id]
+retr0id 05/12/2021 4:37 PM
+I suppose there should be a list of pubkeys
+05/12/2021 4:37 PM
+Directly embedding would definitely be doable
+[mariotaku]
+mariotaku 05/12/2021 4:35 PM
+Or we provide as a separate file
+05/12/2021 4:35 PM
+We can embed pubkey as string into repository right?
+05/12/2021 4:35 PM
+Normally IPK file was signed as a whole with gnupg
+[retr0id]
+retr0id 05/12/2021 4:31 PM
+I suppose package signing will largely solve this problem, once we
+implement it
+05/12/2021 4:30 PM
+True
+[mariotaku]
+mariotaku 05/12/2021 4:30 PM
+And also a great workload for us to review each one
+05/12/2021 4:29 PM
+Taking moonlight as an example, sometimes I make daily updates, if this
+part is done manually, it will be pretty cumbersome
+05/12/2021 4:29 PM
+manifest object it self is fetched automatically (instead of sending PRs
+to us), so if some they still wants to make some nasty changes, it's
+still possible...
+[retr0id]
+retr0id 05/12/2021 4:28 PM
+which raises the question, how are we going to manage addition of
+packages to the repo - perhaps via PR? (edited)
+05/12/2021 4:27 PM
+reason being, if we are allowing semi-trusted people to add their
+packages to our repo, we don't want them to be able to switch out the
+contents of their manifest
+05/12/2021 4:25 PM
+I wonder if we should require that manifests be embedded
+05/12/2021 4:24 PM
+ I think that's a good change
+[mariotaku]
+mariotaku 05/12/2021 4:21 PM
+https://github.com/webosbrew/docs/pull/4/files @infowski I have made
+proposed change, this is gonna be good for hbchannel I think
+Added embed manifest and description fields by mariotaku · Pull Req...
+This closes #3
+[]
+[infowski]
+infowski 05/12/2021 9:47 AM
+Aaand... I haven't unpacked my TV because we still need to choose a
+cabinet for it (my SO is not into pallets, ok?). I am getting my desk
+delivered today so I guess I'll unpack it there... 
+[infowski]
+ww8543 so how did the move go? everything in order? :)
+infowski 05/12/2021 9:44 AM
+yeah, mostly fine, managed to return the previous flat, got my deposit
+back, now left is only some final furnishing and a little bit of
+paperwork. ...and also my ISP is not hurrying on moving my uplink here,
+they theoretically have 21 days after initial ticket, and they have a
+week or so left, so I'm still working over LTE. Not terrible, but not
+great either. (mobile data in poland is okay-ish, but I have 10GB/mo cap
+so not much youtube for me :() (edited)
+[] infowski and, in general, I am quite busy with non-webos stuff right
+now, and I haven't even unpacked my tv a...
+ww8543 05/12/2021 12:01 AM
+so how did the move go? everything in order? :)
+May 11, 2021
+[infowski]
+infowski 05/11/2021 11:51 PM
+and, in general, I am quite busy with non-webos stuff right now, and I
+haven't even unpacked my tv after move yet .__.
+05/11/2021 11:49 PM
+former part needs to be added (waiting to merge in typescript stuff
+before finishing that permissions PR), latter is already done
+05/11/2021 11:48 PM
+...and they shouldn't be needed (at least during startup) unless a crash
+happens during homebrew channel update
+05/11/2021 11:48 PM
+yeah, I'm thinking of switching to using only scan-volatile-dirs and
+doing that only when there are some actual changes
+[dustyangel47]
+dustyangel47 05/11/2021 11:40 PM
+i would say we could start making releases for both permission types and
+determining which one to update with hb channel but that seems really
+overcomplicated (edited)
+05/11/2021 11:38 PM
+has the weird luna crash/factory reset bug even happened to anyone else
+with public switched to all yet? (edited)
+[e99.tuxuser]
+e99.tuxuser 05/11/2021 8:27 PM
+ares-install was fine 
+05/11/2021 8:27 PM
+kk, updated issue #33 then
+[infowski]
+infowski 05/11/2021 8:26 PM
+that deviceinfo stuff is webosose-only
+05/11/2021 8:26 PM
+yeah, that's mostly unrelated
+[e99.tuxuser]
+e99.tuxuser 05/11/2021 8:23 PM
+nvm tho, same happens with
+{"org.webosbrew.hbchannel.service*":["public"]}
+05/11/2021 8:20 PM
+Verbose log: https://pastebin.com/yG376KM5
+$ ares-device -i -vvares-device verb argv {ares-device verb argv ...
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+05/11/2021 8:17 PM
+enabling verbose yields that its actually able to fetch some stuff via
+SSH tho
+05/11/2021 8:15 PM
+likely doing something wrong and sorry for acting so noobish, its just a
+few configurations are "natural/implicit" for you guys, that I am not
+aware of 
+05/11/2021 8:14 PM
+So, trying to check the ares crash
+~/.ssh/config
+    Host lgtv
+      HostName 10.0.20.110
+      User root
+      IdentityFile ~/.ssh/id_rsa_fallback
+    # ~/.webos/ose/novacom-devices.json
+    json
+    [
+        {
+            "order": "0",
+            "default": false,
+            "profile": "ose",
+            "name": "emulator",
+            "description": "LG webOS Emulator",
+            "host": "127.0.0.1",
+            "port": 6622,
+            "username": "developer",
+            "privateKey": {
+                "openSsh": "webos_emul"
+            },
+            "files": "sftp",
+            "noPortForwarding": false,
+            "indelible": true
+        },
+        {
+            "profile": "ose",
+            "name": "LGTV-root",
+            "host": "10.0.20.110",
+            "port": 22,
+            "description": "new device",
+            "username": "root",
+            "default": true,
+            "files": "stream",
+            "privateKey": {
+                "openSsh": "id_rsa_fallback"
+            }
+        }
+    ]
+    # Output
+    $ ares-device -s
+    ares-device ERR! Error: This device does not support the session. 
+    $ ares-device -i
+    ares-device ERR! CLI: luna-send command failed <Denied method call "query" for category "/deviceInfo">
+(edited)
+[infowski]
+infowski 05/11/2021 6:57 PM
+Yeah, absolutely no problem :3
+[zopieux]
+zopieux 05/11/2021 6:38 PM
+ofc sorry I have various levels of availability in the week
+[infowski]
+infowski 05/11/2021 6:13 PM
+@zopieux can you please take a quick look at this in some free time?
+https://github.com/webosbrew/webos-homebrew-channel/pull/43#discussion_r628785496
+[e99.tuxuser]
+e99.tuxuser 05/11/2021 6:07 PM
+kk
+[infowski]
+infowski 05/11/2021 6:06 PM
+@ztuxnet also - after the change (assuming you didn't do it yet) perform
+a reboot and play around with stuff, to check if we don't stumble upon
+https://github.com/webosbrew/webos-homebrew-channel/issues/33 again
+ls-hubd crashes after patching permissions · Issue #33 · webosbrew/...
+@rhinoswirl noticed some weird behaviour after manually applying changes
+in #24 on a device running webOS 4.3.0-9703 / 20210107010305 /
+HE_DTV_W18A_AFADABAA Likely ls-control scan-services run in s...
+[]
+[infowski]
+[] e99.tuxuser Updated the issue, fix from PR #24 was indeed neccessary
+infowski 05/11/2021 6:05 PM
+Thanks 
+[mariotaku]
+[] mariotaku OK. I'll first draft this change to docs tomorrow.
+mariotaku 05/11/2021 6:04 PM
+https://github.com/webosbrew/docs/issues/3
+Embed package manifest into repository object · Issue #3 · webosbre...
+[]
+[e99.tuxuser]
+e99.tuxuser 05/11/2021 6:04 PM
+Updated the issue, fix from PR #24 was indeed neccessary
+[mariotaku]
+mariotaku 05/11/2021 6:04 PM
+OK. I'll first draft this change to docs tomorrow.
+ 1
+[infowski]
+infowski 05/11/2021 6:03 PM
+add me as a reviewer and I'll share my thoughts if you get any specific
+implementation in mind.
+[infowski]
+[] mariotaku I'm thinking to update repo manifest for a little bit, to
+enable package manifest nesting. And a per...
+infowski 05/11/2021 6:03 PM
+makes sense
+[mariotaku]
+mariotaku 05/11/2021 6:02 PM
+I'm thinking to update repo manifest for a little bit, to enable package
+manifest nesting. And a periodic CI task to fetch recent versions.
+[infowski]
+infowski 05/11/2021 6:02 PM
+there's also /var/run/nyx/device_info.json but that has nduid / mac /
+serial number
+[e99.tuxuser]
+e99.tuxuser 05/11/2021 6:02 PM
+thx
+[infowski]
+infowski 05/11/2021 6:02 PM
+no hardware identifiers, only software version info.
+05/11/2021 6:02 PM
+there's /var/run/nyx/os_info.json
+05/11/2021 6:01 PM
+Hmmm, just give me a moment..
+[e99.tuxuser]
+e99.tuxuser 05/11/2021 6:00 PM
+device metadata, codename, model name, fw version .. all that
+05/11/2021 6:00 PM
+can you hint again how to get this nice WebOS device details json
+output?
+[e99.tuxuser]
+e99.tuxuser 05/11/2021 5:41 PM
+sure, will do
+[infowski]
+infowski 05/11/2021 5:36 PM
+@ztuxnet when you have time, can you check if everything works and
+report your webOS version on
+https://github.com/webosbrew/webos-homebrew-channel/issues/7 ? (if you
+have permissions errors during install of any app from our repo, then
+manually applying what
+https://github.com/webosbrew/webos-homebrew-channel/pull/24 does would
+work, ie. replace public with all in
+/var/luna-service2-dev/client-permissions.d/org.webosbrew.hbchannel.service.service.json)
+(edited)
+[] mariotaku Router <-> Phone OK Router <-> PC OK Router <-> TV Jitter
+Phone <-> TV Jitter
+royka87 05/11/2021 4:44 PM
+Strange, active bluetooth connection with the tv? Idk but maybe an USB
+device could interfere with the wifi? Otherwise what you said indeed a
+bt or wifi scan, but then it's different on other model's/software
+version
+[mariotaku]
+mariotaku 05/11/2021 4:34 PM
+Router <-> Phone OK Router <-> PC OK Router <-> TV Jitter Phone <-> TV
+Jitter
+[mariotaku]
+royka87 Maybe another device is reserving all bandwidth, tried another
+WiFi (hotspot) to sort that out?
+mariotaku 05/11/2021 4:33 PM
+Yes I tried, not so much different.
+[e99.tuxuser]
+royka87 It writes over the old script, so if you made modifications to
+that script you should make a backup ...
+e99.tuxuser 05/11/2021 4:33 PM
+thanks, missed that the copying is a manual process (missed it in the
+README) - now did the copying, and its fine 
+royka87 05/11/2021 4:19 PM
+Maybe another device is reserving all bandwidth, tried another WiFi
+(hotspot) to sort that out?
+[mariotaku]
+mariotaku 05/11/2021 4:01 PM
+Hmm, interesting. This is kinda complicated
+royka87 05/11/2021 3:53 PM
+Tv connected to wifi, of the 200 pings I had 1 of 98ms the others around
+1.90ms
+[mariotaku]
+mariotaku 05/11/2021 3:44 PM
+Sound like performance degraded during wifi scan or something
+05/11/2021 3:43 PM
+Could you try to ping your TV to see if it has 100ms delays under WiFi?
+Feel pretty strange about this because I had this for every 10 seconds.
+royka87 05/11/2021 3:18 PM
+It writes over the old script, so if you made modifications to that
+script you should make a backup of the added lines
+[e99.tuxuser]
+e99.tuxuser 05/11/2021 2:15 PM
+Are there required steps available when migrating from XDA-prerelease
+root (and its bundled start-devmode.sh) to the homebrew channel way of
+managing the startup services?
+May 10, 2021
+Deleted User 05/10/2021 1:45 PM
+reboot via cmd and factory mode will be disabled
+05/10/2021 1:45 PM
+exec /usr/bin/com.webos.app.factorywin factory-mode -platform starfish
+05/10/2021 1:45 PM
+how to start tv in factory mode
+Deleted User 05/10/2021 1:32 PM
+(no content)
+[unknown.png]
+ unknown.png
+36.2 KB External
+05/10/2021 1:31 PM
+luna-send -n 1 -f luna://com.webos.memorymanager/getUnitList
+'{\"procList\":200}'
+05/10/2021 1:31 PM
+found running proceses:
+[infowski]
+infowski 05/10/2021 1:26 PM
+well, you can also just manually download some software update package
+and use epk2extract
+[:meep:] 1
+[] infowski pretty sure you can, you just need to reverse engineer
+everything.
+Deleted User 05/10/2021 1:26 PM
+now I am dumping from root . wish me luck (edited)
+Deleted User 05/10/2021 12:56 PM
+Or maybe launch those menus without ir emulator
+[infowski]
+infowski 05/10/2021 12:55 PM
+pretty sure you can, you just need to reverse engineer everything.
+ 1 [:rj45:] 1
+Deleted User 05/10/2021 12:55 PM
+I saw some post on root channel and got me thinking.. Can we extract pin
+codes for lg service menus? Like instart code or service key bla bla
+[dustyangel47]
+dustyangel47 05/10/2021 1:33 AM
+now it works right
+[unknown.png]
+ unknown.png
+23.54 KB External
+05/10/2021 1:29 AM
+lets go i forgot to make a variable in a specific context
+[dustyangel47]
+dustyangel47 05/10/2021 1:21 AM
+also i made the infomation grabbing thing seen in the picture (edited)
+05/10/2021 1:21 AM
+although i forgot to chmod it
+05/10/2021 1:21 AM
+update on my cli package manager: it now supports installing CLI
+applications from https://www.ruthenic.com/hbpm-cli-repo/apps.json
+(which uses a bastardized version of the hb channel apps.json format
+(actually the manifest for the cli app is also a bastardized version of
+the xxx.manifest.json format for hb channel apps)) (edited)
+[unknown.png]
+ unknown.png
+26.11 KB External
+ 1
+May 9, 2021
+[rhinoswirl]
+rhinoswirl 05/09/2021 5:42 PM
+Thanks guys.
+[smx2460]
+smx2460 05/09/2021 5:05 PM
+but it's better than reading binary
+05/09/2021 5:05 PM
+which is still a bit of a mess to navigate in
+05/09/2021 5:04 PM
+it exports db8 databases to some "readable" JSON
+05/09/2021 5:03 PM
+@ww too
+05/09/2021 5:03 PM
+@rhinoswirl https://github.com/webosose/db8/tree/master/tool/ldbviewer
+webosose/db8
+A userspace service that provides access to the webOS database -
+webosose/db8
+[]
+ww8543 05/09/2021 5:01 PM
+it is literally the worst concoction of several data storage methods
+combined together that i have ever seen
+ 1
+05/09/2021 5:00 PM
+https://github.com/feniksa/indb8
+feniksa/indb8
+The no-SQL database for webOS. Contribute to feniksa/indb8 development
+by creating an account on GitHub.
+[]
+[rhinoswirl]
+rhinoswirl 05/09/2021 4:14 PM
+does anyone know of any good apps to read db8 databases? I see that
+something used to exist for it, but not sure if it still works in more
+recent webOS versions as such tools were built for palm devices. should
+work.
+[dustyangel47]
+dustyangel47 05/09/2021 2:29 PM
+no problem (edited)
+[rhinoswirl]
+rhinoswirl 05/09/2021 2:28 PM
+ok, thank you.
+[dustyangel47]
+dustyangel47 05/09/2021 2:27 PM
+yes
+[rhinoswirl]
+rhinoswirl 05/09/2021 2:27 PM
+yup. as for the others, you said that you have
+/mnt/lg/appstore/preload/storepromotion and /mnt/lg/appstore/system
+only, correct?
+[dustyangel47]
+dustyangel47 05/09/2021 2:27 PM
+other wise cat would give an error i think (edited)
+05/09/2021 2:27 PM
+ah, then yes they do seem to all exist
+[rhinoswirl]
+rhinoswirl 05/09/2021 2:26 PM
+they exist, they are just empty.
+[dustyangel47]
+[] rhinoswirl and also the output of the following commands: ```
+/var/luna/preferences/ran-firstuse cat /mnt/lg/...
+dustyangel47 05/09/2021 2:25 PM
+none of those files exist/have anything in them (edited)
+[unknown.png]
+ unknown.png
+10.97 KB External
+[rhinoswirl]
+rhinoswirl 05/09/2021 2:24 PM
+uh... ok, that's good to know.
+[dustyangel47]
+[] rhinoswirl also, can you check for the existence of: ```
+/mnt/lg/cmn_data/db8/corrupted_maindb.tar.bz2 ```
+dustyangel47 05/09/2021 2:24 PM
+doesnt exist here
+[rhinoswirl]
+rhinoswirl 05/09/2021 2:23 PM
+I think I may have discovered the reason why I got a factory reset.
+05/09/2021 2:23 PM
+also, can you check for the existence of:
+    /mnt/lg/cmn_data/db8/corrupted_maindb.tar.bz2
+[dustyangel47]
+dustyangel47 05/09/2021 2:23 PM
+give me a sec for the other one
+[dustyangel47]
+[] rhinoswirl guys, can you please confirm me if you have the following
+files/directories in your tv and your webO...
+dustyangel47 05/09/2021 2:23 PM
+I have the first one and the third one, webOS v5.2.1-2521
+[rhinoswirl]
+rhinoswirl 05/09/2021 2:09 PM
+thank you
+05/09/2021 2:09 PM
+and also the output of the following commands:
+    /var/luna/preferences/ran-firstuse
+    cat /mnt/lg/cmn_data/firstmount
+    cat /mnt/lg/appstore/firstmount
+    cat /mnt/lg/cmn_data/home/firstmount
+    cat /mnt/lg/cmn_data/var/firstmount
+    cat /mnt/lg/db8/vardb/firstmount
+(edited)
+05/09/2021 2:09 PM
+guys, can you please confirm me if you have the following
+files/directories in your tv and your webOS version:
+    /mnt/lg/appstore/preload/storepromotion
+    /mnt/lg/appstore/preload/igallery/files/download
+    /mnt/lg/appstore/system
+    /mnt/lg/uhdcp/copp
+    /mnt/lg/uhdcp/uhdcp
+[rhinoswirl]
+rhinoswirl 05/09/2021 1:30 PM
+but you have reports of people saying that they applied the PR and
+nothing bad happened in more recent webOS versions.
+05/09/2021 1:30 PM
+webOS 4.3.0
+05/09/2021 1:30 PM
+I don't see why it can't. again, it is literally just a change in a
+permission. I was the only one who had issues. immediately after making
+that change and running ls-control scan-volatile-dirs (or scan-services,
+don't remember) my luna bus crashed. again, most likely this is related
+with some other thing I may have changed that caused this because it is
+just a permission and it makes no sense for the system to start
+misbehaving just because you're saying "oh, this service can do more
+things". (edited)
+Deleted User 05/09/2021 1:26 PM
+Can this be tested on webos emulator? I saw some discussion regarding
+the fact that emulator possibly uses open webos version (edited)
+[rhinoswirl]
+rhinoswirl 05/09/2021 1:25 PM
+that PR makes a change to edit
+/var/luna-service2-dev/client-permissions.d/org.webosbrew.hbchannel.service.service.json
+and change the group from public to all.
+05/09/2021 1:25 PM
+https://github.com/rhinoswirl/webostv-research/blob/main/services/client-permissions.d.md
+rhinoswirl/webostv-research
+Research on webOS TV. Contribute to rhinoswirl/webostv-research
+development by creating an account on GitHub.
+[]
+ 1
+05/09/2021 1:24 PM
+the service, yes.
+Deleted User 05/09/2021 1:24 PM
+So.. homebrew app needs permissions to trigger luna install?
+[rhinoswirl]
+rhinoswirl 05/09/2021 1:23 PM
+in my case, that change caused some weird behaviour, but could be
+related with other things I had running or other configurations I may
+have changed before that could've put the system in this inconsistent
+state. applications with the all permissions exist in several places in
+the system.
+05/09/2021 1:21 PM
+it should actually not cause any issues. services in luna have a
+specific set of permissions that tells them what they are allowed to do
+or not. what that change does is to change the permissions of the
+service from public (default) to all (which allows you to do anything,
+including installing).
+Deleted User 05/09/2021 1:21 PM
+It is old method. I even used it on my 2010 lg monitor
+[] rhinoswirl you won't get to that point, but I can't tell you if there
+are or not. I know that there is a way to...
+Deleted User 05/09/2021 1:21 PM
+I did but that is software based not firmware based
+ 1
+[rhinoswirl]
+rhinoswirl 05/09/2021 1:20 PM
+you won't get to that point, but I can't tell you if there are or not. I
+know that there is a way to load a new firmware from USB, but I've never
+tested it.
+[] rhinoswirl As of now, I'm the only one who had issues with this, so
+maybe it was something related with my conf...
+Deleted User 05/09/2021 1:19 PM
+I'll try it but are there any recovery options? Like download mode on
+samsung. DFU on apple. Emergeny download mode on DLINK (edited)
+[rhinoswirl]
+rhinoswirl 05/09/2021 12:51 PM
+As of now, I'm the only one who had issues with this, so maybe it was
+something related with my config. Try it and report if it worked for
+you.
+[rhinoswirl]
+rhinoswirl 05/09/2021 12:39 PM
+applying it caused some weird issues on my TV. if the service was
+running with the permissions set as all, ares-install wouldn't allow me
+to update the app without killing the service manually first as
+otherwise it would crash luna and force me to reboot the TV. eventually,
+something happened and my TV sent me to the getting started page. could
+be unrelated, I don't know.
+https://github.com/webosbrew/webos-homebrew-channel/issues/33 (edited)
+ls-hubd crashes after patching permissions · Issue #33 · webosbrew/...
+@rhinoswirl noticed some weird behaviour after manually applying changes
+in #24 on a device running webOS 4.3.0-9703 / 20210107010305 /
+HE_DTV_W18A_AFADABAA Likely ls-control scan-services run in s...
+[]
+05/09/2021 12:38 PM
+check this: https://github.com/webosbrew/webos-homebrew-channel/pull/24
+elevate-service: extend luna-service2 bus permissions by Informatic...
+Somewhere between webOS 3.8 and 4.3 some changes has been introduced, so
+that our service is not allowed to install applications by default. This
+should give us full permissions to whole bus. This ...
+[]
+05/09/2021 12:37 PM
+^ that's a known issue. The service is run as the root user in the
+system, but in the luna bus permissions it doesn't have enough
+permissions to perform an app install.
+Deleted User 05/09/2021 10:00 AM
+Bahaviour: On webos 5.2.0 with latest homebrew channel release, download
+and install stops at 51%~ish compared to 94% on webos 4.9.0
+May 8, 2021
+[mariotaku]
+mariotaku 05/08/2021 6:11 PM
+Ooh sweet!
+[infowski]
+infowski 05/08/2021 6:11 PM
+https://github.com/enyojs/ares-webos-sdk/blob/master/lib/gdbserver.js
+enyojs/ares-webos-sdk
+Contribute to enyojs/ares-webos-sdk development by creating an account
+on GitHub.
+[]
+[mariotaku]
+mariotaku 05/08/2021 6:10 PM
+They may even work in LG era
+05/08/2021 6:10 PM
+Haha but I think their parameters makes sense
+[infowski]
+infowski 05/08/2021 6:09 PM
+>command line to generate, package, install, run and debug Open webOS
+applications.
+05/08/2021 6:09 PM
+https://github.com/pavelpower/ares-webos-sdk Ooooooohhhhh. I think this
+might be based on HP-era webOS SDK 
+pavelpower/ares-webos-sdk
+Contribute to pavelpower/ares-webos-sdk development by creating an
+account on GitHub.
+[]
+[mariotaku]
+mariotaku 05/08/2021 6:09 PM
+I remember there's no ares-gdbserver on public SDK
+[infowski]
+infowski 05/08/2021 6:08 PM
+Is it though? It kinda looks like a wrapped up parts of webos sdk + some
+public libs?
+[mariotaku]
+mariotaku 05/08/2021 6:08 PM
+I think that's an accidental leak
+[infowski]
+infowski 05/08/2021 5:29 PM
+nice javascript
+[mariotaku]
+mariotaku 05/08/2021 9:00 AM
+https://github.com/recurve/ares-ecosystem/blob/master/node_modules/ares-webos-sdk/lib/gdbserver.js
+recurve/ares-ecosystem
+Complete javascript application development package. All of Enyo, Ares,
+Onyx, etc. all put together, all seamlessly integrated. The complete
+Ares Ecosystem. - recurve/ares-ecosystem
+[]
+[:meep:] 2
+05/08/2021 8:59 AM
+Might got way to do native debugging on webOS
+[:lg:] 1
+May 7, 2021
+[infowski]
+infowski 05/07/2021 11:05 PM
+https://developer.youi.tv/6.3/rn/platform-lg/lg/ completely unrelated I
+just found this - they have webOS renderer for their react-native-like
+framework
+Get Started on LG webOS - You.i TV Developer Portal
+Get started developing LG webOS apps on Linux.
+[dustyangel47]
+dustyangel47 05/07/2021 10:35 PM
+also it was an x86 environment so it wouldn't work
+05/07/2021 10:35 PM
+i actually tried before but I couldn't find the usb port on my tv lol
+[mariotaku]
+mariotaku 05/07/2021 10:34 PM
+Well of course it's fun, I port flutter for the same purpose (edited)
+[dustyangel47]
+dustyangel47 05/07/2021 10:34 PM
+well we can resolve the storage problem by sticking a usb stick in there
+(I think it would be mountable as rw)
+[mariotaku]
+mariotaku 05/07/2021 10:33 PM
+It's slower than a pi plus tiny storage
+[dustyangel47]
+dustyangel47 05/07/2021 10:32 PM
+why not
+[mariotaku]
+[] dustyangel47 obviously you can't run any graphical programs on the tv
+but still
+mariotaku 05/07/2021 10:32 PM
+Of course it can be done but why though
+[mariotaku]
+[] dustyangel47 rms would approve ~~lets just ignore that we're
+compiling to a proprietary platform~~
+mariotaku 05/07/2021 10:32 PM
+Lol yeah but we are adding extra freedom to it
+[dustyangel47]
+dustyangel47 05/07/2021 10:31 PM
+obviously you can't run any graphical programs on the tv but still
+05/07/2021 10:31 PM
+well its busybox's chroot, but its still chroot
+05/07/2021 10:31 PM
+i think it has chroot
+[dustyangel47]
+[] zopieux *proceeds to nixify my tv*
+dustyangel47 05/07/2021 10:30 PM
+couldn't you somehow get a nixos (or any other distro) filesystem on the
+tv and chroot into it?
+[dustyangel47]
+[] mariotaku Nothing is proprietary during this process
+dustyangel47 05/07/2021 10:29 PM
+rms would approve ~~lets just ignore that we're compiling to a
+proprietary platform~~
+[zopieux]
+zopieux 05/07/2021 10:29 PM
+proceeds to nixify my tv
+05/07/2021 10:29 PM
+oh is it, are you saying we could compile the binary sdk from source?
+[mariotaku]
+mariotaku 05/07/2021 10:28 PM
+Nothing is proprietary during this process
+05/07/2021 10:28 PM
+The NDK is a modified version from OSE
+[mariotaku]
+[] zopieux would be nice to be able to rely on a non-proprietary
+toolchain some day
+mariotaku 05/07/2021 10:28 PM
+It is actually!
+[zopieux]
+zopieux 05/07/2021 10:26 PM
+would be nice to be able to rely on a non-proprietary toolchain some day
+05/07/2021 10:26 PM
+wow
+[mariotaku]
+mariotaku 05/07/2021 10:24 PM
+Took quite a while
+[mariotaku]
+[] zopieux fun! how are you building this? lg NDK?
+mariotaku 05/07/2021 10:24 PM
+webOS GCC -> LLVM -> Flutter Engine
+[zopieux]
+[] mariotaku Yes dart
+zopieux 05/07/2021 10:23 PM
+fun! how are you building this? lg NDK?
+[zopieux]
+zopieux 05/07/2021 10:22 PM
+@infowski thanks for the review, great feedback, will fix
+[mariotaku]
+mariotaku 05/07/2021 9:52 PM
+What's spatial navigation?
+[infowski]
+infowski 05/07/2021 7:32 PM
+now the biggest question is - what's the state of spatial navigation in
+flutter
+[infowski]
+infowski 05/07/2021 7:00 PM
+looks reasonable.
+[smx2460]
+smx2460 05/07/2021 6:59 PM
+wow cool
+[mariotaku]
+mariotaku 05/07/2021 6:59 PM
+It's a high standard web app lol
+05/07/2021 6:59 PM
+(no content)
+ VID_20210508_015802_290.mp4
+6.07 MB External
+ 4 [:lg:] 1 🇬 1 🇷 1 🇪 1 🇦 1 🇹 1 [:rtk:] 1
+[mariotaku]
+mariotaku 05/07/2021 6:41 PM
+I'm going to build a few apps to see how well it can run
+[mariotaku]
+[] infowski And that's made in Dart, right?
+mariotaku 05/07/2021 6:41 PM
+Yes dart
+[infowski]
+infowski 05/07/2021 6:37 PM
+(I've never done any flutter stuff, only briefly looked through the docs
+and some demos long time ago)
+05/07/2021 6:36 PM
+And that's made in Dart, right?
+[mariotaku]
+mariotaku 05/07/2021 6:36 PM
+(no content)
+[PXL_20210507_163537866.MP.jpg]
+ PXL_20210507_163537866.MP.jpg
+148.08 KB External
+ 3
+Deleted User 05/07/2021 5:38 PM
+i think raspberry wins in hardware (edited)
+[mariotaku]
+mariotaku 05/07/2021 5:38 PM
+I doubt it will be more powerful than raspi speaking of CPU/RAM
+Deleted User 05/07/2021 5:38 PM
+considering CX lineup
+[] mariotaku It's just a giant decent piece of a glass panel afterall
+Deleted User 05/07/2021 5:38 PM
+expensive one
+[mariotaku]
+mariotaku 05/07/2021 5:38 PM
+It's just a giant decent piece of a glass panel afterall
+Deleted User 05/07/2021 5:37 PM
+maybe with stadia
+[] mariotaku It's not meant to be running too much apps after all
+Deleted User 05/07/2021 5:37 PM
+it will not replace a console for sure
+[mariotaku]
+mariotaku 05/07/2021 5:37 PM
+It's not meant to be running too much apps after all
+Deleted User 05/07/2021 5:37 PM
+300mb user space left
+05/07/2021 5:36 PM
+mediatek..realtek..1gb ram..
+[mariotaku]
+mariotaku 05/07/2021 5:36 PM
+webOS only has less than 1000MB for OS (many are allocated for DSP)
+Deleted User 05/07/2021 5:36 PM
+maybe android 2.3 gingerbread
+05/07/2021 5:36 PM
+hardware is so limited that android emulation will be never a thing
+[mariotaku]
+mariotaku 05/07/2021 5:35 PM
+But it will introduce a new way to write apps for webOS
+ 1
+[mariotaku]
+Deleted User Please tell me this is android app
+mariotaku 05/07/2021 5:35 PM
+No, it's flutter
+Deleted User 05/07/2021 5:35 PM
+[] mariotaku Click to see attachment
+Deleted User 05/07/2021 5:35 PM
+Please tell me this is android app
+[infowski]
+infowski 05/07/2021 1:03 PM
+Yeah. I think there's still a bunch of minor changes that could be done,
+but I'd need to look at it for a while in the context of other system
+icons. I think original icons have bigger margins around the main icon,
+or they just are a little "lighter".
+[mariotaku]
+[] infowski yeah, quick morning mockup in inkscape  I have to say it
+was a happy little accident how it turned...
+mariotaku 05/07/2021 1:00 PM
+I especially love the round one, makes the whole icon looking more
+friendly
+[infowski]
+[] mariotaku Oh my, you draw this?
+infowski 05/07/2021 12:59 PM
+yeah, quick morning mockup in inkscape  I have to say it was a happy
+little accident how it turned out in the end.
+ 2 🇳 1 🇮 1 🇨 1 🇪 1
+[mariotaku]
+mariotaku 05/07/2021 12:56 PM
+When the design finalized, I'd like to use new logo based on your
+version - replacing material beer icon and use yours.
+05/07/2021 12:51 PM
+This is absolutely amazing!
+05/07/2021 12:51 PM
+Oh my, you draw this?
+[infowski]
+infowski 05/07/2021 12:07 PM
+https://github.com/webosbrew/webos-homebrew-channel/pull/45 thoughts?
+assets: branding rework by Informatic · Pull Request #45 · webosbre...
+Closes #14 New homescreen icon: Splashscreen: Icon background color is
+the same as enyo/moonstone accent. Up for comments.
+[]
+[mariotaku]
+mariotaku 05/07/2021 11:24 AM
+(no content)
+[20210507_182338.jpg]
+ 20210507_182338.jpg
+1.23 MB External
+ 1
+[infowski]
+infowski 05/07/2021 6:43 AM
+liekly an issue with some terminfo stuff
+[dustyangel47]
+dustyangel47 05/07/2021 2:01 AM
+hmm, the arrow keys also dont seem to work
+[dustyangel47]
+dustyangel47 05/07/2021 1:53 AM
+but it does seem to work
+05/07/2021 1:52 AM
+lol fish shell without colour is cursed to use (edited)
+[unknown.png]
+ unknown.png
+3.42 KB External
+[infowski]
+infowski 05/07/2021 1:06 AM
+I hope I'll be able to find a minute to test it out tomorrow.
+ 1
+[zopieux]
+zopieux 05/07/2021 12:32 AM
+it should pretty much be a no-op,but I wouldn't mind if you could help
+test this https://github.com/webosbrew/webos-homebrew-channel/pull/43
+Typescriptify services entrypoint; add relevant lint & tooling by Z...
+[]
+[infowski]
+infowski 05/07/2021 12:22 AM
+still waiting for 21.05...
+[zopieux]
+zopieux 05/07/2021 12:20 AM
+(ok i'm on arch here but still)
+05/07/2021 12:20 AM
+oh look a fellow nixos user!
+[infowski]
+infowski 05/07/2021 12:20 AM
+that's what nixpkgs gave me, okay?
+[zopieux]
+zopieux 05/07/2021 12:20 AM
+7.11.2 
+[infowski]
+infowski 05/07/2021 12:20 AM
+    $ npm --version
+    6.14.11
+05/07/2021 12:20 AM
+whoops.
+[zopieux]
+zopieux 05/07/2021 12:20 AM
+not a big deal except for the gigantic git diffs
+05/07/2021 12:19 AM
+hm seems like somebody's using an old npm that creates v1 package-lock
+files
+May 6, 2021
+[infowski]
+infowski 05/06/2021 11:37 PM
+Ah, that works. Thanks.
+[aabytt]
+[] infowski eh, doesn't seem to work for me.
+aabytt 05/06/2021 11:35 PM
+have you tried with a short path like /assets/icon160.png
+[infowski]
+infowski 05/06/2021 11:33 PM
+nice find
+[aabytt]
+aabytt 05/06/2021 11:32 PM
+https://www.freepatentsonline.com/y2017/0085948.html
+DIGITAL DEVICE AND CONTROL METHOD THEREOF - LG ELECTRONICS INC.
+The present specification discloses various embodiments for a digital
+device and a control method thereof. Herein, a control method of a
+digital device according to an embodiment of the present invent
+05/06/2021 11:32 PM
+Another object of the present invention is to support and process an RF
+and/or an IP-based MVPD (multichannel video programming distributor)
+service in a digital device on which a web OS platform is mounted.
+[infowski]
+infowski 05/06/2021 11:25 PM
+eh, doesn't seem to work for me.
+[aabytt]
+aabytt 05/06/2021 11:23 PM
+700x394
+05/06/2021 11:23 PM
+Here is it
+05/06/2021 11:23 PM
+(no content)
+[CH_PIG.png]
+ CH_PIG.png
+250.72 KB External
+[infowski]
+infowski 05/06/2021 11:22 PM
+yeah, possibly, but it seems to have some requirement on the image size
+as it doesn't show up on my TV with a dummy file
+[aabytt]
+aabytt 05/06/2021 11:22 PM
+(no content)
+[unknown.png]
+ unknown.png
+1.18 MB External
+[aabytt]
+[] infowski
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1#registering-an-app-as-an-input-c...
+aabytt 05/06/2021 11:22 PM
+pigImage is a default preview snapshot
+[infowski]
+infowski 05/06/2021 11:15 PM
+https://gist.github.com/Informatic/0033ba3bdb2f88f244da6edb01c268ed any
+comments?
+webos-services-survey.js
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+[infowski]
+infowski 05/06/2021 10:58 PM
+that's just because their build is so optimized. subprocess is missing
+as well.
+[dustyangel47]
+dustyangel47 05/06/2021 10:58 PM
+the entire point of me using python is that i cant write javascript to
+save my life lol
+[infowski]
+infowski 05/06/2021 10:58 PM
+also: Python 2.7.3
+05/06/2021 10:58 PM
+rewrite it in nodejs :^)
+[dustyangel47]
+dustyangel47 05/06/2021 10:58 PM
+i think they only added json in 2.6
+05/06/2021 10:57 PM
+darn
+[infowski]
+infowski 05/06/2021 10:57 PM
+@DustyAngel47 too bad it seems like python on webOS 3.8 doesn't have
+json... (edited)
+[infowski]
+infowski 05/06/2021 10:33 PM
+I'll make a simple python script to scrape over all services and dump a
+JSON file we could then compare between versions.
+05/06/2021 10:33 PM
+OK, so... It'd be nice to start documenting non-public public luna
+service bus APIs
+05/06/2021 10:32 PM
+tfw indent is not even there :/
+05/06/2021 10:32 PM
+long boiiiiiiiiiii
+[dustyangel47]
+dustyangel47 05/06/2021 10:32 PM
+what is that even doing lmao
+[infowski]
+infowski 05/06/2021 10:30 PM
+alias indent='indent -bad -bap -bbo -nbc -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0 -cp33 -cs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs -npsl -nsc -nsob -nss -ts4 '
+that's some long starfishy boi
+05/06/2021 10:30 PM
+that's why ssh root@IP env is different to ssh root@IP and then env
+05/06/2021 10:30 PM
+so i guess we're going to need 999webosbrew :^)
+05/06/2021 10:30 PM
+ah, /etc/profile.d/99starfish specifically
+05/06/2021 10:29 PM
+more likely:
+    # grep -i path /etc/profile
+    PATH="/usr/local/bin:/usr/bin:/bin"
+       PATH=$PATH:/usr/local/sbin:/usr/sbin:/sbin
+    export PATH PS1 OPIEDIR QPEDIR QTDIR EDITOR TERM
+[dustyangel47]
+dustyangel47 05/06/2021 10:28 PM
+i would think it reads from .profile in /home/root although i have yet
+to actually try it (edited)
+05/06/2021 10:27 PM
+~~thats why its in a todo~~
+[infowski]
+infowski 05/06/2021 10:27 PM
+> automagically add to path, even on reboot yeah, that, uh, is not very
+trivial. (edited)
+[dustyangel47]
+dustyangel47 05/06/2021 10:24 PM
+update: i now have a script to pipe into sh and install the package
+manager thing because everyone should make one of those before we die
+run
+curl -L https://github.com/Ruthenic/webos-hbpm/raw/master/install.sh | sh -
+if you want to try it out
+[aabytt]
+[] infowski i guess the `snapshot` param is app-specific and maybe
+they've changed it in newer settings app? no ...
+aabytt 05/06/2021 10:14 PM
+yep, snapshot is not required
+[aabytt]
+aabytt 05/06/2021 10:00 PM
+honestly I do not remember why it is there, I thought crucial is
+launchHidden only, will try without snapshot (edited)
+[infowski]
+infowski 05/06/2021 9:59 PM
+i guess the snapshot param is app-specific and maybe they've changed it
+in newer settings app? no idea.
+05/06/2021 9:59 PM
+ie. it always pops up when I run it now.
+05/06/2021 9:58 PM
+huh, but it doesn't seem to work on mine.
+05/06/2021 9:57 PM
+That's a fun tip. 
+[aabytt]
+aabytt 05/06/2021 9:57 PM
+luna-send -n 1 -f luna://com.webos.applicationManager/launch '{"id":
+"com.palm.app.settings", "params": { "snapshot": true
+},"launchHidden":true}'
+[aabytt]
+[] infowski another tip to note in my magic gist 
+aabytt 05/06/2021 9:57 PM
+I do not know how it goes on fresh webos tv's but on mine 1.4 webos when
+I launch advanced settings for the first time after turn on it takes
+about 8 seconds to load and it pisses me off. So I load settings in
+background on start-devmode.sh Now it launches immediately.
+[infowski]
+infowski 05/06/2021 9:55 PM
+OK, there doesn't seem to be a limit on registered apps, but native
+inputs seem to fall off the screen on inputs list if there are too many,
+and there doesn't seem to be the way to scroll it x-------D (edited)
+ 1
+05/06/2021 9:53 PM
+huh, it even starts from the last played video, that's fun.
+🇾 1 🇪 1 🇸 1
+05/06/2021 9:52 PM
+heh, you can manually add "supportGIP":true to eg.
+/media/cryptofs/apps/usr/palm/applications/youtube.leanback.v4/appinfo.json,
+do a full reboot to reload the data, and then register it via
+luna-send-pub -n 1 'luna://com.webos.service.eim/addDevice' '{"appId":"youtube.leanback.v4","pigImage":""}'
+and it works as well. (edited)
+ 1  1
+[infowski]
+infowski 05/06/2021 9:37 PM
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1#registering-an-app-as-an-input-can-be-used-to-autostart-an-app
+openlgtv webOS hacking notes
+openlgtv webOS hacking notes. GitHub Gist: instantly share code, notes,
+and snippets.
+[]
+ 2
+05/06/2021 9:34 PM
+I don't think there's any limit, but I'll need to test it.
+[aabytt]
+aabytt 05/06/2021 9:34 PM
+can be done to any app? how many devices we can add? )
+[infowski]
+infowski 05/06/2021 9:33 PM
+another tip to note in my magic gist 
+05/06/2021 9:32 PM
+and by failing i mean literally segfaulting
+ 1
+05/06/2021 9:31 PM
+nice, yes.
+05/06/2021 9:30 PM
+lol, it seems like it was failing because of missing largeIcon
+ 1
+05/06/2021 9:27 PM
+I'll make a small POC in a minute.
+[:lg:] 1
+05/06/2021 9:27 PM
+OK, I think I've figured it out.
+[aabytt]
+[] infowski Sure, should work.
+aabytt 05/06/2021 9:24 PM
+yep, it works
+[aabytt]
+aabytt 05/06/2021 9:18 PM
+Checking right now
+[infowski]
+infowski 05/06/2021 9:18 PM
+Sure, should work.
+ 1
+[aabytt]
+aabytt 05/06/2021 9:18 PM
+Yes, just as prof of concept
+[infowski]
+[] aabytt Do you think it only required for the first run? If so then we
+can replace index.html in the folder ...
+infowski 05/06/2021 9:18 PM
+i guess so, but that'd be... a little stupid, if you can do it properly.
+[aabytt]
+[] infowski so... if one has root, it should be possible to run
+`ls-monitor --filter com.webos.service.eim` and ...
+aabytt 05/06/2021 8:29 PM
+Do you think it only required for the first run? If so then we can
+replace index.html in the folder of installed app after the first run.
+[dustyangel47]
+[] infowski `webOS.service.request("luna://com.webos.service.eim", {
+method: "addDevice", parameters: {"pigImage...
+dustyangel47 05/06/2021 8:00 PM
+> successfully crashes
+[iu.png]
+ iu.png
+124.83 KB External
+[infowski]
+infowski 05/06/2021 7:59 PM
+afk.
+05/06/2021 7:59 PM
+webOS.service.request("luna://com.webos.service.eim", { method: "addDevice", parameters: {"pigImage":"/media/developer/apps/usr/palm/applications/org.webosbrew.hbchannel/assets/icon160.png","appId":"org.webosbrew.hbchannel","type":"MVPD_RF"}, onSuccess: function (res) { console.info('success:',res); }, onFailure: function (res) { console.info('failure:', res); }});
+test payload that successfully crashes eim :^)
+[aabytt]
+[] infowski so... if one has root, it should be possible to run
+`ls-monitor --filter com.webos.service.eim` and ...
+aabytt 05/06/2021 7:57 PM
+Thank you! I will ask russian guys on webos chat to track it
+[infowski]
+infowski 05/06/2021 7:56 PM
+@AndreiA ↑
+05/06/2021 7:56 PM
+so... if one has root, it should be possible to run
+ls-monitor --filter com.webos.service.eim and look for that call when
+starting up the app in russian region for the first time.
+ 1
+05/06/2021 7:55 PM
+@aabytt I am 80% sure that an app needs "supportGIP": true flag in
+appinfo.json and then needs to call
+luna://com.webos.service.eim/addDevice with some parameters, but so far
+I was not able to succesfully trigger it, as it just crashes on me 
+[zopieux]
+zopieux 05/06/2021 7:54 PM
+I've gave up trying to modernize the app front-end tho sorry, too much
+js for me
+[mariotaku]
+mariotaku 05/06/2021 7:54 PM
+This will help a lot, not only for homebrew
+[zopieux]
+zopieux 05/06/2021 7:53 PM
+I have a pending commit with basically the root service neatly typed but
+I couldn't get my local definitions to work; let's hope this helps
+[mariotaku]
+mariotaku 05/06/2021 7:52 PM
+Lots of great stuff popping up!
+05/06/2021 7:52 PM
+Neat!
+[zopieux]
+zopieux 05/06/2021 7:51 PM
+https://github.com/DefinitelyTyped/DefinitelyTyped/pull/52561#event-4692743467
+woo 
+Create type definitions for webos-service by Zopieux · Pull Request...
+Use a meaningful title for the pull request. Include the name of the
+package modified. Test the change in your own code. (Compile and run.)
+Add or edit tests to reflect the change. Follow the ad...
+[]
+ 2
+[dustyangel47]
+dustyangel47 05/06/2021 7:44 PM
+it might theoretically possibly maybe work without root
+05/06/2021 7:42 PM
+alright i put the code for the thing up at
+https://github.com/Ruthenic/webos-hbpm/blob/master/hbpm incase anyone
+wants to try it (just download it to anywhere, chmod +x it and ./hbpm to
+run it) (edited)
+ 1
+[aabytt]
+aabytt 05/06/2021 7:36 PM
+(no content)
+[image0.jpg]
+ image0.jpg
+99.15 KB External
+[aabytt]
+[] aabytt In proper regions like Russia it gets to inputs. Is there a
+way to track what kind of reply from ser...
+aabytt 05/06/2021 7:34 PM
+(no content)
+[image0.jpg]
+ image0.jpg
+113.19 KB External
+[image1.jpg]
+ image1.jpg
+130.91 KB External
+[image2.jpg]
+ image2.jpg
+116.93 KB External
+[image3.jpg]
+ image3.jpg
+56.16 KB External
+[dustyangel47]
+dustyangel47 05/06/2021 7:32 PM
+i think i have it working properly
+[unknown.png]
+ unknown.png
+78.57 KB External
+[infowski]
+infowski 05/06/2021 7:25 PM
+I'm looking through eim... the keyword seem to be GIP and MVPD (edited)
+05/06/2021 7:25 PM
+I have a feeling that's going to be something in ls-monitor
+[aabytt]
+[] infowski yeah, same.
+aabytt 05/06/2021 7:24 PM
+In proper regions like Russia it gets to inputs. Is there a way to track
+what kind of reply from server it gets to do it?
+[dustyangel47]
+[] mariotaku `luna-send -n 1` instead of `luna-send -i` if you only want
+one-shot
+dustyangel47 05/06/2021 7:22 PM
+yup that made exit out properly, thanks!
+[infowski]
+infowski 05/06/2021 7:21 PM
+yeah, same.
+[aabytt]
+[] infowski ...or the other way around - it's the region-specific app
+that registers itself.
+aabytt 05/06/2021 7:21 PM
+If launched in regions it is not supposed to it says wrong IP and does
+not get to inputs. (edited)
+[image0.jpg]
+ image0.jpg
+81.65 KB External
+[mariotaku]
+[] dustyangel47 although i have no idea how to actually exit out of
+`luna-send` apart from manually ctrl-c-ing out l...
+mariotaku 05/06/2021 7:20 PM
+luna-send -n 1 instead of luna-send -i if you only want one-shot
+[dustyangel47]
+dustyangel47 05/06/2021 7:18 PM
+although i have no idea how to actually exit out of luna-send apart from
+manually ctrl-c-ing out lol (edited)
+[infowski]
+infowski 05/06/2021 7:17 PM
+>interface_eim_addGIPDevice
+[dustyangel47]
+dustyangel47 05/06/2021 7:17 PM
+lets go, it actually worked on the tv
+[unknown.png]
+ unknown.png
+21.7 KB External
+[infowski]
+infowski 05/06/2021 7:16 PM
+...or the other way around - it's the region-specific app that registers
+itself.
+[aabytt]
+[] infowski Maybe it wasn't supported back then...
+aabytt 05/06/2021 7:15 PM
+And does it run? Seems the service is limited to particular regions and
+it gets to inputs only if service is available and it is confirmed by
+the server
+[infowski]
+infowski 05/06/2021 7:13 PM
+Maybe it wasn't supported back then...
+[infowski]
+aatt12 Some web apps from LG store can be assigned to inputs (like HDMI,
+AV, etc.) This way TV can start wi...
+infowski 05/06/2021 7:13 PM
+How does the "channels plus" thing work? I've installed the ipk on my
+webOS 3.8 TV and I only see it as an app in home screen, it does not
+show in inputs list or tv channels list.
+[infowski]
+infowski 05/06/2021 6:50 PM
+more-or-less, yes.
+[dustyangel47]
+dustyangel47 05/06/2021 6:50 PM
+in theory i should have everything i need to install the things
+[:rj45:] 1
+05/06/2021 6:50 PM
+parsing that was easy
+[unknown.png]
+ unknown.png
+9.28 KB External
+[mariotaku]
+mariotaku 05/06/2021 6:37 PM
+I got embedder compiled as well. Will do more exploration tomorrow.
+[infowski]
+infowski 05/06/2021 6:24 PM
+interesting.
+[mariotaku]
+mariotaku 05/06/2021 6:24 PM
+On webOS we could use SDL (again) to get EGL context
+[infowski]
+infowski 05/06/2021 6:24 PM
+Mhmmm...
+[mariotaku]
+mariotaku 05/06/2021 6:24 PM
+GTK is for window management on desktop
+[infowski]
+infowski 05/06/2021 6:24 PM
+i see mentions of gtk... (edited)
+[infowski]
+[] mariotaku So I got flutter engine compiled lol
+infowski 05/06/2021 6:23 PM
+huh, what are they using for rendering?
+[dustyangel47]
+dustyangel47 05/06/2021 6:22 PM
+it just downloads the apps.json to /tmp and reads the package names from
+it
+05/06/2021 6:21 PM
+currently making a cli tool (because imo its annoying to manually
+execute luna-send and figure out the package's version and id and stuff)
+to install packages from the hbchannel repo and i have this thus far
+[unknown.png]
+ unknown.png
+6.36 KB External
+[mariotaku]
+mariotaku 05/06/2021 5:40 PM
+It can provide a sleek UI without too much trouble
+05/06/2021 5:40 PM
+I have high hope to this thing
+05/06/2021 5:36 PM
+So I got flutter engine compiled lol
+ 2
+Deleted User 05/06/2021 5:25 PM
+so I guess ssh port is by default 22
+05/06/2021 5:24 PM
+https://raw.githubusercontent.com/webosbrew/webos-homebrew-channel/v0.1.1/services/startup.sh
+this does not have something like # set devmode ssh port here
+SSH_PORT="9922"
+[mariotaku]
+mariotaku 05/06/2021 5:17 PM
+Also SDL have pretty stable API so I think a little bit older version
+should be fine
+05/06/2021 5:17 PM
+For example SDL_webOSXXXX() functions are calling internal APIs
+[dustyangel47]
+dustyangel47 05/06/2021 5:16 PM
+darn
+[mariotaku]
+[] dustyangel47 you could possibly compile sdl2 based libraries and have
+that as another option ~~also because i use...
+mariotaku 05/06/2021 5:16 PM
+I have tried and produced a library, but I finally decided to leave it
+as is. As system SDL _works_, and uses many internal APIs that too
+complicated to call directly
+[dustyangel47]
+dustyangel47 05/06/2021 5:14 PM
+you could possibly compile sdl2 based libraries and have that as another
+option ~~also because i use it~~ (edited)
+[mariotaku]
+mariotaku 05/06/2021 5:14 PM
+What do you use it for? Compiling it should be pretty straightforward
+though
+[dustyangel47]
+dustyangel47 05/06/2021 5:13 PM
+has anyone tried compiling python 3 yet? (webos only seems to come with
+python 2) (edited)
+[infowski]
+infowski 05/06/2021 5:00 PM
+so in practice you want failsafe mode disabled
+ 1
+05/06/2021 5:00 PM
+Yeah - failsafe disables all our custom startup handling and only starts
+up telnetd (edited)
+Deleted User 05/06/2021 4:59 PM
+failsafe mode..
+[infowski]
+infowski 05/06/2021 4:58 PM
+yeah, exactly the same thing :/
+[dustyangel47]
+dustyangel47 05/06/2021 4:58 PM
+it seems like its getting stuck at 68%
+[infowski]
+infowski 05/06/2021 4:57 PM
+Sure.
+[dustyangel47]
+dustyangel47 05/06/2021 4:57 PM
+remove*
+05/06/2021 4:57 PM
+gotta install an app first because i have them all
+05/06/2021 4:57 PM
+i just catted the ones that related to hbchannel
+[infowski]
+infowski 05/06/2021 4:57 PM
+@DustyAngel47 ...aaand, does the installs work for you now?
+[dustyangel47]
+dustyangel47 05/06/2021 4:56 PM
+    root@LGwebOSTV:~# cat /var/luna-service2-dev/client-permissions.d/org.webosbrew.hbchannel.service.service.json 
+    {"org.webosbrew.hbchannel.service*":["public"]}
+    root@LGwebOSTV:~# cat /var/luna-service2-dev/client-permissions.d/org.webosbrew.hbchannel.app.json 
+    {"org.webosbrew.hbchannel-*":["public","org.webosbrew.hbchannel.service.group"]}
+[infowski]
+infowski 05/06/2021 4:56 PM
+@DustyAngel47 can you just quickly check
+/var/luna-service2-dev/client-permissions.d/*.json for you?
+05/06/2021 4:55 PM
+Ohhhhhhhhhhh...
+[dustyangel47]
+dustyangel47 05/06/2021 4:55 PM
+just manually
+05/06/2021 4:55 PM
+lul that was actually what i did to fix it i think (edited)
+[infowski]
+[] infowski <@456226577798135808> I suspect what's the reason for that,
+give ma a day or two.
+infowski 05/06/2021 4:54 PM
+https://github.com/webosbrew/webos-homebrew-channel/pull/24 this likely
+fixes it but we had some weird behaviour with one of the guys here, so
+we'll leave it pending until we can figure out why ti failed.
+[dustyangel47]
+dustyangel47 05/06/2021 4:54 PM
+webos version 5.2.1-2521
+05/06/2021 4:54 PM
+lemme check
+[infowski]
+infowski 05/06/2021 4:53 PM
+@DustyAngel47 which webos version you were on, once again?
+[dustyangel47]
+dustyangel47 05/06/2021 4:53 PM
+sorry, i have no idea what it actually was
+[infowski]
+infowski 05/06/2021 4:53 PM
+@Deleted User I suspect what's the reason for that, give ma a day or
+two.
+ 1
+[dustyangel47]
+dustyangel47 05/06/2021 4:53 PM
+i had this problem before and fixed it by changing some permission
+related value
+Deleted User 05/06/2021 4:52 PM
+locks at 84% install
+05/06/2021 4:52 PM
+root shows ok, but apps will not install
+05/06/2021 4:51 PM
+runned that cmd
+    cp /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/startup.sh /media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/start-devmode.sh
+(edited)
+[dustyangel47]
+dustyangel47 05/06/2021 4:51 PM
+yup using the script worked
+05/06/2021 4:50 PM
+no it didnt work lol
+05/06/2021 4:50 PM
+worth a shot ¯\_(ツ)_/¯
+[infowski]
+infowski 05/06/2021 4:50 PM
+It won't since the service is broken in your case still...
+[dustyangel47]
+dustyangel47 05/06/2021 4:49 PM
+before that i'm going to try manually running elevate service even
+though it probably wont work
+[infowski]
+infowski 05/06/2021 4:49 PM
+...or manually reinstall it 
+05/06/2021 4:48 PM
+I guess it'd be easiest to just ssh / telnet over to your TV and run:
+curl -L https://gist.github.com/raw/0ef31dc8664f9749835b08e23914ec05/install.sh | sh -x -
+ 1
+[dustyangel47]
+dustyangel47 05/06/2021 4:48 PM
+(no content)
+[unknown.png]
+ unknown.png
+6.19 KB External
+05/06/2021 4:48 PM
+yup
+[infowski]
+infowski 05/06/2021 4:48 PM
+well then it's broken. You're rooted, right?
+[dustyangel47]
+dustyangel47 05/06/2021 4:48 PM
+dammit
+05/06/2021 4:48 PM
+pending...
+[infowski]
+[] dustyangel47 nope its reported as 0.1.0 in settings
+infowski 05/06/2021 4:48 PM
+What does "root status" show for you in settings?
+[dustyangel47]
+[] infowski <@!714583473804935238> are you running 0.1.1 already?
+dustyangel47 05/06/2021 4:47 PM
+nope its reported as 0.1.0 in settings
+[dustyangel47]
+dustyangel47 05/06/2021 4:47 PM
+0.1.1* lol (edited)
+[infowski]
+infowski 05/06/2021 4:47 PM
+@DustyAngel47 are you running 0.1.1 already?
+[dustyangel47]
+dustyangel47 05/06/2021 4:46 PM
+hmm trying to update to 0.0.1 doesnt work, the update/install option is
+greyed out
+[infowski]
+infowski 05/06/2021 4:45 PM
+@Deleted User
+https://github.com/webosbrew/webos-homebrew-channel/tree/v0.1.1#update-start-devmodesh-script
+you can use that, but, well, it'll wipe your changes. in the end we'll
+want people to use our script unmodified and add their own hooks into a
+special directory.
+ 1
+05/06/2021 4:44 PM
+@Deleted User switches won't do anything actually, since the script
+doesn't install our custom start-devmode.sh
+ 1
+[dustyangel47]
+[] infowski That's why it worked for <@!714583473804935238> as well, as
+they had it installed before 
+dustyangel47 05/06/2021 4:44 PM
+lol
+Deleted User 05/06/2021 4:44 PM
+Should I toggle all the things?
+[infowski]
+infowski 05/06/2021 4:44 PM
+That's why it worked for @DustyAngel47 as well, as they had it installed
+before 
+05/06/2021 4:43 PM
+and, well, I was always doing updates instead of full reinstalls.
+05/06/2021 4:43 PM
+initial release was broken since I removed one file that was crucial for
+services to get started, but I only tested it on my TV and files are not
+removed when updating lol
+05/06/2021 4:43 PM
+you need to wait a second or two for the service to start up.
+05/06/2021 4:42 PM
+well then.
+Deleted User 05/06/2021 4:42 PM
+thank you!!!
+05/06/2021 4:42 PM
+i waited a bit and not it shows root status ok
+05/06/2021 4:42 PM
+wait
+[infowski]
+[] infowski Try running this over telnet and then open the app and
+settings and see if anything changes: ``` /me...
+infowski 05/06/2021 4:40 PM
+@Deleted User try this again please
+ 1
+[infowski]
+infowski 05/06/2021 4:38 PM
+Hmmmm...
+Deleted User 05/06/2021 4:38 PM
+seems to be the same
+05/06/2021 4:37 PM
+i'll try now
+[infowski]
+Deleted User / # cat
+/var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service
+[D-BUS Service] Na...
+infowski 05/06/2021 4:36 PM
+curl -L https://gist.github.com/raw/0ef31dc8664f9749835b08e23914ec05/install.sh | sh -x -
+should work better now.
+[infowski]
+infowski 05/06/2021 4:19 PM
+Yeah, huh, I screwed up. Just give me a second.
+05/06/2021 4:17 PM
+Ah, I think I got it.
+ 1
+Deleted User 05/06/2021 4:17 PM
+/ # cat
+/var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service
+[D-BUS Service] Name=org.webosbrew.hbchannel.service
+Exec=/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service
+-n
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+Type=dynamic
+[infowski]
+Deleted User yup
+infowski 05/06/2021 4:17 PM
+try this:
+cat /var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service
+[] infowski Also, have you removed the app completely before installing
+using the script above? I have a feeling...
+Deleted User 05/06/2021 4:16 PM
+yup
+[infowski]
+infowski 05/06/2021 4:16 PM
+Also, have you removed the app completely before installing using the
+script above? I have a feeling there's just some leftovers off opkg
+stuff that might cause the issues...
+Deleted User 05/06/2021 4:16 PM
+/ #
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service
+-k -n
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+SERVICE_PATH is
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+<13>May 6 17:16:06 LOGIN: [run-js-service] FULL_SERVICE_NAME
+org.webosbrew.hbchannel.service Couldn't determine launch file for
+service path
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+/usr/palm/services/jsservicelauncher/bootstrap-node.js:115 throw new
+Error("Couldn't determine launch file for service path " + service ^
+Error: Couldn't determine launch file for service path
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+at loadAndStart
+(/usr/palm/services/jsservicelauncher/bootstrap-node.js:115:9) at
+Object.exports.parse
+(/usr/palm/services/jsservicelauncher/bootstrap.js:146:2) at
+Object.<anonymous>
+(/usr/palm/services/jsservicelauncher/bootstrap-node.js:119:11) at
+Module._compile (module.js:460:26) at Object.Module._extensions..js
+(module.js:478:10) at Module.load (module.js:355:32) at
+Function.Module._load (module.js:310:12) at Function.Module.runMain
+(module.js:501:10) at startup (node.js:129:16) at node.js:814:3 / #
+05/06/2021 4:15 PM
+ok
+[infowski]
+Deleted User Click to see attachment
+infowski 05/06/2021 4:15 PM
+Try running this over telnet and then open the app and settings and see
+if anything changes:
+    /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service -k -n /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+[infowski]
+infowski 05/06/2021 4:14 PM
+well then, just give me a minute.
+ 1
+Deleted User 05/06/2021 4:12 PM
+(no content)
+[unknown.png]
+ unknown.png
+105.53 KB External
+[mariotaku]
+mariotaku 05/06/2021 4:11 PM
+I remember in moonlight server offtopic is to have chitchats about
+totally irrelevant things, such as games or electrical gadgets or
+something
+Deleted User 05/06/2021 4:10 PM
+don't want to spam
+[infowski]
+infowski 05/06/2021 4:10 PM
+very well in topic
+[mariotaku]
+mariotaku 05/06/2021 4:10 PM
+It's in topic actually lol
+Deleted User 05/06/2021 4:10 PM
+i will post logs to offtopic
+[] infowski `curl -L
+https://gist.github.com/raw/0ef31dc8664f9749835b08e23914ec05/install.sh
+| sh -` - that shou...
+Deleted User 05/06/2021 4:08 PM
+it's same thing for me
+[infowski]
+infowski 05/06/2021 4:04 PM
+curl -L https://gist.github.com/raw/0ef31dc8664f9749835b08e23914ec05/install.sh | sh - -
+that should work... :^)
+[dustyangel47]
+dustyangel47 05/06/2021 3:54 PM
+i considered putting one on my website that just runs sudo rm -rf /* lol
+[dustyangel47]
+[] infowski <@!714583473804935238> regarding initial install (before we
+get rootmytv single-click stuff), while ...
+dustyangel47 05/06/2021 3:54 PM
+no thats fantastic practice, we all know that you should always pipe
+them into sh, especially if you have to put sudo before (not really)
+(edited)
+[infowski]
+infowski 05/06/2021 3:53 PM
+just give me 5 minutes.
+aatt12 05/06/2021 3:53 PM
+Some web apps from LG store can be assigned to inputs (like HDMI, AV,
+etc.) This way TV can start with this app on reboot. How do they get
+such permission? I tried to clone one and install to developer folder
+and it works as original app from store. It is even recognised as
+original by the store app. But as soon as I modify the original link
+this app loads - it no longer could be assigned to input. Seems it does
+not pass some check at remote side. I wonder if this check can be
+simulated somehow with a different web-server. Here is an example of LG
+channels+
+ LG_cahnnels_plus.zip
+1.13 MB External
+ 1
+[infowski]
+infowski 05/06/2021 3:53 PM
+@DustyAngel47 regarding initial install (before we get rootmytv
+single-click stuff), while this is obviously bad practice, we can just
+make curl -L https://... | sh - script line that does everything...
+[dustyangel47]
+Deleted User i don't have something special enabled
+dustyangel47 05/06/2021 3:53 PM
+you can put it in a code block by surrounding it with "\\\`"
+[dustyangel47]
+[] infowski yeah, I need to make a single CLI tool to do that.
+dustyangel47 05/06/2021 3:52 PM
+you could probably just write a shell script and put it somewhere
+writable in $PATH
+[] infowski nope, it should just show "unelevated"
+Deleted User 05/06/2021 3:52 PM
+i don't have something special enabled (edited)
+[infowski]
+infowski 05/06/2021 3:51 PM
+yeah, I need to make a single CLI tool to do that.
+[mariotaku]
+mariotaku 05/06/2021 3:51 PM
+I think a better way to install is via luna-send
+[infowski]
+infowski 05/06/2021 3:50 PM
+Well then, that's fine.
+[dustyangel47]
+dustyangel47 05/06/2021 3:50 PM
+well both versions were 0.1.0 i believe (edited)
+[infowski]
+infowski 05/06/2021 3:49 PM
+@DustyAngel47 yeah, that sounds like it. we need to kill the app during
+install. you can check current version in settings
+[dustyangel47]
+dustyangel47 05/06/2021 3:49 PM
+i think it updated? the app closed and when i restarted it it isnt
+showing the option to update, so i guess
+[infowski]
+infowski 05/06/2021 3:48 PM
+nope, it should just show "unelevated"
+Deleted User 05/06/2021 3:48 PM
+root status still pending. I think I need to figure out that elevate
+service thing
+05/06/2021 3:47 PM
+power cycle fixed this
+05/06/2021 3:47 PM
+but it shutdown and did not respond to remote
+05/06/2021 3:47 PM
+for a moment i thought that I bricked it. Installed using curl and
+rebooted from telnet
+[infowski]
+infowski 05/06/2021 3:46 PM
+lol
+[dustyangel47]
+dustyangel47 05/06/2021 3:46 PM
+gotta find my remote first
+05/06/2021 3:46 PM
+thanks
+[infowski]
+infowski 05/06/2021 3:45 PM
+@DustyAngel47 it's up now, it seemed to self-update fine for me 
+(edited)
+[dustyangel47]
+Deleted User damn opkg
+dustyangel47 05/06/2021 3:38 PM
+i could never get opkg to work with any app, even ones without a service
+[dustyangel47]
+dustyangel47 05/06/2021 3:37 PM
+dang my hb channel install is really out of date now lol
+[infowski]
+infowski 05/06/2021 3:36 PM
+...also even if you managed to install the ipk itself, it won't work on
+rooted devices, unless you also elevate the service. I need to write
+some docs about it in the readme (now it's only partially documented in
+development guide)
+Deleted User 05/06/2021 3:36 PM
+damn opkg
+[infowski]
+infowski 05/06/2021 3:35 PM
+@Deleted User i am 95% sure this is caused by using opkg directly. one
+of the things that appinstalld does is initialize service permissions...
+[:jail:] 1
+Deleted User 05/06/2021 3:35 PM
+everything disabled
+05/06/2021 3:35 PM
+root status...pending
+[infowski]
+infowski 05/06/2021 3:34 PM
+@DustyAngel47 it should actually just work (but it's not present in the
+older homebrew channel releases yet because I need to mark it as "final"
+release (not prerelease as it is by default)
+[dustyangel47]
+dustyangel47 05/06/2021 3:34 PM
+although i wonder how well updating the app using the homebrew channel
+works
+[dustyangel47]
+[] infowski <@!225167450713358338>
+https://github.com/webosbrew/webos-homebrew-channel/actions/runs/816981016
+.....
+dustyangel47 05/06/2021 3:34 PM
+lets go now i can't get confused anymore about the missing releases
+Deleted User 05/06/2021 3:33 PM
+looks amazing
+05/06/2021 3:33 PM
+opkg -o /media/developer/apps install
+https://github.com/webosbrew/webos-homebrew-channel/releases/download/v0.1.0/org.webosbrew.hbchannel_0.1.0_all.ipk
+[] infowski <@!225167450713358338>
+https://github.com/webosbrew/webos-homebrew-channel/actions/runs/816981016
+.....
+Deleted User 05/06/2021 3:32 PM
+now it's done
+[infowski]
+infowski 05/06/2021 3:28 PM
+@Mariotaku
+https://github.com/webosbrew/webos-homebrew-channel/actions/runs/816981016
+...nice
+webosbrew/webos-homebrew-channel
+Unofficial webOS TV homebrew store. Contribute to
+webosbrew/webos-homebrew-channel development by creating an account on
+GitHub.
+[]
+ 1 [:rtk:] 1  1
+[infowski]
+infowski 05/06/2021 10:26 AM
+and then there's some String(caughtError) which doesn't return the error
+message but [object Object] because that's javascript for you.
+05/06/2021 10:26 AM
+I replaced some reject("string") with reject(new Error("string"));
+[mariotaku]
+mariotaku 05/06/2021 10:25 AM
+But I didn't see you change semantics?
+[infowski]
+infowski 05/06/2021 10:25 AM
+Seems like that object Object may have been caused by my eslint cleanup,
+whoops.
+05/06/2021 10:24 AM
+and I don't have "prisoner" sshd because, well, I am rooted already.
+05/06/2021 10:24 AM
+@Mariotaku no, I mean with just the .ipk installed, but without running
+the "elevate-service" script.
+05/06/2021 10:23 AM
+33814.488 TX return 10 org.webosbrew.hbchannel.service (/var/run/ls2/uQiiOM) org.webosbrew.hbchannel-779 (/var/run/ls2/EKGywG) «{"returnValue":false,"errorText":"[object Object]"}»
+ah, lol
+[mariotaku]
+mariotaku 05/06/2021 10:23 AM
+Oh, do you mean no root but devmode not enabled?
+[infowski]
+infowski 05/06/2021 10:22 AM
+Hmmm, need to clean up error handling during install - with unelevated
+service (but no devmode ssh) I just get "An error occured during
+installation: [object Object]" 
+[mariotaku]
+mariotaku 05/06/2021 9:54 AM
+Guess moving out is fine
+[infowski]
+infowski 05/06/2021 9:54 AM
+OK. Good. 
+[mariotaku]
+[] infowski <@!225167450713358338> was there any specific reason for
+putting the import inside of the function i...
+mariotaku 05/06/2021 9:53 AM
+It's a copy paste lol
+[infowski]
+infowski 05/06/2021 9:53 AM
+@Mariotaku was there any specific reason for putting the import inside
+of the function in here?
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/services/buffer-shim.js#L6
+webosbrew/webos-homebrew-channel
+Unofficial webOS TV homebrew store. Contribute to
+webosbrew/webos-homebrew-channel development by creating an account on
+GitHub.
+[]
+May 5, 2021
+Deleted User 05/05/2021 10:10 PM
+luna-send-pub -n 1 -f luna://com.palm.systemservice/osInfo/query '{ "subscribe": false }'
+{ "core_os_name": "Rockhopper", "returnValue": true,
+"core_os_kernel_version": "4.4.84-417.gld4tv.7", "webos_imagename":
+"starfish-dvb-secured", "webos_prerelease": "", "webos_build_id":
+"53904", "webos_manufacturing_version": "05.00.15",
+"webos_release_codename": "goldilocks2-gyeryongsan",
+"webos_api_version": "4.1.0", "core_os_release_codename":
+"goldilocks2-gyeryongsan", "webos_name": "webOS TV Lite",
+"webos_release": "4.9.0", "encryption_key_type": "prodkey",
+"core_os_release": "4.9.0-53904", "webos_build_datetime":
+"20210115065119" }
+Deleted User 05/05/2021 8:58 PM
+how to compile homebew ipk for sideload?
+[mariotaku]
+mariotaku 05/05/2021 7:42 PM
+I'm lost in compling llvm an flutter lol
+[mariotaku]
+mariotaku 05/05/2021 7:07 PM
+That's for wayland package
+05/05/2021 7:06 PM
+1.11.0-r0pro4
+[smx2460]
+[] mariotaku Can it be found somewhere? They seems to be using mesa
+smx2460 05/05/2021 7:06 PM
+Not easily, need to do some guess work unless that changed
+[smx2460]
+smx2460 05/05/2021 7:05 PM
+To me at least
+05/05/2021 7:05 PM
+That's new
+[smx2460]
+[] mariotaku Can it be found somewhere? They seems to be using mesa
+smx2460 05/05/2021 7:05 PM
+Really?
+[smx2460]
+smx2460 05/05/2021 7:05 PM
+I don't know if and how different it will be from @ww and @meep
+[mariotaku]
+mariotaku 05/05/2021 7:05 PM
+Can it be found somewhere? They seems to be using mesa
+[smx2460]
+smx2460 05/05/2021 7:04 PM
+@Mariotaku can you determine the wayland server version?
+05/05/2021 7:04 PM
+And the wayland patch
+[mariotaku]
+mariotaku 05/05/2021 7:02 PM
+For desktop apps if we got correct wayland protocol, then I think
+everything is just a matter of chroot
+[smx2460]
+smx2460 05/05/2021 6:59 PM
+We had it working on WebOS 1
+05/05/2021 6:59 PM
+I know that vanilla QT can work on WebOS
+05/05/2021 6:57 PM
+Ofc with root
+05/05/2021 6:56 PM
+You can chroot into any env you put on it
+05/05/2021 6:56 PM
+Ext works
+05/05/2021 6:55 PM
+Yes
+[mariotaku]
+mariotaku 05/05/2021 6:55 PM
+*storage
+05/05/2021 6:55 PM
+Hmm USB, does webOS support this kind of memory extension natively?
+[smx2460]
+smx2460 05/05/2021 6:55 PM
+With pendrives 64gb in size these days we don't need to worry
+[mariotaku]
+mariotaku 05/05/2021 6:55 PM
+So if an app has 30M+ UI library, it could easily fill up users' TV
+[smx2460]
+smx2460 05/05/2021 6:55 PM
+It would likely be USB only
+[mariotaku]
+mariotaku 05/05/2021 6:54 PM
+One thing though, some of the TVs only has less than 600MB storage
+[smx2460]
+smx2460 05/05/2021 6:53 PM
+Insta-  (edited)
+[mariotaku]
+mariotaku 05/05/2021 6:53 PM
+But support for hardware acceleration still has a long way to go
+05/05/2021 6:53 PM
+There's another UI framework called LVGL
+05/05/2021 6:53 PM
+Oh this one.
+[smx2460]
+smx2460 05/05/2021 6:53 PM
+Nvm
+05/05/2021 6:53 PM
+https://github.com/KDE/plasma-bigscreen
+KDE/plasma-bigscreen
+Plasma shell for TVs. Contribute to KDE/plasma-bigscreen development by
+creating an account on GitHub.
+[]
+[mariotaku]
+mariotaku 05/05/2021 6:52 PM
+You mean Flutter?
+[smx2460]
+smx2460 05/05/2021 6:52 PM
+Is it closed source?
+05/05/2021 6:52 PM
+I can't actually find the sources of that
+[mariotaku]
+mariotaku 05/05/2021 6:52 PM
+So most important requirement would be portability, and size
+05/05/2021 6:51 PM
+There are actually 2 things come to my mind
+[smx2460]
+smx2460 05/05/2021 6:51 PM
+What do you think?
+[mariotaku]
+mariotaku 05/05/2021 6:51 PM
+Flutter. While I'm using SDL2+Nuklear, it's still not a very good choice
+to build nice looking app
+[smx2460]
+smx2460 05/05/2021 6:51 PM
+@Mariotaku if we can port this it would be totally epic

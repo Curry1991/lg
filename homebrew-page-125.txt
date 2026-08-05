@@ -1,0 +1,1676 @@
+May 5, 2021
+[smx2460]
+smx2460 05/05/2021 6:51 PM
+https://plasma-bigscreen.org/
+openuser
+Plasma Bigscreen
+05/05/2021 6:50 PM
+Unless unless
+05/05/2021 6:50 PM
+But even if CEF is sorta lightweight, it's still a web browser
+05/05/2021 6:50 PM
+Sadly CEF is the only thing that comes to mind
+05/05/2021 6:49 PM
+But I don't indeed know which GUI toolkit it would run on
+05/05/2021 6:48 PM
+@Mariotaku .NET!
+[mariotaku]
+mariotaku 05/05/2021 5:40 PM
+I'm trying to build flutter. Do you folks think this would be another
+option for homebrew development?
+May 3, 2021
+[mariotaku]
+mariotaku 05/03/2021 6:07 PM
+They have so many accidental leaks. In fact, there's a chrome84-temp
+which totally reveals how media pipeline work
+ 1
+[infowski]
+infowski 05/03/2021 8:14 AM
+https://github.com/webosose/nodejs-module-webos-service/commit/e5fe9a1f21b2e9b4d6994cc721c419d689f04aa0
+lol banned word
+[:Star:] 1  1
+May 2, 2021
+[mariotaku]
+mariotaku 05/02/2021 3:15 PM
+I think I have fixed this. Buffer.from isn't available in webOS
+ 1
+[infowski]
+infowski 05/02/2021 3:14 PM
+@Mariotaku oh boi... I think you could do some aliasing using webpack
+magic. Any specific code to take a look at?
+[mariotaku]
+mariotaku 05/02/2021 2:48 PM
+I have a silly question to ask. If a node_module uses unsupported API,
+how do I use shims on it?
+[rhinoswirl]
+[] infowski the nodejs "services" subsystem is a standard part of webos
+and is not going to change anytime soon ...
+rhinoswirl 05/02/2021 10:24 AM
+Yes, I know. Again, only checking if exec can be run with the service
+permissions set to public. Edit: nevermind, exec is node, so it'll work.
+(edited)
+[infowski]
+infowski 05/02/2021 10:23 AM
+cya :3
+05/02/2021 10:23 AM
+AFK
+[infowski]
+[] rhinoswirl Or that.
+infowski 05/02/2021 10:23 AM
+the nodejs "services" subsystem is a standard part of webos and is not
+going to change anytime soon it seems. elevating services to root
+permissions is a little hacky, but doesn't seem to be much of an issue
+either. the issue in Your case was elevating service permissions to
+allow full bus access - which is not the same thing as running as root,
+keep in mind.
+[rhinoswirl]
+rhinoswirl 05/02/2021 10:22 AM
+Assuming exec can be called with public permissions.
+05/02/2021 10:22 AM
+Or that.
+[infowski]
+[] rhinoswirl Yes, it's a dirty approach, but it would work. You just
+would have to reboot the tv everytime you wa...
+infowski 05/02/2021 10:22 AM
+i mean, we could also just use the same approach by directly running
+exec in a service. (which is already running as root) (edited)
+[mariotaku]
+mariotaku 05/02/2021 10:22 AM
+I see! I'll write a simple luna-send-pub wrapper now
+[infowski]
+[] infowski ...but internally it's a wrapper around a native `palmbus`
+module (which does actual interaction wit...
+infowski 05/02/2021 10:21 AM
+/usr/lib/node_modules/webos-service/ + /usr/lib/nodejs/palmbus.js which
+is a wrapper around /usr/lib/nodejs/webos-sysbus.node 
+[rhinoswirl]
+[] infowski <@!711307517832986726> nope, the rootmytv / lunadownloadmgr
+exploit doesn't allow arbitrary executio...
+rhinoswirl 05/02/2021 10:21 AM
+Yes, it's a dirty approach, but it would work. You just would have to
+reboot the tv everytime you want to install something. Not ideal, I
+know.
+[mariotaku]
+mariotaku 05/02/2021 10:20 AM
+Using exploits are hard to predict and maintain compatibility
+ 1
+[infowski]
+infowski 05/02/2021 10:20 AM
+@rhinoswirl nope, the rootmytv / lunadownloadmgr exploit doesn't allow
+arbitrary execution, it only allows for file write, which we use to
+create a file that is run on boot as root
+[mariotaku]
+mariotaku 05/02/2021 10:20 AM
+I think for users that's not rooted, we use everything public
+[rhinoswirl]
+rhinoswirl 05/02/2021 10:19 AM
+I was thinking: wouldn't it work to have the Homebrew channel running
+directly through the exploit for non-rooted users? That way it could
+call all the internal APIs. And for rooted users, we could have it
+running sh scripts directly. This would avoid the need for a service and
+patching permissions. Or is there something that I'm missing?
+[infowski]
+infowski 05/02/2021 10:19 AM
+...but internally it's a wrapper around a native palmbus module (which
+does actual interaction with luna bus) (edited)
+[infowski]
+[] mariotaku Looks like `webos-service` is an external module
+infowski 05/02/2021 10:18 AM
+IIRC It's a module in /usr/lib/node_modules
+[mariotaku]
+mariotaku 05/02/2021 10:18 AM
+Looks like webos-service is an external module
+05/02/2021 10:16 AM
+My OS version 4.9.0
+ 1
+[infowski]
+infowski 05/02/2021 10:16 AM
+@zel @rambo @AndreiA which webOS versions are you running? Maybe you
+could file a ticket in the adfree youtube repo so that the issues are at
+least documented anywhere?
+[mariotaku]
+mariotaku 05/02/2021 10:15 AM
+I didn't root (with rootmytv approach), so to any applications they will
+behave like non-rooted devices. And I can't install any package.
+[infowski]
+infowski 05/02/2021 10:14 AM
+@Mariotaku what webOS versions you have? I guess you didn't have any
+issues with installing apps / updates via homebrew channel?
+05/02/2021 10:13 AM
+...which theoretically should be fixable with permissions patch that's
+in a pending PR (but, well, I want to keep it pending for a while, until
+we can retest it on some other device with similar issues)
+05/02/2021 10:12 AM
+There's also the case of devices which have proper permissions checks
+and don't allow our service to use dev/install like in the case of
+@rhinoswirl
+[mariotaku]
+mariotaku 05/02/2021 10:12 AM
+Yes, passing command directly is not very elegant. I'll try to write a
+wrapper to send luna commands via ssh
+[infowski]
+infowski 05/02/2021 10:12 AM
+Yeah, that should work fine.
+05/02/2021 10:12 AM
+As I mentioned in the ticket - it'd be nice to get the same API as
+webos-service though (at least in regards to client-side communication)
+[mariotaku]
+mariotaku 05/02/2021 10:12 AM
+And I assume process.getuid() === 0 in service is how we distinguish
+rooted and rootless mode?
+[infowski]
+infowski 05/02/2021 10:11 AM
+@Mariotaku yeah, we can essentially use luna-send(-pub) with -i flag as
+a lightweight replacement for all webos-service calls thing (even when
+tunneled over ssh) (edited)
+[mariotaku]
+mariotaku 05/02/2021 10:10 AM
+So I think it would be pretty easy
+05/02/2021 10:10 AM
+This one liner does the job
+luna-send-pub -n 1 'luna://com.webos.appInstallService/dev/install' '{"id": "org.chocolate-doom.demo", "ipkUrl": "/media/developer/org.chocolate-doom.demo_0.0.1_arm.ipk", "subscribe": true}'
+[infowski]
+infowski 05/02/2021 10:09 AM
+[mariotaku]
+mariotaku 05/02/2021 10:09 AM
+Oh nvm I see your reply 
+05/02/2021 10:09 AM
+@infowski I have adopted rootless installation feature, you're not
+working on this one right?
+aatt12 It still shows a single ad on first run after reboot, and back
+button does not work
+kingrammus 05/02/2021 9:59 AM
+Same for me
+[zelbat]
+zelbat 05/02/2021 9:25 AM
+@AndreiA Didn't work for me when I tested it a few weeks ago. Any video
+that opens with a ad would just show a black screen. Back button worked
+fine though.
+May 1, 2021
+aatt12 05/01/2021 12:07 PM
+It still shows a single ad on first run after reboot, and back button
+does not work
+[infowski]
+infowski 05/01/2021 12:06 PM
+any specifics?
+05/01/2021 12:06 PM
+Honestly haven't tried it, and won't be able to help much as I use
+youtube premium anyway.
+aatt12 05/01/2021 12:05 PM
+Hey guys, is adfree youtube app operating fine? It is quite buggy on my
+webos 1.4, wondering if it just for me.
+April 30, 2021
+[infowski]
+infowski 04/30/2021 2:18 PM
+well ok then 
+ww8543 04/30/2021 2:18 PM
+i was just kidding 
+[infowski]
+infowski 04/30/2021 2:16 PM
+i mean, I know it exists, but why, when your end product needs to be an
+.so with some specific symbols exposed (never used upx, not sure how
+well it works in such cases), and you already have .zip unpack
+capabilities... (because roms...) (edited)
+[] infowski is it though? i guess in general shared objects/executables
+are pretty well compressible, aren't the...
+ww8543 04/30/2021 2:14 PM
+upx has entered the chat
+[infowski]
+infowski 04/30/2021 12:54 PM
+>50% compression ratio here
+04/30/2021 12:53 PM
+is it though? i guess in general shared objects/executables are pretty
+well compressible, aren't they?
+[zopieux]
+[] infowski ...and all the shared objects are just single file zips.
+zopieux 04/30/2021 12:53 PM
+what why, this is cursed
+[infowski]
+[] mariotaku Yeah, most of the cores are derived from sources from 20
+years ago lol
+infowski 04/30/2021 9:54 AM
+well, but most of them have their makefiles rebuilt for retroarch 
+[infowski]
+infowski 04/30/2021 9:51 AM
+for f in *.so ; do zip $f.zip $f; done +
+https://dropbox.inf.re/retroarch-webos/cores/rebuild-index.sh +
+https://dropbox.inf.re/retroarch-webos/cores/.index-extended lol
+04/30/2021 9:50 AM
+I didn't find where they actually generate that, just remade it from
+scratch.
+04/30/2021 9:50 AM
+...and all the shared objects are just single file zips.
+04/30/2021 9:50 AM
+and for final distribution on "buildbot server" they generate
+.index-extended file which is a list formatted like that:
+1970-01-01 crc32 filename.so.zip (edited)
+[mariotaku]
+[] infowski It's not very well documented, as you might've guessed. 
+mariotaku 04/30/2021 9:49 AM
+Yeah, most of the cores are derived from sources from 20 years ago lol
+[mariotaku]
+mariotaku 04/30/2021 9:48 AM
+Thanks! I'll check.
+[infowski]
+infowski 04/30/2021 9:48 AM
+It's not very well documented, as you might've guessed. 
+04/30/2021 9:46 AM
+but there's a trick, that the flags seem to be scattered all over the
+place, so i ended up also doing export FORCE_GLES=1 GLES=1 ... and a
+bunch of others, pretty much all depending on the core itself
+04/30/2021 9:45 AM
+then you can just copy the binaries over to
+/media/developer/apps/usr/palm/applications/com.retroarch/.config/retroarch/cores/
+04/30/2021 9:44 AM
+@Mariotaku ok, first of all - I am still not entirely sure how the
+official retroarch build flow works, but they have
+https://github.com/libretro/libretro-super which seems to be used by
+their CI, but also has some manual-semi-automatic tool. In the end I
+just source the NDK environment file and do:
+core=dosbox; ./libretro-fetch.sh $core && ./libretro-build.sh $core and
+the binaries end up in dist/unix/
+libretro/libretro-super
+Super repo for other libretro projects. Fetches, builds and installs. -
+libretro/libretro-super
+[]
+[mariotaku]
+mariotaku 04/30/2021 9:42 AM
+@infowski when you are available, could you teach me how to compile
+cores for RetroArch? I'd like to see how to produce cores without need
+for stdc++. Also see if I can optimize the code for a bit.
+[mariotaku]
+mariotaku 04/30/2021 7:31 AM
+Maybe that's one of the reason they didn't provide native development
+lol
+04/30/2021 7:29 AM
+system libraries on 3 uses basic_string while on 4 uses cxx11::string
+04/30/2021 7:28 AM
+Just found when it comes to C++, ABI compatibility is broken across 3 to
+4
+[mariotaku]
+mariotaku 04/30/2021 3:24 AM
+If it's just a few symbols, IMO it's not necessary to bring a whole
+library
+April 29, 2021
+[smx2460]
+smx2460 04/29/2021 10:57 PM
+Or build just libstdc++ maybe
+04/29/2021 10:57 PM
+You can statically link libstdc++ in
+04/29/2021 10:56 PM
+For old libstdc++?
+04/29/2021 10:56 PM
+Why do you want/need old gcc
+[infowski]
+infowski 04/29/2021 10:49 PM
+haha... 
+[mariotaku]
+mariotaku 04/29/2021 10:01 PM
+GN!
+04/29/2021 10:01 PM
+set(CMAKE_CXX_STANDARD 11)
+04/29/2021 10:00 PM
+Ooh resolved! Really gonna sleep this time.
+[infowski]
+infowski 04/29/2021 9:51 PM
+CXXABI_1.3.7 is the highest I see in strings /lib/libstdc++.so.6
+04/29/2021 9:50 PM
+CXXABI_1.3.9 may be missing still on my TV it seems.
+[mariotaku]
+mariotaku 04/29/2021 9:49 PM
+It was:
+    Version References:
+      required from libstdc++.so.6:
+        0x08922974 0x00 02 GLIBCXX_3.4
+        0x0297f871 0x00 03 GLIBCXX_3.4.21
+        0x0849afa3 0x00 04 CXXABI_ARM_1.3.3
+        0x0bafd179 0x00 05 CXXABI_1.3.9
+        0x056bafd3 0x00 06 CXXABI_1.3
+      required from libgcc_s.so.1:
+        0x0b792655 0x00 07 GCC_3.5
+      required from libc.so.6:
+        0x0d696914 0x00 08 GLIBC_2.4
+[infowski]
+infowski 04/29/2021 9:48 PM
+Whoops.
+[mariotaku]
+mariotaku 04/29/2021 9:48 PM
+It's morning lol
+04/29/2021 9:48 PM
+Yeah I'm gonna sleep as well
+04/29/2021 9:48 PM
+Not some nice solution, but it seems that, if I compile binaries with
+this definition, version ref will become this:
+    Version References:
+      required from libstdc++.so.6:
+        0x08922974 0x00 02 GLIBCXX_3.4
+        0x0849afa3 0x00 03 CXXABI_ARM_1.3.3
+        0x0bafd179 0x00 04 CXXABI_1.3.9
+        0x056bafd3 0x00 05 CXXABI_1.3
+      required from libc.so.6:
+        0x0d696914 0x00 06 GLIBC_2.4
+      required from libgcc_s.so.1:
+        0x0b792655 0x00 07 GCC_3.5
+[infowski]
+infowski 04/29/2021 9:47 PM
+Mmmm... We'll try that later if you don't mind.
+[mariotaku]
+mariotaku 04/29/2021 9:47 PM
+@infowski You may want to try this
+    -D_GLIBCXX_USE_CXX11_ABI=0
+[mariotaku]
+mariotaku 04/29/2021 9:17 PM
+Plus, it requires a lot inline asm. Not sure if I found wrong
+documentation
+04/29/2021 9:16 PM
+Yes, although I still want to use newer one, but I can only find ways
+for C, not C++
+ww8543 04/29/2021 9:16 PM
+like 4.8
+04/29/2021 9:16 PM
+lg provides some toolchains with ancient gcc
+[mariotaku]
+mariotaku 04/29/2021 9:14 PM
+So I think my next task, is to provide an ancient gcc
+[mariotaku]
+mariotaku 04/29/2021 8:40 PM
+I would second that
+[infowski]
+infowski 04/29/2021 8:40 PM
+@Mariotaku also i am thinking of changing default behaviour/keybind of
+"EXIT" button to "in-game menu toggle", since on all webos versions one
+can just kill an app via the homescreen (edited)
+[mariotaku]
+mariotaku 04/29/2021 8:21 PM
+https://web.archive.org/web/20160107032111/http://www.trevorpounds.com/blog/?p=103
+Like this one?
+04/29/2021 8:18 PM
+But I still don't know what it is
+04/29/2021 8:18 PM
+libc-matching isn't it?
+ww8543 04/29/2021 8:17 PM
+04/29/2021 8:17 PM
+someone mentioned me
+ 1
+04/29/2021 8:17 PM
+yay
+[smx2460]
+smx2460 04/29/2021 8:16 PM
+Or it's close enough
+04/29/2021 8:16 PM
+Maybe it uses the same glibc version
+04/29/2021 8:15 PM
+And since lg1154 is close enough the same binaries work for @ww too
+04/29/2021 8:15 PM
+It's not that hard
+04/29/2021 8:15 PM
+Yep
+[mariotaku]
+mariotaku 04/29/2021 8:15 PM
+I remember you have succeeded on compiling with GCC 10 and run on LGNC?
+04/29/2021 8:14 PM
+Now it's 6.2.0
+[smx2460]
+smx2460 04/29/2021 8:14 PM
+What's the one you're using atm
+[mariotaku]
+mariotaku 04/29/2021 8:14 PM
+Just comes to my mind lol
+[smx2460]
+smx2460 04/29/2021 8:14 PM
+Why specifically 4.8?
+[mariotaku]
+mariotaku 04/29/2021 8:14 PM
+Install arm-gcc-4.8 and replace $CC command
+[smx2460]
+smx2460 04/29/2021 8:13 PM
+Nah just wondering
+[mariotaku]
+[] smx2460 What do you mean
+mariotaku 04/29/2021 8:13 PM
+Exists via package manager, forgive my laziness
+[smx2460]
+smx2460 04/29/2021 8:13 PM
+With "not sure if it exists"
+[smx2460]
+[] mariotaku Maybe by install gcc 4.8, but not sure if it exists
+smx2460 04/29/2021 8:13 PM
+What do you mean
+[infowski]
+infowski 04/29/2021 8:02 PM
+yeah, i guess nobody would notice
+[mariotaku]
+mariotaku 04/29/2021 8:02 PM
+For now we can just smuggle libstdc++
+04/29/2021 8:01 PM
+So maybe it's time for us to build our own SDK lol
+04/29/2021 7:59 PM
+Maybe by install gcc 4.8, but not sure if it exists
+04/29/2021 7:58 PM
+Hmm, how we gonna do about that, let me think.
+[infowski]
+infowski 04/29/2021 7:58 PM
+OK.
+[mariotaku]
+[] infowski But do we actually mix 2 different libstdc++? retroarch /
+cores don't seem to call any c++ shared li...
+mariotaku 04/29/2021 7:58 PM
+According to the web, it's more about the compiler.
+[infowski]
+[] smx2460 You will have problems mixing 2 different libstdc++
+infowski 04/29/2021 7:56 PM
+But do we actually mix 2 different libstdc++? retroarch / cores don't
+seem to call any c++ shared libraries...? (outside of libstdc++)
+[infowski]
+infowski 04/29/2021 7:54 PM
+confirmed for my initial hacky build
+ 1
+04/29/2021 7:54 PM
+I mean, the bad solution is to just pull in the libstdc++.so from the
+ndk and it just works.
+[smx2460]
+smx2460 04/29/2021 7:54 PM
+You will have problems mixing 2 different libstdc++
+04/29/2021 7:54 PM
+Hmm but
+04/29/2021 7:54 PM
+Plus finding the libs
+[smx2460]
+[] infowski <@!225167450713358338> hmmm, seems like most cores still
+depend on libstdc++... `[ERROR] Error(s): /...
+smx2460 04/29/2021 7:53 PM
+patchelf
+[smx2460]
+smx2460 04/29/2021 7:53 PM
+Ok
+[infowski]
+infowski 04/29/2021 7:52 PM
+@Smx well, that whole code is ifdef'ed for webos-only anyway
+[smx2460]
+smx2460 04/29/2021 7:52 PM
+XD
+04/29/2021 7:52 PM
+Assume dlsym will never fail
+04/29/2021 7:52 PM
+Problem solved
+04/29/2021 7:52 PM
+Unless you #ifdef it
+[infowski]
+infowski 04/29/2021 7:52 PM
+how shall we fix this properly? do we downgrade the libstdc++ in ndk?
+[smx2460]
+smx2460 04/29/2021 7:52 PM
+There's no point in always checking if you're on WebOS
+04/29/2021 7:52 PM
+It was to avoid running the "if" check too many times
+[smx2460]
+[] mariotaku Are there any specific considerations to this? Because this
+function doesn't get called too frequent...
+smx2460 04/29/2021 7:52 PM
+Ok then
+[infowski]
+infowski 04/29/2021 7:51 PM
+@Mariotaku hmmm, seems like most cores still depend on libstdc++...
+[ERROR] Error(s): /lib/libstdc++.so.6: version GLIBCXX_3.4.21 not found (required by /media/developer/apps/usr/palm/applications/com.retroarch/.config/retroarch/cores/snes9x_libretro.so)
+[mariotaku]
+mariotaku 04/29/2021 7:47 PM
+Are there any specific considerations to this? Because this function
+doesn't get called too frequently. I think if I declare the fn variable
+static, it won't bring much performance penalty.
+[smx2460]
+smx2460 04/29/2021 7:45 PM
+Both set at startup
+04/29/2021 7:45 PM
+So you have 2 function pointers. A pointer to the imported SDL function
+with dlsym and a pointer to either the function using the standard SDL
+functions or the WebOS ones
+04/29/2021 7:44 PM
+So you set the right implementation to use just once
+04/29/2021 7:44 PM
+And at startup
+04/29/2021 7:44 PM
+Initialized at runtime
+04/29/2021 7:44 PM
+And define a delegate that points to one or the other
+[infowski]
+infowski 04/29/2021 7:44 PM
+i had some issues with drives not being mounted in app jail until a
+reboot
+[smx2460]
+[] mariotaku Oh you're right. I can make `fn` static
+smx2460 04/29/2021 7:44 PM
+I would split that if/else in 2 separate functions
+[infowski]
+infowski 04/29/2021 7:43 PM
+@Mariotaku have you tried... rebooting it?
+04/29/2021 7:43 PM
+It just shows up on my TV :/
+04/29/2021 7:43 PM
+Possible, no idea how that works.
+[mariotaku]
+mariotaku 04/29/2021 7:42 PM
+I was thinking, should we add permission to appinfo? Because I can't see
+my thumbdrive content in RetroArch
+[mariotaku]
+[] smx2460 Isn't it a good idea to cache the function pointer
+statically/globally?
+mariotaku 04/29/2021 7:42 PM
+Oh you're right. I can make fn static
+[smx2460]
+smx2460 04/29/2021 7:42 PM
+Maybe just once on init
+[smx2460]
+[] mariotaku Are you OK with merging this?
+https://github.com/webosbrew/RetroArch/pull/4
+smx2460 04/29/2021 7:41 PM
+Isn't it a good idea to cache the function pointer statically/globally?
+[dustyangel47]
+dustyangel47 04/29/2021 7:40 PM
+retroarch until 5 seconds ago: can play SMB can't view images
+[infowski]
+infowski 04/29/2021 7:40 PM
+woohooo, now the image viewer doesn't crash the compositor
+[dustyangel47]
+dustyangel47 04/29/2021 7:38 PM
+no reason it shouldnt if a ps3 controller works
+04/29/2021 7:38 PM
+i need to go see if my 360 controller works
+04/29/2021 7:38 PM
+i use the normal remote like a n00b
+[infowski]
+infowski 04/29/2021 7:38 PM
+oh yeah, that's not gonna be pleasant xD
+04/29/2021 7:38 PM
+or juts the boring one?
+[dustyangel47]
+dustyangel47 04/29/2021 7:37 PM
+no
+[infowski]
+infowski 04/29/2021 7:37 PM
+Do you have a magic remote?
+04/29/2021 7:37 PM
+xD
+[dustyangel47]
+dustyangel47 04/29/2021 7:37 PM
+now i can play one-button-at-a-time mario bros
+04/29/2021 7:37 PM
+yup launches now
+04/29/2021 7:36 PM
+lets go
+[infowski]
+infowski 04/29/2021 7:36 PM
+@DustyAngel47 OK, so the new hbchannel release is up.
+[mariotaku]
+mariotaku 04/29/2021 7:31 PM
+Work has highest priority (although we all agree that what we're doing
+now has more fun lol)
+[mariotaku]
+[] infowski Sorry for the delay, had some work emergency and didn't
+notice the emails...
+mariotaku 04/29/2021 7:30 PM
+Don't say that's delay. You're processing those patches swiftly already
+[infowski]
+infowski 04/29/2021 7:30 PM
+Sorry for the delay, had some work emergency and didn't notice the
+emails...
+04/29/2021 7:28 PM
+@Mariotaku sure, looks OK.
+04/29/2021 7:28 PM
+also rel domain - sure, I just wanted something to test things on very
+quickly, didn't anticipate anyone getting that interested 
+[mariotaku]
+[] infowski <@!225167450713358338> works now, thanks. we need to look
+through which flags are actually makefile ...
+mariotaku 04/29/2021 7:28 PM
+Are you OK with merging this?
+https://github.com/webosbrew/RetroArch/pull/4
+Better remote support on webOS 4+ by mariotaku · Pull Request #4 · ...
+Description On webOS 4+, an API SDL_webOSCursorVisibility has been
+introduced for better cursor handling. This PR uses dlsym to call it
+safely. Reviewers @Informatic
+[]
+[infowski]
+infowski 04/29/2021 7:27 PM
+since it seems like at least some part of the stuff in Makefile.webos is
+not even used anywhere in the end.
+04/29/2021 7:27 PM
+@Mariotaku works now, thanks. we need to look through which flags are
+actually makefile flags, and which ones are only needed to be added in
+DEFINES though 
+[mariotaku]
+mariotaku 04/29/2021 7:26 PM
+Once there's a tag it will be available
+04/29/2021 7:26 PM
+Yep lol
+[dustyangel47]
+dustyangel47 04/29/2021 7:26 PM
+i was about to complain that the homebrew channel package on the
+homebrew channel didnt work but then i realized there wasnt even a
+release so it has no reason to work lol
+[mariotaku]
+mariotaku 04/29/2021 7:23 PM
+Also I can provide you a CNAME or something for your domain.
+04/29/2021 7:22 PM
+I think the cores can be correctly downloaded.
+04/29/2021 7:22 PM
+@infowski does my new push work for you?
+[smx2460]
+smx2460 04/29/2021 7:22 PM
+Because they boot dev versions of their OS with NFS
+04/29/2021 7:22 PM
+All LG kernels have NFS built in
+04/29/2021 7:21 PM
+We originally got NFS working with rpcbind, cross compiled
+[mariotaku]
+[] smx2460 For starters, network shares
+mariotaku 04/29/2021 7:21 PM
+True. This is a great use
+ww8543 04/29/2021 7:21 PM
+and nfs
+04/29/2021 7:21 PM
+kodi has builtin libsmb
+[smx2460]
+smx2460 04/29/2021 7:21 PM
+nfs, cifs
+[smx2460]
+[] mariotaku So mostly we bring multimedia apps
+smx2460 04/29/2021 7:21 PM
+For starters, network shares
+[smx2460]
+smx2460 04/29/2021 7:21 PM
+Kodi Mplayer etc...
+04/29/2021 7:20 PM
+If we don't use OMX, then we need to add custom code to whoever wants to
+consume that source
+04/29/2021 7:20 PM
+However
+04/29/2021 7:20 PM
+Epic
+[mariotaku]
+[] smx2460 Maybe even Netcast?
+mariotaku 04/29/2021 7:20 PM
+Yes, lgncapi
+[smx2460]
+[] mariotaku Across webOS 1(?) to 5
+smx2460 04/29/2021 7:20 PM
+Maybe even Netcast?
+[mariotaku]
+mariotaku 04/29/2021 7:19 PM
+So mostly we bring multimedia apps
+04/29/2021 7:19 PM
+Thinking about realistic usages, the TV is to consume content
+[dustyangel47]
+dustyangel47 04/29/2021 7:18 PM
+lol
+[mariotaku]
+mariotaku 04/29/2021 7:18 PM
+download more
+ 2
+[dustyangel47]
+dustyangel47 04/29/2021 7:18 PM
+it cant be that hard
+04/29/2021 7:18 PM
+just install more
+[mariotaku]
+mariotaku 04/29/2021 7:17 PM
+I don't think you'll have enough ram for that
+04/29/2021 7:17 PM
+lol but why
+[dustyangel47]
+[] dustyangel47 better yet, just port qemu and run a linux distro inside
+that to run kodi
+dustyangel47 04/29/2021 7:17 PM
+although more seriously i do think it would be cool to eventually have
+some sort of emulator running so we can run webos on webos
+[mariotaku]
+mariotaku 04/29/2021 7:15 PM
+Across webOS 1(?) to 5
+04/29/2021 7:14 PM
+I did shit-ton of reverse engineering and figured out 4 ways to render
+video
+04/29/2021 7:13 PM
+Ask me
+04/29/2021 7:13 PM
+By the way, to play hardware accelerated video
+[dustyangel47]
+dustyangel47 04/29/2021 7:13 PM
+lol
+[mariotaku]
+mariotaku 04/29/2021 7:13 PM
+lol
+ww8543 04/29/2021 7:13 PM
+right and enjoy 0,000001 fps video
+[dustyangel47]
+dustyangel47 04/29/2021 7:13 PM
+better yet, just port qemu and run a linux distro inside that to run
+kodi
+ww8543 04/29/2021 7:12 PM
+omg no
+[dustyangel47]
+dustyangel47 04/29/2021 7:12 PM
+~~why not port vlc instead~~
+ww8543 04/29/2021 7:11 PM
+whats bad again about kodi ui?
+[smx2460]
+smx2460 04/29/2021 7:11 PM
+It's decent
+04/29/2021 7:11 PM
+I wouldn't exactly label Kodi UI as "good" 
+04/29/2021 7:11 PM
+Videodriver I mean
+[infowski]
+infowski 04/29/2021 7:10 PM
+hmmmmm... but no (good) GUI  (edited)
+[smx2460]
+smx2460 04/29/2021 7:10 PM
+Which has a vastly superior driver support
+04/29/2021 7:10 PM
+You could also try MPlayer/mpv
+04/29/2021 7:09 PM
+But who knows
+04/29/2021 7:09 PM
+Since it's basically some overlay
+04/29/2021 7:09 PM
+I don't see why you'd need anything further on Kodi
+[infowski]
+infowski 04/29/2021 7:09 PM
+I don't know honestly, I need to look it up.
+04/29/2021 7:09 PM
+if everything you need is a gl context and some basic input handling,
+then, well...
+[smx2460]
+smx2460 04/29/2021 7:09 PM
+04/29/2021 7:09 PM
+Then you also send them a PR
+[infowski]
+infowski 04/29/2021 7:08 PM
+and they chose the former
+04/29/2021 7:08 PM
+yeah, I guess it makes some sense - if their original codebase was a
+mess and used sdl all over the place, then they could either drop it
+completely or refactor it out into a separate generic module (edited)
+04/29/2021 7:07 PM
+i mean, if they haven't fucked their own abstractions...
+[smx2460]
+smx2460 04/29/2021 7:07 PM
+I mean you'd basically un-deprecate SDL support
+04/29/2021 7:07 PM
+If you think that's simpler, ok :P
+04/29/2021 7:06 PM
+When you have said abstraction layers
+[infowski]
+infowski 04/29/2021 7:06 PM
+but i guess since they already have backend for xorg, wayland, windows,
+osx, etc... then maybe we could just make our own gl context and input
+provider based on SDL...
+[smx2460]
+smx2460 04/29/2021 7:06 PM
+Why go for a crappier and more vendor specific protocol, meh
+[smx2460]
+[] infowski <@!310158180728700929> no they can't, they've dropped SDL
+completely a couple of years ago.
+smx2460 04/29/2021 7:06 PM
+Lame
+[smx2460]
+smx2460 04/29/2021 7:06 PM
+Only if weston demos work, you have some chances with Kodi
+[infowski]
+infowski 04/29/2021 7:06 PM
+@Smx no they can't, they've dropped SDL completely a couple of years
+ago.
+[smx2460]
+smx2460 04/29/2021 7:06 PM
+Not go head on into Kodi
+04/29/2021 7:05 PM
+The First thing is to build weston demos
+04/29/2021 7:05 PM
+If wayland is the way to go
+ww8543 04/29/2021 7:05 PM
+then next step look at omx
+[smx2460]
+smx2460 04/29/2021 7:05 PM
+Can Kodi run off SDL?
+04/29/2021 7:05 PM
+In which case you need to find an older Kodi or even XBMC
+04/29/2021 7:04 PM
+Or if the client would be too old
+04/29/2021 7:04 PM
+And then if Kodi can even work with that
+[infowski]
+infowski 04/29/2021 7:04 PM
+since they already just use opengles for rendering, and plain wayland /
+xorg just for initialization and input.
+[smx2460]
+smx2460 04/29/2021 7:04 PM
+First someone needs to figure out which Wayland version is being used
+[infowski]
+infowski 04/29/2021 7:04 PM
+well, they could've stayed on sdl...
+[smx2460]
+smx2460 04/29/2021 7:04 PM
+And the wayland patches
+04/29/2021 7:03 PM
+The build setup is the hardest thing
+04/29/2021 7:03 PM
+It should build out of the box
+[mariotaku]
+[] smx2460 And kodi if somebody takes a stab at fixing it
+mariotaku 04/29/2021 7:03 PM
+I actually have checked the code, but it was too huge that I don't want
+to start yet
+[infowski]
+infowski 04/29/2021 7:03 PM
+sure, no problem.
+[mariotaku]
+mariotaku 04/29/2021 7:02 PM
+Sorry for the mess, I'll push to the branch
+[smx2460]
+[] mariotaku I think we already have killer apps to beat the $h!t of
+apps in LG store
+smx2460 04/29/2021 7:02 PM
+And kodi if somebody takes a stab at fixing it
+[infowski]
+infowski 04/29/2021 7:02 PM
+heh
+[mariotaku]
+mariotaku 04/29/2021 7:02 PM
+Ah got it! HAVE_ONLINE_UPDATER
+04/29/2021 6:59 PM
+HAVE_DYLIB
+04/29/2021 6:54 PM
+HAVE_NETWORKING
+[infowski]
+infowski 04/29/2021 6:52 PM
+make -f Makefile.webos clean && make -f Makefile.webos ipk
+04/29/2021 6:52 PM
+Makefile.webos in main directory
+[mariotaku]
+[] infowski <@!225167450713358338> oh no, the content downloader thing
+is missing :/
+mariotaku 04/29/2021 6:52 PM
+Which Makefile you're using?
+[infowski]
+infowski 04/29/2021 6:52 PM
+I'll check the flags...
+04/29/2021 6:52 PM
+@Mariotaku oh no, the content downloader thing is missing :/
+04/29/2021 6:51 PM
+it was just a leftover in my directory
+04/29/2021 6:51 PM
+nvm, it's not in the ipk built via new makefile
+[mariotaku]
+[] infowski <@!225167450713358338> fyi yeah, it seems to work fine
+without libc++ now, I'll remove it then.
+mariotaku 04/29/2021 6:51 PM
+Nice!
+ww8543 04/29/2021 6:50 PM
+quake!
+[infowski]
+infowski 04/29/2021 6:50 PM
+@Mariotaku fyi yeah, it seems to work fine without libc++ now, I'll
+remove it then.
+[mariotaku]
+mariotaku 04/29/2021 6:50 PM
+and DOOM
+04/29/2021 6:50 PM
+RetroArch, Moonlight...
+04/29/2021 6:50 PM
+I think we already have killer apps to beat the $h!t of apps in LG store
+ 1
+04/29/2021 6:50 PM
+@infowski Please go ahead. I'll add automatic build for you later
+[infowski]
+infowski 04/29/2021 6:49 PM
+@Mariotaku i'll make another test release if you don't mind
+04/29/2021 6:47 PM
+deer dog yes
+[dustyangel47]
+dustyangel47 04/29/2021 6:47 PM
+~~webos switch to pipewire when~~
+04/29/2021 6:47 PM
+ah, ic
+[mariotaku]
+mariotaku 04/29/2021 6:46 PM
+But for sdl2, it's not working
+[infowski]
+infowski 04/29/2021 6:46 PM
+@DustyAngel47 there are multiple audio drivers - if you didn't change
+it, then it should've defaulted to pulse - which works fine.
+[mariotaku]
+mariotaku 04/29/2021 6:46 PM
+NES sound works fine if you are using pulse audio driver
+[dustyangel47]
+dustyangel47 04/29/2021 6:46 PM
+because nes audio worked fine for me
+04/29/2021 6:46 PM
+or am i misunderstanding
+04/29/2021 6:46 PM
+wait nes audio wasnt working for ya'll?
+[mariotaku]
+mariotaku 04/29/2021 6:45 PM
+I found the issue on NES
+[infowski]
+infowski 04/29/2021 6:44 PM
+ok, so audio in quake with sdl2 audio driver seems to work for me.
+[mariotaku]
+mariotaku 04/29/2021 6:44 PM
+That shouldn't be our problem
+[infowski]
+infowski 04/29/2021 6:43 PM
+let me check...
+04/29/2021 6:43 PM
+haven't tested sdl at all.
+[mariotaku]
+mariotaku 04/29/2021 6:43 PM
+Yes, pulse works
+[infowski]
+infowski 04/29/2021 6:43 PM
+i mean, it worked on my build.
+04/29/2021 6:43 PM
+uhhhh, no, pulse works for me?
+[mariotaku]
+mariotaku 04/29/2021 6:43 PM
+I can't do it at all
+04/29/2021 6:43 PM
+Did you get sdl2 audio working on your machine?
+[infowski]
+infowski 04/29/2021 6:42 PM
+nois
+[mariotaku]
+mariotaku 04/29/2021 6:42 PM
+But now even if it's an unstripped binary, it's still smol
+[infowski]
+infowski 04/29/2021 6:42 PM
+ah, yeah, forgot about stripping too.
+[mariotaku]
+mariotaku 04/29/2021 6:42 PM
+Not stripped
+04/29/2021 6:42 PM
+Yep
+[infowski]
+infowski 04/29/2021 6:42 PM
+and before it was like 30mb?
+04/29/2021 6:42 PM
+lol, 1.6mb binary
+04/29/2021 6:41 PM
+no, it's just that my tv is pretty old 
+[mariotaku]
+mariotaku 04/29/2021 6:41 PM
+Somehow I removed dependencies of it at all lol
+ 1
+[dustyangel47]
+dustyangel47 04/29/2021 6:41 PM
+darn you my tv being updated
+[infowski]
+infowski 04/29/2021 6:40 PM
+well, it worked for me, but anything after 3.8 seems broken - Mariotaku
+fixed it already...
+[mariotaku]
+mariotaku 04/29/2021 6:40 PM
+@infowski I think for future versions you don't have to ship with
+libstdc++
+      required from libc.so.6:
+        0x0d696914 0x00 02 GLIBC_2.4
+        0x0d696917 0x00 03 GLIBC_2.7
+      required from libgcc_s.so.1:
+        0x0b792655 0x00 04 GCC_3.5
+      required from libpulse.so.0:
+        0x05a17b70 0x00 05 PULSE_0
+      required from libpthread.so.0:
+        0x0d696914 0x00 06 GLIBC_2.4
+      required from libm.so.6:
+        0x0d696914 0x00 07 GLIBC_2.4
+      required from libdl.so.2:
+        0x0d696914 0x00 08 GLIBC_2.4
+      required from librt.so.1:
+        0x0d696914 0x00 09 GLIBC_2.4
+[dustyangel47]
+dustyangel47 04/29/2021 6:40 PM
+so that explains why the ipk i downloaded from there didnt launch
+[infowski]
+infowski 04/29/2021 6:40 PM
+wip: building...
+[dustyangel47]
+dustyangel47 04/29/2021 6:40 PM
+rip
+[infowski]
+infowski 04/29/2021 6:39 PM
+Yeah, that build was screwed.
+[dustyangel47]
+dustyangel47 04/29/2021 6:39 PM
+it just instantly boots me back to the no signal screen
+04/29/2021 6:39 PM
+whenever i try to launch it
+04/29/2021 6:39 PM
+after i reinstalled retroarch with the homebrew channel (edited)
+04/29/2021 6:39 PM
+alright so now i'm having a weird problem
+04/29/2021 6:38 PM
+What (edited)
+04/29/2021 6:34 PM
+its probably just something with the way latest works lol
+04/29/2021 6:34 PM
+no i was talking about how the download was on a different side of the
+version specifier
+[mariotaku]
+mariotaku 04/29/2021 6:33 PM
+That one on the right side, will automatically redirect to latest
+release.
+[infowski]
+infowski 04/29/2021 6:32 PM
+interesting
+[dustyangel47]
+dustyangel47 04/29/2021 6:32 PM
+is that part of the url just interchangable?
+04/29/2021 6:32 PM
+these both download (edited)
+04/29/2021 6:32 PM
+wait huh
+[Screenshot_from_2021-04-29_12-32-03.png]
+ Screenshot_from_2021-04-29_12-32-03.png
+18.96 KB External
+[infowski]
+infowski 04/29/2021 6:31 PM
+@Mariotaku sure, don't mind.
+[mariotaku]
+mariotaku 04/29/2021 6:31 PM
+@infowski as this change doesn't change anything existing, I'd like to
+merge directly without your review (this Makefile is too big to review
+anyway) https://github.com/webosbrew/RetroArch/pull/3
+Added direct makefile for webOS by mariotaku · Pull Request #3 · we...
+Guidelines Rebase before opening a pull request If you are sending
+several unrelated fixes or features, use a branch and a separate pull
+request for each If possible try squashing everything in a ...
+[]
+[infowski]
+infowski 04/29/2021 6:28 PM
+yeah, that's a magic alias.
+04/29/2021 6:28 PM
+It's used in moonlight-tv
+[dustyangel47]
+dustyangel47 04/29/2021 6:28 PM
+thanks
+04/29/2021 6:28 PM
+but i figured it would be master/main
+04/29/2021 6:27 PM
+ooooh i figured you could do something like that
+[infowski]
+infowski 04/29/2021 6:27 PM
+@DustyAngel47 in the meantime, you can replace v1.9.1-webos.0 version
+with latest, so that it'll update automatically :3
+[dustyangel47]
+dustyangel47 04/29/2021 6:27 PM
+oh lol
+[infowski]
+infowski 04/29/2021 6:26 PM
+Yeah, we already have a little patched up build that should support more
+webos versions, and there's a bunch of input fixes.
+[dustyangel47]
+dustyangel47 04/29/2021 6:25 PM
+idk if ya'll were holding off for a more polished build or something to
+add it
+[mariotaku]
+mariotaku 04/29/2021 6:25 PM
+Noice!
+[dustyangel47]
+dustyangel47 04/29/2021 6:25 PM
+made a pr that should add retroarch to the hb channel repo
+https://github.com/webosbrew/apps-repo/pull/1
+Add RetroArch (https://github.com/webosbrew/RetroArch) by Ruthenic ...
+I believe that the package specification is okay? I'm not entirely sure
+if you can test them or something, but it appears to be fine
+[]
+[mariotaku]
+mariotaku 04/29/2021 6:18 PM
+This is true though
+[infowski]
+infowski 04/29/2021 6:17 PM
+though it's a little tricky, as I guess that keyboard works much better
+(ie. works at all) than system one in case of gamepads
+04/29/2021 6:17 PM
+yeah, the retroarch keyboard is not great 
+04/29/2021 6:17 PM
+but pretty much everything I need is in nixpkgs (official nixos/nix
+package repository) anyway
+[mariotaku]
+mariotaku 04/29/2021 6:17 PM
+By the way maybe I can make some changes to use system builtin screen
+keyboard. RetroArch one doesn't work at all (edited)
+04/29/2021 6:17 PM
+I'm waiting for WSLG, looking great
+[infowski]
+infowski 04/29/2021 6:16 PM
+or I've heard of people using lxc, that could work in a similar fashion
+as your wsl setup, and I guess could work better for graphical
+applications.
+[mariotaku]
+mariotaku 04/29/2021 6:16 PM
+I see.
+[infowski]
+infowski 04/29/2021 6:16 PM
+...and that's where docker helps a lot.
+[infowski]
+[] mariotaku Interesting. I'm working on WSL so didn't care about
+messing my filesystem much lol
+infowski 04/29/2021 6:15 PM
+you mean nixos? sure it is, but it also it a lot of hassle if you need
+to operate in environments where random binaries off the internet are
+required
+[mariotaku]
+mariotaku 04/29/2021 6:14 PM
+Interesting. I'm working on WSL so didn't care about messing my
+filesystem much lol
+[infowski]
+infowski 04/29/2021 6:13 PM
+nixos lyf, put everything in docker (unless it's properly nixified)
+(edited)
+04/29/2021 6:13 PM
+I use NDK only in plain ubuntu 20.04 docker container, so can't tell 
+[mariotaku]
+mariotaku 04/29/2021 6:12 PM
+Mine has failed, but this Makefile will just work as it doesn't
+reference /usr/lib . Which is a mistake by llibretro I believe.
+04/29/2021 6:12 PM
+Did you tried to compile, when there's SDL2 on your host machine?
+[infowski]
+infowski 04/29/2021 6:11 PM
+My initial approach was a total hack.
+[mariotaku]
+mariotaku 04/29/2021 6:11 PM
+And we can fine tune every feature.
+[infowski]
+infowski 04/29/2021 6:11 PM
+sure, obviously.
+04/29/2021 6:11 PM
+Cool, good.
+[mariotaku]
+mariotaku 04/29/2021 6:11 PM
+I think this is more suitable if we want to merge it into upstream
+04/29/2021 6:11 PM
+Just like other platforms.
+04/29/2021 6:11 PM
+https://github.com/webosbrew/RetroArch/pull/3
+Added direct makefile for webOS by mariotaku · Pull Request #3 · we...
+Guidelines Rebase before opening a pull request If you are sending
+several unrelated fixes or features, use a branch and a separate pull
+request for each If possible try squashing everything in a ...
+[]
+04/29/2021 6:11 PM
+Simpler for builder (but harder for me to write lol)
+[infowski]
+infowski 04/29/2021 6:10 PM
+You mean simpler one than the one in webos/Makefile?
+[mariotaku]
+mariotaku 04/29/2021 6:10 PM
+And output binary is surprisingly small
+04/29/2021 6:10 PM
+Also I have added a simpler Makefile for webOS 
+04/29/2021 6:09 PM
+I see. I'll make a patch to make it work both on yours and mine
+04/29/2021 6:09 PM
+Haha same
+[infowski]
+infowski 04/29/2021 6:09 PM
+You mean on my TV in general? The cursor shows up when i violently move
+the magic remote or scroll using the scrollwheel.
+[mariotaku]
+mariotaku 04/29/2021 6:07 PM
+For your implementation, what's the condition for displaying cursor?
+04/29/2021 6:06 PM
+Yep, ENTER
+[infowski]
+infowski 04/29/2021 6:06 PM
+or whatever its code/name is...
+04/29/2021 6:06 PM
+and when it's not, it's the ENTER key
+04/29/2021 6:06 PM
+Yeah, it seems to be the same.
+[mariotaku]
+[] infowski I see...
+mariotaku 04/29/2021 6:06 PM
+On your TV, could you tell me what's the behavior of magic remote? On
+mine, when cursor is showing, center key becomes mouse LEFT. (edited)
+[infowski]
+infowski 04/29/2021 5:51 PM
+I see...
+[mariotaku]
+mariotaku 04/29/2021 3:05 PM
+When I press GUIDE, it opened TV guide
+04/29/2021 3:05 PM
+I think on my TV only the keys mentioned above are working
+ww8543 04/29/2021 3:04 PM
+this reminds me that i wanted to code a key event server
+[infowski]
+infowski 04/29/2021 3:02 PM
+Sure. I have both classic and magic remote so can test things out for
+you in case you need it later.
+[mariotaku]
+mariotaku 04/29/2021 3:01 PM
+I'll try a bunch of them first, and update the SDK 
+[infowski]
+infowski 04/29/2021 3:00 PM
+goes afk for a couple of hours...
+04/29/2021 3:00 PM
+need more printf / RARCH_WARN debugging
+04/29/2021 3:00 PM
+actually, most of the keys seem to work.
+04/29/2021 3:00 PM
+LIST and GUIDE work on webOS3.8
+[mariotaku]
+mariotaku 04/29/2021 3:00 PM
+Let me test for more
+04/29/2021 2:59 PM
+Also for color keys
+04/29/2021 2:59 PM
+I remember for SDL (on Magic Remote), only DPAD, Back and channel keys
+are working
+[infowski]
+infowski 04/29/2021 2:57 PM
+also SELECT would be nice to have bound as well by default.
+04/29/2021 2:57 PM
+or GUIDE?
+04/29/2021 2:57 PM
+Yeah, you can bind key like LIST for that maybe?
+04/29/2021 2:57 PM
+(sorry, was having a meal :D)
+[mariotaku]
+mariotaku 04/29/2021 2:57 PM
+That's sounds better than mine. I was thinking to provide a key to open
+menu while in game
+[infowski]
+infowski 04/29/2021 2:56 PM
+@Mariotaku yeah, my solution seems to work well with default keybinds -
+which I am honestly not sure how to modify
+[mariotaku]
+mariotaku 04/29/2021 2:39 PM
+@infowski I saw you are working on colored keys! I'm also trying to do
+this by mapping them to F1~F4, which is a little bit different than
+yours.
+[mariotaku]
+mariotaku 04/29/2021 2:23 PM
+Maybe this luna API
+04/29/2021 2:23 PM
+https://www.webosose.org/docs/reference/ls2-api/com-webos-service-bluetooth2/
+com.webos.service.bluetooth2
+API Summary Allows webOS to use remote Bluetooth devices. Overview of
+the API The bluetooth2 service supports the following categories:
+adapter: Provides methods for discovering and pairing with remote
+Bluetooth devices and for querying their status and Bluetooth adapters
+available in the system. Both outgoing and incoming pairing is
+supporte...
+[]
+ww8543 04/29/2021 2:15 PM
+i have only seen firmware blobs for the bt module
+[infowski]
+infowski 04/29/2021 2:10 PM
+sure 
+[mariotaku]
+[] infowski has anyone researched how does the bluetooth stack work on
+webos? this doesn't look like bluez, does...
+mariotaku 04/29/2021 2:05 PM
+I remember there are some APIs but I don't really want to touch this
+part lol
+[infowski]
+infowski 04/29/2021 2:04 PM
+has anyone researched how does the bluetooth stack work on webos? this
+doesn't look like bluez, does it?
+[retr0id]
+[] mariotaku I think so. And they looks pretty open to homebrew.
+retr0id 04/29/2021 2:03 PM
+yeah, they're generally pretty amenable to upstreaming ports (since
+that's kinda the whole goal of retroarch)
+[infowski]
+infowski 04/29/2021 1:02 PM
+Sure. I'll leave it like that. Reducing auto hide timeout hint from 5000
+(ms?) to 1000 didn't make major difference on my tv, so that's why i
+wanted to work it around somehow. (edited)
+[mariotaku]
+ww8543 if you dont like configure system, you could also try to use
+cmake
+mariotaku 04/29/2021 1:02 PM
+Configure is good for build a project as a whole, but when I want to
+embed it into something else, it's a bit troublesome.
+[mariotaku]
+[] infowski <@!225167450713358338> are you aware of any method of
+forcibly hiding a magic remote cursor outside ...
+mariotaku 04/29/2021 1:02 PM
+I didn't find it yet.
+ww8543 04/29/2021 1:01 PM
+if you dont like configure system, you could also try to use cmake
+[infowski]
+infowski 04/29/2021 1:01 PM
+@Mariotaku are you aware of any method of forcibly hiding a magic remote
+cursor outside of SDL_webOSCursorVisibility? (that symbol is unavailable
+on webOS 3.8 :/)
+SDL_ShowCursor(SDL_DISABLE); SDL_ShowCursor(SDL_ENABLE); seems to
+somewhat work, ie. it hides the pointer, but it still gets reenable much
+quicker than after proper "cooldown" when the remote is stationary for a
+while.
+[mariotaku]
+mariotaku 04/29/2021 12:57 PM
+I think so. And they looks pretty open to homebrew.
+[infowski]
+infowski 04/29/2021 12:57 PM
+well, in the end I guess we could borrow some help from retroarch
+people - they already have a build claster for this stuff, so maybe
+they'll want to take it up as a supported platform?
+[mariotaku]
+mariotaku 04/29/2021 12:56 PM
+Maybe that's me misinterpreted from some guides. By the way for this
+kind of projects needed ./configure and cross compilation, do you have
+suggestions other than writing a simple Makefile?
+[infowski]
+infowski 04/29/2021 12:30 PM
+i mean, in the case of configure target that (line breaks) sure makes
+sense - it's a single very long command. (edited)
+[infowski]
+ww8543 readability on a terminal?
+infowski 04/29/2021 12:29 PM
+and rel readability - not sure honestly - if something breaks in such a
+long line you get a list of mulitple commands instead of a specific one
+that actually failed
+ww8543 04/29/2021 12:29 PM
+i never heard of that
+04/29/2021 12:29 PM
+it cant?
+[infowski]
+infowski 04/29/2021 12:29 PM
+seems to work for me? 
+[mariotaku]
+[] infowski <@!225167450713358338> is there any specific reason for
+these multiline commands instead of having t...
+mariotaku 04/29/2021 12:28 PM
+I remember Makefile can't handle multiple lines, correct me if I'm wrong
+ww8543 04/29/2021 12:28 PM
+readability on a terminal?
+[infowski]
+infowski 04/29/2021 12:28 PM
+i mean, the ; \ part at the end.
+04/29/2021 12:27 PM
+@Mariotaku is there any specific reason for these multiline commands
+instead of having them all on separate lines/statements?
+https://github.com/webosbrew/RetroArch/blob/webos-tv-support/webos/Makefile#L14-L20
+webosbrew/RetroArch
+Cross-platform, sophisticated frontend for the libretro API. Licensed
+GPLv3. - webosbrew/RetroArch
+[]
+[infowski]
+infowski 04/29/2021 12:06 PM
+done
+04/29/2021 12:06 PM
+sure. transfer makes more sense in case I go missing in action
+[mariotaku]
+mariotaku 04/29/2021 12:05 PM
+Sorry I forgot to delete webosbrew/RetroArch, @infowski you can do
+transfer or host it under your name  No matter which I'll be more than
+happy to improve it with you
+[infowski]
+infowski 04/29/2021 12:00 PM
+Yeah, seems like some sdl/wayland/compositor weirdness.
+[dustyangel47]
+dustyangel47 04/29/2021 11:59 AM
+yea setting it to windowed in the conf is what fixed it for me, might be
+a similar issue to do with sdl or something for both?
+[infowski]
+infowski 04/29/2021 11:57 AM
+Yeah. I had weird issues with proper fullscreen in retroarch as well and
+I just use "windowed mode" with preset resolution. (which in the end is
+also scaled up/down to the size of a panel/gpu framebuffer anyway it
+seems, if i set a wrong resolution) (edited)
+04/29/2021 11:57 AM
+huh, interesting.
+[dustyangel47]
+dustyangel47 04/29/2021 11:57 AM
+according to lg anyways
+04/29/2021 11:57 AM
+nope its 4k
+[infowski]
+infowski 04/29/2021 11:57 AM
+or 720p even?
+[dustyangel47]
+dustyangel47 04/29/2021 11:57 AM
+i have no idea what exactly is causing it, but disabling fullscreen in
+chocolate-doom.conf works
+[infowski]
+[] dustyangel47 the most playable doom port in existence (i'm joking,
+its really cool to play doom *on* my tv)
+infowski 04/29/2021 11:57 AM
+I guess your TV is 1080p?
+[dustyangel47]
+dustyangel47 04/29/2021 11:56 AM
+this is the one from the homebrew channel repo btw
+04/29/2021 11:56 AM
+the most playable doom port in existence (i'm joking, its really cool to
+play doom on my tv)
+[20210429_055125.jpg]
+ 20210429_055125.jpg
+256.04 KB External
+[infowski]
+infowski 04/29/2021 11:53 AM
+Done.
+[mariotaku]
+mariotaku 04/29/2021 11:53 AM
+No hurries, just take your time 
+[infowski]
+infowski 04/29/2021 11:53 AM
+Ah, sorry, had a phonecall and didn't check my mail.
+[mariotaku]
+mariotaku 04/29/2021 11:52 AM
+Sent!
+[infowski]
+[] mariotaku <@!501722020434673674> suddenly realized I still should
+send you PR, and let you transfer your Retro...
+infowski 04/29/2021 11:52 AM
+sure, no problem, make a PR, I'll merge it, and then we'll transfer it
+over 
+[mariotaku]
+mariotaku 04/29/2021 11:46 AM
+@infowski suddenly realized I still should send you PR, and let you
+transfer your RetroArch repo instead. Because my upstream is yours, if
+you want to submit PR to upstream in the future, using yours is a better
+idea.
+[] smx2460 Screw locked Smart TVs
+ww8543 04/29/2021 11:09 AM
+what port do we use for that? 
+[smx2460]
+smx2460 04/29/2021 11:09 AM
+Screw locked Smart TVs
+04/29/2021 11:08 AM
+04/29/2021 11:08 AM
+In fact talking about it brought back an idea to buy one
+04/29/2021 11:07 AM
+Except you can always bail out and use the hardware however you want
+04/29/2021 11:07 AM
+In fact they come with a software and a remote to actually use it as a
+TV with some kind of EPG
+04/29/2021 11:06 AM
+They have hardware to decode MPEG2, DVBCSA etc (edited)
+04/29/2021 11:06 AM
+Those are the best thing
+04/29/2021 11:05 AM
+If we want to port webOS to that, or build our own Opensource TV
+platform
+04/29/2021 11:05 AM
+Including Satellite
+[mariotaku]
+[] infowski let's try `parallel_n64`...
+mariotaku 04/29/2021 11:05 AM
+~~let's try dolphin~~
+ 1
+[smx2460]
+smx2460 04/29/2021 11:05 AM
+They even have an add-on Tuner board for live TV
+04/29/2021 11:05 AM
+Because they are perfectly capable TV platforms
+04/29/2021 11:04 AM
+Why is that a good deal?
+04/29/2021 11:04 AM
+Is that they got a deal to release all the SOC documentation
+04/29/2021 11:04 AM
+The interesting thing about those SBCs
+[infowski]
+infowski 04/29/2021 11:04 AM
+let's try parallel_n64...
+[smx2460]
+smx2460 04/29/2021 11:04 AM
+https://www.khadas.com/edge-v
+Edge-V | Khadas
+Rockchip | RK3399 | LPDDR4 | Modular SBC Board | SBC 2.0, Single Board
+Computer | SPI Flash | Gigabit LAN | WOL | Wake-on-Lan
+[]
+ww8543 04/29/2021 11:03 AM
+aaawww 
+[infowski]
+[] infowski ``` 1 core(s) successfully processed: mupen64plus_next ```
+infowski 04/29/2021 11:03 AM
+well, it crashes xD
+[] smx2460 Except for Intel and AMD based ones
+ww8543 04/29/2021 11:03 AM
+and except for nvidia sbcs
+[smx2460]
+smx2460 04/29/2021 11:02 AM
+https://www.khadas.com/vim3
+VIM3 | Khadas
+WOL | Wake-on-Lan | ARM Development Board | Linux | PCIE | USB 3.0 |
+Android | Amlogic A311D
+[]
+04/29/2021 11:01 AM
+Except for Intel and AMD based ones
+04/29/2021 11:01 AM
+Which are probably along the most powerful
+04/29/2021 11:01 AM
+They also make SBCs out of rockchip/amlogic
+[infowski]
+infowski 04/29/2021 11:00 AM
+all wienner.
+ 1
+[smx2460]
+smx2460 04/29/2021 11:00 AM
+Arm9 or something
+04/29/2021 11:00 AM
+A very old one too
+04/29/2021 11:00 AM
+My chinese ebook reader is all winner
+[infowski]
+infowski 04/29/2021 11:00 AM
+...and allwinner
+[smx2460]
+smx2460 04/29/2021 11:00 AM
+Alongside Amlogic
+04/29/2021 10:59 AM
+And so are many Android TV boxes out in the market
+04/29/2021 10:59 AM
+My aftermarket car radio is Rockchip
+ww8543 04/29/2021 10:55 AM
+not sure why they check for that explicitely
+[infowski]
+infowski 04/29/2021 10:55 AM
+yeah, I know that.
+ww8543 04/29/2021 10:55 AM
+rockchip is an arm soc manufacturer, like qualcomm or mediatek
+[infowski]
+infowski 04/29/2021 10:54 AM
+    ifeq ($(platform), unix)
+        EXT ?= so
+       TARGET := $(TARGET_NAME)_libretro.$(EXT)
+       fpic := -fPIC
+       HAVE_OPENGL = 1
+        GL_LIB := -lGL
+       SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
+    else ifeq ($(platform), linux-portable)
+       TARGET := $(TARGET_NAME)_libretro.$(EXT)
+       fpic := -fPIC -nostdlib
+        HAVE_OPENGL = 1
+        GL_LIB := -lGL
+       SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T
+        LIBM :=
+    else ifneq (,$(findstring rockchip,$(platform)))
+       EXT ?= so
+       TARGET := $(TARGET_NAME)_libretro.$(EXT)
+       CFLAGS += -D_POSIX_C_SOURCE=199309L -DMESA_EGL_NO_X11_HEADERS -DEGL_NO_X11
+       fpic := -fPIC
+       SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
+       GLES := 1
+       ifneq (,$(findstring RK3399,$(platform)))
+           GLES31 := 1
+       endif
+rockchip ???
+04/29/2021 10:53 AM
+every core uses their own set of configure flags, and there are random
+platform checks all over the place. vitaquake2 right now is trying to
+both link against GLESv2 and GL because lol we're running on unix-like
+system then for sure we use opengl, right?
+04/29/2021 10:52 AM
+jesus, libretro buildsystem seems like a major shitshow. don't want to
+judge, as that's really not my industry (again, I mostly do python, js
+and a little bit of nix/k8s), but oh my...
+[mariotaku]
+mariotaku 04/29/2021 10:51 AM
+Smash Bros. running on TV lol
+[infowski]
+infowski 04/29/2021 10:49 AM
+    1 core(s) successfully processed:
+       mupen64plus_next
+[mariotaku]
+mariotaku 04/29/2021 10:49 AM
+On mine it can't be used completely, so I guess it's better to disable
+in configuration.
+04/29/2021 10:48 AM
+Oh I have one thing want to mention, webOS seems not having very good
+support for ALSA
+[infowski]
+infowski 04/29/2021 10:47 AM
+OK, also HAVE_NEON=1 is needed (interestingly, they have some parts of
+code that check __ARM_NEON__ or something similar, but the makefile
+needs a separate flag to compile in the optimized assembly)
+[infowski]
+[] infowski not bad, 60fps on everything i tried so far. too bad i
+wasn't able to build mupen64 or vitaquake due...
+infowski 04/29/2021 10:42 AM
+export USE_GLES=1 seems like the way to go (at least on mupen64, need to
+check other cores if that's a common variable...)
+ 2
+[infowski]
+infowski 04/29/2021 10:33 AM
+Cool.
+[mariotaku]
+mariotaku 04/29/2021 10:33 AM
+Then I'll give you access for that
+04/29/2021 10:32 AM
+Yep, no difference.
+[infowski]
+infowski 04/29/2021 10:32 AM
+or, well, you can just push to that and I'll remove mine, I don't think
+there's any difference really? (except for that test release above, but
+I can just copy it over)
+04/29/2021 10:32 AM
+yeah, just realized there's one in webosbrew repo
+04/29/2021 10:32 AM
+sure.
+[mariotaku]
+mariotaku 04/29/2021 10:31 AM
+I have a PR for you, maybe you can merge, and I will delete the old one
+[infowski]
+infowski 04/29/2021 10:31 AM
+I'll try the transfer thing. Just give me a minute...
+[mariotaku]
+[] infowski I think we can keep the retroarch fork on webosbrew org? (I
+didn't do that in the first place since ...
+mariotaku 04/29/2021 10:30 AM
+No problem! Do you want to transfer yours or use my forked repo?
+[infowski]
+[] mariotaku Got it working! Need some tricks though, webOS is sending
+DOWN and UP back key event at the same tim...
+infowski 04/29/2021 10:29 AM
+I think we can keep the retroarch fork on webosbrew org? (I didn't do
+that in the first place since I honestly wasn't expecting for this to
+get to this point and then just kept pushing in my fork :D)
+[infowski]
+infowski 04/29/2021 10:27 AM
+that's interesting.
+04/29/2021 10:27 AM
+ohhhhhhhhhh...
+[mariotaku]
+mariotaku 04/29/2021 9:57 AM
+Got it working! Need some tricks though, webOS is sending DOWN and UP
+back key event at the same time so...

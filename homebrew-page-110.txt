@@ -1,0 +1,1990 @@
+January 9, 2022
+[infowski]
+[] tbsniller This looks like something is wrong with hyperion if you
+look at `2022-01-09T13:20:26.428414Z [91.029...
+infowski 01/09/2022 2:23 PM
+Oh! I totally missed that in previous logs.
+[m.ksy]
+[] infowski OK, still crashing. Can you look at `ls -la
+/tmp/faultmanager/crash/*.gz`?
+m.ksy 01/09/2022 2:22 PM
+root@LGwebOSTV:/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service#
+ls -la /tmp/faultmanager/crash/*.gz -rw-r--r-- 1 root root 7463 Jan 9
+15:20 /tmp/faultmanager/crash/RDXD_hyperion-webosLinux Crash:
+hyperion-webos crashes at location ?lib?libc-2.24.so (gsignal+0xc4)
+[0x96c7eec0]__hyperion-webos.5878.mbdypF.gz
+[tbsniller]
+tbsniller 01/09/2022 2:22 PM
+This looks like something is wrong with hyperion if you look at
+2022-01-09T13:20:26.428414Z [91.029622017] user.err hyperion-webos [] hyperion-webos_service FNCCPTMAIN {} Error! hyperion_client. 2022-01-09T13:20:26.428522Z [91.029724684] user.info hyperion-webos [] hyperion-webos_service FNCCPTLOOP {} Ending connection loop
+or not?
+[infowski]
+infowski 01/09/2022 2:22 PM
+You should have some crash log dumps there, you can send me one of the
+last ones in a private message.
+01/09/2022 2:21 PM
+OK, still crashing. Can you look at ls -la /tmp/faultmanager/crash/*.gz?
+[m.ksy]
+m.ksy 01/09/2022 2:21 PM
+https://pastebin.com/n5PFtzGD
+2022-01-09T13:20:25.893603Z [90.494844462] user.info hyperion-webos...
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+[m.ksy]
+[] infowski <@!693815155913654274>
+https://d.inf.re/b/96de57fb1424d9f577a24fef67aa0970.tgz try this one
+m.ksy 01/09/2022 2:21 PM
+'osal_Mutexlock failed : No such file or directory hyperion-webos:
+Threads.cpp:537: HRESULT osal_MutexLock(osal_mutex_t*): Assertion
+0' failed. osal_Mutexlock failed : Success hyperion-webos: Threads.cpp:537: HRESULT osal_MutexLock(osal_mutex_t*): Assertion 0'
+failed. [1]+ Stopped (signal) ./hyperion-webos -S -b libdile_vt -a
+192.168.0.102
+root@LGwebOSTV:/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service#
+Error : Connect Failed osal_Mutexlock failed : No such file or directory
+hyperion-webos: Threads.cpp:537: HRESULT osal_MutexLock(osal_mutex_t*):
+Assertion `0' failed. '
+[infowski]
+infowski 01/09/2022 2:16 PM
+@olegovych https://d.inf.re/b/96de57fb1424d9f577a24fef67aa0970.tgz try
+this one
+01/09/2022 2:16 PM
+I already noticed and fixed that in logging refactor branch...
+01/09/2022 2:16 PM
+There's definitely return 0 missing at the end of libdile_vt
+capture_start 
+01/09/2022 2:15 PM
+Ah, I think I got it.
+ 1
+01/09/2022 2:13 PM
+so VT is now properly created, but it somehow crashes...
+01/09/2022 2:13 PM
+>Capture main init completed. Creating subproccess for looping..
+[m.ksy]
+m.ksy 01/09/2022 2:13 PM
+also hyperion log:
+ 2022-01-09T13:09:08.819Z [ FLATBUFSERVER] (DEBUG) (FlatBufferServer.cpp:74:FlatBufferServer::newConnection()) New connection from ::ffff:192.168.0.107 2022-01-09T13:09:08.947Z [ FLATBUFSERVER] (DEBUG) (FlatBufferClient.cpp:70:FlatBufferClient::disconnected()) Socket Closed 2022-01-09T13:11:11.062Z [ FLATBUFSERVER] (DEBUG) (FlatBufferServer.cpp:74:FlatBufferServer::newConnection()) New connection from ::ffff:192.168.0.107 2022-01-09T13:11:11.145Z [ FLATBUFSERVER] (DEBUG) (FlatBufferClient.cpp:70:FlatBufferClient::disconnected()) Socket Closed
+01/09/2022 2:10 PM
+https://pastebin.com/9Wk2GF9z
+[m.ksy]
+[] infowski So here is the service from `main` branch:
+https://d.inf.re/b/515d798294644c28dfcbf9e43c200756.tgz w...
+m.ksy 01/09/2022 2:10 PM
+root@LGwebOSTV:/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service# ./hyperion-webos -S -b libdile_vt -a 192.168.0.102 osal_Mutexlock failed : No such file or directory hyperion-webos: Threads.cpp:537: HRESULT osal_MutexLock(osal_mutex_t*): Assertion 0 failed. osal_Mutexlock failed : Success hyperion-webos: Threads.cpp:537: HRESULT osal_MutexLock(osal_mutex_t*): Assertion 0 failed. Aborted 
+[m.ksy]
+[] infowski So here is the service from `main` branch:
+https://d.inf.re/b/515d798294644c28dfcbf9e43c200756.tgz w...
+m.ksy 01/09/2022 1:44 PM
+will check now
+[infowski]
+[] m.ksy ok)
+infowski 01/09/2022 1:43 PM
+So here is the service from main branch:
+https://d.inf.re/b/515d798294644c28dfcbf9e43c200756.tgz with just these
+changes:
+    diff --git a/src/backends/libdile_vt.c b/src/backends/libdile_vt.c
+    index 76ae76e..e0223a8 100644
+    --- a/src/backends/libdile_vt.c
+    +++ b/src/backends/libdile_vt.c
+    @@ -95,7 +95,7 @@ int capture_cleanup() {
+     int capture_start()
+     {
+         PmLogInfo(logcontext, "DILECPTSTART", 0, "Capture start called.");
+    -    vth = DILE_VT_Create(0);
+    +    vth = DILE_VT_CreateEx(0, 1);
+         if (vth == NULL) {
+             return -1;
+         }
+[m.ksy]
+m.ksy 01/09/2022 1:28 PM
+ok)
+[infowski]
+infowski 01/09/2022 1:28 PM
+Sure, I'll try to rebuild it for you in a minute, and we'll see how it
+goes.
+[m.ksy]
+[] infowski Do you have an NDK set up to be able to quickly recompile
+hyperion-webos?
+m.ksy 01/09/2022 1:28 PM
+nope :/
+[infowski]
+[] m.ksy Click to see attachment
+infowski 01/09/2022 1:27 PM
+Do you have an NDK set up to be able to quickly recompile
+hyperion-webos?
+[infowski]
+infowski 01/09/2022 1:26 PM
+OK, so my TV always uses DILE_VT_Create
+01/09/2022 1:24 PM
+let me compare it with my TV.
+01/09/2022 1:24 PM
+OK, exactly the same.
+[m.ksy]
+[] infowski Try that. Let's see what happens.
+m.ksy 01/09/2022 1:24 PM
+(no content)
+[unknown.png]
+ unknown.png
+321.42 KB External
+[infowski]
+infowski 01/09/2022 1:22 PM
+Try that. Let's see what happens.
+[m.ksy]
+[] infowski Another important question - have you tried starting capture
+when there's some video on screen?
+m.ksy 01/09/2022 1:22 PM
+only with opened apps not videostream
+[infowski]
+infowski 01/09/2022 1:21 PM
+probably via SSH/Telnet
+[infowski]
+[] m.ksy Click to see attachment
+infowski 01/09/2022 1:21 PM
+Another important question - have you tried starting capture when
+there's some video on screen?
+[infowski]
+infowski 01/09/2022 1:18 PM
+Ha, I see DILE_VT_CreateEx
+ 1
+01/09/2022 1:17 PM
+Question is what is it using internally (edited)
+[m.ksy]
+m.ksy 01/09/2022 1:11 PM
+(no content)
+[unknown.png]
+ unknown.png
+301.25 KB External
+[infowski]
+infowski 01/09/2022 12:56 PM
+huh, ghidra seems to work fairly well over xpra x-D
+[m.ksy]
+m.ksy 01/09/2022 12:39 PM
+[infowski]
+infowski 01/09/2022 12:36 PM
+come back in 30 minutes 
+01/09/2022 12:36 PM
+It's still analyzing
+[m.ksy]
+m.ksy 01/09/2022 12:32 PM
+(no content)
+[unknown.png]
+ unknown.png
+201.6 KB External
+01/09/2022 12:32 PM
+yeah, not really fast process 
+[infowski]
+infowski 01/09/2022 11:57 AM
+Thanks! 
+[m.ksy]
+[] infowski OK, so in my case it is for example
+"Capture::Control::executeOneShot → API_CAPTURE_Easy → CAPTURE_I...
+m.ksy 01/09/2022 11:57 AM
+will take a look
+[m.ksy]
+m.ksy 01/09/2022 11:56 AM
+my lgapp dir https://fex.net/uk/s/m8nmxvx
+FEX.NET
+[]
+[infowski]
+infowski 01/09/2022 11:56 AM
+OK, so in my case it is for example "Capture::Control::executeOneShot →
+API_CAPTURE_Easy → CAPTURE_Impl_Capture → CAPTURE_VT_CaptureSourceVideo
+→ _CAPTURE_VT_Capture" ...and that one uses DILE_VT like we have
+implemented in hyperion-webos
+[m.ksy]
+[] infowski probably using a shitty thinkpad x260 is not very helpful in
+working with such a big binaries... I w...
+m.ksy 01/09/2022 11:54 AM
+ok, will try with Ghidra
+[infowski]
+infowski 01/09/2022 11:54 AM
+probably using a shitty thinkpad x260 is not very helpful in working
+with such a big binaries... I wanted to say Ghidra is fairly fast in
+comparison to IDA, but... search is still going on.
+01/09/2022 11:53 AM
+iirc method luna handlers tend to have actual method name in them, so
+probably searching for executeoneshot will give you something fairly
+sensible
+[m.ksy]
+[] infowski keep in mind it can take ~30 minutes to parse that binary
+m.ksy 01/09/2022 11:51 AM
+okay, thanks
+[infowski]
+infowski 01/09/2022 11:50 AM
+keep in mind it can take ~30 minutes to parse that binary
+01/09/2022 11:49 AM
+letme open up my TVs binary to point at a general symbol you are looking
+for...
+[m.ksy]
+m.ksy 01/09/2022 11:49 AM
+root@LGwebOSTV:/# ls-monitor -l | grep -i capture 1318 com.webos.service.tv.capture /mnt/lg/tvservice/lgapp/tvservice static 1jNSGuhs 
+[infowski]
+infowski 01/09/2022 11:49 AM
+So if that's the case, then... Into Ghidra we go.
+01/09/2022 11:49 AM
+ls-monitor -l  lists all active Luna services and its PID/binary path
+01/09/2022 11:48 AM
+if it does, then you can make it absolutely sure if that capture service
+is implemented by tvservice/RELEASE by using this:
+    root@lgwebostv:~# ls-monitor -l | grep -i capture
+    1173            com.webos.service.tv.capture    /mnt/lg/tvservice/lgapp/tvservice       static                  /var/run/ls2/rTZueo 
+[m.ksy]
+[] infowski Another thing you may want to check first if it actually
+captures all video/UI properly via this: ht...
+m.ksy 01/09/2022 11:48 AM
+i can make screenshots from tv
+[m.ksy]
+m.ksy 01/09/2022 11:47 AM
+root@LGwebOSTV:/# ls -la /mnt/lg/lgapp/RELEASE lrwxrwxrwx 1 root root 9 Jan 15 2021 /mnt/lg/lgapp/RELEASE -> tvservice root@LGwebOSTV:/# ls -la /mnt/lg/lgapp/tvservice* -rwxr-xr-x 1 root root 102454108 Jan 15 2021 /mnt/lg/lgapp/tvservice -rw-r--r-- 1 root root 5503010 Jan 15 2021 /mnt/lg/lgapp/tvservice.sym 
+[infowski]
+infowski 01/09/2022 11:47 AM
+Another thing you may want to check first if it actually captures all
+video/UI properly via this:
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1#screenshot
+openlgtv webOS hacking notes
+openlgtv webOS hacking notes. GitHub Gist: instantly share code, notes,
+and snippets.
+[]
+01/09/2022 11:46 AM
+    root@lgwebostv:~# ls -la /mnt/lg/lgapp/RELEASE
+    lrwxrwxrwx    1 root     root             9 Dec  5  2019 /mnt/lg/lgapp/RELEASE -> tvservice
+    root@lgwebostv:~# ls -la /mnt/lg/lgapp/tvservice*
+    -rwxr-xr-x    1 root     root      91741398 Dec  3  2019 /mnt/lg/lgapp/tvservice
+    -rw-r--r--    1 root     root       5471070 Dec  3  2019 /mnt/lg/lgapp/tvservice.sym
+01/09/2022 11:45 AM
+that's my TV.
+01/09/2022 11:45 AM
+    root@lgwebostv:~# ps aux | grep -i release
+    root      1173 17.3  2.0 1389408 18104 pts/1   SLsl+ 04:06  79:30 /mnt/lg/lgapp/RELEASE --service lg.service.special.broadcast
+01/09/2022 11:45 AM
+Oh, OK. Ghidra is basically just like IDA Pro, but free, and seems to
+have better decompiler, to the point I basically never look at
+disassembly, unless it's missing some function arguments...
+01/09/2022 11:44 AM
+If you did, then tvservice is somewhere on the TV in /mnt/lg... - you
+can probably check ps aux | grep -i tvservice or
+ps aux | grep -i release and then copy over that binary.
+[m.ksy]
+[] infowski Have you every used Ghidra or IDA Pro? 
+m.ksy 01/09/2022 11:44 AM
+only ida pro to debug my arm binnaries for nucleos os
+[infowski]
+infowski 01/09/2022 11:44 AM
+If not, then... this is probably, sadly, off your league.
+01/09/2022 11:43 AM
+Have you every used Ghidra or IDA Pro? 
+[m.ksy]
+[] infowski Not sure what your experience is - but what we would
+proobably need to do is to take `tvservice`/`RE...
+m.ksy 01/09/2022 11:43 AM
+where i can get instruction to do that? 
+[infowski]
+infowski 01/09/2022 11:42 AM
+since that's the process that likely handles screenshot in that version
+still
+01/09/2022 11:42 AM
+Not sure what your experience is - but what we would proobably need to
+do is to take tvservice/RELEASE binary off that TV/firmware, plop it
+into Ghidra, and check what they use for video capture
+[m.ksy]
+m.ksy 01/09/2022 11:42 AM
+"board_type": "K5LP_DVB", "hardware_id": "HE_DTV_W19P_AFADABAA",
+"product_id": "43UM7050PLF", "core_os_release": "4.9.0-53904",
+"webos_manufacturing_version": "05.00.15",
+[m.ksy]
+[] infowski If it's webOS 4.9 then it's the same issue as this
+https://github.com/webosbrew/hyperion-webos/issue...
+m.ksy 01/09/2022 11:41 AM
+yeah, i thik so
+[m.ksy]
+m.ksy 01/09/2022 11:40 AM
+(no content)
+[unknown.png]
+ unknown.png
+200.41 KB External
+[infowski]
+infowski 01/09/2022 11:40 AM
+ie. libdile_vt/libvt fails with unsupported hardware 0xfffffffff and
+libvtcapture is missing
+[m.ksy]
+m.ksy 01/09/2022 11:40 AM
+here is log after start piccap with libdile_vt library:
+[infowski]
+[] m.ksy Click to see attachment
+infowski 01/09/2022 11:40 AM
+If it's webOS 4.9 then it's the same issue as this
+https://github.com/webosbrew/hyperion-webos/issues/29 and that
+https://github.com/webosbrew/hyperion-webos/issues/23
+[tbsniller]
+tbsniller 01/09/2022 11:40 AM
+if you dont specify a backend it tries to use this: libdile_vt_backend.so_backend.so  -
+I'm wrong this isnt the case mislooked
+[m.ksy]
+m.ksy 01/09/2022 11:39 AM
+and ./hyperion-webos -S -b libvt -a 192.168.0.104
+01/09/2022 11:39 AM
+i use ./hyperion-webos -S -b libdile_vt -a 192.168.0.104
+[tbsniller]
+tbsniller 01/09/2022 11:38 AM
+if you dont specify a backend it tries to use this:
+libdile_vt_backend.so_backend.so its indeed a bug, but have you set -b
+in your tries this came up ?
+[m.ksy]
+m.ksy 01/09/2022 11:37 AM
+will try now from piccap
+01/09/2022 11:36 AM
+nope, writing command from terminal
+[tbsniller]
+tbsniller 01/09/2022 11:36 AM
+or havent saved your settings?
+01/09/2022 11:36 AM
+do you set to automatic?
+01/09/2022 11:36 AM
+oh
+[m.ksy]
+[] tbsniller wait this is wrong Full library path:
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.s...
+m.ksy 01/09/2022 11:34 AM
+yes, already saw this
+[tbsniller]
+tbsniller 01/09/2022 11:33 AM
+wait this is wrong Full library path:
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/libdile_vt_backend.so_backend.so
+[m.ksy]
+m.ksy 01/09/2022 11:33 AM
+(no content)
+[unknown.png]
+ unknown.png
+326.5 KB External
+01/09/2022 11:33 AM
+(no content)
+[unknown.png]
+ unknown.png
+312.47 KB External
+01/09/2022 11:33 AM
+replaced libdile_vt with libvt:
+01/09/2022 11:28 AM
+(no content)
+[unknown.png]
+ unknown.png
+321.08 KB External
+01/09/2022 11:27 AM
+hmm, replaced libdile_vt_backend.so with libdile_vt and got this:
+root@LGwebOSTV:/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service# ./hyperion-webos -S -b libdile_vt -a 192.168.0.104 osal_Mutexlock failed : Operation not permitted hyperion-webos: Threads.cpp:537: HRESULT osal_MutexLock(osal_mutex_t*): Assertion 0'
+failed. Aborted`
+[m.ksy]
+[] tbsniller You maybe have to restart your hyperiond service - had the
+same. Maybe some unused connection remain...
+m.ksy 01/09/2022 11:19 AM
+not helped for me  also if i try to enter 192.168.0.104:19400 in tv's
+browser, i got this messages in hyperion: 2022-01-09T10:17:46.993Z [
+FLATBUFSERVER] (DEBUG) (FlatBufferServer.cpp:74:newConnection()) New
+connection from ::ffff:192.168.0.107 2022-01-09T10:17:51.753Z [
+FLATBUFSERVER] (DEBUG) (FlatBufferClient.cpp:70:disconnected()) Socket
+Closed
+[wenbo8629]
+wenbo8629 01/09/2022 11:03 AM
+oh, sorry, I'll have a read of that link first, thanks.
+[tbsniller]
+[] wenbo8629 my `/var/log/` folder are full of
+`messages.0.gz/messages.1.gz` files, there is no `/var/log/message...
+tbsniller 01/09/2022 10:58 AM
+did this
+# webOS 4.x+ luna-send -n 1 -f luna://com.webos.service.config/setConfigs '{"configs": {"system.collectDevLogs": true}}' # webOS 3.x and older luna-send -n 1 -f 'luna://com.webos.pmlogd/setdevlogstatus' '{"recordDevLogs":false}'
+like mentioned here: https://www.webosbrew.org/pages/logging.html ?
+[wenbo8629]
+wenbo8629 01/09/2022 10:57 AM
+my /var/log/ folder are full of messages.0.gz/messages.1.gz files, there
+is no /var/log/messages file.
+[tbsniller]
+[] m.ksy http://192.168.0.104:8090/#conf_logging log-level: debug no any
+new records after command in termin...
+tbsniller 01/09/2022 10:27 AM
+Until https://github.com/webosbrew/hyperion-webos/pull/27 is integrated,
+you will see these logs in /var/log/messages after increasing loglevel
+to debug from hyperion-webos_service. You can take a look here
+https://www.webosbrew.org/pages/logging.html to set it up, after that
+tail -F /var/log/messages | grep hyperion in a new session and then run
+your command again, or hit start in the UI
+Logging refactor by Informatic · Pull Request #27 · webosbrew/hyper...
+This adds unified logging library src/lib.c which routes messages to
+both colored stderr and PmLogLib. Log messages can contain calling
+function name, since all log calls are handled in a macro (fu...
+[]
+[tbsniller]
+[] m.ksy "board_type": "K5LP_DVB", "hardware_id":
+"HE_DTV_W19P_AFADABAA", "product_id": "43UM7050PLF"...
+tbsniller 01/09/2022 10:21 AM
+You maybe have to restart your hyperiond service - had the same. Maybe
+some unused connection remaining there
+[infowski]
+[] wenbo8629 I installed PicCap 0.2.1 on my TV, I can start from the UI
+as normal, haven't tested the autostart y...
+infowski 01/09/2022 10:20 AM
+Yes, framerate should be logged to pmlogd -
+https://www.webosbrew.org/pages/logging.html
+[wenbo8629]
+wenbo8629 01/09/2022 5:04 AM
+I installed PicCap 0.2.1 on my TV, I can start from the UI as normal,
+haven't tested the autostart yet. Is there a way to check FPS from the
+log? I feel the FPS for libdile backed is quite slow.
+[m.ksy]
+m.ksy 01/09/2022 1:50 AM
+(no content)
+[unknown.png]
+ unknown.png
+20.29 KB External
+01/09/2022 1:48 AM
+piccap says "Capture is stopped." after Start button pushed
+01/09/2022 1:44 AM
+http://192.168.0.104:8090/#conf_logging log-level: debug no any new
+records after command in terminal
+01/09/2022 1:42 AM
+cant connect to hyperion :/
+[m.ksy]
+[] tbsniller Would be nice if some dudes can test before we fully
+release it to the repo It has to work on TVs wh...
+m.ksy 01/09/2022 1:42 AM
+"board_type": "K5LP_DVB", "hardware_id": "HE_DTV_W19P_AFADABAA",
+"product_id": "43UM7050PLF", "core_os_release": "4.9.0-53904",
+"webos_manufacturing_version": "05.00.15",
+[dustyangel47]
+dustyangel47 01/09/2022 1:33 AM
+thanks for the notification aphex
+01/09/2022 1:32 AM
+back in august at that
+01/09/2022 1:32 AM
+https://github.com/libretro/RetroArch/commit/20ef0667b0b59a24d54b61d7401adbca58d3cb58
+well damn, guess they did (edited)
+Add initial webOS port courtesy of informatic/webosbrew/mariotaku ·...
+[]
+[dustyangel47]
+[] infowski TIL retorarch pulled in our patches without telling us lol
+dustyangel47 01/09/2022 1:32 AM
+wait what
+[infowski]
+infowski 01/09/2022 12:46 AM
+I guess now I have to set up proper CI for that on our side, heh.
+01/09/2022 12:46 AM
+It almost builds. Needs one missing config variable that was introduced
+since meeging that in and now
+ 1
+[infowski]
+infowski 01/09/2022 12:38 AM
+Unless i totally missed that
+01/09/2022 12:38 AM
+TIL retorarch pulled in our patches without telling us lol
+January 8, 2022
+[infowski]
+infowski 01/08/2022 10:15 PM
+...which alsodoesnt seem to call per-platform makefiles. that's
+confusing. (edited)
+[infowski]
+infowski 01/08/2022 10:04 PM
+ah, it's ./retroarch-build.sh lol
+01/08/2022 10:03 PM
+How it started:
+    $ platform=webos ./libretro-fetch.sh retroarch
+    PLATFORM: webos
+    ARCHITECTURE: arm
+    TARGET: unix
+    === RetroArch
+    Fetching retroarch...
+    cd "/app/retroarch"
+    git pull
+    Already up to date.
+    How it's going:
+    === retroarch
+    Building retroarch...
+    retroarch not fetched, skipping ...
+    No build actions performed.
+???
+dontpanicaim 01/08/2022 8:55 PM
+you guys have been busy, love it; lots to catch up and read 
+01/08/2022 8:54 PM
+opens a beer, time to enjoy the weekend :D
+[infowski]
+infowski 01/08/2022 8:09 PM
+just try running it. if it doesn't work then wait a couple of days for
+v2
+[beppedino]
+beppedino 01/08/2022 8:00 PM
+Is 03.20.95 vulnerable to the exploit? (edited)
+[bastihst]
+bastihst 01/08/2022 5:54 PM
+Ok 
+[tbsniller]
+tbsniller 01/08/2022 5:53 PM
+Yeah I'm working on something. But needs much more investigation since
+the integrated browser is slow as f***.. In this app I want to integrate
+BetterTwitchTV mod. The rest may look like the mobile site (m.twitch.tv)
+which also has VOD support. But dont expect a release in the next few
+weeks 
+[infowski]
+infowski 01/08/2022 5:50 PM
+Generally speaking - we can only "port" stuff based on SDL or similar,
+or web-based stuff. Android/Java is no go.
+01/08/2022 5:50 PM
+I think @TBSniller started working on some customized twitch app...
+[bastihst]
+bastihst 01/08/2022 5:46 PM
+Is this possible to port? https://github.com/twireapp/Twire There is a
+twitch app, I know. There is also Backseat gamer, but this app doesn't
+work for me anymore. Twire would be nice, because it has VODs. Which the
+official app lacks.
+GitHub - twireapp/Twire: Twire is an alternative and open source Tw...
+Twire is an alternative and open source Twitch client for Android -
+GitHub - twireapp/Twire: Twire is an alternative and open source Twitch
+client for Android
+[]
+[tbsniller]
+tbsniller 01/08/2022 4:35 PM
+Just take your time 
+[infowski]
+infowski 01/08/2022 4:34 PM
+This is going to take some time, sorry.
+[tbsniller]
+tbsniller 01/08/2022 4:26 PM
+please let me know if I can help somehow
+[infowski]
+infowski 01/08/2022 4:21 PM
+Ah, I think I see...
+01/08/2022 4:20 PM
+yeah, we need to generate /var/luna-service2-dev config files...
+[tbsniller]
+tbsniller 01/08/2022 4:20 PM
+Wow  So is it something that can be fixed? 
+[infowski]
+infowski 01/08/2022 4:19 PM
+And it was just an accident it worked on my TV because it had some
+leftovers from js-service stuff.
+01/08/2022 4:19 PM
+Fascinating. So native services pre-webOS 4.x are partially broken 
+01/08/2022 4:18 PM
+Ha! I see it now.
+01/08/2022 4:17 PM
+Fascinating. Even with the fixed elevate-service the app itself is
+unable to contact the service. (edited)
+01/08/2022 4:14 PM
+Yeah - okay. When I install the original version it's broken again, so
+it was that other elevate-service script.
+01/08/2022 4:12 PM
+and it works properly now. let me try that original version again...
+01/08/2022 4:12 PM
+OK, I think I had some screwed up ls-hubd config (webOS <4.x doesn't
+look at manifests so any leftovers will be automatically pulled in)
+(edited)
+[tbsniller]
+tbsniller 01/08/2022 4:11 PM
+okay, just to let you know, freshly uninstall and reinstall and its
+still working on my tv
+[infowski]
+infowski 01/08/2022 4:08 PM
+this is weird.
+01/08/2022 4:08 PM
+after replacing elevate-service
+01/08/2022 4:08 PM
+Let me first debug this... I can't access it at all now even O-o
+[tbsniller]
+tbsniller 01/08/2022 4:07 PM
+oh really? looks like before, then let me replace elevate-service
+[infowski]
+[] tbsniller Hm its working on my TV also using your one liner - no luna
+permission issues. Application and my ro...
+infowski 01/08/2022 4:05 PM
+That's likely after it executed elevate-service.
+[tbsniller]
+tbsniller 01/08/2022 4:01 PM
+Hm its working on my TV also using your one liner - no luna permission
+issues. Application and my root session both can speak to the service -
+I will try a complete reinstall of PicCap and see what happens.. Okaay
+nice to know. Just followed your advise to ship it directly instead of
+laying on HBChannel. But this one should also work Btw in your example
+it doesn't even seem to reach the service, so it never gets into the
+stage of running the elevate script
+[infowski]
+[] infowski Which `elevate-service` is this using now?
+https://github.com/webosbrew/webos-homebrew-channel/pull/...
+infowski 01/08/2022 3:57 PM
+Just FYI, this one was running fine on my TV and some other one with
+libvtcapture. (webOS 6.2) (edited)
+[infowski]
+infowski 01/08/2022 3:57 PM
+Can't test out any further now, will be back later tonight.
+01/08/2022 3:55 PM
+That is completely wrong. This is a call going from a private bus as
+root, so... luna config must be very broken. :/ (edited)
+01/08/2022 3:54 PM
+    # luna-send -n 1 'luna://org.webosbrew.piccap.service/start' '{}'
+    {"returnValue":false,"errorCode":-1,"errorText":"Denied method call \"start\" for category \"/\""
+[tbsniller]
+tbsniller 01/08/2022 3:54 PM
+https://github.com/TBSniller/piccap/blob/422167a2cf98a60528684688e0eff9bfa749b5e2/servicenative/elevate-service
+this one, but its denied before the service itself is called
+piccap/elevate-service at 422167a2cf98a60528684688e0eff9bfa749b5e2 ...
+PicCap. Contribute to TBSniller/piccap development by creating an
+account on GitHub.
+[]
+[infowski]
+infowski 01/08/2022 3:54 PM
+Hmmm, still the same after a reboot. Will check this out later.
+[tbsniller]
+tbsniller 01/08/2022 3:53 PM
+It should call the service which then tries to self elevate
+[infowski]
+infowski 01/08/2022 3:53 PM
+Which elevate-service is this using now?
+https://github.com/webosbrew/webos-homebrew-channel/pull/72 this or the
+other?
+elevate-service: implement patching of native services and their ro...
+Cleaned up #71
+[]
+[tbsniller]
+tbsniller 01/08/2022 3:53 PM
+That indeed is wrong
+[infowski]
+infowski 01/08/2022 3:52 PM
+Let's try a reboot.
+01/08/2022 3:52 PM
+It... Hangs on "Loading status..."?
+errorText: "Denied method call "isRoot" for category "/"" Hmmmmm...
+01/08/2022 3:50 PM
+Single command install:
+luna-send -i 'luna://org.webosbrew.hbchannel.service/install' '{"ipkUrl": "https://github.com/TBSniller/piccap/releases/download/0.2.1/org.webosbrew.piccap_0.2.1_all.ipk","ipkHash": "e70e60cc63d0dd525bed6576aeed2c740839f19df59ec2adac4742c159b2e3de"}'
+ 1
+[tbsniller]
+tbsniller 01/08/2022 3:48 PM
+Would be nice if some dudes can test before we fully release it to the
+repo It has to work on TVs where PicCap v0.1 also was working
+https://github.com/TBSniller/piccap/releases/tag/0.2.1
+Release org.webosbrew.piccap_0.2.1 · TBSniller/piccap
+This is only the frontend for the backend service! Switching to a real
+native WebOS service. This results in a better performance. Added
+libdile_vt -> wider TV compatibility Changed the way aut...
+[]
+[infowski]
+[] maryjohanna42069 how can things like knox exist then within the EU as
+well?
+infowski 01/08/2022 2:55 PM
+I honestly have no idea what do you mean. If knox does some things like
+hard remote attestation and stuff, and refuses to connect to Samsung's
+services, then... I don't think it matters?
+[tbsniller]
+[] infowski IIRC `.so` don't need to have executable bit, right?
+tbsniller 01/08/2022 2:55 PM
+It seems to not be needed. Thx, obviously giving the right file the
+permission is working, it was a hard week..  (edited)
+ 1
+[beppedino]
+[] infowski All webOS versions between 3.4 (latest one on 5 years old
+TVs) and 6.2 (latest ones on latest releas...
+beppedino 01/08/2022 2:54 PM
+super! thank you for your time mate 
+[infowski]
+[] beppedino wym?
+infowski 01/08/2022 2:54 PM
+All webOS versions between 3.4 (latest one on 5 years old TVs) and 6.2
+(latest ones on latest released models) are vulnerable.
+[beppedino]
+[] infowski If you are buying new, then... All.
+beppedino 01/08/2022 2:53 PM
+wym?
+[infowski]
+infowski 01/08/2022 2:53 PM
+(or at least will be in the next couple of days)
+[infowski]
+[] beppedino Oh ok, I'm actually buying the TV today so where can I
+check which versions are supported by the exp...
+infowski 01/08/2022 2:53 PM
+If you are buying new, then... All.
+[beppedino]
+[] infowski It's possible Your TV is already patched against current
+rootmy.tv exploit, but we'll release a new ...
+beppedino 01/08/2022 2:53 PM
+Oh ok, I'm actually buying the TV today so where can I check which
+versions are supported by the exploit?
+[infowski]
+infowski 01/08/2022 2:51 PM
+so stay tuned...
+01/08/2022 2:51 PM
+It's possible Your TV is already patched against current rootmy.tv
+exploit, but we'll release a new version in a couple of days.
+01/08/2022 2:50 PM
+So far - it seems like it. We only had a single person brick their TV
+(though we managed to revive it) but they just did things they shouldn't
+have in the first place. (they tried to modify a read-only partition on
+the system that is signed and verified during boot so it... well...
+stopped booting) If you just root and use stuff from Homebrew Channel it
+should be just fine. (edited)
+[beppedino]
+[] infowski Rooting? Or Developer Mode? 
+beppedino 01/08/2022 2:48 PM
+rooting
+[infowski]
+infowski 01/08/2022 2:48 PM
+Rooting? Or Developer Mode? 
+[beppedino]
+[] infowski Developer Mode - yes. Rooting - no (that's approximately
+half of the reason people root - not needin...
+beppedino 01/08/2022 2:48 PM
+ok, and I suppose that's pretty safe like with Apple
+[infowski]
+[] beppedino that expires every 50h right?
+infowski 01/08/2022 2:48 PM
+Developer Mode - yes. Rooting - no (that's approximately half of the
+reason people root - not needing to renew the session)
+[beppedino]
+[] infowski alternatively you can install Homebrew Channel app, which is
+an app to install homebrew directly fro...
+beppedino 01/08/2022 2:47 PM
+that expires every 50h right?
+[maryjohanna42069]
+maryjohanna42069 01/08/2022 2:47 PM
+how can things like knox exist then within the EU as well?
+[infowski]
+infowski 01/08/2022 2:47 PM
+alternatively you can install Homebrew Channel app, which is an app to
+install homebrew directly from a TV - it should work with "normal"
+Developer Mode.
+[infowski]
+[] beppedino Tysm, where can I find a store (or repos) to install custom
+apps?
+infowski 01/08/2022 2:46 PM
+Dev Manager Desktop integrates with https://repo.webosbrew.org/apps/
+[beppedino]
+[] infowski 1. Depends on what country are you in. In EU it's generally
+**legally** safe. Of course, as always, ...
+beppedino 01/08/2022 2:46 PM
+Tysm, where can I find a store (or repos) to install custom apps?
+[infowski]
+infowski 01/08/2022 2:45 PM
+Phone, TV, same situation.
+01/08/2022 2:45 PM
+https://piana.eu/root/
+Does rooting your phone invalidate its warranty? (In EU)
+This is a joint blog post written together with Matija Šuklje with the
+goal to disband some popular FUD that you lose your warranty if you
+flash or root your device Rooting your phone Does rooting your device
+(e.
+[infowski]
+[] beppedino Hi guys, I tried to check on faq but I can't see anything,
+does rootmy.tv void the warranty? Can I u...
+infowski 01/08/2022 2:44 PM
+1. Depends on what country are you in. In EU it's generally legally
+safe. Of course, as always, a vendor can try to tell you that the
+warranty is void, but then you technically can sue them and have a fair
+guarantee to win. 2. Yeah - you can enable Developer Mode from LG, but
+this will require "renewals" by launching an app on your TV every 50
+hours (or adding a script to run on some of your servers to send a magic
+HTTP Request) - https://github.com/webosbrew/dev-manager-desktop may be
+useful. Plus some homebrew will just not work, since it depends on
+having root permissions - like PicCap or Custom Screensaver. (edited)
+[beppedino]
+beppedino 01/08/2022 2:41 PM
+Hi guys, I tried to check on faq but I can't see anything, does
+rootmy.tv void the warranty? Can I use homebrew w/o root?
+[infowski]
+infowski 01/08/2022 2:41 PM
+IIRC .so don't need to have executable bit, right?
+[tbsniller]
+[] infowski it's a part at the beginning of `/etc/init/devmode.conf`.
+and your builds work because you are not p...
+tbsniller 01/08/2022 2:41 PM
+and why are already build ones not working anymore?
+[infowski]
+[] tbsniller really? thought I have done a reboot, but why its working
+with my own builds? and why was it working...
+infowski 01/08/2022 2:41 PM
+it's a part at the beginning of /etc/init/devmode.conf. and your builds
+work because you are not packing and unpacking an artifacts zip like
+github ci does 
+[tbsniller]
+tbsniller 01/08/2022 2:40 PM
+oh I'm a idiot when trying to fix it on yesterday, of course thats only
+the shipped zip and not our application wow 
+[infowski]
+infowski 01/08/2022 2:40 PM
+you also need chmod +x on piccapautostart
+01/08/2022 2:40 PM
+https://github.com/TBSniller/piccap/actions/runs/1669286841/workflow#L97
+slightly more readable. see the issue?
+Merge branch 'task/native-service' of https://github.com/TBSniller/...
+PicCap. Contribute to TBSniller/piccap development by creating an
+account on GitHub.
+[]
+01/08/2022 2:39 PM
+artifacts between github ci tasks do not have their mode preserved it
+seems.
+[tbsniller]
+tbsniller 01/08/2022 2:39 PM
+really? thought I have done a reboot, but why its working with my own
+builds? and why was it working in the past 
+[infowski]
+infowski 01/08/2022 2:39 PM
+that is a bug in our CI config - that chmod needs to be a line earlier.
+(edited)
+01/08/2022 2:39 PM
+https://github.com/TBSniller/piccap/runs/4743577007?check_suite_focus=true#step:9:4
+ah yeah
+Merge branch 'task/native-service' of https://github.com/TBSniller/...
+PicCap. Contribute to TBSniller/piccap development by creating an
+account on GitHub.
+[]
+[tbsniller]
+tbsniller 01/08/2022 2:38 PM
+I have this issue also with already built older ones from github actions
+[infowski]
+infowski 01/08/2022 2:38 PM
+though, technically, a reboot will fix it because LG does
+chmod +x -R /media/developer...
+01/08/2022 2:38 PM
+(simple test: dpkg-deb -c org.webosbrew.piccap_0.2.0_all.ipk)
+01/08/2022 2:38 PM
+    drwxrwxrwx 1001/121         0 2022-01-07 21:50:48 usr/palm/services/org.webosbrew.piccap.service/
+    -rw-r--r-- 1001/121     13526 2022-01-07 21:50:48 usr/palm/services/org.webosbrew.piccap.service/elevate-service
+    -rw-r--r-- 1001/121    280752 2022-01-07 21:50:48 usr/palm/services/org.webosbrew.piccap.service/hyperion-webos
+    -rw-r--r-- 1001/121    990884 2022-01-07 21:50:48 usr/palm/services/org.webosbrew.piccap.service/libdile_vt_backend.so
+    -rw-r--r-- 1001/121     43544 2022-01-07 21:50:48 usr/palm/services/org.webosbrew.piccap.service/libvt_backend.so
+    -rw-r--r-- 1001/121     58012 2022-01-07 21:50:48 usr/palm/services/org.webosbrew.piccap.service/libvtcapture_backend.so
+    -rw-r--r-- 1001/121        90 2022-01-07 21:50:48 usr/palm/services/org.webosbrew.piccap.service/piccapautostart
+    -rw-r--r-- 1001/121       296 2022-01-07 21:50:48 usr/palm/services/org.webosbrew.piccap.service/services.json
+that is indeed the case.
+[tbsniller]
+tbsniller 01/08/2022 2:26 PM
+could please someone check if this version
+https://github.com/TBSniller/piccap/actions/runs/1669286841 is installed
+correctly on the tv and the app is working? whyever on my tv all from
+github generated versions are installed without execute permission, so
+the service doesn't come up on my tv. - manual builds are installed
+correctly..
+Merge branch 'task/native-service' of https://github.com/TBSniller/...
+PicCap. Contribute to TBSniller/piccap development by creating an
+account on GitHub.
+[]
+[dsl444]
+dsl444 01/08/2022 2:18 PM
+Hey everyone Is it possible to run Hyperion.NG on the LG TV and combine
+it with PicCap? At least you don't need a RaspberryPi to run Ambilight.
+[infowski]
+infowski 01/08/2022 9:24 AM
+Fascinsting, just got a mail of someone asking for some retroarch core
+to be built. People are actually using that shit
+[] bastihst Sometimes I just like the TV to be really dim. And I can't
+make it dimmer than on maximum energy sav...
+ww8543 01/08/2022 12:43 AM
+you can turn the panel completely off, doesnt get any dimmer than that
+ (edited)
+January 7, 2022
+[wlanjesus]
+grba1 Hey guys. Is there an update on the „UM700“ / K5LP TVs?
+<@501722020434673674> <@430448040080572424>
+wlanjesus 01/07/2022 11:47 PM
+i guess he's reffering to the WebOS4.9 problem on UM700 machines
+(edited)
+[infowski]
+infowski 01/07/2022 6:54 PM
+Thats, uhhh, one of the tickets. Havent looked into it, have been
+finishing up rootmytv v2 and... doing various other things.
+[tbsniller]
+tbsniller 01/07/2022 6:32 PM
+what do you mean by update?
+grba1 01/07/2022 6:31 PM
+Hey guys. Is there an update on the „UM700“ / K5LP TVs? @infowski
+@TBSniller
+[bastihst]
+bastihst 01/07/2022 6:10 PM
+It's not a big problem. I have the TV since 2 years, but would have been
+nice
+01/07/2022 6:10 PM
+nah, sounds not so great
+01/07/2022 6:10 PM
+Sometimes I just like the TV to be really dim. And I can't make it
+dimmer than on maximum energy saver.
+[infowski]
+infowski 01/07/2022 6:09 PM
+One stupid solution would be to put half-transparent black overlay over
+input/video, but... thats bad.
+01/07/2022 6:06 PM
+I dont think so. Any specific usecase?
+[bastihst]
+bastihst 01/07/2022 6:03 PM
+Is it possible to dim the screen even more than maximum energy saver
+mode?
+[throwingbits]
+throwingbits 01/07/2022 2:04 AM
+Then he is badass 
+[infowski]
+infowski 01/07/2022 2:04 AM
+that's actually @retr0id's stuff
+[throwingbits]
+[] infowski why am I doing this to myself
+throwingbits 01/07/2022 2:03 AM
+Because in secret you love that stuff  The image in the README.md with
+the smartphone displaying the LG Screen is super badass like it 
+[infowski]
+infowski 01/07/2022 12:24 AM
+like, it was not supposed be like that.
+01/07/2022 12:23 AM
+sounds fairly corrupted, lol
+[aabytt]
+aabytt 01/07/2022 12:12 AM
+wtf the newer webos does not parse these language tags  webos 1.4
+"subtitleTrackInfo":[{"language":"ru"},{"language":"ru"},{"language":"uk"},{"language":"en"},{"language":"en"}]
+webos 5.3
+"subtitleTrackInfo":[{"trackNum":4,"language":"(null)","type":"text","periodStart":0},{"trackNum":0,"language":"(null)","type":"text","periodStart":0},{"trackNum":1,"language":"(null)","type":"text","periodStart":0},{"trackNum":2,"language":"(null)","type":"text","periodStart":0},{"trackNum":3,"language":"(null)","type":"text","periodStart":0}]
+January 6, 2022
+Deleted User 01/06/2022 10:44 PM
+As it erased/written stuff to startup file
+[infowski]
+infowski 01/06/2022 10:44 PM
+ok, that's weird but ok
+Deleted User 01/06/2022 10:44 PM
+@infowski toggling off and on autostart did the trick for custom
+screensaver
+[infowski]
+infowski 01/06/2022 10:42 PM
+could've made a nodejs service in 20 minutes, but spent ~10h on this
+otherwise.
+01/06/2022 10:42 PM
+why am I doing this to myself
+01/06/2022 10:38 PM
+https://github.com/Informatic/webos-vncserver/tree/native_service/src
+never again
+webos-vncserver/src at native_service · Informatic/webos-vncserver
+An extremely hacky VNC server for WebOS - Works by reading directly from
+the GPU's framebuffer. - webos-vncserver/src at native_service ·
+Informatic/webos-vncserver
+[]
+[infowski]
+infowski 01/06/2022 9:28 PM
+I am honestly confused how incompetent were people making these.
+https://github.com/webosose/samples/blob/master/native-services/external/com.sample.echo.service/src/main.c#L86-L89
+So this is basically an irrecoverable error, right? That function is
+supposed to return false if a message can't be handled, and true if it
+was handled (you don't need to send a response right away)
+samples/main.c at master · webosose/samples
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+[infowski]
+infowski 01/06/2022 9:06 PM
+this is so bad.
+01/06/2022 9:05 PM
+did anyone even review this thing?
+01/06/2022 9:01 PM
+amazing. (edited)
+01/06/2022 9:01 PM
+https://github.com/webosose/samples/blob/master/native-services/external/com.sample.echo.service/src/main.c#L40-L42
+There's supposed to be a null entry here.
+samples/main.c at master · webosose/samples
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+[maryjohanna42069]
+maryjohanna42069 01/06/2022 8:16 PM
+https://github.com/openwebos/luna-service2/blob/master/src/libluna-service2/message.c#L94
+luna-service2/message.c at master · openwebos/luna-service2
+Contribute to openwebos/luna-service2 development by creating an account
+on GitHub.
+[]
+01/06/2022 8:16 PM
+It looks useless, yeah
+[infowski]
+infowski 01/06/2022 7:54 PM
+either i am very stupid, or that call does absolutely nothing ???
+01/06/2022 7:53 PM
+https://github.com/webosose/samples/blob/master/native-services/external/com.sample.echo.service/src/main.c#L133
+what did they mean by this
+samples/main.c at master · webosose/samples
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+[smx2460]
+smx2460 01/06/2022 6:35 PM
+no 
+[mariotaku]
+mariotaku 01/06/2022 6:28 PM
+Powered by Silverlight  (edited)
+ 1
+[smx2460]
+smx2460 01/06/2022 6:24 PM
+we need C# 
+[mariotaku]
+mariotaku 01/06/2022 6:24 PM
+I'm gonna revamp homepage and apps repo later. Still trying my best to
+not have javascript
+ 1
+[bastihst]
+bastihst 01/06/2022 6:22 PM
+Is there a list of commands various functions/qol improvements? I
+already found out how to autostart YouTube, when I turn my TV off with
+YouTube running.  (edited)
+[aabytt]
+aabytt 01/06/2022 4:26 PM
+Done 
+[infowski]
+[] aabytt <@501722020434673674> Thanks! Changed the image with inverted
+one. Absolutely love it 
+infowski 01/06/2022 4:20 PM
+That would actually make sense - want to file a PR? 
+[aabytt]
+aabytt 01/06/2022 4:19 PM
+@infowski Thanks! Changed the image with inverted one. Absolutely love
+it 
+.MOV preview not available — download to play
+ IMG_4298.mov
+170.99 KB External
+ 1  1
+[infowski]
+infowski 01/06/2022 11:53 AM
+as in - I am totally all for extending it, if someone actually does it.
+[infowski]
+[] throwingbits I thought so. But was Just an idea. Could be pretty dope
+infowski 01/06/2022 11:53 AM
+You can always file an issue in custom-screensaver repo and maybe
+someone will be willing to contribute to it.
+[infowski]
+[] throwingbits I thought so. But was Just an idea. Could be pretty dope
+infowski 01/06/2022 10:55 AM
+FYI there's a reason we don't close issues for these repositories - you
+can write an issue describing whatever you'd see as valuable for custom
+screensaver, and maybe someone someday may be willing to implement it.
+[throwingbits]
+[] infowski Honestly this was 90% a joke, though... I think we could do
+that.
+throwingbits 01/06/2022 9:33 AM
+I thought so. But was Just an idea. Could be pretty dope 
+[retr0id]
+retr0id 01/06/2022 3:45 AM
+anyway it's from here https://github.com/witnessmenow/WiFi-Tetris-Clock
+01/06/2022 3:45 AM
+looks like discord broke that gif lol
+01/06/2022 3:44 AM
+[]
+01/06/2022 3:44 AM
+tetris clock
+[dustyangel47]
+dustyangel47 01/06/2022 3:30 AM
+tetris 
+[infowski]
+infowski 01/06/2022 3:28 AM
+I was thinking of doing somethng similar to Chromecast idle screen for
+example (or maybe even just very slowly randomly moving clock)
+[infowski]
+[] throwingbits Custom images also possible? Or is that feature planned?
+infowski 01/06/2022 3:27 AM
+The thing is that it was mostly a POC - you can make your own QML-based
+scene (qmlscene tool can be useful for testing on a development PC,
+iirc) to do whatever you like.
+[the48070]
+the48070 01/06/2022 3:25 AM
+It's brilliant, you guys are amazing
+[infowski]
+[] throwingbits Custom images also possible? Or is that feature planned?
+infowski 01/06/2022 3:19 AM
+Honestly this was 90% a joke, though... I think we could do that.
+January 5, 2022
+[throwingbits]
+[] infowski
+https://repo.webosbrew.org/apps/org.webosbrew.custom-screensaver - Now
+available in "Homebrew Channe...
+throwingbits 01/05/2022 11:16 PM
+Custom images also possible? Or is that feature planned? (edited)
+[tbsniller]
+tbsniller 01/05/2022 8:46 PM
+also removed some flag called something like --disable-newvideo-renderer
+dont know what this did (edited)
+01/05/2022 8:44 PM
+going to odd high with some values also produces failed to alloc
+errors - so it indeed changes something and isnt just a placebo as I
+first thought
+01/05/2022 8:42 PM
+More randomly than really knowing what I've done - Lazy adding zeros to
+Cache stuff -> 50MB to 500MB applicationCache, 2MB -> 20MB for program
+gpu cache, ... max gpu mem from 256 to 1024 to 2048 was the most
+noticeable change Havent tested any further, just noticing and sharing^^
+[] tbsniller <@!501722020434673674> editing some values in
+`/etc/systemd/system/scripts/webapp-mgr.sh` and restar...
+ww8543 01/05/2022 8:35 PM
+what values?
+[tbsniller]
+tbsniller 01/05/2022 8:25 PM
+also browser is much more responsive - webapp
+01/05/2022 8:24 PM
+@infowski editing some values in
+/etc/systemd/system/scripts/webapp-mgr.sh and restarting service
+systemctl restart webapp-mgr gives some noticeable extra boost to
+webapps
+[infowski]
+infowski 01/05/2022 5:55 PM
+https://repo.webosbrew.org/apps/org.webosbrew.custom-screensaver - Now
+available in "Homebrew Channel" near you!
+ 7  5  6  3
+[infowski]
+infowski 01/05/2022 5:31 PM
+Yeah.
+[mariotaku]
+mariotaku 01/05/2022 5:31 PM
+Anyway, people are responsible for running anything on their TV. I think
+everything right now is fine (edited)
+01/05/2022 5:30 PM
+Or we can even delete anything that's not link
+[infowski]
+infowski 01/05/2022 5:29 PM
+@Mariotaku by "people" I was more thinking about developers - I would
+still allow actual files in there for people wanting to hack around.
+[mariotaku]
+mariotaku 01/05/2022 5:29 PM
+Oh! find -type l /var/lib/webosbrew/init.d -exec {} ; lol
+[infowski]
+infowski 01/05/2022 5:29 PM
+There's still the case of dynamic reconfiguration.
+[mariotaku]
+mariotaku 01/05/2022 5:28 PM
+If we integrate bind mounts in hbchannel, then I think we can reduce
+init.d usage.
+[infowski]
+[] mariotaku homebrew.json ```json { "overlays": {
+"/usr/palm/applications/com.webos.app.screensaver/main.q...
+infowski 01/05/2022 5:27 PM
+Not sure. Honestly I'd probably more appreciate some functionality
+that'd enforce people to put symlinks in /var/lib/webosbrew/init.d, and
+automatic cleanup of inexistent links.
+[mariotaku]
+mariotaku 01/05/2022 5:26 PM
+I think that's not a big deal
+01/05/2022 5:26 PM
+In android you can see tons of bind mounts but still that's fine
+[retr0id]
+retr0id 01/05/2022 5:26 PM
+I wonder if it could bog down the kernel eventually
+01/05/2022 5:26 PM
+is there any downside to (hypothetically) having a large number of bind
+mounts?
+[mariotaku]
+mariotaku 01/05/2022 5:25 PM
+I'll propose in hbchannel app and will implement if you think that makes
+sense.
+01/05/2022 5:25 PM
+homebrew.json
+    {
+      "overlays": {
+        "/usr/palm/applications/com.webos.app.screensaver/main.qml": "screensaver-main.qml"
+      }
+    }
+01/05/2022 5:22 PM
+I'm thinking if we define overlay info like homebrew.json in app folder,
+and allow overlaying from hbchannel, this will make modding app like the
+screensaver much easier.
+ww8543 01/05/2022 12:08 PM
+[infowski]
+infowski 01/05/2022 12:07 PM
+I didn't notice that before.
+01/05/2022 12:07 PM
+lol, the rename
+[] infowski Yeah, you can.
+grba1 01/05/2022 1:50 AM
+okay thank you very much for all your help. Really awesome stuff u guys
+got going on here
+[infowski]
+infowski 01/05/2022 1:49 AM
+Yeah, you can.
+grba1 01/05/2022 1:49 AM
+okay. @infowski can i do an update in the meantime and re-root in the
+future again etc? or do i risk bricking the TV?
+[infowski]
+infowski 01/05/2022 1:46 AM
+that branch soon will be killed and we'll all use native service
+grba1 01/05/2022 1:45 AM
+yea thats what i wanted to tell you. Probably an bug where it doesnt
+check.
+01/05/2022 1:45 AM
+youre too fast 
+[infowski]
+infowski 01/05/2022 1:45 AM
+and that's likely a bug
+grba1 01/05/2022 1:45 AM
+(no content)
+[unknown.png]
+ unknown.png
+6.01 KB External
+[infowski]
+infowski 01/05/2022 1:45 AM
+tahts the same error
+grba1 01/05/2022 1:45 AM
+after a reboot ive got this goin on
+01/05/2022 1:45 AM
+@infowski weird situation here: ive installed this ipk
+lhttp://d.inf.re/b/416d2634b2eb7e8acc9d3a2d94131b42.ipk", After the
+first start i got this error
+[unknown.png]
+ unknown.png
+11.56 KB External
+[fullonrager]
+fullonrager 01/05/2022 1:34 AM
+Cheers!
+[infowski]
+infowski 01/05/2022 1:34 AM
+com.webos.notification is pretty much the same as in webos OSE, so you
+probably can reference their docs as well
+[infowski]
+[] fullonrager Is there a way I can send custom notifications remotely
+with a rooted TV?
+infowski 01/05/2022 1:33 AM
+https://github.com/RootMyTV/RootMyTV.github.io/blob/main/files/stage3.sh#L28
+[infowski]
+infowski 01/05/2022 1:33 AM
+hang on.
+01/05/2022 1:33 AM
+@fullonrager sure
+[fullonrager]
+fullonrager 01/05/2022 1:33 AM
+Is there a way I can send custom notifications remotely with a rooted
+TV?
+[infowski]
+infowski 01/05/2022 1:32 AM
+we need someone to learn ghidra and figure out how tvservice does video
+capture there 
+grba1 01/05/2022 1:32 AM
+just lmk and ill do my best to help u guys out
+[] infowski The best person to figure this out is **you**  
+grba1 01/05/2022 1:29 AM
+ill def help you guys out if u want to try something. Other than that im
+probably not much help
+[infowski]
+infowski 01/05/2022 1:26 AM
+The best person to figure this out is you  
+grba1 01/05/2022 1:24 AM
+Maybe we will get lucky and someone finds a way @wlanjesus
+[wlanjesus]
+[] infowski Yeah - so these 3 TVs are exactly the same, and their only
+difference is screen size.
+wlanjesus 01/05/2022 1:24 AM
+Well that's unforunate. Solid machine by itself.
+[infowski]
+infowski 01/05/2022 1:23 AM
+Yeah - so these 3 TVs are exactly the same, and their only difference is
+screen size.
+[wlanjesus]
+grba1 yea thats what i wanted to do  guess we are unlucky for now :/
+wlanjesus 01/05/2022 1:22 AM
+I'm working in cloud engineering. There is never a "it just works" 
+(edited)
+[] infowski If it says `"board_type": "K5LP_DVB",` then no need to.
+grba1 01/05/2022 1:22 AM
+okay. yea it does say "K5LP_DVB"
+[infowski]
+grba1 <@!501722020434673674> should i post my grep output somewhere for
+you guys? im new to github stuff
+infowski 01/05/2022 1:21 AM
+If it says "board_type": "K5LP_DVB", then no need to.
+[] wlanjesus Would be such a nice setup just using a pi zero 2 w without
+that hdmi-splitter setup. Especially whe...
+grba1 01/05/2022 1:21 AM
+yea thats what i wanted to do  guess we are unlucky for now :/
+[wlanjesus]
+wlanjesus 01/05/2022 1:20 AM
+Would be such a nice setup just using a pi zero 2 w without that
+hdmi-splitter setup. Especially when using it with a PS5...
+grba1 01/05/2022 1:20 AM
+@infowski should i post my grep output somewhere for you guys? im new to
+github stuff
+[infowski]
+grba1 is it likely that piccap will run in the near future or am i out
+of luck here? Wanted to rebuild my ...
+infowski 01/05/2022 1:20 AM
+Can't guarantee. Someone will need to take a look at how that model does
+video capture.
+[infowski]
+infowski 01/05/2022 1:19 AM
+so that we can compare whether an issue is just firmware-related, or
+whole model is broken
+grba1 01/05/2022 1:19 AM
+is it likely that piccap will run in the near future or am i out of luck
+here? Wanted to rebuild my ambilight setup but ill guess ill keep it as
+it is for now :/
+[infowski]
+infowski 01/05/2022 1:19 AM
+That's why it's very important for people to note down their
+ota_id/firmware version
+01/05/2022 1:19 AM
+UM7100 - yeah - that's exactly the same TV.
+[wlanjesus]
+wlanjesus 01/05/2022 1:18 AM
+Thats a bummer
+grba1 01/05/2022 1:18 AM
+ive got an "55UM71007LB".
+[infowski]
+infowski 01/05/2022 1:17 AM
+Running on the same / similar firmware version.
+01/05/2022 1:17 AM
+just noting that we have 3 people with the same problem, likely with the
+same TV.
+[infowski]
+[] wlanjesus Actually thats the one i've created
+infowski 01/05/2022 1:17 AM
+yeah I know 
+[infowski]
+infowski 01/05/2022 1:16 AM
+We need to build an issue template for that repo...
+[wlanjesus]
+[] infowski OK, so Your TV doesn't support libdile_vt either. That's
+likely the same issue as here: https://gith...
+wlanjesus 01/05/2022 1:16 AM
+Actually thats the one i've created
+[infowski]
+[] wlanjesus nvm you're right
+infowski 01/05/2022 1:15 AM
+Please also dump result of
+grep -h -E '"(hardware_id|core_os_release|product_id|webos_manufacturing_version|board_type)"' /var/run/nyx/*
+into that ticket.
+[infowski]
+infowski 01/05/2022 1:15 AM
+same as grba1 as well
+01/05/2022 1:15 AM
+https://github.com/webosbrew/hyperion-webos/issues/23 ok, these all are
+the same thing.
+Doesn't work for webos 4.9 ... · Issue #23 · webosbrew/hyperion-web...
+Super project, thanks! But it doesn&#39;t work for me. Here is the log:
+root@LGwebOSTV:/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service#
+/media/developer/apps/usr/palm/servi...
+[]
+01/05/2022 1:13 AM
+OK, so Your TV doesn't support libdile_vt either. That's likely the same
+issue as here: https://github.com/webosbrew/hyperion-webos/issues/29
+Errors with webOS4.9 and PicCap 0.2.0 / libvtcapture · Issue #29 ·...
+Hi there, i tried to get hyperion-webos via PicCap 0.2.0 working for the
+last few days. PicCap 0.1.0 wasn&#39;t working either. I&#39;ve added my
+log that was generated after using the foll...
+[]
+grba1 01/05/2022 1:04 AM
+ errors keep getting funky. @infowski (edited)
+[unknown.png]
+ unknown.png
+141.94 KB External
+[infowski]
+infowski 01/05/2022 1:02 AM
+that's a command. a mouthful.
+01/05/2022 1:02 AM
+LD_LIBRARY_PATH=/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service /media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/hyperion-webos --backend libdile_vt --address ... --fps 30
+01/05/2022 1:02 AM
+ah, hang on
+grba1 01/05/2022 1:02 AM
+weird
+[] infowski Run it manually,
+`/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/hyperion-webo...
+grba1 01/05/2022 1:01 AM
+(no content)
+[unknown.png]
+ unknown.png
+14.48 KB External
+[infowski]
+infowski 01/05/2022 1:00 AM
+Run it manually,
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/hyperion-webos --backend libdile_vt --address ... --fps 30
+and check what other errors you get.
+[] infowski Yeah.
+grba1 01/05/2022 12:59 AM
+(no content)
+[unknown.png]
+ unknown.png
+116.02 KB External
+[infowski]
+infowski 01/05/2022 12:56 AM
+Yeah.
+[] infowski OK,what do you get on libdile_vt?
+grba1 01/05/2022 12:56 AM
+do you mean if i select it via the GUI and start the service?
+[infowski]
+infowski 01/05/2022 12:55 AM
+OK,what do you get on libdile_vt?
+grba1 01/05/2022 12:55 AM
+im on 4.9.0-53904 goldilocks2-gyeryongsan
+[infowski]
+grba1 <@!501722020434673674> is this a known issue? And if so is there a
+fix for it? 
+infowski 01/05/2022 12:54 AM
+Which webOS version are you on? If 5.x+ then you likely want
+libvtcapture
+grba1 01/05/2022 12:53 AM
+@infowski is this a known issue? And if so is there a fix for it? 
+[unknown.png]
+ unknown.png
+40.34 KB External
+[infowski]
+infowski 01/05/2022 12:50 AM
+It essentailly adds -Wl,-rpath='$ORIGIN:$ORIGIN/lib' to linker command.
+01/05/2022 12:49 AM
+@TBSniller btw there's a solution for our manual building of .so binary
+path:
+    set_target_properties(webos-vncserver PROPERTIES
+        BUILD_RPATH_USE_ORIGIN ON
+        INSTALL_RPATH "$ORIGIN:$ORIGIN/lib"
+        BUILD_RPATH "$ORIGIN:$ORIGIN/lib"
+    )
+This will make it automatically attempt loading stuff from the same
+directory as the binary, or from lib subdirectory.
+01/05/2022 12:48 AM
+plus, generally... having stuff somewhat noted down 
+01/05/2022 12:48 AM
+that plus version/model info, as per support tracker issue, this will
+help a lot.
+[wlanjesus]
+wlanjesus 01/05/2022 12:48 AM
+nvm you're right
+[infowski]
+[] wlanjesus was hitting "start" multiple times
+infowski 01/05/2022 12:47 AM
+That logfile would be enough.
+[wlanjesus]
+wlanjesus 01/05/2022 12:47 AM
+unfortunatly i'm not even aware, what the rough description should look
+like. i don't think simple "installed Piccap 0.2.0 - isn't working on
+4.9" would be enough...
+[infowski]
+infowski 01/05/2022 12:45 AM
+Could you please create an issue in hyperion-webos with the same
+questions as listed in "Support Tracker" issue there? With a rough
+description of your problem. (edited)
+01/05/2022 12:45 AM
+OK, so you don't have libvtcapture i guess.
+[wlanjesus]
+[] infowski which webOS version were you on, once again?
+wlanjesus 01/05/2022 12:45 AM
+4.9
+[infowski]
+infowski 01/05/2022 12:44 AM
+which webOS version were you on, once again?
+[wlanjesus]
+[] tbsniller <@!501722020434673674> this seems like dile vt is also
+unavailble here like someone a time ago? `HA...
+wlanjesus 01/05/2022 12:44 AM
+@infowski any updates on this error? 
+grba1 01/05/2022 12:34 AM
+Any idea whats wrong here?
+[unknown.png]
+ unknown.png
+12.38 KB External
+January 4, 2022
+[infowski]
+infowski 01/04/2022 11:35 PM
+TIL libhalgal is also a thing... pretty much everywhere.
+[funky7603]
+funky7603 01/04/2022 10:55 PM
+https://github.com/TBSniller/piccap/pull/6
+service rewrite by Informatic · Pull Request #6 · TBSniller/piccap
+Configuration is now stored in config.json file in service directory -
+files are persisted between application upgrades. Autostart init.d
+script is now automatically symlinked into/removed from /va...
+[]
+[funky7603]
+grba1 Quick question: Can anyone link me this version of piccap pls?
+Thanks 
+funky7603 01/04/2022 10:54 PM
+luna-send -i 'luna://org.webosbrew.hbchannel.service/install'
+'{"ipkUrl":"http://d.inf.re/b/416d2634b2eb7e8acc9d3a2d94131b42.ipk",
+"ipkHash":"3c3377618acbe8994185fa2528b93de1cf0d4f0edaa8aa74d1cd728bd6d624dd"}'
+grba1 01/04/2022 10:41 PM
+(no content)
+[IMG_5896.jpg]
+ IMG_5896.jpg
+1.36 MB External
+01/04/2022 10:41 PM
+Quick question: Can anyone link me this version of piccap pls? Thanks 
+grba1 01/04/2022 7:18 PM
+Which before wouldnt work. Now it also stays root after a reboot.
+grba1 01/04/2022 7:07 PM
+(no content)
+[unknown.png]
+ unknown.png
+21.37 KB External
+01/04/2022 7:07 PM
+I did right after installing the app which gave me root. Now ive got the
+following message
+[infowski]
+grba1
+https://cdn.discordapp.com/attachments/927219236596772955/927984972667711498/unknown.png
+infowski 01/04/2022 7:04 PM
+try this first:
+curl http://d.inf.re/b/bec6961d307387914921b3f7e2951d67.txt -o /tmp/elevate-service && chmod +x /tmp/elevate-service && /tmp/elevate-service org.webosbrew.piccap.service
+grba1 01/04/2022 7:02 PM
+[]
+01/04/2022 7:02 PM
+@infowski ive got the ipk u linked now running as root. But it wont
+start. I get the following error when i try to start it. Any ideas? Def.
+a step further now then before
+0verr1de_ 01/04/2022 5:31 PM
+i see, @infowski post a new compiled version of piccap, maybe someone
+can give me the newest one, and tell me how to remove the homebrew
+piccap 0.1.0?
+sinergetikus 01/04/2022 5:06 PM
+By the way, I had to switch back to my custom autostart script as
+default one sometimes doesn't start and sometimes piccap can be slow and
+even crash without "renice" part
+[infowski]
+infowski 01/04/2022 5:04 PM
+https://github.com/webosbrew/webos-homebrew-channel/pull/72/commits/612c987bc757b03343e751f6553b9661c2c42691
+that one is... odd.
+elevate-service: implement patching of native services and their ro...
+Cleaned up #71
+[]
+[infowski]
+infowski 01/04/2022 4:54 PM
+but we are moving away from that solution and are going to just update
+permissions in /var/luna-service2-dev
+01/04/2022 4:54 PM
+No - it's was supposed to be copied into /var/lib/webosbrew/init.d
+sinergetikus 01/04/2022 4:53 PM
+Does it something that should be run every time piccap is started?
+Because if it is something that should be executed only once, there is a
+chance that I executed it during my early experiments
+[infowski]
+infowski 01/04/2022 4:51 PM
+unless you also use that patch-permissions script from current homebrew
+channel release
+01/04/2022 4:51 PM
+Huh, I think this is another platform-dependent case.
+sinergetikus 01/04/2022 4:50 PM
+No, I'm using libvtcapture
+[infowski]
+sinergetikus <@!501722020434673674> How does it work on my TV without
+any elevate script/service?
+infowski 01/04/2022 4:46 PM
+If you use libdile_vt then it's not required.
+sinergetikus 01/04/2022 4:45 PM
+@infowski How does it work on my TV without any elevate script/service?
+[infowski]
+infowski 01/04/2022 2:45 PM
+sure
+ 1
+[] infowski I'll try to fix it up later today.
+grba1 01/04/2022 2:45 PM
+okay thanks. Could u give a heads up when its done and ill test again?
+[infowski]
+infowski 01/04/2022 2:45 PM
+I'll try to fix it up later today.
+01/04/2022 2:44 PM
+Yes, we found some bug in that script.
+[] kampfgurke2021 I told him he had to reboot after replacing the
+elevate Service ;)
+grba1 01/04/2022 2:44 PM
+did a bunch of reboots but nothing seems to work :/ @infowski any other
+idea i could try? Is there a way to completely start fresh? ie. re-root
+and re-install piccap etc? The help is really appriciated.
+[infowski]
+infowski 01/04/2022 12:54 PM
+sure.
+[kampfgurke2021]
+kampfgurke2021 01/04/2022 12:53 PM
+If I start from ssh it works ... GUI never checked ... Will try later :)
+[infowski]
+infowski 01/04/2022 12:48 PM
+are these solved?
+[infowski]
+[] kampfgurke2021 there
+infowski 01/04/2022 12:48 PM
+I saw these issues
+[infowski]
+infowski 01/04/2022 12:48 PM
+Oh, so you say it works?
+[kampfgurke2021]
+kampfgurke2021 01/04/2022 12:45 PM
+At least it works... Okay at the mom no Autostart but I haven't testet
+xD :) Ah where I can make a donation for that project ?
+[infowski]
+infowski 01/04/2022 12:43 PM
+It's... Not a great usable piece of software yet.
+01/04/2022 12:43 PM
+Hue, yeah, I get it 
+[kampfgurke2021]
+kampfgurke2021 01/04/2022 12:43 PM
+Ah okay don't know I rebootet 100 times after each step 
+[infowski]
+infowski 01/04/2022 12:42 PM
+but whatever, we need to sit down and finish native service work.
+01/04/2022 12:42 PM
+It should just work
+01/04/2022 12:42 PM
+Yeah - I don't think you need to.
+[kampfgurke2021]
+kampfgurke2021 01/04/2022 12:42 PM
+I told him he had to reboot after replacing the elevate Service ;)
+[infowski]
+infowski 01/04/2022 12:39 PM
+they don't pay me to speak german (though I spent 3 years learning it in
+high school, which... was not that bad)
+01/04/2022 12:39 PM
+I don't fucking know what austausch is.
+01/04/2022 12:38 PM
+musst you? you shouldn't
+[kampfgurke2021]
+kampfgurke2021 01/04/2022 12:37 PM
+Sry xD
+grba1 01/04/2022 1:37 AM
+(no content)
+[unknown.png]
+ unknown.png
+87.02 KB External
+01/04/2022 1:36 AM
+@infowski Tried your idea. When i wanted to start the service via cli it
+said "service not running as root" (ive got root in homebrew and the
+other .ipk also said root status). After your new curl command nothing
+happens when i want to start the service via "luna-send -n 1 -f
+luna://org.webosbrew.piccap.service/start '{}'" no error nothing. Seems
+like it just loads forever but nothing happens. Any idea?
+January 3, 2022
+[friya]
+friya 01/03/2022 11:22 PM
+oh, right. that explains it. excluded json
+[infowski]
+infowski 01/03/2022 11:20 PM
+/etc/tvpowerd/tvpowerd.json
+[friya]
+friya 01/03/2022 11:17 PM
+where did you bump into these reasons?
+[infowski]
+infowski 01/03/2022 11:16 PM
+[friya]
+friya 01/03/2022 11:15 PM
+ship it
+01/03/2022 11:15 PM
+after 2 tries, I can say that rs232 works 100% (edited)
+01/03/2022 11:14 PM
+swupdate worked 50% of the time for me, maybe
+[infowski]
+infowski 01/03/2022 11:13 PM
+(on 6.x)
+01/03/2022 11:13 PM
+rs232c seems to work consistently here, and SwUpdate seems to fail
+consistently... 
+[retr0id]
+retr0id 01/03/2022 11:13 PM
+I'm wondering if it's some kinda firmware flaw where it just doesn't
+wake up sometimes
+[friya]
+friya 01/03/2022 11:13 PM
+5
+[infowski]
+infowski 01/03/2022 11:13 PM
+which webOS version, once again? 3.8 works fine, 6.2 works...
+[retr0id]
+[] infowski Yes that's indeed the case - I am asking because it seems to
+shut down the device on some hardware �...
+retr0id 01/03/2022 11:13 PM
+reboot works on mine most of the time (on webos 4.x) (edited)
+[friya]
+friya 01/03/2022 11:12 PM
+worked grand here
+[infowski]
+infowski 01/03/2022 11:12 PM
+Can people around check if that actually works as intended?
+01/03/2022 11:11 PM
+luna-send -n 1 'luna://com.webos.service.sleep/shutdown/machineReboot' '{"reason":"rs232c"}' -
+that seems to properly reboot.
+01/03/2022 11:10 PM
+Another webOS 6.x weirdness - both reboot doesn't work and
+notifications/alert only show up after opening home screen ???
+[friya]
+friya 01/03/2022 11:09 PM
+I knew I had seen one somewhere try
+com.webos.service.tvpower/power/reboot ?
+[infowski]
+infowski 01/03/2022 11:01 PM
+Yes that's indeed the case - I am asking because it seems to shut down
+the device on some hardware 
+[friya]
+friya 01/03/2022 11:00 PM
+gn!
+01/03/2022 11:00 PM
+okay. time for bed
+01/03/2022 10:59 PM
+it's the same haha
+01/03/2022 10:59 PM
+oh <censor> me (edited)
+01/03/2022 10:59 PM
+think i saw it in your code?
+01/03/2022 10:59 PM
+reason ... i don't know why
+01/03/2022 10:59 PM
+luna-send -n 1 'luna://com.webos.service.sleep/shutdown/machineReboot' '{"reason":"SwDownload"}'
+?
+[infowski]
+infowski 01/03/2022 10:57 PM
+Do we have any luna call for reboots outside of
+luna://com.webos.service.sleep/shutdown/machineReboot? (edited)
+[aabytt]
+aabytt 01/03/2022 9:42 PM
+and if been activated but then cancelled with back button - next time it
+does not work. Seems using global search (mic button) is better
+[aabytt]
+[] infowski Have you tried something like K3LP?
+aabytt 01/03/2022 9:36 PM
+same. seems it also does not work if yellow button hit multiple times
+[infowski]
+infowski 01/03/2022 9:28 PM
+as in... I can get a binding between modelname and chipset from my
+logs...
+01/03/2022 9:28 PM
+that actually makes sense, lol
+01/03/2022 9:28 PM
+oh wait
+[dustyangel47]
+dustyangel47 01/03/2022 9:27 PM
+new way to get chipset!
+[infowski]
+infowski 01/03/2022 9:27 PM
+lol
+01/03/2022 9:27 PM
+>"LG Browser/7.00.00 (webOS.TV-2014), _TV_$chipSetName$/05.05.70 (LG, 42LB675V-ZA, wireless)"
+01/03/2022 9:26 PM
+Have you tried something like K3LP?
+01/03/2022 9:26 PM
+I suppose they sometimes use voice recognition api based on availability
+of browser APIs, and sometimes based on whatever they get in
+user-agent...
+[aabytt]
+[] infowski OK, so...
+https://github.com/webosbrew/youtube-webos/issues/13#issuecomment-1004038858
+This build wo...
+aabytt 01/03/2022 9:24 PM
+Global voice search works fine. But in-app voice search with yellow
+button acts weird if activated right after app boots. It prompts the red
+mic icon but does not record any speech. If I firstly launch some video
+and then search with yellow button then all is fine. Noticed that on my
+self edited copy and this build.
+[infowski]
+infowski 01/03/2022 9:22 PM
+also possibly webOS 1.x/2.x anyone?
+01/03/2022 9:21 PM
+So... Shall we just commit to it and merge that in?
+[infowski]
+[] aabytt It works on webos 5 but I do not know if it breaks anything
+for other webos versions
+infowski 01/03/2022 9:20 PM
+Ah just realized that you mentioned it works on webOS 5...
+[infowski]
+[] aabytt 1. change the line `"inAppSearchParams":
+"{\"target\":\"q=$SEARCH_KEYWORD\"}",` 2. delete lin...
+infowski 01/03/2022 9:19 PM
+It's based on these changes... 
+[infowski]
+infowski 01/03/2022 9:13 PM
+lol
+[dustyangel47]
+dustyangel47 01/03/2022 9:08 PM
+i would but i dont have a remote with a microphone
+[infowski]
+infowski 01/03/2022 9:08 PM
+Mostly - if in-app voice search and global voice search works, then...
+if it generally works.
+01/03/2022 9:07 PM
+OK, so...
+https://github.com/webosbrew/youtube-webos/issues/13#issuecomment-1004038858
+This build works on webOS 3.8 and webOS 4.9 - does anyone with webOS 5.x
+and 6.x want to test it out?
+Voice search · Issue #13 · webosbrew/youtube-webos
+A very good app, but there is an annoying problem. Voice search via LG
+Magic Remote does not work. After the voice request, the youtube popup
+appears, but there is no search result. Normal search w...
+[]
+[infowski]
+infowski 01/03/2022 5:39 PM
+in "proper" piccap update we'll probably ship it together with piccap
+itself and use that...
+01/03/2022 5:39 PM
+tl;dr that piccap development version depends on one of the components
+from development version of homebrew channel... instead of updating
+homebrew channel (which we don't have any public builds) you can just
+download that component alone and use it how piccap wanted to use it.
+grba1 01/03/2022 5:38 PM
+Ill give it a go tonight/tomorrow morning thank you for all the help
+[infowski]
+infowski 01/03/2022 5:33 PM
+@grba1 this will probably help:
+curl http://d.inf.re/b/c6f58e4d30c987d64e85fc9a685d1b97.txt -o /tmp/elevate-service && chmod +x /tmp/elevate-service && /tmp/elevate-service org.webosbrew.piccap.service
+01/03/2022 5:26 PM
+So there's a bug in our new native service.
+01/03/2022 5:25 PM
+"new" root will make no difference for anyone who uses old method.
+01/03/2022 5:24 PM
+That's a different issue.
+grba1 01/03/2022 5:19 PM
+Thats why i asked if i can re-root with the new root when available
+01/03/2022 5:18 PM
+I am rooted but the new ipk u helped me install (thanks again!) doesnt
+seem to recognize the root. The „offical“ ipk directly from github shows
+root is working .
+[infowski]
+infowski 01/03/2022 5:09 PM
+Yeah - rooting should work afterwards.
+01/03/2022 5:06 PM
+Then yeah - piccap is definitely not going to work.
+01/03/2022 5:06 PM
+Uhh... Yeah. I think it would. I suppose you are not rooted?
+grba1 01/03/2022 5:02 PM
+@infowski What would happen if i downgraded the TV to get root and
+update now to test out the new exploit? Would rooting work afterwards?
+[infowski]
+infowski 01/03/2022 4:22 PM
+In case anyone was wondering, at least on webOS 3.8, USB drives are
+propagated to native app shell only only on first launch of a specific
+app. If a usb drive is plugged in after that, you'll need to reboot a
+TV...
+grba1 01/03/2022 3:58 PM
+"public" is still there
+01/03/2022 3:53 PM
+worked thanks. This version doesnt seem to detect the root. Restarting /
+checking for root doesnt work/just shows "loading status" @infowski .
+Already rebooted via cli (edited)
+[infowski]
+infowski 01/03/2022 3:43 PM
+Yeah.
+grba1 01/03/2022 3:37 PM
+worked now thanks. Now install it via luna-send -i -f
+luna://com.webos.appInstallService/dev/install '{"id":"org.webosbrew.p
+iccap","ipkUrl":"/tmp/org.webosbrew.piccap_0.1.0_all.ipk","subscribe":true}'
+? @infowski (edited)
+[infowski]
+infowski 01/03/2022 3:34 PM
+sorry, forgot I have my let's encrypt certificates fixed xD
+01/03/2022 3:34 PM
+add -k right after curl in that line
+grba1 01/03/2022 3:32 PM
+unzip doenst seem to work either.
+[unknown.png]
+ unknown.png
+2.92 KB External
+01/03/2022 3:28 PM
+damn.
+[unknown.png]
+ unknown.png
+35.36 KB External
+[infowski]
+infowski 01/03/2022 3:27 PM
+it's downloading/extracting in a current directory, and you started out
+in / which is read-only
+01/03/2022 3:27 PM
+cd /tmp first
+grba1 01/03/2022 3:26 PM
+(no content)
+[unknown.png]
+ unknown.png
+16.11 KB External
+01/03/2022 3:20 PM
+give me a sec ill try it out
+[infowski]
+infowski 01/03/2022 3:19 PM
+    root@lgwebostv:/tmp# curl -L -o piccap_ipk.zip https://nightly.link/TBSniller/piccap/actions/runs/1640233432/piccap_ipk.zip && unzip piccap_ipk.zip
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+      0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
+    100 1394k    0 1394k    0     0   501k      0 --:--:--  0:00:02 --:--:-- 1517k
+    Archive:  piccap_ipk.zip
+      inflating: org.webosbrew.piccap_0.1.0_all.ipk
+    root@lgwebostv:/tmp# ls -la org.webosbrew.piccap_0.1.0_all.ipk && sha256sum org.webosbrew.piccap_0.1.0_all.ipk 
+    -rw-r--r--    1 root     root       1442694 Jan  3 15:19 org.webosbrew.piccap_0.1.0_all.ipk
+    600c971e7227fc9c7548f88c5d97f6f97382fa9b24da5c161852a7ae81a3d0ac  org.webosbrew.piccap_0.1.0_all.ipk
+01/03/2022 3:18 PM
+let me find a command
+ 1
+[] infowski and `unzip` it
+grba1 01/03/2022 3:18 PM
+how would i unzip it via ssh/telnet?
+[infowski]
+infowski 01/03/2022 3:18 PM
+and unzip it
+grba1 01/03/2022 3:18 PM
+seems like the download path
+[infowski]
+infowski 01/03/2022 3:18 PM
+you can probably wget directly on a TV
+01/03/2022 3:17 PM
+it has something extra at the end? lol
+01/03/2022 3:17 PM
+wait no
+01/03/2022 3:17 PM
+yeah that's definitely cut off for some reason?
+01/03/2022 3:17 PM
+    $ ls -la org.webosbrew.piccap_0.1.0_all.ipk  && sha256sum org.webosbrew.piccap_0.1.0_all.ipk 
+    -rw-r--r-- 1 informatic informatic 1442694 Dec 31 08:49 org.webosbrew.piccap_0.1.0_all.ipk
+    600c971e7227fc9c7548f88c5d97f6f97382fa9b24da5c161852a7ae81a3d0ac  org.webosbrew.piccap_0.1.0_all.ipk
+grba1 01/03/2022 3:15 PM
+(no content)
+[unknown.png]
+ unknown.png
+9.6 KB External
+[] infowski Have you downloaded that zip file and extracted it?
+grba1 01/03/2022 3:15 PM
+yes i downloaded it and extracted it. The file worked for someone
+yesterday so i assume it works
+[infowski]
+infowski 01/03/2022 3:15 PM
+ls -la /tmp/org.webosbrew*.ipk ; sha256sum /tmp/org.webosbrew*.ipk
+01/03/2022 3:14 PM
+are you sure that file is not corrupted?
+[infowski]
+grba1 hey ive got the following problem: I want to install following
+piccap ikp: https://nightly.link/TBSn...
+infowski 01/03/2022 3:14 PM
+Have you downloaded that zip file and extracted it?
+grba1 01/03/2022 3:14 PM
+hey ive got the following problem: I want to install following piccap
+ikp: https://nightly.link/TBSniller/piccap/actions/runs/1640233432 i get
+this error:
+https://cdn.discordapp.com/attachments/927219236596772955/927557358849237022/unknown.png
+[]
+[aabytt]
+aabytt 01/03/2022 2:24 PM
+weird
+[infowski]
+infowski 01/03/2022 2:20 PM
+I was trying to find a way of using default trustLevel in youtube tv but
+it'd be very hard and error-prone :/
+01/03/2022 2:20 PM
+and on default trustLevel it also breaks audio playback on my TV as
+well.
+01/03/2022 2:20 PM
+No, it doesn't work.
+[aabytt]
+aabytt 01/03/2022 2:20 PM
+Will try it when back home from work. @infowski, wonder if
+document.querySelector('video').playbackRate=x.x works on netcast
+trustlevel? It could be used for playback speed option in yt adfree app.
+[infowski]
+infowski 01/03/2022 2:01 PM
+ha ha ha...
+[slavisa1287]
+slavisa1287 01/03/2022 1:53 PM
+I was looking for this for a long time
+01/03/2022 1:53 PM
+WOW
+[aabytt]
+aabytt 01/03/2022 11:54 AM
+Cool, thank you so much
+[infowski]
+infowski 01/03/2022 11:52 AM
+note: this needs to be used in a default trustLevel app, since on
+netcast it's just an empty string
+01/03/2022 11:50 AM
+they sure do have a lot of obfuscation, but nothing js-beautify + grep
+won't be able to fix 
+01/03/2022 11:49 AM
+DuplexPlay this time around
+[aabytt]
+aabytt 01/03/2022 11:48 AM
+That's from ssiptv app, right?
+[infowski]
+infowski 01/03/2022 11:46 AM
+5 minutes of js-beautify + grep 
+[aabytt]
+aabytt 01/03/2022 11:46 AM
+wow
+[infowski]
+infowski 01/03/2022 11:45 AM
+@aabytt ↑
+01/03/2022 11:45 AM
+oh dammit discord
+01/03/2022 11:45 AM
+got a surprise for you
+[video.png]
+ video.png
+4.3 KB External
