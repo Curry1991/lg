@@ -1,0 +1,342 @@
+June 23, 2025
+[lazy.suse]
+lazy.suse 06/23/2025 7:04 PM
+Still nothing
+[mariotaku]
+mariotaku 06/23/2025 4:50 PM
+What about nf_register_ ? (edited)
+06/23/2025 4:49 PM
+Oh 
+[lazy.suse]
+[] mariotaku BTW, what's the output of `cat /proc/kallsyms | grep
+nf_register_hooks`?
+lazy.suse 06/23/2025 10:15 AM
+No output
+June 22, 2025
+[mariotaku]
+mariotaku 06/22/2025 6:52 PM
+BTW, what's the output of cat /proc/kallsyms | grep nf_register_hooks?
+[mariotaku]
+[] lazy.suse can you explain on what "in the tree" mean?
+mariotaku 06/22/2025 6:52 PM
+I'm not sure. Maybe this one?
+https://unix.stackexchange.com/questions/208638/linux-kernel-meaning-of-source-tree-in-tree-and-out-of-tree
+[lazy.suse]
+[] mariotaku OK I think they're indeed in the tree, but it has a
+dependency tree. Let me figure that out
+lazy.suse 06/22/2025 5:49 PM
+can you explain on what "in the tree" mean?
+[lazy.suse]
+lazy.suse 06/22/2025 5:47 PM
+coundn't insmod x_tables, i checked modinfo for the same and there are
+no dependencies.
+    [ 5625.567353] (0)-5932 x_tables: Unknown symbol nf_register_hooks (err 0)
+    [ 5625.567417] (0)-5932 x_tables: Unknown symbol nf_unregister_hooks (err 0)
+was in dmesg
+06/22/2025 5:43 PM
+    root@LGwebOSTV:~# modinfo ~/userdata/modules/net/ipv4/netfilter/iptable_nat.ko
+    filename:       /home/root/userdata/modules/net/ipv4/netfilter/iptable_nat.ko
+    license:        GPL
+    srcversion:     0ABBEAA64C52C3302A03BE4
+    depends:        ip_tables,nf_nat_ipv4
+    intree:         Y
+    vermagic:       4.4.84 SMP preempt mod_unload ARMv7
+    root@LGwebOSTV:~# insmod ~/userdata/modules/net/ipv4/netfilter/ip_tables.ko
+    insmod: ERROR: could not insert module /home/root/userdata/modules/net/ipv4/netfilter/ip_tables.ko: Unknown symbol in module
+    root@LGwebOSTV:~# insmod ~/userdata/modules/net/ipv4/netfilter/nf_nat_ipv4.ko
+    insmod: ERROR: could not insert module /home/root/userdata/modules/net/ipv4/netfilter/nf_nat_ipv4.ko: Unknown symbol in module
+    root@LGwebOSTV:~# modinfo ~/userdata/modules/net/ipv4/netfilter/ip_tables.ko
+    filename:       /home/root/userdata/modules/net/ipv4/netfilter/ip_tables.ko
+    description:    IPv4 packet filter
+    author:         Netfilter Core Team <coreteam@netfilter.org>
+    license:        GPL
+    srcversion:     9F85288902DE1463888443E
+    depends:        x_tables
+    intree:         Y
+    vermagic:       4.4.84 SMP preempt mod_unload ARMv7
+    root@LGwebOSTV:~# modinfo ~/userdata/modules/net/ipv4/netfilter/nf_
+    nf_conntrack_ipv4.ko  nf_defrag_ipv4.ko     nf_nat_ipv4.ko        nf_reject_ipv4.ko
+    root@LGwebOSTV:~# modinfo ~/userdata/modules/net/ipv4/netfilter/nf_nat_ipv4.ko
+    filename:       /home/root/userdata/modules/net/ipv4/netfilter/nf_nat_ipv4.ko
+    alias:          nf-nat-2
+    license:        GPL
+    srcversion:     62E44ADA1A1F6F29B5E6B7A
+    depends:        nf_nat,nf_conntrack
+    intree:         Y
+    vermagic:       4.4.84 SMP preempt mod_unload ARMv7
+[mariotaku]
+mariotaku 06/22/2025 5:38 PM
+I think there should be a better way to load all automatically but yet
+to find one
+06/22/2025 5:37 PM
+It has some, and should be included in the archive
+06/22/2025 5:37 PM
+You can use modinfo net/ipv4/netfilter/iptable_nat.ko to check its
+dependencies
+[mariotaku]
+[] lazy.suse ``` [ 4146.208715] (3)-3997 iptable_nat: Unknown symbol
+nf_nat_ipv4_fn (err 0) [ 4146.208748] (3)-39...
+mariotaku 06/22/2025 5:35 PM
+OK I think they're indeed in the tree, but it has a dependency tree. Let
+me figure that out
+[lazy.suse]
+[] mariotaku Can you find out which one is missing? If it's in the
+archive, you may be able to insert that too
+lazy.suse 06/22/2025 5:30 PM
+    [ 4146.208715] (3)-3997 iptable_nat: Unknown symbol nf_nat_ipv4_fn (err 0)
+    [ 4146.208748] (3)-3997 iptable_nat: Unknown symbol ipt_alloc_initial_table (err 0)
+    [ 4146.208764] (3)-3997 iptable_nat: Unknown symbol ipt_do_table (err 0)
+    [ 4146.208780] (3)-3997 iptable_nat: Unknown symbol nf_register_hooks (err 0)
+    [ 4146.208800] (3)-3997 iptable_nat: Unknown symbol nf_nat_ipv4_local_fn (err 0)
+    [ 4146.208824] (3)-3997 iptable_nat: Unknown symbol nf_nat_ipv4_out (err 0)
+    [ 4146.208839] (3)-3997 iptable_nat: Unknown symbol nf_unregister_hooks (err 0)
+    [ 4146.208854] (3)-3997 iptable_nat: Unknown symbol ipt_unregister_table (err 0)
+    [ 4146.208878] (3)-3997 iptable_nat: Unknown symbol nf_nat_ipv4_in (err 0)
+    [ 4146.208893] (3)-3997 iptable_nat: Unknown symbol ipt_register_table (err 0)
+dont think these files are in the archive (edited)
+[angry.toenail]
+angry.toenail 06/22/2025 5:17 PM
+I'm watching your guys progress, hopefully you can make it work. You're
+very generous with your help @Mariotaku, thank you!
+[mariotaku]
+mariotaku 06/22/2025 11:13 AM
+Can you find out which one is missing? If it's in the archive, you may
+be able to insert that too
+06/22/2025 11:13 AM
+https://askubuntu.com/questions/1150155/unknown-symbol-in-module-but-what-symbol
+[mariotaku]
+[] lazy.suse ``` root@LGwebOSTV:~/userdata/modules# insmod
+net/ipv4/netfilter/iptable_nat.ko insmod: ERROR: could...
+mariotaku 06/22/2025 11:13 AM
+I think this means it has some dependencies (insmod is not very smart,
+as it won't load dependencies)
+June 21, 2025
+[lazy.suse]
+[] mariotaku Probably you could just try `insmod
+net/ipv4/netfilter/iptable_nat.ko` to see if it works...
+lazy.suse 06/21/2025 7:19 PM
+    root@LGwebOSTV:~/userdata/modules# insmod net/ipv4/netfilter/iptable_nat.ko
+    insmod: ERROR: could not insert module net/ipv4/netfilter/iptable_nat.ko: Unknown symbol in module
+does this mean it wasnt for the corrct kernel version
+[mariotaku]
+mariotaku 06/21/2025 6:46 PM
+What about the kernel module?
+[mariotaku]
+[] lazy.suse my bad, the local ip range was same as the once advertised
+on subnetrouter.
+mariotaku 06/21/2025 6:46 PM
+So you're not locked out right? Before you test everything, better not
+to make it start automatically
+[lazy.suse]
+lazy.suse 06/21/2025 6:43 PM
+my bad, the local ip range was same as the once advertised on
+subnetrouter.
+06/21/2025 6:41 PM
+I guess I messed up somethingwhile editing the tailscale startup script.
+Im unable to ssh or use telnet now for some reason
+[mariotaku]
+[] angry.toenail Ooo, I didn't think to install iptables - I didn't know
+that was an option
+mariotaku 06/21/2025 6:39 PM
+Installing required kernel module is really a hard way, as it requires
+both skill & luck
+[angry.toenail]
+angry.toenail 06/21/2025 6:35 PM
+I've been using ts in userspace mode since forever and living with the
+shortfalls
+06/21/2025 6:35 PM
+Ooo, I didn't think to install iptables - I didn't know that was an
+option
+[lazy.suse]
+lazy.suse 06/21/2025 6:33 PM
+got it, just checkedout insmod
+[mariotaku]
+[] lazy.suse Should i extract the archive in / Then execute the command?
+mariotaku 06/21/2025 6:27 PM
+You could extract it anywhere (root isn't an option because it's read
+only)
+[lazy.suse]
+lazy.suse 06/21/2025 6:21 PM
+Should i extract the archive in / Then execute the command?
+[mariotaku]
+[] lazy.suse might i ask whats a better way to get good with these?
+mariotaku 06/21/2025 6:19 PM
+I think I learned all this from random places. BTW the comprehensive
+guide I linked was really handy 
+[mariotaku]
+mariotaku 06/21/2025 6:15 PM
+That's for your model but not sure if it's for your exact kernel
+06/21/2025 6:15 PM
+Probably you could just try insmod net/ipv4/netfilter/iptable_nat.ko to
+see if it works...
+06/21/2025 6:14 PM
+(no content)
+ modules.tgz
+6.44 MB External
+[lazy.suse]
+lazy.suse 06/21/2025 6:12 PM
+might i ask whats a better way to get good with these?
+06/21/2025 6:11 PM
+damn i dont understnd most of this stuff, but thanks for the info
+[mariotaku]
+mariotaku 06/21/2025 6:02 PM
+For the toolchain I used
+https://github.com/lgstreamer/starfish-sdk-x86_64/releases The 159MB one
+Releases · lgstreamer/starfish-sdk-x86_64
+LG's gstreamer "starfish" toolchain. Contribute to
+lgstreamer/starfish-sdk-x86_64 development by creating an account on
+GitHub.
+[]
+06/21/2025 6:02 PM
+I'm able to get some modules
+06/21/2025 6:01 PM
+Just the JKHP 1.0
+[lazy.suse]
+lazy.suse 06/21/2025 5:48 PM
+am i supposed to download all the 4 source files if i went about doing
+this myself?
+[image.png]
+ image.png
+181.17 KB External
+06/21/2025 5:45 PM
+thats great news
+[mariotaku]
+mariotaku 06/21/2025 5:38 PM
+Got it, then I think it probably gonna work
+[lazy.suse]
+lazy.suse 06/21/2025 5:22 PM
+Linux LGwebOSTV 4.4.84-612.jcl4tv.40 #1 SMP PREEMPT Fri Jun 28 11:11:42
+UTC 2024 armv7l GNU/Linux
+[mariotaku]
+mariotaku 06/21/2025 5:16 PM
+Can you run uname -a? I guess your kernel is 32-bit?
+[lazy.suse]
+lazy.suse 06/21/2025 4:47 PM
+(no content)
+ config.gz
+20.8 KB External
+[mariotaku]
+mariotaku 06/21/2025 4:47 PM
+Just for an excercise lol
+ 1
+06/21/2025 4:47 PM
+So I could try building too
+06/21/2025 4:47 PM
+Yes
+[lazy.suse]
+lazy.suse 06/21/2025 4:47 PM
+do you want me to send it here?
+[mariotaku]
+mariotaku 06/21/2025 4:45 PM
+Can you copy /proc/config.gz if there is one?
+06/21/2025 4:44 PM
+This would be the guide we need
+06/21/2025 4:44 PM
+FYI
+https://discord.com/channels/407937994037919756/408006551656333312/1368692653914329201
+ 1
+[lazy.suse]
+lazy.suse 06/21/2025 4:41 PM
+ok
+[mariotaku]
+mariotaku 06/21/2025 4:38 PM
+Let me see if it's possible. I saw the kernel archive
+06/21/2025 4:37 PM
+Like the idea above, build needed kernel model
+[lazy.suse]
+lazy.suse 06/21/2025 4:34 PM
+Thanks! Could you give me gist of what you're trying to do? I'm
+interested
+[mariotaku]
+mariotaku 06/21/2025 4:29 PM
+Otherwise it's gonna be a waste of your time
+06/21/2025 4:29 PM
+I'm also downloading that to see if it's possible
+[lazy.suse]
+lazy.suse 06/21/2025 4:28 PM
+but as expected subnet routing doesnt work now, I'll take a look at the
+resource you sent me. meanwhile guess I will use ssh portforwarding
+06/21/2025 4:27 PM
+you were right, disabling userspace networking fixed the ping issue and
+able to connect jellyfin
+[mariotaku]
+mariotaku 06/21/2025 4:25 PM
+Let me see if they have such resources
+06/21/2025 4:25 PM
+1. Find kernel source of your model from https://opensource.lge.com 2.
+Build the kernel (usually, a native toolchain will be included in the
+source tarball)
+LG Open Source
+[]
+[lazy.suse]
+lazy.suse 06/21/2025 4:21 PM
+how would I do that
+[mariotaku]
+mariotaku 06/21/2025 4:21 PM
+Too bad it indeed doesn't come with iptables support... If you really
+want you can build the module though
+[lazy.suse]
+lazy.suse 06/21/2025 4:20 PM
+(no content)
+[image.png]
+ image.png
+323.63 KB External
+[mariotaku]
+mariotaku 06/21/2025 4:17 PM
+I can see something like this, but not on some webOS 5 devices
+06/21/2025 4:17 PM
+    /lib/modules/4.4.84-899.19.koli.1/kernel/net:
+    total 0
+    drwxr-xr-x    3 root     root            32 Apr 25 03:34 ipv4
+    /lib/modules/4.4.84-899.19.koli.1/kernel/net/ipv4:
+    total 0
+    drwxr-xr-x    2 root     root            95 Apr 25 05:54 netfilter
+    /lib/modules/4.4.84-899.19.koli.1/kernel/net/ipv4/netfilter:
+    total 14
+    -rw-r--r--    1 root     root          3516 Apr 25 03:34 ipt_MASQUERADE.ko
+    -rw-r--r--    1 root     root          4668 Apr 25 03:34 iptable_nat.ko
+    -rw-r--r--    1 root     root          4904 Apr 25 03:34 nf_nat_masquerade_ipv4.ko
+06/21/2025 4:15 PM
+Can you execute this command? ls -lR /lib/modules/$(uname -r)/kernel/
+(edited)
+[lazy.suse]
+lazy.suse 06/21/2025 4:09 PM
+it displays the same error message
+[mariotaku]
+mariotaku 06/21/2025 4:09 PM
+There will be some ways but is complicated. Maybe you need to try this
+command: iptables -t filter -L
+[lazy.suse]
+lazy.suse 06/21/2025 4:08 PM
+so I guess this cant be helped?
+[mariotaku]
+mariotaku 06/21/2025 4:07 PM
+Maybe it means your TV lacks a kernel module...
+06/21/2025 4:07 PM
+This command
+06/21/2025 4:07 PM
+/usr/sbin/iptables -t filter -N ts-input --wait
+06/21/2025 4:07 PM
+On my device it is working somehow
+[lazy.suse]
+lazy.suse 06/21/2025 4:07 PM
+tailscale subnet routing wasnt working. a user suggested I use userspace
+networking so this error doesnt throw up and routing would work, which
+it did
+[mariotaku]
+mariotaku 06/21/2025 4:06 PM
+Damn
+[lazy.suse]
+lazy.suse 06/21/2025 4:06 PM
+when running tailscale ststus, at the footer
+    # Health check:
+    #     - running [/usr/sbin/iptables -t filter -N ts-input --wait]: exit status 3: modprobe: FATAL: Module ip_tables not found in directory /lib/modules/4.4.84-612.jcl4tv.40
+    iptables v1.6.2: can't initialize iptables table `filter': Table does not exist (do you need to insmod?)
+    Perhaps iptables or your kernel needs to be upgraded.
+[mariotaku]
+mariotaku 06/21/2025 4:02 PM
+What kind of errors?
+[mariotaku]
+mariotaku 06/21/2025 4:02 PM
+hmm I had to use userspace-networking because subnet routing wouldn't
+work otherwise.

@@ -1,0 +1,377 @@
+May 23, 2022
+zipperhead46237 05/23/2022 1:24 AM
+Ok, added startup script rebooted and works as expected. Thank you for
+your patience.
+ 1
+[infowski]
+infowski 05/23/2022 1:15 AM
+and root:root should be fine.
+05/23/2022 1:15 AM
+just +rx is needed (edited)
+zipperhead46237 05/23/2022 1:14 AM
+do you know what the recommended permission set should be?
+[infowski]
+infowski 05/23/2022 1:08 AM
+we use run-parts from busybox
+zipperhead46237 05/23/2022 1:07 AM
+It seems like I remember they were executed in numerical order
+05/23/2022 1:07 AM
+If I remember correctly From SunOS the file names in init.d can just be
+a single digit. Is that correct or is there a suggested naming
+convention for WebOS?
+zipperhead46237 05/23/2022 12:54 AM
+LoL, such simple pleasures.
+05/23/2022 12:54 AM
+I Now Love My LGC1
+[infowski]
+infowski 05/23/2022 12:53 AM
+I think we should document this on webosbrew.org at some point.
+05/23/2022 12:53 AM
+glad I could help. and we got some knowhow from this too.
+zipperhead46237 05/23/2022 12:52 AM
+Thank you very much!
+05/23/2022 12:51 AM
+Excellent! So now the next step for a smart mind is to take that and
+make into an app that Individuals can enter their own apps which this
+happens to and put it in HomeBrew. But for now init.d it is.
+05/23/2022 12:49 AM
+yes, that makes sense.
+[infowski]
+infowski 05/23/2022 12:48 AM
+but add & after final done line, since this needs to run in the
+background.
+zipperhead46237 05/23/2022 12:48 AM
+Ha, anticipated my next question.
+[infowski]
+infowski 05/23/2022 12:48 AM
+If you want to have this run on boot in the background you can create a
+script with that snippet in /var/lib/webosbrew/init.d
+zipperhead46237 05/23/2022 12:48 AM
+So where would it make since to place this into a file where it will
+just run every time the TV is turned on?
+05/23/2022 12:46 AM
+ok, this is it. I pulled that snippet, replaced org.webosbrew.piccap
+with the Plex App_id and entered that into a shell running root. It
+resets the timer while Plex is running but not NetFlix so You Did it!
+That is Amazing!
+May 22, 2022
+zipperhead46237 05/22/2022 9:11 PM
+Ok got it.
+[infowski]
+infowski 05/22/2022 9:10 PM
+I just noted the reason the original snippet didn't work.
+[infowski]
+zipperhead46237 I am not knowledgeable enough to know what that means.
+Does it mean those commands would need to be...
+infowski 05/22/2022 9:09 PM
+The snippet I just posted above works on my TV just fine.
+zipperhead46237 05/22/2022 9:09 PM
+I am not knowledgeable enough to know what that means. Does it mean
+those commands would need to be added to the app itself?
+[infowski]
+[] infowski <@225167450713358338> btw I tried blocking screensaver via
+`"ack": false` and it doesn't *seem* to w...
+infowski 05/22/2022 7:54 PM
+Ah. It doesnt't work via luna-send since the response needs to be called
+from the same client it seems. Created a minimal JS service (running as
+root) that uses the same luna client for subscribe and response and it
+works as expected.
+[infowski]
+infowski 05/22/2022 7:39 PM
+sure.
+zipperhead46237 05/22/2022 7:37 PM
+Sounds promising. I will work on this and report results.
+[infowski]
+infowski 05/22/2022 7:32 PM
+@Mariotaku btw I tried blocking screensaver via "ack": false and it
+doesn't seem to work here... (my webOS 5.1 test board, triggering the
+screensaver via
+luna://com.webos.service.tvpower/power/turnOnScreenSaver)
+05/22/2022 7:29 PM
+adjust org.webosbrew.piccap with your desired app id.
+05/22/2022 7:29 PM
+    luna-send -i palm://com.webos.service.tvpower/power/registerScreenSaverRequest '{"subscribe":true,"clientName":"tester"}' | while IFS= read -r line; do
+      timestamp="$(echo "$line" | grep -o -E '[0-9]*')";
+      if [[ ! -z "$timestamp" ]]; then
+        if luna-send -n 1 'luna://com.webos.applicationManager/getForegroundAppInfo' '{}' | grep 'org.webosbrew.piccap'; then
+          echo Resetting screensaver timer...
+          luna-send -n 1 "luna://com.webos.service.tvpower/power/turnOnScreen" '{}'
+        fi
+      fi ;
+    done
+Test something like this.
+05/22/2022 7:26 PM
+we can reset the screensaver timer by calling turnOnScreen (edited)
+05/22/2022 7:25 PM
+OK, I think I got something figured out for you. Hang on.
+zipperhead46237 05/22/2022 3:38 PM
+What we need is an app in home brew, that you can add/select apps you
+have installed that when they are in the list and running in the
+foreground, the LG screensaver will NOT come on. I’m ready to shoot this
+TV. Gurrrr.
+May 21, 2022
+zipperhead46237 05/21/2022 9:12 PM
+and actually you don't need the -i switch in grep
+05/21/2022 9:11 PM
+if Plex is running
+05/21/2022 9:10 PM
+in the main.qml so when it runs it just kills itself
+05/21/2022 9:09 PM
+but somehow adding the code to look for Plex ID
+05/21/2022 9:09 PM
+but I don't know how to only execute this if Plex is running. But
+couldn't I just stick this inside the screensaver app itself?
+05/21/2022 9:08 PM
+kill $(ps aux |grep -i [s]creensaver | awk '{print $2}')
+05/21/2022 9:08 PM
+ok this single command line will kill the screensaver
+zipperhead46237 05/21/2022 8:05 PM
+granted any new update would undo this but....
+05/21/2022 8:05 PM
+or somehow branch around the commands that actually start the
+screensaver
+05/21/2022 8:04 PM
+I guess you could use getForegroundAppInfo luna-send command to see when
+plex or any other app is running the modify the screensaver app itself
+to just not start.
+05/21/2022 8:00 PM
+but where I'm going with this is to somehow embed the command above with
+the kill command to kill the screensaver using the screensaver app
+itself but only if a certain app is running
+05/21/2022 7:54 PM
+not sure why
+05/21/2022 7:54 PM
+the only thing is, when Plex is running I don't see it's process using
+ps -ef
+05/21/2022 7:53 PM
+if the Plex is running
+05/21/2022 7:53 PM
+I can then just use the kill command to kill the screensaver
+05/21/2022 7:52 PM
+ps -ef|grep screensaver |grep -v grep| awk {'print$2'}
+05/21/2022 7:52 PM
+so consider this not so elegant route. I can grab the process id of the
+screensaver using grep like this
+zipperhead46237 05/21/2022 7:13 PM
+root 7286 2103 16 13:11 ? 00:00:12 /usr/bin/qml-runner
+{"appId":"com.webos.app.screensaver","main":"file:///usr/palm/applications/com.webos.app.screensaver/qml/main.qml","params":{}}
+05/21/2022 7:13 PM
+not sure if this helps but here is the process running
+zipperhead46237 05/21/2022 7:00 PM
+yes with "ack": false
+[infowski]
+infowski 05/21/2022 6:59 PM
+weird... but I guess this may also be broken on that TV...
+05/21/2022 6:59 PM
+And that's with "ack": false?
+zipperhead46237 05/21/2022 6:57 PM
+resetting! 2083070339 { "returnValue": true }
+05/21/2022 6:57 PM
+ok, with that syntax I get back this but the screensaver still comes on
+[infowski]
+infowski 05/21/2022 6:51 PM
+I have no idea why it says it's too late :/
+[infowski]
+zipperhead46237 with the " ' $timestamp ' " format (spaces are for
+readability) i get this:
+infowski 05/21/2022 6:51 PM
+This is the correct one.
+zipperhead46237 05/21/2022 6:51 PM
+no quotes double quotes single quotes double and single all are giving
+me bad results
+05/21/2022 6:46 PM
+havn't found a format that works
+05/21/2022 6:45 PM
+{ "errorCode": "-13", "returnValue": false, "errorText": "The response
+is too late" }
+05/21/2022 6:45 PM
+with the " ' $timestamp ' " format (spaces are for readability) i get
+this:
+[infowski]
+infowski 05/21/2022 6:43 PM
+let me check.
+05/21/2022 6:43 PM
+unless I missed something about ack
+05/21/2022 6:43 PM
+hmmm, no. it should be enough now.
+zipperhead46237 05/21/2022 6:31 PM
+do you have to somehow declare $timestamp is an integer?
+zipperhead46237 05/21/2022 6:18 PM
+is it treating that $timestamp as text even though its numbers
+05/21/2022 6:15 PM
+but ScreenSaver still comes on
+05/21/2022 6:15 PM
+now I don't get an error and get returnValue:true
+05/21/2022 6:14 PM
+So first enclosed $timestamp in ' then put " around that.
+05/21/2022 6:13 PM
+root@LGwebOSTV:~# luna-send -i
+palm://com.webos.service.tvpower/power/registerScreenSaverRequest
+'{"subscribe":true,"clientName":"tester"}' | while IFS= read -r line; d
+o > timestamp="$(echo "$line" | grep -o -E '[0-9]*')"; > if [[ ! -z
+"$timestamp" ]]; then > echo "resetting! $timestamp"; > luna-send -f -n
+1 'palm://com.webos.service.tvpower/power/responseScreenSaverRequest'
+'{"clientName": "tester", "timestamp": "'$timestamp'", "ack": false}'
+; > fi ; > done resetting! 3733028713 { "returnValue": true } ^C
+05/21/2022 6:13 PM
+so I put it like this "'$timestamp'"
+zipperhead46237 05/21/2022 5:58 PM
+is the resulting output
+05/21/2022 5:58 PM
+resetting! 2838028976 { "errorCode": "-12", "returnValue": false,
+"errorText": "'timestamp' is needed, invalid param" }
+05/21/2022 5:57 PM
+just repasting what I am pasting in my console to confirm nothing lost
+in translation
+05/21/2022 5:56 PM
+luna-send -i
+palm://com.webos.service.tvpower/power/registerScreenSaverRequest
+'{"subscribe":true,"clientName":"tester"}' | while IFS= read -r line; do
+timestamp="$(echo "$line" | grep -o -E '[0-9]*')"; if [[ ! -z
+"$timestamp" ]]; then echo "resetting! $timestamp"; luna-send -f -n 1
+'palm://com.webos.service.tvpower/power/responseScreenSaverRequest'
+'{"clientName": "tester", "timestamp": '$timestamp', "ack": false}' ; fi
+; done
+05/21/2022 5:54 PM
+resetting! 2488028926 { "errorCode": "-12", "returnValue": false,
+"errorText": "'timestamp' is needed, invalid param"
+[infowski]
+infowski 05/21/2022 5:43 PM
+Try one without " around $timestamp (updated the message above)
+05/21/2022 5:41 PM
+now that is weird - it seems to work on my TV.
+zipperhead46237 05/21/2022 5:40 PM
+resetting! 1808030468 { "errorCode": "-12", "returnValue": false,
+"errorText": "'timestamp' is needed, invalid param" }
+[infowski]
+infowski 05/21/2022 5:37 PM
+Great then. Now for the final part:
+    luna-send -i palm://com.webos.service.tvpower/power/registerScreenSaverRequest '{"subscribe":true,"clientName":"tester"}' | while IFS= read -r line; do
+      timestamp="$(echo "$line" | grep -o -E '[0-9]*')";
+      if [[ ! -z "$timestamp" ]]; then
+        echo "resetting! $timestamp";
+        luna-send -f -n 1 'palm://com.webos.service.tvpower/power/responseScreenSaverRequest' '{"clientName": "tester", "timestamp": '$timestamp', "ack": false}' ;
+      fi ;
+    done
+split up into multiple lines to make it more readable. (edited)
+zipperhead46237 05/21/2022 5:35 PM
+at least it does echo the timestamp
+05/21/2022 5:33 PM
+root@LGwebOSTV:~# luna-send -i
+palm://com.webos.service.tvpower/power/registerScreenSaverRequest
+'{"subscribe":true,"cli entName":"tester"}' | while IFS= read -r line;
+do timestamp="$(echo "$line" | grep -o -E '[0-9]*')"; if [[ ! -z
+"$timest amp" ]]; then echo "resetting! $timestamp"; fi ; done
+resetting! 1343028581
+05/21/2022 5:33 PM
+I think this one worked
+[infowski]
+infowski 05/21/2022 5:08 PM
+disgusting, but may work.
+05/21/2022 5:08 PM
+    luna-send -i palm://com.webos.service.tvpower/power/registerScreenSaverRequest '{"subscribe":true,"clientName":"tester"}' | while IFS= read -r line; do timestamp="$(echo "$line" | grep -o -E '[0-9]*')"; if [[ ! -z "$timestamp" ]]; then echo "resetting! $timestamp"; fi ; done
+zipperhead46237 05/21/2022 5:06 PM
+so I guess the read ts is not working?
+[infowski]
+infowski 05/21/2022 5:01 PM
+There's no easy way. I think we can emulate an input device but that's
+not something we can do via CLI
+zipperhead46237 05/21/2022 5:00 PM
+to bad there isn't a way to just simulate shaking the magic remote. LoL
+that seems like an easy way to prevent it from coming on.
+[infowski]
+infowski 05/21/2022 4:59 PM
+That is not expected.
+zipperhead46237 05/21/2022 4:59 PM
+nothing returned to console
+05/21/2022 4:59 PM
+screensaver still came on, was that supposed to?
+05/21/2022 4:58 PM
+luna-send -i 'palm://com.webos.service.tvpower/power/registerScreenSaverRequest' '{"subscribe":true, "
+clientName": "tester"}' | grep -o -E '[0-9]*' | while read ts; do echo
+"resetting! $ts"; done
+[infowski]
+infowski 05/21/2022 4:57 PM
+Yeah, it worked on a bunch of TVs I played with, but seems like nodejs
+is somehow broken on yours.
+zipperhead46237 05/21/2022 4:57 PM
+I'm guessing the error wasn't expected. 
+[infowski]
+infowski 05/21/2022 4:55 PM
+welp, i'll check this later.
+05/21/2022 4:55 PM
+oh noes.
+zipperhead46237 05/21/2022 4:54 PM
+% Total % Received % Xferd Average Speed Time Time Time Current Dload
+Upload Total Spent Left Speed 0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:--
+0 100 2384 100 2384 0 0 3826 0 --:--:-- --:--:-- --:--:-- 3826 [*]
+Capturing system info... node: ../deps/uv/src/unix/core.c:117: uv_close:
+Assertion `!uv__is_closing(handle)' failed. child_process.js:626 throw
+err; ^ Error: Command failed: /usr/sbin/ls-monitor -l at
+checkExecSyncError (child_process.js:603:13) at Object.execFileSync
+(child_process.js:623:13) at [stdin]:28:4 at
+ContextifyScript.Script.runInThisContext (vm.js:50:33) at
+Object.runInThisContext (vm.js:139:38) at Object.<anonymous>
+([stdin]-wrapper:6:22) at Module._compile (module.js:653:30) at
+evalScript (bootstrap_node.js:479:27) at Socket.<anonymous>
+(bootstrap_node.js:250:15) at emitNone (events.js:111:20)
+[infowski]
+infowski 05/21/2022 4:50 PM
+I think it will work without -, but it shouldn't also break anything.
+zipperhead46237 05/21/2022 4:50 PM
+on that curl command do I include the "-" after "node" in the command?
+[infowski]
+infowski 05/21/2022 4:48 PM
+this should print resetting! 1234567 now before a screensaver. small
+steps forward  (edited)
+05/21/2022 4:48 PM
+OK, that sounds ok. Let's now try this:
+    luna-send -i 'palm://com.webos.service.tvpower/power/registerScreenSaverRequest' '{"subscribe":true, "clientName": "tester"}' | grep -o -E '[0-9]*' | while read ts; do echo "resetting! $ts"; done
+zipperhead46237 05/21/2022 4:47 PM
+luna-send -i 'palm://com.webos.service.tvpower/power/registerScreenSaverRequest' '{"subscribe":true, "
+clientName": "tester"}' | grep -o -E '[0-9]*' 2922996438
+[infowski]
+infowski 05/21/2022 4:46 PM
+I am slowly gathering these bundles for various webOS versions to keep
+track whichever APIs are available
+05/21/2022 4:46 PM
+In the meantime - could you also run this and report the URL it'll print
+out?
+curl -L 'https://gist.github.com/Informatic/0033ba3bdb2f88f244da6edb01c268ed/raw/c2aff120df1ee31d3ebd4f91d8d2c639908bce0a/webos-services-survey.js' | node -
+this will go through all the luna services on the system and dump
+available methods, together with some basic system/os version
+information.
+05/21/2022 4:44 PM
+This should print out just the timestamp number before screensaver gets
+triggered
+05/21/2022 4:44 PM
+Let's just check if this wors:
+luna-send -i 'palm://com.webos.service.tvpower/power/registerScreenSaverRequest' '{"subscribe":true, "clientName": "tester"}' | grep -o -E '[0-9]*'
+zipperhead46237 05/21/2022 4:43 PM
+sent that , the Lg screensaver still comes on but I don't get anything
+back from the console
+[infowski]
+infowski 05/21/2022 4:43 PM
+triple ` :d
+05/21/2022 4:43 PM
+That's a very screwed up output. use   `
+zipperhead46237 05/21/2022 4:42 PM
+luna-send -i 'palm://com.webos.service.tvpower/power/registerScreenSaverRequest' '{"subscribe":true, "
+clientName": "tester"}' | grep -o -E '[0-9]*' | while read ts; do echo
+"resetting! $ts"; luna-send -f -n 1
+'palm://com.webos.service.tvpower/power/responseScreenSaverRe quest'
+'{"clientName": "tester", "time > stamp": '$ts', "ack": true}' & done
+[infowski]
+infowski 05/21/2022 4:37 PM
+...replaced ack with false, because that's how you prevent the
+screensaver...
+05/21/2022 4:36 PM
+This will listen for screensaver requests like you did before, then try
+to extract any digits from any line, then while will read that number
+into $ts variable whenever a new request with digits comes in, and will
+call that response command to reset the timer.
+[infowski]
+infowski 05/21/2022 4:36 PM
+Try this:
+    luna-send -i 'palm://com.webos.service.tvpower/power/registerScreenSaverRequest' '{"subscribe":true, "clientName": "tester"}' | grep -o -E '[0-9]*' | while read ts; do echo "resetting! $ts"; luna-send -f -n 1 'palm://com.webos.service.tvpower/power/responseScreenSaverRequest' '{"clientName": "tester", "time
+    stamp": '$ts', "ack": false}' &  done
