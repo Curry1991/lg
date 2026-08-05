@@ -1,0 +1,511 @@
+April 3, 2021
+[smx2460]
+smx2460 04/03/2021 4:52 PM
+Making sure the last byte read is what you want
+04/03/2021 4:52 PM
+And write right to left
+04/03/2021 4:52 PM
+So you basically need to use "addr"
+[] smx2460 Then it can only read from the beginning
+Deleted User 04/03/2021 4:51 PM
+from 0x00000?
+[smx2460]
+smx2460 04/03/2021 4:51 PM
+Then it can only read from the beginning
+ww8543 04/03/2021 4:51 PM
+i would say yes
+[smx2460]
+smx2460 04/03/2021 4:51 PM
+Is "bytes" a count?
+ww8543 04/03/2021 4:50 PM
+      ext4load <interface> <dev[:part]> [addr] [filename] [bytes]
+    For example:  UBOOT #ext4load mmc 2:2 0x30007fc0 uImage
+(edited)
+[] smx2460 What's the syntax of "ext4read"
+ww8543 04/03/2021 4:50 PM
+it is "ext4load", no?
+Deleted User 04/03/2021 4:49 PM
+based on the real doable scenario - which approach you would recommend?
+@Smx to extract the firmware unencrypted (edited)
+ww8543 04/03/2021 4:48 PM
+evrything else seemed to be
+[smx2460]
+smx2460 04/03/2021 4:48 PM
+Hm right
+ww8543 04/03/2021 4:48 PM
+should be regular uboot syntax?
+[smx2460]
+smx2460 04/03/2021 4:47 PM
+Can it read at a given offset and a given length?
+04/03/2021 4:47 PM
+What's the syntax of "ext4read"
+ 2
+[] smx2460 I.e. the "ls" binary will hold all bytes from 0-255
+ww8543 04/03/2021 4:47 PM
+wow, thats some next level shit! haha i have seen malware do that to try
+to avoid detection 
+[smx2460]
+smx2460 04/03/2021 4:47 PM
+Without "mw"
+04/03/2021 4:47 PM
+And then you can write arbitrary content to memory
+04/03/2021 4:46 PM
+So you write a script that converts a given payload into "ext4read"
+sequences
+04/03/2021 4:46 PM
+I.e. the "ls" binary will hold all bytes from 0-255
+04/03/2021 4:46 PM
+To form the payload
+04/03/2021 4:46 PM
+You can extract individual bytes from files
+Deleted User 04/03/2021 4:45 PM
+thanks ww
+04/03/2021 4:45 PM
+I was trying to write this
+[smx2460]
+smx2460 04/03/2021 4:45 PM
+If it can, then you dump the files from Android
+ww8543 04/03/2021 4:45 PM
+    0       - 0.stop  - program flash using MTKTool
+    ?       - alias for 'help'
+    addboot - addboot  - append environment variables 'bootargs'
+    avbab   - 
+              enable-verity     - AVB2.0 enable dm-verity.
+              disable-verity    - AVB2.0 disable dm-verity.
+              set_active [slot] - set slot a/b to active slot.
+    bootm   - boot application image from memory
+    chpart  - change active partition
+    delboot - delboot  - del environment variables 'bootargs'
+    eboot   - eboot   - boot from EMMC device
+    env     - environment handling commands
+    erase   - erase FLASH memory
+    ext4filesize- get file size from a Ext4 filesystem
+    ext4load- load binary file from a Ext4 filesystem
+    ext4ls  - list files in a directory (default /)
+    ext4write- create a file in the root directory
+    fdt     - flattened device tree utility commands
+    flinfo  - print FLASH memory information
+    fsinfo  - print information about filesystems
+    fsload  - load binary file from a filesystem image
+    gpio_getin- gpio_getin  - do_gpio_getin
+    gpio_setout- gpio_setout  - do_gpio_setoutl
+    help    - print command description/usage
+    load    - load     - load configuration from an environment variable
+    ls      - list files in a directory (default /)
+    mmc     - MMC sub system
+    mmcinfo - display MMC info
+    mtdparts- define flash/nand partitions
+    printenv- print environment variables
+    protect - enable or disable FLASH write protection
+    reloadenv- reloadenv  - reload default environment variables
+    reset   - Perform RESET of the CPU
+    saveenv - save environment variables to persistent storage
+    setenv  - set environment variables
+    usb     - usb     - USB sub-system
+    version - print monitor, compiler and linker version
+(edited)
+ 1
+[smx2460]
+smx2460 04/03/2021 4:45 PM
+At the file level
+04/03/2021 4:45 PM
+Confirm that uboot can also read said partition
+04/03/2021 4:44 PM
+Like /system
+04/03/2021 4:44 PM
+From Android, you need a partition you can read that is not encrypted
+Deleted User 04/03/2021 4:44 PM
+but what I could see is the files name
+[smx2460]
+smx2460 04/03/2021 4:44 PM
+Then it can be done like this (edited)
+04/03/2021 4:44 PM
+(please confirm it)
+04/03/2021 4:44 PM
+But if we want to be fancy and he really has ex4load
+ww8543 04/03/2021 4:43 PM
+you did the mtdparts, that should tell you which is which
+[smx2460]
+smx2460 04/03/2021 4:43 PM
+It's likely easier to try @Waam 's key
+Deleted User 04/03/2021 4:43 PM
+there are 11 ls works, but I am not sure which partitions are belonged
+to
+ww8543 not sure if any other partitions worked....
+<@456226577798135808>?
+Deleted User 04/03/2021 4:43 PM
+I've noted them down
+ww8543 04/03/2021 4:42 PM
+not sure if any other partitions worked.... @Deleted User?
+04/03/2021 4:42 PM
+at least the drm partition was ls'able
+[smx2460]
+smx2460 04/03/2021 4:42 PM
+Tho it depends
+04/03/2021 4:41 PM
+/data is encrypted normally
+ww8543 04/03/2021 4:41 PM
+oh right put it on some ext4 partition from booted android, then read it
+from uboot using ext4load (edited)
+04/03/2021 4:40 PM
+no fatload
+[smx2460]
+smx2460 04/03/2021 4:40 PM
+Or fatload
+ww8543 04/03/2021 4:40 PM
+there is the usb command set tho
+[smx2460]
+ww8543 only mmc read will write to ram i guess
+smx2460 04/03/2021 4:40 PM
+If he has ext4read or similar he can save it inside a partition
+[smx2460]
+smx2460 04/03/2021 4:40 PM
+Any way to get byes in memory works
+ww8543 04/03/2021 4:40 PM
+only mmc read will write to ram i guess
+ww8543 so you would have to try to get that binary to uboot using some
+fastboot command on the pc?
+Deleted User 04/03/2021 4:39 PM
+yess indeed
+ww8543 04/03/2021 4:39 PM
+no m* commands at all
+[smx2460]
+smx2460 04/03/2021 4:39 PM
+Any command that writes to ram
+[smx2460]
+ww8543 there is no "mw"
+smx2460 04/03/2021 4:39 PM
+Android autocorrect
+ 1
+[smx2460]
+smx2460 04/03/2021 4:39 PM
+With a script that automatically sends the commands
+ww8543 04/03/2021 4:39 PM
+there is no "mw" (edited)
+04/03/2021 4:39 PM
+and then load it into ram and execute?
+[smx2460]
+smx2460 04/03/2021 4:39 PM
+It can be written from USB, TFTP or writing it manually using "mw"
+(edited)
+ww8543 04/03/2021 4:38 PM
+so you would have to try to get that binary to uboot using some fastboot
+command on the pc?
+[smx2460]
+smx2460 04/03/2021 4:38 PM
+Such as a boot image loader
+04/03/2021 4:38 PM
+I have a fork with extended functionality for Broadcom devices
+04/03/2021 4:37 PM
+And can't run on others
+04/03/2021 4:37 PM
+Each sample is tailored to a specific device and version
+04/03/2021 4:37 PM
+Yes it's mostly a CMake setup
+[] smx2460 It's not limited to the LG world
+Deleted User 04/03/2021 4:37 PM
+and also can be supplied to different archs?
+[smx2460]
+smx2460 04/03/2021 4:37 PM
+I used for my Broadband Modem too (edited)
+04/03/2021 4:36 PM
+It's not limited to the LG world (edited)
+04/03/2021 4:36 PM
+https://github.com/openlgtv/bootSdk
+openlgtv/bootSdk
+Run custom binaries in lxboot or uboot. Contribute to openlgtv/bootSdk
+development by creating an account on GitHub.
+[]
+ww8543 04/03/2021 4:36 PM
+oh right wasnt that on github somewhere?
+Deleted User 04/03/2021 4:36 PM
+that sounds so cool
+[smx2460]
+ww8543 how do you even compile such a bare metal binary?
+smx2460 04/03/2021 4:35 PM
+I wrote a toolkit to make it easy
+[smx2460]
+smx2460 04/03/2021 4:35 PM
+To add more commands
+04/03/2021 4:35 PM
+I have written several POCs that also extend the uboot menu
+[] smx2460 This is just a piece of code loaded in memory and executed
+ww8543 04/03/2021 4:35 PM
+how do you even compile such a bare metal binary?
+[smx2460]
+smx2460 04/03/2021 4:35 PM
+Yes
+[] smx2460 This is just a piece of code loaded in memory and executed
+Deleted User 04/03/2021 4:35 PM
+right! so you mean this will be done via uboot shell
+[smx2460]
+smx2460 04/03/2021 4:34 PM
+Unless you know where those functions are
+04/03/2021 4:34 PM
+It can't call any third party function other than the code you write
+04/03/2021 4:34 PM
+This is just a piece of code loaded in memory and executed
+04/03/2021 4:34 PM
+No
+Deleted User 04/03/2021 4:34 PM
+I see does this mean the kernel img is needed in the first place ?
+[smx2460]
+smx2460 04/03/2021 4:33 PM
+And you have a primordial "md" command
+04/03/2021 4:33 PM
+You then implement a basic hex dump function on top of this
+04/03/2021 4:33 PM
+And you replicate the minimum needed to print something
+04/03/2021 4:33 PM
+It will write and read hardware registers
+04/03/2021 4:32 PM
+You look up the kernel to see how the UART driver is implemented
+[] smx2460 Mtk uses AES in CBC mode, so you have key and IV
+Deleted User 04/03/2021 4:32 PM
+right!
+[] smx2460 Btw writing a key dumper that runs in uboot isn't that
+hard...mtk has a region of RAM where the key ...
+Deleted User 04/03/2021 4:32 PM
+can you specify a little on the key dumper via UART? I'm curious to find
+out how to achieve this
+[smx2460]
+smx2460 04/03/2021 4:32 PM
+Mtk uses AES in CBC mode, so you have key and IV
+04/03/2021 4:31 PM
+Then it's either md5 of that or sha256 (first 16 bytes) used as the real
+key
+ww8543 do you have a link where to download it?
+Deleted User 04/03/2021 4:31 PM
+let me check on that later
+[smx2460]
+smx2460 04/03/2021 4:30 PM
+It's just a matter of printing it
+04/03/2021 4:30 PM
+Btw writing a key dumper that runs in uboot isn't that hard...mtk has a
+region of RAM where the key is loaded
+Deleted User yes and epk tool can not extract it
+ww8543 04/03/2021 4:29 PM
+do you have a link where to download it?
+[smx2460]
+smx2460 04/03/2021 4:29 PM
+That's lame, @Smx
+ 1
+[] smx2460 Did I push it?
+ww8543 04/03/2021 4:29 PM
+i believe you did not
+ww8543 you said you had a pkg you couldnt decrypt?
+Deleted User 04/03/2021 4:29 PM
+yes and epk tool can not extract it
+[smx2460]
+smx2460 04/03/2021 4:29 PM
+I def have it on my PC
+[smx2460]
+ww8543 maybe the key waam dumped would work here too?
+smx2460 04/03/2021 4:29 PM
+Did I push it?
+[smx2460]
+smx2460 04/03/2021 4:28 PM
+We then can print the AES key in memory
+ww8543 04/03/2021 4:28 PM
+maybe the key waam dumped would work here too?
+[smx2460]
+smx2460 04/03/2021 4:28 PM
+We don't know where printf() is in memory so we must make our own by
+using the hardware registers
+ww8543 04/03/2021 4:28 PM
+here is a wild idea
+04/03/2021 4:28 PM
+no
+[smx2460]
+smx2460 04/03/2021 4:28 PM
+Can epk2extract dump it?
+Deleted User it's hisense
+ww8543 04/03/2021 4:28 PM
+you said you had a pkg you couldnt decrypt?
+[] smx2460 Do you have a firmware update?
+Deleted User 04/03/2021 4:28 PM
+yes I have one
+ww8543 04/03/2021 4:27 PM
+yea thought so (edited)
+[smx2460]
+smx2460 04/03/2021 4:27 PM
+Yes
+[] smx2460 The binary is loaded in RAM from uboot and ran there
+ww8543 04/03/2021 4:27 PM
+from within uboot?
+Deleted User 04/03/2021 4:27 PM
+right!
+[smx2460]
+smx2460 04/03/2021 4:27 PM
+It's a bare metal binary
+[smx2460]
+ww8543 i dont think <@310158180728700929> means executing from within
+android
+smx2460 04/03/2021 4:27 PM
+The binary is loaded in RAM from uboot and ran there (edited)
+Deleted User 04/03/2021 4:27 PM
+it's hisense
+[smx2460]
+smx2460 04/03/2021 4:27 PM
+Do you have a firmware update?
+ww8543 04/03/2021 4:27 PM
+i dont think @Smx means executing from within android (edited)
+[smx2460]
+smx2460 04/03/2021 4:27 PM
+@Deleted User what brand is it
+[] smx2460 Write a small program that will allow us to dump memory
+through uart
+Deleted User 04/03/2021 4:26 PM
+that's so cool - but can not excute the binary I've tried with my
+current permission
+[smx2460]
+smx2460 04/03/2021 4:26 PM
+Thus gaining the original partitions (edited)
+04/03/2021 4:26 PM
+And decrypt a firmware update
+04/03/2021 4:26 PM
+We can also dump the AES key that way
+04/03/2021 4:26 PM
+Load it from usb and execute it. Then we dump the bootloader
+04/03/2021 4:25 PM
+Write a small program that will allow us to dump memory through uart
+04/03/2021 4:24 PM
+Then lookup the UART registers to read and write characters
+Deleted User 04/03/2021 4:24 PM
+so boot kernel could be the only way right?
+[smx2460]
+smx2460 04/03/2021 4:24 PM
+You can figure out what type of SOC you have
+ww8543 04/03/2021 4:24 PM
+no tftp in uboot, so would have to be usb
+Deleted User 04/03/2021 4:24 PM
+exactly
+[smx2460]
+smx2460 04/03/2021 4:23 PM
+If you are in a chicken and egg situation where you can't save the
+current boot partition to patch it
+04/03/2021 4:23 PM
+Then save the partitions
+04/03/2021 4:23 PM
+From tftp or usb
+[smx2460]
+ww8543 can we somehow backup current boot img?
+smx2460 04/03/2021 4:23 PM
+Boot a patched boot partition in uboot
+[] smx2460 With Orange boot status
+Deleted User 04/03/2021 4:22 PM
+really that's good!
+Deleted User oh actually it works here in the device - the fastboot boot
+Deleted User 04/03/2021 4:22 PM
+but it aborted
+[smx2460]
+smx2460 04/03/2021 4:22 PM
+With Orange boot status
+04/03/2021 4:22 PM
+At least Hisense TVs seem to allow self signed boot partitions
+Deleted User 04/03/2021 4:21 PM
+sorry in respond to smx
+ww8543 can we somehow backup current boot img?
+Deleted User 04/03/2021 4:21 PM
+oh actually it works here in the device - the fastboot boot (edited)
+[smx2460]
+smx2460 04/03/2021 4:21 PM
+Afaik fastboot boot is not implemented and forbidden
+04/03/2021 4:21 PM
+Fastboot on MTK is implemented in uboot
+ww8543 04/03/2021 4:20 PM
+can we somehow backup current boot img?
+Deleted User 04/03/2021 4:20 PM
+or I could try fastboot boot (edited)
+[] smx2460 ```Flashed boot.img with magisk. Had to replace the x64
+binary with the 32bit variant to force the m...
+Deleted User 04/03/2021 4:20 PM
+but I think this could brick the device? if the flash does not work
+properly
+ww8543 04/03/2021 4:19 PM
+hmm maybe that could work
+[smx2460]
+smx2460 04/03/2021 4:19 PM
+    Modded the adbd binary to remove the root flag check
+ww8543 04/03/2021 4:19 PM
+oh magisk patched boot img
+[smx2460]
+smx2460 04/03/2021 4:18 PM
+And
+04/03/2021 4:18 PM
+What @Waam did
+[] smx2460 The actual kernel doesn't need modifications
+ww8543 04/03/2021 4:18 PM
+if you have an easier method...?
+[smx2460]
+smx2460 04/03/2021 4:18 PM
+    Flashed boot.img with magisk. Had to replace the x64 binary with the 32bit variant to force the magisk su binary to be the proper symlink in sbin
+Deleted User 04/03/2021 4:18 PM
+yes basically it hijacks system calls to trick the shell into thinking
+/system/bin/su exists on the device, when it actually doesn’t. It then
+executes commands run with su as if they were normal commands, but with
+root privileges
+ww8543 04/03/2021 4:16 PM
+and the patch is for the kernel
+04/03/2021 4:16 PM
+hence the kernel patching
+04/03/2021 4:16 PM
+well there is a patch that makes su always succeed even if you dont have
+the rights to
+04/03/2021 4:15 PM
+without initramfs i guess
+[smx2460]
+smx2460 04/03/2021 4:15 PM
+The actual kernel doesn't need modifications
+04/03/2021 4:15 PM
+Packed together
+ww8543 04/03/2021 4:15 PM
+the actual kernel?
+[smx2460]
+smx2460 04/03/2021 4:15 PM
+Because the kernel partition is made of the kernel binary and initramfs
+04/03/2021 4:15 PM
+What are you talking about when you say "kernel"
+[] smx2460 The kernel i used for <@125792660676935680> is the stock one,
+not recompiled at all
+ww8543 04/03/2021 4:15 PM
+so what use was that then? how did it make you have root or whatever?
+ww8543 04/03/2021 4:14 PM
+this one
+04/03/2021 4:13 PM
+https://github.com/p0isk/linux-3.10.27
+p0isk/linux-3.10.27
+linux kernel for Mediatek MT53xx/MT58xx. Contribute to
+p0isk/linux-3.10.27 development by creating an account on GitHub.
+[]
+[smx2460]
+smx2460 04/03/2021 4:13 PM
+The kernel i used for @Waam is the stock one, not recompiled at all
+ww8543 04/03/2021 4:13 PM
+he is trying with p0isk kernel, seems closest to stock
+[smx2460]
+smx2460 04/03/2021 4:13 PM
+If it's the same SoC as @Waam he could use the same image
+[smx2460]
+ww8543 otherwise what other choices are there with no "md" in his
+bootloader to dump partitions?
+smx2460 04/03/2021 4:12 PM
+Take the stock kernel, repack it with buildroot
+ww8543 04/03/2021 4:12 PM
+yes but he is not around currently :(
+04/03/2021 4:12 PM
+otherwise what other choices are there with no "md" in his bootloader to
+dump partitions?
+[smx2460]
+smx2460 04/03/2021 4:12 PM
+@Waam could help better here
+ww8543 04/03/2021 4:11 PM
+right @Smx?
+04/03/2021 4:11 PM
+he applied the patch, and now i guess he should do make menuconfig to
+select the new feature
+04/03/2021 4:11 PM
+@Deleted User is trying to compile a kernel with su-patch for his
+hisense android tv
+04/03/2021 4:10 PM
+sooo

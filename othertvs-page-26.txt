@@ -1,0 +1,1513 @@
+December 27, 2021
+[smx2460]
+smx2460 12/27/2021 9:34 PM
+he told us that shell was freely accessible
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:33 PM
+I would go full yolo and build the linux tree they published with the
+magisk patch applied
+[smx2460]
+smx2460 12/27/2021 9:33 PM
+he didn't use the fastboot route
+12/27/2021 9:33 PM
+he used the UART connection to test it out
+12/27/2021 9:33 PM
+mind you tho
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:33 PM
+thats unfortunate
+[smx2460]
+smx2460 12/27/2021 9:32 PM
+@ww also tried to look for him to no avail
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:32 PM
+uff
+[smx2460]
+smx2460 12/27/2021 9:32 PM
+he disappeared
+12/27/2021 9:32 PM
+we don't know what happened to him
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:31 PM
+do you think there is a platform I could contact him?
+[smx2460]
+smx2460 12/27/2021 9:31 PM
+and he had made a modified Magisk image
+12/27/2021 9:31 PM
+specifically with vbmeta (edited)
+12/27/2021 9:31 PM
+he did similar work on hisense
+12/27/2021 9:31 PM
+damn we could use Waam here
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:31 PM
+yeah
+[smx2460]
+smx2460 12/27/2021 9:31 PM
+but you did
+12/27/2021 9:31 PM
+    (bootloader)    slot-count: 2
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:31 PM
+I saw slot count
+[smx2460]
+smx2460 12/27/2021 9:30 PM
+it means you don't have AB slots
+12/27/2021 9:30 PM
+also, if you didn't see those variables below
+12/27/2021 9:30 PM
+        //Client Variables for getvar:%s
+        fastboot_publish("version", "0.5", NULL);
+        fastboot_publish("serialno", "", do_getvar_serialno);
+        fastboot_publish("version-bootloader", "1.1", NULL);
+        fastboot_publish("version-baseband", "2.0", NULL);
+        fastboot_publish("product", "board-mtxx", NULL);
+        fastboot_publish("secure", "no", NULL);
+        fastboot_publish("unlocked", "yes", NULL);
+        fastboot_publish("product", "amai", NULL);
+        fastboot_publish("max-download-size", "0x8000000", NULL); //128MB.
+        #ifdef CC_SUPPORT_AB_UPDATE
+        fastboot_publish("slot-count", "2",NULL);
+        fastboot_publish("slot-suffixes", "",do_getvar_slotSuffixes);
+        fastboot_publish("has-slot:", "",do_getvar_hasSlot);
+        fastboot_publish("current-slot", "",do_getvar_currentSlot);
+        fastboot_publish("slot-successful:", "",do_getvar_slotSuccessful);
+        fastboot_publish("slot-unbootable:", "",do_getvar_slotUnbootable);
+        fastboot_publish("slot-retry-count:", "",do_getvar_slotRetryCount);
+        #endif
+12/27/2021 9:30 PM
+you can download and flash, but not boot
+12/27/2021 9:30 PM
+it's not a registered command
+12/27/2021 9:30 PM
+it's not
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:30 PM
+unsure
+[smx2460]
+[] maryjohanna42069 and try fastboot boot recovery.img
+smx2460 12/27/2021 9:29 PM
+is fastboot boot even implemented?
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:29 PM
+hopefully I dont need to go that far
+[smx2460]
+smx2460 12/27/2021 9:29 PM
+that allows you to reflash uboot
+12/27/2021 9:29 PM
+it just sets a global var
+12/27/2021 9:29 PM
+oh
+12/27/2021 9:29 PM
+i'm not sure if this works
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:29 PM
+and try fastboot boot recovery.img
+[smx2460]
+smx2460 12/27/2021 9:29 PM
+        else if (strcmp("unlock_critical", TempData) == 0)
+        {
+            fastboot_info("flashing bootloader-related partitions has its own risk");
+            critical_lock = 0;
+        }
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:29 PM
+so I assume I could just try to build twrp for this somehow
+12/27/2021 9:28 PM
+it is
+[smx2460]
+smx2460 12/27/2021 9:28 PM
+but that's what we saw on Hisense too
+12/27/2021 9:28 PM
+which is odd
+12/27/2021 9:28 PM
+which technically means booting custom code is enabled
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:28 PM
+yep
+[smx2460]
+smx2460 12/27/2021 9:28 PM
+it means that CC_ANDROID_SECURE_BOOT_CLASS_B is defined
+12/27/2021 9:28 PM
+so if you're seeing this
+12/27/2021 9:28 PM
+ok
+12/27/2021 9:28 PM
+    #ifdef  CC_ANDROID_SECURE_BOOT_CLASS_B
+        char TempData[20] = {0};
+        char *dev_state = getenv("devicestate");
+        ret = 0;
+        TrimLeft(TempData, data, strlen(data));
+        if (strcmp("get_unlock_ability", TempData) == 0)
+        {
+            fastboot_info(dev_state);
+        }
+        else if (strcmp("lock", TempData) == 0 || strcmp("unlock", TempData) == 0)
+        {
+            if (dev_state != NULL && strcmp(dev_state, TempData) != 0)
+            {
+                fastboot_info("wipe user data");
+                EraseUserData();
+                setenv("devicestate", TempData);
+                saveenv();
+            }
+        }
+        else if (strcmp("lock_critical", TempData) == 0)
+        {
+            critical_lock = 1;
+        }
+        else if (strcmp("unlock_critical", TempData) == 0)
+        {
+            fastboot_info("flashing bootloader-related partitions has its own risk");
+            critical_lock = 0;
+        }
+        else
+    #endif//CC_ANDROID_SECURE_BOOT_CLASS_B
+12/27/2021 9:27 PM
+hmm
+12/27/2021 9:27 PM
+    #ifdef  CC_ANDROID_SECURE_BOOT
+        {
+            char *dev_state = getenv("devicestate");
+            if (dev_state == NULL || strcmp(dev_state, "unlock") != 0)
+            {
+                printf("device locked, forbid to write flash.\n");
+                fastboot_fail("device locked, forbid to write flash.");
+                return -1;
+            }
+        }
+    #endif//CC_ANDROID_SECURE_BOOT
+12/27/2021 9:27 PM
+so...
+12/27/2021 9:27 PM
+i'm familiar with this shit
+12/27/2021 9:27 PM
+    MODEL_secure_BOOTboot.bin              .                        .
+    mtkloader.bin                       .                        .
+    u-boot_pack.lzhs                    MTK_LOADER_MAX_SIZE        .
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:27 PM
+mtk is ~~fun~~
+[smx2460]
+smx2460 12/27/2021 9:26 PM
+they figured maybe it should be licensed properly (edited)
+12/27/2021 9:26 PM
+since they kept being included as part of uboot but with proprietary
+licenses
+12/27/2021 9:26 PM
+apparently MTK officially opensourced those too
+12/27/2021 9:26 PM
+it has the preloader sources too
+12/27/2021 9:26 PM
+it's surely bigger
+12/27/2021 9:25 PM
+it has handling for the unlock
+12/27/2021 9:24 PM
+so that source code is NEWER
+12/27/2021 9:23 PM
+nvm i'm tired probably
+12/27/2021 9:23 PM
+but i extracted it again and i don't see that
+12/27/2021 9:23 PM
+ah no wait it's not
+12/27/2021 9:22 PM
+retrying
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:22 PM
+lmao?
+[smx2460]
+smx2460 12/27/2021 9:22 PM
+and my sha1 is different
+12/27/2021 9:22 PM
+i downloaded this
+12/27/2021 9:22 PM
+    https://prodgpl.blob.core.windows.net/download/TV/Uroboros_all_2021_0601/u-boot-2011.12-2011.12.tar.bz2
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:22 PM
+https://prodgpl.blob.core.windows.net/download/TV/Uroboros_all_2021_0601/u-boot-2011.12-2011.12.tar.bz2
+downloaded this one
+12/27/2021 9:21 PM
+8ee84c2ff57a315c090ad2cbf6c4f4934c403cc8
+[smx2460]
+smx2460 12/27/2021 9:21 PM
+maybe i am having a mental fart
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:21 PM
+one sec
+[smx2460]
+smx2460 12/27/2021 9:21 PM
+what is your tar sha1, excuse me
+12/27/2021 9:21 PM
+hold on
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:21 PM
+    [mary@hal-9000 u-boot-2011.12-2011.12]$  ls -la u-boot-2011.12/common/download_command.c 
+    -rw-r--r--. 1 mary mary 24464 May  7  2021 u-boot-2011.12/common/download_command.c
+[smx2460]
+smx2460 12/27/2021 9:21 PM
+using WSL
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:21 PM
+its not a symlink tho
+12/27/2021 9:20 PM
+yeah I did it on a linux host
+[smx2460]
+smx2460 12/27/2021 9:20 PM
+tf
+12/27/2021 9:20 PM
+with another version
+12/27/2021 9:20 PM
+it overwrites the file with something else
+12/27/2021 9:20 PM
+maybe it's a symlink or smth
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:20 PM
+ohh gross
+[smx2460]
+smx2460 12/27/2021 9:20 PM
+tar from cygwin is doing something nasty while extracting it!
+12/27/2021 9:20 PM
+WOW
+12/27/2021 9:18 PM
+oops
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:18 PM
+    [mary@hal-9000 u-boot-2011.12-2011.12]$ grep -R "get_unlock_ability" .
+    ./u-boot-2011.12/common/download_command.c:    if (strcmp("get_unlock_ability", TempData) == 0)
+12/27/2021 9:17 PM
+so mine
+12/27/2021 9:17 PM
+I downloaded the uboot sources from the tv you linked
+[smx2460]
+smx2460 12/27/2021 9:17 PM
+why don't i see it
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:17 PM
+611 line
+12/27/2021 9:17 PM
+u-boot-2011.12/common/download_command.c
+12/27/2021 9:16 PM
+the file I mentioned
+[smx2460]
+smx2460 12/27/2021 9:16 PM
+where is that
+12/27/2021 9:16 PM
+uh
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:16 PM
+tf
+12/27/2021 9:16 PM
+    611      if (strcmp("get_unlock_ability", TempData) == 0)
+       612      {
+       613          fastboot_info(dev_state);
+       614      }
+       615      else if (strcmp("lock", TempData) == 0 || strcmp("unlock", TempData) == 0)
+       616      {
+       617          if (dev_state != NULL && strcmp(dev_state, TempData) != 0)
+       618          {
+       619              fastboot_info("wipe user data");
+       620              EraseUserData();
+       621              setenv("devicestate", TempData);
+[smx2460]
+smx2460 12/27/2021 9:16 PM
+it has less functionality
+12/27/2021 9:16 PM
+i'm comparing it with mine in fact
+12/27/2021 9:16 PM
+it's the one i was looking at
+12/27/2021 9:16 PM
+is also in mine
+12/27/2021 9:16 PM
+yeah that
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:15 PM
+u-boot-2011.12/common/download_command.c
+[smx2460]
+smx2460 12/27/2021 9:15 PM
+but it also has some files that the other pkg didn't have
+12/27/2021 9:15 PM
+it lacks mt5883 and 5891
+12/27/2021 9:15 PM
+it's older actually
+12/27/2021 9:13 PM
+it might be different than the package i got for the 7596
+12/27/2021 9:13 PM
+interesting
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:13 PM
+thanks
+[smx2460]
+smx2460 12/27/2021 9:13 PM
+this is the partial uboot code
+12/27/2021 9:12 PM
+https://prodgpl.blob.core.windows.net/download/TV/Uroboros_all_2021_0601/u-boot-2011.12-2011.12.tar.bz2
+12/27/2021 9:12 PM
+@MaryJohanna420 https://oss.sony.net/Products/Linux/TV/KD-55AF9.html
+Sony Global - Source Code Distribution Service
+Source code download
+12/27/2021 9:10 PM
+but it didn't sound worth the cash (edited)
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:10 PM
+I have 1 year insurance on it
+[smx2460]
+smx2460 12/27/2021 9:10 PM
+which i was pondering on buying
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:10 PM
+I was thinking in the worst case I will bring it back
+[smx2460]
+smx2460 12/27/2021 9:10 PM
+unless i have a spare board
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:10 PM
+thats a good thing
+[smx2460]
+smx2460 12/27/2021 9:09 PM
+i'm very pedantic about checking things before fiddling with them
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:09 PM
+so I assume it did flip a bit
+12/27/2021 9:09 PM
+now when I unlocked it, it returns unlock
+12/27/2021 9:09 PM
+yeah so basically when it was locked I saw that this cmd returns lock
+[smx2460]
+smx2460 12/27/2021 9:09 PM
+but i never tried fiddling with fastboot
+[smx2460]
+[] maryjohanna42069 ooor you are just reading a tree now and dont have
+an actual device?
+smx2460 12/27/2021 9:09 PM
+i have the actual device, i have a source tree
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:09 PM
+ah
+12/27/2021 9:09 PM
+ooor you are just reading a tree now and dont have an actual device?
+[smx2460]
+smx2460 12/27/2021 9:09 PM
+i don't have it hooked up rn
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:09 PM
+what does it return for you?
+[smx2460]
+smx2460 12/27/2021 9:08 PM
+unless it's implemented with a getvar
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:08 PM
+not vendor specific (edited)
+12/27/2021 9:08 PM
+this is default fastboot cmd arg
+[smx2460]
+smx2460 12/27/2021 9:08 PM
+i don't have that
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:08 PM
+yeah but this was
+    [root@todo steve]# fastboot flashing get_unlock_ability
+    < waiting for any device >
+    (bootloader) unlock
+    OKAY [  0.029s]
+    Finished. Total time: 0.029s
+lock before
+[smx2460]
+smx2460 12/27/2021 9:07 PM
+this is the command table (edited)
+12/27/2021 9:07 PM
+        fastboot_register("reboot", do_reboot, FALSE);
+        fastboot_register("reboot-bootloader", do_resetBootloader, FALSE);
+        fastboot_register("flashall", do_update, FALSE);
+        fastboot_register("download:", do_download, FALSE);    // flash cmd step1
+        fastboot_register("flash:", do_update, FALSE);    // flash cmd step2 
+        fastboot_register("continue", do_continue, FALSE);
+        fastboot_register("erase:", do_erase_emmc, FALSE);
+12/27/2021 9:07 PM
+i bet it would have showed the same before
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:07 PM
+it is yeah
+[smx2460]
+smx2460 12/27/2021 9:07 PM
+notice how unlocked is hardcoded to yes
+12/27/2021 9:07 PM
+it's identical
+12/27/2021 9:06 PM
+actually wait
+12/27/2021 9:06 PM
+        //Client Variables for getvar:%s
+        fastboot_publish("version", "0.5");
+        fastboot_publish("serialno", "123456789ABCDEF");
+        fastboot_publish("version-bootloader", "1.1");
+        fastboot_publish("version-baseband", "2.0");
+        fastboot_publish("product", "board-mtxx");
+        fastboot_publish("secure", "no");
+        fastboot_publish("unlocked", "yes");
+        fastboot_publish("product", "amai");
+12/27/2021 9:06 PM
+your bl is newer
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:05 PM
+lol
+[smx2460]
+smx2460 12/27/2021 9:05 PM
+prepares a working directory to hold @MaryJohanna420 info (edited)
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:04 PM
+I hope fastboot getvar all does the trick
+12/27/2021 9:04 PM
+https://pastebin.com/raw/1J3YqWqR
+[smx2460]
+smx2460 12/27/2021 9:03 PM
+i can try to check my partial sources (edited)
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:03 PM
+oh true
+[smx2460]
+smx2460 12/27/2021 9:03 PM
+we don't know what the MTK OEM commands are
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:03 PM
+I can try to fastboot boot an image
+[smx2460]
+smx2460 12/27/2021 9:03 PM
+with OEM commands
+12/27/2021 9:03 PM
+mind you, fastboot has "fastboot oem XXX"
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:03 PM
+fastboot seemingly cannot do it
+12/27/2021 9:02 PM
+yeah I checked the docs
+12/27/2021 9:02 PM
+uff
+12/27/2021 9:02 PM
+and whats the easiest way to confirm that its indeed unlocked?
+[smx2460]
+smx2460 12/27/2021 9:02 PM
+or figure out how to do it somehow from fastboot
+12/27/2021 9:02 PM
+you would need to either be root
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:02 PM
+okay, how could I dump the current kernel
+[smx2460]
+smx2460 12/27/2021 9:02 PM
+that it doesn't surprise me
+12/27/2021 9:01 PM
+MTK BSP is so broken
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:01 PM
+after a reboot
+12/27/2021 9:01 PM
+loadavg is fine now
+12/27/2021 9:01 PM
+actually what the heck
+[smx2460]
+smx2460 12/27/2021 9:01 PM
+!?
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 9:01 PM
+I will relock the bl for now
+12/27/2021 9:01 PM
+fun
+[unknown.png]
+ unknown.png
+263.67 KB External
+[smx2460]
+smx2460 12/27/2021 9:00 PM
+or whatever it was, the uboot base
+12/27/2021 8:59 PM
+now let's check TEXT_ADDRESS
+12/27/2021 8:59 PM
+    #define CFG_LOAD_ADDR   (0x3f00000)     /* default load address */
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:59 PM
+good idea
+[smx2460]
+[] maryjohanna42069 high load avg when wifi is on
+smx2460 12/27/2021 8:59 PM
+check logcat
+[smx2460]
+smx2460 12/27/2021 8:59 PM
+it seems simple to corrupt the update package tho
+12/27/2021 8:58 PM
+it might be tedious (and risky) to test this since it depends on a
+flashing/updating protocol
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:58 PM
+high load avg when wifi is on
+12/27/2021 8:58 PM
+    127|BRAVIA_UR3:/ $ uptime
+     20:57:55 up 3 min,  0 users,  load average: 43.47, 24.09, 9.72
+[retr0id]
+[] smx2460 knowing how Nintendo and others messed them up
+retr0id 12/27/2021 8:57 PM
+a conversation from a few hours ago
+[unknown.png]
+ unknown.png
+126.11 KB External
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:57 PM
+tf
+12/27/2021 8:57 PM
+    BRAVIA_UR3:/ $ cat /proc/loadavg                                                                                                                                                                                                           
+    cat: /proc/loadavg: Permission denied
+[smx2460]
+smx2460 12/27/2021 8:57 PM
+and
+    #define MAX_USBFS_BULK_SIZE (16 * 1024)
+12/27/2021 8:57 PM
+        while (len > 0) {
+            xfer = (len > MAX_USBFS_BULK_SIZE) ? MAX_USBFS_BULK_SIZE : len;
+            req->buf = buf;
+            req->length = xfer;
+            req->complete = req_complete;
+            r = udc_request_queue(out, req);
+            req_status = REQ_STATE_READING;
+            if (r < 0) {
+                printf("usb_read() queue failed\n");
+                goto oops;
+            }
+12/27/2021 8:57 PM
+for example, in usb_read
+12/27/2021 8:57 PM
+but i wonder if it handles "odd sizes" properly
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:57 PM
+system_server is basically killing the TV
+12/27/2021 8:56 PM
+(no content)
+[unknown.png]
+ unknown.png
+46.16 KB External
+[smx2460]
+smx2460 12/27/2021 8:56 PM
+MAX_RSP_SIZE is 64
+12/27/2021 8:56 PM
+    again:
+        while (1)
+        {
+            service_interrupts();
+            if(fastboot_state == STATE_OFFLINE)
+                goto again;
+            memset(buffer, 0, sizeof(buffer));
+            r = usb_read(buffer, MAX_RSP_SIZE);
+12/27/2021 8:56 PM
+@retr0id
+12/27/2021 8:56 PM
+knowing how Nintendo and others messed them up
+12/27/2021 8:56 PM
+i also wonder if the USB transfes are properly done
+12/27/2021 8:56 PM
+but images_header seems different than the actual chunks (edited)
+12/27/2021 8:55 PM
+this is the only size check
+12/27/2021 8:55 PM
+        pTmp += header_size;
+        struct {
+        u8 name[PARTITION_NAME_SIZE];
+        u32 size;
+        } *img_info = images_header->img_info;
+    ...
+        if (find_partition(name, &partition_num,
+                &partition_size, &partition_offset)) {
+            printf("The partition %s is not defined.\n", name);
+            fastboot_fail("The partition is not defined");
+            return MULTI_IMAGE_ERROR;
+        }
+        if (size > partition_size) {
+            printf("Image size is larger than the partition size.\n");
+            fastboot_fail("Image size is larger than the partition size");
+                return MULTI_IMAGE_ERROR;
+        }
+[retr0id]
+retr0id 12/27/2021 8:55 PM
+would need to know the memory layout
+[smx2460]
+smx2460 12/27/2021 8:55 PM
+if i'm understanding this correctly
+12/27/2021 8:55 PM
+the chunk header is still not the image header
+12/27/2021 8:54 PM
+for example, this
+12/27/2021 8:54 PM
+            case CHUNK_TYPE_CRC:
+                if(chunk_header->total_sz != sparse_header->chunk_hdr_sz)
+                {
+                    fastboot_fail("Bogus chunk size for chunk type Dont Care");
+                    return -1;
+                }
+                total_blocks += chunk_header->chunk_sz;
+                data += chunk_data_sz;
+                break;
+[retr0id]
+[] smx2460 <@!291024996896210944> i wonder if this can be abused to
+overwrite something
+retr0id 12/27/2021 8:54 PM
+interesting
+[smx2460]
+smx2460 12/27/2021 8:54 PM
+unless i'm missing something
+12/27/2021 8:54 PM
+this means we can point the data pointer anywhere we want
+12/27/2021 8:54 PM
+the size gets added to the base pointer when traversing the chunks
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:53 PM
+I assume this is maybe safetynet or some other google shit kicking in
+[smx2460]
+smx2460 12/27/2021 8:53 PM
+but it's not checked at all!
+12/27/2021 8:53 PM
+and then each chunk has its own size
+12/27/2021 8:53 PM
+there is a header that holds the total image size
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:53 PM
+okay so the TV gets awfully slow when its unlocked if you enable wifi
+and connect to one
+[smx2460]
+smx2460 12/27/2021 8:53 PM
+there is a very evident flaw that i'm seeing in that code
+12/27/2021 8:52 PM
+again, apparently no checks on the files being flashed (unless that
+happens later when booting and you're fucked) (edited)
+12/27/2021 8:52 PM
+it then checks the magic and begins flashing
+12/27/2021 8:51 PM
+the check is unsigned so we can't fake it (edited)
+12/27/2021 8:51 PM
+and with a size large enough to hold the binary
+12/27/2021 8:51 PM
+it then does some code i'll skip to check that the partition actually
+exists on eMMC
+12/27/2021 8:50 PM
+        pTmp += header_size;
+        struct {
+        u8 name[PARTITION_NAME_SIZE];
+        u32 size;
+        } *img_info = images_header->img_info;
+we skip the header, our base is "img_info" now
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:50 PM
+must be on a diff partition
+[smx2460]
+smx2460 12/27/2021 8:50 PM
+so just craft the header with num_images >= 1
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:50 PM
+the channel list is preserved still
+12/27/2021 8:50 PM
+interesting because after so many wipes
+[smx2460]
+smx2460 12/27/2021 8:50 PM
+performs no signature checks whatsoever btw
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:50 PM
+oh the tv is done with the sat check
+[smx2460]
+smx2460 12/27/2021 8:50 PM
+first, it checks for the number of images
+12/27/2021 8:50 PM
+        u8_array_to_u32(&images_header->num_images, &num_images);
+        u8_array_to_u32(&images_header->images_size, &images_size);
+        u8_array_to_u32(&images_header->header_size, &header_size);
+        if (num_images < 1) {
+        printf("This packed images contain no image.\n");
+        fastboot_fail("The packed images contain no image");
+        return MULTI_IMAGE_ERROR;
+        }
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:49 PM
+sounds great
+[smx2460]
+smx2460 12/27/2021 8:49 PM
+i think we could take over
+12/27/2021 8:49 PM
+so if we upload a crafted update
+12/27/2021 8:49 PM
+it performs little to no checks
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:49 PM
+which I am not sure how to do without an existing tree
+[smx2460]
+smx2460 12/27/2021 8:49 PM
+do_update_packed_images looks very very broken
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:49 PM
+but I would need to build twrp
+[smx2460]
+smx2460 12/27/2021 8:49 PM
+also
+12/27/2021 8:49 PM
+    /* Ported by Zhendong Wang starts for fastboot supporting packed image ends */
+    int do_update(const char *arg,const char * data,unsigned int sz )
+    {
+        /* part modified by David Li starts for fastboot supporting packed image */
+        if( strncmp( ( const char* ) download_base, "BOOTLDR!", 8 ) == 0 ){
+            return do_update_packed_images();
+        }
+        /* part modified by David Li ends */
+        sparse_header_t *sparse_header;
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:49 PM
+if I fuck the kernel
+[smx2460]
+smx2460 12/27/2021 8:49 PM
+with "flash"
+12/27/2021 8:49 PM
+so the purpose of the "download" command is to basically download
+something to flash later
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:49 PM
+flashing twrp or something could help
+[smx2460]
+smx2460 12/27/2021 8:48 PM
+it's the locked standard recovery (edited)
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:48 PM
+so yeah
+12/27/2021 8:48 PM
+indeed
+[smx2460]
+smx2460 12/27/2021 8:48 PM
+but you can't access its menu
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:48 PM
+yeah ok
+[smx2460]
+smx2460 12/27/2021 8:48 PM
+it does have one
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:48 PM
+vol up and power
+12/27/2021 8:48 PM
+rn the TV doesnt have one seemingly but its binded to a key
+[smx2460]
+smx2460 12/27/2021 8:48 PM
+unless you mean replacing it
+12/27/2021 8:48 PM
+iirc the recovery only accepts signed updates
+12/27/2021 8:48 PM
+but i gotta check the memory map
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:48 PM
+sorry for interrupting but I think the recovery would be a good starting
+point
+[smx2460]
+smx2460 12/27/2021 8:48 PM
+@retr0id i wonder if this can be abused to overwrite something
+12/27/2021 8:47 PM
+    void download_value_init()
+    {
+        download_base = CFG_LOAD_ADDR + 0x100000; // <-- this
+        download_size = 0;
+        return;
+    }
+12/27/2021 8:47 PM
+the destination of the write is
+12/27/2021 8:47 PM
+it's the argument from fastboot
+12/27/2021 8:47 PM
+we control length
+12/27/2021 8:46 PM
+    static int download_standard(u32 data_length)
+    {
+        int r;
+        printf("USB Transferring... .bufer[x%x], len=%d\n",download_base, data_length);
+        r = usb_read(download_base, data_length);
+        if ((r < 0) || ((unsigned) r != data_length))
+        {
+            printf("Read USB error r = %d, data_length = %d.\n", r, data_length);
+            fastboot_state = STATE_ERROR;
+            return -1;
+        }
+        download_size = data_length;
+        printf("read OK.  data:0x%x\n", *((int*)download_base));
+        return 0;
+    }
+12/27/2021 8:44 PM
+for volunteering for testing
+12/27/2021 8:44 PM
+and thank you
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:43 PM
+brb when the tv is done
+ 1
+12/27/2021 8:43 PM
+I will be afk for a bit
+[smx2460]
+smx2460 12/27/2021 8:43 PM
+i have a KD-49XF7596 here
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:43 PM
+the model is kd-49xh8096
+[smx2460]
+smx2460 12/27/2021 8:42 PM
+i'm intrigued and curious about this 
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:42 PM
+and I can get it to fastboot
+[smx2460]
+[] maryjohanna42069 and when I later checked if it is unlocked
+smx2460 12/27/2021 8:42 PM
+so it saved something
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:42 PM
+okay, I can give you fastboot getvar output once the sat scan is over
+[smx2460]
+smx2460 12/27/2021 8:42 PM
+- the model name - the output of fastboot getvar
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:42 PM
+it said it is
+[smx2460]
+smx2460 12/27/2021 8:42 PM
+do me a favour and tell me
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:42 PM
+and when I later checked if it is unlocked
+[smx2460]
+smx2460 12/27/2021 8:42 PM
+the problem is that i don't have the code that handles unlock
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:42 PM
+but it triggered an erase
+12/27/2021 8:42 PM
+so you said these are probably stubs
+[smx2460]
+smx2460 12/27/2021 8:41 PM
+but i don't guarantee it will be supported
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:41 PM
+and my tv is unlocked now
+12/27/2021 8:41 PM
+but I think I can get to fastboot
+12/27/2021 8:41 PM
+yeah I only have a usb ttl cable
+[smx2460]
+smx2460 12/27/2021 8:41 PM
+or to another PL2303 in nullmodem config
+12/27/2021 8:41 PM
+which you can either hook to a Raspberry to read (edited)
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:41 PM
+I see
+[smx2460]
+smx2460 12/27/2021 8:41 PM
+on the other end you have UART wires
+12/27/2021 8:41 PM
+one end goes in the TV USB
+12/27/2021 8:41 PM
+PL2303 is a USB 2 serial adapter
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:41 PM
+oh is it?
+12/27/2021 8:41 PM
+but I will have fastboot now
+[smx2460]
+smx2460 12/27/2021 8:41 PM
+PL2303 is external
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:40 PM
+I dont really wanna open the tv up
+[smx2460]
+smx2460 12/27/2021 8:40 PM
+or better a direct UART connection
+12/27/2021 8:40 PM
+alternatively, if you're willing to try a PL2303 adapter (but i wouldn't
+trust it to work) (edited)
+12/27/2021 8:40 PM
+until we have a way to enter fastboot at will and reflash the bad kernel
+12/27/2021 8:40 PM
+so i wouldn't do it
+12/27/2021 8:40 PM
+trying to flash a kernel might lock us out of fastboot
+12/27/2021 8:39 PM
+but
+dontpanicaim 12/27/2021 8:39 PM
+what I know of fastboot + bootloader lock/unlock is that it always does
+a reset of all the userdata
+[smx2460]
+smx2460 12/27/2021 8:39 PM
+we gotta find out
+12/27/2021 8:39 PM
+yeah it's a rethoric q
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:39 PM
+no clue
+[smx2460]
+smx2460 12/27/2021 8:39 PM
+what did unlock change
+12/27/2021 8:39 PM
+but the question is, why did this happen after the unlock
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:39 PM
+and you mustnt add wifi and your account for some reason
+12/27/2021 8:39 PM
+with vol down and power
+[smx2460]
+smx2460 12/27/2021 8:39 PM
+ah
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:39 PM
+I needed to trigger a factory reset
+[smx2460]
+smx2460 12/27/2021 8:39 PM
+i thought you had already tried it lol (edited)
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:39 PM
+no
+[smx2460]
+smx2460 12/27/2021 8:38 PM
+so all you needed was to plug it out and in?
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:38 PM
+without wifi and the other shit
+12/27/2021 8:38 PM
+it booted lol
+12/27/2021 8:38 PM
+seemingly all data is gone
+12/27/2021 8:38 PM
+ok I am back to the wizard
+[smx2460]
+smx2460 12/27/2021 8:38 PM
+but i'm as nervous as you are that your TV is KO
+12/27/2021 8:37 PM
+someone took from a ATV
+12/27/2021 8:37 PM
+i got this full eMMC dump
+12/27/2021 8:37 PM
+    Sony KD-55XF7596-EMMC.rar
+12/27/2021 8:37 PM
+not sure
+12/27/2021 8:37 PM
+actually maybe i have it
+12/27/2021 8:37 PM
+damn i wish i had a bootloader dump to look at
+12/27/2021 8:37 PM
+it might only enter fastboot if you press the keys while plugging power
+in
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:36 PM
+no fastboot
+[smx2460]
+smx2460 12/27/2021 8:36 PM
+this gives me an idea
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:36 PM
+now its black screen
+12/27/2021 8:36 PM
+but to plug it out
+12/27/2021 8:35 PM
+there is no other way to power it off
+12/27/2021 8:35 PM
+vol down and power on the TV and then I give it power
+[smx2460]
+smx2460 12/27/2021 8:35 PM
+how?
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:35 PM
+I managed to reset it
+12/27/2021 8:35 PM
+ohh
+[smx2460]
+smx2460 12/27/2021 8:35 PM
+among others
+12/27/2021 8:35 PM
+i see these hardcoded values (edited)
+12/27/2021 8:35 PM
+        //Client Variables for getvar:%s
+        fastboot_publish("version", "0.5");
+        fastboot_publish("serialno", "123456789ABCDEF");
+        fastboot_publish("version-bootloader", "1.1");
+        fastboot_publish("version-baseband", "2.0");
+        fastboot_publish("product", "board-mtxx");
+        fastboot_publish("secure", "no");
+        fastboot_publish("unlocked", "yes");
+        fastboot_publish("product", "amai");
+12/27/2021 8:35 PM
+did you try running getvar?
+12/27/2021 8:34 PM
+even if they are partial
+12/27/2021 8:34 PM
+i'm reading the uboot sources (edited)
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:34 PM
+the buttons dont react either in a long time
+12/27/2021 8:34 PM
+the tv is overloaded af
+12/27/2021 8:33 PM
+I havent checked it yet
+[smx2460]
+smx2460 12/27/2021 8:32 PM
+with vol up does it appear on fastboot?
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:32 PM
+both boots it up too
+12/27/2021 8:32 PM
+with vol down it boots up to the wizard
+12/27/2021 8:32 PM
+not even the screen backlight lights up
+12/27/2021 8:32 PM
+with volume up I get seemingly nothing
+[smx2460]
+smx2460 12/27/2021 8:32 PM
+try as you'd do on a phone
+12/27/2021 8:32 PM
+you should have a volume rocker on the side of the TV
+12/27/2021 8:32 PM
+what happens if you try booting with the volume down key pressed
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:32 PM
+its not enabled xdd
+12/27/2021 8:31 PM
+nope
+[smx2460]
+smx2460 12/27/2021 8:31 PM
+but adb connect doesn't work?
+12/27/2021 8:31 PM
+oh
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:31 PM
+I can even ping it
+12/27/2021 8:31 PM
+fun cuz it is on my wifi
+[smx2460]
+smx2460 12/27/2021 8:31 PM
+wait
+12/27/2021 8:31 PM
+oh
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:31 PM
+"cant connect to network, scan failed"
+12/27/2021 8:31 PM
+I see toast messages over and over again
+12/27/2021 8:30 PM
+been on for 20 mins
+12/27/2021 8:30 PM
+yeah
+[smx2460]
+smx2460 12/27/2021 8:30 PM
+no matter how long you wait?
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:30 PM
+but I get a black screen
+[smx2460]
+[] maryjohanna42069 then if I complete the steps it doesnt take me to
+the home screen
+smx2460 12/27/2021 8:30 PM
+that's interesting
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:30 PM
+then if I complete the steps it doesnt take me to the home screen
+[smx2460]
+[] maryjohanna42069 Which command is exploitable probably?
+smx2460 12/27/2021 8:30 PM
+my bet was on the update process
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:30 PM
+I get the setup wizard first
+[smx2460]
+smx2460 12/27/2021 8:29 PM
+do you get a black screen or a setup wizard?
+12/27/2021 8:29 PM
+wait
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:29 PM
+will try the USB recovery
+12/27/2021 8:29 PM
+the setup wizard starts when I start the TV
+[smx2460]
+smx2460 12/27/2021 8:29 PM
+ouch
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:29 PM
+and no adb or anything
+12/27/2021 8:29 PM
+now i get a black screen
+12/27/2021 8:29 PM
+I did a factory reset again
+12/27/2021 8:29 PM
+but it got super slow
+12/27/2021 8:29 PM
+nope
+[smx2460]
+smx2460 12/27/2021 8:28 PM
+do you get a warning screen when booting now?
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:28 PM
+I could get it to boot normally to settings though
+[smx2460]
+smx2460 12/27/2021 8:28 PM
+dafuk
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:28 PM
+and then it gets extremely slow at the install process
+[smx2460]
+smx2460 12/27/2021 8:28 PM
+wait did it really unlock?
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:28 PM
+the TV does a factory reset when I unlock it
+[smx2460]
+smx2460 12/27/2021 8:28 PM
+and it just replies OK
+12/27/2021 8:28 PM
+i think a lot of those commands are stub
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:28 PM
+sad though
+[smx2460]
+[] maryjohanna42069 <@310158180728700929> sooo, I got a bit further. I
+could get into the fastboot mode and my arch lapt...
+smx2460 12/27/2021 8:28 PM
+that's epic!
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 8:13 PM
+Interesting, once the TV is unlocked, the setup wizard breaks really bad
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 7:34 PM
+I assume the tv can be unlocked then
+12/27/2021 7:33 PM
+I lost all my data too now lol
+12/27/2021 7:33 PM
+this is interesting
+12/27/2021 7:33 PM
+    [root@todo steve]# fastboot flashing get_unlock_ability
+    (bootloader) lock
+    OKAY [  0.027s]
+    Finished. Total time: 0.027s
+    [root@todo steve]# fastboot flashing unlock
+    (bootloader) wipe user data
+    OKAY [  0.046s]
+    Finished. Total time: 0.046s
+    [root@todo steve]# fastboot flashing get_unlock_ability
+    (bootloader) unlock
+    OKAY [  0.027s]
+    Finished. Total time: 0.027s
+    [root@todo steve]# fastboot flashing lock
+    (bootloader) wipe user data
+    OKAY [  0.046s]
+    Finished. Total time: 0.046s
+    [root@todo steve]# fastboot flashing get_unlock_ability
+    (bootloader) lock
+    OKAY [  0.027s]
+    Finished. Total time: 0.027s
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 6:49 PM
+Or what would you do next?
+12/27/2021 6:49 PM
+Which command is exploitable probably?
+12/27/2021 6:49 PM
+I couldnt try if oem unlock works yet since my gf was already mad that
+she needs to wait with her series, but the cable works at least 
+12/27/2021 6:48 PM
+fastboot reboot also brang back the tv
+12/27/2021 6:48 PM
+@Smx sooo, I got a bit further. I could get into the fastboot mode and
+my arch laptop recognized it just fine
+[smx2460]
+smx2460 12/27/2021 2:43 PM
+on Android phones unlocking the bootloader sets some state in the
+trustzone
+[smx2460]
+[] maryjohanna42069 As far as I know they look for unlocked bls across
+all platforms
+smx2460 12/27/2021 2:43 PM
+uboot doesn't have an "unlock" tho, it's far from perfect
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 2:38 PM
+As far as I know they look for unlocked bls across all platforms
+[smx2460]
+smx2460 12/27/2021 1:03 PM
+Maybe safetynet doesn't yet know about rooted android TVs 
+ww8543 12/27/2021 12:44 PM
+unless you have easily detectable su bins lying around
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 11:56 AM
+Good
+ww8543 12/27/2021 11:56 AM
+unless safetynet detects you, you should be fine
+[maryjohanna42069]
+maryjohanna42069 12/27/2021 11:55 AM
+I am unsure if I root for example, will I still be able to watch netflix
+& prime
+12/27/2021 11:55 AM
+Assuming it runs a similar android to shield devices, I guess there is
+safetynet on these ones too
+12/27/2021 11:54 AM
+I only have one concern
+12/27/2021 11:54 AM
+Okay, so I dug up the warranty paper in case anything would go wrong and
+I am soon going for the usb cables
+December 26, 2021
+[smx2460]
+smx2460 12/26/2021 6:35 PM
+i know
+[] smx2460 as it's not supposed to have OEM unlock as an option
+ww8543 12/26/2021 6:34 PM
+yea but in general it is pretty normal for an unlocked android device
+[smx2460]
+smx2460 12/26/2021 6:31 PM
+as it's not supposed to have OEM unlock as an option (edited)
+12/26/2021 6:31 PM
+@ww it shouldn't be a situation that you get on a TV
+[] smx2460
+https://cdn.discordapp.com/attachments/484820611928162322/815213457179279360/20210227_082705.jpg
+ww8543 12/26/2021 6:30 PM
+this is a very normal android message that pops up if the bootloader is
+unlocked
+[smx2460]
+smx2460 12/26/2021 4:24 PM
+while uboot isn't
+12/26/2021 4:24 PM
+and RELEASE is typically hardcoded to check ATEN VID too
+12/26/2021 4:23 PM
+and yeah it outputs full blown RS232, not UART TTL
+12/26/2021 4:23 PM
+(no content)
+[unknown.png]
+ unknown.png
+205.12 KB External
+12/26/2021 4:22 PM
+which is just a PL2303 with particular IDs
+12/26/2021 4:22 PM
+they put the Aten UC232A everywhere
+12/26/2021 4:22 PM
+yeah
+[infowski]
+infowski 12/26/2021 4:22 PM
+That totally sounds like LG's own twist.
+[smx2460]
+smx2460 12/26/2021 4:22 PM
+once you put it in DEBUG mode
+12/26/2021 4:22 PM
+all i know is that i can access my LG/MTK UBOOT with a PL2303
+12/26/2021 4:22 PM
+not sure if it's the same on SONY/MTK
+12/26/2021 4:21 PM
+i mean, the USB2Serial addition could very well be an LG demand
+12/26/2021 4:21 PM
+LG/MTK does
+12/26/2021 4:21 PM
+i actually don't know if MTK supports usb2serial adapters (edited)
+12/26/2021 4:21 PM
+which could however be more complicated
+12/26/2021 4:21 PM
+otherwise we need to figure out the fastboot path
+12/26/2021 4:20 PM
+and then it's game over
+12/26/2021 4:20 PM
+maybe we could get some direct uboot access
+12/26/2021 4:20 PM
+@MaryJohanna420 if you're willing to open your up and connect UART
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:19 PM
+Ah I see
+[smx2460]
+smx2460 12/26/2021 4:17 PM
+but this is Waam's TV
+12/26/2021 4:17 PM
+@MaryJohanna420 it then boots
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:17 PM
+What a user friendly error
+[smx2460]
+smx2460 12/26/2021 4:08 PM
+[]
+12/26/2021 4:04 PM
+once you used it, you could just flash whatever as kernel (edited)
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:04 PM
+Interesting
+[smx2460]
+smx2460 12/26/2021 4:04 PM
+so basically the bootloader had an unofficial, or leftover, OEM unlock
+12/26/2021 4:04 PM
+it was a Hisense iirc
+12/26/2021 4:04 PM
+it allowed OEM unlocking
+12/26/2021 4:04 PM
+@ww @waam's TV was odd
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:04 PM
+Or just use a pi zero in otg mode
+12/26/2021 4:03 PM
+Will make an usb a a cable after the festive season is over
+12/26/2021 4:03 PM
+Okay, sounds good
+[smx2460]
+smx2460 12/26/2021 4:03 PM
+if it works, we can then continue from there
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:03 PM
+Yeah well the tv was a bit expensive :D
+[smx2460]
+smx2460 12/26/2021 4:03 PM
+get a fastboot connection
+12/26/2021 4:03 PM
+first of all
+12/26/2021 4:02 PM
+i don't want people to try random stuff that i wouldn't try myself
+12/26/2021 4:02 PM
+but we need to check that carefully
+12/26/2021 4:02 PM
+there is a flash command that can be issued from fastboot, and i believe
+it might be abused
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:02 PM
+Now I just need to build some sorta recovery for it
+[smx2460]
+smx2460 12/26/2021 4:02 PM
+lies in the updater
+12/26/2021 4:02 PM
+the flaw i found tho
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:02 PM
+Ohh nice idea
+[smx2460]
+smx2460 12/26/2021 4:02 PM
+but it's worth trying it
+12/26/2021 4:02 PM
+iirc it's not implemented
+12/26/2021 4:02 PM
+i don't remember if fastboot boot works
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:02 PM
+Rip
+[smx2460]
+smx2460 12/26/2021 4:01 PM
+so
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:01 PM
+Probably yeah I assume
+[smx2460]
+smx2460 12/26/2021 4:01 PM
+yes
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:01 PM
+And umm do they verify the kernel image?
+[smx2460]
+smx2460 12/26/2021 4:01 PM
+the commands that it implements are limited
+12/26/2021 4:01 PM
+yes it does
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:01 PM
+I assume
+12/26/2021 4:01 PM
+So fastboot reboot works
+[smx2460]
+smx2460 12/26/2021 4:01 PM
+in theory
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:01 PM
+Ohh
+[smx2460]
+smx2460 12/26/2021 4:01 PM
+the fastboot command
+12/26/2021 4:01 PM
+you get fastboot to recognize the device
+[smx2460]
+[] maryjohanna42069 And how do I get a console exactly? Thru serial?
+smx2460 12/26/2021 4:01 PM
+you don't get a console
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:01 PM
+Interesting
+[smx2460]
+smx2460 12/26/2021 4:01 PM
+and it will not assert VBUS when doing so
+12/26/2021 4:00 PM
+that lets you plug a host into a host
+12/26/2021 4:00 PM
+in essence it looks like the MTK SoC has some protection
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:00 PM
+And how do I get a console exactly? Thru serial?
+[smx2460]
+smx2460 12/26/2021 4:00 PM
+so yeah it's possible
+12/26/2021 4:00 PM
+@ww TRUE!
+ww8543 12/26/2021 4:00 PM
+@waam did that
+[smx2460]
+smx2460 12/26/2021 4:00 PM
+as it's 2 host devices talking to each other
+12/26/2021 4:00 PM
+i find that sketchy
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 4:00 PM
+Ohh that sounds easy af
+[smx2460]
+smx2460 12/26/2021 3:59 PM
+the connection happens via a USB A-A cable
+12/26/2021 3:59 PM
+which clears this flag
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 3:59 PM
+I see
+[smx2460]
+smx2460 12/26/2021 3:59 PM
+and the only way to exit it is by connecting to it and issuing a reboot
+12/26/2021 3:59 PM
+which indicates that it's in fastboot mode
+12/26/2021 3:59 PM
+whenever you reboot to fastboot, it sets a bit in the misc partition
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 3:59 PM
+Serial wouldnt work I guess
+12/26/2021 3:59 PM
+But then what do I use to communicate with it?
+[smx2460]
+smx2460 12/26/2021 3:59 PM
+well
+12/26/2021 3:59 PM
+why is so?
+12/26/2021 3:59 PM
+then they headed to Sony forums crying because they were stuck in it
+[maryjohanna42069]
+maryjohanna42069 12/26/2021 3:59 PM
+Yeah
+[smx2460]
+smx2460 12/26/2021 3:58 PM
+and people have done it
+12/26/2021 3:58 PM
+@MaryJohanna420 so you should be able to reboot to fastboot via adb over
+wifi
+November 29, 2021
+[psyncshift]
+psyncshift 11/29/2021 11:42 PM
+at least i got to repaste it
+ww8543 11/29/2021 11:36 PM
+for sure
+[maryjohanna42069]
+maryjohanna42069 11/29/2021 11:35 PM
+but you can always dump it :d
+11/29/2021 11:35 PM
+right
+ww8543 11/29/2021 11:26 PM
+be careful about changing stuff on the flash/emmc, you dont know if the
+partitions are verified or not
+[psyncshift]
+psyncshift 11/29/2021 11:26 PM
+i have ADB but thats it
+[maryjohanna42069]
+maryjohanna42069 11/29/2021 11:24 PM
+My experience is definitely not enough for this but maybe someone else
+can guide you
+11/29/2021 11:23 PM
+I dont see a serial port, but there must be some other way to reach the
+flash chip somehow
+11/29/2021 11:23 PM
+You are better off looking at the board a tad bit more
+11/29/2021 11:22 PM
+Okay, so unless you find an obvious exploit in the software which is
+probably gonna be damn hard since you are blind rn
+[psyncshift]
+psyncshift 11/29/2021 11:20 PM
+:D
+ww8543 11/29/2021 11:20 PM
