@@ -1,0 +1,1665 @@
+December 29, 2022
+Deleted User 12/29/2022 4:02 AM
+    service.register("start", function(message) {
+        message.respond({
+            Response: "Started."
+        });
+    });
+    service.register("autostart", function(message) {
+        fs.writeFileSync('/var/lib/webosbrew/init.d/inputhook', '#!/bin/sh\nluna-send -n 1 "luna://org.webosbrew.inputhook.service/start" \'{}\'');
+        fs.chmodSync('/var/lib/webosbrew/init.d/inputhook', '755');
+        message.respond({
+            Response: "Started."
+        });
+    });
+12/29/2022 4:02 AM
+@hellobox would something like this work?
+Deleted User 12/29/2022 3:30 AM
+alright
+hellobox. 12/29/2022 3:30 AM
+just put something in /var/webosbrew/init.d
+12/29/2022 3:30 AM
+i don't think so
+Deleted User 12/29/2022 3:30 AM
+without requiring the user to do anything
+12/29/2022 3:30 AM
+if i create an endpoint, would there be any way to get it to
+automatically call?
+hellobox. 12/29/2022 3:29 AM
+since you don't have one, you'll have to do it manually i guess
+Deleted User 12/29/2022 3:29 AM
+hmm
+hellobox. 12/29/2022 3:28 AM
+usually services get started because their luna endpoints get called, i
+think
+Deleted User 12/29/2022 3:24 AM
+(no content)
+ inputhook_service.js
+4.2 KB External
+12/29/2022 3:21 AM
+oh wait, was i supposed to restart first?
+Deleted User 12/29/2022 3:04 AM
+is there some requirement to getting the service to run automatically?
+12/29/2022 3:04 AM
+but after installing it nothing happened
+12/29/2022 3:04 AM
+@hellobox running the service like this (and commenting out webos
+service stuff) works just fine
+[image.png]
+ image.png
+8.53 KB External
+Deleted User 12/29/2022 1:52 AM
+like
+ezinject (pidof target) libphp.so lginput-hook.php (nameof target) > /tmp/ezinject-(nameof target).log
+(edited)
+12/29/2022 1:52 AM
+which is just passed as an additional argument
+12/29/2022 1:52 AM
+im modifying hookfactory.php and lginput-hook.php to generate logs with
+names based off of what they are injected to
+Deleted User 12/29/2022 1:37 AM
+(no content)
+[image.png]
+ image.png
+225.49 KB External
+12/29/2022 1:36 AM
+(no content)
+[image.png]
+ image.png
+218.94 KB External
+12/29/2022 1:36 AM
+and then the service
+12/29/2022 1:35 AM
+then i ran testapp
+12/29/2022 1:35 AM
+i commented out the webos service stuff again, and modified the service
+on the tv (i already had it installed) to use this updated code
+12/29/2022 1:35 AM
+@hellobox i think it works
+Deleted User ```js var targetNames = ['RELEASE', 'tvservice',
+'micomservice', 'lginput2']; var targets = fs.read...
+Deleted User 12/29/2022 1:32 AM
+im adding testapp to the targetNames for debug purposes
+Deleted User 12/29/2022 1:20 AM
+its in the pinned messages in # unknown-channel
+12/29/2022 1:20 AM
+but i think crashd will work
+12/29/2022 1:19 AM
+thats your firmware version, not webos version (edited)
+detcil 12/29/2022 1:19 AM
+03.33.26
+Deleted User 12/29/2022 1:18 AM
+wait, whats your webos version?
+detcil I just did the root my.tv on my lg, and the app does not appear
+Deleted User 12/29/2022 1:18 AM
+use crashd
+detcil 12/29/2022 1:17 AM
+I just did the root my.tv on my lg, and the app does not appear
+Deleted User 12/29/2022 1:17 AM
+    var targetNames = ['RELEASE', 'tvservice', 'micomservice', 'lginput2'];
+    var targets = fs.readdirSync("/proc").map(function(x) {
+        try {
+            return [x, fs.readFileSync('/proc/' + x + '/comm', {encoding: 'utf8'}).trimRight()];
+        } catch (error) {
+            return null;
+        }
+    }).filter(function(x) {
+        return x != null && targetNames.indexOf(x[1]) > -1;
+    });
+Deleted User 12/29/2022 1:10 AM
+though you could probably keep some array of target names, and just do
+return targets.indexOf(x[1]) > -1
+12/29/2022 1:09 AM
+    [ [ '1069', 'tvservice' ], [ '2151', 'lginput2' ] ]
+12/29/2022 1:09 AM
+anyways
+    fs.readdirSync("/proc").map(function(x){ try { return [x, fs.readFileSync('/proc/'+x+'/comm', {encoding: 'utf8'}).trimRight()] } catch(e){ return null }}).filter(function(x) {return x != null}).filter(function(x) {return x[1] == 'tvservice' || x[1] == 'RELEASE' || x[1] == 'micomservice' || x[1] == 'lginput2'});
+12/29/2022 1:09 AM
+though on the tv that supported bluetooth, it still couldnt pair for
+some reason
+12/29/2022 1:09 AM
+usb headphones dont work, (though on the webos 3.x tv it recognized it
+as a HID device), and bluetooth didnt work
+12/29/2022 1:08 AM
+i had spent like an hour trying to get headphones to work, a few months
+ago
+12/29/2022 1:07 AM
+but if the magic remote is bluetooth, and this tv supports it, why
+doesnt it support bluetooth audio?
+12/29/2022 1:07 AM
+probably, now that i think of it
+hellobox. 12/29/2022 1:07 AM
+does the magic remote use bluetooth?
+Deleted User 12/29/2022 1:07 AM
+just internal tv speakers and optical out i think
+12/29/2022 1:06 AM
+but there arent any settings for bluetooth speakers
+12/29/2022 1:06 AM
+theres also some system apps with bluetooth in the name
+12/29/2022 1:06 AM
+but i wonder why those would be running
+hellobox. 12/29/2022 1:06 AM
+    #description "(unknown)"
+    start on core-boot-done
+    respawn
+    # Comment this line out to suppress logs on the console
+    #console output
+    pre-start script
+        if [ -e /var/lib/bluetooth-audio/debug-mode ] ; then
+            PmLogCtl def bluetooth-audio-source debug
+        fi
+    end script
+    script
+        exec /usr/sbin/btaudiosrc
+    end script
+Deleted User 12/29/2022 1:06 AM
+oh, my brain was correct
+hellobox. 12/29/2022 1:05 AM
+    #description "bluetooth audio sink service (speaker mode, sound sharing)"
+    start on init-boot-done
+    respawn
+    # Comment this line out to suppress logs on the console
+    #console output
+    pre-start script
+        if [ -e /var/lib/bluetooth-audio/debug-mode ] ; then
+            PmLogCtl def bluetooth-audio-sink debug
+        fi
+    end script
+    exec /usr/sbin/btaudiosnk
+(edited)
+Deleted User 12/29/2022 1:05 AM
+oh my brain inserted an i for some reason
+hellobox. 12/29/2022 1:05 AM
+right now it doesn't even have a wifi module
+12/29/2022 1:05 AM
+the board those are running on definitely doesn't support bluetooth
+12/29/2022 1:04 AM
+    root      1779     1  0 14913  4492   2 16:31 ?        00:00:00   /usr/sbin/btaudiosrc
+    root      1960     1  0 16550  7804   3 16:31 ?        00:00:00   /usr/sbin/btaudiosnk
+Deleted User 12/29/2022 1:04 AM
+but as far as i know, this tv doesnt support bluetooth at all
+12/29/2022 1:03 AM
+i would think that bt means bluetooth
+12/29/2022 1:03 AM
+just curious, whats btaudiosink?
+hellobox. 12/29/2022 1:03 AM
+i wonder how that works in non-ltr locales
+12/29/2022 1:03 AM
+it has trimRight though
+Deleted User 12/29/2022 1:03 AM
+yeah
+12/29/2022 1:03 AM
+undefined is not a function
+hellobox. 12/29/2022 1:02 AM
+node.js doesn't have trimEnd i guess
+Deleted User 12/29/2022 1:02 AM
+trimEnd just results in an empty array
+12/29/2022 1:01 AM
+i was using .trim()
+Deleted User they all have `\n` at the end
+hellobox. 12/29/2022 1:01 AM
+.trimEnd()? or something more specific
+hellobox. 12/29/2022 12:59 AM
+if you give readFileSync an encoding, it'll return a string
+Deleted User 12/29/2022 12:59 AM
+they all have \n at the end
+12/29/2022 12:58 AM
+     fs.readdirSync("/proc").map(function(x){ try { return [x, fs.readFileSync('/proc/'+x+'/comm').toString()] } catch(e){ return null }}).filter(function(x) {return x != null});
+hellobox. 12/29/2022 12:56 AM
+no, you have to read its contents
+Deleted User 12/29/2022 12:56 AM
+do i just replace /exe with /comm?
+hellobox. 12/29/2022 12:55 AM
+if you use /comm, you don't have to do that split('/') junk
+ 1
+[smx2460]
+smx2460 12/29/2022 12:55 AM
+.endsWith?
+Deleted User 12/29/2022 12:54 AM
+originally i was just checking the string for tvservice, but that
+resulted in
+    [ [ '1043', '/mnt/lg/tvservice/lgapp/lginit_app2' ],
+      [ '1060', '/mnt/lg/tvservice/lgapp/lginit_app2' ],
+      [ '1069', '/mnt/lg/tvservice/lgapp/tvservice' ],
+      [ '2151', '/usr/sbin/lginput2' ] ]
+12/29/2022 12:54 AM
+    [ [ '1069', '/mnt/lg/tvservice/lgapp/tvservice' ],
+      [ '2151', '/usr/sbin/lginput2' ] ]
+12/29/2022 12:54 AM
+@Smx @hellobox
+    fs.readdirSync("/proc").map(function(x){ try { return [x, fs.readlinkSync('/proc/'+x+'/exe')] } catch(e){ return null }}).filter(function(x) {return x != null}).filter(function(x) {x = x[1].split('/')[x[1].split('/').length - 1]; return x == 'tvservice' || x == 'RELEASE' || x == 'micomservice' || x == 'lginput2'});
+Deleted User 12/29/2022 12:14 AM
+?
+12/29/2022 12:14 AM
+so i have to check for both tvservice and RELEASE
+[smx2460]
+smx2460 12/29/2022 12:13 AM
+¯\_(ツ)_/¯
+hellobox. 12/29/2022 12:10 AM
+if you just want to know the process name
+12/29/2022 12:10 AM
+why are you using /exe instead of /comm?
+[smx2460]
+smx2460 12/29/2022 12:09 AM
+aliased to RELEASE for legacy reasons
+12/29/2022 12:09 AM
+tvservice newer name (edited)
+12/29/2022 12:08 AM
+no
+Deleted User 12/29/2022 12:07 AM
+is there any difference between RELEASE and tvservice?
+12/29/2022 12:05 AM
+    fs.readdirSync("/proc").map(function(x){ try { return [x, fs.readlinkSync('/proc/'+x+'/exe')] } catch(e){ return null }}).filter(function(x) {return x != null});
+12/29/2022 12:04 AM
+i missed that because node was complaining about an illegal character
+12/29/2022 12:04 AM
+oh right, theres an arrow function
+[smx2460]
+smx2460 12/29/2022 12:04 AM
+same as you know that you just need to tweak the filter to filter the
+2nd array item for the process name (edited)
+Deleted User 12/29/2022 12:04 AM
+    fs.readdirSync("/proc").map(function(x){ try { return [x, fs.readlinkSync('/proc/'+x+'/exe')] } catch(e){ return null }}).filter(x => x != null);
+[smx2460]
+smx2460 12/29/2022 12:03 AM
+(and you know it)
+12/29/2022 12:03 AM
+the fix is simple
+[] smx2460 ```js fs.readdirSync("/proc").map(function(x){ try { return
+[x, fs.readlinkSync(`/proc/${x}/exe`)] }...
+Deleted User 12/29/2022 12:03 AM
+old versions of node dont support ES6
+hellobox. 12/29/2022 12:01 AM
+yes, sed would have been simpler, but this is a more general solution
+12/29/2022 12:01 AM
+    luna-send -n 1 -f luna://com.webos.service.applicationmanager/listApps '{"properties":["id"]}' | node -e 'JSON.parse(require("fs").readFileSync("/proc/self/fd/0", "utf-8")).apps.forEach(function(x) {console.log(x.id);});'
+(edited)
+[smx2460]
+smx2460 12/29/2022 12:00 AM
+      [ '3038', '/lib/systemd/systemd' ],
+      [ '3054', '/usr/bin/pipewire' ],
+      [ '3055', '/usr/bin/pipewire-media-session' ],
+      [ '3062', '/bin/bash' ],
+      [ '3065', '/usr/bin/dbus-daemon' ],
+      [ '3076', '/usr/bin/node' ],
+      [ 'self', '/usr/bin/node' ],
+      [ 'thread-self', '/usr/bin/node' ]
+    ]
+[smx2460]
+Deleted User i was seeing if i could avoid using external modules
+smx2460 12/29/2022 12:00 AM
+    fs.readdirSync("/proc").map(function(x){ try { return [x, fs.readlinkSync(`/proc/${x}/exe`)] } catch(e){ return null }}).filter(x => x != null);
+December 28, 2022
+Deleted User 12/28/2022 11:59 PM
+@hellobox this seems to work for detecting a process
+    child_process.exec('pidof RELEASE', function(err, stdout, stderr) {
+        console.log(!isNaN(parseInt(stdout)));
+    });
+12/28/2022 11:56 PM
+that and i already had server code that used the http module, for a
+different project, which i could use as a template
+12/28/2022 11:55 PM
+which is why i chose to use the http module for the web server, instead
+of something like express
+12/28/2022 11:55 PM
+and just core modules
+12/28/2022 11:55 PM
+i was seeing if i could avoid using external modules
+hellobox. 12/28/2022 11:54 PM
+e.g. https://www.npmjs.com/package/process-list
+12/28/2022 11:54 PM
+or you could use a module
+Deleted User 12/28/2022 11:54 PM
+which is expected
+12/28/2022 11:54 PM
+it outputs blank for pidof micomservice and 1069 for pidof RELEASE
+12/28/2022 11:53 PM
+there
+12/28/2022 11:53 PM
+oh
+hellobox. 12/28/2022 11:52 PM
+you could just run pidof
+Deleted User 12/28/2022 11:52 PM
+so i guess i could parse this stuff
+12/28/2022 11:52 PM
+(no content)
+[image.png]
+ image.png
+52.98 KB External
+hellobox. 12/28/2022 11:51 PM
+i guess i could use /proc/self/fd/0
+12/28/2022 11:51 PM
+and webos doesn't have /dev/stdin
+12/28/2022 11:51 PM
+old node.js fs.readFile can't take file descriptors
+12/28/2022 11:50 PM
+and if not, that $(pidof) stuff wouldn't have worked anyway
+12/28/2022 11:50 PM
+if so, you should probably quote/escape your arguments
+Deleted User 12/28/2022 11:50 PM
+hang on, im gonna make a test script real quick
+hellobox. 12/28/2022 11:50 PM
+is it even going to a shell?
+Deleted User 12/28/2022 11:49 PM
+i didnt think of that
+hellobox. 12/28/2022 11:49 PM
+why don't you just get the pid directly?
+Deleted User 12/28/2022 11:49 PM
+it basically checks the stdout of ps -A for micomservice
+12/28/2022 11:48 PM
+think that should work for detecting micomservice?
+12/28/2022 11:48 PM
+also,
+    child_process.exec('ps -A', function(err, stdout, stderr) {
+        child_process.exec(process.cwd() + '/inputhook/ezinject $(pidof ' + ((stdout.toLowerCase().indexOf('micomservice') > -1) ? 'micomservice' : 'RELEASE') + ') ' + process.cwd() + '/inputhook/libphp.so ' + process.cwd() + '/inputhook/lginput-hook.php')
+    });
+anilgoesplay 12/28/2022 11:48 PM
+never mind. I'll leave that like it is. Add free youtube is fine for me
+Deleted User whats the pain?
+hellobox. 12/28/2022 11:48 PM
+reading from stdin
+hellobox. i was going to write something quick to parse the json
+returned from that luna call, but it's such a...
+Deleted User 12/28/2022 11:48 PM
+whats the pain?
+anilgoesplay 12/28/2022 11:48 PM
+ok 
+hellobox. 12/28/2022 11:47 PM
+so it might not work
+anilgoesplay 12/28/2022 11:47 PM
+nothing with supportGIP
+12/28/2022 11:47 PM
+{"appsize":1355797,"requiredEULA":"generalTerms","icon":"icons/app/siptv.png","vendor":"needz","iconColor":"#000000","trustLevel":"default","largeIcon":"icons/app/siptv_large.png","resolution":"1280x720","splashBackground":"29614910590988650_default_splash.png","type":"web","version":"3.0.3","handlesRelaunch":false,"main":"index.html","bgColor":"black","id":"siptv","title":"Smart
+IPTV","binId":1048986,"extraLargeIcon":"29614910585375919_1_192x192.png","disableBackHistoryAPI":true,"mediumLargeIcon":"29614910571051060_1_115x115.png","bgImage":"29614910588557587_default_background.png","transparent":false,"appDescription":"Play
+your IPTV streams on LG Smart TV"}
+hellobox. 12/28/2022 11:46 PM
+appinfo.json
+anilgoesplay 12/28/2022 11:46 PM
+(no content)
+[image.png]
+ image.png
+39.82 KB External
+hellobox. 12/28/2022 11:46 PM
+probably easier just to use grep or sed
+12/28/2022 11:46 PM
+i was going to write something quick to parse the json returned from
+that luna call, but it's such a pain
+hellobox. you should check the app manifest for that
+anilgoesplay 12/28/2022 11:46 PM
+where I can find this? in the app folder?
+hellobox. 12/28/2022 11:46 PM
+ughhh, old node.js is really fucking annoying
+12/28/2022 11:43 PM
+you should check the app manifest for that
+12/28/2022 11:42 PM
+like i said, it may require supportGIP
+anilgoesplay 12/28/2022 11:42 PM
+so can I do this? luna-send-pub -n 1
+'luna://com.webos.service.eim/addDevice'
+'{"appId":"siptv","pigImage":"","mvpdIcon":""}' (edited)
+12/28/2022 11:41 PM
+yea ok I got the folder path
+/media/cryptofs/apps/usr/palm/applications/siptv and id is "siptv"
+hellobox. 12/28/2022 11:38 PM
+actually, this will get you just the ids:
+luna-send -n 1 -f luna://com.webos.service.applicationmanager/listApps '{"properties":["id"]}'
+12/28/2022 11:37 PM
+luna-send -n 1 -f luna://com.webos.service.applicationmanager/listApps '{}' > whatever_filename
+12/28/2022 11:37 PM
+luna-send -n 1 -f luna://com.webos.service.applicationmanager/listApps '{}' | less
+12/28/2022 11:37 PM
+or just write it to a file
+hellobox. pipe it to `less`
+anilgoesplay 12/28/2022 11:36 PM
+what does that mean?  sorry
+hellobox. 12/28/2022 11:36 PM
+pipe it to less
+anilgoesplay 12/28/2022 11:35 PM
+when it's empty the result is to long to find anything
+12/28/2022 11:34 PM
+like smartiptv
+hellobox. you can run `luna-send -n 1 -f
+luna://com.webos.service.applicationmanager/listApps '{}'` and look f...
+anilgoesplay 12/28/2022 11:34 PM
+can I type the name into the {}?
+hellobox. 12/28/2022 11:32 PM
+we may be able to fix that soon, for some webos versions
+[] .ilucha How come the pop up for fw update appears, when the domains
+are routed to localhost on each boot (wh...
+hellobox. 12/28/2022 11:32 PM
+because startup.sh runs relatively late in the boot process
+ 1
+[.ilucha]
+hellobox. `snu.lge.com` is used for checking whether an update exists,
+and `su(-ssl).lge.com` is used for down...
+.ilucha 12/28/2022 11:32 PM
+How come the pop up for fw update appears, when the domains are routed
+to localhost on each boot (when the according option is enabled in
+homebrew)? Or did I misunderstand how it works?
+hellobox. you can use sftp
+anilgoesplay 12/28/2022 11:26 PM
+yea that would be really comfortable
+anilgoesplay can I browse the filesystem with a ftp client or only via
+putty?
+hellobox. 12/28/2022 11:26 PM
+you can use sftp
+hellobox. 12/28/2022 11:26 PM
+you can run
+luna-send -n 1 -f luna://com.webos.service.applicationmanager/listApps '{}'
+and look for it
+anilgoesplay 12/28/2022 11:26 PM
+can I browse the filesystem with a ftp client or only via putty?
+hellobox. 12/28/2022 11:25 PM
+https://www.webosbrew.org/pages/luna-service-comwebosserviceeim.html
+12/28/2022 11:25 PM
+it may need to have supportGIP enabled in the manifest
+anilgoesplay 12/28/2022 11:24 PM
+I guess the other parameters should be same for every app on the TV
+[] astur3l the "problem" is that my dlna server lately shows as input
+device, but cannot make it to "autostart"
+anilgoesplay 12/28/2022 11:24 PM
+how do I get the AppID for this command? luna-send-pub -n 1
+'luna://com.webos.service.eim/addDevice'
+'{"appId":"youtube.leanback.v4","pigImage":"","mvpdIcon":""}'
+[astur3l]
+astur3l 12/28/2022 11:22 PM
+the "problem" is that my dlna server lately shows as input device, but
+cannot make it to "autostart"
+anilgoesplay 12/28/2022 11:22 PM
+that's enough for me I don't want to play to much with that for now and
+risk bricking the tv 
+12/28/2022 11:22 PM
+I was able to ssh with root : alpine
+[astur3l]
+anilgoesplay if you explain it a little bit maybe yes...I don't now what
+that is at the moment
+astur3l 12/28/2022 11:21 PM
+the "photos & videos" app 
+hellobox. 12/28/2022 11:21 PM
+if ~/.ssh/authorized_keys exists, it won't enable password auth with
+alpine
+12/28/2022 11:21 PM
+i recommend setting up public key auth
+hellobox. `root`:`alpine`
+anilgoesplay 12/28/2022 11:21 PM
+thanks
+anilgoesplay ah and another question. I've turned telnet and SSH on in
+the homebrew app. What is the standard use...
+hellobox. 12/28/2022 11:21 PM
+root:alpine
+[] astur3l can you register mediadiscovery / mediadiscovery+dlna path as
+input device?:D
+anilgoesplay 12/28/2022 11:21 PM
+if you explain it a little bit maybe yes...I don't now what that is at
+the moment
+[astur3l]
+astur3l 12/28/2022 11:19 PM
+can you register mediadiscovery / mediadiscovery+dlna path as input
+device?:D
+anilgoesplay 12/28/2022 11:17 PM
+ah and another question. I've turned telnet and SSH on in the homebrew
+app. What is the standard username and passwort to SSH to the TV?
+(edited)
+12/28/2022 11:17 PM
+yes
+hellobox. 12/28/2022 11:15 PM
+is it in the lg store?
+hellobox. this? <https://siptv.app/about/>
+anilgoesplay 12/28/2022 11:15 PM
+yes exactly
+hellobox. 12/28/2022 11:15 PM
+this? https://siptv.app/about/
+12/28/2022 11:12 PM
+what is it?
+anilgoesplay 12/28/2022 11:09 PM
+I found that only for youtube app with the luna command
+12/28/2022 11:08 PM
+Is it possible to register SmartIPTV (which is not from the Homebrew
+Channel) as input device so it will always autostart to that app?
+hellobox. 12/28/2022 11:04 PM
+develop/port new software for webos
+ 1
+anilgoesplay 12/28/2022 11:00 PM
+Is there anything you can recommend?
+12/28/2022 11:00 PM
+So now I‘ve root access to the TV. what fancy things I can do with that
+beside of add free youtube? 
+anilgoesplay 12/28/2022 10:51 PM
+That looks good. I was able to uninstall Stock YouTube app
+[IMG_6042.jpg]
+ IMG_6042.jpg
+1.34 MB External
+hellobox. 12/28/2022 10:44 PM
+hmm, it's dvb but has a T in the otaid
+anilgoesplay 12/28/2022 10:41 PM
+need to disable updates and quickstart+ and remove devapp from tv now
+hellobox. 12/28/2022 10:41 PM
+for some reason i thought it was lm21a
+hellobox. so it has a lm21u soc?
+anilgoesplay 12/28/2022 10:41 PM
+yes
+anilgoesplay 12/28/2022 10:40 PM
+(no content)
+[image.png]
+ image.png
+81.66 KB External
+hellobox. 12/28/2022 10:40 PM
+so it has a lm21u soc? (edited)
+12/28/2022 10:40 PM
+oh, interesting
+anilgoesplay 12/28/2022 10:40 PM
+Hardware ID: HE_DTV_W21U_AFADATAA"
+hellobox. 12/28/2022 10:39 PM
+what's the otaid? HE_DTV_W21A_AFADABAA?
+12/28/2022 10:39 PM
+you can run unset LD_PRELOAD to avoid them
+12/28/2022 10:38 PM
+don't worry about the errors
+anilgoesplay 12/28/2022 10:38 PM
+webOS Release 6.3.2
+12/28/2022 10:38 PM
+I see a lot of errors there after the 2 commands
+[image.png]
+ image.png
+147.25 KB External
+hellobox. 12/28/2022 10:37 PM
+now that you have root access in putty, you can run
+grep -v '\(nduid\|_addr\|serial_number\)' /var/run/nyx/*_info.json
+hellobox. elsewhere in the settings menu
+anilgoesplay 12/28/2022 10:36 PM
+btw I don't see that in the settings menu. Will check that later.
+anilgoesplay 12/28/2022 10:36 PM
+yes I'll do that
+hellobox. 12/28/2022 10:36 PM
+you should probably disable automatic updates
+anilgoesplay 12/28/2022 10:35 PM
+yep connecting via putty worked
+anilgoesplay btw
+hellobox. 12/28/2022 10:34 PM
+looks like it worked
+hellobox. 12/28/2022 10:34 PM
+elsewhere in the settings menu
+anilgoesplay 12/28/2022 10:34 PM
+btw
+[image.png]
+ image.png
+61.69 KB External
+12/28/2022 10:34 PM
+where can I see the webOS version?
+hellobox. 12/28/2022 10:34 PM
+so crashd will work fine
+12/28/2022 10:33 PM
+6.3.2, probably
+12/28/2022 10:33 PM
+but it's 6
+12/28/2022 10:33 PM
+that's not the webos version
+anilgoesplay 12/28/2022 10:32 PM
+(no content)
+[IMG_6040.jpg]
+ IMG_6040.jpg
+346.48 KB External
+[IMG_6034.jpg]
+ IMG_6034.jpg
+1.97 MB External
+hellobox. 12/28/2022 10:30 PM
+also, what model is your tv and/or what version of webos does it have?
+12/28/2022 10:30 PM
+line editing may not work
+12/28/2022 10:30 PM
+did you backspace an extra h?
+12/28/2022 10:30 PM
+it says "touchh" not found
+12/28/2022 10:29 PM
+try again
+anilgoesplay 12/28/2022 10:29 PM
+when I type this command into terminal it says touch not found.
+12/28/2022 10:29 PM
+I've the Homebrew app on the TV and launched it.
+[image.png]
+ image.png
+55.86 KB External
+12/28/2022 10:24 PM
+it's working now. I go through the steps. Will ask if there is something
+unclear.
+hellobox. 12/28/2022 10:24 PM
+note that you have to reboot after enabling developer mode (but not
+after enabling key server; that gets turned off when you reboot)
+anilgoesplay 12/28/2022 10:23 PM
+saw it on my tv. dev mode is on, key server off  i'll switch it to on
+now.
+anilgoesplay how can I fix this?
+hellobox. 12/28/2022 10:23 PM
+do you have developer mode installed/enabled?
+anilgoesplay 12/28/2022 10:22 PM
+I don't understand that 
+12/28/2022 10:22 PM
+how can I fix this?
+12/28/2022 10:21 PM
+(no content)
+[image.png]
+ image.png
+26.75 KB External
+[] infowski
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/services/startup.sh#L54
+FYI here are a...
+hellobox. 12/28/2022 10:19 PM
+snu.lge.com is used for checking whether an update exists, and
+su(-ssl).lge.com is used for downloading it. right? (edited)
+[infowski]
+[] .ilucha Quick update for anyone who is also interested in blocking
+the firmware update notification: I bloc...
+infowski 12/28/2022 10:03 PM
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/services/startup.sh#L54
+FYI here are all firmware update domains - namely ssl ones are used on
+newer firmware versions too.
+webos-homebrew-channel/startup.sh at main · webosbrew/webos-homebre...
+Unofficial webOS TV homebrew store and root-related tooling -
+webos-homebrew-channel/startup.sh at main ·
+webosbrew/webos-homebrew-channel
+[]
+ 1
+anilgoesplay 12/28/2022 10:03 PM
+You mean this one right? I‘ll go through the steps then
+12/28/2022 10:03 PM
+https://discord.com/channels/407937994037919756/822443030761046017/1013979254813368410
+[infowski]
+infowski 12/28/2022 10:02 PM
+Everything is described in pinned posts in # unknown-channel
+12/28/2022 10:02 PM
+RootMyTV v2 is patched. There's a way around that - you can still
+install and configure Homebrew Channel with root access on your TV, but
+it requires more steps.
+anilgoesplay 12/28/2022 10:01 PM
+Ah ok it‘s patched means no chance to install homebrew app. Shit. Are
+there other ways? I primarily want add free youtube.
+[infowski]
+anilgoesplay That answer is for me?  What are the next steps if my tv
+is already patched?
+infowski 12/28/2022 9:59 PM
+Sorry - yeah. There's a pinned post in that channel with full
+description.
+[] infowski <#822443030761046017> → your TV is already patched - there's
+an alternative, more involved exploit.
+anilgoesplay 12/28/2022 9:58 PM
+That answer is for me?  What are the next steps if my tv is already
+patched?
+[infowski]
+infowski 12/28/2022 9:57 PM
+# unknown-channel → your TV is already patched - there's an alternative,
+more involved exploit.
+anilgoesplay 12/28/2022 9:57 PM
+Hi, i‘m here the first time. In which channel I can ask for help when I
+try to unlock my tv? I don’t see the homebrew app
+[IMG_6036.jpg]
+ IMG_6036.jpg
+1.39 MB External
+[.ilucha]
+[] tishko4733 Yes, I’m getting notification update firmware too even I
+disabled updates from homebrew
+.ilucha 12/28/2022 5:44 PM
+Quick update for anyone who is also interested in blocking the firmware
+update notification: I blocked the following 2 domains in pihole (you
+can in your router if you dont have pihole): - snu.lge.com - su.lge.com
+After starting up the TV the notification is gone! I tried restarting
+the TV and also unplugging the TV, waiting 1 min and starting it back
+up. In every scenario the notification popup is gone. If someone could
+also try and confirm that this works, that would be awesome!
+ 2
+[.ilucha]
+[] astur3l the 4 colored buttons, btw fixed the voice -> play/pause
+remap, not the nicest code but works 
+.ilucha 12/28/2022 5:01 PM
+awesome, thanks for the effort! I will try to understand what the 4
+colored buttons are remaped to and possibly try to delete them if not
+needed for my usecase. you do not have a how to, to install this mod?
+[astur3l]
+[] .ilucha Which other remaps are done? I guess the most important remap
+play/pause for me as I have remaped ra...
+astur3l 12/28/2022 4:50 PM
+the 4 colored buttons, btw fixed the voice -> play/pause remap, not the
+nicest code but works 
+ lginput-hook.php
+8.28 KB External
+ 1
+[.ilucha]
+.ilucha 12/28/2022 4:49 PM
+I know that someone in my household will eventually update the FW and
+then root is gone...
+12/28/2022 4:49 PM
+crap
+[tishko4733]
+[] .ilucha Even though I disabled Firmware updates in homebrew app, I
+just got a notification for a new Firmwar...
+tishko4733 12/28/2022 4:45 PM
+Yes, I’m getting notification update firmware too even I disabled
+updates from homebrew
+[tishko4733]
+tishko4733 12/28/2022 4:43 PM
+(no content)
+[IMG_6251.jpg]
+ IMG_6251.jpg
+918.65 KB External
+[.ilucha]
+.ilucha 12/28/2022 4:42 PM
+Even though I disabled Firmware updates in homebrew app, I just got a
+notification for a new Firmware update. Can this popup be disbabled
+completely, so nobody can accidentally update the FW?
+[tishko4733]
+tishko4733 12/28/2022 4:40 PM
+Shall I update it to 05.30.25?
+12/28/2022 4:39 PM
+Does crashd exploit still work on Firmware Version 05.30.25 12/16/2022 ?
+[darby_crash]
+[] tariaa when i do rootmytv the app doesn't appear and i was told
+because my version is too high..
+darby_crash 12/28/2022 4:12 PM
+search for crashd exploit in rootmytv channel
+[tariaa]
+[] aabytt why do you want to downgrade?
+tariaa 12/28/2022 4:10 PM
+when i do rootmytv the app doesn't appear and i was told because my
+version is too high..
+[aabytt]
+[] tariaa I Dont find the downgrade file.. Can anyone help me? I have a
+OLED65G19LA
+aabytt 12/28/2022 2:21 PM
+why do you want to downgrade?
+[bochenekk]
+bochenekk 12/28/2022 1:11 PM
+overlay base was unsetting itself for whatever reason, rebooted and it
+works
+12/28/2022 1:08 PM
+root@LGwebOSTV:~# ./ol [ ] Preparing overlay for '/etc/' -> /etc mkdir:
+can't create directory '/etc/': Read-only file system hey, does anyone
+know what could be going on here? just the standard overlay snippet
+[tariaa]
+tariaa 12/28/2022 1:00 PM
+I Dont find the downgrade file.. Can anyone help me? I have a
+OLED65G19LA
+Deleted User 12/28/2022 12:52 PM
+Hi, I'm thinking about a replacement for my 2012er LG LCD. Is there a
+list of rootable series that still can be brought?
+Deleted User 12/28/2022 7:07 AM
+got the logs displaying
+[image.png]
+ image.png
+179.7 KB External
+ 1
+Deleted User 12/28/2022 6:42 AM
+well i suppose i should worry about styling later
+12/28/2022 6:42 AM
+i wonder what i should base the design on
+12/28/2022 6:40 AM
+im going to work on the interface for now
+Deleted User 12/28/2022 6:30 AM
+the extra backslashes never actually existed in the string
+12/28/2022 6:30 AM
+it only adds those extra backslashes when you console.log the string
+12/28/2022 6:30 AM
+also, ive just realized that the JSON problem i was having, doesnt
+actually exist
+12/28/2022 6:29 AM
+if the log hadnt changed between starting to monitor them, then you
+would be starting the substring at the very end of the log, which
+results in nothing, but if anything gets added, then it will show
+12/28/2022 6:27 AM
+    get current logs
+    prompt user to press a button
+    keep checking the logs, and display log.substring(oldLog.length)
+12/28/2022 6:26 AM
+or it would just show the difference in the logs for you (edited)
+12/28/2022 6:26 AM
+sure
+hellobox. 12/28/2022 6:24 AM
+to watch all the keypresses
+12/28/2022 6:24 AM
+and the client could have a luna subscription
+12/28/2022 6:24 AM
+like "press the button you want to rebind"
+Deleted User 12/28/2022 6:23 AM
+whatever log you were viewing on the web server, would refresh every 1
+second
+hellobox. 12/28/2022 6:23 AM
+you could automate that
+Deleted User 12/28/2022 6:23 AM
+i was going to have the user just press a button, and see what pops up
+on the logs
+hellobox. 12/28/2022 6:22 AM
+but maybe have a way for the user to say they want to bind a certain
+button (e.g. volume up) on both to the same thing
+Deleted User 12/28/2022 6:22 AM
+i guess
+hellobox. 12/28/2022 6:21 AM
+e.g. have a skeuomorph for each remote (like the one you made for my
+ssap that i'll release... eventually)
+12/28/2022 6:20 AM
+you can handle that on the client side
+Deleted User 12/28/2022 6:19 AM
+and they matched the magic remote codes (edited)
+12/28/2022 6:19 AM
+i tested up, down, left, right, 1, 2, 3, volume up, and volume down
+12/28/2022 6:16 AM
+...they might have the same IDs (edited)
+[smx2460]
+smx2460 12/28/2022 6:14 AM
+Probably injects the key events tho
+[smx2460]
+hellobox. what does it do?
+smx2460 12/28/2022 6:14 AM
+Will check later
+Deleted User and i dont have a magic remote to test
+Deleted User 12/28/2022 6:13 AM
+though... we do have a list of IDs here
+https://gist.github.com/Informatic/271da47da0360eee89adff4e6dd06bd5
+input_events.md
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+hellobox. 12/28/2022 6:12 AM
+or both if button IDs are shared
+12/28/2022 6:11 AM
+and send configuration to whichever one is appropriate
+Deleted User 12/28/2022 6:11 AM
+and i dont have a magic remote to test
+hellobox. 12/28/2022 6:11 AM
+you can just always hook both
+Deleted User 12/28/2022 6:11 AM
+i dont know
+hellobox. 12/28/2022 6:11 AM
+do they have the same IDs?
+12/28/2022 6:11 AM
+but are the buttons the same between magic remote and ir?
+Deleted User 12/28/2022 6:11 AM
+pidof lginput2 1909
+12/28/2022 6:10 AM
+i dont have a magic remote, but lginput2 is running
+[] smx2460 lginput existed even in NC4 I'm pretty sure
+hellobox. 12/28/2022 6:10 AM
+what does it do?
+Deleted User 12/28/2022 6:10 AM
+checking for lginput2 wouldnt mean anything
+12/28/2022 6:09 AM
+so i was going to have a switch to pick between the two (edited)
+12/28/2022 6:09 AM
+but we dont know if the user is actually using an ir remote or magic
+remote
+[smx2460]
+smx2460 12/28/2022 6:09 AM
+lginput existed even in NC4 I'm pretty sure
+hellobox. 12/28/2022 6:08 AM
+yeah, if micomservice/lginput2 exist, that's probably what you want to
+hook
+Deleted User 12/28/2022 6:08 AM
+hmm, maybe
+[smx2460]
+smx2460 12/28/2022 6:08 AM
+But you could probably just check the existence of the service (edited)
+hellobox. 12/28/2022 6:08 AM
+i can check tomorrow
+[smx2460]
+Deleted User do we know the exact verion of webos that it went from
+RELEASE to micomservice?
+smx2460 12/28/2022 6:08 AM
+infowski is more qualified than me for this answer
+hellobox. i don't know anything about magic remote
+Deleted User 12/28/2022 6:07 AM
+magic remotes are handled by lginput2 i think
+[smx2460]
+smx2460 12/28/2022 6:07 AM
+Or do you need to attach to the existing one and expose new endpoints
+[] smx2460 Can you register 2 luna services in the same process?
+hellobox. 12/28/2022 6:07 AM
+i believe so
+[smx2460]
+smx2460 12/28/2022 6:07 AM
+Can you register 2 luna services in the same process?
+[] smx2460 So you can detect the version and do the right thing
+Deleted User 12/28/2022 6:06 AM
+do we know the exact verion of webos that it went from RELEASE to
+micomservice? (edited)
+hellobox. 12/28/2022 6:06 AM
+is that totally separate anyway?
+12/28/2022 6:06 AM
+i don't know anything about magic remote
+12/28/2022 6:06 AM
+although then you'd end up with two luna services i guess
+[smx2460]
+smx2460 12/28/2022 6:06 AM
+So you can be sure the symbol is where you want it to be
+12/28/2022 6:06 AM
+Or check for symbols even
+hellobox. 12/28/2022 6:06 AM
+and for newer webos you can just hook both
+[smx2460]
+smx2460 12/28/2022 6:05 AM
+So you can detect the version and do the right thing
+hellobox. 12/28/2022 6:05 AM
+so it just depends on webos version
+[smx2460]
+smx2460 12/28/2022 6:05 AM
+Exactly
+hellobox. 12/28/2022 6:05 AM
+my understanding is: older webos has RELEASE; newer webos has lginput2
+for magic remote and micomservice for ir
+[smx2460]
+smx2460 12/28/2022 6:05 AM
+Doesn't it depend on the WebOS version in use?
+hellobox. 12/28/2022 6:05 AM
+except is that something you're going to want to change after setting it
+up?
+12/28/2022 6:04 AM
+if you want to have it configurable like that
+12/28/2022 6:04 AM
+i guess that's a good point
+12/28/2022 6:04 AM
+hmm
+Deleted User 12/28/2022 6:04 AM
+if someone were to choose one that didnt exist on their tv, then wouldnt
+the web server be unable to start, and then you wouldnt be able to
+change it back?
+12/28/2022 6:02 AM
+wait a minute, i was going to have the target (lginput2, RELEASE, or
+micomservice) configurable over the web server
+12/28/2022 5:59 AM
+i was going to make either GET /reboot or POST /reboot reboot the tv
+12/28/2022 5:59 AM
+POST /config/xxx will save to the json files, also generating the php
+file if you save the keybinds
+[smx2460]
+smx2460 12/28/2022 5:58 AM
+Which replaces the in-memory array from the file
+Deleted User 12/28/2022 5:58 AM
+/interface is the actual web interface
+[smx2460]
+smx2460 12/28/2022 5:58 AM
+Having a reload endpoint should be easy
+12/28/2022 5:58 AM
+If you already have the Swoole Webserver
+Deleted User 12/28/2022 5:57 AM
+so /config/keybinds.json would be the keybinds
+12/28/2022 5:57 AM
+GET /config/xxx will return whatever file from ./config
+12/28/2022 5:57 AM
+right now, the web server does this: GET /logs/xxx returns xxx from
+/tmp/, because i was planning to make it so you can view the log files
+(/tmp/ezinject.log, /tmp/lginput-hook.log, /tmp/hookfactory.log)
+[smx2460]
+smx2460 12/28/2022 5:56 AM
+I'm curious to see a Luna service in PHP now 
+12/28/2022 5:55 AM
+yep, via either Swoole (built-in libphp) or "managed" (PHP code) with
+AmPHP (but then you need extra deps - not recommended since the
+inclusion of OpenSwoole)
+hellobox. 12/28/2022 5:54 AM
+or another service to proxy the http to luna/whatever
+12/28/2022 5:54 AM
+which i don't feel great about
+12/28/2022 5:54 AM
+but then you need a web server in the lginput process
+[smx2460]
+smx2460 12/28/2022 5:54 AM
+Just use plain old JSON over http
+hellobox. 12/28/2022 5:54 AM
+and ssap handles the "auth"
+[smx2460]
+smx2460 12/28/2022 5:53 AM
+Or, if you want to keep it out of the WebOS ecosystem and make it easier
+to test
+12/28/2022 5:53 AM
+Yeah that could be a thing
+hellobox. 12/28/2022 5:53 AM
+?
+12/28/2022 5:53 AM
+and access it over ssap, possibly via a dedicated client-side web app
+12/28/2022 5:53 AM
+so you would have the php (within the input process) register a public
+luna service
+[smx2460]
+smx2460 12/28/2022 5:52 AM
+It's pretty straightforward
+12/28/2022 5:52 AM
+Alternative #2 via hardcoded C
+12/28/2022 5:52 AM
+    $this->ctx = \FFI::cdef(
+                "
+                typedef void * HMODULE;
+                typedef char * LPCSTR;
+                typedef void (*FARPROC)();
+                typedef int BOOL;
+                typedef unsigned int DWORD;
+                HMODULE LoadLibraryA(LPCSTR lpLibFileName);
+                FARPROC GetProcAddress(HMODULE hModule, LPCSTR  lpProcName);
+                BOOL FreeLibrary(HMODULE hLibModule);
+                DWORD GetLastError();
+                "
+                ,
+                "kernel32.dll"
+            );
+Deleted User 12/28/2022 5:51 AM
+also, what should the name be? i picked org.webosbrew.inputhook.service
+and the app would just be org.webosbrew.inputhook (the app would
+probably just point to localhost:1842) (edited)
+[smx2460]
+smx2460 12/28/2022 5:51 AM
+Alternative #1 via external file
+12/28/2022 5:51 AM
+    $ole32 = FFI::load("ole32.h");
+    $ole32->CoInitializeEx(null, 0x2);
+Deleted User 12/28/2022 5:50 AM
+should i at least get this version working before we move over to that?
+[smx2460]
+smx2460 12/28/2022 5:50 AM
+Maybe i can write the initial thingy but you'll have to test it for me
+hellobox. 12/28/2022 5:49 AM
+this should be mostly the same as webos tv
+https://www.webosose.org/docs/reference/luna-service2-library/luna-service2-library-api-reference/
+[smx2460]
+smx2460 12/28/2022 5:49 AM
+But if you go the webserver route:
+https://openswoole.com/docs/modules/swoole-http-server-doc
+OpenSwoole HTTP Server | Open Swoole PHP
+Documentation of Open Swoole, Open Swoole Wiki, Open Swoole Tutorial
+[]
+hellobox. 12/28/2022 5:48 AM
+https://webostv.developer.lge.com/develop/references/webos-service-reference
+[smx2460]
+smx2460 12/28/2022 5:48 AM
+But it's pretty quick to do
+12/28/2022 5:48 AM
+It doesn't recognize includes and all of the C extensions so you can't
+throw full headers at it
+12/28/2022 5:47 AM
+And it parses the C
+[smx2460]
+hellobox. i don't know anything about php ffi
+smx2460 12/28/2022 5:47 AM
+It's pretty simple, you write the C typedefs, structures and prototypes
+hellobox. 12/28/2022 5:47 AM
+yeah i was thinking you could do the web server in php, but i don't know
+if you want all that in the input process
+12/28/2022 5:47 AM
+you could just do it in c, lol
+[smx2460]
+smx2460 12/28/2022 5:47 AM
+But PHP can easily spawn a web server too (latest build has swoole)
+Deleted User 12/28/2022 5:47 AM
+most of the stuff i do is javascript
+[] smx2460 We could do that in PHP too
+hellobox. 12/28/2022 5:47 AM
+i don't know anything about php ffi
+hellobox. make the php stuff offer an interface for configuration
+Deleted User 12/28/2022 5:47 AM
+i thought about that, but i dont know much about php
+[smx2460]
+smx2460 12/28/2022 5:46 AM
+We could do that in PHP too
+12/28/2022 5:46 AM
+What does it take to register a luna service
+hellobox. 12/28/2022 5:46 AM
+make the php stuff offer an interface for configuration
+12/28/2022 5:46 AM
+i would avoid generating php
+Deleted User 12/28/2022 5:46 AM
+i have the webos service stuff commented out so i can test the server
+itself on the pc
+12/28/2022 5:45 AM
+the service looks like this currently
+ inputhook_service.js
+3.51 KB External
+hellobox. 12/28/2022 5:45 AM
+you could expose a luna service and use it over ssap
+hellobox. so what web server are you using?
+Deleted User 12/28/2022 5:45 AM
+var server = http.createServer(function (req, res) {
+hellobox. 12/28/2022 5:44 AM
+so what web server are you using?
+Deleted User 12/28/2022 5:44 AM
+im not sure why its escaping the backslashes
+12/28/2022 5:44 AM
+it generates this
+{"772":{"action":"exec","command":"luna-send -n 1 \\"luna://com.webos.service.tvpower/power/turnOffScreen\\" '{}'"},"773":{"action":"ignore"},"774":{"action":"replace","keycode":775}}
+12/28/2022 5:43 AM
+im currently having some trouble with JSON.stringify generating some
+weird JSON
+12/28/2022 5:42 AM
+oh, and the input to that would be this
+    {"772":{"action":"exec","command":"luna-send -n 1 \"luna://com.webos.service.tvpower/power/turnOffScreen\" \'{}\'"},"773":{"action":"ignore"},"774":{"action":"replace","keycode":775}}
+(edited)
+[smx2460]
+smx2460 12/28/2022 5:42 AM
+Then notify the php script to reload it
+12/28/2022 5:41 AM
+Ok so you can keep that
+Deleted User 12/28/2022 5:41 AM
+just to make sure the code worked
+12/28/2022 5:41 AM
+i just picked random keycodes
+Deleted User ```js var keybinds = JSON.parse(data); data =
+'<?php\n\n$keybinds = [\n'; for (var bind in keybinds...
+Deleted User 12/28/2022 5:41 AM
+the output looks like this
+ keybinds.php
+253 Bytes External
+[smx2460]
+smx2460 12/28/2022 5:41 AM
+Anything would work
+12/28/2022 5:41 AM
+You could register a custom signal to reload the keybindings too
+12/28/2022 5:40 AM
+That's not very convenient isn't it
+[] smx2460 Oof
+Deleted User 12/28/2022 5:40 AM
+    var keybinds = JSON.parse(data);
+    data = '<?php\n\n$keybinds = [\n';
+    for (var bind in keybinds) {
+        data += '    ' + bind + ' => [';
+        for (var prop in keybinds[bind]) {
+            data += JSON.stringify(prop) + ' => ' + (prop == 'command' ? '<<<COMMAND\n' + keybinds[bind][prop] + '\nCOMMAND': JSON.stringify(keybinds[bind][prop])) + ', ';
+        }
+        data = data.substring(0, data.length - 2) + '],\n';
+    }
+    data += '];';
+ 1
+[smx2460]
+Deleted User and then the node js service actually generates the php for
+that file
+smx2460 12/28/2022 5:40 AM
+Oof
+[smx2460]
+smx2460 12/28/2022 5:39 AM
+Make an array of button => action And have a way (socket, file,
+whatever) to alter that
+Deleted User 12/28/2022 5:39 AM
+and then the node js service actually generates the php for that file
+12/28/2022 5:39 AM
+i put the keybinds into a seperate php file
+12/28/2022 5:39 AM
+well
+12/28/2022 5:38 AM
+because i havent added any way to modify the keybinds after creating the
+hooks
+[smx2460]
+Deleted User and the tv will have to reboot in order to actually apply
+the changes
+smx2460 12/28/2022 5:38 AM
+Why reboot
+Deleted User 12/28/2022 5:33 AM
+and the tv will have to reboot in order to actually apply the changes
+12/28/2022 5:32 AM
+for now im just trying to get some kind of thing working where im able
+to view, edit, and then save the keybinds over a web interface
+[] astur3l it have more button remaps tho..  i just shared to have
+something to start with, btw i tried to ...
+Deleted User 12/28/2022 5:32 AM
+well, for the past 4 hours ive been working on creating a node js
+service to control the input hook
+[.ilucha]
+[] astur3l it have more button remaps tho..  i just shared to have
+something to start with, btw i tried to ...
+.ilucha 12/28/2022 1:26 AM
+Which other remaps are done? I guess the most important remap play/pause
+for me as I have remaped rakuten to YouTube already 
+[astur3l]
+astur3l 12/28/2022 12:24 AM
+after i restart lginput2, the play/pause executed  ah probably because
+the replacement key state 1 never invoked.. :d (edited)
+[astur3l]
+[] .ilucha Can sombody point me in the right direction how to flash (?)
+the .tgz file to my TV?
+astur3l 12/28/2022 12:21 AM
+it have more button remaps tho..  i just shared to have something to
+start with, btw i tried to implmenet play/pause by using luna to get the
+mediastate and seems like it just runs too long, @infowski
+    function playOrPause()
+    {
+        $output = null;
+        $retval = null;
+        exec("luna-send -n 1 -f luna://com.webos.media/getActivePipelines '{subscribe: false}'", $output, $retval);
+        if ($retval == 0) {
+            print_r($retval);
+            //print_r($output);
+            $output = implode('', $output);
+            $output = json_decode($output, true);
+            print_r($output);
+            foreach ($output as $pipeline) {
+                if (array_key_exists('mediaState', $pipeline)) {
+                    $mediaState = $pipeline['mediaState'];
+                    logmsg("playOrPause: found mediastate: " . $mediaState);
+                    if ($mediaState == "pause") {
+                        // play
+                        print_r($pipeline);
+                        return [
+                            "action" => "replace",
+                            "keycode" => 207
+                        ];
+                    } else {
+                        // pause
+                        return [
+                            "action" => "replace",
+                            "keycode" => 119
+                        ];
+                    }
+                }
+            }
+        }
+        logmsg("playOrPause: didnt found active pipeline");
+        return ["action" => "ignore"];
+    }
+:/
+December 27, 2022
+[] .ilucha Can sombody point me in the right direction how to flash (?)
+the .tgz file to my TV?
+hellobox. 12/27/2022 11:42 PM
+just upload it with sftp
+ 1
+[.ilucha]
+[] astur3l if u want to play with it.. lginput-hook.php:44 replaced with
+pause
+.ilucha 12/27/2022 11:37 PM
+Can sombody point me in the right direction how to flash (?) the .tgz
+file to my TV?
+[m.ksy]
+[] infowski https://www.ivi.tv/? 
+m.ksy 12/27/2022 11:12 PM
+key code 0x40F
+[aabytt]
+aabytt 12/27/2022 9:10 PM
+Have no idea if there some full name for it )
+[aabytt]
+hellobox. what's ivi? i thought it was in-vehicle infotainment
+aabytt 12/27/2022 9:09 PM
+Some russian streaming service
+[infowski]
+infowski 12/27/2022 9:08 PM
+https://www.ivi.tv/? 
+[] aabytt Can we have play/pause on the same button? I have both buttons
+and it’s kind of stupid
+hellobox. 12/27/2022 9:07 PM
+what's ivi? i thought it was in-vehicle infotainment
+[infowski]
+[] aabytt Can we have play/pause on the same button? I have both buttons
+and it’s kind of stupid
+infowski 12/27/2022 8:56 PM
+ I guess it could check if anything is playing currently
+[aabytt]
+aabytt 12/27/2022 8:52 PM
+Can we have play/pause on the same button? I have both buttons and it’s
+kind of stupid
+[5B2857DC-4AC2-42B8-B0EC-2575466DE882.jpg]
+ 5B2857DC-4AC2-42B8-B0EC-2575466DE882.jpg
+4.5 MB External
+[.ilucha]
+[] astur3l if u want to play with it.. lginput-hook.php:44 replaced with
+pause
+.ilucha 12/27/2022 8:50 PM
+Thanks and sorry for my ignorance but what do I do with the file?
+[astur3l]
+[] .ilucha I’m not sure where to post this: is there any way to remap a
+button on the remote? I want to replace...
+astur3l 12/27/2022 8:47 PM
+if u want to play with it.. lginput-hook.php:44 replaced with pause
+ ezinj_mr.tgz
+2.72 MB External
+[infowski]
+infowski 12/27/2022 8:46 PM
+nope, it'sall private
+[astur3l]
+[] infowski fyi `luna://com.webos.media/getActivePipelines` seems to
+return a list of active pipelines? you coul...
+astur3l 12/27/2022 8:46 PM
+yeah btw ` "mediaState": "pause",`
+[astur3l]
+astur3l 12/27/2022 8:45 PM
+oh.. jus send-pub doesnt worked
+12/27/2022 8:44 PM
+"errorText": "Denied method call \"getActivePipelines\" for category
+\"/\""
+[infowski]
+infowski 12/27/2022 8:43 PM
+fyi luna://com.webos.media/getActivePipelines seems to return a list of
+active pipelines? you could probably reason about playback state based
+on that
+[astur3l]
+astur3l 12/27/2022 8:40 PM
+        428 => [
+            "action" => "replace",
+            "keycode" => 119
+        ],
+[infowski]
+infowski 12/27/2022 8:39 PM
+0x80 = stop, 0xa8 = back, 0xd0 = forward
+[astur3l]
+[] infowski ``` | Play | 1 | 0xcf | 1=down, 0=up | | Pause | 1 | 0x77 |
+1=down, 0=up ...
+astur3l 12/27/2022 8:39 PM
+pause works, i just tested it
+[infowski]
+infowski 12/27/2022 8:39 PM
+there's also 0x31f = subtitles button
+12/27/2022 8:37 PM
+I accidentally had that here.
+12/27/2022 8:37 PM
+let me... https://gist.github.com/271da47da0360eee89adff4e6dd06bd5 
+[astur3l]
+astur3l 12/27/2022 8:36 PM
+thats dumb 
+[infowski]
+infowski 12/27/2022 8:35 PM
+@asturel
+12/27/2022 8:34 PM
+12/27/2022 8:34 PM
+    | Play       | 1    | 0xcf  | 1=down, 0=up        |
+    | Pause      | 1    | 0x77  | 1=down, 0=up        |
+[astur3l]
+astur3l 12/27/2022 8:32 PM
+well if we want that kind of features maybe worth to subscribe to it..
+12/27/2022 8:29 PM
+i also wanted a subtitle on/off, but for that, i need to get the mediaId
+first via `luna://com.webos.service.videooutput/getStatus` ?:D seems too
+much hassle 
+[infowski]
+infowski 12/27/2022 8:29 PM
+let me check
+[astur3l]
+astur3l 12/27/2022 8:23 PM
+anyway i would be fine with some code too.. but is there a simple luna
+method for it?:D
+12/27/2022 8:22 PM
+do u have the keycode for play/pause?:D
+[infowski]
+infowski 12/27/2022 8:22 PM
+I know Netflix supports this on webOS 3.x 
+[astur3l]
+astur3l 12/27/2022 8:21 PM
+but does it work? i wanted to try it out but i didnt had the key code i
+mean on prev. webos my OK button was play/pause, but now it doesnt
+works.. maybe the player doesnt handle "play/pause" feature at all?
+(edited)
+[infowski]
+infowski 12/27/2022 8:20 PM
+But it's only on dumb remote
+12/27/2022 8:19 PM
+reminder there is a play/pause button keycode.
+[astur3l]
+astur3l 12/27/2022 8:19 PM
+but it would be nice to fetch the current "media title" too..  for
+HA/GA  or atleast media playing state
+[astur3l]
+[] infowski <@433352458694033428> ↑ :^)
+astur3l 12/27/2022 8:16 PM
+i wanted to do that too, but does webos have some play/pause lua method
+to call? because the other way is to subsribe to the sourceinput (? or
+something like that) and do the control according to media state?:/ or
+you can just remap the button to the non-existent play/pause?:D
+[infowski]
+infowski 12/27/2022 7:38 PM
+@asturel ↑ :^)
+[.ilucha]
+.ilucha 12/27/2022 7:08 PM
+I’m not sure where to post this: is there any way to remap a button on
+the remote? I want to replace the mic button with play/pause for
+example. My TV (G2) is rooted
+December 26, 2022
+[] kopiro91 Anything else you think it does much better than WebOS?
+timcook4825 12/26/2022 11:21 PM
+Kodi!
+[pepijn]
+[] astur3l yeah i would exchange my webos 6 to even 2.x  biiiiiirds 
+pepijn 12/26/2022 5:01 PM
+Don't say that XD I am on 3.4 some streaming services stopped supporting
+it  (edited)
+simoorish 12/26/2022 3:00 PM
+ty infowski , do you know plz any repos beside the homebrew channel ?
+[infowski]
+infowski 12/26/2022 2:55 PM
+No, you won't - rooting keeps devmode enabled infinitely.
+simoorish 12/26/2022 2:48 PM
+hi guyz, new to this and need little help to understand, installed
+hombrew channel through device manager for web after enabling dev mode,
+the annoying is this keep dev mode enabled thing, if i root the tv will
+i need this dev mode iftt command be fired alltime ?
+December 25, 2022
+[astur3l]
+astur3l 12/25/2022 10:26 PM
+or hell no Chromecast support 
+12/25/2022 10:26 PM
+i though WebOS 6 finally have proper Google assistant, like with active
+hot word listening.. nice dream  its shittier than on my 10 years old
+tablet with no mic :d
+[aabytt]
+aabytt 12/25/2022 9:41 PM
+Actually wanted C9 because of dts support but could not find any
+available 
+12/25/2022 9:39 PM
+Last year I bought oled CX because of webos 5 even C1 was cheaper on
+sale.
+[astur3l]
+[] infowski webOS before 6.x is pretty cool :3
+astur3l 12/25/2022 8:48 PM
+yeah i would exchange my webos 6 to even 2.x  biiiiiirds  (edited)
+[infowski]
+infowski 12/25/2022 8:47 PM
+webOS before 6.x is pretty cool :3
+[astur3l]
+astur3l 12/25/2022 8:47 PM
+i hate the webos 6.x  but im also not using any ext device, it does
+what i want (play movies) without any hassle with dv/hdr/ etc..  dv
+support is not really common (well shields support it, not sure about
+apple tv?) also MR is really good  (edited)
+[kopiro91]
+kopiro91 12/25/2022 8:46 PM
+I don't about you other guys but I still really like webOS interface tbh
+12/25/2022 8:45 PM
+Yeah, that are my thoughts. Alright, I'll wait another 1-2 years when
+webOS became really unstable then 
+[astur3l]
+[] kopiro91 It checks out everything, pretty impressive. Still, I think
+it does exactly what my TV does, not mor...
+astur3l 12/25/2022 8:45 PM
+just faster 
+[kopiro91]
+kopiro91 12/25/2022 8:44 PM
+Anything else you think it does much better than WebOS?
+12/25/2022 8:43 PM
+It checks out everything, pretty impressive. Still, I think it does
+exactly what my TV does, not more, not less. An interesting feature is
+the AI upscaling, sure, but I can live without I guess 
+[darby_crash]
+darby_crash 12/25/2022 8:31 PM
+https://www.nvidia.com/en-us/shield/compare/
+NVIDIA SHIELD TV vs Apple TV, Fire TV, and Roku Ultra
+See why NVIDIA SHIELD TV is the dominant streaming media device today.
+[]
+12/25/2022 8:29 PM
+https://www.nvidia.com/en-us/shield/specs/
+NVIDIA SHIELD Specs & Features
+So many features, it's no wonder SHIELD TV is the best streaming media
+device today.
+[]
+[kopiro91]
+kopiro91 12/25/2022 8:28 PM
+alright, i'll give it a try - i need to check codecs and stuff 
+[darby_crash]
+darby_crash 12/25/2022 8:27 PM
+is perfect and rootable, I have 2015 pro model and support everything
+without issues. Is really fast
+[kopiro91]
+[] darby_crash Nvidia Shield
+kopiro91 12/25/2022 8:26 PM
+Do you have personal on experience on it? Can you root it? I'm in
+general a bit skeptical because it runs Android TV - and it's famous to
+be slow. (edited)
+[kopiro91]
+kopiro91 12/25/2022 8:25 PM
+Well, what about the user-interface and the software? Is there an OS I
+can install on it? Also, wouldn't that be expensive compared to other
+solutions?
+[estebiu.]
+[] kopiro91 Hello! Just wondering, is there a good HDMI device with
+great homebrew capabilities I can use instea...
+estebiu. 12/25/2022 8:23 PM
+Just connect a pc to your tv.
+[darby_crash]
+darby_crash 12/25/2022 8:21 PM
+Nvidia Shield
+[] kopiro started a thread: Hello Just wondering is there a good. See
+all threads. 12/25/22, 7:44 PM
+[kopiro91]
+kopiro91 12/25/2022 7:08 PM
+Hello! Just wondering, is there a good HDMI device with great homebrew
+capabilities I can use instead of relying on webOS? I'm pretty happy so
+far with the jailbroken webos, but I feel it's still pretty limited and
+I wanted to explore alternatives, like FireStick or Apple TV - but I
+also want to make sure that: - They support 4K, 7.1 HDR and all those
+video/audio capabilities my integrated TV has and it's been working
+great - It's jail-breakable and I can experiment with it at any level,
+possibly without being scared of breaking a 1000$ device like my TV if I
+do smth wrong
+ Hello Just wondering is there a good →
+[darby_crash]
+[] surname. Click to see attachment
+darby_crash 12/25/2022 6:06 AM
+use lowercase L
+[surname.]
+surname. 12/25/2022 5:44 AM
+Got it working
+[surname.]
+surname. 12/25/2022 5:06 AM
+(no content)
+[image.png]
+ image.png
+12.42 KB External
+12/25/2022 5:06 AM
+did the terminal command on device manager
+12/25/2022 5:05 AM
+Trying to telnet to my TV
+12/25/2022 5:05 AM
+(no content)
+[image.png]
+ image.png
+6.31 KB External
+12/25/2022 5:05 AM
+Need some help fellas
+December 24, 2022
+[] estebiu. Hey! I think someone did an update on my family TV and now
+the homebrew app it's gone. I tried goin...
+Deleted User 12/24/2022 10:17 PM
+use crashd
+[estebiu.]
+estebiu. 12/24/2022 8:43 PM
+My system version is 6.10, btw
+12/24/2022 8:43 PM
+Hey! I think someone did an update on my family TV and now the homebrew
+app it's gone. I tried going to rootmy.tv to retry rooting it but after
+rebooting there isn't any homebrew app installed.
+[borjajajas]
+borjajajas 12/24/2022 3:28 PM
+Because it is reading the adapter correctly and the leds seem to be
+correct too
+12/24/2022 3:28 PM
+I am pretty sure it is the config of the size and page size
+[borjajajas]
+borjajajas 12/24/2022 2:53 PM
+There is no other method on 3.9 but changing the eeprom @ww @hellobox ?
+[borjajajas]
+[] darby_crash Check chip size and page size. Maybe this is useful:
+https://www.14core.com/working-on-24c256-eeprom...
+borjajajas 12/24/2022 2:51 PM
+Hahaha I don't hava much knowledge about this. What chip size and page
+size do you recommend me?
+[borjajajas]
+hellobox. what address did you use?
+borjajajas 12/24/2022 2:50 PM
+@Darby_Crash what do you mean by adress? I don't understand sorry
+December 23, 2022
+[krazyiezay]
+[] mariotaku Input **exact** command below, **don't miss any characters
+including space** `touch /var/log/crashd...
+krazyiezay 12/23/2022 6:19 PM
+I ended up doing that and got it to work without any issues after that
+[mariotaku]
+[] krazyiezay Hello I’m trying to root my lg C1 using crashd and I get
+this error can someone help me on what I’m ...
+mariotaku 12/23/2022 6:03 PM
+Input exact command below, don't miss any characters including space
+touch /var/log/crashd/"x;telnetd -l sh"
+[krazyiezay]
+krazyiezay 12/23/2022 3:25 PM
+Hello I’m trying to root my lg C1 using crashd and I get this error can
+someone help me on what I’m doing wrong
+[IMG_1732.jpg]
+ IMG_1732.jpg
+1.35 MB External
+zubairkhan00712 12/23/2022 2:34 PM
+Any fix for no wifi on lg uh651v?
+12/23/2022 2:33 PM
+Hi all
+ww8543 12/23/2022 11:14 AM
+also the tv probably works even without the eeprom, as it uses default
+values in that case
+12/23/2022 11:13 AM
+he could measure the vcc wire, to see whether or not the ch341 really
+outputs any voltage at all
+[darby_crash]
+[] borjajajas If I connect the clip in other ways the red led goes off
+and the usb is not recognised...
+darby_crash 12/23/2022 1:34 AM
+Check chip size and page size. Maybe this is useful:
+https://www.14core.com/working-on-24c256-eeprom-256kbit-32-kbyte-serial-memory-data-storage-on-i2c-bus/
+(edited)
+Wired Developer
+Working on 24C256 EEPROM 256Kbit / 32 Kbyte Serial Memory Data Stor...
+This is the AT24C256 that provides 32 Kbyte of serial, Electrically
+Erasable Programmable Read Only Memory (EEPROM) organized at 256Kbits
+WORDS of 8 BITS each. EEPROM can store data permanently unless you erase
+or write it and won’t lost the data when power off. Some of
+microcontroller have limited storage like Arduino it has only
+[]
+December 22, 2022
+ww8543 12/22/2022 10:35 PM
+iirc they are floating
+hellobox. 12/22/2022 10:35 PM
+which they probably did
+ww8543 its address should be 0x50, kinda curious that none of these
+tools let you specify it
+hellobox. 12/22/2022 10:34 PM
+if they grounded the address pins or left them floating
+hellobox. i guess only spi eeproms have an ID
+ww8543 12/22/2022 10:32 PM
+its address should be 0x50, kinda curious that none of these tools let
+you specify it
+hellobox. 12/22/2022 10:22 PM
+i guess only spi eeproms have an ID
+12/22/2022 10:21 PM
+did lg pull up any of the address pins?
+12/22/2022 10:16 PM
+what address did you use?
+[borjajajas]
+hellobox. i was responding to this
+https://discord.com/channels/407937994037919756/408006551656333312/10554468...
+borjajajas 12/22/2022 10:14 PM
+Thanks, I connect it there but the output when I try to read it is all
+FF as showed in the puctures
+hellobox. 24Cxx are i2c; 25Cxx are spi
+ww8543 12/22/2022 8:53 PM
+oops i misread what you wrote, sorry (edited)
+hellobox. 12/22/2022 8:41 PM
+i haven't seen SPI used on any lg boards
+12/22/2022 8:41 PM
+i was responding to this
+https://discord.com/channels/407937994037919756/408006551656333312/1055446887567736903
+12/22/2022 8:39 PM
+and 93xx means microwire, which is basically spi
+12/22/2022 8:37 PM
+24Cxx are i2c; 25Cxx are spi
+hellobox. it's definitely a 24c256; 25c256 would use SPI
+ww8543 12/22/2022 8:35 PM
+spi? since when? thats a i2c chip
+hellobox. i don't know how much other stuff you'll backpower
+ww8543 12/22/2022 8:34 PM
+backpower was not an issue on my boards so far
+hellobox. probably 3.3V
+ww8543 12/22/2022 8:34 PM
+it is 3.3v per datasheet
+hellobox. 12/22/2022 7:52 PM
+it's definitely a 24c256; 25c256 would use SPI

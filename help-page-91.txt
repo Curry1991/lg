@@ -1,0 +1,1794 @@
+June 13, 2021
+[infowski]
+infowski 06/13/2021 9:44 PM
+just add an overlay in that directory maybe?
+06/13/2021 9:44 PM
+very likely, yeah.
+[tbsniller]
+tbsniller 06/13/2021 9:44 PM
+yeah im already trying things out: root@LGwebOSTV:~/bin# certutil -A -n
+mitmproxy -t SSL -d /etc/pki/nssdb/ -a -i /home/root/mitmproxy.crt
+certutil: function failed: SEC_ERROR_READ_ONLY: security library:
+read-only database. i think overlay is missing
+[infowski]
+infowski 06/13/2021 9:44 PM
+and it's not on my tv so can't help.
+06/13/2021 9:44 PM
+seems like certutil would be used to edit these databases? TIL, never
+used that subsystem honestly even outside webos
+[tbsniller]
+tbsniller 06/13/2021 9:40 PM
+uhhhh hollyyyy very nice find thank you! i will see what i can find
+[infowski]
+infowski 06/13/2021 8:56 PM
+and in general - likely this binary/subsystem keyword → certupdmgr
+06/13/2021 8:54 PM
+/etc/pki/nssdb
+06/13/2021 8:54 PM
+@TBSniller so... I think I may have a path to give you a tip about
+regarding CA certs...
+[infowski]
+infowski 06/13/2021 3:37 PM
+-p accepts process pid
+[tbsniller]
+tbsniller 06/13/2021 3:37 PM
+uhh nice, thanks ill give it a try 
+[infowski]
+infowski 06/13/2021 3:37 PM
+(-f = follow forks, this is very likely needed on anything more complex
+than plain curl/wget/openssl binaries, eg. chrome / webappmgr...)
+(edited)
+06/13/2021 3:36 PM
+strace -p ... -f
+06/13/2021 3:36 PM
+Yeah - you can bind to a running app
+[tbsniller]
+tbsniller 06/13/2021 3:36 PM
+is there a way to strace apps? 
+06/13/2021 3:32 PM
+and this thing somehow must be inclueded by the tv or not? think the
+certs are precompiled in the apps
+06/13/2021 3:31 PM
+okay cant get it working even cat /home/root/mitmproxy.crt >
+/etc/ssl/certs/DigiCert_Trusted_Root_G4.pem isnt working
+[tbsniller]
+tbsniller 06/13/2021 3:21 PM
+ahh okay i see
+[infowski]
+infowski 06/13/2021 3:20 PM
+essentially /var/palm/jail/com.webos.app.browser is the rootfs seen by
+browser app
+06/13/2021 3:20 PM
+may or may not. check cert path in /var/palm/jail/com.webos.app.browser
+[tbsniller]
+tbsniller 06/13/2021 3:19 PM
+but then the browser uses this cert or not?
+[infowski]
+infowski 06/13/2021 3:19 PM
+ie. they bindmount /tmp, so your files pop up multiple times
+06/13/2021 3:19 PM
+yeah, they are bindmounted iirc
+06/13/2021 3:19 PM
+They likely use a different source of certs
+[tbsniller]
+tbsniller 06/13/2021 3:19 PM
+these are my overlays for ssl dirs with included mitm cert
+06/13/2021 3:19 PM
+searching for pem on filesystem
+/var/palm/jail/com.webos.app.browser/tmp/overlayfs/upper4/cert.pem
+/var/palm/jail/com.webos.app.browser/tmp/overlayfs/upper2/sdp-ca.pem
+06/13/2021 3:18 PM
+so but this is a thing i dont get
+06/13/2021 3:16 PM
+hmm sadly apps dont care 
+06/13/2021 3:14 PM
+okay nice, openssl is assumeing its okay now with creating the cert.pem
+[infowski]
+infowski 06/13/2021 3:09 PM
+yeah, that's not that crt stuff 
+[tbsniller]
+tbsniller 06/13/2021 3:09 PM
+here are some nearly containing info root@LGwebOSTV:~/bin# grep -e "crt"
+/lib/libdl.so.2 crti.S crtn.S crti.S crtn.S crti.S crtn.S crtstuff.c
+root@LGwebOSTV:~/bin# grep -e "crt" /lib/libnss_files.so.2 crti.S crtn.S
+crti.S crtn.S crti.S crtn.S crtstuff.c
+06/13/2021 3:07 PM
+i tried to search for "crt" with grep in those found lib file, not found
+anything
+[infowski]
+infowski 06/13/2021 3:07 PM
+I suspect they may have their own extra openssl module that provides
+certs from secure storage or something? (edited)
+[tbsniller]
+tbsniller 06/13/2021 3:05 PM
+nice idea, i try this is btw the output root@LGwebOSTV:/usr/lib/ssl# ls
+-l total 0 lrwxrwxrwx 1 root root 22 Mar 10 08:57 certs ->
+../../../etc/ssl/certs lrwxrwxrwx 1 root root 28 Mar 10 08:57
+openssl.cnf -> ../../../etc/ssl/openssl.cnf lrwxrwxrwx 1 root root 24
+Mar 10 08:57 private -> ../../../etc/ssl/private
+root@LGwebOSTV:/usr/lib/ssl# pwd /usr/lib/ssl
+[infowski]
+infowski 06/13/2021 3:05 PM
+you can try creating it.
+06/13/2021 3:04 PM
+this path looks promising even if it doesn't exist.
+[tbsniller]
+tbsniller 06/13/2021 3:04 PM
+doesnt exists..
+[infowski]
+infowski 06/13/2021 3:04 PM
+/usr/lib/ssl/cert.pem
+[tbsniller]
+tbsniller 06/13/2021 2:59 PM
+(no content)
+ message.txt
+14.04 KB External
+06/13/2021 2:59 PM
+so strace is givn me the following. i think its meaning the certs are
+loaded from one of the libs?
+[infowski]
+infowski 06/13/2021 2:36 PM
+Possibly, dunno.
+[tbsniller]
+tbsniller 06/13/2021 2:34 PM
+werent there people complaining they cant root because of a already
+fixed thinq?
+[infowski]
+infowski 06/13/2021 2:33 PM
+I mean, worst case you just need to reroot, but yeah.
+[tbsniller]
+tbsniller 06/13/2021 2:33 PM
+okay nice, luckily havent done that 
+[infowski]
+infowski 06/13/2021 2:29 PM
+and installing devmode app doesn't make much sense since you can develop
+on rooted device anyway if you enable sshd in homebrew channel. (edited)
+06/13/2021 2:29 PM
+yeah, installing devmode app essentially unroots your tv.
+[tbsniller]
+tbsniller 06/13/2021 2:29 PM
+i havent, somebody wrote that he had problems first rooting and then
+installing the devmode app
+[infowski]
+infowski 06/13/2021 2:28 PM
+also if you have devmode app installed by any chance it ships
+precompiled strace binaries
+[tbsniller]
+tbsniller 06/13/2021 2:28 PM
+i think i have to..  thanks! 
+[infowski]
+infowski 06/13/2021 2:26 PM
+sketchiness level: 76%
+06/13/2021 2:26 PM
+https://github.com/andrew-d/static-binaries/blob/master/binaries/linux/arm/strace
+i think that worked?
+andrew-d/static-binaries
+Various *nix tools built as statically-linked binaries -
+andrew-d/static-binaries
+[]
+06/13/2021 2:26 PM
+let me find it...
+06/13/2021 2:26 PM
+there are a bunch of static binaries prebuilt on random github repos, if
+you trust them 
+[tbsniller]
+tbsniller 06/13/2021 2:25 PM
+uhm i havent.. i think i have to compile it from here
+https://github.com/strace/strace/tree/v5.12 ?
+strace/strace
+strace is a diagnostic, debugging and instructional userspace utility
+for Linux - strace/strace
+[]
+[infowski]
+infowski 06/13/2021 2:22 PM
+...assuming you have working strace.
+[tbsniller]
+tbsniller 06/13/2021 2:21 PM
+ahh nice never heard from that thx!
+[infowski]
+infowski 06/13/2021 2:20 PM
+in general strace -e open openssl s_client ...
+[tbsniller]
+tbsniller 06/13/2021 2:19 PM
+yeah im already trying to add it to certs finding by find / | grep .crt
+could you please give me a peak how to strace it? 
+[infowski]
+infowski 06/13/2021 2:17 PM
+You can try strace'ing it on webos side to see which file it reads certs
+off
+[infowski]
+infowski 06/13/2021 2:08 PM
+Ah, yeah. It may be using some other ca certificate store...
+[tbsniller]
+tbsniller 06/13/2021 2:07 PM
+okay i see, but i think that isnt the real problem. using for example
+this openssl s_client -connect google.com:https -CAfile
+/etc/ssl/certs/ca-certificates.crt, is working because openssl knows
+which ca chain should be used openssl s_client -connect google.com:https
+isnt working because because no ca chain is included, so our mitmproxy
+cert is missing at some point
+[infowski]
+infowski 06/13/2021 2:04 PM
+chrome / webappmgr / curl should properly send SNI though...
+06/13/2021 2:03 PM
+so, this should return proper CN (does not change the fact that it may
+not work in other apps)
+openssl s_client -connect google.com:https -servername google.com -CAfile /etc/ssl/certs/ca-certificates.crt
+06/13/2021 2:03 PM
+-servername val Set TLS extension servername (SNI) in ClientHello (default)
+06/13/2021 2:01 PM
+I know why CN is invalid - openssl does not send SNI by default
+[tbsniller]
+tbsniller 06/13/2021 2:00 PM
+i think its the cn 
+[infowski]
+infowski 06/13/2021 2:00 PM
+i am stupid.
+06/13/2021 2:00 PM
+wait, nvm
+06/13/2021 2:00 PM
+huh. that looks like your /etc/ssl/certs/ca-certificates.crt is
+invalid...?
+[tbsniller]
+tbsniller 06/13/2021 2:00 PM
+it seems to be a missing location
+[tbsniller]
+[] infowski Not working at all, or working just partially?
+tbsniller 06/13/2021 1:59 PM
+his tv is working, my tv dont
+[tbsniller]
+tbsniller 06/13/2021 1:59 PM
+somehow my tv would not trust this certificated.. here are tests with
+openssl: root@LGwebOSTV:~# openssl s_client -connect google.com:https
+-CAfile /usr/share/ca-certificates/sdp/sdp-ca.pem CONNECTED(00000003)
+depth=1 CN = mitmproxy, O = mitmproxy verify return:1 depth=0 CN =
+invalid2.invalid verify return:1 --- root@LGwebOSTV:~# openssl s_client
+-connect google.com:https -CAfile /etc/ssl/certs/ca-certificates.crt
+CONNECTED(00000003) depth=1 CN = mitmproxy, O = mitmproxy verify
+return:1 depth=0 CN = invalid2.invalid verify return:1 ---
+root@LGwebOSTV:~# openssl s_client -connect google.com:https
+CONNECTED(00000003) depth=1 CN = mitmproxy, O = mitmproxy verify
+error:num=19:self signed certificate in certificate chain ---
+Certificate chain 0 s:/CN=invalid2.invalid i:/CN=mitmproxy/O=mitmproxy 1
+s:/CN=mitmproxy/O=mitmproxy i:/CN=mitmproxy/O=mitmproxy --- not working
+with no ca defined
+[infowski]
+infowski 06/13/2021 1:59 PM
+Not working at all, or working just partially? (edited)
+[tbsniller]
+tbsniller 06/13/2021 1:58 PM
+the there im are trying to get the mitm proxy working on my tv mitmproxy
+is set up and working root ca is imported using this commands (also at
+boot): mkdir -p /tmp/overlayfs/upper /tmp/overlayfs/work && mount -t
+overlay -o
+lowerdir=/etc/ssl/,upperdir=/tmp/overlayfs/upper/,workdir=/tmp/overlayfs/work/
+overlay-ssl /etc/ssl/ mkdir -p /tmp/overlayfs/upper2
+/tmp/overlayfs/work2 && mount -t overlay -o
+lowerdir=/usr/share/ca-certificates/sdp/,upperdir=/tmp/overlayfs/upper2/,workdir=/tmp/overlayfs/work2/
+overlay-sdp /usr/share/ca-certificates/sdp/ cd /etc/ssl/certs cp
+/home/root/mitmproxy.crt /etc/ssl/certs/ ln -s mitmproxy.crt $(openssl
+x509 -in /etc/ssl/certs/mitmproxy.crt -subject_hash_old -noout).0
+(edited)
+June 12, 2021
+[soliver84]
+soliver84 06/12/2021 6:12 AM
+[tbsniller]
+tbsniller 06/12/2021 12:23 AM
+okay forget this, its late overread something.. (edited)
+June 11, 2021
+[tbsniller]
+tbsniller 06/11/2021 8:26 PM
+think that is you at #1529 haha
+06/11/2021 8:25 PM
+this is the only thing ive found
+http://www.hifi-forum.de/viewthread-94-16350-31.html 
+06/11/2021 8:25 PM
+lol
+[soliver84]
+soliver84 06/11/2021 7:27 PM
+hello how do I find the changelog of the engineering firmware: LG AU810
+FW: 03.00.31.01
+June 5, 2021
+[mariotaku]
+[] tbsniller insane, thats it
+mariotaku 06/05/2021 6:38 AM
+Jackpot!
+[tbsniller]
+tbsniller 06/05/2021 2:07 AM
+insane, thats it
+[unknown.png]
+ unknown.png
+969.97 KB External
+ 1
+June 4, 2021
+[tbsniller]
+tbsniller 06/04/2021 11:54 PM
+according to the bin its yuv420 i look further into this again thank you
+very much!  good night
+[infowski]
+infowski 06/04/2021 11:53 PM
+'nite. see you tomorrow.
+06/04/2021 11:53 PM
+isn't this some bizarre yuv? hmmmmmmm...
+[tbsniller]
+tbsniller 06/04/2021 11:52 PM
+on the right waay
+[unknown.png]
+ unknown.png
+206.77 KB External
+[tbsniller]
+tbsniller 06/04/2021 11:42 PM
+i try a more normal resolution
+06/04/2021 11:42 PM
+the only nearly useful is grey 8-bit
+[infowski]
+infowski 06/04/2021 11:42 PM
+but maybe? hmmmm..
+06/04/2021 11:41 PM
+hmmmmm... this... doesn't look like rgba though.... hmmmm...
+06/04/2021 11:41 PM
+RGBA?
+[tbsniller]
+tbsniller 06/04/2021 11:41 PM
+holy moly never expected anything you are that other hero
+[infowski]
+infowski 06/04/2021 11:41 PM
+hmmmmmmmm...
+[tbsniller]
+tbsniller 06/04/2021 11:40 PM
+(no content)
+[unknown.png]
+ unknown.png
+142.22 KB External
+[tbsniller]
+tbsniller 06/04/2021 9:24 PM
+ohh doesnt sound well 
+[infowski]
+infowski 06/04/2021 9:23 PM
+ohhh...
+[tbsniller]
+tbsniller 06/04/2021 9:22 PM
+width 1900 height 200
+[infowski]
+[] tbsniller so you only need beginning address and the size for one
+image
+infowski 06/04/2021 9:21 PM
+what's the resolution you';re trying to capture?
+[infowski]
+infowski 06/04/2021 9:21 PM
+interesting.
+06/04/2021 9:21 PM
+also that's a rather small size...
+06/04/2021 9:20 PM
+yeah, that should work this way.
+[tbsniller]
+tbsniller 06/04/2021 9:20 PM
+so you only need beginning address and the size for one image
+06/04/2021 9:19 PM
+thank you!  at this moment i dont really get the buffer thing. why
+there are two different addresses and two different sizes? in my
+understanding there should only be one: address begin -> image data ->
+address end | one size for begin to end
+[infowski]
+infowski 06/04/2021 9:10 PM
+fopen with "wb" mode, fwrite contents of a buffer. then pull that into
+gimp in "raw image data" mode and try to figure it out
+[infowski]
+[] tbsniller that would be pretty helpful thanks!
+infowski 06/04/2021 9:10 PM
+https://gist.github.com/7452a1d6ba48454cf19918edd8efb75d that should
+just work.
+test.c
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+[tbsniller]
+tbsniller 06/04/2021 9:08 PM
+that would be pretty helpful thanks!
+[infowski]
+infowski 06/04/2021 9:07 PM
+@TBSniller i think it'd be best to first just capture a single buffer
+into a file. Let me find an example...
+[tbsniller]
+tbsniller 06/04/2021 9:07 PM
+maybe some of you have some tutorials or info how to work with this
+06/04/2021 9:05 PM
+okay, thank you guys to this point, took me a very long time but the
+capture thing seems to be working, no perm or other issues at all i can
+now get the buffer information, but i dont have any plan how to get this
+info into a byte(?) image stream understandable for ffplay here an
+example what i can get: addr0: 0x95f04000 addr1: 0x955d0000 size0:
+380800 size1: 190400 addr are pointers, size are integers exanded info
+in logs: 2021-06-04T18:56:57.564898Z [18921.264982646] user.debug
+vtcapture-capture [] capture DBGMSG {}
+vtDriver.cpp.currentCaptureBuffInfo():462 try to get current capture
+buffer info. 2021-06-04T18:56:57.565020Z [18921.265103350] user.debug
+vtcapture-capture [] capture DBGMSG {}
+vtDriver.cpp.currentCaptureBuffInfo():507 start addr[0]: 0x95f04000,
+addr[1]: 0x955d0000 2021-06-04T18:56:57.565104Z [18921.265186387]
+user.debug vtcapture-capture [] capture DBGMSG {}
+vtDriver.cpp.currentCaptureBuffInfo():508 start size[0]: 380800,
+size[1]: 190400 as far as i can see another capture bin is after capture
+working with YUV encoded information and converts it to rgb using a
+Image library maybe there is a easier way?
+June 3, 2021
+[mariotaku]
+[] tbsniller if i have a basic_string param_2 = "my test char" and
+following code: bVar = param_2[1]; what does i...
+mariotaku 06/03/2021 6:23 AM
+basic_string is a c++ type, which may have some other fields (not sure
+though)
+June 2, 2021
+[dustyangel47]
+dustyangel47 06/02/2021 10:59 PM
+i would think that bVar would be y but idk for sure
+[tbsniller]
+tbsniller 06/02/2021 10:51 PM
+if i have a basic_string param_2 = "my test char" and following code:
+bVar = param_2[1]; what does it do? bvar then "test" bvar then "y" or
+maybe something complete other?
+[tbsniller]
+tbsniller 06/02/2021 9:54 PM
+okay understand it thank you!
+[tbsniller]
+tbsniller 06/02/2021 9:44 PM
+okay makes sense on security aspecs
+[mariotaku]
+mariotaku 06/02/2021 9:43 PM
+I think programs doesn't do IPC like that. One pointer can't be accessed
+by another process by default.
+[tbsniller]
+tbsniller 06/02/2021 9:39 PM
+okay nice thx! think ive found it. its a pointer PTR_LOOP_00047004 as
+far as i know pointer are pointing at a specific position in ram is it
+possible that another program is setting the id, saves the id in ram at
+the pointer location and then another program can get this information?
+or is a pointer just a variable with the ability to give the address
+instead of the data and i have to look further where the pointer is
+being set?
+[mariotaku]
+[] tbsniller i dont get it.. can somebody tell me where _gClientId is
+set? or is it a random generated number?
+mariotaku 06/02/2021 9:15 PM
+It might be a member field of a struct, so maybe you could find
+addresses around this field, and see if there are any access.
+[tbsniller]
+tbsniller 06/02/2021 9:13 PM
+its called in functions but nowhere set
+06/02/2021 9:13 PM
+(no content)
+[unknown.png]
+ unknown.png
+39.52 KB External
+06/02/2021 9:12 PM
+(no content)
+[unknown.png]
+ unknown.png
+11.5 KB External
+06/02/2021 9:12 PM
+i dont get it.. can somebody tell me where _gClientId is set? or is it a
+random generated number?
+June 1, 2021
+[tbsniller]
+tbsniller 06/01/2021 6:18 PM
+maybe the standard gallery cant handle hdr in m2ts, you could also try a
+alternative app
+06/01/2021 6:15 PM
+i use mkv file format direct play (mkv straight forward to client) and
+convert to lower bitrates through plex (idk which file format is used
+after transformation) is working fine with hdr
+[gobycarwash]
+gobycarwash 06/01/2021 6:04 PM
+Apparently you need an MP4 container , I was using m2ts
+[tbsniller]
+[] gobycarwash would it be possible to play dolby vision or HDR10+ files
+from the LG os once rooted/homebrew channe...
+tbsniller 06/01/2021 7:49 AM
+Plex with hdr Files is working fine for me
+[gobycarwash]
+gobycarwash 06/01/2021 6:52 AM
+would it be possible to play dolby vision or HDR10+ files from the LG os
+once rooted/homebrew channel enabled? my B9 can play the built in demo
+with the "dolby vision" banner but none of my local files on USB show up
+as any more than "HDR" (no HDR10+, no DV)
+[mariotaku]
+mariotaku 06/01/2021 3:51 AM
+Hmm interesting. You may need to register your binary as a service, but
+about the permission and id part there...
+May 31, 2021
+[tbsniller]
+tbsniller 05/31/2021 10:59 PM
+any ideas how to get a executeable as a service, so i can elevate it to
+"all"? i think that would do the trick for the following
+05/31/2021 10:59 PM
+2021-05-31T20:54:40.445910Z [2727.071804780] user.debug ls-hubd []
+ls-hubd DBGMSG {} _LSHubSendRequestNameReply :###### active permission
+found for unique_name [VfLcihRC]
+service_name[com.webos.service.capture.client1803]
+2021-05-31T20:54:40.445987Z [2727.071881002] user.debug ls-hubd []
+ls-hubd DBGMSG {} LSHubPermissionGetRequiredTrustAsString :get perm
+level perm->required_trust none 2021-05-31T20:54:40.460610Z
+[2727.086504261] user.debug vtcapture-capture [] capture DBGMSG {}
+ls2Interface.cpp.call():114 call (tx): api =
+luna://com.webos.service.capturepermission/checkPermission, payload =
+{"subscribe":true} 2021-05-31T20:54:40.460798Z [2727.086692298]
+user.debug vtcapture-capture [] <default-lib> DBGMSG {}
+_LSTransportAddPendingMessageWithToken: inserting
+"com.webos.service.capturepermission" into pending: 0x95e01250
+2021-05-31T20:54:40.460875Z [2727.086769150] user.debug
+vtcapture-capture [] <default-lib> DBGMSG {} _LSTransportQueryName:
+service_name com.webos.service.capturepermission, hub: 0x95e03c30
+2021-05-31T20:54:40.461246Z [2727.087140224] user.debug
+vtcapture-capture [] <default-lib> DBGMSG {} method call: token: 5,
+category: /, method: checkPermission, payload: {"subscribe":true}
+2021-05-31T20:54:40.466298Z [2727.092192631] user.warning ls-hubd []
+ls-hubd LSHUB_NO_NAME_PERMS {} Can not find match for
+'com.webos.service.capturepermission' in pattern queue
+'["com.webos.service.capture.client", "com.palm.service.capture.client",
+"com.palm.capture.client", "com.lge.capture.client"]'
+2021-05-31T20:54:40.466380Z [2727.092274076] user.err ls-hubd [] ls-hubd
+LSHUB_NO_OUT_PERMS
+{"DEST_APP_ID":"com.webos.service.capturepermission","SRC_APP_ID":"com.webos.service.capture.client1803","EXE":"/home/root/bin/vtcapture-capture","PID":4372}
+"com.webos.service.capture.client1803" does not have sufficient outbound
+permissions to communicate with "com.webos.service.capturepermission"
+(cmdline: ./vtcapture-capture)
+May 30, 2021
+[tbsniller]
+tbsniller 05/30/2021 7:33 PM
+thx @infowski found it and done, thx
+[tbsniller]
+tbsniller 05/30/2021 5:43 PM
+nice that seemed to work thx!
+[infowski]
+infowski 05/30/2021 5:41 PM
+you may need to increase logging level: PmLogCtl set '*' 'debug'
+[tbsniller]
+tbsniller 05/30/2021 5:40 PM
+in the vtCapture_create function is a little bit with luna stuff like
+LS2Interface::LS2Interface ls2serviceStartRoutine there are lots of
+debugging prints like
+printLog("capture",7,0,"ls2Interface.cpp","LS2Interface",0x19,"vtcapture
+ls2 service started."); is there any way to see these logs? activating
+advanced logging with luna-send -n 1 -f
+luna://com.webos.service.config/setConfigs '{ "configs":
+{"system.collectDevLogs": true}}' doesnt change that much, im looking in
+/var/log/messages. is there another place for these debugging logs?
+[tbsniller]
+tbsniller 05/30/2021 5:13 PM
+Linux Crash: vtcapture-captu crashes at location /lib/libc-2.28.so
+(__libc_do_syscall+0x5) [0x96dd8886]
+05/30/2021 5:10 PM
+i think there is the problem.. the original testing bin fails also with
+the message C++ exception with description "LSRegisterPubPriv FAILED"
+thrown in the test fixture's constructor.
+[infowski]
+infowski 05/30/2021 5:09 PM
+sounds like it may try to bind to luna bus, but it's not registered
+there
+05/30/2021 5:09 PM
+the question is - why does it fail. have you looked what the actual
+binary tries to do there?
+05/30/2021 5:08 PM
+ah, libluna-service2.so.3
+[tbsniller]
+tbsniller 05/30/2021 5:08 PM
+how can i check this?
+[infowski]
+infowski 05/30/2021 5:08 PM
+was that libhelpers.so.2?
+[tbsniller]
+tbsniller 05/30/2021 5:08 PM
+according to this
+https://github.com/openwebos/luna-service2/blob/master/src/libluna-service2/base.c
+it should have to do something with luna
+[infowski]
+infowski 05/30/2021 5:06 PM
+iirc
+05/30/2021 5:06 PM
+yeah, that's a symbol from one of the helper libraries...
+[tbsniller]
+tbsniller 05/30/2021 5:06 PM
+searching for LSRegisterPubPriv in the libvtcapture lib doesnt find
+anything
+05/30/2021 5:02 PM
+anyone a hint where to look further?
+05/30/2021 5:01 PM
+maybe somebody can help me: i try to get libvtcapture working, reversing
+sample comes from /opt/webos/tests/capture/test_vtDriver when i try to
+run this original test-bin i get the following message: root@TBTV:~/bin#
+/opt/webos/tests/capture/test_vtDriver [==========] Running 1 test from
+1 test case. [----------] Global test environment set-up. [----------] 1
+test from VtDriverTest [ RUN ] VtDriverTest.startVtCapture unknown file:
+Failure C++ exception with description "LSRegisterPubPriv FAILED" thrown
+in the test fixture's constructor. [1]+ Stopped (signal)
+/opt/webos/tests/capture/test_vtDriver i throught this came from some
+testing stuff and i can use the vtCaptureAPI anyways so now trying my
+own bin and i get a similar message: terminate called after throwing an
+instance of 'std::runtime_error' what(): LSRegisterPubPriv FAILED
+Aborted This message must came from vtCapture_create(); maybe there is
+also some other thing wrong.. im not very fit in programming, just
+trying to get things working. Git:
+https://github.com/TBSniller/tv-native-apis/blob/main/samples/vtcapture
+TBSniller/tv-native-apis
+Headers and API stubs not included in OSE. Contribute to
+TBSniller/tv-native-apis development by creating an account on GitHub.
+[]
+May 27, 2021
+ww8543 05/27/2021 11:25 AM
+and whether it uses encryption or not
+05/27/2021 11:25 AM
+it depends on the app
+Deleted User 05/27/2021 11:23 AM
+I used the method detailed above with scp and ide
+05/27/2021 11:23 AM
+(no content)
+[unknown.png]
+ unknown.png
+61.02 KB External
+05/27/2021 11:22 AM
+But app works fine
+05/27/2021 11:22 AM
+Idk why
+05/27/2021 11:22 AM
+And it works but couldn.t find images
+05/27/2021 11:21 AM
+Aka oled gallery
+05/27/2021 11:21 AM
+I tried to port iGallery
+ww8543 05/27/2021 11:21 AM
+since you have to deal with the encryption of the apps
+Deleted User Also.. how to transplant apps
+ww8543 05/27/2021 11:20 AM
+thats not trivial
+Deleted User 05/27/2021 11:20 AM
+Scp to folder then reapack to ipk with webos IDE then push ipk?
+ww8543 does your tv have it natively, or did you try to transplant it
+from another tv?
+Deleted User 05/27/2021 11:20 AM
+Also.. how to transplant apps
+Deleted User 05/27/2021 10:27 AM
+very
+ww8543 05/27/2021 10:26 AM
+strange
+ww8543 does your tv have it natively, or did you try to transplant it
+from another tv?
+Deleted User 05/27/2021 10:26 AM
+had it
+ww8543 05/27/2021 10:24 AM
+does your tv have it natively, or did you try to transplant it from
+another tv?
+05/27/2021 10:24 AM
+it probably crashes something in the kernel
+Deleted User 05/27/2021 10:13 AM
+hence apple tv..
+05/27/2021 10:13 AM
+how can app reboot my tv
+05/27/2021 10:13 AM
+then why
+Deleted User I think is due to drm thing maybe it detects root
+ww8543 05/27/2021 10:09 AM
+nope
+Deleted User 05/27/2021 9:59 AM
+[:lg:]
+05/27/2021 9:59 AM
+I am not sure
+05/27/2021 9:59 AM
+I think is due to drm thing maybe it detects root
+05/27/2021 9:59 AM
+As soon as I hit play , tv reboots (edited)
+05/27/2021 9:59 AM
+Started using apple tv app (edited)
+05/27/2021 9:58 AM
+Long story short
+May 24, 2021
+[gobycarwash]
+gobycarwash 05/24/2021 8:39 PM
+For safety I went with this nov? update
+https://web.archive.org/web/20201111203909/https://www.lg.com/us/support/product/lg-OLED65B9PUA.AUS
+http://gscs-b2c.lge.com/downloadFile?fileId=VVK9V49UfCBUVtVWpLjZAg
+05.00.02
+LG OLED65B9PUA.AUS: Support, Manuals, Warranty & More | LG USA Support
+Get product support, user manuals and software drivers for the LG
+OLED65B9PUA.AUS. View OLED65B9PUA.AUS warranty information & schedule
+repair service.
+[]
+May 23, 2021
+[david.rysk]
+david.rysk 05/23/2021 9:53 PM
+I mean, I'm having problems with HDMI ARC since that update 
+[gobycarwash]
+gobycarwash 05/23/2021 9:37 PM
+any reason not to update to feb 2021 then? like missing functionality or
+less stable exploit or something?
+ww8543 05/23/2021 9:35 PM
+but doubtful that they fixed that bug
+[retr0id]
+retr0id 05/23/2021 9:33 PM
+feb 2021 would definitely be rootable still
+[gobycarwash]
+gobycarwash 05/23/2021 9:28 PM
+sorry for the n00b question but are all public mainline firmwares
+exploitable? I haven't updated in months and I want a fix for the PCM
+surround out bug. I want to update my lg b9 US model to this Feb 2021
+fw: SW File(Version 05.00.15) Detailed applicable model list : Please
+check with reference Tab exactly Software_File(Version_05.00.15).zip
+02/04/2021 980298K will it remain rootable?
+https://discord.com/channels/407937994037919756/822443030761046017/831893006655291402
+[smx2460]
+smx2460 05/23/2021 9:26 PM
+Extract epk, get pak files, upload from bootloader
+05/23/2021 9:26 PM
+One (maybe not known?) Popular use of epk2extract was to restore half
+bricked units
+05/23/2021 9:26 PM
+You get partitions by unpacking the .epk and grabbing the .pak files
+05/23/2021 9:25 PM
+Then upload the partition with say TeraTerm and go enjoy your life
+05/23/2021 9:25 PM
+For the old sets (zmodem)
+05/23/2021 9:24 PM
+Iirc the command was "loadz <part name>"
+05/23/2021 9:24 PM
+Or you need a custom script that pulls in chunks
+05/23/2021 9:24 PM
+Not sure if there's a one stop command for that
+05/23/2021 9:24 PM
+Hopefully the new ones can be done a little bit smarter with tftp or usb
+05/23/2021 9:23 PM
+Except the old sets were downgraded with ZMODEM at an abysmal speed
+(edited)
+05/23/2021 9:23 PM
+For older sets, but there's no difference for new ones
+05/23/2021 9:23 PM
+Has been done many times before
+05/23/2021 9:23 PM
+@infowski you can easily downgrade from the bootloader
+[infowski]
+infowski 05/23/2021 8:35 PM
+Has anyone tried downgrading with root? This seems a little like a bunch
+of strategic nops in /usr/sbin/update, unless there's some actual efuses
+that prevent downgrades? (doubt it...?) (edited)
+[retr0id]
+retr0id 05/23/2021 8:33 PM
+good job I didn't update my B9, heh
+ww8543 05/23/2021 8:30 PM
+or install homebrew channel, which has an option for this
+[david.rysk]
+david.rysk 05/23/2021 8:30 PM
+it's more that stuff is broken
+ww8543 05/23/2021 8:30 PM
+if the update popups annoy you, you can block 2 hostnames, and the tv
+wont bother you
+05/23/2021 8:29 PM
+rarely do they add some real new thing
+05/23/2021 8:29 PM
+they just sometimes fix exploits, and take away functionality
+05/23/2021 8:29 PM
+usually updates dont bring any improvements
+[david.rysk]
+david.rysk 05/23/2021 8:27 PM
+I'd expect better from such an expensive tv
+05/23/2021 8:27 PM
+ww8543 05/23/2021 8:27 PM
+thats lg
+[david.rysk]
+david.rysk 05/23/2021 8:25 PM
+so I have an LG B9 with the latest LG firmware, and first off it seems
+the latest firmware broke HDMI ARC with my Vizio soundbar, and second,
+the Apple TV+ app has awful stutter that happens any time it's used more
+than once after a TV reboot. Is it me, or is is that the LG firmware and
+the apps are terrible? (edited)
+jackching 05/23/2021 7:59 PM
+Is there a way to install disney+ app on 3.10.11 yet?
+May 20, 2021
+[tbsniller]
+[] smx2460 Each having its own task
+tbsniller 05/20/2021 9:46 PM
+and yes you are right^^ thats why i wanted the the originial tvservice
+bin to get the differences and maybe fix my blackscreen issue with the
+hyperion-webos bin from mariotaku
+[tbsniller]
+[] smx2460 Which year is your TV?
+tbsniller 05/20/2021 9:45 PM
+Yeah its the 2020 edition: LG 65NANO867NA
+[tbsniller]
+[] mariotaku Tako 
+tbsniller 05/20/2021 9:43 PM
+im so sorry, fingers where faster than brain.. 
+[mariotaku]
+[] tbsniller ^^
+mariotaku 05/20/2021 6:36 PM
+Tako 
+[smx2460]
+ww8543 or rather they split it up into several binaries, not one
+monolithic binary anymore
+smx2460 05/20/2021 6:17 PM
+This (edited)
+[smx2460]
+ww8543 it does, you might have a newer tv where they renamed it again
+tho
+smx2460 05/20/2021 6:17 PM
+Not just a rename
+[smx2460]
+smx2460 05/20/2021 6:16 PM
+That's why the newest TVs seem to have dummy ones only
+05/20/2021 6:16 PM
+Each having its own task
+05/20/2021 6:16 PM
+Replaced by specialized services on the Luna bus
+05/20/2021 6:16 PM
+It looks like tvservice is going to die eventually
+05/20/2021 6:15 PM
+They are moving from the monolithic RELEASE setup (Netcast4 era) to a
+multitude of services
+05/20/2021 6:15 PM
+Afaik 2020+
+05/20/2021 6:15 PM
+The fake or mock tvservice is the newest iteration of RELEASE (edited)
+05/20/2021 6:14 PM
+Which year is your TV?
+05/20/2021 6:14 PM
+@TBSniller hm
+May 19, 2021
+[tbsniller]
+tbsniller 05/19/2021 8:08 PM
+^^
+ww8543 05/19/2021 8:08 PM
+@Mariotaku*
+[tbsniller]
+tbsniller 05/19/2021 8:08 PM
+mariotaku*
+05/19/2021 8:07 PM
+Because I think the executeOneShot-function in tvservice isnt handled
+like in captureservice, thats why the hyperion-webos bin from mariotako
+isnt working on my tv
+ww8543 05/19/2021 8:07 PM
+or rather they split it up into several binaries, not one monolithic
+binary anymore
+[infowski]
+infowski 05/19/2021 8:07 PM
+i mean, they might've split the service up
+[tbsniller]
+tbsniller 05/19/2021 8:06 PM
+yeah its now bundled in captureservice (the func im looking for) - eg
+executeOneShot. There I already found it. Now I want to discover
+tvservice, because JohnPaul called it would also be there to get to know
+the differences
+ww8543 05/19/2021 8:06 PM
+newer webos releases renamed it to something with "legacy" in the name
+05/19/2021 8:05 PM
+no captureservice should be something else
+05/19/2021 8:05 PM
+it does, you might have a newer tv where they renamed it again tho
+[tbsniller]
+tbsniller 05/19/2021 8:04 PM
+it only has captureservice
+05/19/2021 8:04 PM
+tvservice*
+05/19/2021 8:04 PM
+my tv hasnt tvservices
+[] tbsniller recognize differences
+ww8543 05/19/2021 8:03 PM
+so what exactly is the reason why you dont use tvservice from your tv?
+[tbsniller]
+tbsniller 05/19/2021 8:02 PM
+recognize differences
+[] tbsniller i want to diff between tvservice and captureservice
+ww8543 05/19/2021 8:01 PM
+"diff"?
+[tbsniller]
+tbsniller 05/19/2021 7:41 PM
+i want to diff between tvservice and captureservice
+[e99.tuxuser]
+e99.tuxuser 05/19/2021 7:40 PM
+thx, sorry, I just posted without thinking too much - I dunno even what
+you are up to tbh (edited)
+[tbsniller]
+tbsniller 05/19/2021 7:38 PM
+i think you want the output?
+ message.txt
+2.12 KB External
+[e99.tuxuser]
+e99.tuxuser 05/19/2021 7:36 PM
+ps aux|grep -i RELEASE
+[tbsniller]
+tbsniller 05/19/2021 7:36 PM
+okay.. might one of you guys give me the modelnumber of his tv?  as
+mentioned i think my tv hasnt the tvservice bin this supports it:
+root@TBTV:~# cat /lib/systemd/system/scripts/tvservice-fake.sh #!/bin/sh
+@@@LICENSE
+# Copyright (c) 2019 LG Electronics, Inc.
+# Confidential computer software. Valid license from LG required for
+possession, use or copying. Consistent with FAR 12.211 and 12.212,
+Commercial Computer Software, Computer Software Documentation, and
+Technical Data for Commercial Items are licensed to the U.S. Government
+under vendor's standard commercial license.
+# LICENSE@@@
+echo "[tvservice-fake] Temporally It mounts rw partition what must be
+done by tvservice because tvservice is disabled."
+ww8543 05/19/2021 7:29 PM
+some firmwares tvservice even have DWARF info inside, helps a bunch
+while reversing
+[infowski]
+infowski 05/19/2021 7:29 PM
+Always forget about it...
+05/19/2021 7:29 PM
+That's a way to go as well.
+[] infowski <@!430448040080572424> `su.lge.com` reverse engineering +
+`epk2extract` may be the way to go 
+ww8543 05/19/2021 7:28 PM
+if you google for your model you can often find the epk on lg's model
+page in the support section too (edited)
+[infowski]
+infowski 05/19/2021 7:20 PM
+(that's the host your TV phones on startup to ask for updates)
+05/19/2021 7:20 PM
+it's not very well documented but if you know some programming language
+and are able to use mitmproxy and/or tcpdump/wireshark, it should be
+fine
+05/19/2021 7:20 PM
+@TBSniller su.lge.com reverse engineering + epk2extract may be the way
+to go 
+[tbsniller]
+tbsniller 05/19/2021 7:19 PM
+is it possible that somebody shares his /mnt/lg/lgapp/tvservice with me?
+would be nice
+[infowski]
+infowski 05/19/2021 1:07 PM
+aaanyways, back to work.
+ 1
+05/19/2021 1:07 PM
+tip: always take things you see on the internet with a grain of salt,
+and try to follow how the things work, I think I've given you the path
+to look at the last time I was explaining that
+ 1
+Deleted User 05/19/2021 1:06 PM
+so that's why i was unsure
+05/19/2021 1:06 PM
+i saw some fideling on rusian forums about this
+05/19/2021 1:06 PM
+but
+[] infowski angery reacts only  (mostly because I've explained it like
+3 times already)
+Deleted User 05/19/2021 1:05 PM
+ikr
+[infowski]
+infowski 05/19/2021 1:05 PM
+angery reacts only  (mostly because I've explained it like 3 times
+already)
+05/19/2021 1:04 PM
+if you don't have devmode app, rooting will just create a file in there,
+but it won't be removed (unless you explicitly remove it yourself)
+ 1
+05/19/2021 1:04 PM
+the issue is that you've removed devmode app, which in turn removed a
+file that it installed in the first place (but got replaced when
+rooting)
+Deleted User 05/19/2021 1:03 PM
+thank you
+05/19/2021 1:03 PM
+okey got it
+[infowski]
+infowski 05/19/2021 1:03 PM
+Don't, ffs. That devSessionTime is only checked by original
+start-devmode.sh we're overwriting anyway when rooting...
+Deleted User 05/19/2021 1:03 PM
+Make root never expire
+echo '90000:00:00' >
+/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/devSessionTime
+chgrp 5000
+/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/devSessionTime
+chmod 664
+/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/devSessionTime
+[infowski]
+infowski 05/19/2021 1:03 PM
+read and understand /etc/init/devmode.conf
+Deleted User 05/19/2021 1:02 PM
+yup
+[infowski]
+infowski 05/19/2021 1:02 PM
+it's completely unrelated...
+[infowski]
+Deleted User just so it won't expire
+infowski 05/19/2021 1:02 PM
+that's completely different thing...
+Deleted User 05/19/2021 1:02 PM
+just so it won't expire
+05/19/2021 1:02 PM
+just for peace of mind can you update homebrew's start-devmode.sh to
+update remaining time every reboot?
+[infowski]
+infowski 05/19/2021 1:01 PM
+and you won't have the devmode app anymore
+05/19/2021 1:01 PM
+you can just root again
+[infowski]
+Deleted User so this app should not de deleted?
+infowski 05/19/2021 1:01 PM
+should not, if you had it before rooting
+Deleted User 05/19/2021 1:01 PM
+i thought that app was not necessary for rooting
+[infowski]
+[] aabytt deleting devmode should flush enabler file
+infowski 05/19/2021 1:01 PM
+it's somewhat the other way around - removing devmode removed
+start-devmode.sh and on startup /etc/init/devmode.conf detects that that
+file is missing so it removes /media/developer and disables
+enable_devmode flag (edited)
+Deleted User 05/19/2021 1:01 PM
+so this app should not de deleted?
+[infowski]
+infowski 05/19/2021 1:00 PM
+start-devmode.sh we use for bootstrap is "owned" by devmode app if you
+have it installed
+[aabytt]
+aabytt 05/19/2021 1:00 PM
+deleting devmode should flush enabler file
+[infowski]
+infowski 05/19/2021 1:00 PM
+need to rerun the root.
+05/19/2021 1:00 PM
+you've just unrooted your tv lol
+05/19/2021 1:00 PM
+ah yeah
+Deleted User 05/19/2021 1:00 PM
+but i didn't expected this
+05/19/2021 12:59 PM
+i remeber deleting devmode app from this yesterday night since it wasn't
+necessary
+05/19/2021 12:59 PM
+homebrewapp disappeared
+05/19/2021 12:59 PM
+but
+05/19/2021 12:59 PM
+i checked ip and was fine
+05/19/2021 12:59 PM
+and it wasn't connecting
+05/19/2021 12:59 PM
+ok so i was trying to telnet tv now
+May 18, 2021
+[infowski]
+infowski 05/18/2021 9:02 PM
+i was lurking there like 3 years ago or so.
+[soliver84]
+soliver84 05/18/2021 9:01 PM
+05/18/2021 9:01 PM
+(no content)
+[unknown.png]
+ unknown.png
+19.21 KB External
+[infowski]
+infowski 05/18/2021 8:59 PM
+yeah, everyone have migrated from irc to discord here lol
+[soliver84]
+soliver84 05/18/2021 8:59 PM
+https://webchat.freenode.net/#openlgtv do you already know him?
+05/18/2021 8:57 PM
+The @ww found Thanks to him 
+Deleted User B&O code was found yesterday
+royka87 05/18/2021 8:03 PM
+Creative code: It was founded in 1925 by Peter Bang and Svend Olufsen
+May 17, 2021
+sandbox8529 05/17/2021 2:24 AM
+OK thanks for clarifying. Really appreciate everyone's input!
+[retr0id]
+retr0id 05/17/2021 12:08 AM
+afaik
+05/17/2021 12:08 AM
+All the important filesystems are read-only
+May 16, 2021
+sandbox8529 05/16/2021 11:46 PM
+Just curious - do you think the Luna Download Manager vulnerability
+could be used to download the MITMProxy certificate instead of having to
+use an overlay file system?
+Deleted User 05/16/2021 12:58 PM
+it's 1925
+05/16/2021 12:58 PM
+B&O code was found yesterday
+ 1
+Deleted User And instart menu is locked
+Deleted User 05/16/2021 12:58 PM
+more info here
+[retr0id]
+retr0id 05/16/2021 1:37 AM
+awesome
+[infowski]
+sandbox8529 Yeah - I was able to do it using a variant of the method.
+Looks like LG is closing down a lot of the...
+infowski 05/16/2021 12:55 AM
+@retr0id 
+sandbox8529 05/16/2021 12:51 AM
+However, I just kind of kept trying links until I was able to load a
+page where I had embedded the url to load the script. That part worked
+pretty well. Trying to stand up MITMproxy has been the really
+challenging part.
+05/16/2021 12:48 AM
+Yeah - I was able to do it using a variant of the method. Looks like LG
+is closing down a lot of the different ways of loading a URL.
+[infowski]
+infowski 05/16/2021 12:48 AM
+(we had some mixed reports on webOS 6.x being vulnerable or not to the
+LunaDownloadMgr bug...)
+05/16/2021 12:47 AM
+using rootmytv?
+05/16/2021 12:47 AM
+Oh, so you managed to root webOS 6.0.0?
+sandbox8529 05/16/2021 12:47 AM
+Thanks - I was just in the process of checking. I am working on an
+OLED55C1PUB what has webOS TV Version 6.0.0-60 (kissculr-kalaupap).
+[infowski]
+infowski 05/16/2021 12:43 AM
+I think I had that mentioned in my gist 
+05/16/2021 12:43 AM
+FYI Everything I am noting down is based on webOS 3.8.
+05/16/2021 12:42 AM
+Maybe they've changed the way they look up the certificates in certain
+services? no idea.
+05/16/2021 12:41 AM
+ie. run mitm.sh on every bootup (to enable overlay) and
+mitm-bootstrap.sh once to add a certificate
+05/16/2021 12:41 AM
+Yeah, I just did exactly the things in that gist
+sandbox8529 05/16/2021 12:41 AM
+Thanks
+[infowski]
+infowski 05/16/2021 12:41 AM
+I think i've noted everything down in there..
+05/16/2021 12:40 AM
+Let me check...
+05/16/2021 12:40 AM
+I just added the certificates
+sandbox8529 05/16/2021 12:40 AM
+Were you able to get update-ca-certificates to work just modifying the
+paths you mention in the gist or was it simply enough just to add the
+certificates. I am wondering whether I should reboot and start over.
+[infowski]
+infowski 05/16/2021 12:39 AM
+Possibly, yeah
+sandbox8529 05/16/2021 12:38 AM
+Am I correct in understanding that this is the client application on the
+TV refusing the handshake because it cannot verify the certificate chain
+from the server?
+[infowski]
+infowski 05/16/2021 12:37 AM
+but that'd give you errors on mitmproxy side different to "unable to get
+local issuer certificate", IIRC...
+05/16/2021 12:36 AM
+There's a chance some remote service you're trying to intercept may be
+verifying TV mutual TLS client certificate
+sandbox8529 05/16/2021 12:36 AM
+OK that is much more than I have been able to capture. I can intercept
+traffic in system browser, but that is it.
+[infowski]
+infowski 05/16/2021 12:34 AM
+at least to capture traffic from spotify, content store, sdp (most
+internal services), youtube tv, system browser...
+05/16/2021 12:34 AM
+Mhmmmm... In my case the paths mentioned in the gist were enough :/
+sandbox8529 05/16/2021 12:34 AM
+How would I manually add to the trust chain?
+05/16/2021 12:33 AM
+I have been running with --ssl-insecure option in transparent mode. I
+ran some tests with curl making https requests and they seem to work
+fine. OpenSSL had an error when I specified the CApath but didn't throw
+an error when I specified mimproxy.crt as the CAfile.
+May 15, 2021
+[infowski]
+infowski 05/15/2021 11:57 PM
+same with (possibly) other remote hosts (or you can manually add them to
+your trust chain but that's much more work...) (edited)
+05/15/2021 11:57 PM
+for SDP to work you'll most probably want --ssl-insecure on mitmproxy
+host side, yeah
+[rhinoswirl]
+rhinoswirl 05/15/2021 11:34 PM
+probably it's not loading your PC's trust chain correctly or some of
+those certificates have root CAs only present on the TV (didn't test,
+tbh). from the project: could you try running mitmproxy with
+--ssl-insecure?
+sandbox8529 05/15/2021 11:22 PM
+Thanks everyone for for the great instructions. I have managed to root
+my LG C1. I am interested in trying to standup mitmproxy in transparent
+mode to review network traffic. I followed the instructions here:
+https://gist.github.com/Informatic/92e9b83ad9cd7a29d5650b1f2ad77154 and
+couldn't get the mitmproxy certificate to work. I tried copying the
+mitmproxy certificate into /usr/share/ca-certificates/sdp/ and editing
+the /etc/ca-certificates.conf file to the path of the mitmproxy.crt
+certificate. At this point, update-ca-certificates appeared to work and
+added a certificate. However, running mitmproxy I get a bunch of errors
+like "Certificate verification error for ichnaea.netflix.com: unable to
+get local issuer certificate (errno: 20, depth:1)." Then the client
+handshake fails. It is not limited to the Netflix App, but every App I
+have tried including the LG Apps. Any suggestions would be much
+appreciated! (edited)
+webOS mitm setup
+webOS mitm setup. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+May 10, 2021
+[soliver84]
+soliver84 05/10/2021 9:19 PM
+are these all the settings On for the tool codes that you have sent?
+05/10/2021 9:18 PM
+do you have a program that means: instart tools?
+[soliver84]
+soliver84 05/10/2021 9:10 PM
+Do I enter this in the device's browser?
+05/10/2021 9:10 PM
+IHow do I connect to the device to issue the command?
+Deleted User 05/10/2021 1:34 PM
+these were edited by me using instart tools
+05/10/2021 1:34 PM
+but keep in mind that there are not original values
+05/10/2021 1:33 PM
+/ # luna-send -n 1 -f
+luna://com.webos.service.tv.systemproperty/getProperties \ >
+'{"keys":["toolOption1Value","toolOption2Value","toolOption3Value", >
+"toolOption4Value","toolOption5Value","toolOption6Value","areaOptionValue"]}'
+{ "returnValue": true, "areaOptionValue": "3122", "toolOption1Value":
+"235078094", "toolOption2Value": "16414", "toolOption3Value": "6648",
+"toolOption4Value": "416841", "toolOption5Value": "60351524",
+"toolOption6Value": "810270909" } / #
+05/10/2021 1:33 PM
+here u go
+[] soliver84 Hello can someone help me with the bitvalues or does
+someone have the BIT table? Device HU810 To...
+Deleted User 05/10/2021 1:33 PM
+sure
+Deleted User 05/10/2021 1:20 PM
+*just select (hower) do not click first option
+05/10/2021 1:17 PM
+until it opens
+05/10/2021 1:17 PM
+then press 1111111111111
+05/10/2021 1:17 PM
+select first option
+05/10/2021 1:16 PM
+programmes
+[infowski]
+infowski 05/10/2021 1:12 PM
+>host diagnostics huh, how do I open this view? never seen that
+Deleted User 05/10/2021 1:10 PM
+and as you can see this is not B&O TV (edited)
+[unknown.png]
+ unknown.png
+2.11 MB External
+05/10/2021 1:06 PM
+as you can see three options are now disabled
+[unknown.png]
+ unknown.png
+2.24 MB External
+05/10/2021 1:03 PM
+(no content)
+[unknown.png]
+ unknown.png
+3.04 MB External
+05/10/2021 12:59 PM
+So don.t change things too much
+05/10/2021 12:59 PM
+Also account management in settings is disabled
+05/10/2021 12:58 PM
+I will not launch instart
+05/10/2021 12:58 PM
+I tried every singe posible code
+05/10/2021 12:58 PM
+And instart menu is locked
+[infowski]
+infowski 05/10/2021 12:58 PM
+lol
+Deleted User 05/10/2021 12:58 PM
+Now it boots with Bang n Olufsen logo instead of lg (edited)
+05/10/2021 12:58 PM
+I changed mine to DTS or something similar
+05/10/2021 12:58 PM
+Do not change sound codec
+05/10/2021 12:57 PM
+Be careful
+[soliver84]
+soliver84 05/10/2021 9:04 AM
+and 2-3 others!
+05/10/2021 9:03 AM
+(no content)
+[IMG_20210508_222637.jpg]
+ IMG_20210508_222637.jpg
+1.44 MB External
+05/10/2021 9:03 AM
+(no content)
+[IMG_20210508_222635.jpg]
+ IMG_20210508_222635.jpg
+1.43 MB External
+05/10/2021 9:03 AM
+(no content)
+[IMG_20210508_222634.jpg]
+ IMG_20210508_222634.jpg
+1.43 MB External
+05/10/2021 9:03 AM
+(no content)
+[IMG_20210508_222630.jpg]
+ IMG_20210508_222630.jpg
+1.42 MB External
+05/10/2021 9:03 AM
+These devices can be selected in the firmware:
+05/10/2021 9:02 AM
+(no content)
+[IMG_20210508_084207.png]
+ IMG_20210508_084207.png
+1.56 MB External
+05/10/2021 9:02 AM
+(no content)
+[IMG_20210508_083559.png]
+ IMG_20210508_083559.png
+1.36 MB External
+05/10/2021 9:02 AM
+(no content)
+[IMG_20210508_083324.png]
+ IMG_20210508_083324.png
+719.04 KB External
+05/10/2021 9:01 AM
+(no content)
+[IMG_20210508_082750.png]
+ IMG_20210508_082750.png
+4.07 MB External
+05/10/2021 9:01 AM
+Hello can someone help me with the bitvalues or does someone have the
+BIT table? Device HU810 ToolOpt3_PQ/sound (ID locked) "only free white
+font option can be changed" ID does not. ToolOpt4_EtC ID Freely
+selectable does someone have the ID of AU? Or the bit table?
+ToolOpt6_Energy/Country ID Freely selectable does someone have the ID of
+AU? Or the bit table? Thank you Gürße
+May 7, 2021
+[smx2460]
+smx2460 05/07/2021 4:27 PM
+I might have to try that to see if it's true (a bit skeptical) (edited)
+05/07/2021 4:27 PM
+I didn't know there was a method of accessing EZ_ADJUST with the stock
+remote (edited)
+05/07/2021 4:27 PM
+Same as IN_START
+05/07/2021 4:27 PM
+It can be done only with custom remotes afaik
+05/07/2021 4:27 PM
+to force a factory reset
+05/07/2021 4:26 PM
+You could send an IN_STOP
+May 6, 2021
+Deleted User 05/06/2021 8:19 AM
+https://www.wikihow.com/Display-the-Secret-Menu-in-LG-TVs
+Display the Secret Menu in LG TVs
+This wikiHow teaches you how to open your LG TV's hidden service or
+installation menu. Make sure you have the TV's original remote. While
+some non-LG, third-party or universal remotes can be used to access your
+LG TV's service menu, you'll...
+[]
+05/06/2021 8:17 AM
+nu, rotita este deasupra, undeva in centrul telecomenzii magice
+Deleted User putem conversa in romana?
+Deleted User 05/06/2021 8:14 AM
+dm me but I will respond later
+Deleted User 05/06/2021 8:12 AM
+putem conversa in romana?
+Deleted User Are you from Romania?
+Deleted User 05/06/2021 8:11 AM
+and yes
+Deleted User I do not have settings ON MAGIC REMOTE
+Deleted User 05/06/2021 8:11 AM
+it is the circle wheel button, under channel down
+Deleted User 05/06/2021 8:00 AM
+Are you from Romania?
+05/06/2021 7:59 AM
+I do not have settings ON MAGIC REMOTE
+05/06/2021 7:53 AM
+0413 7777 8741 8743 8878
+05/06/2021 7:53 AM
+More codes to try 1105
+05/06/2021 7:48 AM
+Go to tv app. Press and hold settings ON MAGIC REMOTE untill channel
+info appears. Quickly type 1521 and press ok. Hidden menu will appear
+Deleted User I have a 49UB850V-ZD TV and I have the following problems.
+I can't understand if it's a software iss...
+Deleted User 05/06/2021 7:47 AM
+try entering hotel mode. There is a factory reset option here
+Deleted User 05/06/2021 7:42 AM
+I have a 49UB850V-ZD TV and I have the following problems. I can't
+understand if it's a software issue or a component issue. Cannot be
+reset using the menu. I can access the menu, I entered the 0000 pin and,
+if I try to click Confirm, the button flashes without success. If I
+click Cancel, the menu closes normally. TV channels do not work. There
+is no problem with the provider. It simply does not play any channels If
+I connect the USB driver or hard drive to play some movies, I can browse
+the folder, but I can't play anything. When I connect to Netflix or
+YouTube, I can browse, but if I try to play anything, it doesn't work.
+With the original remote control, I can only turn it on and off. But I
+can do it with the magic remote control. I think it's a problem that
+affects the data written in memory. By the time he reached this stage,
+he was making another figure. Sometimes at startup I lacked a signal on
+TV programs, but I restarted it and it recovered. Has anyone ever
+experienced these symptoms? Does anyone have a bin to be able to rewrite
+memory? Any suggestions are welcome. Thank you in advance!
+May 5, 2021
+[beanow]
+beanow 05/05/2021 5:45 PM
+Any tests / files / data I could contribute for the cause before or
+after? 
+05/05/2021 5:44 PM
+Makes sense. And guess that presumes root.
+[infowski]
+infowski 05/05/2021 5:20 PM
+Only issue may be that for example the wayland compositor (that's also
+responsible for rendering the home screen) on webOS 3.8 has all its QML
+assets bundled in. I guess it may be the case for some newer versions /
+pieces of webOS as well, so you'd need to make a QML/Qt resources
+unbundler of some sort. (edited)
+[infowski]
+infowski 05/05/2021 5:01 PM
+Most of UI is made in QML or HTML5. I guess you should be able to patch
+up any part of the UI using enough overlays/bindmounts.
+[beanow]
+beanow 05/05/2021 4:56 PM
+And for the rooting / homebrew work does that involve only apps or also
+these UI parts?
+05/05/2021 4:56 PM
+That's what I meant yeah, got it. So really not many options there then.
+[infowski]
+infowski 05/05/2021 4:54 PM
+And there's no "open source build" (if you mean "webOS OSE" it's
+essentially a separate distro not meant to be run on TVs)
+05/05/2021 4:53 PM
+No, you can't downgrade.
+[beanow]
+beanow 05/05/2021 4:53 PM
+Like can I backup and downgrade after, or can I switch to the open
+source build and back?
+05/05/2021 4:52 PM
+Have some dev background, but I don't know anything about my options
+with lg tvs yet. Wondering if there's a good overview you can point to.
+05/05/2021 4:51 PM
+Hey all. So today I get confronted with the 6.0 webos upgrade. And
+looking at this preview, I wonder if isn't worse and more intrusive than
+5.x.
+[unknown.png]
+ unknown.png
+328.16 KB External
+April 29, 2021
+[smx2460]
+smx2460 04/29/2021 11:59 AM
+Using the same API used by the device is the best way to ensure it will
+be done correctly
+04/29/2021 11:59 AM
+Them figure out which offset to poke
+04/29/2021 11:59 AM
+Make a complete backup of the settings storage (whether it's EEPROM,
+flash or whatever)
+04/29/2021 11:58 AM
+The best way to know that is by looking at the same code that stores and
+reads those settings
+04/29/2021 11:58 AM
+Hi @soliver84, welcome. It's tricky to answer your questions. In general
+there is an EEPROM, but the generation and storage of settings can
+change between platforms. In the case of the EEPROM, the offsets the
+data is written to can change
+[soliver84]
+soliver84 04/29/2021 8:04 AM
+Hello, I have a few questions (don't worry, I'm an IT administrator and
+I also have flash pliers, I can flash any chip) 1. Is there a table or
+ID generator for the "Tool Option 3" menu? 2. What about the Calman
+support? there is the new LG projector with Webos 5, one with HU and one
+with AU, is it possible to activate the function freely? 3. Can I
+activate THX all color profile? 4. Can I activate ISF as a color
+profile? Thanks, I'm new here, I've already looked around in the AVS and
+LG Developer Forum, of course, haven't found anything. thanks greetings
+Soliver84
+April 27, 2021
+[infowski]
+infowski 04/27/2021 2:51 PM
+@DeKu we are somewhat in the process of doing that right now in
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/services/startup.sh +
+some pending PRs (edited)
+[deniz.kuru]
+deniz.kuru 04/27/2021 1:40 PM
+@Smx Thank You. Im still tryin to create a nice start-devmode.sh script
+which will take care of ssh etc... Thx for all your help
+April 26, 2021
+[smx2460]
+smx2460 04/26/2021 9:47 PM
+Due to signature mismatch
+04/26/2021 9:46 PM
+In general you cannot reflash any modified partition without causing a
+brick
+04/26/2021 9:45 PM
+@DeKu repacking makes sense only in a few limited circumstances which
+can be done manually and with different extraction procedures. For the
+majority of cases, it's not a recommended thing to do due to what @ww
+said. For this reason, epk2extract doesn't always strive to preserve
+filesystem permissions and attributes, especially on Cygwin. That's why,
+in the limited repacking cases, extra care and steps must be taken
+(edited)
+[deniz.kuru]
+deniz.kuru 04/26/2021 9:28 PM
+Found it... thanks again
+ww8543 04/26/2021 9:28 PM
+just add it to the devmode start script, just like it starts the
+telnetd, you can add other stuff it should start on boot
+[deniz.kuru]
+deniz.kuru 04/26/2021 9:25 PM
+Any hints on how?
+ww8543 04/26/2021 9:17 PM
+why not? :)
+[deniz.kuru]
+deniz.kuru 04/26/2021 9:17 PM
+Can i manually restart it again?
+ww8543 04/26/2021 9:15 PM
+if you used the rootmy.tv exploit script it overwrote your original
+devmode start script, so it wont start that devmode sshd anymore, just
+be aware of this
+[deniz.kuru]
+deniz.kuru 04/26/2021 9:14 PM
+04/26/2021 9:13 PM
+Yeah now i remember seeing that port in the Scripts... Thank you @ww
+Forgot to turn dev mode on so i couldnt see the port with nmap
+ww8543 04/26/2021 9:10 PM
+adapt it to your needs
+04/26/2021 9:10 PM
+once you have root you can change everything
+04/26/2021 9:10 PM
+but you can change it, just start it with your own config
+04/26/2021 9:09 PM
+by default it runs on port 9922
+04/26/2021 9:09 PM
+you dont trouble me :)
+[deniz.kuru]
+deniz.kuru 04/26/2021 9:09 PM
+Does the SSH from the Devmode App run on port 22? Sorry for troubling
+you @ww
+[] deniz.kuru Allright. Thank You. It makes sense. But it is possible do
+make changes to the installed fw, right...
+ww8543 04/26/2021 9:07 PM
+yes you can make changes of course, even to the "ro" part by using bind
+mount. we people either get ssh by dropping in our own dropbear, or by
+using the installed sshd from the dev mode app
+[deniz.kuru]
+deniz.kuru 04/26/2021 9:05 PM
+Allright. Thank You. It makes sense. But it is possible do make changes
+to the installed fw, right? I know that some partitions are “ro“ to
+prevent exactly that. I wouldnt mind running apps from a USB DRIVE.. How
+did u people get ssh on the tv? Am i missing something again?
+ww8543 04/26/2021 8:56 PM
+yes exactly, you cant repack the firmware, well in theory you could, but
+the tv wont accept it, since it checks the signature
+[deniz.kuru]
+deniz.kuru 04/26/2021 8:54 PM
+!!WARNING!! epk2extract isn't designed to repack files If you wish to
+repack modified files, follow the openlgtv wiki/forum, and do it in a
+Linux environment (no cygwin) Don't repack files extracted in cygwin
+environment In any case, you do so at your own risk
+04/26/2021 8:53 PM
+Yes i think so.... there was just a note regarding that epk2extract
+could only unpack. And to check out the Wiki reagrding repacking...
+[] deniz.kuru Hey People, First i wanna thank everyone in the Community
+for the Effort and Time they‘ve put into a...
+ww8543 04/26/2021 8:50 PM
+repacking the firmware? where did you read about that? maybe you were
+reading some outdated old stuff? (edited)
+[deniz.kuru]
+deniz.kuru 04/26/2021 8:26 PM
+Hey People, First i wanna thank everyone in the Community for the Effort
+and Time they‘ve put into all this. I was able to root my LG 43UM7450PLA
+thanks to all of you. Now im trying to figure out, how to get a ssh
+Server running on my TV. Is there a “common“ way or do i need to compile
+it myself (dropbear?) and start it via Telnet? I did manage to setup and
+install NDK with the „Config Layer“ and it did create the Image for the
+RPi3. But i havent flashed it yet.. (onto the Pi) My goal is to
+personalize the OS so that i can mount some of my NAS Shares, remove
+unwanted Apps and finally have the Ability to Download via the Browser
+(Chrome) on to for example a USB Drive maybe.. Finally i did use
+epkextract to extract my firmware but i couldnt really make much sense
+regarding the Instructions for „repacking“ the firmware. Which could be
+one way of achieving what im tryin to do. And again thx for everything
+and any Guidance or hints would be much appreciated... DeKu
+April 24, 2021
+Deleted User 04/24/2021 9:58 PM
+Sorry
+04/24/2021 9:58 PM
+I saw it
+[smx2460]
+smx2460 04/24/2021 9:57 PM
+@Deleted User please read # unknown-channel
+Deleted User 04/24/2021 9:53 PM
+I’ve got mb here. What I need to do?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/24/2021 9:51 PM
+You can get encrypted versions of this data but no more without access
+to the TV
+Deleted User 04/24/2021 9:51 PM
+Ok I understand
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/24/2021 9:45 PM
+In all likelihood, no, because a storage dump is not enough. Do take a
+look at # unknown-channel too
+Deleted User 04/24/2021 9:43 PM
+Could anyone help me find hdcp and Ci keys in emmc dump in 42lb650v?
+04/24/2021 9:43 PM
+Hi
+April 16, 2021
+[smx2460]
+smx2460 04/16/2021 2:10 PM
+For Mediatek even other TV sources could work, since the BSP and in
+particular the kernel is often the same (edited)
+04/16/2021 2:10 PM
+Since the kernel source is never for a single SOC
+04/16/2021 2:09 PM
+You just need to find a newer TV with the same SOC family
+04/16/2021 2:09 PM
+Then you're half screwed but not really
+04/16/2021 2:09 PM
+The only possible caveat is if LG updates the kernel but not the OSS tar
+04/16/2021 2:08 PM
+On NC4, Mediatek, I compiled my own custom .ko files too
+04/16/2021 2:08 PM
+For ethernet-less TVs
+04/16/2021 2:08 PM
+Where people added USB2LAN adapters support
+04/16/2021 2:08 PM
+Since the MIPS days
+[smx2460]
+[] retr0id It is hypothetically possible to compile custom kernel
+modules
+smx2460 04/16/2021 2:07 PM
+It can and has been done
+April 14, 2021
+[infowski]
+infowski 04/14/2021 2:12 PM
+nice.
+04/14/2021 2:12 PM
+so that works.
+04/14/2021 2:12 PM
+    / # ip tuntap add pope mode tun
+    / # ip link show dev pope
+    14: pope: <POINTOPOINT,MULTICAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+        link/none 
+04/14/2021 2:09 PM
+OTOH, at that point (ie. as long as there's no proper frontend), you'd
+most probably be better just pointing your tv's default gateway at some
+box on a local network that'd nat the traffic over to some VPN
+[4434]
+4434 04/14/2021 2:08 PM
+@bslover is the one you should be pinging though lol
+[infowski]
+infowski 04/14/2021 2:08 PM
+anyone willing to make openvpn / wireguard frontend for webos? 
+[4434]
+4434 04/14/2021 2:08 PM
+Ooh, cool
+[infowski]
+infowski 04/14/2021 2:07 PM
+https://github.com/cloudflare/boringtun/blob/master/src/device/tun_linux.rs
+yeah, seems like it. sounds cool.
+cloudflare/boringtun
+Userspace WireGuard Implementation in Rust. Contribute to
+cloudflare/boringtun development by creating an account on GitHub.
+[]
+04/14/2021 2:07 PM
+@Hyphen also there's https://github.com/cloudflare/boringtun - not sure
+if it supports tun, but worth researching
+cloudflare/boringtun
+Userspace WireGuard Implementation in Rust. Contribute to
+cloudflare/boringtun development by creating an account on GitHub.
+[]
+04/14/2021 2:05 PM
+so openvpn could work.
+04/14/2021 2:05 PM
+interestingly, it seems like my kernel has CONFIG_TUN=y (edited)
+[retr0id]
+retr0id 04/14/2021 2:05 PM
+using the GPL'ed sources
+[4434]
+4434 04/14/2021 2:05 PM
+oh yeah i forgot mainline wg is a super recent thing (edited)
+[retr0id]
+retr0id 04/14/2021 2:05 PM
+It is hypothetically possible to compile custom kernel modules
+[infowski]
+infowski 04/14/2021 2:04 PM
+4.4.3 here, but that's webOS 3.8...
+04/14/2021 2:04 PM
+@Hyphen doesn't seem like it. they are pretty old
+[4434]
+4434 04/14/2021 2:02 PM
+Hmm, does anyone know if webOS has a kernel with wireguard support?
+plaintextfile 04/14/2021 10:42 AM
+is it possible to download a VPN application for my tv ?
+April 9, 2021
+[] infowski also, even after installing an app, i'd guess they'll still
+check your region before accessing conte...
+ww8543 04/09/2021 12:29 PM
+the content store sends a country and region in the http headers if it
+requests something, and this gets different results, depending on where
+the app is supposed to be available, not every app is like netflix which
+is available pretty much everywhere
+plaintextfile 04/09/2021 12:01 PM
+thanks its okay
+[infowski]
+infowski 04/09/2021 12:01 PM
+sorry, assumed you have european region.
+04/09/2021 12:00 PM
+ah, that's a completely different region.
+plaintextfile 04/09/2021 11:56 AM
+mine has
+Argentine,Bolivia,Brazil,Chile,CostaRica,Ecudor,Peru,Panama,Urugauy,others,Honduras
+but not uk in this list
+[infowski]
+infowski 04/09/2021 11:54 AM
+I think my TV has been manufactured pre-brexit, so I have all european
+countries there.
+04/09/2021 11:53 AM
+huh, ok.
+plaintextfile 04/09/2021 11:52 AM
+i tried this but i cannot see uk in there at all and i also re checked
+now it and made it others just for checking but not there with uk vpn
+connected too
+[infowski]
+infowski 04/09/2021 11:50 AM
+also, even after installing an app, i'd guess they'll still check your
+region before accessing content anyway?
+04/09/2021 11:49 AM
+@bslover hmmm... have you tried changing "lg services region" (or
+however it is called, i use non-english UI language) to UK? some apps
+come preloaded but hidden, and they pop up after region change (edited)
+plaintextfile 04/09/2021 11:15 AM
+can this be done with VPN installed or dns?
+04/09/2021 11:15 AM
+Hi i want to know how to install bbc.iplayer on my TV because mine is
+from eu and i can not see it in the store
+April 8, 2021
+[piotrk1]
+piotrk1 04/08/2021 11:50 AM
+Yes
+[infowski]
+infowski 04/08/2021 11:50 AM
+mmm
+[martin_._]
+martin_._ 04/08/2021 11:50 AM
+That beats my flimsy 0.5GB
+[martin_._]
+[] piotrk1 Click to see attachment
+martin_._ 04/08/2021 11:50 AM
+Oh wow newer models got 4GB writable storage?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/08/2021 11:44 AM
+probably look into # unknown-channel
+[piotrk1]
+piotrk1 04/08/2021 11:43 AM
+?
+04/08/2021 11:43 AM
+How to root
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/08/2021 11:43 AM
+yes
+[piotrk1]
+piotrk1 04/08/2021 11:43 AM
+I must root my TV?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/08/2021 11:42 AM
+if you're familiar with Linux you'll be able to do it though
+04/08/2021 11:42 AM
+yes, especially to get the key you're looking at a very manual process
+[infowski]
+infowski 04/08/2021 11:42 AM
+but it's not very user friendly either.
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/08/2021 11:41 AM
+sorry to interrupt
+04/08/2021 11:41 AM
+nothing bad probably
+[piotrk1]
+piotrk1 04/08/2021 11:41 AM
+:(
+04/08/2021 11:41 AM
+what will happen when i do root
+[infowski]
+infowski 04/08/2021 11:40 AM
+regardless, you'd most probably need to root your TV and then figure out
+how to extract the recording encryption keys - not sure if this is
+documented anywhere.
+[piotrk1]
+piotrk1 04/08/2021 11:40 AM
+Yes

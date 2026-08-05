@@ -1,0 +1,1854 @@
+May 22, 2022
+[] mariotaku By commercial TV, do you mean commercial signage display?
+vvv599 05/22/2022 10:29 PM
+A pro centric commercial tv
+[infowski]
+infowski 05/22/2022 5:49 PM
+...which of course launched the page in privileged app...
+05/22/2022 5:49 PM
+yeah, they did it by jumping into stage2 directly in some "preview URL"
+option
+[] mariotaku With that kind of devices I believe you can install apps by
+USB, however they may have different set...
+ww8543 05/22/2022 5:37 PM
+we had someone here the other day who managed to install homebrew
+channel on it
+[mariotaku]
+mariotaku 05/22/2022 2:46 PM
+With that kind of devices I believe you can install apps by USB, however
+they may have different set of apps so rooting might not work.
+[mariotaku]
+vvv599 I have a commercial TV and cant access lg connect apps options
+and if i downgrade my firmware then i...
+mariotaku 05/22/2022 2:30 PM
+By commercial TV, do you mean commercial signage display?
+vvv599 05/22/2022 1:07 PM
+I have a commercial TV and cant access lg connect apps options and if i
+downgrade my firmware then im unable to access the user agreements is
+there any work around (edited)
+May 21, 2022
+[_nocap_]
+[] infowski Yeah.
+_nocap_ 05/21/2022 4:35 PM
+Unfortunately the only thing that’s worked is to either reconnect the
+hdmi cable or power cycle the receiver  (edited)
+[infowski]
+zipperhead46237 I moved the magic remote and the LG screensaver turned
+off while the Plex remained on. then I got ...
+infowski 05/21/2022 4:35 PM
+Try this:
+    luna-send -i 'palm://com.webos.service.tvpower/power/registerScreenSaverRequest' '{"subscribe":true, "clientName": "tester"}' | grep -o -E '[0-9]*' | while read ts; do echo "resetting! $ts"; luna-send -f -n 1 'palm://com.webos.service.tvpower/power/responseScreenSaverRequest' '{"clientName": "tester", "time
+    stamp": '$ts', "ack": false}' &  done
+(edited)
+ Screensaver hacking →
+zipperhead46237 05/21/2022 4:34 PM
+{ "returnValue": true, "timestamp": "1717994860", "state": "Active",
+"instantBoot": "on" } { "returnValue": true, "timestamp": "1927996813",
+"state": "Active", "instantBoot": "on" }
+05/21/2022 4:34 PM
+I moved the magic remote and the LG screensaver turned off while the
+Plex remained on. then I got another line after the lg screensaver came
+back on.
+[infowski]
+infowski 05/21/2022 4:34 PM
+Yeah.
+[_nocap_]
+[] infowski have you tried switching around audio output mode on the TV?
+_nocap_ 05/21/2022 4:33 PM
+Do you mean like switch audio output to something else and then back to
+arc? Yeah that hasn’t worked for me.. (edited)
+[infowski]
+infowski 05/21/2022 4:32 PM
+have you tried switching around audio output mode on the TV?
+[_nocap_]
+[] infowski <@142388065246248961> coming back to your specific issue...
+can you "unplug" and "replug" your HDMI2...
+_nocap_ 05/21/2022 4:31 PM
+I need to physically disconnect the hdmi cable atm, I was hoping it
+would be some how possible to disable hdmi 2 and enable it?
+[infowski]
+zipperhead46237
+root@LGwebOSTV:/media/cryptofs/apps/usr/palm/applications/cdp-30#
+luna-send -i 'palm://com.webos.ser...
+infowski 05/21/2022 4:29 PM
+Cool, let me write a quick example on how to handle this... 
+[infowski]
+infowski 05/21/2022 4:28 PM
+@noCap coming back to your specific issue... can you "unplug" and
+"replug" your HDMI2 using the webOS UI alone? If so, then you should be
+able to replicate it in a script by using ls-monitor to sniff what
+commands are executed when you switch stuff around in the UI, and then
+rewriting it into luna-send commands (edited)
+zipperhead46237 05/21/2022 4:28 PM
+root@LGwebOSTV:/media/cryptofs/apps/usr/palm/applications/cdp-30#
+luna-send -i
+'palm://com.webos.service.tvpower/power/registerScreenSaverRequest'
+'{"subscribe":true, " clientName": "tester"}' { "returnValue": true,
+"subscribed": true } { "returnValue": true, "timestamp": "1717994860",
+"state": "Active", "instantBoot": "on" }
+[infowski]
+infowski 05/21/2022 4:27 PM
+https://github.com/RootMyTV/RootMyTV.github.io/blob/main/stage2.html#L77-L88
+like here.
+05/21/2022 4:27 PM
+You can call luna services from webOS apps as well, of course. This is
+what webostv.js library in webapps is used for.
+05/21/2022 4:26 PM
+There's some info here:
+https://www.webosbrew.org/pages/luna-service-bus.html and in official
+webOS TV / webOS OSE docs (both TV and OSE use Luna bus for
+cross-process comunication and there's some overlap in supported/exposed
+services, but don't rely on webOS OSE service docs too much, since most
+of these are different on TV) (edited)
+[infowski]
+[] _nocap_ I’ve seen some stuff regarding luna-send, is that how
+commands are sent to the tv? I wanted to creat...
+infowski 05/21/2022 4:25 PM
+Luna is a cross-process communication bus on webOS. luna-send is a CLI
+command that allows you to call a method on some Luna service (other
+process in the system exposing some methods). ls-monitor can be used to
+sniff whatever messages are exchanged on a bus
+[infowski]
+infowski 05/21/2022 4:24 PM
+I'll try to help you in building up a proper script for that 
+[infowski]
+zipperhead46237 I see while app is running but before screensaver
+infowski 05/21/2022 4:24 PM
+Can you take a screenshot or copy whatever the line you get before the
+screensaver from that registerScreenSaverRequest command?
+[infowski]
+infowski 05/21/2022 4:23 PM
+from: /usr/palm/applications/alibaba.genie/index.html
+zipperhead46237 05/21/2022 4:23 PM
+I see while app is running but before screensaver
+[infowski]
+zipperhead46237 Your last two Luna-send commands have my head spinning
+and searching for help online
+infowski 05/21/2022 4:23 PM
+Heh, you won't find much about it online - it's not documented anywhere
+publicly and it's just what I got from looking at some apps on 6.x
+firmware.
+zipperhead46237 05/21/2022 4:22 PM
+Your last two Luna-send commands have my head spinning and searching for
+help online
+[infowski]
+zipperhead46237 I thinks so also. It’s just the latter is above my head.
+No being a programmer. I would need reall...
+infowski 05/21/2022 4:22 PM
+First try check if this will print something after a couple of minutes,
+before the screensaver kicks in:
+luna-send -i 'palm://com.webos.service.tvpower/power/registerScreenSaverRequest' '{"subscribe":true, "clientName": "tester"}'
+[_nocap_]
+[] infowski Which API are you talking about? 
+_nocap_ 05/21/2022 4:22 PM
+I’ve seen some stuff regarding luna-send, is that how commands are sent
+to the tv? I wanted to create a start up script that disconnects hdmi 2
+and reconnects it so my receiver works
+zipperhead46237 05/21/2022 4:20 PM
+I thinks so also. It’s just the latter is above my head. No being a
+programmer. I would need really good documentation.
+[infowski]
+zipperhead46237 That would probably require a reboot I’m guessing
+infowski 05/21/2022 4:18 PM
+Not necessarily. You could extend com.webos.app.screensaver (after
+rooting, via bind mounts, ofc) to check currently running app id and
+exit early if it's one of the known IDs. Or you could use above
+(private) interfaces as root to prevent system launching the screensaver
+altogether. Probably the latter is more universal / easier.
+[infowski]
+[] _nocap_ Is there any documentation for the api? I assume this is the
+only way to control the tv?
+infowski 05/21/2022 4:17 PM
+Which API are you talking about? 
+[_nocap_]
+_nocap_ 05/21/2022 4:16 PM
+Is there any documentation for the api? I assume this is the only way to
+control the tv?
+zipperhead46237 05/21/2022 4:12 PM
+That would probably require a reboot I’m guessing
+05/21/2022 4:11 PM
+To expose the real screensaver again
+05/21/2022 4:10 PM
+When the app is no longer running issue a umount command
+05/21/2022 4:09 PM
+Or would that process require a reboot each time
+05/21/2022 4:08 PM
+So back to the mount dummy screensaver idea where you mount a dummy file
+over the real screensaver. Couldn’t a script just look for an app to see
+if it’s running then if so mount the dummy file. Then when/if that app
+is no longer running the mount?
+05/21/2022 4:01 PM
+So somehow it’s the foreground app thing and what it is doing. Sorry
+just thinking out loins
+[infowski]
+infowski 05/21/2022 4:00 PM
+Though there are still tricks that could make a nice workaround for
+that - like creating a dummy audio / video element that'd play "nothing"
+in the background, which blocks screensaver by default.
+zipperhead46237 05/21/2022 3:59 PM
+That’s too bad. So you would have to have a separate root process as a
+proxy that watches for certain apps and does this
+[infowski]
+infowski 05/21/2022 3:58 PM
+so it's actually impossible to implement this properly in the app
+(without root) as far as I can see.
+05/21/2022 3:57 PM
+too bad these requests are not accessible in the public interface 
+(edited)
+zipperhead46237 05/21/2022 3:53 PM
+Can’t remember which ones though
+05/21/2022 3:53 PM
+Yes, I’ve seen others on social media mentioning this issue interrupting
+karaoke apps
+[infowski]
+infowski 05/21/2022 3:52 PM
+Yeah, that'd be fairly practical.
+zipperhead46237 05/21/2022 3:50 PM
+I see the actual makings of another home brew app the people simply
+enter apps in that they want to disable the screensaver.
+05/21/2022 3:49 PM
+Yeah that seems practical. Would be a low resource background script.
+Could probably bump it up to 45 seconds or around that even.
+[infowski]
+infowski 05/21/2022 3:49 PM
+Seems like the API is:
+luna-send -i 'palm://com.webos.service.tvpower/power/registerScreenSaverRequest' '{"subscribe":true, "clientName": "tester"}'
+and then
+palm://com.webos.service.tvpower/power/responseScreenSaverRequest {"clientName": "tester", "timestamp": orig.timestamp, "ack": true/false}
+whenever you get a message with a timestamp
+05/21/2022 3:46 PM
+Let me find how we were supposed to reset that timer...
+05/21/2022 3:46 PM
+not a beautiful solution, but that's still somewhat of a solution.
+zipperhead46237 05/21/2022 3:45 PM
+I know whoever did program Plex’s screensaver they did a wonderful job.
+[infowski]
+infowski 05/21/2022 3:45 PM
+If that works for you, you could wrap up a script that'd listen for
+active app and reset the screensaver timer every couple of seconds in
+the background.
+zipperhead46237 05/21/2022 3:44 PM
+Burn in
+05/21/2022 3:44 PM
+I would hate for programmers to get flack because some user did
+something stupid and it caused burn it
+05/21/2022 3:42 PM
+Yes. The liability thing probably comes to play here unfortunately
+[infowski]
+infowski 05/21/2022 3:41 PM
+It's possible for an app itself to block the screensaver - it's just
+that it's not documented, and app developers don't do that officially 
+zipperhead46237 05/21/2022 3:40 PM
+It’s funny they apparently had this in an older version but for some
+reason left it out.
+05/21/2022 3:39 PM
+I do like where you are going with this because that would be the ideal
+solution to just disable the LG screensaver only when the app has its
+own built in protection.
+[infowski]
+infowski 05/21/2022 3:31 PM
+Yeah, I did a quick look later and it indeed seems that variable is
+applied only if there's some specific "PIG" layer present, whatever that
+is.
+zipperhead46237 05/21/2022 3:30 PM
+unfortunately after rebooting and starting Plex, then waiting, it did
+the same thing, first the Plex screensaver came on then the clock and
+weather popped on. darn it.
+05/21/2022 3:28 PM
+{"appsize":151592,"requiredEULA":"generalTerms","icon":"Plex_80x80.png","vendor":"Plex","iconColor":"#1f1f1f","trustLevel":"default","largeIcon":"Plex_130x130.png","resolution":"1920x1080","type":"web","splashBackground":"Plex_Splash.png","version":"5.0.0","main":"index.html","bgColor":"#000000","id":"cdp-30","title":"Plex","binId":1070287,"extraLargeIcon":"46040090402494192_16789827_192x192.png","enablePigScreenSaver":false,"disableBackHistoryAPI":true,"mediumLargeIcon":"46040090386015206_16789827_115x115.png","bgImage":"Plex_Splash.png"}
+05/21/2022 3:28 PM
+I did insert that variable. I just put it in the middle.
+zipperhead46237 05/21/2022 3:14 PM
+Does it matter where in the list of items already there you insert that
+new variable? Sorry if that is a stupid question. I was never a real
+programmer except some basic language stuff years ago.
+zipperhead46237 05/21/2022 3:02 PM
+yes that is easier, tyvm
+[infowski]
+infowski 05/21/2022 2:50 PM
+if you just want an application folder out of an app id, without having
+to wonder where that app came from/checking multiple locations 
+(edited)
+05/21/2022 2:50 PM
+alternative, probably somewhat easier option:
+luna-send -n 1 'luna://com.webos.service.applicationManager/getAppInfo' '{"id": "org.webosbrew.hbchannel"}' -f | grep -i folderPath
+zipperhead46237 05/21/2022 2:49 PM
+very good info. tyvm
+[infowski]
+infowski 05/21/2022 2:48 PM
+https://www.webosbrew.org/pages/glossary.html → application paths
+[infowski]
+zipperhead46237 Can anyone tell me what file directory an installed
+application would be installed to?
+infowski 05/21/2022 2:47 PM
+It's probably in /media/cryptofs/apps/usr/palm/applications/...
+zipperhead46237 05/21/2022 2:44 PM
+Is there a Luna send command to find an applications file location
+zipperhead46237 05/21/2022 2:35 PM
+Can anyone tell me what file directory an installed application would be
+installed to?
+zipperhead46237 05/21/2022 2:22 PM
+cdp-30 is appid. Darn autocorrect
+05/21/2022 2:21 PM
+Throw me a bone please. So getforgroundappinfo returns “cod-30” when
+Plex is running but under /usr/palm/applications there is no directory
+by that name. So where would I find plex’s app info.json?
+[infowski]
+infowski 05/21/2022 2:16 PM
+just having a chuckle over some korean english.
+05/21/2022 2:15 PM
+nothing to see here.
+zipperhead46237 05/21/2022 2:15 PM
+I don’t understand
+[infowski]
+infowski 05/21/2022 2:14 PM
+[%s] Fail crate screensaver timer thread. but skeep this time
+zipperhead46237 05/21/2022 2:07 PM
+That sounds promising. Okay
+[infowski]
+infowski 05/21/2022 2:06 PM
+you can try adding that into plex's appinfo.json and see how it behaves.
+05/21/2022 2:06 PM
+ha. I see "enablePigScreenSaver": false, as an available option in
+appinfo.json
+zipperhead46237 05/21/2022 2:05 PM
+I know I was on latest because I checked before rooting. And was
+surprised that rootmytv worked
+05/21/2022 2:03 PM
+There it is under software update. Yes. 3.25.25
+[infowski]
+infowski 05/21/2022 2:03 PM
+It's definitely in Software Update tab
+zipperhead46237 05/21/2022 2:02 PM
+I know I found it somewhere. Maybe service menu
+05/21/2022 2:01 PM
+CRS
+05/21/2022 2:01 PM
+Can’t seem to find software ver. Darn I hate getting old
+[infowski]
+infowski 05/21/2022 1:59 PM
+Ha. I see fullScreenSaverApps was last present in 2018... 
+zipperhead46237 05/21/2022 1:59 PM
+WebOS 6.2.1-2414 (kiss curl-Javier)
+05/21/2022 1:57 PM
+Let me see if I can remember how to display what I have
+[infowski]
+infowski 05/21/2022 1:56 PM
+5.x was released on TVs from 2020, 6.x on 2021, 4.x (4.5+ to be exact,
+because... LG) on 2019, 4.x (4.0+) in 2018, etc... (edited)
+05/21/2022 1:55 PM
+5.x/6.x is version of the webOS "core" system, and "software version" is
+model/series-specific release number. (edited)
+zipperhead46237 05/21/2022 1:55 PM
+LoL
+[infowski]
+infowski 05/21/2022 1:55 PM
+your C1 is probably on "Software Version" 03.XX.ZZ, but running
+something around webOS 6.x (edited)
+zipperhead46237 05/21/2022 1:54 PM
+I guess I should actually look to see what I have. 
+[infowski]
+infowski 05/21/2022 1:54 PM
+mind you - "software version" is a different thing
+05/21/2022 1:54 PM
+https://www.t3.com/reviews/lg-c1-review - yeah - that screenshot -
+that's definitely webOS 6.x
+LG C1 review (OLED65C1): an incredible value OLED TV for movies and...
+Our LG C1 review reveals how LG's mid-range OLED holds on to its crown
+as the best OLED TV for most people
+[]
+05/21/2022 1:54 PM
+wait, I though C1 was released with 6.x
+zipperhead46237 05/21/2022 1:53 PM
+Hmm, I wonder if C1 will ever update to 6
+[infowski]
+infowski 05/21/2022 1:52 PM
+They indeed did some screensaver refactor for webOS 6.x
+05/21/2022 1:51 PM
+Yeah, let's see how they handle that...
+zipperhead46237 05/21/2022 1:50 PM
+Was wondering if adding that Var to my Main.qml would do it. But if it’s
+not present my OS must not use it so adding it would probably not do
+anything. Does that make sense?
+[infowski]
+infowski 05/21/2022 1:48 PM
+sure.
+zipperhead46237 05/21/2022 1:48 PM
+Yes I grep’d the whole darn file system
+[infowski]
+infowski 05/21/2022 1:47 PM
+have you tried grep'ping around com.webos.app.screensaver directory?
+zipperhead46237 05/21/2022 1:47 PM
+Since I don’t have a file with this in it: at the top of
+ScreensaverMain.qml you should have a section like this:
+        property var fullScreenSaverApps: ["com.webos.app.discovery", "com.webos.app.inputmgr",
+            "com.webos.app.multiview", "com.webos.app.connectionwizard", "com.webos.app.tvguide",
+            "com.webos.app.channeledit"]
+[infowski]
+infowski 05/21/2022 1:47 PM
+webOS 5.x vs 6.x on C1
+[infowski]
+zipperhead46237 I wonder why the file system structure is different on
+my LGC1 than what you were expecting to see. ...
+infowski 05/21/2022 1:46 PM
+iirc tuxuser has X series TV.
+[] e99.tuxuser at the top of `ScreensaverMain.qml` you should have a
+section like this: ```qml property var fu...
+zipperhead46237 05/21/2022 1:46 PM
+I wonder why the file system structure is different on my LGC1 than what
+you were expecting to see. Since my screensaver filenames and folders
+are different. Before I rooted. I had already checked and was on the
+latest software versions
+Deleted User 05/21/2022 9:47 AM
+Thanks man
+[mariotaku]
+Deleted User Anyone know of any other repos I can add?
+mariotaku 05/21/2022 5:11 AM
+webosapp.club but barely useful outside Russia
+May 20, 2022
+[e99.tuxuser]
+e99.tuxuser 05/20/2022 11:14 PM
+There is no other repo
+Deleted User 05/20/2022 11:08 PM
+Looking for an iptv player that's free and anything else that could be
+fun lol
+05/20/2022 11:08 PM
+Anyone know of any other repos I can add?
+[20220520_220812.jpg]
+ 20220520_220812.jpg
+3.49 MB External
+[] kampfgurke2021 I will try that but where I can get those xD the 55
+inch is a un7400lb
+ww8543 05/20/2022 6:53 AM
+try ebay. lots of lg psus there. you dont even need a very specific one,
+they tend to use the same ones across many models, just make sure the
+connector fits
+[vamastah]
+vamastah 05/20/2022 5:56 AM
+u need to know exact model of power board from your tv, so tv model may
+be not enough
+05/20/2022 5:55 AM
+look for similar stuff
+[vamastah]
+[] kampfgurke2021 Okay sounds nice the shipping costs are lower than a
+new tv xD where are you from 
+vamastah 05/20/2022 5:55 AM
+https://www.amazon.com/55UM7300PUA-TV-LGP55T-19U1-Supply-EAY65149301/dp/B08PHM1BJ2
+LG 55UM7300PUA 4K LED TV LGP55T-19U1 Power Supply Board- EAY65149301
+This part has been tested and fully functional operation
+[]
+[vamastah]
+vamastah 05/20/2022 5:43 AM
+@KampfGurke2021 i dont live there anymore and tbh it would be an issue
+for me to get proper parts
+zipperhead46237 05/20/2022 1:54 AM
+If anyone figures out how to add an app the the list of apps that the
+screensaver will not activate on the new OLED65C1PUB file structure
+please let me know. I would love to add my Plex app to that list.
+[kampfgurke2021]
+kampfgurke2021 05/20/2022 12:31 AM
+Okay sounds nice the shipping costs are lower than a new tv xD where are
+you from 
+May 19, 2022
+[vamastah]
+vamastah 05/19/2022 11:02 PM
+my family town is a place where LG produces TVs ;p
+05/19/2022 11:01 PM
+i dont know, I dont live in Germany :)
+[kampfgurke2021]
+kampfgurke2021 05/19/2022 10:34 PM
+The others I must see xD
+05/19/2022 10:34 PM
+I will try that but where I can get those xD the 55 inch is a un7400lb
+[vamastah]
+vamastah 05/19/2022 10:30 PM
+u should be able to do it quite cheaply
+[vamastah]
+[] kampfgurke2021 So stupid... My 2010 32inch LG survived xD
+vamastah 05/19/2022 10:29 PM
+maybe its enough to replace power supply boards inside
+[kampfgurke2021]
+kampfgurke2021 05/19/2022 10:26 PM
+The 47 starts and then it's making a strange sound
+05/19/2022 10:25 PM
+XD
+05/19/2022 10:25 PM
+1x 55 inch dead 1x 50inch dead 1x 47 inch dead
+05/19/2022 10:25 PM
+So stupid... My 2010 32inch LG survived xD
+[tbsniller]
+tbsniller 05/19/2022 10:24 PM
+Oh surrounds* I'm sorry 
+[vamastah]
+vamastah 05/19/2022 10:20 PM
+pervert >.<
+05/19/2022 10:19 PM
+how can u be aroused by a storm?
+[vamastah]
+[] tbsniller That's why you shouldn't use the shower while a storm
+arouses you lol
+vamastah 05/19/2022 10:19 PM
+wut
+[vamastah]
+vamastah 05/19/2022 10:19 PM
+it happens quite frequently in Poland
+[tbsniller]
+tbsniller 05/19/2022 10:13 PM
+Crazy never heard that something like this happened  you have my
+sympathy
+05/19/2022 10:12 PM
+That's why you shouldn't use the shower while a storm arouses you lol
+[kampfgurke2021]
+kampfgurke2021 05/19/2022 10:10 PM
+Wtf what LG tv can I buy I need 3 new -.- scheiß Gewitter sry stupid
+lightning storm killed al tvs in my house + my Avr + kp I have to find
+out xD
+zipperhead46237 05/19/2022 12:08 PM
+zero results
+05/19/2022 12:08 PM
+root@LGwebOSTV:/usr/palm/applications/com.webos.app.screensaver# grep
+-ri fullscreensaverapps .
+root@LGwebOSTV:/usr/palm/applications/com.webos.app.screensaver# ls -lat
+05/19/2022 12:06 PM
+this system layout must be different
+05/19/2022 12:06 PM
+root@LGwebOSTV:/usr/palm/applications/com.webos.app.screensaver# ls -lat
+total 1 drwxr-xr-x 104 root root 4039 Jan 17 03:21 .. drwxr-xr-x 3 root
+root 58 Jan 17 00:55 . -rwxr-xr-x 1 root root 384 Jan 17 00:55
+appinfo.json drwxr-xr-x 9 root root 188 Jan 17 00:55 qml
+root@LGwebOSTV:/usr/palm/applications/com.webos.app.screensaver# cd qml
+root@LGwebOSTV:/usr/palm/applications/com.webos.app.screensaver/qml# ls
+-lat total 5 drwxr-xr-x 9 root root 188 Jan 17 00:55 . drwxr-xr-x 3 root
+root 58 Jan 17 00:55 .. drwxr-xr-x 2 root root 198 Jan 17 00:55
+AppInitializer drwxr-xr-x 3 root root 29 Jan 17 00:55 Components
+drwxr-xr-x 2 root root 96 Jan 17 00:55 Containers drwxr-xr-x 5 root root
+433 Jan 17 00:55 Controllers drwxr-xr-x 2 root root 60 Jan 17 00:55
+Debug drwxr-xr-x 2 root root 67 Jan 17 00:55 Effects drwxr-xr-x 2 root
+root 119 Jan 17 00:55 Utilities -rwxr-xr-x 1 root root 4319 Jan 17 00:55
+main.qml -rwxr-xr-x 1 root root 365 Jan 17 00:55 main.qmlproject
+05/19/2022 12:01 PM
+That returns no results for me. I believe this LG C1 has a different
+setup for the screensaver. I was wondering if adding that Var to my
+main.qml would help but was hoping to see the entire ScreensaverMain.qml
+to get the context. It may be that my system doesn’t even use that
+“property var fullScreenSaverApps” so adding it to my main.qml may have
+no effect.
+[tbsniller]
+zipperhead46237 would it be possible to get the contents of your entire
+file that contains the property var fullScre...
+tbsniller 05/19/2022 7:46 AM
+Yeah like this:
+grep -ri fullscreensaverapps /usr/palm/applications/com.webos.app.screensaver/
+Grep for search in file R for recursive search (every file in this and
+deeper directories) I for ignore case sensitive And obviously the path
+where to start (edited)
+zipperhead46237 05/19/2022 3:28 AM
+I would like to campare that one with my Main.qml
+05/19/2022 3:27 AM
+ScreensaverMain.qml
+05/19/2022 3:27 AM
+would it be possible to get the contents of your entire file that
+contains the property var fullScreenSaverApps:
+zipperhead46237 05/19/2022 1:08 AM
+I also searched for fullScreenSaverApps
+zipperhead46237 05/19/2022 12:52 AM
+No results
+[e99.tuxuser]
+e99.tuxuser 05/19/2022 12:41 AM
+No result with that command?
+zipperhead46237 05/19/2022 12:38 AM
+I have struck out trying to find that 
+[e99.tuxuser]
+e99.tuxuser 05/19/2022 12:27 AM
+grep -n com.webos *
+05/19/2022 12:21 AM
+A section that contains app ids
+05/19/2022 12:20 AM
+Check each file if it contains a similar section
+zipperhead46237 05/19/2022 12:19 AM
+Clock.qml MainView.qml PIGMasker.qml ScreenSaver.qml
+[e99.tuxuser]
+e99.tuxuser 05/19/2022 12:16 AM
+Wahts the contents:
+/usr/palm/applications/com.webos.app.screensaver/qml/Containers/
+(edited)
+zipperhead46237 05/19/2022 12:16 AM
+Not sure what adding that property to my "Main.qml" file would do. I
+would not want to do any permanent damage.
+05/19/2022 12:09 AM
+I did find the Plex app id but just don't know where to add it.
+05/19/2022 12:07 AM
+not sure where that same functionality would be in my system
+zipperhead46237 05/19/2022 12:00 AM
+I don't have a ScreensaverMain.qml but also that var fullScreenSaverApps
+is not in my Main.qml
+May 18, 2022
+zipperhead46237 05/18/2022 11:34 PM
+ok, yes i see that
+[infowski]
+infowski 05/18/2022 11:31 PM
+and pressing ctrl-c should kill it
+05/18/2022 11:31 PM
+Yeah - but it should print out current app id whenever you switch apps.
+zipperhead46237 05/18/2022 11:27 PM
+prompt
+05/18/2022 11:27 PM
+that command hangs and doesn't return a promt
+[infowski]
+infowski 05/18/2022 11:20 PM
+luna-send -i 'luna://com.webos.applicationManager/getForegroundAppInfo' '{"subscribe":true}'
+(edited)
+zipperhead46237 05/18/2022 11:20 PM
+Thanks. Do you have an easy way to find the app I’d
+[e99.tuxuser]
+e99.tuxuser 05/18/2022 11:19 PM
+try to add your plex app id there
+05/18/2022 11:18 PM
+at the top of ScreensaverMain.qml you should have a section like this:
+        property var fullScreenSaverApps: ["com.webos.app.discovery", "com.webos.app.inputmgr",
+            "com.webos.app.multiview", "com.webos.app.connectionwizard", "com.webos.app.tvguide",
+            "com.webos.app.channeledit"]
+ 1
+zipperhead46237 05/18/2022 10:13 PM
+It's funny because waving the magic remote back and forth would turn off
+the LG screensaver but not the Plex screensaver. So I had considered
+rigging some sort of mechanical contraption to wave the remote back and
+forth so I could just sit the remote in it while not using it. LoL. This
+method is much more elegant.
+05/18/2022 10:09 PM
+I can confirm that the mount --bind over the main.qml with a null file
+idea did work. And after a reboot its back to normal. So this works for
+me since I can just turn the screensaver off while using the Plex App.
+It would be nice to modify a script to tell the screensaver not to turn
+on while plex is running even if I have a show paused but I think that
+is above my knowledge. Thank you for your assistance.
+[infowski]
+infowski 05/18/2022 9:22 PM
+main.qml is probably the one you want to kill
+zipperhead46237 05/18/2022 9:20 PM
+ty
+ 1
+05/18/2022 9:20 PM
+ah yes that is where mine is, I will take a look.
+[tbsniller]
+tbsniller 05/18/2022 9:19 PM
+path is another on newer tvs, at least on mine (webOS 5):
+/usr/palm/applications/com.webos.app.screensaver/qml/Containers/ScreenSaver.qml
+ 1
+05/18/2022 9:19 PM
+take a look at containers
+zipperhead46237 05/18/2022 9:19 PM
+root@LGwebOSTV:/tmp# cd
+/usr/palm/applications/com.webos.app.screensaver/qml/
+root@LGwebOSTV:/usr/palm/applications/com.webos.app.screensaver/qml# ls
+-lat total 5 drwxr-xr-x 9 root root 188 Jan 17 00:55 . drwxr-xr-x 3 root
+root 58 Jan 17 00:55 .. drwxr-xr-x 2 root root 198 Jan 17 00:55
+AppInitializer drwxr-xr-x 3 root root 29 Jan 17 00:55 Components
+drwxr-xr-x 2 root root 96 Jan 17 00:55 Containers drwxr-xr-x 5 root root
+433 Jan 17 00:55 Controllers drwxr-xr-x 2 root root 60 Jan 17 00:55
+Debug drwxr-xr-x 2 root root 67 Jan 17 00:55 Effects drwxr-xr-x 2 root
+root 119 Jan 17 00:55 Utilities -rwxr-xr-x 1 root root 4319 Jan 17 00:55
+main.qml -rwxr-xr-x 1 root root 365 Jan 17 00:55 main.qmlproject
+05/18/2022 9:18 PM
+I dont have a file by that name in that location.
+[e99.tuxuser]
+e99.tuxuser 05/18/2022 9:16 PM
+ScreensaverMain.qml is the right one (edited)
+05/18/2022 9:16 PM
+You were looking at the wrong file
+zipperhead46237 05/18/2022 9:06 PM
+I took a look at the main.qml screensaver file. Honestly I think I'm
+over my head because I can't tell from reading that file what I could
+edit in there to have the screensaver not come on while Plex is running.
+zipperhead46237 05/18/2022 6:57 PM
+Thanks again
+05/18/2022 6:57 PM
+I hope qml is close to Unix or SQL scripting because that and Rocky
+Mountain Basic is all the scripting experience I have. And that has been
+awhile. But I feel confident I can muddle through it.
+zipperhead46237 05/18/2022 6:29 PM
+I will definitely look into doing that. Because to be honest, Plex is
+the only app so far I want to disable the screensaver for since it has
+its own built in.
+zipperhead46237 05/18/2022 6:19 PM
+Oh! Yes! That is perfect!
+[e99.tuxuser]
+e99.tuxuser 05/18/2022 6:19 PM
+that would be the cleanest/safest solution
+05/18/2022 6:18 PM
+/usr/palm/applications/com.webos.app.screensaver/qml/ScreensaverMain.qml
+has all the logic to check which app is running and when to enable
+screensaver - so you could very well copy this file, make edits to it,
+then mount --bind your edited file over the original
+zipperhead46237 05/18/2022 6:16 PM
+Got it. That makes sense. But this is the next best thing to a toggle on
+and off.
+[aabytt]
+zipperhead46237 Is the temporary method good until a reboot? Because
+that is really not all that bad.
+aabytt 05/18/2022 6:14 PM
+Be careful, it will disable LG screensaver in all the apps, not only
+Plex.
+[e99.tuxuser]
+e99.tuxuser 05/18/2022 6:01 PM
+Yeah, temporary is active until reboot
+zipperhead46237 05/18/2022 5:37 PM
+Could be a good thing if you have others using same set and maybe
+pausing video games which might not necessarily have any protection.
+05/18/2022 5:34 PM
+Is the temporary method good until a reboot? Because that is really not
+all that bad.
+zipperhead46237 05/18/2022 5:21 PM
+This looks awesome. Thank you! I will try it out.
+[e99.tuxuser]
+e99.tuxuser 05/18/2022 5:12 PM
+there are probably more elegant ways, but its fine^^
+05/18/2022 5:11 PM
+alright, just tested it, worked fine  Updated instructions to make it
+a permanent overwrite at startup
+zipperhead46237 05/18/2022 5:07 PM
+Away now but will later. Thank you.
+05/18/2022 5:07 PM
+Sorry, will do.
+[e99.tuxuser]
+e99.tuxuser 05/18/2022 5:07 PM
+stop complaining and test the code above xDDD
+ 1  1 [:ahegao:] 2
+zipperhead46237 05/18/2022 5:07 PM
+But taking the option of using their screensaver away from the TV owners
+just rubs me the wrong way. Even though I understand the OLED burn in
+issue. I do.
+05/18/2022 5:05 PM
+I DO like cheaper. I cannot lie.
+[e99.tuxuser]
+[] e99.tuxuser Can you try something like this over ssh: ```sh # Create
+empty file touch /tmp/dummyscreensaver.qml...
+e99.tuxuser 05/18/2022 5:04 PM
+You need to be in an app to test this
+[vamastah]
+zipperhead46237 Yes. In fact My Daughter has a Samsung. Same app same
+scenario what you are watching does not get ...
+vamastah 05/18/2022 5:04 PM
+maybe u r right, but on the other hand LGs are cheaper by 30-40% than
+Samsungs with similar display size
+zipperhead46237 05/18/2022 5:01 PM
+And you can duplicate this issue if you wish. There is an app on the LG
+App Store “SmartScreensaver” if you install it run all it does is
+display images rotating them every couple of seconds. The images are
+just like Plex movie and tv show posters. By default there is also text.
+But you can turn the text off. But just like Plex the lg screensaver
+pops on over it.
+[e99.tuxuser]
+e99.tuxuser 05/18/2022 5:01 PM
+this is temporary.. but good enough for testing
+05/18/2022 5:01 PM
+Can you try something like this over ssh:
+    # Create empty file
+    touch /tmp/dummyscreensaver.qml
+    # Mount empty file over actual screensaver
+    mount --bind /tmp/dummyscreensaver.qml /usr/palm/applications/com.webos.app.screensaver/qml/main.qml
+    # Test if screensaver is neutered
+    luna-send -n 1 'luna://com.webos.service.tvpower/power/turnOnScreenSaver' '{}'
+    Now, you can make this permanent
+    sh
+    cat > /var/lib/webosbrew/init.d/50-custom-screensaver << EOF
+    # Create empty file
+    touch /tmp/dummyscreensaver.qml
+    # Mount empty file over actual screensaver
+    mount --bind /tmp/dummyscreensaver.qml /usr/palm/applications/com.webos.app.screensaver/qml/main.qml
+    EOF
+    chmod +x /var/lib/webosbrew/init.d/50-custom-screensaver
+(edited)
+zipperhead46237 05/18/2022 4:47 PM
+Yes. In fact My Daughter has a Samsung. Same app same scenario what you
+are watching does not get interrupted by a screensaver. That problem
+should never have left the factory much less when you open a service
+ticket with Lg they simply blow it off with “it’s to protect your
+screen”. It doesn’t protect anything because as I said already there is
+not a static image on the screen when it comes on so it is not
+necessary.
+[vamastah]
+zipperhead46237 Which is also why it will be the last LG anything I ever
+purchase.
+vamastah 05/18/2022 3:52 PM
+so u claim other manufacturers are better?
+zipperhead46237 05/18/2022 3:20 PM
+Which is also why it will be the last LG anything I ever purchase.
+05/18/2022 3:18 PM
+Yes but it’s not static and there is now chance for image burn. So my
+only point here is that LG’s logic for the screensaver is flawed when it
+prevents the owners for enjoying the media content they want to enjoy.
+Hence I want to turn it off.
+[aabytt]
+zipperhead46237 It doesn’t ever come on while watching a movie or tv
+show in the Plex app. But if you pause a movie...
+aabytt 05/18/2022 3:16 PM
+sure it knows, plex slideshow screensaver is not video but just a web
+page.
+zipperhead46237 05/18/2022 3:12 PM
+The remote is not being used in either case.
+05/18/2022 3:12 PM
+It doesn’t ever come on while watching a movie or tv show in the Plex
+app. But if you pause a movie, first the Plex screensaver comes on, then
+the LG screensaver comes on. So how does the tv know the difference
+between the movie and the Plex slideshow screensaver?
+[aabytt]
+aabytt 05/18/2022 3:10 PM
+Just curious if plex is the only app you run all the time? Be careful
+disabling screensaver globally as there are apps that do not have
+built-in screensaver like plex.
+05/18/2022 3:07 PM
+LG screensaver does not get active only when video is playing. As soon
+as there is no activity from your remote it will come on images
+slideshow.
+zipperhead46237 05/18/2022 3:00 PM
+I will check that out. I wish I could find out how the screensaver gets
+triggered to come on and just block it. The Plex screensaver that comes
+on when you pause a show displays movie and tv show artwork. There is
+never anything static because the images change every few seconds. But
+somehow the LG screensaver comes on anyway.
+[aabytt]
+zipperhead46237 on the subject of turning off the screensaver I do know
+that this is the process/service that comes ...
+aabytt 05/18/2022 1:57 PM
+just an idea, may be you can generate some blank transparent main.qml
+and mount bind it over original. Check out @infowski's custom
+screensaver
+https://github.com/webosbrew/custom-screensaver/blob/main/assets/screensaver-main.qml
+zipperhead46237 05/18/2022 1:20 PM
+2103 com.webos.service.applicationManager /usr/sbin/sam static QEHz39Ml
+05/18/2022 1:19 PM
+i also know that this service is call by a service called "SAM"
+05/18/2022 1:18 PM
+now the big question is how do I stop that service from starting.
+05/18/2022 1:17 PM
+root 10476 2103 16 07:03 ? 00:00:06 /usr/bin/qml-runner
+{"appId":"com.webos.app.screensaver","main":"file:///usr/palm/applications/com.webos.app.screensaver/qml/main.qml","params":{}}
+05/18/2022 1:17 PM
+on the subject of turning off the screensaver I do know that this is the
+process/service that comes on when it is on the display.
+[ayr_ton]
+ayr_ton 05/18/2022 4:05 AM
+Do you folks know some way of controlling the brightness by autostart
+scripts? My plan is to change the brightness from auto to low when the
+night starts with some simple automation. Got it with
+luna-send -f -n 1 luna://com.webos.settingsservice/setSystemSettings '{"category":"picture", "settings": {"energySaving":"max"}}'
+and
+luna-send -f -n 1 luna://com.webos.settingsservice/setSystemSettings '{"category":"picture", "settings": {"energySaving":"auto"}}'
+(edited)
+May 17, 2022
+[infowski]
+infowski 05/17/2022 2:25 PM
+Should be doable. I guess I shall dig into this at this point.
+zipperhead46237 05/17/2022 12:48 PM
+My biggest complaint with the OLED65C1PUB is that the LG
+fireworks/clock&weather screensaver come on on top of the screensaver my
+streaming apps use. Plex has a wonderful screensaver but can’t enjoy it
+because the LG SS turns on. Someone mentioned it might be possible to
+change the timeout using a Luna send command but I haven’t seen any
+examples.
+05/17/2022 12:41 PM
+If anyone knows of a command that would turn the OLED screensaver off
+and on that would wonderful.
+[infowski]
+infowski 05/17/2022 12:24 PM
+No. The only public repository outside of the official one right now is:
+https://webosapp.club/
+webOS app market
+install webos app online
+[sinpai0222]
+sinpai0222 05/17/2022 5:32 AM
+Hello. Is there a section for repository links?
+May 16, 2022
+[sodaboiash]
+[] infowski ...but in order to open key rebinding window you'll also
+need Magic Remote, or a mouse connected to ...
+sodaboiash 05/16/2022 11:44 AM
+I’ll try that later, I appreciate it my dude
+[sodaboiash]
+[] vamastah i tested it yesterday and it seems it does not support
+remote control
+sodaboiash 05/16/2022 11:44 AM
+Thank you!
+[infowski]
+infowski 05/16/2022 9:59 AM
+But "home" button behaviour on the remote is handled regardless of
+whatever the app does (you don't need to implement going back to home
+screen in your native app) (edited)
+ 1
+[vamastah]
+vamastah 05/16/2022 9:59 AM
+k, thx
+[infowski]
+infowski 05/16/2022 9:58 AM
+You could probably open up "Home screen" overlay via some Luna call, but
+this probably needs research. ls-monitor (+ webosbrew.org docs) may come
+in hepful.
+05/16/2022 9:57 AM
+Not entirely sure what you mean here. If an application exits webOS will
+launch last active input application.
+[vamastah]
+vamastah 05/16/2022 9:57 AM
+like webOS.platformBack() in js?
+05/16/2022 9:57 AM
+ok, i get it, thx, is there a special API to handle going back to home
+screen when building native apps?
+[infowski]
+infowski 05/16/2022 9:56 AM
+as in - webOS only supports SDL2, and there's no SDL1 port.
+05/16/2022 9:56 AM
+1. Not really, I have very limited time lately and there are probably
+better things I could work on. 2. Sadly not, and it'd probably be close
+to impossible to user SDL1, unless someone creates some SDL1-to-SDL2
+porting layer.
+[vamastah]
+vamastah 05/16/2022 9:55 AM
+and more important question - does the toolchain support SDL1?
+05/16/2022 9:54 AM
+@infowski do u have plans to port battle for wesnoth?
+05/16/2022 9:53 AM
+:(
+[infowski]
+infowski 05/16/2022 9:53 AM
+...but in order to open key rebinding window you'll also need Magic
+Remote, or a mouse connected to the TV. Yeah, that port is not great 
+05/16/2022 9:53 AM
+You need to rebind the remote keys.
+[vamastah]
+vamastah 05/16/2022 9:52 AM
+try to connect keyboard to usb, it should work
+[vamastah]
+[] sodaboiash Does anyone know the controls?
+vamastah 05/16/2022 9:52 AM
+i tested it yesterday and it seems it does not support remote control
+[sodaboiash]
+sodaboiash 05/16/2022 5:36 AM
+The only button I can get working is Up and it just does a full tilt
+05/16/2022 5:35 AM
+Does anyone know the controls?
+05/16/2022 5:35 AM
+I installed the Space Cadet 3D Pinball port on my TV
+05/16/2022 5:35 AM
+This is a stupid question but I can’t seem to find help anywhere else on
+this
+May 15, 2022
+[hivemynd]
+[] vamastah in the end it is good that i have an ancient webos ;p
+hivemynd 05/15/2022 5:31 PM
+yea
+[vamastah]
+vamastah 05/15/2022 5:05 PM
+in the end it is good that i have an ancient webos ;p
+[hivemynd]
+[] vamastah yep, after 50 hours, its sad
+hivemynd 05/15/2022 5:04 PM
+sad
+[vamastah]
+[] hivemynd TIL the apps you install using Dev mode automatically
+uninstall when you turn dev mode off
+vamastah 05/15/2022 5:04 PM
+yep, after 50 hours, its sad
+[hivemynd]
+[] mariotaku Yes. Dev mode is still needed but you don't have to install
+a bunch of developer apps on computer
+hivemynd 05/15/2022 5:00 PM
+TIL the apps you install using Dev mode automatically uninstall when you
+turn dev mode off
+[mariotaku]
+mariotaku 05/15/2022 4:50 PM
+Yes. Dev mode is still needed but you don't have to install a bunch of
+developer apps on computer
+[hivemynd]
+hivemynd 05/15/2022 4:32 PM
+Like Do I need to be in the Dev mode?
+[hivemynd]
+[] mariotaku https://github.com/webosbrew/dev-manager-desktop
+hivemynd 05/15/2022 4:32 PM
+any instructions as to how to use it?
+[mariotaku]
+[] hivemynd So I am trying to install a youtube app using the Dev tools
+instead of the homebrew channel because ...
+mariotaku 05/15/2022 4:28 PM
+https://github.com/webosbrew/dev-manager-desktop
+GitHub - webosbrew/dev-manager-desktop: Device/DevMode Manager for ...
+Device/DevMode Manager for webOS TV. Contribute to
+webosbrew/dev-manager-desktop development by creating an account on
+GitHub.
+[]
+[hivemynd]
+hivemynd 05/15/2022 3:27 PM
+And uh, I can't for the life of me figure out how to install the LG SDK
+on my Windows PC
+05/15/2022 3:26 PM
+So I am trying to install a youtube app using the Dev tools instead of
+the homebrew channel because the homebrew channel is not working
+05/15/2022 3:26 PM
+hey guys need some help again
+[retr0id]
+retr0id 05/15/2022 2:55 PM
+babel can convert es6 to es5
+05/15/2022 2:54 PM
+ah, I consider ES6 to be vanilla, didn't realise how ancient webos3 was
+[vamastah]
+vamastah 05/15/2022 2:49 PM
+issues like flickering and restarting app each few seconds
+05/15/2022 2:49 PM
++ i have weird issues with asm.js on 4.0 and 5.0, on 6.0 everything is
+fine
+05/15/2022 2:48 PM
+and it doesnt work on 3.0 or older
+05/15/2022 2:48 PM
+its not vanilla js, its ecmascript 6
+[retr0id]
+[] vamastah personally I care bc I cannot run any app that was created
+using WebAssembly or asm.js
+retr0id 05/15/2022 2:47 PM
+asm.js should work tho, since that's just vanilla js
+[_nocap_]
+[] timmods `# Activate HDMI-ARC Home Cinema Sound System luna-send -f -n
+1 luna://com.webos.applicationManager/...
+_nocap_ 05/15/2022 1:35 PM
+Legend! I’ll have a look into it
+[vamastah]
+vamastah 05/15/2022 12:37 PM
+personally I care bc I cannot run any app that was created using
+WebAssembly or asm.js
+05/15/2022 12:36 PM
+etc
+05/15/2022 12:36 PM
+more apps available
+05/15/2022 12:33 PM
+and other UI i guess
+[vamastah]
+[] hivemynd What's so new about WebOS 6 anyway
+vamastah 05/15/2022 12:33 PM
+higher version of underlying chromium
+[hivemynd]
+hivemynd 05/15/2022 12:32 PM
+Ah
+[e99.tuxuser]
+e99.tuxuser 05/15/2022 12:31 PM
+More ads
+[hivemynd]
+hivemynd 05/15/2022 12:30 PM
+What's so new about WebOS 6 anyway
+05/15/2022 12:30 PM
+Huh
+[e99.tuxuser]
+e99.tuxuser 05/15/2022 12:30 PM
+@HiveMynd that's good, because you shouldnt
+[hivemynd]
+hivemynd 05/15/2022 12:30 PM
+That's wierd
+[vamastah]
+vamastah 05/15/2022 12:30 PM
+yep, same for me
+[hivemynd]
+hivemynd 05/15/2022 12:30 PM
+Apparantly there aren't any updates
+05/15/2022 12:30 PM
+Wierd thing is I can't even update it
+[vamastah]
+vamastah 05/15/2022 12:30 PM
+i bought my device half a year ago and got webos 3.0
+05/15/2022 12:29 PM
+the interesting thing is why LG even delivers old webOS
+[tbsniller]
+[] hivemynd It's WebOS v. 5.20.15
+tbsniller 05/15/2022 12:26 PM
+oh sorry no him
+ 1
+[vamastah]
+[] tbsniller i believe thats firmware version can you check also under
+tv information? there it might be
+vamastah 05/15/2022 12:26 PM
+me?
+[vamastah]
+vamastah 05/15/2022 12:25 PM
+i.e. remote with accelerometer and wireless connection
+05/15/2022 12:25 PM
+u can buy sth like that from aliexpress for $10
+[hivemynd]
+hivemynd 05/15/2022 12:25 PM
+How well will it work as a Wiimote
+05/15/2022 12:25 PM
+I wonder
+[vamastah]
+vamastah 05/15/2022 12:24 PM
+@HiveMynd well, its not expensive in production i guess
+[tbsniller]
+[] vamastah k, interesting
+tbsniller 05/15/2022 12:24 PM
+i believe thats firmware version can you check also under tv
+information? there it might be
+[hivemynd]
+hivemynd 05/15/2022 12:24 PM
+Like LG really went overboard shipping what is basically a Wii remote
+with their TV
+[vamastah]
+vamastah 05/15/2022 12:24 PM
+why does LG patch old webos?
+[hivemynd]
+hivemynd 05/15/2022 12:24 PM
+It's the one with the Fancy ass Magic Remote
+[vamastah]
+vamastah 05/15/2022 12:23 PM
+k, interesting
+[hivemynd]
+hivemynd 05/15/2022 12:23 PM
+It's WebOS v. 5.20.15
+[vamastah]
+vamastah 05/15/2022 12:23 PM
+i assume yours is much newer
+[hivemynd]
+hivemynd 05/15/2022 12:23 PM
+Op found it
+[vamastah]
+vamastah 05/15/2022 12:23 PM
+different versions have different ui though
+05/15/2022 12:22 PM
+in my webos 3.0 there is a gear icon in the top right corner, and from
+there i can access more settings
+[hivemynd]
+hivemynd 05/15/2022 12:22 PM
+The what?
+[tbsniller]
+tbsniller 05/15/2022 12:22 PM
+in support/assistant menu
+[hivemynd]
+hivemynd 05/15/2022 12:21 PM
+There Is nothing like that here
+[vamastah]
+vamastah 05/15/2022 12:21 PM
+or sth like that
+05/15/2022 12:21 PM
+settings -> about device
+[hivemynd]
+hivemynd 05/15/2022 12:21 PM
+How do I check? I'm not familiar with WebOS
+[vamastah]
+[] hivemynd I mean makes sense I literally bought the TV yesterday
+vamastah 05/15/2022 12:20 PM
+which webos version?
+[hivemynd]
+hivemynd 05/15/2022 12:20 PM
+I mean makes sense I literally bought the TV yesterday
+05/15/2022 12:20 PM
+Aaah I see
+[tbsniller]
+tbsniller 05/15/2022 12:20 PM
+yes
+[hivemynd]
+hivemynd 05/15/2022 12:19 PM
+Is the exploit fixed?
+[hivemynd]
+[] tbsniller pls check <#926881570512572456> seems your tv is patched.
+hivemynd 05/15/2022 12:19 PM
+What does that mean
+[tbsniller]
+[] hivemynd And now it's basically as if nothing happened
+tbsniller 05/15/2022 12:18 PM
+pls check # unknown-channel seems your tv is patched.
+[hivemynd]
+hivemynd 05/15/2022 12:17 PM
+And now it's basically as if nothing happened
+05/15/2022 12:17 PM
+And it rebooted once
+05/15/2022 12:17 PM
+Went to https://rootmy.tv
+RootMy.TV
+RootMy.TV - Slide to root your LG webOS TV and install the webOS
+Homebrew Channel
+[]
+05/15/2022 12:17 PM
+Hey guys so I tried to Root my tv
+May 14, 2022
+[smx2460]
+smx2460 05/14/2022 9:54 PM
+then you need either a Raspberry PI or another PL2303 in reverse
+(edited)
+05/14/2022 9:53 PM
+if you are using one that has individual wires at TTL level (5v)
+05/14/2022 9:53 PM
+and so you need a RS232 PC or an RS232 to USB adapter
+05/14/2022 9:53 PM
+now, if you're using the ATEN UC232A, you'll have RS232 DB9
+[smx2460]
+[] mariotaku When DEBUG is enabled, how to connect TV and computer via
+the adapter? `Computer <-Serial port-> Ada...
+smx2460 05/14/2022 9:52 PM
+you plug a PL2303 in the TV
+[infowski]
+infowski 05/14/2022 7:21 PM
+tl;dr they dynamically patch up nvidia's binary driver to overwrite some
+PID/VID checks to unlock some functionality only present on quadros
+[infowski]
+[] e99.tuxuser How feasible is kernel patching/hooking at runtime ? Have
+you tried that yet <@310158180728700929> ?
+infowski 05/14/2022 7:21 PM
+IIRC that's essentially what https://github.com/DualCoder/vgpu_unlock
+does - probably a nice functional example 
+GitHub - DualCoder/vgpu_unlock: Unlock vGPU functionality for consu...
+Unlock vGPU functionality for consumer grade GPUs. - GitHub -
+DualCoder/vgpu_unlock: Unlock vGPU functionality for consumer grade
+GPUs.
+[]
+[mariotaku]
+[] smx2460 requirements are : - root access - a PL2303 usb2serial
+adapter - a usb flash drive - time 
+mariotaku 05/14/2022 7:02 PM
+When DEBUG is enabled, how to connect TV and computer via the adapter?
+Computer <-Serial port-> Adapter <- USB -> TV?
+[tbsniller]
+tbsniller 05/14/2022 6:44 PM
+thanks until now! 
+ 1
+05/14/2022 6:44 PM
+okay then I will have to borrow it at work on monday
+[smx2460]
+smx2460 05/14/2022 6:43 PM
+the bootloader doesn't support anything else
+[tbsniller]
+[] smx2460 requirements are : - root access - a PL2303 usb2serial
+adapter - a usb flash drive - time 
+tbsniller 05/14/2022 6:42 PM
+I have a ftdi FT232RL adapter, does it also do its job? otherwise I can
+organize a pl2303, because I don't have it at home And a more obvious
+question, do you even want to help me with my very limited knowledge and
+my maybe not so smart questions 
+[smx2460]
+smx2460 05/14/2022 6:35 PM
+you can also loop through the syscall table and change the handlers
+05/14/2022 6:35 PM
+but there are various ways to do that once you get that far
+05/14/2022 6:35 PM
+i didn't need to patch them
+05/14/2022 6:35 PM
+if i tried it? i have written a module that locates where symbols are to
+call them
+05/14/2022 6:34 PM
+then it does the usual trampoline magic
+05/14/2022 6:34 PM
+you make a kernel module that locates the location of symbols through
+kallsyms
+[smx2460]
+[] e99.tuxuser How feasible is kernel patching/hooking at runtime ? Have
+you tried that yet <@310158180728700929> ?
+smx2460 05/14/2022 6:34 PM
+it's not that insane
+[smx2460]
+smx2460 05/14/2022 6:33 PM
+requirements are : - root access - a PL2303 usb2serial adapter - a usb
+flash drive - time  (edited)
+05/14/2022 6:33 PM
+@TBSniller no disassembling required
+[tbsniller]
+tbsniller 05/14/2022 3:21 PM
+I have read your messages about that here:
+https://discord.com/channels/407937994037919756/413498235307425802/956705122958856232
+so the plan would be to put tv in debug mode, change its fs to a usb
+drive and reboot from that into a unsigned kernel? would I need to
+disassemble the tv, or can everything be done without accessing the
+board itself
+[e99.tuxuser]
+e99.tuxuser 05/14/2022 3:10 PM
+How feasible is kernel patching/hooking at runtime ? Have you tried that
+yet @Smx ?
+[smx2460]
+smx2460 05/14/2022 3:08 PM
+You can recover from a bad kernel on DEBUG as long as you don't wipe the
+bootloader
+05/14/2022 3:07 PM
+(no content)
+[IMG_20220514_150713.jpg]
+ IMG_20220514_150713.jpg
+2.1 MB External
+[tbsniller]
+tbsniller 05/14/2022 2:55 PM
+I believe its k6hp, does it make sense? At least I have found it in some
+driver specifications and this is my output:
+ "board_type": "K6HP_DVB", "hardware_id": "HE_DTV_W20H_AFADABAA", "product_id": "65NANO867NA", "core_os_release": "5.3.0-21", "webos_manufacturing_version": "04.30.50",
+do you think this procedere is doable for someone who nearly started
+into this coding thing and only has really limited knowledge on this
+kernel stuff?
+[smx2460]
+smx2460 05/14/2022 2:53 PM
+Before you do anything you'll want to be in DEBUG mode tho
+[smx2460]
+smx2460 05/14/2022 2:45 PM
+From there's you can reboot into the kernel you want
+05/14/2022 2:44 PM
+Is booting an alternative rootfs
+05/14/2022 2:44 PM
+What night be possible tho
+05/14/2022 2:44 PM
+But as far as we know, the kernel partition is always verified on all
+platforms
+05/14/2022 2:44 PM
+@TBSniller it depends on the SoC you have
+[tbsniller]
+tbsniller 05/14/2022 1:49 PM
+I believe I have found the functio where the displayed content is
+recognized and the capture interface is dis- or enabled, want to try to
+patch it up to recognize other values, so the question is: is it
+possible and how are chances to bricking without recovering (edited)
+05/14/2022 1:46 PM
+Is it possibe to patch the kernel image and flash it back on the tv? or
+are there any hash checks during launch, so bricking the tv is the
+result also if it's easy to patch it up, how are chances of recovering
+the tv if something messed up and the kernel is corrupted (edited)
+[timmods]
+timmods 05/14/2022 10:18 AM
+Optionally, you can add lines to start another app, I'm also removing
+the app from recent apps
+# Launch start app sleep 1 luna-send -f -n 1 luna://com.webos.applicationManager/launch '{"id": "PACKAGEID", "params":{}}' # Remove from Recents luna-send -f -n 1 luna://com.webos.service.recent/removeRecent '{"appId": "com.webos.app.hdmi2", "params":{}}'
+(edited)
+[timmods]
+timmods 05/14/2022 10:00 AM
+It's not the greatest solution, but it works 
+05/14/2022 9:58 AM
+# Activate HDMI-ARC Home Cinema Sound System luna-send -f -n 1 luna://com.webos.applicationManager/launch '{"id": "com.webos.app.hdmi2", "params":{}}' sleep 3 luna-send -f -n 1 luna://com.webos.service.systemUIManager/launch '{"appId": "com.webos.app.screenremote", "params":{}}' sleep 2 luna-send -f -n 1 luna://com.webos.service.tv.legacyinput/createKeyEvent '{"code": "0x001C", "type":"single" }'
+[timmods]
+[] _nocap_ could it be possible to create something that cycles (turns
+off and on) the arc hdmi 2 on after star...
+timmods 05/14/2022 9:56 AM
+Yes, im doing this in my init.d startup script, hold on let me look
+[_nocap_]
+_nocap_ 05/14/2022 3:55 AM
+could it be possible to create something that cycles (turns off and on)
+the arc hdmi 2 on after start up so my receiver works or turns on
+automatically? (not asking for someone to do it, asking if possible)
+(edited)
+May 13, 2022
+[e99.tuxuser]
+e99.tuxuser 05/13/2022 10:06 AM
+check out last msg in # unknown-channel
+ 1
+[illiloh]
+illiloh 05/13/2022 10:04 AM
+Hi, everyone, I have an OLED65CX9LA and cannot downgrade. Downgrade via
+USB and webosapp.club/downgrade. TV always reports: Software update
+cannot be applied to the TV.
+May 12, 2022
+[e99.tuxuser]
+e99.tuxuser 05/12/2022 11:36 PM
+the correct channel is # unknown-channel
+whoami1337 05/12/2022 11:33 PM
+Is there any guide about wiring LEDs and raspberry? Please (not sure if
+I'm writing to the correct channel)
+05/12/2022 11:32 PM
+Hi guys!
+[retr0id]
+csapi8l I was wondering if the proper DRM versions could be extracted
+from a WebOS 3.5 tv and put onto the ...
+retr0id 05/12/2022 12:24 AM
+not really, because the media DRM essentially works via hardware-bound
+keys
+May 11, 2022
+csapi8l I was wondering if the proper DRM versions could be extracted
+from a WebOS 3.5 tv and put onto the ...
+ww8543 05/11/2022 2:48 PM
+drm discussion is a bit out of scope here
+ww8543 05/11/2022 2:47 PM
+epk2extract is your friend
+05/11/2022 2:47 PM
+we have decryption keys for a lot of lg models, you can download them
+from lg, and extract them and try
+csapi8l probably even if the default browser could be updated somehow
+could lead to a progress
+ww8543 05/11/2022 2:46 PM
+you are welcome to try
+csapi8l 05/11/2022 2:03 PM
+probably even if the default browser could be updated somehow could lead
+to a progress
+05/11/2022 2:02 PM
+I was wondering if the proper DRM versions could be extracted from a
+WebOS 3.5 tv and put onto the older ones? Same applies for the browser?
+Or it would have too much dependencies which are not there in the former
+OS'es?
+[] matisadam i thought, because spotify does not work neither. but i'd
+like to try some other apps also that prob...
+ww8543 05/11/2022 2:01 PM
+... that dont need drm assets? that rules out pretty much all of the
+streaming apps
+ 1
+[matisadam]
+ww8543 netflix is a native app on webos, very unlikely that it will
+work, since you also need very specific...
+matisadam 05/11/2022 1:53 PM
+i thought, because spotify does not work neither. but i'd like to try
+some other apps also that probs don't need drm assets. but maybe that
+all is just wast of time what i'm doing 
+[_nocap_]
+_nocap_ 05/11/2022 1:48 PM
+This there a discord or a place to get help with lgtv’s and arc issues?
+Not sure if this discord is relevant
+[] matisadam thanks for your feedback. Honestly I am missing all the
+content store apps so HBO is not the first p...
+ww8543 05/11/2022 1:14 PM
+netflix is a native app on webos, very unlikely that it will work, since
+you also need very specific netflix drm assets in the secure store
+[matisadam]
+csapi8l Hi, I was the one who asked for such an information. Even if you
+had your ipk decrypted, it is not g...
+matisadam 05/11/2022 1:05 PM
+thanks for your feedback. Honestly I am missing all the content store
+apps so HBO is not the first prio. I'm even happy for having youtube
+now.  I found a page with some IPK-s that I would try to install and
+make it work. I wanna try netflix next, but there's a chance it won't
+work because the same reason. (Spoty not working also) At least i could
+say i tried. (edited)
+[] matisadam hi! can you help me with the same thing? (HBO starts for me
+with this solution, i have no account to...
+csapi8l 05/11/2022 12:42 PM
+Hi, I was the one who asked for such an information. Even if you had
+your ipk decrypted, it is not going to work. I was able to install, log
+in and navigate the HBO Max, however I haven't been able to get the
+streaming work due to DRM issues. The WebOS 3.5 uses different DRM
+engine(s) than the WebOS 3.4 and also uses old Chromium engine (38). I
+reproduced the issue on an x86 Linux (Lubuntu),i nstalled an old
+Chromium (which also uses the 38 engine) and I had the very same issue
+when inspecting the console. Also tried to edit the user agent if this
+works but obviously no luck. I think we are out of possibilities within
+the boundaries of "tweakings" trying to make it work properly. (edited)
+[matisadam]
+ww8543 Click to see attachment
+matisadam 05/11/2022 12:23 PM
+hi! can you help me with the same thing? (HBO starts for me with this
+solution, i have no account to try completely) I have no content store.
+I was able to get a bunch of IPA that i'd like to install, but these are
+encrypted also so I get -900 network error. I have a rooted webos 3.7
+and i was able to epk2extract my software, so i have keys. (with help of
+infowski) So can you help what is the process on this? (edited)
+[itsme0094476]
+[] infowski one that'll just render HDMI input on the side however you
+like.
+itsme0094476 05/11/2022 11:22 AM
+So I need an hdmi adapter for my phone? I don’t know how to use what’s
+in the link
+[m3m3dub5]
+[] maxlmuller How can I connect a rooted tv with Device Manager after
+enabling SSHD in Homebrew Settings? the pass...
+m3m3dub5 05/11/2022 1:27 AM
+Make sure to reboot tv from hb channel
+[ronankade]
+ronankade 05/11/2022 12:44 AM
+Can anyone help me root my web os 2.2
+[maxlmuller]
+maxlmuller 05/11/2022 12:29 AM
+How can I connect a rooted tv with Device Manager after enabling SSHD in
+Homebrew Settings? the passphrase don't work...
+May 10, 2022
+[infowski]
+infowski 05/10/2022 1:10 PM
+https://www.webosbrew.org/pages/web-development.html#inputtv-embedding
+05/10/2022 1:10 PM
+one that'll just render HDMI input on the side however you like.
+[infowski]
+[] itsme0094476 My screen is partially broke on the left side. I was
+wondering if the is a way to shrink the screen ...
+infowski 05/10/2022 1:10 PM
+kinda, if you just need HDMI inputs you can make a custom app for that
+[temezer]
+temezer 05/10/2022 12:51 PM
+sorry, i have no clue
+05/10/2022 12:51 PM
+don't switch 
+[krizz.exe]
+krizz.exe 05/10/2022 12:42 PM
+Help needed thanks
+05/10/2022 12:42 PM
+My lg tv not saving wifi password Need to re enter password everytime i
+switch from 2.4 ghz to 5 ghz
+[itsme0094476]
+itsme0094476 05/10/2022 11:09 AM
+My screen is partially broke on the left side. I was wondering if the is
+a way to shrink the screen down and move it to where it is not behind
+the white broken part. Is there a way?
+[infowski]
+infowski 05/10/2022 9:52 AM
+See pinned post in # unknown-channel - running patched firmware.
+[ronankade]
+ronankade 05/10/2022 6:37 AM
+Hey I used rootmy.tv on my lg websos 4.26.35 and its stuck on black
+screen after the root loading screen. Everythings fine if I reboot but
+its not rebooting on its own and finishing the root.
+May 7, 2022
+[nico6819]
+nico6819 05/07/2022 4:39 PM
+Removing the policy fixed it. I guess I just need to watch the traffic
+and refine my policy.
+[nico6819]
+nico6819 05/07/2022 3:35 PM
+Thank you.
+05/07/2022 3:35 PM
+Cool I’ll test my firewall policy this morning.
+[] nico6819 Anyone have Disney+ stop working after rooting?
+ww8543 05/07/2022 8:35 AM
+no
+[nico6819]
+nico6819 05/07/2022 7:58 AM
+Not sure if it’s that or my firewall policy blocking all the LG stuff.
+Wife just told me it wasn’t working and its bedtime.
+05/07/2022 7:57 AM
+Anyone have Disney+ stop working after rooting?
+Deleted User 05/07/2022 2:33 AM
+Thanks mate. I've sorted it now but I appreciate yoy getting back to me
+[mariotaku]
+Deleted User Cool. Thanks anyway mate
+mariotaku 05/07/2022 2:22 AM
+Ifttt can do that for free (3 free applets)
+Deleted User 05/07/2022 12:55 AM
+Cool. Thanks anyway mate
+[timmods]
+timmods 05/07/2022 12:46 AM
+Its possible to run this on a remote server like Heroku or Google / AWS
+cloud. No tutorial im aware of sorry.
+Deleted User 05/07/2022 12:39 AM
+I'm running win10 btw
+05/07/2022 12:37 AM
+Is there a noob tutorial to run that on a sever online somewhere? Lol
+05/07/2022 12:37 AM
+Ahhh, I'm with you now
+[timmods]
+timmods 05/07/2022 12:27 AM
+'Renew Session'
+05/07/2022 12:27 AM
+(no content)
+[onbekend.png]
+ onbekend.png
+68.4 KB External
+Deleted User 05/07/2022 12:26 AM
+OK thanks! Can you link me?
+[timmods]
+timmods 05/07/2022 12:25 AM
+Yes, but perhaps you should take a look at the devmode session
+automation script, there is a code snippet included in Dev Manager app
+which you could run on a server.
+Deleted User 05/07/2022 12:23 AM
+I can't set up the token to auto-renew (too complicated, I have like no
+experience with Terminal) , but then it ends in 50 hours, I can boot up
+developer mode, renew it and use YouTube add free again right?
+05/07/2022 12:22 AM
+Thanks @TimMods , turns out my sessions expired and I needed to restart
+the whole TV to renew the token lol
+[timmods]
+Deleted User Host: ip address Port: 9922 Username: prisoner
+Authentication Method: Private key on TV Passphrase: ...
+timmods 05/07/2022 12:21 AM
+Have you enabled the key server on your tv?
+May 6, 2022
+Deleted User 05/06/2022 10:44 PM
+Host: ip address Port: 9922 Username: prisoner Authentication Method:
+Private key on TV Passphrase: exactly as is written on tv 
+05/06/2022 10:42 PM
+Is this a common issue?
+05/06/2022 10:42 PM
+Csnt seems to find my device each time
+05/06/2022 10:42 PM
+Hi Guys. I'm trying to connect to the TV. Using Device Manager for webOS
+[moon55_]
+[] esportler89 Thanks for your reply! Is it actually possible to block
+the update search via DNS to prevent the ann...
+moon55_ 05/06/2022 9:40 AM
+Same for me...
+May 5, 2022
+[esportler89]
+[] paolotk Correct atm
+esportler89 05/05/2022 7:31 PM
+Thanks for your reply! Is it actually possible to block the update
+search via DNS to prevent the annoying popup? Even automatic update is
+disabled my TV prompts several times "Hey, very important update
+avaiable" ....... ###EDIT### Okay, got it! I blocked the domains
+su.lge.com and snu.lge.com with my PiHole. No more updates..... I wish I
+had blocked this domains much earlier.... (edited)
+ 2
+[paolotk]
+[] esportler89 Hello all! I became aware of the server here through a
+Hyperion forum and just fail at doing... Am ...
+paolotk 05/05/2022 7:09 PM
+Correct atm
+[esportler89]
+esportler89 05/05/2022 6:30 PM
+Hello all! I became aware of the server here through a Hyperion forum
+and just fail at doing... Am I right in assuming that my OLED55B97LA
+with firmware 05.20.15 can neither be rooted nor downgraded?
+zubairkhan00712 05/05/2022 5:05 PM
+Also what are the benefits of rooting the tv
+05/05/2022 5:05 PM
+Will update you once i finish trying these fixes.
+05/05/2022 5:04 PM
+Thanks for your suggestions and time
+zubairkhan00712 05/05/2022 4:48 PM
+The tv model is UH651V
+05/05/2022 4:46 PM
+Though there wasn't any wifi module in the tv afak
+05/05/2022 4:46 PM
+This seems to fix the problem
+05/05/2022 4:45 PM
+https://youtu.be/0DbKviuX9K4
+MrBentFinger
+LG WiFi Connection Fix Tutorial
+Model LG43UK6090PUA Smart TV WiFi Not Connected / Error Message WiFi is
+turned off
+[] Watch video
+05/05/2022 4:45 PM
+I guess I've to disassemble the tv again
+zubairkhan00712 05/05/2022 4:38 PM
+Just did the reset and now i got a endless balls juggling animation
+zubairkhan00712 I did disassemble the tv to check if reseating the wifi
+module could help but there is no detachable...
+ww8543 05/05/2022 4:20 PM
+usually it is integrated with the infrared receiver/power button harness
+[infowski]
+infowski 05/05/2022 4:19 PM
+this is what determines how the settings app is laid out.
+05/05/2022 4:19 PM
+That's Software Version, I want webOS TV Version
+zubairkhan00712 05/05/2022 4:19 PM
+It's 05.60.25
+[infowski]
+infowski 05/05/2022 4:19 PM
+https://www.lg.com/us/support/video-tutorials/lg-tv-how-to-reset-my-lg-smart-tv-CT10000018-1441914092672
+LG TV- How to reset my LG Smart TV | LG USA Support
+LG TV- How to reset my LG Smart TV. Watch our online video tutorials to
+find guides and useful tips on how to use your LG devices and
+appliances.
+[]
+05/05/2022 4:19 PM
+or roughly model manufacturing date
+[] infowski which webOS version is that?
+zubairkhan00712 05/05/2022 4:19 PM
+Wait
+[infowski]
+infowski 05/05/2022 4:18 PM
+which webOS version is that?
+zubairkhan00712 05/05/2022 4:18 PM
+Let me try this
+05/05/2022 4:18 PM
+Okay
+[infowski]
+infowski 05/05/2022 4:18 PM
+"Reset this TV to default settings" or something similar.
+[] infowski There's an option in the UI to turn the wifi on
+zubairkhan00712 05/05/2022 4:18 PM
+Where? I can't see it.
+[infowski]
+infowski 05/05/2022 4:18 PM
+There's an option somewhere in system settings app.
+05/05/2022 4:18 PM
+First do a factory reset, and let's hope it'll just work then.
+05/05/2022 4:17 PM
+There's an option in the UI to turn the wifi on
+[] infowski Have you tried doing a factory reset?
+zubairkhan00712 05/05/2022 4:17 PM
+No
+zubairkhan00712 05/05/2022 4:17 PM
+The wifi is integrated on the mainboard.
+05/05/2022 4:17 PM
+I did disassemble the tv to check if reseating the wifi module could
+help but there is no detachable wifi module.
+[infowski]
+infowski 05/05/2022 4:16 PM
+Have you tried doing a factory reset?
+zubairkhan00712 05/05/2022 4:15 PM
+There is no option or switch on the tv or the remote control to turn
+on/off the wifi.
+05/05/2022 4:14 PM
+It says " Wi-Fi is turned off. Turn it on see the list of available
+networks that you can connect to and additional related menu items. "
+05/05/2022 4:13 PM
+The wifi has stopped working
+05/05/2022 4:13 PM
+Can anyone help me with lg webos tv
+05/05/2022 4:12 PM
+Hi all
+[catwank]
+[] paloking But yea, your edited shows that you did! We just have to be
+patient and hope for an update !
+catwank 05/05/2022 3:57 AM
+Yeah I thought it would be a pinned thing in the help section didn’t
+look elsewhere at first my bad.
+[paloking]
+paloking 05/05/2022 3:54 AM
+But yea, your edited shows that you did! We just have to be patient and
+hope for an update !
+[paloking]
+[] catwank Hello, I’ve got an LG 86UN8100PTB WebOS 5.3.1-29 I go through
+all the motions and tv restarts but I ...
+paloking 05/05/2022 3:54 AM
+Refer to # unknown-channel 
+[catwank]
+catwank 05/05/2022 3:45 AM
+Hello, I’ve got an LG 86UN8100PTB WebOS 5.3.1-29 I go through all the
+motions and tv restarts but I can’t seem to find the home brew channel
+in the app bar that runs along the bottom of the TV when the home button
+is pressed? Not sure if it shows up elsewhere or this version isn’t
+supported. Any guidance? Read the pinned post and sorry for wasting your
+time seems my tv is patched. (edited)
+May 4, 2022
+csapi8l 05/04/2022 8:37 PM
+Well, that's sad, thank you guys for assisting my agony, anyways
+[infowski]
+infowski 05/04/2022 8:25 PM
+Technically unlikely.
+ww8543 unlikely
+csapi8l 05/04/2022 8:24 PM
+Unlikely within the policy of the thread or unikely in general? 
+_otto_mustafa 05/04/2022 7:39 PM
+Webos version 5.3.1-29
+05/04/2022 7:38 PM
+hello i need help i need help 49un71006lb my device is available i can't
+root via rootmy.tv device restarts but app won't load i tried to
+downgrade my software version but i didn't succeed please help me thank
+you
+csapi8l If so, is there anything I could do?
+ww8543 05/04/2022 7:01 PM
+unlikely
+csapi8l 05/04/2022 6:47 PM
+If so, is there anything I could do? (edited)
+csapi8l Worked like a charm. I am getting 'Digital Rights Variant
+Filter' reduced video to zero, there are ...
+ww8543 05/04/2022 6:36 PM
+sounds to me like it could be a drm issue
+csapi8l 05/04/2022 6:14 PM
+Worked like a charm. I am getting 'Digital Rights Variant Filter'
+reduced video to zero, there are no variants left to play! error and
+multiple RegionController related warnings
+[unknown.png]
+ unknown.png
+155.73 KB External
+ww8543 05/04/2022 5:58 PM
+see also https://www.webosbrew.org/pages/web-development.html
+05/04/2022 5:57 PM
+it is on port 9998
+csapi8l So I did the update of the HTML, and the app started up
+succssfully. I could even log in and everyth...
+ww8543 05/04/2022 5:56 PM
+you can add "inspectable": true to the appinfo.json and reboot the tv,
+this will give you the ability to have your chrome browser remote
+inspect the app, where you could try to catch the exception that
+probably happens
+csapi8l 05/04/2022 5:31 PM
+So I did the update of the HTML, and the app started up succssfully. I
+could even log in and everything, though it is unable to play anything
+and reports an error of the playback. It refers some kind of a network
+error and a long hex error code how I can refer to HBO Max with this
+fault code if I want to  Is there any way to run an app in verbose
+mode or see any logs of it to see what happens exactly?
+ww8543 05/04/2022 2:39 PM
+i mean, you can either extract it from a tv that has the app installed,
+or you ask the lg servers for it, if you know how to use the api, and
+have the required secrets that these servers demand
+csapi8l 05/04/2022 2:17 PM
+my bad 
+csapi8l It's highly unlikely to get eh AES key if it's being held by an
+external server I believe
+ww8543 05/04/2022 2:15 PM
+not highly unlikely... just unlikely for the average person
+csapi8l 05/04/2022 2:13 PM
+It's highly unlikely to get eh AES key if it's being held by an external
+server I believe
+ww8543 no
+csapi8l 05/04/2022 2:12 PM
+Thank You
+ww8543 05/04/2022 1:55 PM
+you just give it the aes key with corresponding cid
+[mariotaku]
+mariotaku 05/04/2022 1:54 PM
+Interesting.
+[] mariotaku If it works this way, then I was wondering if we could
+install our own key... And install self-encry...
+ww8543 05/04/2022 1:52 PM
+we could if we impersonate the lg servers
+[mariotaku]
+ww8543 when you request the ipk from lg, you have to request the key
+from another server using the app id
+mariotaku 05/04/2022 1:41 PM
+If it works this way, then I was wondering if we could install our own
+key... And install self-encrypted app to /media/cryptofs
+ww8543 05/04/2022 12:03 PM
+when you request the ipk from lg, you have to request the key from
+another server using the app id
+csapi8l Thank U! So the decryption of the HTML is based on the TV's
+unique key where the .ipk is being ext...
+ww8543 05/04/2022 11:58 AM
+no
+csapi8l 05/04/2022 11:01 AM
+Thank U! So the decryption of the HTML is based on the TV's unique key
+where the .ipk is being extracted from? Will check it tonight.
+ww8543 05/04/2022 10:21 AM
+@csapi8l overwrite the html file with the one from the 7z (edited)
+05/04/2022 10:21 AM
+(no content)
+ com.hbo.hbomax.7z
+3.74 MB External
+csapi8l 05/04/2022 8:49 AM
+Thanks a lot!
+May 3, 2022
+csapi8l So then is there anything needs to be done to the .ipk before
+even trying to install it? If so is th...
+ww8543 05/03/2022 10:40 PM
+i can decrypt it for you tomorrow
+csapi8l 05/03/2022 9:54 PM
+So then is there anything needs to be done to the .ipk before even
+trying to install it? If so is there anyone who could help to at least
+give a hint where should I start?
+[] infowski so... it'll not be able to work at all, will it? since the
+keys are still missing
+ww8543 05/03/2022 9:46 PM
+i was just asked for an ipk 
+csapi8l 05/03/2022 9:26 PM
+I am absolutely amateur here, just trying to catch up, so most probably
+I don't even know (yet) what to do just digging here and there 
+[infowski]
+ww8543 it is not
+infowski 05/03/2022 9:24 PM
+so... it'll not be able to work at all, will it? since the keys are
+still missing
+csapi8l 05/03/2022 9:23 PM
+So there is a different method to install a content store app?
+[] infowski No. If the app is decrypted it should be correct.
+ww8543 05/03/2022 9:16 PM
+it is not
+[infowski]
+infowski 05/03/2022 9:16 PM
+No. If the app is decrypted it should be correct.
+csapi8l After I successfully installed the .ipk via `luna-send -i -f
+luna://com.webos.appInstallService/dev/...
+ww8543 05/03/2022 9:15 PM
+isnt that how you install devmode apps, and not content store apps?
+ww8543 Click to see attachment
+csapi8l 05/03/2022 8:53 PM
+After I successfully installed the .ipk via
+luna-send -i -f luna://com.webos.appInstallService/dev/install '{"id":"HBO", "ipkUrl":"/home/root/com.hbo.hbomax.ipk", "subscribe":true}'
+I was able to start up the app, though after the load screen it got me
+an error "check network connection (-900) Am I missing something during
+the installation or the app is checking something which is not present
+in my WebOS?
+ww8543 Click to see attachment
+csapi8l 05/03/2022 10:57 AM
+Thanks a lot, I will give it a shot tonight and will indeed get back
+with the results as it may be interesting for others, too.
+ww8543 05/03/2022 10:30 AM
+since it is a web app, the hbo servers might verify what webos version
+you are running tho
+csapi8l Hi there, sorry if I ask something which might be already
+answered, I haven't found any specific wit...
+ww8543 05/03/2022 10:27 AM
+(no content)
+ com.hbo.hbomax.ipk
+3.75 MB External
+csapi8l 05/03/2022 9:53 AM
+Hi there, sorry if I ask something which might be already answered, I
+haven't found any specific within the search. I'm new here. I have a
+WebOS 3.4 55UH850V and I am desperate to somehow put HBO Max on such
+WebOS and as far as I know the lowest version supported by the app is
+3.5. By any chance trying to install the .ipk would worth a try to get
+it work? - Also, anyone happen to have the ipk extracted from a pre 4.0
+WebOS system?
+May 2, 2022
+[specasltu]
+[] .vokon oh, so there is nothing i can do really 
+specasltu 05/02/2022 10:17 PM
+maybe you can, try reddit 
