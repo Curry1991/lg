@@ -1,0 +1,1774 @@
+January 14, 2023
+jimbobm 01/14/2023 1:42 AM
+i'm using webos-dev-manager
+01/14/2023 1:42 AM
+has anyone got a list of commands to telnet the tv with ?
+January 13, 2023
+the_real_armon 01/13/2023 3:17 PM
+i heard it's posssible to run docker containers there, so after getting
+hyperion working on that
+01/13/2023 3:16 PM
+heh, thats' bit out side my comfort zone
+[infowski]
+infowski 01/13/2023 3:08 PM
+If you plan on doing something really sketchy like hacking on a
+bootloader or developing exploits... keep us informed. (: There are some
+extra methods that help with brick prevention.
+01/13/2023 3:07 PM
+Blocking update services on a local DNS server is a good idea. Turning
+off "automatic system updates" somewhere in webOS settings and enabling
+update blocking in Homebrew Channel settings as another precautionary
+measure is a good idea too.
+the_real_armon 01/13/2023 3:06 PM
+ ok. anything on the os side? (edited)
+hellobox. 01/13/2023 3:06 PM
+use ssh public key auth
+[] infowski I actually spent more time trying to get my board to record
+anything, because I don't have an aerial...
+the_real_armon 01/13/2023 3:05 PM
+oh, one other question I had. Now that the tv is rooted. Is there a list
+of security precautions to take to harden it? other than turning telnet
+off?
+[infowski]
+infowski 01/13/2023 3:04 PM
+god dammit I need to finish it up and publish on homebrew channel too...
+01/13/2023 3:03 PM
+btw if you want/need to hack on something gui-wise you can use vncserver
+→ https://github.com/Informatic/webos-vncserver/tree/native_service
+GitHub - Informatic/webos-vncserver at native_service
+An extremely hacky VNC server for WebOS - Works by reading directly from
+the GPU's framebuffer. - GitHub - Informatic/webos-vncserver at
+native_service
+[]
+the_real_armon 01/13/2023 3:03 PM
+never heard of ghidra. github looks pretty cool, something to play
+around with on the weekend 
+[infowski]
+infowski 01/13/2023 3:02 PM
+I actually spent more time trying to get my board to record anything,
+because I don't have an aerial at home, and none of my USB drives are
+considered fast enough by webOS to even start the recording lol
+01/13/2023 3:01 PM
+Not even sure if it's possible to use hardware video encoder on plain
+memory buffers. Again - I just popped one service into ghidra and stared
+at it for 15 minutes.
+01/13/2023 3:01 PM
+And I think that's impossible to do.
+[infowski]
+the_real_armon is there not drm protection on hdmi streams?
+infowski 01/13/2023 3:00 PM
+Nope, hyperion-ng at least is able to capture HDMI, the issue is passing
+video to video encoder to not copy everything around.
+[infowski]
+infowski 01/13/2023 3:00 PM
+Windows client is kinda fucky last I tried, but there's an alternative
+golang-based one (that probably only works on Linux, but good enough for
+me)
+[] infowski (sadly seems like HDMI, at least on platforms I am looking
+at, uses a different pipeline and it does...
+the_real_armon 01/13/2023 2:59 PM
+is there not drm protection on hdmi streams?
+[infowski]
+the_real_armon oh? you can use the remote as a mouse?
+infowski 01/13/2023 2:59 PM
+https://github.com/Wouterdek/magic4pc it's not published on Homebrew
+Channel, but should work.
+GitHub - Wouterdek/magic4pc: Allows you to use the magic remote on ...
+Allows you to use the magic remote on your LG tv as a mouse for your
+PC. - GitHub - Wouterdek/magic4pc: Allows you to use the magic remote on
+your LG tv as a mouse for your PC.
+[]
+[infowski]
+infowski 01/13/2023 2:59 PM
+(sadly seems like HDMI, at least on platforms I am looking at, uses a
+different pipeline and it doesn't seem possible to restream HDMI
+inputs - though that would be *amazing*)
+hellobox. what webos version?
+timcook4825 01/13/2023 2:59 PM
+7.2.0-47 mullet marine
+[infowski]
+infowski 01/13/2023 2:58 PM
+What else... I started sniffing around PVR functionality a couple of
+days ago, and it seems viable to implement local-network analog/digital
+TV restreaming, though nobody did that actually.
+the_real_armon 01/13/2023 2:58 PM
+that's nice
+01/13/2023 2:58 PM
+oh? you can use the remote as a mouse?
+[infowski]
+infowski 01/13/2023 2:57 PM
+Global key rebinds are kinda useful. Magic4PC is cool, if you are into
+Magic Remotes. (I really like it, some don't - though I don't have an
+actual PC connected to the TV to use it on)
+01/13/2023 2:56 PM
+exploit development is fun
+ 2
+the_real_armon 01/13/2023 2:56 PM
+by the way. what do you do with your rooted tvs? I specifically went for
+lg because of possibility to run hyperion and ad-free youtube. What
+other cool stuff is possible? (edited)
+hellobox. 01/13/2023 2:56 PM
+i think they switched to systemd with 5.0 (edited)
+01/13/2023 2:55 PM
+or, for older webos (and still present on systemd-based versions),
+/etc/init/update.conf
+the_real_armon 01/13/2023 2:55 PM
+thanks! i'll dig around
+hellobox. 01/13/2023 2:54 PM
+/lib/systemd/system/update.service
+[maryjohanna42069]
+maryjohanna42069 01/13/2023 2:54 PM
+probably tvservice
+hellobox. ``` root@LGwebOSTV[k7lp 6.3.2]:~# strings /usr/sbin/update |
+grep lge.com https://su-ssl.lge.com/ ht...
+the_real_armon 01/13/2023 2:54 PM
+thanks, adding new ones to the blocklist
+the_real_armon 01/13/2023 2:53 PM
+i'm trying to learn a bit more on the boot process, what calls update?
+is there a systemd or similar?
+hellobox. 01/13/2023 2:53 PM
+older i think... upstart?
+01/13/2023 2:53 PM
+newer webos uses systemd
+01/13/2023 2:52 PM
+    root@LGwebOSTV[k7lp 6.3.2]:~# strings /usr/sbin/update | grep lge.com
+    https://su-ssl.lge.com/
+    http://su.lge.com/
+    http://nsu.lge.com:5100/
+    https://snu.lge.com/CheckSWAutoUpdate.laf
+    http://snu-dev.lge.com/CheckSWAutoUpdate.laf
+    https://snu.lge.com/CheckSWManualUpdate.laf
+    http://snu-dev.lge.com/CheckSWManualUpdate.laf
+    https://snu.lge.com/SWDownloadStartLog.laf
+    http://snu-dev.lge.com/SWDownloadStartLog.laf
+    https://snu.lge.com/SWDownloadEndLog.laf
+    http://snu-dev.lge.com/SWDownloadEndLog.laf
+    https://snu.lge.com/DownloadResult.laf
+    http://snu-dev.lge.com/DownloadResult.laf
+    https://snu.lge.com/DownLoadFeedback.laf
+    http://snu-dev.lge.com/DownLoadFeedback.laf
+    snu.lge.com
+the_real_armon 01/13/2023 2:52 PM
+there must be like a boot script list somewher?
+01/13/2023 2:52 PM
+i see
+hellobox. 01/13/2023 2:52 PM
+it's a binary
+01/13/2023 2:52 PM
+/usr/sbin/update
+hellobox. `update` has already started at that point
+the_real_armon 01/13/2023 2:52 PM
+thanks, and 'update' script? (edited)
+hellobox. 01/13/2023 2:51 PM
+/var/lib/webosbrew/startup.sh
+the_real_armon 01/13/2023 2:51 PM
+where is startup.sh located on the device?
+hellobox. 01/13/2023 2:51 PM
+update has already started at that point
+01/13/2023 2:50 PM
+you're getting the update prompt because startup.sh runs so late during
+the boot process
+the_real_armon 01/13/2023 2:50 PM
+btw, do the tv updates offer any actual benefits? i coudnt' find the
+patchnotes anywhere. i got promt to upgrade to 03.30.14
+hellobox.
+https://discord.com/channels/407937994037919756/822443030761046017/1053855715606929519
+the_real_armon 01/13/2023 2:49 PM
+ah! superstar, thank you!
+the_real_armon 01/13/2023 2:49 PM
+tv os: 03.21.05
+hellobox. 01/13/2023 2:49 PM
+https://discord.com/channels/407937994037919756/822443030761046017/1053855715606929519
+the_real_armon 01/13/2023 2:49 PM
+webos 7.2.0-39, yes (edited)
+the_real_armon maybe something went wrong during rooting, i'm not sure.
+homebrew channel and telnet works perfectly...
+hellobox. 01/13/2023 2:49 PM
+webos 7?
+the_real_armon 01/13/2023 2:48 PM
+maybe something went wrong during rooting, i'm not sure. homebrew
+channel and telnet works perfectly but I cannot get ssh to come up at
+all
+01/13/2023 2:47 PM
+blocking those solved it instantly
+01/13/2023 2:47 PM
+was like that for several hours until i found someone's post about the
+above domains
+[maryjohanna42069]
+maryjohanna42069 01/13/2023 2:47 PM
+strange
+[] maryjohanna42069 even with the block fw updates ticked on?
+the_real_armon 01/13/2023 2:47 PM
+yup
+[] infowski Also `su-ssl.lge.com` iirc
+the_real_armon 01/13/2023 2:47 PM
+thanks, added to the block list
+[maryjohanna42069]
+maryjohanna42069 01/13/2023 2:47 PM
+even with the block fw updates ticked on? (edited)
+the_real_armon 01/13/2023 2:47 PM
+after installing homebrew i was still getting update notifications
+[maryjohanna42069]
+maryjohanna42069 01/13/2023 2:46 PM
+just in the hosts file
+01/13/2023 2:46 PM
+but thats what homebrew does too iirc
+[infowski]
+infowski 01/13/2023 2:46 PM
+Also su-ssl.lge.com iirc
+01/13/2023 2:46 PM
+It is foolproof.
+[maryjohanna42069]
+maryjohanna42069 01/13/2023 2:46 PM
+i have it blocked too
+[] maryjohanna42069 so far my tv didnt update
+the_real_armon 01/13/2023 2:46 PM
+that is concerning that they can do that. blocking domains 'snu.lge.com'
+and 'su.lge.com' in the local dns server helped get rid of the 'update
+available' notification. I know it's not foolproof but should help as an
+extra layer of protection (edited)
+hellobox. 01/13/2023 2:41 PM
+what webos version?
+timcook4825 01/13/2023 2:38 PM
+That’s good to know, number 3 sounded like a big „stay away“ lol
+hellobox. 01/13/2023 2:36 PM
+crashd doesn't involve the kernel
+timcook4825 01/13/2023 2:34 PM
+Number 3 has me concerned, are those the crashd kernel exploits?
+01/13/2023 2:34 PM
+Changelog of a future update: 1) lg channels in more countries, 2) new
+remote function for handicapped people, 3) known kernel vulnerability
+was patched CVE-2021-4154, CVE-2022-2588
+01/13/2023 2:30 PM
+I got a notification yesterday that a new software update will fix some
+kernel exploits
+01/13/2023 2:29 PM
+There was just one update since I rooted and I got a notification that
+an update is available. But nothing was automatically installed
+[maryjohanna42069]
+maryjohanna42069 01/13/2023 2:19 PM
+so far my tv didnt update
+01/13/2023 2:19 PM
+or is that just some "hoax"
+01/13/2023 2:19 PM
+I have read that now on many forums that LG somehow updated the firmware
+on rooted tvs where updates were blocked by homebrew channel. Should I
+be concerned too?
+the_real_armon 01/13/2023 1:31 AM
+Alright! crashd method worked first time on 03.21.05 version.
+ww8543 if you are talking about rootmytv v2, yes that is known,
+currently only the crashd method from the p...
+the_real_armon 01/13/2023 12:53 AM
+does crashd method work even on latest os? just got a tv and wondering
+whether to let it update or not
+January 12, 2023
+ww8543 if you are talking about rootmytv v2, yes that is known,
+currently only the crashd method from the p...
+Deleted User 01/12/2023 10:04 PM
+good 
+Deleted User when i checked in the morning i saw that homebrew was gone
+and i tried to root it again, it was inst...
+ww8543 01/12/2023 9:27 PM
+if you are talking about rootmytv v2, yes that is known, currently only
+the crashd method from the pinned messages works, if you are talking
+about the latter, that is indeed news
+Deleted User 01/12/2023 9:17 PM
+when i checked in the morning i saw that homebrew was gone and i tried
+to root it again, it was installing almost smoothly until after rootmytv
+restarted my tv, i saw that homebrew was gone again
+01/12/2023 9:14 PM
+Guys, I think LG has brought a fix for root in its latest software
+update
+01/12/2023 9:14 PM
+whoops
+[aabytt]
+[] ddepau ah lol, it says 4.06 in the settings
+aabytt 01/12/2023 12:00 PM
+webos version and firmware version are different things
+ 1
+[ddepau]
+ddepau 01/12/2023 12:00 PM
+which doesn't appear to work
+[aabytt]
+aabytt 01/12/2023 12:00 PM
+getmein is your only option
+[ddepau]
+[] aabytt well, it is webos 2.x
+ddepau 01/12/2023 12:00 PM
+ah lol, it says 4.06 in the settings
+[aabytt]
+[] ddepau 43uf7767
+aabytt 01/12/2023 12:00 PM
+well, it is webos 2.x
+[ddepau]
+ddepau 01/12/2023 11:59 AM
+unfortunately it had auto updates enabled
+[ddepau]
+[] aabytt what's your TV model?
+ddepau 01/12/2023 11:59 AM
+43uf7767
+[aabytt]
+[] ddepau Hey there, are there any exploits for an up-to-date webOS
+4.06? I see rootmytv fails since the downl...
+aabytt 01/12/2023 11:57 AM
+what's your TV model?
+[ddepau]
+ddepau 01/12/2023 11:56 AM
+it does appear that files in /var/log/crashd are being consumed though
+01/12/2023 11:50 AM
+Hey there, are there any exploits for an up-to-date webOS 4.06? I see
+rootmytv fails since the download manager does not exist, crashd doesn't
+appear to be starting telnet
+January 11, 2023
+[infowski]
+infowski 01/11/2023 10:58 PM
+K3LP_DVB, that is.
+01/11/2023 10:58 PM
+Oh yeah definitely, works wonders
+ 1
+[astur3l]
+astur3l 01/11/2023 10:56 PM
+oh yeah :d
+[infowski]
+infowski 01/11/2023 10:39 PM
+What do you mean? For piccap/hyperion? (edited)
+[astur3l]
+astur3l 01/11/2023 10:36 PM
+does it produces usable fps? (as u had the same tv :d) (edited)
+[infowski]
+infowski 01/11/2023 10:31 PM
+ie. just clicking will work
+01/11/2023 10:31 PM
+@asturel you can just press the OK button on it
+ 1
+[astur3l]
+astur3l 01/11/2023 10:31 PM
+how do u slide with old remote on rootmytv ?.:d i told my mom to try to
+root it
+01/11/2023 10:29 PM
+uj634zd but seems like everything same :d
+[astur3l]
+[] infowski Depends on version - there's been some 3.9 releases that
+were still rootable with rootmytv v2 iirc.
+astur3l 01/11/2023 10:28 PM
+https://discord.com/channels/407937994037919756/835489130967859251/930569573529452614
+seems like same
+[infowski]
+[] astur3l is WebOS 3.9 rootable?
+infowski 01/11/2023 10:26 PM
+Depends on version - there's been some 3.9 releases that were still
+rootable with rootmytv v2 iirc.
+[astur3l]
+astur3l 01/11/2023 10:26 PM
+is WebOS 3.9 rootable?
+[infowski]
+infowski 01/11/2023 10:26 PM
+I thought it's kinda obvious, and stated fairly well in the readme, that
+you should never update your TV.
+01/11/2023 10:26 PM
+Oh - you've updated your TV after rooting? That's... not wise, but ok.
+01/11/2023 10:25 PM
+Homebrew Channel v0.5.1 is listed in crashd guide here...
+[mulich]
+[] infowski Wait, where did you get Homebrew Channel 0.4.0 even from?
+mulich 01/11/2023 10:25 PM
+rooted a while ago...
+[infowski]
+infowski 01/11/2023 10:25 PM
+That's a very old version 
+[infowski]
+[] mulich 0.4.0
+infowski 01/11/2023 10:24 PM
+Wait, where did you get Homebrew Channel 0.4.0 even from?
+[rama6392]
+rama6392 01/11/2023 9:53 PM
+Updated C1 to 3.34.55, didn't lost root, didn't even lost anything 
+Deleted User 01/11/2023 9:25 PM
+i cant remember what it is though
+01/11/2023 9:25 PM
+i think there is a way to update it in the app itself without having the
+check the app in the repo (edited)
+[mulich]
+Deleted User you could check for updates using something like webos dev
+manager
+mulich 01/11/2023 9:24 PM
+sure thing.I just expected there would be update notifications, or an
+update button in the homebrew channel app itself. The more you know...
+Deleted User 01/11/2023 9:20 PM
+you could check for updates using something like webos dev manager
+01/11/2023 9:19 PM
+and the homebrew channel does need to get updates for bug fixes or
+features
+01/11/2023 9:19 PM
+the homebrew channel isnt in the content store or anything
+[] mulich Working! thanks a lot. a bit weird to check for updates in an
+app inside of this very app 
+Deleted User 01/11/2023 9:19 PM
+well, thats the only way to do it from the tv
+[mulich]
+mulich 01/11/2023 9:14 PM
+Working! thanks a lot. a bit weird to check for updates in an app inside
+of this very app 
+Deleted User 01/11/2023 9:10 PM
+reboot
+[mulich]
+Deleted User and i dont mean update the tv
+mulich 01/11/2023 9:10 PM
+sure, done
+Deleted User 01/11/2023 9:10 PM
+the latest version of homebrew channel is 0.5.1
+01/11/2023 9:10 PM
+i mean the homebrew channel
+[] mulich ahh didnt know updates where kind of counter intuitive on the
+app  ill try
+Deleted User 01/11/2023 9:10 PM
+and i dont mean update the tv
+[mulich]
+Deleted User update it
+mulich 01/11/2023 9:09 PM
+ahh didnt know updates where kind of counter intuitive on the app  ill
+try
+[] mulich 0.4.0
+Deleted User 01/11/2023 9:06 PM
+update it
+[mulich]
+mulich 01/11/2023 8:54 PM
+I still have telnet access via "run telnet" from some russian repo
+(edited)
+[mulich]
+[] infowski Have you allowed all the basic webOS EULAs?
+mulich 01/11/2023 8:53 PM
+no idea on the EULAs xD how to check?
+[mulich]
+[] infowski Huh, that's not great. Which Homebrew Channel version are
+you on?
+mulich 01/11/2023 8:52 PM
+0.4.0
+[infowski]
+infowski 01/11/2023 8:51 PM
+That's needed for autostart to work sadly on newer webOS versions..
+(edited)
+01/11/2023 8:50 PM
+Have you allowed all the basic webOS EULAs? (edited)
+01/11/2023 8:50 PM
+Huh, that's not great. Which Homebrew Channel version are you on?
+[mulich]
+mulich 01/11/2023 8:39 PM
+hi. I'm running WebOS 6.3.2 with RootMyTV. Root is working, but
+autostart (Piccap, Hyperion, telnet etc) not. Anyone got an idea how to
+fix it? If I do a factory reset, will I be able to root again? PS: I
+know I'm dumb for not blocking updates... (edited)
+[remizyaka.]
+[] aabytt the links are from ARUB version pages
+remizyaka. 01/11/2023 1:39 PM
+Thanks! upgraded and rooted successfully
+ 1  1
+hellobox. maybe it's because i enabled expert mode?
+ww8543 01/11/2023 12:06 PM
+yes that should be the reason
+[] infowski I remember reading it's not possible a long time ago
+hellobox. 01/11/2023 11:47 AM
+maybe it's because i enabled expert mode?
+[remizyaka.]
+remizyaka. 01/11/2023 11:12 AM
+thanks a lot!
+[aabytt]
+[] remizyaka. ARUB - RUS,UA,BY etc..
+aabytt 01/11/2023 11:12 AM
+the links are from ARUB version pages
+[remizyaka.]
+remizyaka. 01/11/2023 11:11 AM
+ARUB - RUS,UA,BY etc..
+[aabytt]
+[] remizyaka. but it could be for other region?
+aabytt 01/11/2023 11:11 AM
+what's your region?
+[remizyaka.]
+[] aabytt <@354256916769406978> and here is USB version of 05.60.30
+https://gscs-b2c.lge.com/downloadFile?fil...
+remizyaka. 01/11/2023 11:10 AM
+but it could be for other region?
+[aabytt]
+aabytt 01/11/2023 11:09 AM
+@remizyaka. and here is USB version of 05.60.30
+https://gscs-b2c.lge.com/downloadFile?fileId=93uxUPa9Rq5Jr3uKrT7LHA
+[image.png]
+ image.png
+6.83 KB External
+[remizyaka.]
+[] aabytt <@354256916769406978> this one you can use to update with USB
+remizyaka. 01/11/2023 11:09 AM
+Thanks! will give it a try
+[smx2460]
+smx2460 01/11/2023 11:04 AM
+We have ssl in place
+01/11/2023 11:04 AM
+Even if we wanted to do the update, without downgrading
+01/11/2023 11:04 AM
+NSU for ones coming from SNU
+[aabytt]
+[] aabytt
+https://gscs-b2c.lge.com/downloadFile?fileId=kRKZlOQ526yK12NJ3AK2zQ
+aabytt 01/11/2023 11:03 AM
+@remizyaka. this one you can use to update with USB
+[smx2460]
+smx2460 01/11/2023 11:03 AM
+Header has USB for all epk files coming from the support site
+01/11/2023 11:03 AM
+USB/NSU
+01/11/2023 11:03 AM
+And this might also include the updateType field
+01/11/2023 11:03 AM
+2) they added a header verification function to make sure the version in
+the EPK header matches the expected (edited)
+[aabytt]
+aabytt 01/11/2023 11:03 AM
+https://gscs-b2c.lge.com/downloadFile?fileId=kRKZlOQ526yK12NJ3AK2zQ
+01/11/2023 11:02 AM
+(no content)
+[image.png]
+ image.png
+8.05 KB External
+[smx2460]
+smx2460 01/11/2023 11:02 AM
+1) they switched to https
+[aabytt]
+aabytt 01/11/2023 11:02 AM
+Look what I found in bing cache
+[smx2460]
+smx2460 01/11/2023 11:02 AM
+But LG did 2 changes to counteract it
+01/11/2023 11:02 AM
+Packages as a single Jar
+01/11/2023 11:02 AM
+I have a new AIO version of it, that i never tested thoroughly, which
+spawns DNS, DHCP and NSU servers
+[smx2460]
+[] infowski snu emulator could actually work on webOS 3.x since they
+don't use https, but it's a lot of hassle.....
+smx2460 01/11/2023 11:01 AM
+Kind of
+[smx2460]
+smx2460 01/11/2023 11:01 AM
+But it did the job (edited)
+01/11/2023 11:01 AM
+That script is pretty ugly, I'm ashamed of it
+[smx2460]
+[] infowski <@310158180728700929> will probably remember that
+smx2460 01/11/2023 11:00 AM
+Oof, yeah
+[remizyaka.]
+[] aabytt yes, with this 3.3>3.4 update they brought in exploit used by
+rootmytv
+remizyaka. 01/11/2023 10:56 AM
+thanks, unfortunately LG removed this version of firmware from official
+site, so I can only upgrade with this NSU update
+[aabytt]
+[] remizyaka. Destination directory: .. [EPK3] Platform Version: 3.4.0
+[EPK3] SDK Version: 3.4.0 seems that it is...
+aabytt 01/11/2023 10:52 AM
+yes, with this 3.3>3.4 update they brought in exploit used by rootmytv
+[remizyaka.]
+[] infowski → https://github.com/openlgtv/epk2extract
+remizyaka. 01/11/2023 10:29 AM
+Destination directory: .. [EPK3] Platform Version: 3.4.0 [EPK3] SDK
+Version: 3.4.0 seems that it is 3.4.0 ?
+[infowski]
+infowski 01/11/2023 10:19 AM
+snu emulator could actually work on webOS 3.x since they don't use
+https, but it's a lot of hassle...
+01/11/2023 10:18 AM
+@Smx will probably remember that
+01/11/2023 10:18 AM
+and the only way one could trick that is via "snu emulator" php script
+flying around xD
+01/11/2023 10:17 AM
+I remember reading it's not possible a long time ago
+01/11/2023 10:17 AM
+Oh, cool.
+hellobox. 01/11/2023 10:17 AM
+via usb
+01/11/2023 10:16 AM
+i think i applied one to my tv (webos 6)
+[infowski]
+infowski 01/11/2023 10:16 AM
+(there's a field for that in the heard)
+01/11/2023 10:16 AM
+ie. only USB updates can be applied via USB and such
+[infowski]
+hellobox. why not?
+infowski 01/11/2023 10:16 AM
+If think they actually check it when applying?
+[] infowski This is an NSU update - I don't think you'll be able to
+apply it manually via USB 
+hellobox. 01/11/2023 10:16 AM
+why not?
+[infowski]
+infowski 01/11/2023 10:14 AM
+→ https://github.com/openlgtv/epk2extract
+GitHub - openlgtv/epk2extract: Extraction tool for LG, Hisense, Sha...
+Extraction tool for LG, Hisense, Sharp, Philips/TPV, Thompson and
+similar TVs/Embedded Devices - GitHub - openlgtv/epk2extract: Extraction
+tool for LG, Hisense, Sharp, Philips/TPV, Thompson and sim...
+[]
+01/11/2023 10:14 AM
+or, of course, use # unknown-channel tool
+01/11/2023 10:14 AM
+if you're on linux you could also do
+strings test.epk | egrep '^3\.[0-9]\.[0-9]' | head - there's definitely
+going to be some false positives, but roughly at the beginning you'll
+get two of these version strings. (edited)
+01/11/2023 10:13 AM
+You can pop it into some text editor - it's a (mostly) encrypted binary
+file, but there are two text fields roughly at the beginning (in the
+first 2kb) surrounded by a lot of \x00 bytes formatted like 3.4.5 - you
+could quickly find it.
+01/11/2023 10:12 AM
+This is an NSU update - I don't think you'll be able to apply it
+manually via USB 
+[remizyaka.]
+[] infowski I guess it'd be cool if someone found 05.60.* series
+firmware and checked if it's webOS 3.4*
+remizyaka. 01/11/2023 10:07 AM
+Seems that it is FW for my model, but I have no idea how to check webOS
+version in it 
+    http://su.lge.com/GlobalSWDownloadCdn.laf?IMG=/202209/starfish-dvb-secured-m16lite-59.digya.m16lite-5909-05.60.30-prodkey_nsu_V3_SECURED%5B0%5D.epk
+[infowski]
+infowski 01/11/2023 9:47 AM
+I guess it'd be cool if someone found 05.60. series firmware and checked
+if it's webOS 3.4
+[remizyaka.]
+[] aabytt what's your exact model?
+remizyaka. 01/11/2023 9:45 AM
+43uh671v-zf currently I'm on [05.50.95] changelog for my model and
+firmwares available
+    [05.50.95]
+    1. Fix the failure of access to certain website in the browser
+    [05.60.15]
+    1. LG Channel has been upgraded and service territory expansion. (Selected Countries Only)
+    2. Software update contains minor bug fix
+    [05.60.25]
+    1. Fixing minor bugs in software
+    [05.60.30]
+    1. Fixing minor bugs in software
+    [05.70.30]
+    1. The voice recognition performance has been improved.
+    2. Series of security vulnerabilites patched in relation to below two categories
+       - Privilege escalation
+       - Force firmware downgrade
+sharaf4969 01/11/2023 9:30 AM
+So currently I have no solution to root my TV?
+[aabytt]
+sharaf4969 Currently I have webos version 3.9.2, initially I tries
+running rootmytv. The TV restarted but there...
+aabytt 01/11/2023 9:30 AM
+crashd works only webos 4+
+[] infowski It is, but no specifics yet. Last time I gave an estimate I
+was off by... Infinity  If you are in ...
+sharaf4969 01/11/2023 9:29 AM
+Currently I have webos version 3.9.2, initially I tries running
+rootmytv. The TV restarted but there was no homebrew after. Will the
+crashed exploit work on this version?
+[aabytt]
+[] remizyaka. Hi guys, is it possible to root WebOS 3.3.4 firmware from
+mid 2020? have such an error trying to ro...
+aabytt 01/11/2023 8:58 AM
+what's your exact model?
+[aabytt]
+aabytt 01/11/2023 8:54 AM
+[]
+ 1
+[aabytt]
+[] infowski Check if you can update your TV - there's a chance you'll
+have webOS ~3.4 update available and it *s...
+aabytt 01/11/2023 8:53 AM
+latest updates are patched
+[infowski]
+[] remizyaka. Hi guys, is it possible to root WebOS 3.3.4 firmware from
+mid 2020? have such an error trying to ro...
+infowski 01/11/2023 8:36 AM
+Check if you can update your TV - there's a chance you'll have webOS
+~3.4 update available and it should work with RootMyTV v2
+[infowski]
+sharaf4969 Hi, is there a new update to rootmytv planned for newer webos
+versions?
+infowski 01/11/2023 8:36 AM
+It is, but no specifics yet. Last time I gave an estimate I was off
+by... Infinity  If you are in a hurry (and running webOS 4.x/5.x+) you
+can use crashd exploit described in a pinned post here.. (edited)
+sharaf4969 01/11/2023 6:50 AM
+Hi, is there a new update to rootmytv planned for newer webos versions?
+hellobox. 01/11/2023 12:13 AM
+you'd need to find a firmware image from after they introduced the
+vulnerability and before it was patched
+[] remizyaka. Hi guys, is it possible to root WebOS 3.3.4 firmware from
+mid 2020? have such an error trying to ro...
+hellobox. 01/11/2023 12:12 AM
+see
+https://github.com/RootMyTV/RootMyTV.github.io/blob/main/docs/TROUBLESHOOTING.md
+January 10, 2023
+[remizyaka.]
+remizyaka. 01/10/2023 11:15 PM
+Hi guys, is it possible to root WebOS 3.3.4 firmware from mid 2020? have
+such an error trying to root ...
+[photo_2023-01-11_01-14-17.jpg]
+ photo_2023-01-11_01-14-17.jpg
+111.51 KB External
+[] oyaji_psy Hello ! good little return on the root of the TV LG, in my
+case the 55 C2, I took time but it works ...
+hellobox. 01/10/2023 11:04 PM
+https://discord.com/channels/407937994037919756/822443030761046017/1053855715606929519
+ 1
+[oyaji_psy]
+[] killerodniez does lg c2 supoort homebrew??
+oyaji_psy 01/10/2023 6:32 PM
+Just test it right now and yes
+[oyaji_psy]
+oyaji_psy 01/10/2023 6:32 PM
+Hello ! good little return on the root of the TV LG, in my case the 55
+C2, I took time but it works finally, Ambilight with Hyperion & Piccap.
+I had a little trouble because I tried the hack via rootmytv (the
+website), it did not work, well either I have web os 7.0.1 so I tell
+myself that it is patch, so I do the crashd method. I start the process
+and after install, if we activate the auto start of hyperion and piccap,
+the root jumps and remains on "pending", after reboot because the
+autostart is corrupted, and it does that only if we tested the method by
+the website before. So you have to reset the TV completely and do the
+crashd process directly, and then it's fine. Despite a small bug that
+makes SSH not work (I used telnet all the time), for now it's good!
+[satdx62]
+[] d_rekk Guys, my tv shows the update window every time i turn it on.
+Is there any way I can disable it? My t...
+satdx62 01/10/2023 5:52 PM
+https://discord.com/channels/407937994037919756/822443030761046017/1062408366481219644
+[killerodniez]
+killerodniez 01/10/2023 5:43 PM
+and can i make a website into .ipk file
+01/10/2023 5:43 PM
+does lg c2 supoort homebrew??
+[satdx62]
+satdx62 01/10/2023 5:31 PM
+Have you blocked the LG update services in your router? snu.lge.com
+su-dev.lge.com su.lge.com su-ssl.lge.com
+[d_rekk]
+d_rekk 01/10/2023 12:58 PM
+Guys, my tv shows the update window every time i turn it on. Is there
+any way I can disable it? My tv is already rooted
+Deleted User 01/10/2023 12:28 PM
+[:salad_thinking:] it also make my tv lag too
+01/10/2023 12:28 PM
+so...the advice is to disable quickstart?
+[] shelbygt25 why do you have to delete the dev account app with the
+crashd method?
+hellobox. 01/10/2023 6:14 AM
+the dev mode app may delete all your installed apps
+ 2  1
+[shelbygt25]
+shelbygt25 01/10/2023 5:11 AM
+why do you have to delete the dev account app with the crashd method?
+January 8, 2023
+[infowski]
+infowski 01/08/2023 10:39 PM
+thank you lg
+ 1
+[astur3l]
+astur3l 01/08/2023 10:00 PM
+but e.g. even mediadiscocery becomes laggy for me after s while, if i
+close and reopen it won't be as fast as it used to be after cold start
+01/08/2023 9:57 PM
+at that's without root, basically just browser + photos+videos app ,
+maybe YouTube :d also WebOS become hella slow (edited)
+[astur3l]
+[] infowski Heh, odd. It's working perfectly fine on my tv 
+astur3l 01/08/2023 9:56 PM
+i always ended up breaking services with qs+, sometimes it couldn't play
+movie anymore.. or just no sound, everything started to break somehow
+until i restarted.. :d but it lasted for like 2 days at top
+[infowski]
+infowski 01/08/2023 6:51 PM
+run this (via /exec) before / after / during /autostart call in
+autostart app
+[infowski]
+[] kopiro91 <@501722020434673674> perhaps we could implement the `mount`
+in the autostart app
+infowski 01/08/2023 6:51 PM
+Sure - that's what I meant 
+[infowski]
+hellobox. will your autostart app run as root if you use
+`elevate-service` on it?
+infowski 01/08/2023 6:51 PM
+No. It only works for services.
+hellobox. 01/08/2023 6:28 PM
+will your autostart app run as root if you use elevate-service on it?
+[kopiro91]
+kopiro91 01/08/2023 6:06 PM
+not sure if you wanna do this with an exec by sending the code directly
+to homebrew or rather expose a service that only does that (edited)
+01/08/2023 6:05 PM
+as it won't be needed for everyone, but just for people that have this
+problem
+01/08/2023 6:05 PM
+@infowski perhaps we could implement the mount in the autostart app
+[kopiro91]
+kopiro91 01/08/2023 5:57 PM
+example: https://www.youtube.com/watch?v=I2RmTZtfds0
+The Tech Giant
+Fix LG TV WiFi ISSUES, reset & reconnect EASILY!
+How to reset and reconnect your LG OLED TVs WiFi. Like what i do on the
+channel or have helped you out? then you can show your appreciation with
+the new Super Thanks feature on the YouTube or you can simply buy me a
+coffee! https://www.buymeacoffee.com/Thetechgiant Check out my Amazon
+affiliate shop Make your next Amazon purchase via my aff...
+[] Watch video
+01/08/2023 5:55 PM
+and check what's going on
+01/08/2023 5:55 PM
+perhaps I can actually debug it now that I have root access
+01/08/2023 5:54 PM
+oh, right - enabling QuickStart also make Wifi not working anymore
+[infowski]
+infowski 01/08/2023 5:54 PM
+no idea how is this even supposed to be related, heh.
+[kopiro91]
+kopiro91 01/08/2023 5:54 PM
+I read somewhere it's related to Wifi+Bluetooth board overheating
+01/08/2023 5:54 PM
+No but this has always been like that
+[infowski]
+infowski 01/08/2023 5:54 PM
+quality QA there I see.
+01/08/2023 5:53 PM
+Jesus, LG.
+[kopiro91]
+kopiro91 01/08/2023 5:53 PM
+Yes, it is
+01/08/2023 5:53 PM
+and then as consequence cursor not working
+[infowski]
+infowski 01/08/2023 5:53 PM
+Odd. Is that on latest firmware?
+[kopiro91]
+kopiro91 01/08/2023 5:53 PM
+I debugged it some time ago, and it basically boils down to Bluetooth
+not working anymore
+[infowski]
+infowski 01/08/2023 5:53 PM
+Heh, odd. It's working perfectly fine on my tv 
+[kopiro91]
+kopiro91 01/08/2023 5:53 PM
+sorry, QuickStart
+[infowski]
+infowski 01/08/2023 5:52 PM
+autostart or quickstart?
+[kopiro91]
+kopiro91 01/08/2023 5:52 PM
+probably some memory leak in some app (edited)
+01/08/2023 5:52 PM
+as a sidenote, not sure if it's a problem of my TV, but enabling
+autostart make everything slow down after restart, and the mouse pointer
+doesn't work anymore
+[infowski]
+infowski 01/08/2023 5:52 PM
+And rebind eim directory to a different one so any writes to files there
+will go there correctly...
+[kopiro91]
+kopiro91 01/08/2023 5:51 PM
+without the possibility to be overwritten
+[infowski]
+infowski 01/08/2023 5:51 PM
+Yep!
+[kopiro91]
+kopiro91 01/08/2023 5:51 PM
+so the first time your run it manually, then subsequent restart will
+recall the autostart app
+[infowski]
+infowski 01/08/2023 5:51 PM
+and to keep it less annoying for people - tell them to enable
+QuickStart+
+[kopiro91]
+kopiro91 01/08/2023 5:51 PM
+Oh, I see what you mean
+[infowski]
+infowski 01/08/2023 5:51 PM
+That's the point - you can put that in "autostart app" code though.
+01/08/2023 5:50 PM
+It won't
+01/08/2023 5:50 PM
+as in - verified it actually does what I meant it to do.
+[kopiro91]
+kopiro91 01/08/2023 5:50 PM
+please correct me if i'm wrong, but should mount persist across reboots?
+[infowski]
+infowski 01/08/2023 5:50 PM
+Ran it once, didn't test 
+[kopiro91]
+[] infowski So... Probably something like this will work: `if [[ ! -d
+/var/lib/webosbrew/eim ]]; then cp -r /var...
+kopiro91 01/08/2023 5:49 PM
+Have you tried?
+[infowski]
+infowski 01/08/2023 4:27 PM
+Yep.
+[blaskkaffe]
+[] infowski Exploit used by RootMyTV has been patched a while ago by LG
+and the effect is that... It just reboot...
+blaskkaffe 01/08/2023 4:27 PM
+Thanks! Checking out the instructions for Crashd right now since that
+still should work with latest firmware as far as I have read here and on
+other sources.
+[infowski]
+infowski 01/08/2023 4:15 PM
+Exploit used by RootMyTV has been patched a while ago by LG and the
+effect is that... It just reboots your TV at this point instead of
+installing everything.
+[infowski]
+[] blaskkaffe Just something I read on the rootmy.tv github that could
+happen if you restart the tv too quickly un...
+infowski 01/08/2023 4:14 PM
+Your TV is not rooted if Homebrew Channel didn't get installed.
+[blaskkaffe]
+hellobox. just use crashd
+blaskkaffe 01/08/2023 4:14 PM
+Just something I read on the rootmy.tv github that could happen if you
+restart the tv too quickly unless you have disabled it in homebrew
+channel, which I don't have so it would be hard to disable if It got
+activated
+[infowski]
+infowski 01/08/2023 4:13 PM
+There's also a VNC server I developed but haven't release as an app yet
+https://github.com/Informatic/webos-vncserver/tree/native_service and
+https://github.com/Wouterdek/magic4pc app that hasn't been released on
+Homerbrew Channel yet either.
+01/08/2023 4:11 PM
+Depending on your webOS version you can remove some ads on home screen
+using eg. https://github.com/nurikk/lg-webos-ad-killer
+[dr.d1996]
+dr.d1996 01/08/2023 3:14 PM
+thanks for the guide, I rooted it with crushed a question except for the
+apps, which are the must have scripts that root enables us?
+January 7, 2023
+hellobox. 01/07/2023 11:13 PM
+just use crashd
+[] blaskkaffe quick question, I ran rootmy.tv on my C1, too late
+realized a update had been run a couple of days a...
+hellobox. 01/07/2023 11:13 PM
+what failsafe mode?
+[blaskkaffe]
+blaskkaffe 01/07/2023 10:14 PM
+quick question, I ran rootmy.tv on my C1, too late realized a update had
+been run a couple of days ago (has been avoiding updates since day one
+but somehow LG got its ways...). I didn't get the homebrew app installed
+but I do get the "Hello World" at port 3000. Do I have to worry about
+triggering the failsafe mode and if so is it better to run a factory
+reset to remove root or can I keep it like this?
+polo753 01/07/2023 8:49 PM
+Thank you it's a simple translation error, I'll try later.
+ 1
+[infowski]
+infowski 01/07/2023 6:22 PM
+You are missing touch  at the beginning of that line. Read carefully...
+(edited)
+polo753 01/07/2023 6:09 PM
+(no content)
+[Sans_titre.png]
+ Sans_titre.png
+26.12 KB External
+01/07/2023 6:09 PM
+Yes I am at step J: /var/log/crashd/"x;telnetd -l sh" tells me not found
+Deleted User 01/07/2023 5:40 PM
+if you mean you're trying to elevate the crashd method i think there's a
+workaround, iirc there's a russian repo that have the telnet hack for
+webos, you could install it and use mobaxterm, putty or anything else to
+get telnet access and elevate the homebrew service
+polo753 01/07/2023 3:30 PM
+(no content)
+[Sans_titre.png]
+ Sans_titre.png
+45.48 KB External
+01/07/2023 3:30 PM
+Hello, I am trying to crash on the 65C25 But I get stuck at a time when
+you have to type in the terminal unable to enter order
+[infowski]
+infowski 01/07/2023 12:02 PM
+So... Probably something like this will work:
+if [[ ! -d /var/lib/webosbrew/eim ]]; then cp -r /var/lib/eim /var/lib/webosbrew/eim; fi ; if ! findmnt /var/lib/eim; then mount --bind /var/lib/webosbrew/eim /var/lib/eim ; fi ; /var/lib/webosbrew/startup.sh
+(edited)
+[kopiro91]
+kopiro91 01/07/2023 12:02 PM
+so it persist on org.webosbrew.autostart
+01/07/2023 12:02 PM
+how do you make it unwritable now?
+[infowski]
+infowski 01/07/2023 11:59 AM
+It... Booted on HDMI2, as I told it to.
+[kopiro91]
+kopiro91 01/07/2023 11:58 AM
+let me know, I can test as well
+[infowski]
+infowski 01/07/2023 11:58 AM
+Let's see what happens if I change that file 
+[kopiro91]
+kopiro91 01/07/2023 11:58 AM
+    root@LGwebOSTV:~# cat /var/lib/eim/lastinput
+    {"type":"MVPD_IP","appId":"org.webosbrew.autostart"}
+01/07/2023 11:57 AM
+Oh, that's nice
+[infowski]
+infowski 01/07/2023 11:57 AM
+there's /var/lib/eim/lastinput 
+01/07/2023 11:56 AM
+But I am not sure, gotta check. 
+01/07/2023 11:56 AM
+Yep, if writes will go to a different target path.
+[kopiro91]
+kopiro91 01/07/2023 11:56 AM
+would it persist across reboots?
+[infowski]
+infowski 01/07/2023 11:56 AM
+if it's just a file, I think bindmounting over it with an alternative
+path would work fairlywell.
+[infowski]
+hellobox. how does webos know which input to choose on boot?
+infowski 01/07/2023 11:55 AM
+I think it was either via configd, or some file in /var (i've actually
+seen it in multiple places...)
+[yasmine_vixen]
+hellobox. could you set something up to launch it right before shutdown?
+yasmine_vixen 01/07/2023 11:55 AM
+Or maybe using the luna 'setPreloadPolicy' might work? And let some app
+preload doing the autostart?
+[kopiro91]
+hellobox. i'm not sure about `webosbrew-autostart`; i think it's
+supposed to be registered as an input or some...
+kopiro91 01/07/2023 11:54 AM
+hello! yeah the problem is that if your last input was (for example
+HDMI1), that input get registered as last one.
+hellobox. 01/07/2023 11:54 AM
+how does webos know which input to choose on boot?
+01/07/2023 11:53 AM
+there's probably something you can subscribe to with luna for power
+notifications
+01/07/2023 11:52 AM
+pretty ugly, but it might work
+01/07/2023 11:52 AM
+could you set something up to launch it right before shutdown?
+[infowski]
+hellobox. i'm not sure about `webosbrew-autostart`; i think it's
+supposed to be registered as an input or some...
+infowski 01/07/2023 11:50 AM
+The issue with eim input apps is that only last launched input is
+persisted and relaunched on boot - if you actually use any other inputs,
+autostart will not actually launch there... D: (edited)
+[yasmine_vixen]
+hellobox. i'm not sure about `webosbrew-autostart`; i think it's
+supposed to be registered as an input or some...
+yasmine_vixen 01/07/2023 11:47 AM
+Thank you for your support!
+[lockup.]
+lockup. 01/07/2023 11:46 AM
+how does the homebrew store work im trying to get popcorn or an app
+similar to it to work on my lg tv any ideas?
+hellobox. 01/07/2023 11:45 AM
+i'm not sure about webosbrew-autostart; i think it's supposed to be
+registered as an input or something. maybe @kopiro can help you
+[infowski]
+infowski 01/07/2023 11:44 AM
+QuickStart+ will just suspend the TV instead of going through the full
+boot procedure, and thus whatever is running / modified during first
+boot will stay on.
+ 1
+[yasmine_vixen]
+yasmine_vixen 01/07/2023 11:43 AM
+Ah perfect that sounds like a good work-around 
+[infowski]
+infowski 01/07/2023 11:43 AM
+@Yasmine no - but if you keep "QuickStart+" enabled you won't actually
+need to run autostart "manually" unless your power goes off. (or you
+reboot intentionally) (edited)
+[yasmine_vixen]
+yasmine_vixen 01/07/2023 11:42 AM
+Okay so for now there is no way to get autostart working automatically
+then? Even with webosbrew-autostart?
+hellobox. 01/07/2023 11:40 AM
+the problem is that older webos doesn't support previewMetadata in
+appinfo.json, which is what we're using for autostart
+[yasmine_vixen]
+yasmine_vixen 01/07/2023 11:39 AM
+Okay, I did not know that. But rebooting does not trigger the autostart
+because ssh is not working after a reboot (but ssh is enabled in hb, and
+when I manually trigger autostart ssh starts to work). Anyway I can
+debug webosbrew-autostart to see what is happening during startup?
+[] yasmine_vixen yes 0.5.1 is installed, but after the last 'state
+installed' the terminal hangs.
+hellobox. 01/07/2023 11:37 AM
+that's just how luna works
+[yasmine_vixen]
+yasmine_vixen 01/07/2023 11:36 AM
+yes 0.5.1 is installed, but after the last 'state installed' the
+terminal hangs.
+hellobox. 01/07/2023 11:31 AM
+you have homebrew channel 0.5.1, right?
+01/07/2023 11:30 AM
+and the luna-send output you posted on github is expected; the last line
+contains "state":"installed"
+[] yasmine_vixen I posted earlier that ssh/telnet do not work on my tv
+after a reboot. Turns out this is due to autos...
+hellobox. 01/07/2023 11:29 AM
+no, because that relies on autostart
+[yasmine_vixen]
+yasmine_vixen 01/07/2023 11:23 AM
+I posted earlier that ssh/telnet do not work on my tv after a reboot.
+Turns out this is due to autostart not working on webOS TV 4.4.2. I
+tried the webosbrew-autostart but that also doesn't seem to work for
+some reason.. details:
+https://github.com/kopiro/webosbrew-autostart/issues/1 Any ideas on
+this? Might it be an solution to put an executable file in
+/var/lib/webosbrew/init.d which does the autostart of hb?
+[cabby7144]
+hellobox. yes
+cabby7144 01/07/2023 5:56 AM
+thanks! Worked flawlessly. For now I am going to leave SSH/Telnet
+disabled. Awesome work thank again
+hellobox. 01/07/2023 5:06 AM
+https://discord.com/channels/407937994037919756/822443030761046017/1053855715606929519
+[] cabby7144 Just found out I can root my tv lol. seeing I have had
+autoupdate turned on I cannot use rootmy.tv d...
+hellobox. 01/07/2023 5:06 AM
+yes
+[cabby7144]
+cabby7144 01/07/2023 4:40 AM
+Just found out I can root my tv lol. seeing I have had autoupdate turned
+on I cannot use rootmy.tv due to LG's newest patch. I am currently on
+03.21.20 with a OLED65B2PUA. Am I able to utilize the "crashd" exploit?
+[tra1ner]
+tra1ner 01/07/2023 1:56 AM
+is it startup now?
+01/07/2023 1:56 AM
+alright i did chmod + x var/lib/webosbrew/init.d/ad_killer (edited)
+[tra1ner]
+hellobox. you have to be in the same directory or specify the full path
+tra1ner 01/07/2023 1:20 AM
+wdym
+hellobox. 01/07/2023 1:17 AM
+try this https://github.com/kopiro/webosbrew-autostart
+andreasyeah if i install the developer mode app to get ssh connection,
+will it break root?
+hellobox. 01/07/2023 1:17 AM
+yes
+andreasyeah 01/07/2023 1:17 AM
+if i install the developer mode app to get ssh connection, will it break
+root?
+[] tra1ner no such file or directory
+hellobox. 01/07/2023 1:15 AM
+you have to be in the same directory or specify the full path
+[tra1ner]
+tra1ner 01/07/2023 1:15 AM
+no such file or directory
+01/07/2023 1:14 AM
+it says
+andreasyeah it's 4.9.5 (goldilocks)
+hellobox. 01/07/2023 1:13 AM
+i don't know if the autostart method works on pre-5.x
+hellobox. it's not webos 7/22 is it?
+andreasyeah 01/07/2023 1:12 AM
+it's 4.9.5 (goldilocks)
+[tra1ner]
+hellobox. is it executable?
+tra1ner 01/07/2023 1:11 AM
+no
+andreasyeah hey so i rooted the tv and enabled ssh and telnet in
+homebrew. but after restarting I can't ssh
+hellobox. 01/07/2023 1:10 AM
+it's not webos 7/22 is it?
+andreasyeah 01/07/2023 1:07 AM
+With nmap I can't see ssh or telnet port open actually
+01/07/2023 1:06 AM
+hey so i rooted the tv and enabled ssh and telnet in homebrew. but after
+restarting I can't ssh
+hellobox. 01/07/2023 12:30 AM
+chmod +x ad-killer
+01/07/2023 12:30 AM
+is it executable?
+[tra1ner]
+hellobox. the filenames can't contain anything but letters, numbers, `_`
+and `-`
+tra1ner 01/07/2023 12:28 AM
+"ad-killer"
+[harrypottr]
+harrypottr 01/07/2023 12:18 AM
+weirdly i found your github googling earlier, but no binaries - and i'm
+far too lazy to compile... then found you'd posted binaries here 
+[infowski]
+infowski 01/07/2023 12:16 AM
+glad to hear that. I started building a configuration UI for that.
+ 1
+01/07/2023 12:16 AM
+haha
+[harrypottr]
+[] infowski
+https://github.com/Informatic/webos-vncserver/tree/native_service eh
+dammit, I don't have prebuilt b...
+harrypottr 01/07/2023 12:16 AM
+i know this is an old(er) message ... but it should be stickied, vnc'd
+to a wayland render and just using a mouse/keyboard to control TV is
+soooooo useful... and it works amazingly well
+[infowski]
+infowski 01/07/2023 12:11 AM
+That's sweet.
+hellobox. 01/07/2023 12:11 AM
+i was using GL
+[infowski]
+infowski 01/07/2023 12:10 AM
+oh, and GL
+01/07/2023 12:10 AM
+Oh,PL2303HXD vs PL2303TA
+01/07/2023 12:09 AM
+Ohhhhhhh, it has an OTP? I was totally convinced these only had support
+for external eeprom.
+hellobox. 01/07/2023 12:08 AM
+so you can (in theory) program the OTP (which is actually two-times
+programmable)
+01/07/2023 12:08 AM
+but they'll be unprogrammed
+01/07/2023 12:08 AM
+no, unfortunately
+[infowski]
+hellobox. yeah... i designed a pcb with two back-to-back pl2303 ICs
+infowski 01/07/2023 12:07 AM
+both with eeproms I hope? 
+hellobox. 01/07/2023 12:04 AM
+but i haven't had them made yet
+01/07/2023 12:04 AM
+yeah... i designed a pcb with two back-to-back pl2303 ICs
+[astur3l]
+astur3l 01/07/2023 12:03 AM
+ah  so i need an rs232 ttl usb 
+hellobox. 01/07/2023 12:03 AM
+you connect the usb side to the tv
+[astur3l]
+astur3l 01/07/2023 12:02 AM
+or isnt there an usb version? my tv doesnt have the classic rs232 port..
+(?) or it requires disassembly?:D (edited)
+01/07/2023 12:01 AM
+no  i think nobody shipping to here (hungary) :DD i couldnt find a
+decent one (edited)
+[infowski]
+[] astur3l can u hit me with a link sometime?:D
+infowski 01/07/2023 12:00 AM
+Uh, oh, are you living in Poland? 
+ 1
+[astur3l]
+[] infowski I think it was even cheaper than on Amazon.
+astur3l 01/07/2023 12:00 AM
+can u hit me with a link sometime?:D
+January 6, 2023
+Deleted User 01/06/2023 11:54 PM
+i will think about it later
+01/06/2023 11:54 PM
+[:salad_woah:] i see
+[infowski]
+Deleted User or only locking bootloader can be do on the service menu
+infowski 01/06/2023 11:54 PM
+Nope, unlocking requires root access first.
+[infowski]
+hellobox. it's worked for me
+infowski 01/06/2023 11:53 PM
+Huh! I know it (plain PL2303) works on my K3LP board on both bootloader
+and userspace, but only does in bootloader on K6LP (they do some
+validation in udev rules) (edited)
+Deleted User 01/06/2023 11:52 PM
+or only locking bootloader can be do on the service menu
+[] infowski "plain" PL2303 generally won't work. It'll only work in
+bootloader *probably*, but not in webOS.
+hellobox. 01/06/2023 11:52 PM
+it's worked for me
+Deleted User 01/06/2023 11:52 PM
+unlock as well?
+01/06/2023 11:52 PM
+oh
+[infowski]
+infowski 01/06/2023 11:52 PM
+You can actually just do it in normal instart/ezadjust service menu.
+01/06/2023 11:51 PM
+There is.
+Deleted User 01/06/2023 11:51 PM
+and another thing is there's no way to lock it back?
+[astur3l]
+astur3l 01/06/2023 11:51 PM
+aten costs like 20€ here :d
+[infowski]
+infowski 01/06/2023 11:51 PM
+I think I only ever got it during development.
+[infowski]
+Deleted User that is annoying
+infowski 01/06/2023 11:51 PM
+That is very rare though, unless you screw something up.
+Deleted User 01/06/2023 11:51 PM
+[:salad_thinking:]
+01/06/2023 11:51 PM
+i think i may considered to not doing it
+[infowski]
+[] astur3l but pl2203 wont work?
+infowski 01/06/2023 11:51 PM
+"plain" PL2303 generally won't work. It'll only work in bootloader
+*probably*, but not in webOS.
+Deleted User 01/06/2023 11:50 PM
+that is annoying
+[infowski]
+infowski 01/06/2023 11:50 PM
+just angry "service has crashed, press OK to reboot or NO to keep
+running"
+[astur3l]
+astur3l 01/06/2023 11:50 PM
+but pl2203 wont work?
+[infowski]
+Deleted User popup on screen?
+infowski 01/06/2023 11:50 PM
+SImilar to the one you get when trying to connect using LG Connect Apps
+/ when running RootMyTV
+[] infowski The only annoying side-effect is that webOS
+service/application crashes cause a popup on-screen 
+Deleted User 01/06/2023 11:50 PM
+popup on screen?
+[infowski]
+infowski 01/06/2023 11:50 PM
+Nah, it's a common PL2303 just with modified VID/PID
+[astur3l]
+astur3l 01/06/2023 11:50 PM
+i thought i need to kiss some asses for it 
+[infowski]
+infowski 01/06/2023 11:50 PM
+I think it was even cheaper than on Amazon.
+[infowski]
+[] astur3l but it requires aten usb rs232 ttl?:D where can i get one 
+infowski 01/06/2023 11:49 PM
+Amazon? I got it on our local ebay equivalent as well.
+[astur3l]
+astur3l 01/06/2023 11:49 PM
+oh i see, i can just buy at local stores...... 
+[infowski]
+infowski 01/06/2023 11:49 PM
+The only annoying side-effect is that webOS service/application crashes
+cause a popup on-screen 
+[astur3l]
+astur3l 01/06/2023 11:49 PM
+but it requires aten usb rs232 ttl?:D where can i get one  (edited)
+Deleted User 01/06/2023 11:49 PM
+[:entySweats:]
+[] infowski <@456226577798135808> ping me tomorrow, I can wrap something
+up for you.
+Deleted User 01/06/2023 11:49 PM
+i'm actually a little bit afraid but alrighty
+[infowski]
+infowski 01/06/2023 11:48 PM
+@asturel so far it's generally pretty safe. at some point they could
+detect that on application level. (I am guessing there are only a couple
+of webOS TVs worldwide with unlocked bootloader, besides LG engineering
+hardware at this point) (edited)
+[astur3l]
+astur3l 01/06/2023 11:47 PM
+yeah, like on android i wont pass on safety level n... i wonder if
+widewine/ some drm content will fail too?:d
+[infowski]
+infowski 01/06/2023 11:47 PM
+@Deleted User ping me tomorrow, I can wrap something up for you.
+Deleted User 01/06/2023 11:47 PM
+so i need bootloader unlock and the way to recovery
+01/06/2023 11:47 PM
+i was trying to do something related to it firmware but i afraid i will
+just kill my tv
+[infowski]
+infowski 01/06/2023 11:47 PM
+@asturel what? bootloader unlocking?
+[astur3l]
+astur3l 01/06/2023 11:47 PM
+does it break anything?
+[infowski]
+Deleted User oh hmm...how to unlock bootloader of the tv
+infowski 01/06/2023 11:46 PM
+There's... A way. What are you planning to hack on? 
+[infowski]
+infowski 01/06/2023 11:46 PM
+It should be fine
+Deleted User 01/06/2023 11:46 PM
+oh hmm...how to unlock bootloader of the tv
+ 1
+[astur3l]
+astur3l 01/06/2023 11:46 PM
+are these shit just temporary btw? so a hard reboot would clean it or it
+will retry to upload?:D
+[infowski]
+infowski 01/06/2023 11:45 PM
+Essentially - intentionally set static networking to break it in default
+system configuration, and bindmount config in runtime, so that user
+settings are actually stored in a different directory - but network is
+broken until our startup script runs (edited)
+01/06/2023 11:44 PM
+btw one of the "novel" ways of updates blocking I tried a while ago is:
+    [[ ! -d /var/lib/webosbrew/connman ]] && cp -r /var/lib/connman /var/lib/webosbrew/connman
+    for dirname in $(ls -d /var/lib/connman/*/); do
+      echo $dirname $(basename $dirname)
+      connmanctl config $(basename $dirname) --ipv4 manual 48.48.48.48 255.255.255.0 48.48.48.48  # fuck prudential lol
+    done
+    mount --bind /var/lib/webosbrew/connman /var/lib/connman
+    systemctl restart connman
+ 1
+[astur3l]
+astur3l 01/06/2023 11:44 PM
+ah.. im too lazy that, ill rather block on router via iptables 
+[infowski]
+infowski 01/06/2023 11:43 PM
+that's the easiest way 
+01/06/2023 11:43 PM
+Keep in mind you can switch the TV to static networking and set some
+invalid gateway IP
+01/06/2023 11:43 PM
+I don't remember, sorry.
+[astur3l]
+astur3l 01/06/2023 11:43 PM
+last time i put every host what it tried to resolve into my blocklist...
+ (edited)
+01/06/2023 11:42 PM
+where does it uploads? any common lg server?
+[infowski]
+infowski 01/06/2023 11:42 PM
+so that it doesn't try to upload all the shenanings you do instantly.
+01/06/2023 11:42 PM
+@asturel of course best to do it without gateway/external networking on
+the TV 
+Deleted User 01/06/2023 11:41 PM
+i will just not touching it
+[astur3l]
+[] infowski <@433352458694033428> you'd need to remove rdxd/uploadd
+mounts we do in `startup.sh`
+astur3l 01/06/2023 11:41 PM
+my bpm just dropped by 60 
+[infowski]
+[] infowski Yeah, if your TV is already rooted, it will generally not
+get "lost". The only functionality that ca...
+infowski 01/06/2023 11:41 PM
+But, of course - removal of Homebrew Channel app will break root, if
+it's not rootable/exploitable anymore.
+[infowski]
+infowski 01/06/2023 11:40 PM
+@asturel you'd need to remove rdxd/uploadd mounts we do in startup.sh
+ 1
+Deleted User 01/06/2023 11:40 PM
+ohhh
+[infowski]
+infowski 01/06/2023 11:40 PM
+Yeah, if your TV is already rooted, it will generally not get "lost".
+The only functionality that can really break is autostart, but on 4.5+
+it should work.
+[astur3l]
+astur3l 01/06/2023 11:40 PM
+i tried to run
+`echo $(whoami) > /tmp/x via touch /var/log/crashd/"x;echo ZWNobyAkKHdob2FtaSkgPiAvdG1wL3gK | base64 -d | sh"`
+also nothing 
+Deleted User 01/06/2023 11:39 PM
+i was really surprised
+01/06/2023 11:39 PM
+i use crashd method
+01/06/2023 11:39 PM
+and somehow root access is not gone
+01/06/2023 11:39 PM
+i tried to update my tv
+[astur3l]
+[] aabytt And have you checked if crashd exploit still available?
+astur3l 01/06/2023 11:39 PM
+should it work without devmode installed? so only
+`touch /var/log/crashd/"x;telnetd -l sh"` should run telnetd ? 'coz it
+wont run it :/
+Deleted User 01/06/2023 11:39 PM
+for unknown reason
+hellobox. 01/06/2023 11:16 PM
+the filenames can't contain anything but letters, numbers, _ and -
+[tra1ner]
+tra1ner 01/06/2023 11:13 PM
+i did
+[] tra1ner How can I make a script startup everytime automatically?
+hellobox. 01/06/2023 11:12 PM
+put it in /var/lib/webosbrew/init.d
+[tra1ner]
+tra1ner 01/06/2023 11:02 PM
+How can I make a script startup everytime automatically?
+hellobox. 01/06/2023 10:46 PM
+not really
+andreasyeah 01/06/2023 10:45 PM
+Are there plans to make this exploit into a nice UI like rootmytv?
+01/06/2023 10:45 PM
+Awesome thanks 
+andreasyeah Like maybe 2020 or smth
+hellobox. 01/06/2023 10:44 PM
+2020 will work
+andreasyeah 01/06/2023 10:44 PM
+Like maybe 2020 or smth
+01/06/2023 10:44 PM
+It's an old one
+01/06/2023 10:44 PM
+Ok nice i'll try on my uhd then
+andreasyeah Does the crashd exploit only work for oled tvs?
+hellobox. 01/06/2023 10:43 PM
+no
+andreasyeah 01/06/2023 10:42 PM
+I have a 43 inch ultra HD one
+01/06/2023 10:42 PM
+Does the crashd exploit only work for oled tvs?
+[astur3l]
+[] aabytt And have you checked if crashd exploit still available?
+astur3l 01/06/2023 10:37 PM
+not yet, just launched update before sit down for movie :dd, will check
+when i make to pc :d (edited)
+[theparanoiddj]
+theparanoiddj 01/06/2023 10:25 PM
+Any one know how to dump the keybox l1? I can pay for this info.
+(edited)
+[aabytt]
+[] astur3l FYI who worries , updated my A1 to 3.34.50 , root didn't get
+lost
+aabytt 01/06/2023 10:04 PM
+And have you checked if crashd exploit still available?
+[astur3l]
+astur3l 01/06/2023 9:26 PM
+FYI who worries , updated my A1 to 3.34.50 , root didn't get lost
+[aabytt]
+hellobox. autostart only works on 5+
+aabytt 01/06/2023 3:33 PM
+it works on 4.9+ (2019+)
+hellobox. 01/06/2023 10:11 AM
+you can try this https://github.com/kopiro/webosbrew-autostart
+ 1
+01/06/2023 10:10 AM
+autostart only works on 5+
+01/06/2023 10:10 AM
+oh, c8... so 4.something?
+[] yasmine_vixen Yes I enabled telnet (not ssh) and rebooted several
+times now. Quick Start+ is disabled. Maybe there...
+hellobox. 01/06/2023 10:09 AM
+what version of webos?
+[yasmine_vixen]
+[] yolofant enable ssh or telnet in hb channel and reboot
+yasmine_vixen 01/06/2023 10:09 AM
+Yes I enabled telnet (not ssh) and rebooted several times now. Quick
+Start+ is disabled. Maybe there is something off in my network. I don't
+understand because directly after using the crashd exploit I could
+connect to telnet and 'whoami' even said 'root'. Any other ideas? Is
+there maybe an terminal app available for homebrew so I can inspect on
+the TV itself?
+[] astur3l if root doesn't get lost on update does that mean that the
+firmware still vulnerable for crashd or ....
+hellobox. 01/06/2023 12:45 AM
+not necessarily, but it should still be vulnerable anyway
+[yolofant]
+[] yasmine_vixen I used crashd on my C8 with succes. I got an telnet
+connection with root access and then did unset...
+yolofant 01/06/2023 12:05 AM
+enable ssh or telnet in hb channel and reboot
+January 5, 2023
+[astur3l]
+hellobox. it was fine
+astur3l 01/05/2023 10:45 PM
+if root doesn't get lost on update does that mean that the firmware
+still vulnerable for crashd or .. ? :d
+[yasmine_vixen]
+yasmine_vixen 01/05/2023 10:37 PM
+btw homebrew does confirm the tv is rooted
+[yasmine_vixen]
+yasmine_vixen 01/05/2023 10:27 PM
+I used crashd on my C8 with succes. I got an telnet connection with root
+access and then did unset LD_PRELOAD
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service
+mkdir -p /var/lib/webosbrew/init.d cp
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/startup.sh
+/var/lib/webosbrew/startup.sh rm -rf
+/var/luna/preferences/devmode_enabled && mkdir -p
+/var/luna/preferences/devmode_enabled after that I removed the Developer
+Mode app and rebooted the TV. But now I'm not able to connect via telnet
+or ssh anymore. Also re-installing the developer mode app does not work
+and the device manager for webOS cannot connect either. I'm able to ping
+the TV though, and I'm getting "connection refused" (not timeouts etc).
+Any ideas? Can I maybe factory reset and try again?
+mattl0. 01/05/2023 8:46 PM
+I can confirm too , that it is still rooted
+mattl0. 01/05/2023 8:29 PM
+Thank you so much :p
+hellobox. 01/05/2023 8:28 PM
+and this guy did it on a G1
+01/05/2023 8:28 PM
+https://discord.com/channels/407937994037919756/413498235307425802/1060089531157712926
+01/05/2023 8:27 PM
+oh yeah, i did
+hellobox. it was fine
+mattl0. 01/05/2023 8:27 PM
+Thanks!
+hellobox. 01/05/2023 8:27 PM
+maybe not
+01/05/2023 8:26 PM
+it was fine
+mattl0. Lg C1 — Anyone tried to install the very last firmware 3.34.55 ?
+, with an already rooted (crashd) c...
+hellobox. 01/05/2023 8:26 PM
+i believe i installed the same version on a different model
+mattl0. 01/05/2023 8:22 PM
+Lg C1 — Anyone tried to install the very last firmware 3.34.55 ? , with
+an already rooted (crashd) c1?
+[suiiislide]
+suiiislide 01/05/2023 8:14 PM
+idc about any of the other features other than maybe crunchyroll
+01/05/2023 8:13 PM
+i legit just want ad free youtube lmao the ads these days are too much
+man xd
+01/05/2023 8:13 PM
+ah i see
+hellobox. 01/05/2023 8:13 PM
+i don't know if it ever worked on 2022 models
+[suiiislide]
+suiiislide 01/05/2023 8:13 PM
+bummer
+hellobox. 01/05/2023 8:13 PM
+probably not
+[suiiislide]
+hellobox. i don't know
+suiiislide 01/05/2023 8:12 PM
+it doesnt show in the home menu so it didnt work right?
+hellobox. 01/05/2023 8:10 PM
+i don't know
+[suiiislide]
+suiiislide 01/05/2023 8:07 PM
+alright and if it doesnt work there is no backfire? like they cant tell
+and the warrenty wont be void?
+hellobox. 01/05/2023 8:07 PM
+basically zero
+[suiiislide]
+suiiislide 01/05/2023 8:06 PM
+alright ig ill try it what are the odds of it bricking tho
+hellobox. 01/05/2023 8:06 PM
+just make sure to replace dropbear and sftp-server if you want ssh/sftp
+to work:
+https://discord.com/channels/407937994037919756/822443030761046017/1053855715606929519
+01/05/2023 8:06 PM
+but if not, crashd will
+01/05/2023 8:06 PM
+i don't know if it'll work
+01/05/2023 8:06 PM
+anyway, you can try rootmytv
+01/05/2023 8:06 PM
+the model would be 43UQ75xxxxx
+[suiiislide]
+suiiislide 01/05/2023 8:06 PM
+yea i think so
+hellobox. 01/05/2023 8:05 PM
+so from 2022? webos 7/22?
+[suiiislide]
+suiiislide 01/05/2023 8:05 PM
+I hope that’s correct sorry
+[suiiislide]
+hellobox. what model?
+suiiislide 01/05/2023 8:05 PM
+LG UHD AI THINQ 43UQ75
+[] suiiislide i have software 03.21.05 can i use the web browser exploit
+or do i have to do the crashd exploit??
+hellobox. 01/05/2023 7:56 PM
+what model?
+[suiiislide]
+suiiislide 01/05/2023 7:51 PM
+i have software 03.21.05 can i use the web browser exploit or do i have
+to do the crashd exploit??
+vrvrvrvrvr. hi! agter pressing update for hyperhdr in homebrew app
+section, hyperhdr does not start anymore. sho...
+_nurikk_ 01/05/2023 6:53 PM
+Try to reboot your tv
+vrvrvrvrvr. 01/05/2023 6:31 PM
+hi! agter pressing update for hyperhdr in homebrew app section, hyperhdr
+does not start anymore. showing "elevating" which seems to be stuck. any
+ideas for a quick fix ? 
+ hi agter pressing update for hyperhdr in →
+[satdx62]
+[] stogie1987 Okay, i am a bit surprised. I previously rooted my TV with
+crashd method and now i decided to update...
+satdx62 01/05/2023 4:43 PM
+The question is with or without Quick Start+ enabled? The device does
+not really reboot the activated Quick Start+, but starts quickly.
+[tra1ner]
+tra1ner 01/05/2023 1:18 PM
+How can I make a script startup everytime
+[the_bearded_jay]
+the_bearded_jay 01/05/2023 1:29 AM
+All is right in the world! Just must have fatfingered something
+01/05/2023 1:27 AM
+disregard, i think i got it to work....
+01/05/2023 1:20 AM
+in step 3(f) it tells me no such file/directory to remove
+[yolofant]
+yolofant 01/05/2023 1:12 AM
+LD_PRELOAD errors can be ignored
+01/05/2023 1:12 AM
+but what errors are you referring to?
+[the_bearded_jay]
+the_bearded_jay 01/05/2023 1:12 AM
+Ok then I'm probably doing something wrong
+[yolofant]
+yolofant 01/05/2023 1:11 AM
+just make sure you spell everything correctly
+01/05/2023 1:11 AM
+it should work fine on webos 4.x+
+[the_bearded_jay]
+the_bearded_jay 01/05/2023 1:10 AM
+I attempted that as well, but I'm probably doing something wrong as I
+get error messages when typing in the commands.
+[yolofant]
+yolofant 01/05/2023 1:08 AM
+check pins
+01/05/2023 1:08 AM
+that next exploit is called crashd 
+[the_bearded_jay]
+the_bearded_jay 01/05/2023 1:06 AM
+(no content)
+[PXL_20230104_185244257.jpg]
+ PXL_20230104_185244257.jpg
+345.45 KB External
+01/05/2023 1:06 AM
+Though there was no error when installing, afaik
+01/05/2023 1:04 AM
+I can't get homebrew to install after rooting, which probably means I
+have to wait for the next exploit.
+January 4, 2023
+[.ilucha]
+[] stogie1987 Okay, i am a bit surprised. I previously rooted my TV with
+crashd method and now i decided to update...
+.ilucha 01/04/2023 11:17 PM
+Very interesting! I also thought, that root will be gone
+[aabytt]
+[] stogie1987 Okay, i am a bit surprised. I previously rooted my TV with
+crashd method and now i decided to update...
+aabytt 01/04/2023 10:59 PM
+This time hbc app survived the update keeping its elevated permissions.
+That does not guarantee it won’t get patched by LG with any further
+update.
+[stogie1987]
+stogie1987 01/04/2023 10:55 PM
+So we can just update without any concerns if we previously rooted with
+crashd
+01/04/2023 10:54 PM
+Okay, i am a bit surprised. I previously rooted my TV with crashd method
+and now i decided to update the tv to the latest firmware and i
+expected, that i have to root again with crashd after the update, but
+root still persist even after 2 shutdowns of the tv. (edited)
+[infowski]
+infowski 01/04/2023 9:06 PM
+Yep, pretty much so far. If you don't update it after buying new you may
+also get proper RootMyTV v2 support, which is slightly better than
+crashd. (since we get slightly earlier boot code execution)
+timcook4825 01/04/2023 8:13 PM
+I think root features are the same no matter what lg oled you use
+philipp0745 01/04/2023 8:07 PM
+Hey i currently have a C9 55“ rooted with crashd but want to go bigger.
+I use piccap, YouTube adfree and Hyperion. Everything works as espected,
+even Netflix and Amazon build in. What do you recommend to switch to in
+terms of usability / root features? C1 or C2? Is OLED evo worth it?
+[tra1ner]
+tra1ner 01/04/2023 7:53 PM
+oh ye sorry
+[infowski]
+infowski 01/04/2023 7:33 PM
+and alpine for password

@@ -1,0 +1,1654 @@
+October 7, 2022
+[.ultraguy24]
+.ultraguy24 10/07/2022 12:45 PM
+Cool, thank you will have a look at that now
+Deleted User 10/07/2022 12:44 PM
+your tv is patched use crashd instead (check pinned messages)
+[.ultraguy24]
+.ultraguy24 10/07/2022 12:40 PM
+according to the documentation all versions of WebOS 4 should be
+supported
+10/07/2022 12:40 PM
+Was wondering if anyone had any suggestions
+10/07/2022 12:40 PM
+It looks like it goes through fine, and then reboots, but nothing
+afterwards and no HBchannel
+10/07/2022 12:39 PM
+Hello all, I am currently having issues applying the exploit onto my
+LG56NANO866NA on WebOS 4.40.15
+Deleted User 10/07/2022 11:50 AM
+if you just follow along the guide and ask in # unknown-channel if you
+encounter something weird
+10/07/2022 11:49 AM
+very unlikely unless you do something really stupid
+[mk1337__]
+mk1337__ 10/07/2022 11:46 AM
+I also thought about just giving it a try, but I'm a bit afraid of
+bricking my new TV on the second day already. Could something like this
+realistically happen? (ofc, no warranty and all)
+Deleted User 10/07/2022 11:34 AM
+you can just try rootmytv, it tv reboots and no hb channel appears then
+you can still use crashd 
+[mk1337__]
+mk1337__ 10/07/2022 10:24 AM
+(no content)
+[LG.jpg]
+ LG.jpg
+768.25 KB External
+10/07/2022 10:20 AM
+I don't have a "webOS TV Version" field so I'm confused
+10/07/2022 10:19 AM
+I just got my new LG 65UQ75009LF yesterday and it reports "Software
+Version 03.11.10" - is that supported by RootMyTv?
+[stategamer]
+stategamer 10/07/2022 9:37 AM
+someone is a hamlet fan, but why is that in there ?
+[aabytt]
+aabytt 10/07/2022 7:37 AM
+[unknown.png]
+ unknown.png
+100.81 KB External
+[2150512]
+2150512 10/07/2022 3:14 AM
+This is an awesome resource to find! Planning on using crashd this
+weekend
+[nintend00m]
+nintend00m 10/07/2022 2:11 AM
+Noted thank you
+hellobox. 10/07/2022 2:11 AM
+which you'll have to create
+10/07/2022 2:11 AM
+i'd recommend
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/lib
+or something
+[nintend00m]
+nintend00m 10/07/2022 2:11 AM
+Oh, duh yes right
+hellobox. 10/07/2022 2:11 AM
+but this is specific to the sshd that comes with homebrew channel
+[nintend00m]
+nintend00m 10/07/2022 2:11 AM
+Right ones I can write to I guess I mean
+hellobox. 10/07/2022 2:11 AM
+well, there are limited options for paths you can write to
+[nintend00m]
+nintend00m 10/07/2022 2:10 AM
+I've been reading back. So /new/path/here can be whatever I want as long
+as that's where I put the old libcrypt file. If I only really care about
+hyperhdr I would put it in that directory and create the symlink
+hellobox. 10/07/2022 2:08 AM
+which apparently also has different soname major versions among webos
+versions:
+https://discord.com/channels/407937994037919756/822443030761046017/998156125490913360
+(edited)
+10/07/2022 2:05 AM
+i've been misremembering the incompatible library as libcrypto.so (part
+of openssl) until just now
+[nintend00m]
+nintend00m 10/07/2022 2:01 AM
+Wow, thank you. This place is the best. Hopefully I can do this without
+fucking it up too bad.
+[] nintend00m Where can I read more about that?
+hellobox. 10/07/2022 1:56 AM
+webos 22 has a newer/different version of libcrypt than previous webos
+versions: libcrypt.so.2 rather than libcrypt.so.1. the ssh server
+included with the homebrew channel app, dropbear, is looking for
+libcrypt.so.1. workaround: 1. put a copy of libcrypt.so.1 from an
+earlier version of webos
+(https://discord.com/channels/407937994037919756/822443030761046017/1019731178145714286)
+somewhere writable: for example,
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/lib
+2. make a symlink to it named libcrypt.so.1. example:
+    ln -s libcrypt.so.1.1.0 /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/lib/libcrypt.so.1
+    3. modify the homebrew startup script by adding `LD_LIBRARY_PATH="/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"` to the beginning of the command that starts `dropbear` (the shell variable stuff is to be compatible with existing values of `LD_LIBRARY_PATH`; if you don't care you can just use `LD_LIBRARY_PATH='/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/lib'`). example:
+    sh
+    sed -e'/dropbear -R/s@^\s*@&LD_LIBRARY_PATH="/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" @' -i.bak /var/lib/webosbrew/startup.sh(this will create a backup of the original `startup.sh` as `startup.sh.bak`)
+    if you'd rather not risk messing with the startup script, you can do this instead of step 3:
+    3a. disable sshd in homebrew channel settings
+    3b. create a separate startup script to run `dropbear`:sh
+    cat > /var/lib/webosbrew/init.d/10-dropbear << "EOF"
+    #!/bin/sh
+    LD_LIBRARY_PATH="/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/bin/dropbear -R
+    EOF
+    chmod +x /var/lib/webosbrew/init.d/10-dropbear
+(edited)
+[nintend00m]
+nintend00m 10/07/2022 1:35 AM
+Where can I read more about that?
+[yolofant]
+yolofant 10/07/2022 12:33 AM
+yes though some caveats apply on 2022 models regarding ssh but it's
+fixable
+[nintend00m]
+nintend00m 10/07/2022 12:21 AM
+The crashd exploit should work on pretty much any webos tv right? So if
+I get a C2 I'll be in the clear?
+10/07/2022 12:20 AM
+But physically. Thanks lg for making tvs out of paper mache
+10/07/2022 12:19 AM
+Welp I broke my tv
+October 6, 2022
+hellobox. 10/06/2022 11:24 PM
+and if you want to get rid of all traces,
+rm -rf /var/luna/preferences/devmode_enabled
+10/06/2022 11:23 PM
+there might be some files left behind; there's a github issue that lists
+some i think
+10/06/2022 11:23 PM
+uninstalling homebrew channel will do most of it
+10/06/2022 11:22 PM
+you can do it manually
+Deleted User 10/06/2022 11:02 PM
+Ahh great, thank's for the quick reply! Unroot would just be the factory
+reset or is there a special procedure?
+hellobox. 10/06/2022 10:59 PM
+and you don't need to have quick start+ on
+10/06/2022 10:59 PM
+yes, you can unroot it
+Deleted User 10/06/2022 10:58 PM
+Hi, I'm new here and want to root my TV to get hyperion and piccap
+installer. The exploit via the rootmy.tv website failed for me, so I
+think I need to follow the pinned "crashed exploit procedure". If for
+some reasons I'm not happy with that, can the changes be fully reverted?
+And another question. The instruction say for the reboot you should turn
+off QuickStart+. Does this mean for the normal operation you would
+always keep this on? I'Ve read something like this on another page.
+[ashlar4242]
+ashlar4242 10/06/2022 3:03 PM
+thanks for your answer. I guess it was harder than initially guessed. In
+any case the TV I have already does what I need for the moment. The new
+homescreen is fast, YouTube with no ads works... I can wait and remain
+grateful for all the work done behind scenes. 
+[] ashlar4242 rootmytv still not updated for new firmwares, right?
+ww8543 10/06/2022 3:01 PM
+correct
+[ashlar4242]
+ashlar4242 10/06/2022 3:00 PM
+rootmytv still not updated for new firmwares, right?
+[smx2460]
+[] astur3l webos system is read only, but you can do 'overlay' as mount
+--bind, so you can safely edit the qml ...
+smx2460 10/06/2022 1:15 AM
+sshfs
+October 5, 2022
+[55thetax55war]
+55thetax55war 10/05/2022 11:20 PM
+Is there a risk of bricking the tv? I bricked my Samsung s3 before. That
+sucked big time. Lucky i got it from a low end pc shop. they exchanged
+it for me. got the unlock store to put root on it. If there is risk ill
+do it when i am cunfy getting a new tv. I see the apps. Meh. I am kinda
+thinking just ordering a firestick or nvidea shield pre rooted. or
+something. Less risk on my part... I almost don't watch tv anymore. Only
+want the live events. Hockey. soccer(fifa and world cup), Olympics.
+Plenty of news on the regular webos. I think the webos is kinda dodgy. i
+feel a bit of lag going on. (edited)
+[astur3l]
+hellobox. although somebody here claimed to have locked himself out of
+his tv using iptables, so some apparent...
+astur3l 10/05/2022 5:25 PM
+just checked now..
+    root@LGwebOSTV:~# iptables --version
+    iptables v1.6.2
+even have iptable_nat kmod 
+`lrwxrwxrwx 1 root root 13 Jun 9 03:36 /usr/sbin/iptables -> xtables-multi`
+(edited)
+[dan_revoltado]
+hellobox. no problem. did you try it yet?
+dan_revoltado 10/05/2022 2:59 PM
+I will try to do this procedure
+https://discord.com/channels/407937994037919756/822443030761046017/1013979254813368410
+[smx2460]
+smx2460 10/05/2022 12:28 AM
+(no content)
+[unknown.png]
+ unknown.png
+35.88 KB External
+[smx2460]
+[] infowski <https://www.youtube.com/watch?v=_5n49nI5UdA> dude on the
+right is pure gold
+smx2460 10/05/2022 12:27 AM
+October 4, 2022
+Deleted User 10/04/2022 11:20 PM
+i was browsing directories of system apps and found a lot of media
+[infowski]
+infowski 10/04/2022 11:19 PM
+It's on mine!
+Deleted User 10/04/2022 11:19 PM
+i might have found something like it
+[infowski]
+infowski 10/04/2022 11:19 PM
+unless they changed it 
+10/04/2022 11:19 PM
+it's one of the default media on "Photos & Videos" app (in Music
+directory of course)
+10/04/2022 11:19 PM
+it's very likely it's built into your tv
+Deleted User 10/04/2022 11:19 PM
+didnt know this existed
+[] infowski https://www.youtube.com/watch?v=uuqwy8Z7qqQ me when the
+Deleted User 10/04/2022 11:18 PM
+LOL (edited)
+[infowski]
+infowski 10/04/2022 11:16 PM
+https://www.youtube.com/watch?v=_5n49nI5UdA dude on the right is pure
+gold
+[infowski]
+Deleted User Click to see attachment
+infowski 10/04/2022 11:15 PM
+https://www.youtube.com/watch?v=uuqwy8Z7qqQ me when the
+Deleted User 10/04/2022 10:20 PM
+lol
+[yolofant]
+yolofant 10/04/2022 10:17 PM
+starboard is great for memes 
+[smx2460]
+smx2460 10/04/2022 10:05 PM
+XD
+Deleted User 10/04/2022 9:56 PM
+(no content)
+[unknown.png]
+ unknown.png
+36.44 KB External
+10/04/2022 9:56 PM
+something like this
+[unknown.png]
+ unknown.png
+12.98 KB External
+[] smx2460 we should have an "hall of <:lg:612078262788816906>" lol
+Deleted User 10/04/2022 9:47 PM
+we should add the starboard bot, it works something like this whenever
+enough people react with  on a message, it gets posted in the
+starboard channel (which is configurable) i believe you can customize
+the emoji to use, and how many people that need to react with it
+[smx2460]
+smx2460 10/04/2022 9:14 PM
+we should have an "hall of [:lg:]" lol
+10/04/2022 9:13 PM
+[smx2460]
+hellobox. and ended up including the string `$LD_PRELOAD` instead of its
+value
+smx2460 10/04/2022 9:13 PM
+[:lg:]
+[:lg:] 1
+[] dan_revoltado thanks
+hellobox. 10/04/2022 7:45 PM
+no problem. did you try it yet?
+[dan_revoltado]
+hellobox. see pinned messages for crashd
+dan_revoltado 10/04/2022 7:45 PM
+thanks
+Deleted User 10/04/2022 7:42 PM
+i think ive seen two people here do that so far
+hellobox. yeah you already had a telnetd started without `-l sh`
+probably
+Deleted User 10/04/2022 7:41 PM
+maybe they typed a 1 instead of l?
+hellobox. 10/04/2022 7:35 PM
+see pinned messages for crashd
+[dan_revoltado]
+dan_revoltado 10/04/2022 7:34 PM
+Site didn't work for me, the smart tv restarts but the homebrew does not
+appear. webOS TV Version: 4.9.5-14 (goldilocks2-gympie) Software
+Version: 5.20.35
+hellobox. 10/04/2022 7:31 PM
+and ended up including the string $LD_PRELOAD instead of its value
+ 1
+10/04/2022 7:30 PM
+lg got their quoting wrong when setting LD_PRELOAD
+10/04/2022 7:30 PM
+you can probably do unset LD_PRELOAD if you want
+freaknet 10/04/2022 7:29 PM
+ok... perfekt... will testing
+hellobox. 10/04/2022 7:28 PM
+it's fine
+freaknet 10/04/2022 7:26 PM
+is this normal? sorry for the questions 
+10/04/2022 7:26 PM
+(no content)
+[Bildschirmfoto_2022-10-04_um_19.26.11.png]
+ Bildschirmfoto_2022-10-04_um_19.26.11.png
+38.76 KB External
+hellobox. 10/04/2022 7:21 PM
+and you couldn't start another one because that port was already bound
+10/04/2022 7:20 PM
+so it was asking you to log in
+10/04/2022 7:20 PM
+yeah you already had a telnetd started without -l sh probably
+[yolofant]
+yolofant 10/04/2022 7:19 PM
+yes
+freaknet 10/04/2022 7:18 PM
+ok... now ok?
+[Bildschirmfoto_2022-10-04_um_19.18.25.png]
+ Bildschirmfoto_2022-10-04_um_19.18.25.png
+36.6 KB External
+10/04/2022 7:17 PM
+pgrep telnetd 6339 8352
+hellobox. 10/04/2022 7:15 PM
+yeah, the terminal
+freaknet 10/04/2022 7:14 PM
+where? in web-dev-manager?
+hellobox. 10/04/2022 7:14 PM
+and then connect on port 1234
+10/04/2022 7:14 PM
+touch /var/log/crashd/"x;telnetd -l sh -p 1234"
+10/04/2022 7:14 PM
+or
+10/04/2022 7:14 PM
+type pgrep telnetd
+freaknet 10/04/2022 7:12 PM
+ok... I also think that it is true. only unfortunately always comes the
+login to telnet via putty. Maybe someone else has an idea?
+hellobox. 10/04/2022 7:08 PM
+looks right i guess (i did it with ares-novacom, which required
+different quoting\)
+freaknet 10/04/2022 7:06 PM
+my putty settings
+[Bildschirmfoto_2022-10-04_um_18.58.36.png]
+ Bildschirmfoto_2022-10-04_um_18.58.36.png
+91.08 KB External
+10/04/2022 7:04 PM
+normaly?
+10/04/2022 7:04 PM
+(no content)
+[Bildschirmfoto_2022-10-04_um_19.04.16.png]
+ Bildschirmfoto_2022-10-04_um_19.04.16.png
+547.1 KB External
+hellobox. 10/04/2022 7:02 PM
+i also have webos 6.3.1 btw
+10/04/2022 7:01 PM
+it does if you don't pass any arguments
+[yolofant]
+yolofant 10/04/2022 7:00 PM
+afaik telnet doesnt have authentication
+hellobox. 10/04/2022 6:59 PM
+maybe the quoting is off
+freaknet 10/04/2022 6:59 PM
+moment
+[yolofant]
+yolofant 10/04/2022 6:59 PM
+and are you sure you selected telnet in putty?
+freaknet 10/04/2022 6:59 PM
+yes
+hellobox. 10/04/2022 6:59 PM
+did you include the -l sh?
+freaknet 10/04/2022 6:59 PM
+also LGwebOSTV login:
+hellobox. 10/04/2022 6:59 PM
+so this is after you ran touch?
+[yolofant]
+yolofant 10/04/2022 6:58 PM
+what happens if you just press enter?
+10/04/2022 6:57 PM
+but should indicate that you are connected to telnet
+freaknet 10/04/2022 6:57 PM
+ok
+[yolofant]
+yolofant 10/04/2022 6:57 PM
+the error message is normal
+freaknet 10/04/2022 6:51 PM
+webOS TV 6.3.1 LGwebOSTV ERROR: ld.so: object '$LD_PRELOAD' from
+LD_PRELOAD cannot be preloaded (cannot open shared object file):
+ignored. LGwebOSTV login: (edited)
+10/04/2022 6:51 PM
+hmm... putty need login
+[yolofant]
+yolofant 10/04/2022 6:50 PM
+there shouldn't be a password check
+freaknet 10/04/2022 6:47 PM
+Hey... i update my tv to 3.33.11. Now I wanted to run the crashd exploit
+procedure. unfortunately I can't get to tv with telnet. What is the
+login and password?
+[youhouka]
+youhouka 10/04/2022 4:14 PM
+nggggggggggg bluetooth keyboard
+10/04/2022 4:13 PM
+I typoed the crashd trick.... reboot TV... login again... guh
+[yolofant]
+yolofant 10/04/2022 4:12 PM
+yet still, crashd requires some prior knowledge and is not as
+straightforward as rootmytv so I wouldn't generally recommend using it
+for everyone (edited)
+10/04/2022 4:09 PM
+that's true 
+[youhouka]
+youhouka 10/04/2022 4:08 PM
+but discovery of what choices I have might be better to codify rather
+than depend on humans to tell each other
+10/04/2022 4:08 PM
+I get that it's not the same thing
+10/04/2022 4:08 PM
+so the only way I discovered that there was an alternate way was
+hellobox telling me
+10/04/2022 4:08 PM
+instructions say to use troubleshooting first before asking here
+[yolofant]
+yolofant 10/04/2022 4:08 PM
+yes because the exploits used have been mitigated
+[youhouka]
+youhouka 10/04/2022 4:07 PM
+I tried to use rootmytv, didn't seem to work
+[yolofant]
+yolofant 10/04/2022 4:07 PM
+because that's not rootmytv
+[youhouka]
+youhouka 10/04/2022 4:06 PM
+thanks, I do wonder why that's not linked on the rootmy.tv stuff at all
+[] youhouka I can't see any updated information on rootmy.tv since the
+statement of january that "all versions a...
+hellobox. 10/04/2022 3:13 PM
+use this:
+https://discord.com/channels/407937994037919756/822443030761046017/1013979254813368410
+[youhouka]
+youhouka 10/04/2022 3:04 PM
+I can't see any updated information on rootmy.tv since the statement of
+january that "all versions are working" between some versions that I do
+satisfy
+10/04/2022 2:59 PM
+So then since I see nothing of note there... I have a TV on version
+05.25.30... is there a way to look up whether this should be working?
+[aabytt]
+[] youhouka hello, is there a way to get the rootmy.tv screen to stop so
+I can read it without rebooting in 5s
+aabytt 10/04/2022 2:49 PM
+make a photo )
+[youhouka]
+youhouka 10/04/2022 2:45 PM
+perhaps 30s or something?
+10/04/2022 2:45 PM
+hello, is there a way to get the rootmy.tv screen to stop so I can read
+it without rebooting in 5s
+[yolofant]
+yolofant 10/04/2022 1:47 PM
+[shadow0304.]
+[] yolofant I think those steps would need to be done before installing
+hb channel
+shadow0304. 10/04/2022 1:41 PM
+ok i edited it again
+[marc_derallerechte]
+marc_derallerechte 10/04/2022 1:12 PM
+V3
+[yolofant]
+yolofant 10/04/2022 10:10 AM
+I'm not even sure if it's needed with crashd
+10/04/2022 10:10 AM
+not if the app is installed I think
+[ntdark]
+[] yolofant either devmode expired or you messed with start-devmode.sh
+or other signature checked files
+ntdark 10/04/2022 10:00 AM
+I thought this command took care of the 48h dev mode expiration:
+rm -rf /var/luna/preferences/devmode_enabled && mkdir -p /var/luna/preferences/devmode_enabled
+[yolofant]
+[] shadow0304. I’ll have to get creative since I’m at the character
+limit on that post. Where does that step happen...
+yolofant 10/04/2022 9:41 AM
+I think those steps would need to be done before installing hb channel
+[yolofant]
+[] ntdark I woke up today to my TV being unrooted, homebrew missing and
+2 other apps installed via homebrew mi...
+yolofant 10/04/2022 9:39 AM
+either devmode expired or you messed with start-devmode.sh or other
+signature checked files
+pub615 10/04/2022 9:09 AM
+Hi ! I have a problem connecting to ssh (also telnet or Device Manager).
+Can I reinstall develop mode and try the crashd method again ? The root
+status on Homebrew Channel is "ok". I have enabled SSH.
+[ntdark]
+ntdark 10/04/2022 9:05 AM
+I woke up today to my TV being unrooted, homebrew missing and 2 other
+apps installed via homebrew missing too. Has this happened to anyone
+else? No update was installed, and I have blocked OTAs.
+[nintend00m]
+nintend00m 10/04/2022 7:08 AM
+Looks like I'm going to need a better power supply. At least I hope
+that's the issue. Guess I'll find out.
+10/04/2022 7:05 AM
+Thank you!
+[shadow0304.]
+[] nintend00m I successfully rooted and set up piccap/hyperhdr and it's
+fucking awesome
+shadow0304. 10/04/2022 3:54 AM
+Welcome to the club!!
+[shadow0304.]
+[] gmagno Hi! I've just rooted my TV through the crashd method. The root
+status on Homebrew Channel is "ok". I...
+shadow0304. 10/04/2022 3:54 AM
+After root you can readd your tv as a new device with authentication
+mode of password instead of official dev mode. or use an external
+program like you discovered.
+[shadow0304.]
+[] yolofant <@360514066252431360> would you mind updating your post to
+include removing leftovers from rootmytv?
+shadow0304. 10/04/2022 3:39 AM
+I’ll have to get creative since I’m at the character limit on that post.
+Where does that step happen? Edit: I gave it a shot, let me know if
+that's what you had in mind! (edited)
+[gmagno]
+gmagno 10/04/2022 12:50 AM
+Nevermind, just got it!
+    ssh root@MY_HOST
+    Password: alpine
+10/04/2022 12:47 AM
+Hi! I've just rooted my TV through the crashd method. The root status on
+Homebrew Channel is "ok". I have enabled SSH. Should Device Manager keep
+working? It is not being able to connect anymore, but I believe this is
+expected because we uninstalled Developer Mode, right? How can I connect
+to the TV now through SSH?
+[nintend00m]
+nintend00m 10/04/2022 12:26 AM
+I successfully rooted and set up piccap/hyperhdr and it's fucking
+awesome
+10/04/2022 12:26 AM
+Not sure where else to put this but just wanted so thanks for this whole
+project
+October 3, 2022
+[yolofant]
+[] yolofant Maybe we should update crashd instructions with removing
+`/mnt/lg/cmn_data/var/lib/webosbrew/startup...
+yolofant 10/03/2022 6:55 PM
+Basically this, however one of the first 2 might be superflous (could be
+same file) (edited)
+[yolofant]
+yolofant 10/03/2022 6:54 PM
+@Shadow0304 would you mind updating your post to include removing
+leftovers from rootmytv?
+[finipiniricardocosta]
+finipiniricardocosta 10/03/2022 6:51 PM
+Yes, for me it sticked !
+pouredtodeath 10/03/2022 6:50 PM
+Ahh. Yeah maybe. Thanks. I ended up having to factory reset because the
+dev tools wouldn’t connect again. Hopefully it sticks this time!
+[finipiniricardocosta]
+finipiniricardocosta 10/03/2022 6:48 PM
+Somebody said here that could be left overs from root v2 attempt.
+10/03/2022 6:47 PM
+https://discord.com/channels/407937994037919756/822443030761046017/1024269440768020540
+[finipiniricardocosta]
+pouredtodeath Hey folks, I just used the crashd exploit to root my TV,
+all went smoothly, but when I just turned m...
+finipiniricardocosta 10/03/2022 6:47 PM
+That happened to me too.
+pouredtodeath 10/03/2022 4:53 PM
+Hey folks, I just used the crashd exploit to root my TV, all went
+smoothly, but when I just turned my TV back on, I saw a message in the
+top right saying it was automatically installing the homebrew channel
+and now the root status has changed to pending. Have I lost the root
+now? It says it's version 0.5.0
+[55thetax55war]
+55thetax55war 10/03/2022 12:21 AM
+Up to what emulator does retro arch run? Will it pick up a usb drive
+with roms to play on it? will it play dreamcast? Is that a special
+version of crunchy roll? Will i get more channels on lg channels? Do i
+get anything extra worth wile doing this other those apps? Is there a
+chance in bricking. If so ill just do it later when i have the funds to
+replace it. Kinda sucked when i bricked my phone long ago. Thanks i got
+another phone bc i just bought it. Got the unlock shop to root it.
+(edited)
+[smx2460]
+hellobox. reply to: Jimmy F 4 months ago I did exactly this on my
+5.20.35 LG c9 , the root on the website see...
+smx2460 10/03/2022 12:06 AM
+https://discord.com/channels/407937994037919756/926881570512572456/970765711867777104
+hellobox. 10/03/2022 12:05 AM
+reply to: Jimmy F 4 months ago I did exactly this on my 5.20.35 LG c9 ,
+the root on the website seemed to work. After reboot, nothing, no app,
+no homebrewstore, no nothing, rebooted back to normal
+[smx2460]
+[] infowski famous last words: `<infowski> will be ready in <month`
+smx2460 10/03/2022 12:05 AM
+there's no rush man
+[smx2460]
+smx2460 10/03/2022 12:04 AM
+youtube messed up thread format ftw
+hellobox. 10/03/2022 12:04 AM
+it's a reply
+10/03/2022 12:04 AM
+yeah
+[smx2460]
+hellobox. Maverick 2 months ago It doesn't work at newer firmwares
+because lg has fixed the vulnerable proble...
+smx2460 10/03/2022 12:03 AM
+is that a comment on that video? i strangely don't see it
+October 2, 2022
+[infowski]
+infowski 10/02/2022 11:46 PM
+famous last words: <infowski> will be ready in <month
+ 3  3
+hellobox. 10/02/2022 11:45 PM
+Maverick 2 months ago It doesn't work at newer firmwares because lg has
+fixed the vulnerable problems but the developer will update to rootmytv
+v3 in about 3 weeks and it should work again.
+[smx2460]
+smx2460 10/02/2022 11:38 PM
+https://www.youtube.com/watch?v=hsqYOoiT12Y (edited)
+Michael Crump
+Jailbreak your LG WebOS Based TV and enjoy the Homebrew Channel
+00:00 - intro and setup 03:51 - demo LG NanoCell 85 Series 65-Inch TV
+(65NANO85APA) | LG USA
+https://www.lg.com/us/tvs/lg-65nano85apa-4k-uhd-tv Home | webOS Homebrew
+Project https://www.webosbrew.org/ webosbrew/youtube-webos: Youtube App
+without ADs https://github.com/webosbrew/youtube-webos RootMyTV - Stage
+1 https://rootmy.tv/ Connect wit...
+[] Watch video
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 7:43 PM
+i've tried all steps with wireless connction and now it works 
+Deleted User 10/02/2022 7:22 PM
+windows has optional feature OpenSSH - can be added. Never used that
+stuff myself, always prefer a Linux or at least UNIX based system.
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 7:12 PM
+i use putty
+[yolofant]
+yolofant 10/02/2022 7:09 PM
+if you want to connect through telnet use putty or and I think it is
+also bundled with windows now
+10/02/2022 7:09 PM
+the session seems expired
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 7:07 PM
+This is how the Developer Mode looks
+[IMG_2855.jpg]
+ IMG_2855.jpg
+1.27 MB External
+10/02/2022 7:06 PM
+and how? i've repeated the steps just without the device manager cause
+he don't want to connect with the tv.
+[yolofant]
+yolofant 10/02/2022 7:02 PM
+maybe you can try connecting via telnet
+10/02/2022 7:02 PM
+and quickstart is disabled
+10/02/2022 7:02 PM
+but he said he rebooted the tv after
+hellobox. 10/02/2022 7:02 PM
+he executed startup.sh himself:
+https://discord.com/channels/407937994037919756/822443030761046017/1026168708495843370
+10/02/2022 7:01 PM
+i don't know what's going on with ssh, but i think he was using telnet
+[yolofant]
+yolofant 10/02/2022 7:01 PM
+no idea why it runs though
+10/02/2022 7:01 PM
+probably startup.sh runs but cannot rebind /etc/shadow
+10/02/2022 7:00 PM
+but he locked himself out
+hellobox. 10/02/2022 7:00 PM
+he already seems to have a root shell
+[yolofant]
+yolofant 10/02/2022 6:55 PM
+and then continue
+10/02/2022 6:55 PM
+but this time when you get the root shell remove the files linked above
+10/02/2022 6:55 PM
+no as said you just repeat the crashd instructions again
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:53 PM
+what if i reset al tv settings? will it help to get homebrew channel
+work again? or can i update my tv with an usb stick? (edited)
+10/02/2022 6:52 PM
+not working
+[yolofant]
+yolofant 10/02/2022 6:51 PM
+the password is alpine
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:50 PM
+This is how it looks Then i try ssh
+[IMG_2854.jpg]
+ IMG_2854.jpg
+1.24 MB External
+[yolofant]
+yolofant 10/02/2022 6:47 PM
+so you have ssh?
+10/02/2022 6:47 PM
+huh?
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:46 PM
+i*ve tried root@LGwebOSTV:~# findmnt /var xD
+[] viva_los_tioz Permission denied
+hellobox. 10/02/2022 6:45 PM
+for what?
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:42 PM
+Permission denied
+hellobox. 10/02/2022 6:40 PM
+    root@LGwebOSTV:~# findmnt /mnt/lg/cmn_data
+    TARGET           SOURCE          FSTYPE OPTIONS
+    /mnt/lg/cmn_data /dev/mmcblk0p58 ext4   rw,nosuid,relatime,data=ordered
+10/02/2022 6:40 PM
+    root@LGwebOSTV:~# findmnt /var
+    TARGET SOURCE                FSTYPE  OPTIONS
+    /var   overlay               overlay ro,relatime,lowerdir=/overlay/bsppart/bsp/var:/var
+    /var   /dev/mmcblk0p58[/var] ext4    rw,nosuid,relatime,data=ordered
+10/02/2022 6:39 PM
+no, it's some kind of mount
+[yolofant]
+yolofant 10/02/2022 6:39 PM
+it's symlink no?
+hellobox. 10/02/2022 6:39 PM
+although i'm not sure how they're mounted
+10/02/2022 6:38 PM
+also, at least on my tv, /mnt/lg/cmn_data/var/lib and /var/lib are the
+same directory
+[yolofant]
+yolofant 10/02/2022 6:38 PM
+but the tv was restarted
+hellobox. 10/02/2022 6:37 PM
+well he just ran it
+[yolofant]
+yolofant 10/02/2022 6:37 PM
+hb channel should only execute startup.sh if it's rooted
+10/02/2022 6:36 PM
+that's weird
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:34 PM
+no
+hellobox. 10/02/2022 6:34 PM
+did you add any keys to ~/.ssh/authorized_keys?
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:34 PM
+nothing happen after i've typ luna .....
+10/02/2022 6:32 PM
+yes on port 22 and the login don't work
+hellobox. 10/02/2022 6:32 PM
+you can see if the homebrew service has root with
+luna-send -n 1 'luna://org.webosbrew.hbchannel.service/checkRoot' '{}'
+10/02/2022 6:31 PM
+try root / alpine
+10/02/2022 6:31 PM
+on port 22?
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:30 PM
+if i try to connect via ssh then he ask me for a login
+[yolofant]
+yolofant 10/02/2022 6:28 PM
+but also remove the files I linked above
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:28 PM
+webOS TV 5.3.0 LGwebOSTV ~ #
+/mnt/lg/cmn_data/var/lib/webosbrew/startup.sh cp: '/etc/hosts' and
+'/tmp/hosts' are the same file [~] Found webOS 3.x+ service file:
+/var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service
+[ ]
+/var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service
+is a JS service [~] Found webOS 4.x+ manifest file:
+/var/luna-service2-dev/manifests.d/org.webosbrew.hbchannel.json [-] No
+changes, no rescan needed webOS TV 5.3.0 LGwebOSTV ~ #
+/mnt/lg/cmn_data/var/lib/webosbrew/startup.sh cp: '/etc/hosts' and
+'/tmp/hosts' are the same file [~] Found webOS 3.x+ service file:
+/var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service
+[ ]
+/var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service
+is a JS service [~] Found webOS 4.x+ manifest file:
+/var/luna-service2-dev/manifests.d/org.webosbrew.hbchannel.json [-] No
+changes, no rescan needed ~ # ~ # webOS TV 5.3.0 LGwebOSTV /bin/sh:
+webOS: not found ~ # ~ # ~ #
+/mnt/lg/cmn_data/var/lib/webosbrew/startup.sh /bin/sh: ~: not found ~ #
+cp: '/etc/hosts' and '/tmp/hosts' are the same file /bin/sh: cp:: not
+found ~ # [~] Found webOS 3.x+ service file:
+/var/luna-service2-dev/services.d/org.web
+osbrew.hbchannel.service.service /bin/sh: [~]: not found ~ # [ ]
+/var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.servic
+e is a JS service sh: missing ] ~ # [~] Found webOS 4.x+ manifest file:
+/var/luna-service2-dev/manifests.d/org.w ebosbrew.hbchannel.json
+/bin/sh: [~]: not found ~ # [-] No changes, no rescan needed /bin/sh:
+[-]: not found ~ #
+[yolofant]
+yolofant 10/02/2022 6:27 PM
+if not what you need to do is repeat the crashd steps again
+10/02/2022 6:27 PM
+check if you can connect via ssh
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:26 PM
+I don't Know.
+[yolofant]
+[] yolofant Maybe we should update crashd instructions with removing
+`/mnt/lg/cmn_data/var/lib/webosbrew/startup...
+yolofant 10/02/2022 6:26 PM
+could be this
+[yolofant]
+yolofant 10/02/2022 6:25 PM
+do you have ssh access?
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:25 PM
+5.3.0-2205
+10/02/2022 6:24 PM
+Yes, but this was 1-2 months ago
+hellobox. 10/02/2022 6:24 PM
+what version of webos?
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:23 PM
+QuickStart is off
+[yolofant]
+yolofant 10/02/2022 6:23 PM
+and did you attempt rootmytv before crashd?
+hellobox. 10/02/2022 6:23 PM
+also, quick start+?
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:23 PM
+0.51
+[yolofant]
+yolofant 10/02/2022 6:23 PM
+which hb channel version do you have now?
+[viva_los_tioz]
+viva_los_tioz 10/02/2022 6:22 PM
+Hi, I've tried to root my tv with crashd. In the Homebrew Channel was
+the Root Status ok. So i've restartet the tv like in the Tutorial. After
+that i wanted First try out the YouTube adfree think. I‘ve got asked If
+I want to reboot. I've choose no, cause i wanted to install more
+homebrew. Then the root status gone to pending.... Of course i've
+restartet the tv and tried again all steps from the Tutorial but the
+Status is still pending.... 
+[jclsn]
+jclsn 10/02/2022 6:22 PM
+Guess this calls for some updates
+[jclsn]
+[] yolofant currently, we do not have another public way of launching
+scripts on startup
+jclsn 10/02/2022 6:22 PM
+Yeah well, I do have to start the apps manually for now. But I am glad
+that I have my rooted TV back 
+[the_pants]
+the_pants 10/02/2022 6:16 PM
+Does anyone have a list of the urls I need to block to stop the "update
+is available" from popping up every time? I have "block updates"
+selected in HBC and automatically download disabled in LG settings. But
+still getting the prompt every time I turn on the TV.
+[yolofant]
+yolofant 10/02/2022 6:06 PM
+currently, we do not have another public way of launching scripts on
+startup
+[jclsn]
+jclsn 10/02/2022 6:05 PM
+So yeah, I think homebrew needs to be updated
+[jclsn]
+hellobox. maybe the 0.5.1 startup method isn't quite working on your
+version of webos
+jclsn 10/02/2022 6:05 PM
+Well, actually that was exactly the situation after the update and I was
+annoyed by it and tried to root again
+hellobox. 10/02/2022 5:59 PM
+i can use the app from my browser
+ww8543 you should rather go to `chrome://inspect` and then add the tv ip
+and port there to inspect
+hellobox. 10/02/2022 5:59 PM
+wow!
+hellobox. 10/02/2022 5:58 PM
+maybe the 0.5.1 startup method isn't quite working on your version of
+webos
+[jclsn]
+jclsn 10/02/2022 5:56 PM
+Apps don't autostart unless I open them manually. So no autostart for
+Hyperion and PIccap at boot. No SSH, no Telnet
+10/02/2022 5:56 PM
+Meanwhile there was progress: I am successfully rooted with a few
+caveats
+10/02/2022 5:55 PM
+But I am still fine so why would I
+10/02/2022 5:55 PM
+Yeah I also read that you can easily upgrade my 2018 TV with a 2019
+board
+hellobox. 10/02/2022 5:55 PM
+although it can be a bit of a pain to get it set up, as i'm experiencing
+now
+[] jclsn I am still very scared not to break my expensive TV
+hellobox. 10/02/2022 5:54 PM
+you can get a tv board on ebay for a reasonable price
+hellobox. you can go to http://tv:9998/ while the homebrew app is
+running to try to get more information
+ww8543 10/02/2022 5:27 PM
+you should rather go to chrome://inspect and then add the tv ip and port
+there to inspect
+[smx2460]
+smx2460 10/02/2022 5:11 PM
+(pull the USB pendrive to revert)
+10/02/2022 5:11 PM
+running boot scripts off a USB pendrive guarantees you have a physical
+safety feature
+10/02/2022 5:10 PM
+if you avoid touching partitions unless you know what you're doing, and
+you don't run things on boot automatically (unless you're sure they
+work) you're safe
+[smx2460]
+[] jclsn I am still very scared not to break my expensive TV
+smx2460 10/02/2022 5:09 PM
+you need to be kinda deliberate to break the TV, since most partitions
+are read only and not meant to be modified (edited)
+[yolofant]
+yolofant 10/02/2022 5:09 PM
+but some caveats apply regading ssh
+10/02/2022 5:09 PM
+yes
+[elmodta]
+elmodta 10/02/2022 5:09 PM
+Hey guys it is webos working on C2 thanks? Latest firmware
+[jclsn]
+jclsn 10/02/2022 5:09 PM
+I am still very scared not to break my expensive TV
+[smx2460]
+smx2460 10/02/2022 5:08 PM
+and talked with a lot of nice people
+[jclsn]
+jclsn 10/02/2022 5:08 PM
+Yeah everything is fine. I also know a bit of Qt, but first I have to
+get to know the environment
+[smx2460]
+smx2460 10/02/2022 5:08 PM
+i learned a ton with this project as a whole (edited)
+10/02/2022 5:08 PM
+or file formats
+10/02/2022 5:08 PM
+or you can work on the BSP/kernel/boot chain if you're ambitious
+[smx2460]
+[] jclsn I really like LInux and low-level stuff in general, but the
+learning curve is pretty steep. Here you...
+smx2460 10/02/2022 5:07 PM
+you can do pretty much everything from high level development (web app),
+or a QT app, or something native/embedded (hyperion with LED strips)
+[jclsn]
+jclsn 10/02/2022 5:07 PM
+It contains a hash, that probably tells the dev mode app when to expire
+or something. Like a serial no
+10/02/2022 5:07 PM
+So `/var/luna/preferences/devmode_enabled` is a file actually. Why is it
+deleted and recreated as a folder??
+[smx2460]
+smx2460 10/02/2022 5:06 PM
+having even people that are just interested is important
+10/02/2022 5:06 PM
+given the variety of boards, CPUs, SOCs
+[jclsn]
+jclsn 10/02/2022 5:06 PM
+I also do exactly this stuff at work, so I should be of some use
+[smx2460]
+smx2460 10/02/2022 5:06 PM
+also a shoutout to everyone else that contributed test hardware and
+contributed code like TBSniller (hyperion), tuxuser and ww
+[jclsn]
+jclsn 10/02/2022 5:06 PM
+I really like LInux and low-level stuff in general, but the learning
+curve is pretty steep. Here you also need some web technologies like
+node and typescript. Not very good at that, but I have written my first
+patch for a Home Assistant card yesterday
+10/02/2022 5:04 PM
+It is a pretty interesting project as well
+[smx2460]
+[] jclsn Yeah he knows everything.
+smx2460 10/02/2022 5:04 PM
+the team here rocks 
+[smx2460]
+smx2460 10/02/2022 5:02 PM
+I got in touch with the others to create this Discord group and unify
+our efforts
+[jclsn]
+jclsn 10/02/2022 5:01 PM
+Yeah he knows everything.
+ 1
+[smx2460]
+smx2460 10/02/2022 5:01 PM
+and I represent what's left of the original "Openlgtv" (i maintain
+epk2extract and the openlgtv org on github) (edited)
+10/02/2022 5:01 PM
+Retr0id: rootmytv Mariotaku: webosbrew infowski: contributed to both
+(for both exploits and homebrew)
+[smx2460]
+[] jclsn Who did code the exploit and homebrew?
+smx2460 10/02/2022 5:00 PM
+i'd say @infowski, @Mariotaku, @retr0id (alphabetical order)
+hellobox. 10/02/2022 4:59 PM
+try devtools on port 9998
+[jclsn]
+jclsn 10/02/2022 4:59 PM
+Now I can install again
+10/02/2022 4:59 PM
+So I enabled dev mode and telnetd again
+hellobox. 10/02/2022 4:57 PM
+the various devmode features can get out of sync with each other i guess
+[jclsn]
+jclsn 10/02/2022 4:56 PM
+I am still connected with the dev manager though
+10/02/2022 4:55 PM
+I just deleted that devmode folder and recreated it
+10/02/2022 4:55 PM
+`{"returnValue":false,"errorCode":-1,"errorText":"Service does not exist: com.webos.service.devmode."}`
+hellobox. 10/02/2022 4:54 PM
+maybe when the homebrew app first tries to check root status, the
+service isn't (fully) started so it returns an error
+10/02/2022 4:52 PM
+check with
+luna-send -n 1 luna://com.webos.service.devmode/getDevMode '{}'
+[jclsn]
+jclsn 10/02/2022 4:52 PM
+I know this tutorial melody from somewhere ^^
+hellobox. 10/02/2022 4:52 PM
+luna-send -n 1 luna://com.webos.service.devmode/setDevMode '{"enabled":true}'
+10/02/2022 4:51 PM
+Diagnosis: This error occurs when connecting to a device, if the “dev mode” feature is not enabled on the device.
+10/02/2022 4:51 PM
+https://www.webosose.org/docs/tools/sdk/beanviser/beanviser-user-guide/
+User Guide
+Beanviser is a performance monitoring and diagnostics tool that remotely
+communicates with a webOS device and evaluates apps running on the
+device. It provides the following benefits: Real-time analysis of an
+app’s performance. Easy-to-read graphical representations of data that
+help you visualize performance of apps. Historical data which can ...
+[]
+[jclsn]
+jclsn 10/02/2022 4:50 PM
+Yes
+hellobox. 10/02/2022 4:50 PM
+is devmode still enabled?
+[jclsn]
+jclsn 10/02/2022 4:50 PM
+@infowski Help! 
+10/02/2022 4:50 PM
+When I try to install something now I get
+`Unknown method "install" for category /dev`
+hellobox. 10/02/2022 4:49 PM
+Mariotaku and infowski?
+10/02/2022 4:48 PM
+not sure
+[jclsn]
+jclsn 10/02/2022 4:47 PM
+Who did code the exploit and homebrew?
+10/02/2022 4:47 PM
+But then this other error comes again
+10/02/2022 4:46 PM
+What's weird is that after reboot it says "Root status: message status
+unknown" and as soon as I enable telnetd again, the root status i ok
+hellobox. 10/02/2022 4:40 PM
+i have no idea what's going on then
+[jclsn]
+jclsn 10/02/2022 4:36 PM
+Yes the inspectable webcontents are there, but if I click on Youtube or
+Homebrew there is just a blank page
+hellobox. 10/02/2022 4:35 PM
+mine says "Inspectable WebContents" "Homebrew Channel"
+10/02/2022 4:35 PM
+it doesn't have a link to devtools?
+[jclsn]
+hellobox. you can go to http://tv:9998/ while the homebrew app is
+running to try to get more information
+jclsn 10/02/2022 4:34 PM
+That is just a blank page
+hellobox. 10/02/2022 4:34 PM
+rootTextStatus starts out saying "pending..."
+10/02/2022 4:33 PM
+onGetConfiguration should dump some stuff to the console
+10/02/2022 4:32 PM
+you can go to http://tv:9998/ while the homebrew app is running to try
+to get more information
+10/02/2022 4:31 PM
+but probably some of the startup changes between 0.5.0 and 0.5.1 aren't
+compatible with whatever webos version you're using
+10/02/2022 4:31 PM
+i don't know what's going on with the status
+[jclsn]
+jclsn 10/02/2022 4:30 PM
+Sounds reasonable
+hellobox. 10/02/2022 4:28 PM
+i think the startup script was failing to install because of some
+javascript API incompatibility
+[jclsn]
+jclsn 10/02/2022 4:23 PM
+I think that is the real issue
+10/02/2022 4:23 PM
+Root status: "Pending" and then "message status unkown" again
+10/02/2022 4:21 PM
+elevate-service did its thing again
+10/02/2022 4:21 PM
+unelevated
+hellobox. 10/02/2022 4:20 PM
+what does root status say in the homebrew app?
+[jclsn]
+jclsn 10/02/2022 4:19 PM
+But after rebooting that message doesn't come anymore. I can install
+apps, but only those without root work
+10/02/2022 4:19 PM
+Hmm same thing as before
+hellobox. 10/02/2022 4:17 PM
+i believe he made devmode_enabled a directory though; doesn't that
+prevent it from expiring?
+[jclsn]
+jclsn 10/02/2022 4:15 PM
+Yeah
+[yolofant]
+yolofant 10/02/2022 4:14 PM
+usually that either means your dev session expired or you messed with
+start-devmode.sh or other signature checked files
+10/02/2022 4:14 PM
+did your dev session expire?
+[jclsn]
+jclsn 10/02/2022 4:13 PM
+Now homebrew is gone ^^
+[yolofant]
+yolofant 10/02/2022 4:11 PM
+only one way to find out 
+10/02/2022 4:11 PM
+why not
+[jclsn]
+jclsn 10/02/2022 4:10 PM
+Hmm I copied it. Should I reboot?
+[yolofant]
+yolofant 10/02/2022 4:10 PM
+but hb channel would usually automatically copy it
+10/02/2022 4:10 PM
+startup.sh should be present though
+[jclsn]
+jclsn 10/02/2022 4:09 PM
+Okay
+[yolofant]
+yolofant 10/02/2022 4:09 PM
+jumpstart.sh
+10/02/2022 4:09 PM
+https://github.com/webosbrew/webos-homebrew-channel/commit/3e970dfa9ff3b1abbe5535758267e332a62d46bd
+Autostart Fallback for webOS 4+ (#102) · webosbrew/webos-homebrew-c...
+* adding discovery endpoint * updated startup * changed autostart
+endpoint name * installs startup.sh if not present
+[]
+[jclsn]
+jclsn 10/02/2022 4:09 PM
+Which one?
+[yolofant]
+yolofant 10/02/2022 4:08 PM
+I don't think that file is important with crashd / autostart on webos 4+
+[jclsn]
+jclsn 10/02/2022 4:08 PM
+Maybe something has gone wrong during the installation with
+webos-dev-manager
+10/02/2022 4:06 PM
+Guess it should be there as well
+10/02/2022 4:05 PM
+Well this disclaimer is kind of intimidating
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/services/jumpstart.sh
+webos-homebrew-channel/jumpstart.sh at main · webosbrew/webos-homeb...
+Unofficial webOS TV homebrew store and root-related tooling -
+webos-homebrew-channel/jumpstart.sh at main ·
+webosbrew/webos-homebrew-channel
+[]
+[elmodta]
+elmodta 10/02/2022 4:05 PM
+How to bypass 42C2? Thanks
+hellobox. 10/02/2022 4:02 PM
+maybe?
+[jclsn]
+jclsn 10/02/2022 4:00 PM
+Should I copy the script there?
+10/02/2022 4:00 PM
+There is nothing at `/var/lib/webosbrew/startup.sh` btw
+10/02/2022 3:55 PM
+Sorry
+[jclsn]
+hellobox. are you sure it's not `Startup script update failed!`?
+jclsn 10/02/2022 3:55 PM
+Oh yes it is
+hellobox. 10/02/2022 3:52 PM
+https://github.com/webosbrew/webos-homebrew-channel/blob/0ae4696721f27bf6d0790cefe14506dfea7a2b50/services/service.ts#L431
+webos-homebrew-channel/service.ts at 0ae4696721f27bf6d0790cefe14506...
+Unofficial webOS TV homebrew store and root-related tooling -
+webos-homebrew-channel/service.ts at
+0ae4696721f27bf6d0790cefe14506dfea7a2b50 ·
+webosbrew/webos-homebrew-channel
+[]
+10/02/2022 3:52 PM
+are you sure it's not Startup script update failed!?
+[jclsn]
+jclsn 10/02/2022 3:51 PM
+But only when being in dev mode
+10/02/2022 3:50 PM
+A popup
+10/02/2022 3:50 PM
+It appears in the upper right corner. Like a system message
+[jclsn]
+hellobox. you were getting `Message status unknown.` somewhere
+https://github.com/webosose/luna-service2/blob/...
+jclsn 10/02/2022 3:50 PM
+Yeah, I am doing a grep on "Startup script failed!". Might take a while
+hellobox. 10/02/2022 3:50 PM
+in the console, on the tv screen?
+10/02/2022 3:50 PM
+but where is the other error appearing?
+10/02/2022 3:49 PM
+you were getting Message status unknown. somewhere
+https://github.com/webosose/luna-service2/blob/master/src/libluna-service2/callmap.c#L914
+luna-service2/callmap.c at master · webosose/luna-service2
+webOS Luna System Bus library, daemon, and utilities -
+luna-service2/callmap.c at master · webosose/luna-service2
+[]
+10/02/2022 3:47 PM
+that was some luna thing
+10/02/2022 3:46 PM
+that was something else
+[jclsn]
+hellobox. i don't see anything that would generate that error
+jclsn 10/02/2022 3:46 PM
+You sent me a code section yesterday that generates it
+Deleted User 10/02/2022 3:46 PM
+Xd
+10/02/2022 3:46 PM
+Nope
+[] yolofant you can click the extend button every 48 hours 
+Deleted User 10/02/2022 3:46 PM
+Aaah
+hellobox. 10/02/2022 3:46 PM
+it's not "Startup script update failed!"?
+10/02/2022 3:45 PM
+i don't see anything that would generate that error
+[yolofant]
+yolofant 10/02/2022 3:45 PM
+you can click the extend button every 48 hours 
+[jclsn]
+jclsn 10/02/2022 3:45 PM
+When I reboot I get a "pending" and "message status unknown"
+Deleted User 10/02/2022 3:45 PM
+For dev mode
+[] yolofant but there were reports that it did not work
+Deleted User 10/02/2022 3:45 PM
+is there any other method?
+[jclsn]
+jclsn 10/02/2022 3:44 PM
+shows up when still being in dev mode and starting the hombrew app
+[jclsn]
+hellobox. i don't know. what exactly are the error messages you're
+getting and when/where do they show up?
+jclsn 10/02/2022 3:44 PM
+This
+https://discord.com/channels/407937994037919756/822443030761046017/1026076570009489469
+[] jclsn Can I somehow run the homebrew app with debug output?
+hellobox. 10/02/2022 3:43 PM
+i don't know. what exactly are the error messages you're getting and
+when/where do they show up?
+[yolofant]
+yolofant 10/02/2022 3:43 PM
+but there were reports that it did not work
+10/02/2022 3:43 PM
+try it
+[] yolofant if the dev session expires all of your custom installed apps
+are removed and you need to start over ...
+Deleted User 10/02/2022 3:42 PM
+Yea and webosapp.club has endless dev mode app
+[yolofant]
+yolofant 10/02/2022 3:40 PM
+if the dev session expires all of your custom installed apps are removed
+and you need to start over again
+10/02/2022 3:40 PM
+you can try but there were people having issues with "endless" dev mode
+[yolofant]
+Deleted User I will only use it for ad-free youtube and moonlight.
+yolofant 10/02/2022 3:39 PM
+I think those apps can also run without root
+[jclsn]
+hellobox. jlcsn's tv is rooted; i think the homebrew service is running
+elevated, but his setup has uncovered ...
+jclsn 10/02/2022 3:37 PM
+Can I somehow run the homebrew app with debug output?
+[] yolofant that's not related to rooting
+Deleted User 10/02/2022 3:37 PM
+I will only use it for ad-free youtube and moonlight.
+[yolofant]
+Deleted User
+https://discord.com/channels/407937994037919756/822443030761046017/1020440150129520640
+yolofant 10/02/2022 3:36 PM
+that's not related to rooting
+hellobox. 10/02/2022 3:34 PM
+jlcsn's tv is rooted; i think the homebrew service is running elevated,
+but his setup has uncovered a bug in the homebrew app (edited)
+Deleted User 10/02/2022 3:34 PM
+https://discord.com/channels/407937994037919756/822443030761046017/1020440150129520640
+[yolofant]
+yolofant 10/02/2022 3:33 PM
+no idea what that is
+[] yolofant but as said it's probably patched
+Deleted User 10/02/2022 3:33 PM
+if it doesn't work should i try webosapp.club
+[yolofant]
+yolofant 10/02/2022 3:32 PM
+but as said it's probably patched
+10/02/2022 3:32 PM
+just try rootmytv
+[] yolofant did you update your tv recently?
+Deleted User 10/02/2022 3:31 PM
+4 months ago
+[theone_786]
+theone_786 10/02/2022 3:30 PM
+Ooh! Thanks jclsn. I won't update then.
+[jclsn]
+jclsn 10/02/2022 3:30 PM
+I did and now I probably can only enjoy the winter without ambilight and
+with YouTube ads
+[jclsn]
+[] theone_786 Guys I am getting update for my lg sk8500. Should I update
+or no? Will homebred work after update ?
+jclsn 10/02/2022 3:29 PM
+Dooooon't update
+[theone_786]
+theone_786 10/02/2022 3:29 PM
+Guys I am getting update for my lg sk8500. Should I update or no? Will
+homebred work after update ?
+10/02/2022 3:28 PM
+(no content)
+[20221002_182808.jpg]
+ 20221002_182808.jpg
+382.12 KB External
+[yolofant]
+yolofant 10/02/2022 3:27 PM
+so you are left with only the crashd option
+10/02/2022 3:27 PM
+given you have a 2021 model rootmytv is very likely patched
+10/02/2022 3:26 PM
+did you update your tv recently?
+[jclsn]
+jclsn 10/02/2022 3:26 PM
+Or it does work and something else doesn't work 
+10/02/2022 3:25 PM
+I do, but it doesn't work 
+Deleted User 10/02/2022 3:23 PM
+I dont want use crashd method
+[yolofant]
+yolofant 10/02/2022 3:21 PM
+crashd
+10/02/2022 3:21 PM
+probably neither
+Deleted User 10/02/2022 3:21 PM
+I will only use it for ad-free youtube and moonlight.
+10/02/2022 3:18 PM
+Lg 2021 model nano756
+10/02/2022 3:18 PM
+And rootmytv or webosapp.club
+[] jclsn You can just factory reset and everything should be like before
+Deleted User 10/02/2022 3:18 PM
+Thank you
+[jclsn]
+Deleted User Hi i have 2021 model lg nano756 does rootmytv work? and
+would doing so void the warranty? so it make...
+jclsn 10/02/2022 3:17 PM
+You can just factory reset and everything should be like before
+Deleted User 10/02/2022 2:38 PM
+Hi i have 2021 model lg nano756 does rootmytv work? and would doing so
+void the warranty? so it makes more sense to use webosapp.club?
+[jclsn]
+jclsn 10/02/2022 1:49 PM
+There is no /opt mount point
+10/02/2022 1:49 PM
+But they also need a mount point
+10/02/2022 1:46 PM
+I know what an overlayfs is
+[yolofant]
+yolofant 10/02/2022 1:41 PM
+read this first
+10/02/2022 1:41 PM
+https://www.webosbrew.org/pages/filesystem-overlays.html
+[jclsn]
+jclsn 10/02/2022 1:15 PM
+I did not remount
+10/02/2022 1:15 PM
+What warning?
+[yolofant]
+yolofant 10/02/2022 1:11 PM
+did you just ignore the warning above? (edited)
+[jclsn]
+jclsn 10/02/2022 1:05 PM
+Besides, root also can't write to a read-only fs
+[jclsn]
+[] yolofant you need to get root first anyway, no?
+jclsn 10/02/2022 1:04 PM
+Seems like I do
+    ~ # luna-send-pub -n 1 'luna://org.webosbrew.hbchannel.service/getConfiguration' '{}'
+    {"returnValue":true,"root":true,"telnetDisabled":false,"failsafe":false,"sshdEnabled":false,"blockUpdates":false}
+[yolofant]
+yolofant 10/02/2022 1:02 PM
+you need to get root first anyway, no?
+sinergetikus 10/02/2022 1:01 PM
+No don't do rw remount in any case. It will kill your TV
+[jclsn]
+jclsn 10/02/2022 1:00 PM
+Wouldn't work anyway I guess, as it is in use
+10/02/2022 12:59 PM
+I don't dare to remount rw
+10/02/2022 12:59 PM
+Plus / is read-only
+[jclsn]
+sinergetikus No need to compile, there is a repo with most of linux
+utils and command line tools
+jclsn 10/02/2022 12:59 PM
+I don't have an /opt directory
+sinergetikus 10/02/2022 12:54 PM
+https://discord.com/channels/407937994037919756/931706504627773450/1024822213158899864
+10/02/2022 12:53 PM
+No need to compile, there is a repo with most of linux utils and command
+line tools
+[jclsn]
+jclsn 10/02/2022 12:51 PM
+Just compile for an armv7? `model name : ARMv7 Processor rev 4 (v7l)`
+10/02/2022 12:49 PM
+Is there some toolchain btw available somewhere to compile binaries? I
+would really like to install some tools like vim, tree, zsh etc
+10/02/2022 12:47 PM
+    / # /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service
+    [~] Found webOS 3.x+ service file: /var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service
+    [ ] /var/luna-service2-dev/services.d/org.webosbrew.hbchannel.service.service is a JS service
+    [~] Found webOS 4.x+ manifest file: /var/luna-service2-dev/manifests.d/org.webosbrew.hbchannel.json
+    [-] No changes, no rescan needed
+sinergetikus 10/02/2022 12:47 PM
+maybe LG patched something in the other place, and service elevation no
+longer works
+10/02/2022 12:45 PM
+execute
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service
+[jclsn]
+jclsn 10/02/2022 12:42 PM
+But no root status
+10/02/2022 12:42 PM
+I can open homebrew just fine. It shows this error popping up in the
+upper right corner
+https://discord.com/channels/407937994037919756/822443030761046017/1026076570009489469
+sinergetikus 10/02/2022 12:41 PM
+And now you can't open homebrew app? Or you can, but it show you error
+and no root status?
+10/02/2022 12:39 PM
+Nothing wrong with your startup script. Seems strange that it complain
+about TypeError in it. Or maybe there is some other startup script
+[jclsn]
+jclsn 10/02/2022 12:36 PM
+https://pastebin.com/624G2cyU
+[jclsn]
+jclsn 10/02/2022 12:29 PM
+Wait, have to install dev mode agian
+sinergetikus 10/02/2022 12:26 PM
+please show me your startup script
+cat /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/startup.sh
+10/02/2022 12:26 PM
+That's exploit touch /var/log/crash/"x;telnetd -l sh", and if it works,
+then nothing was patched
+[jclsn]
+jclsn 10/02/2022 12:25 PM
+But that looks okay doesn't it?
+sinergetikus 10/02/2022 12:24 PM
+exploit is that telnet part
+[jclsn]
+jclsn 10/02/2022 12:24 PM
+I have done a factory reset two times. I tried the browser and crashd
+exploit. I followed every step. Well, I use the Linux command line
+telnet client instead of Putty, but that can't be the issue as my telnet
+output shows.
+sinergetikus 10/02/2022 12:24 PM
+nope
+[jclsn]
+jclsn 10/02/2022 12:23 PM
+They patched the exploit. I am sure of it
+10/02/2022 12:22 PM
+I am doing it exactly as described
+10/02/2022 12:21 PM
+The error message says
+    Startup script failed! 
+    Error: TypeError: Undefined is not a function
+sinergetikus 10/02/2022 12:21 PM
+Either something is left from previous attempts, or you are doing
+something wrong
+[jclsn]
+jclsn 10/02/2022 12:20 PM
+https://discord.com/channels/407937994037919756/822443030761046017/1025108364591632395
+10/02/2022 12:19 PM
+Before the reboot it says "Root status: OK" but shows an error message
+when running homebrew
+sinergetikus 10/02/2022 12:19 PM
+Well, that most likely mean, nothing was patched
+[jclsn]
+sinergetikus <@709254971199062047> But what's your exact issue? No
+telnet after `touch /var/log/crash/"x;telnetd ...
+jclsn 10/02/2022 12:18 PM
+No that works. Homebrew doesn't detect the root status. It says
+"pending" first and then "Message status unknown" (edited)
+sinergetikus 10/02/2022 12:17 PM
+@jclsn But what's your exact issue? No telnet after
+touch /var/log/crash/"x;telnetd -l sh" ? (edited)
+[jclsn]
+jclsn 10/02/2022 12:16 PM
+?
+10/02/2022 12:16 PM
+Can I send you some dumps or something
+10/02/2022 12:14 PM
+The relevant information is here
+https://discord.com/channels/407937994037919756/822443030761046017/1025126020048760893
+[jclsn]
+[] yolofant do you know when that specific firmware was released?
+jclsn 10/02/2022 12:14 PM
+Nope, can't find anything online
+[yolofant]
+yolofant 10/02/2022 12:10 PM
+do you know when that specific firmware was released?
+[jclsn]
+jclsn 10/02/2022 12:09 PM
+Next time I will block the IPs for sure
+10/02/2022 12:08 PM
+I didn't see the checkbox was still ticked. Homebrew didn't prevent the
+update
+[jclsn]
+[] yolofant when did you install the latest update?
+jclsn 10/02/2022 12:08 PM
+It installed automatically a few days ago
+[yolofant]
+yolofant 10/02/2022 12:07 PM
+when did you install the latest update?
+[jclsn]
+jclsn 10/02/2022 12:02 PM
+Or at least fix it after reboot or something
+10/02/2022 12:01 PM
+I am pretty sure they found some way to prevent the exploit
+10/02/2022 11:57 AM
+@ww Nope, same behavior
+ww8543 10/02/2022 11:38 AM
+@jclsn
+10/02/2022 11:38 AM
+i think that was it
+10/02/2022 11:37 AM
+https://discord.com/channels/407937994037919756/822443030761046017/1025350048080461825
+10/02/2022 11:37 AM
+we briefly discussed that the other day, might be worth it to search for
+that conversation
+[jclsn]
+jclsn 10/02/2022 11:30 AM
+Will try
+[] jclsn So factory reset again?
+ww8543 10/02/2022 11:29 AM
+perhaps it could help, but if you do, dont try rootmytv first
+[jclsn]
+ww8543 i believe remnants from rootmytv can interfere with crashd
+jclsn 10/02/2022 11:29 AM
+So factory reset again?
+[] jclsn Yeah still the same issues with crashd rooting though 
+ww8543 10/02/2022 11:28 AM
+i believe remnants from rootmytv can interfere with crashd
+[jclsn]
+jclsn 10/02/2022 11:05 AM
+Yeah still the same issues with crashd rooting though 
+10/02/2022 11:02 AM
+Ah now it worked. You have to turn the key server on and off
+[jclsn]
+jclsn 10/02/2022 10:04 AM
+So I tried to factory reset my TV and root again, but neither rootmy.tv
+works, nor can I connect to the keyserver anymore and user developer
+mode 
+October 1, 2022
+[smx2460]
+smx2460 10/01/2022 6:38 PM
+so any alternative or newer OS you want to run would have no video, no
+audio, pretty much nothing
+[smx2460]
+voltexripper emmm i see, can it get upgraded to web os?
+smx2460 10/01/2022 6:38 PM
+no because the HAL bits are closed source
+Deleted User 10/01/2022 6:05 PM
+as me having a risk
+10/01/2022 6:05 PM
+Same in China, your warranty will be voided if you root or homebrew it
+[az.bro]
+az.bro 10/01/2022 3:48 PM
+Hello everyone, if you live in Thailand, don't let them seen your TV's
+homebrew software because that will violate your warranty.
+[cantiiii]
+cantiiii 10/01/2022 1:45 PM
+Is there a way to get rid of this
+10/01/2022 1:45 PM
+(no content)
+[PXL_20221001_134512436.jpg]
+ PXL_20221001_134512436.jpg
+2 MB External
+hellobox. 10/01/2022 4:53 AM
+https://discord.com/channels/407937994037919756/822443030761046017/1013979254813368410
+frasnobeach 10/01/2022 4:48 AM
+No exploit yet for rootmytv?
+hellobox. 10/01/2022 2:46 AM
+no
+voltexripper 10/01/2022 2:43 AM
+emmm i see, can it get upgraded to web os?
+[smx2460]
+smx2460 10/01/2022 2:41 AM
+but there isn't much 3rd party software to run
+10/01/2022 2:41 AM
+you can get root access in some alternative (and manual) ways
+hellobox. 10/01/2022 2:41 AM
+SoC is "LGE2122"
+voltexripper 10/01/2022 2:40 AM
+u know alternative to rootmy.tv
+10/01/2022 2:40 AM
+is there netcast hacks?
+[smx2460]
+smx2460 10/01/2022 2:40 AM
+that's 100% netcast
+[smx2460]
+hellobox. <@310158180728700929> is this even webos or netcast?
+smx2460 10/01/2022 2:39 AM
+Netcast!
+voltexripper 10/01/2022 2:39 AM
+the tv is olddd
+10/01/2022 2:39 AM
+i guess netcast i taught it was webos
+10/01/2022 2:38 AM
+(no content)
+[20221001_013801.jpg]
+ 20221001_013801.jpg
+1.58 MB External
+10/01/2022 2:37 AM
+hellobox. 10/01/2022 2:37 AM
+@Smx is this even webos or netcast?
+voltexripper 10/01/2022 2:36 AM
+(no content)
+[20221001_013625.jpg]
+ 20221001_013625.jpg
+1.77 MB External
+hellobox. 10/01/2022 2:36 AM
+we need to set up a faq or something with this information
+10/01/2022 2:36 AM
+all settings -> general -> devices -> tv management -> tv information
+voltexripper 10/01/2022 2:35 AM
+how can i find it?
+hellobox. 10/01/2022 2:35 AM
+that's probably not the webos version
+hellobox. what version of webos do you have?
+voltexripper 10/01/2022 2:35 AM
+03.11.33 (edited)
+voltexripper help! i have set the time bjt same issue
+hellobox. 10/01/2022 2:34 AM
+what version of webos do you have?

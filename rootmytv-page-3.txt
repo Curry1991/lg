@@ -1,0 +1,1891 @@
+July 23, 2026
+[jovies007]
+jovies007 07/23/2026 5:16 PM
+I posted the root issue on the Throwaway96 github, I don't know if he's
+here, but here it is also for reference: TV model: LG OLED65C6PSA (2026
+lineup) webOS version: commercial name "webOS 26" — maps to webOS 11
+internally (per the Discord FAQ note that webOS major version depends on
+model year, not firmware string) Firmware: 43.11.76 (latest available at
+time of test, auto-update disabled) Command run: python3 slopbro.py
+--debug <TV_IP> Result: SSAP pairing completes successfully (TV shows
+the pairing prompt, connection accepted, test-server mode also confirmed
+connectivity beforehand). The exploit then fails at launch with this
+exact output on the TV screen (--debug on): Debug: received message:
+{"returnValue":false,"errorCode":-1,"errorText":"Denied method call
+\"run\" for category \"/\""} Error: service failed to start: Denied
+method call "run" for category "/" Status: launch requested... So it's
+not a connectivity/timeout issue — the exploit reaches the launch step
+and gets an explicit LS2 (Luna Service Bus) ACL denial on the "run"
+method for category "/". The Discord FAQ ("How do I root
+<model/version>?", as of 2026-07-15) lists webOS 11 as N/A (SlopBro?) —
+speculative. This report confirms: SlopBro currently fails on webOS 11 /
+firmware 43.11.76 on this model, specifically at the privileged launch
+step, which looks like LG tightened LS2 ACL/category permissions in
+webOS 11 rather than patching the jsserver vector itself (pairing still
+works fine). Happy to test a WIP branch or provide more diagnostics if
+useful.
+[jovies007]
+[] slada1 You can also reduce bitrate a bit in moonlight to fit in that
+100 mbps, or use hdmi cable (there are...
+jovies007 07/23/2026 4:40 PM
+Hey, thanks! I figured out how to compile via homebrew, but yes, slopbro
+is not working, the connection is made but it fails to launch, I'll keep
+the updates off for the moment. About the wifi, it's definitely better
+than the rj45, the tv is in the same room, for some reason (I don't know
+if it's the network card), I don't get the 750 mbps I have with my ISP,
+but I get 250-300 mbps with very few stutters/jitter on geforce now.
+It's great even for a demanding game like forza horizon 6 at max
+settings with max bitrate. The problem definitely lies with moonlight,
+I'm actually getting better results with the xcloud app for some reason
+(for the games not available on gfn), the resolution is good, not gfn
+good, but it's good, and as the bitrate is very low, the ping stays low.
+All in all, I'm still able to play in max settings at 4k 120 fps
+natively on my tv as it is now, I'll wait for the exploit for better
+stability and speed.
+[dogelition]
+[] evil1nside Yeah, thanks for the idea, It's a C4, but I'll see what I
+can find
+dogelition 07/23/2026 8:32 AM
+did you end up figuring anything out?
+[exxxxkc]
+exxxxkc 07/23/2026 8:07 AM
+the wifi card of the proby is a usb 2 wifi card (edited)
+[exxxxkc]
+[] slada1 You can also reduce bitrate a bit in moonlight to fit in that
+100 mbps, or use hdmi cable (there are...
+exxxxkc 07/23/2026 8:06 AM
+well
+[slada1]
+slada1 07/23/2026 7:54 AM
+Latest webos 26 is patched, so you may wait a bit for new exploit, so
+you need to try some workarounds
+[slada1]
+[] jovies007 Hey, guys. Thanks for all the work you're doing here. I got
+a new LG C6 OLED65C6PSA a week ago, and ...
+slada1 07/23/2026 7:54 AM
+You can also reduce bitrate a bit in moonlight to fit in that 100 mbps,
+or use hdmi cable (there are also really long optical ones). And try
+wifi if your router is very close to the TV - wifi is faster than rj45
+somehow
+[jovies007]
+jovies007 07/23/2026 4:58 AM
+Hey, guys. Thanks for all the work you're doing here. I got a new LG C6
+OLED65C6PSA a week ago, and cause I stream games a lot, with geforce now
+and moonlight, I got the UE3000 adapter after reading some reviews to
+increase the ethernet bitrate (I didn't know the native port was capped
+at 100mbps, wtf). I tested it yesterday and, surprise, it's capped too,
+it seems the drivers are missing, LG intentionally removed them since
+webos 24, so I found a dude that created a solution on github (for
+another tv) by ssh, my question is, if I root my TV and find the kernel,
+is it possible to vibe code through claude to cross compile the driver
+myself? This is very new to me, so I don't know how complex it is. The
+firmware is updated to its last version though, so I figure I have to
+wait a bit until a new exploit comes in. Here's the repo from the guy
+who did it for his 2024 75QNED86T6A btw
+https://github.com/mbenitez343/lg-webos-2024-ethernet-fix
+GitHub - mbenitez343/lg-webos-2024-ethernet-fix: Chipset: Realtek R...
+Chipset: Realtek RTL8152/RTL8153 Arch: aarch64 Kernel:
+5.4.268-294.17.paparoa.pine.2 Confirmed Models: LG OLED/QNED 2024 (K25lp
+/ Paparoa) - mbenitez343/lg-webos-2024-ethernet-fix
+[]
+July 22, 2026
+[] valnjes. Have you fixed JS for webos4.x, so i can test slopbro?
+hellobox. 07/22/2026 10:19 PM
+Remind me in a few hours
+[valnjes.]
+hellobox. I'll fix it when I get home (if I remember)
+valnjes. 07/22/2026 9:59 PM
+Have you fixed JS for webos4.x, so i can test slopbro?
+[slada1]
+slada1 07/22/2026 9:24 PM
+Stereo is still better than silence
+ 1
+[_josip]
+_josip 07/22/2026 7:35 PM
+probably yes. On the dts_restore repo (original one for CX) it didn't
+play TrueHD at all so i guess at least this is some improvement (edited)
+[yolofant]
+yolofant 07/22/2026 7:35 PM
+same thing, you decode into pcm
+07/22/2026 7:34 PM
+it will also be stereo
+[_josip]
+_josip 07/22/2026 7:34 PM
+I'll try to get a hold of the AVR for the next time to fully test it.
+But yeah. As for the truehd, i did add the support for it but probably
+also not fully. The audio plays and it works fine, but again, i have
+only test it on the tv speakers
+[yolofant]
+yolofant 07/22/2026 7:34 PM
+dts they implemented for 2023 and 2024 so it works
+07/22/2026 7:34 PM
+though the hardware I think can do truehd too but userland doesn't know
+about it
+07/22/2026 7:33 PM
+that way you get real dts support, though not truehd still
+07/22/2026 7:33 PM
+as I said the better way would be to find out how to reenable it in the
+audio driver
+[_josip]
+_josip 07/22/2026 7:32 PM
+Thanks mate on testing!
+[yolofant]
+yolofant 07/22/2026 7:31 PM
+I wish it was different, but it is what it is 
+07/22/2026 7:31 PM
+and alsa is just hardcapped to stereo unfortunately
+07/22/2026 7:31 PM
+iirc the gstreamer sink just uses alsa if it's receiving pcm
+07/22/2026 7:30 PM
+just because the gstreamer element negotiates 6 channels, that does not
+mean it actually hits the speakers
+07/22/2026 7:30 PM
+yes, I did try to play a 5.1 dts file which worked but only played in
+stereo as confirmed by the avr
+ 1
+[_josip]
+_josip 07/22/2026 7:29 PM
+You tested it on the actual 5.1 or something else?
+[yolofant]
+yolofant 07/22/2026 7:28 PM
+stereo
+ 1  1
+[_josip]
+_josip 07/22/2026 7:28 PM
+You mean the stereo stuff or generally?
+ 1
+[yolofant]
+hellobox. <@195583665265311744> do you know if there's any relevant
+difference between o22n3 and o24n?
+yolofant 07/22/2026 7:28 PM
+in terms of media playback, I don't think so
+[yolofant]
+yolofant 07/22/2026 7:28 PM
+ok I wasted 10 minutes to confirm it does not work [:KEKW:]
+ 1  1  1
+hellobox. 07/22/2026 7:27 PM
+@Yolofant do you know if there's any relevant difference between o22n3
+and o24n?
+[_josip]
+_josip 07/22/2026 7:26 PM
+I think it should. Like i said, i have only tested it on C5 and as far
+as i know, the software part should be the same between the two
+hellobox. 07/22/2026 7:25 PM
+Do you expect it to also work on a G5?
+07/22/2026 7:25 PM
+I do already have a G5 board set up 
+07/22/2026 7:25 PM
+Well, I don't have C5/G5 speakers, but I can use a scope on the outputs
+[_josip]
+_josip 07/22/2026 7:24 PM
+Yeah, no worries. Thanks for the input regardless. I'll look into the
+kernel stuff and how plausible it is but for now, i'm more than happy
+with the outcome. At least i can finally play the Audio tracks for 99%
+of the stuff that i watch on it
+[] _josip I understand. And about the slop, it's only a slop if you
+don't understand what you're doing. And i ...
+hellobox. 07/22/2026 7:23 PM
+I can theoretically test it on a C5 and/or G5 board ig. But I will
+realistically never get around to it
+hellobox. 07/22/2026 7:22 PM
+Plus I am inclined to believe @Yolofant . Maybe he misunderstood
+something, but I know he has at least done the RE himself
+[_josip]
+_josip 07/22/2026 7:22 PM
+I understand. And about the slop, it's only a slop if you don't
+understand what you're doing. And i do agree with you completely. But
+like i said, i have made all the possible tests i could have without the
+actual hardware to run it on apart from the TV and the correct Webos.
+Just wanted to share so it maybe helps someone as it did for me
+hellobox. 07/22/2026 7:21 PM
+So I'm more skeptical now
+07/22/2026 7:20 PM
+Nothing personal. We are just drowning in slop
+07/22/2026 7:19 PM
+We've had a lot of people come through and make claims they clearly
+didn't understand well enough to know whether or not they're true
+[] _josip I personally tested it but just flr the fun of it... What's
+the difference, i tell it what tests to ...
+hellobox. 07/22/2026 7:19 PM
+It's difficult to believe someone when they don't necessarily understand
+what's going on. And it's become difficult to trust people who claim to
+understand (or have done) things, since they can either be lying or (as
+is becoming increasingly popular) just copying/pasting your conversation
+to/from a chatbot
+[_josip]
+_josip 07/22/2026 7:15 PM
+If you've got the hardware to test it on, be my guest and report back
+07/22/2026 7:15 PM
+I personally tested it but just flr the fun of it... What's the
+difference, i tell it what tests to run and how to do them and i check
+if the sound plays or not
+[] _josip Yes, I'm sure. I have tested 5.1 , all channels get correct
+data
+hellobox. 07/22/2026 7:14 PM
+Did you personally test it, or did the chatbot run a test?
+[_josip]
+[] yolofant yeah, so you did not test it <:KEKW:1240917121454702663>
+_josip 07/22/2026 7:14 PM
+I did test it. You dont necessarily have to have all those stuff to test
+out the channels and the data that they receive
+[agentfaith]
+agentfaith 07/22/2026 7:13 PM
+ah ok I see
+[_josip]
+_josip 07/22/2026 7:13 PM
+Nuvio is like a Stremio if you've ever used it
+[yolofant]
+yolofant 07/22/2026 7:13 PM
+yeah, so you did not test it [:KEKW:]
+[_josip]
+_josip 07/22/2026 7:12 PM
+I only don't have the AVR to test it fully so if someone has it, and
+report back, that'll be great
+[agentfaith]
+[] _josip Yes. But i fixed the stereo stuff only the passthrough is left
+agentfaith 07/22/2026 7:12 PM
+I'll report back tomorrow. I'll check Jellyfin logs and also Nuvia. Is
+Nuvia like a jellyfin fork or?
+[_josip]
+_josip 07/22/2026 7:12 PM
+Yes, I'm sure. I have tested 5.1 , all channels get correct data
+[yolofant]
+yolofant 07/22/2026 7:11 PM
+the alsa sink can only do stereo so I highly doubt it
+07/22/2026 7:11 PM
+and are you sure about stereo only?
+07/22/2026 7:10 PM
+you cant get passthrough
+[_josip]
+[] yolofant limited to stereo and no passthrough
+_josip 07/22/2026 7:10 PM
+Yes. But i fixed the stereo stuff only the passthrough is left
+[_josip]
+_josip 07/22/2026 7:09 PM
+Yes. You can try it on Nuvio as well
+[agentfaith]
+[] _josip The mp4 , ts, and mts were known to have those issues where
+they wouldn't even play the video at all
+agentfaith 07/22/2026 7:09 PM
+Dolby Atmos 7.1Mix, DolbyTRUEHD+Dolby ATMOS it should work for this
+right?
+[yolofant]
+yolofant 07/22/2026 7:08 PM
+limited to stereo and no passthrough
+[_josip]
+_josip 07/22/2026 7:08 PM
+As for the mkv, it should work put of the box with this mod
+[yolofant]
+[] _josip I'm not sure about it. Right now I'm on the latest webos and
+all the modifications are userland. Unl...
+yolofant 07/22/2026 7:08 PM
+patching gstreamer is the inferior version
+[_josip]
+_josip 07/22/2026 7:08 PM
+The mp4 , ts, and mts were known to have those issues where they
+wouldn't even play the video at all
+07/22/2026 7:07 PM
+It should work for mkv as well
+ 1
+[agentfaith]
+agentfaith 07/22/2026 7:06 PM
+or it doesn't matter if it's mkv
+07/22/2026 7:06 PM
+is it only working for mp4 dts
+07/22/2026 7:06 PM
+Cool, I'll check what's going on with Jellyfin
+[_josip]
+[] agentfaith What I mea is that the first clip plays for 3 s and the
+rest for 0.5s
+_josip 07/22/2026 7:06 PM
+That's a bug for now but at least the audio can be heard
+[agentfaith]
+agentfaith 07/22/2026 7:05 PM
+there's audio in all 3
+[_josip]
+_josip 07/22/2026 7:05 PM
+If you uninstall the mosification you'll hear nothing for all 3
+[agentfaith]
+agentfaith 07/22/2026 7:05 PM
+What I mea is that the first clip plays for 3 s and the rest for 0.5s
+[_josip]
+_josip 07/22/2026 7:05 PM
+The samples are intentionally 2-3 s long (edited)
+07/22/2026 7:05 PM
+That is fine. That means the sound works
+[agentfaith]
+[] _josip You should hear at least something for all 3, try uninstalling
+the modification in the app and try r...
+agentfaith 07/22/2026 7:05 PM
+I only hear the background music in .ts and .m2ts and it crashes before
+the actor speaks.
+[] amaan_1000 Aah ! if tried it on UR8050PSB and it got failed or even
+successful is there any risks for security ...
+hellobox. 07/22/2026 7:03 PM
+Yeah it's not going to work on non-LX models
+[_josip]
+_josip 07/22/2026 7:03 PM
+You should hear at least something for all 3, try uninstalling the
+modification in the app and try re running the samples
+07/22/2026 7:03 PM
+Then try enabling/disabling the modification to check the difference. It
+might be that the jelyfinn itself is blocking some extensions
+[agentfaith]
+agentfaith 07/22/2026 7:03 PM
+The mp4 is making audio the others aren't ( they bug out and cut before
+the audio ) but the self-test passes all 3
+07/22/2026 7:02 PM
+The samples work there
+07/22/2026 7:02 PM
+Just to make sure can you state which codecs it's allowing.
+[_josip]
+_josip 07/22/2026 7:02 PM
+Try installing the dts restore app that is in that repo and test out the
+samples that are there
+[] reisxd yall know what yall are doing is wrong and still are doing it
+hellobox. 07/22/2026 7:02 PM
+Bratty children 
+ 1
+[agentfaith]
+[] _josip This should enable the dts for the whole tv, it's not strictly
+for one app... So yes, it should work
+agentfaith 07/22/2026 7:01 PM
+I'm using the same TV and Jellyfin still says that the audio codec isn't
+supported. I'll check through the logs later properly
+[_josip]
+[] agentfaith Does this work in Jellyfin as well?
+_josip 07/22/2026 7:01 PM
+This should enable the dts for the whole tv, it's not strictly for one
+app... So yes, it should work
+[_josip]
+[] yolofant before it was easy to get dts by only patching userland
+stuff
+_josip 07/22/2026 7:00 PM
+I'm not sure about it. Right now I'm on the latest webos and all the
+modifications are userland. Unless they have changed something between
+webos24 and 25 then i guess it's still the same
+[agentfaith]
+[] _josip Hi guys. Not sure if it's the cirrect channel to post this...
+If you're struggling with DTS/TrueHD s...
+agentfaith 07/22/2026 6:58 PM
+Does this work in Jellyfin as well?
+[yolofant]
+yolofant 07/22/2026 5:31 PM
+but kpatch patches entire functions, it's probably enough to just change
+some jumps
+[exxxxkc]
+[] yolofant can you not binary patch from another kernel module?
+exxxxkc 07/22/2026 5:30 PM
+that kpatch for u
+[yolofant]
+yolofant 07/22/2026 5:30 PM
+it should just be a couple of skipped checks
+[yolofant]
+[] exxxxkc but how
+yolofant 07/22/2026 5:30 PM
+can you not binary patch from another kernel module?
+[yolofant]
+yolofant 07/22/2026 5:28 PM
+now it's being enforced in the kernel
+07/22/2026 5:28 PM
+before it was easy to get dts by only patching userland stuff
+07/22/2026 5:27 PM
+no, they locked it down in webos 24 I think
+[_josip]
+_josip 07/22/2026 3:50 PM
+so currently, my guess is the userland way is the only way to restore
+the DTS functionality
+[_josip]
+[] yolofant They started locking down dts support at the kernel level.
+Technically, the hardware does support it...
+_josip 07/22/2026 3:50 PM
+I don't think it's true. If it were, then all userland changes would not
+work
+[_josip]
+_josip 07/22/2026 3:11 PM
+No risks, you can remove it any time you want, and if it's possible to
+patch, you'll get the buttons to enable/disable/uninstall
+ 1
+[amaan_1000]
+[] _josip Not sure. You can try it out but i have mainly focused on C5
+since i own it and I'm on webos 33.31.6...
+amaan_1000 07/22/2026 3:02 PM
+Aah ! if tried it on UR8050PSB and it got failed or even successful is
+there any risks for security or functionality of tv?
+[exxxxkc]
+exxxxkc 07/22/2026 2:35 PM
+yeah do u want to make a custom intface or what lol (edited)
+07/22/2026 2:34 PM
+ig good luck lol
+[exxxxkc]
+[] yolofant Yeah would need to be a kernel module
+exxxxkc 07/22/2026 2:33 PM
+but how
+[yolofant]
+yolofant 07/22/2026 2:28 PM
+Yeah would need to be a kernel module
+[exxxxkc]
+exxxxkc 07/22/2026 1:52 PM
+https://github.com/throwaway96/webos-kernel-drivers
+GitHub - throwaway96/webos-kernel-drivers: Linux kernel modules for...
+Linux kernel modules for webOS. Contribute to
+throwaway96/webos-kernel-drivers development by creating an account on
+GitHub.
+[]
+07/22/2026 1:52 PM
+and there are also this
+07/22/2026 1:50 PM
+i have builded kernel module b4
+[exxxxkc]
+[] exxxxkc custom kernel module can be done on lgtv
+exxxxkc 07/22/2026 1:50 PM
+https://discord.com/channels/407937994037919756/843456930726805528/1529445117012742235
+[exxxxkc]
+exxxxkc 07/22/2026 1:44 PM
+techually u can also make a custon interface in /dev just for dts and
+build a kernel module that load that interface (edited)
+07/22/2026 1:43 PM
+hence thta might work if yk know how to build it (edited)
+[exxxxkc]
+[] exxxxkc it might be possible to use
+https://en.wikipedia.org/wiki/Kpatch
+exxxxkc 07/22/2026 1:43 PM
+and this is builded as module
+[exxxxkc]
+exxxxkc 07/22/2026 1:42 PM
+custom kernel module can be done on lgtv
+07/22/2026 1:42 PM
+however idk how to get to work i tried
+07/22/2026 1:41 PM
+it might be possible to use https://en.wikipedia.org/wiki/Kpatch
+Kpatch
+kpatch is a feature of the Linux kernel that implements live patching of
+a running kernel, which allows kernel patches to be applied while the
+kernel is still running. By avoiding the need for rebooting the system
+with a new kernel that contains the desired patches, kpatch aims to
+maximize the system uptime and availability. At the same time, ...
+07/22/2026 1:40 PM
+bc secure boot so u have to use kexec to boot custom kernel (edited)
+07/22/2026 1:39 PM
+custom kernel wont boot on the bl
+07/22/2026 1:38 PM
+so u ethier patch kexec userland tool to work without kcore or patch
+kcore to be compile-able as kernel module
+07/22/2026 1:37 PM
+there are kexec on lg kernel but there are no kcore and kexec userland
+tool want kcore (edited)
+[yolofant]
+yolofant 07/22/2026 1:30 PM
+They started locking down dts support at the kernel level. Technically,
+the hardware does support it but the kernel does not allow it anymore.
+It would be more interesting to see if the kernel could be patched at
+runtime to allow it again
+[_josip]
+_josip 07/22/2026 11:29 AM
+It depends on the tv model but yes, the later webos versions include the
+libs and binaries needed to play it but the tvs are just blocked by
+software. That's were this comes in
+[valnjes.]
+valnjes. 07/22/2026 11:12 AM
+Nice work Josip. For the WebOS23-24 i dont think its needed, because
+they support DTS natively. WebOS22 does not
+[_josip]
+_josip 07/22/2026 10:31 AM
+This should also support 5.1 without downmixing
+07/22/2026 10:30 AM
+The new ipk app is there as well. I'll look into publiahing it via
+homebrew soon but for noe, it can be sideloaded so you don't have to run
+any scripts
+[IMG_3786.jpg]
+ IMG_3786.jpg
+675.44 KB External
+[IMG_3787.jpg]
+ IMG_3787.jpg
+708.13 KB External
+[yolofant]
+yolofant 07/22/2026 10:13 AM
+Nice slop
+ 2  1
+[_josip]
+_josip 07/22/2026 10:07 AM
+Not sure. You can try it out but i have mainly focused on C5 since i own
+it and I'm on webos 33.31.68
+[amaan_1000]
+[] _josip Hi guys. Not sure if it's the cirrect channel to post this...
+If you're struggling with DTS/TrueHD s...
+amaan_1000 07/22/2026 10:05 AM
+Would it work for ur8050psb?
+[amaan_1000]
+amaan_1000 07/22/2026 10:05 AM
+North and South
+[amaan_1000]
+[] oh46897 bc he is kim joung goon
+amaan_1000 07/22/2026 10:04 AM
+Exactly If we think properly both are korean
+[oh46897]
+oh46897 07/22/2026 10:04 AM
+kim joung ugly
+[oh46897]
+[] amaan_1000 Freedom, freedomless in directly I just end getting
+freedomless and gooned
+oh46897 07/22/2026 10:04 AM
+bc he is kim joung goon
+[amaan_1000]
+[] exxxxkc getting freendom out of your tv or breing freedom-less else
+where
+amaan_1000 07/22/2026 10:03 AM
+Freedom, freedomless in directly I just end getting freedomless and
+gooned
+[_josip]
+_josip 07/22/2026 10:03 AM
+Hi guys. Not sure if it's the cirrect channel to post this... If you're
+struggling with DTS/TrueHD support for the LG C5 (might work on other
+models as well but i have only tested it on C5) you can check out this
+https://github.com/josippapez/dts_restore_plus . it's a fork of the
+dts_restore on top of which i have added the modifications, new features
+and improvements so if you were previously unable to play DTS/TrueHD try
+it out. Of course, it needs root privileges but with the surge of new
+methods lately, i don't think it should be a problem
+GitHub - josippapez/dts_restore_plus: Restore DTS + Dolby TrueHD/ML...
+Restore DTS + Dolby TrueHD/MLP audio (incl. DTS in mp4/ts/m2ts) on
+rooted LG webOS TVs. webOS 25 (C5) verified; carries the CX-era webOS
+3-6 tool. Fork of lgstreamer/dts_restore. - josippapez/dts_r...
+[]
+ 1
+[djs38943]
+djs38943 07/22/2026 9:57 AM
+lets just move to # unknown-channel
+[oh46897]
+oh46897 07/22/2026 9:57 AM
+[oh46897]
+[] djs38943 i bet someone at apple laughed at this
+oh46897 07/22/2026 9:57 AM
+they patched it
+[reisxd]
+reisxd 07/22/2026 9:56 AM
+[reisxd]
+[] oh46897 hope dont have offtopic police now
+reisxd 07/22/2026 9:56 AM
+yall know what yall are doing is wrong and still are doing it
+[amaan_1000]
+[] djs38943 i bet someone at apple laughed at this
+amaan_1000 07/22/2026 9:56 AM
+Even Steve Job was laughing
+[djs38943]
+djs38943 07/22/2026 9:56 AM
+ww 
+[oh46897]
+oh46897 07/22/2026 9:56 AM
+hope dont have offtopic police now
+[amaan_1000]
+[] oh46897 Click to see attachment
+amaan_1000 07/22/2026 9:55 AM
+That man even got fired
+[djs38943]
+[] oh46897 Click to see attachment
+djs38943 07/22/2026 9:55 AM
+i bet someone at apple laughed at this (edited)
+[amaan_1000]
+amaan_1000 07/22/2026 9:55 AM
+Both ( courageous (
+[oh46897]
+oh46897 07/22/2026 9:55 AM
+(no content)
+[Screenshot_2026-07-22-14-32-03-52.jpg]
+ Screenshot_2026-07-22-14-32-03-52.jpg
+43.11 KB External
+07/22/2026 9:55 AM
+kim joung liquid ass
+[amaan_1000]
+[] amaan_1000 Ask kim
+amaan_1000 07/22/2026 9:55 AM
+He'll guide
+[exxxxkc]
+exxxxkc 07/22/2026 9:55 AM
+pick one
+[exxxxkc]
+[] amaan_1000 But u can root your tv
+exxxxkc 07/22/2026 9:55 AM
+getting freendom out of your tv or breing freedom-less else where
+[amaan_1000]
+[] oh46897 how
+amaan_1000 07/22/2026 9:54 AM
+Ask kim
+[oh46897]
+[] amaan_1000 But u can root your tv
+oh46897 07/22/2026 9:54 AM
+how
+[djs38943]
+djs38943 07/22/2026 9:54 AM
+kim jong un is a master of goon
+ 1
+[amaan_1000]
+[] oh46897 they will take a screenshot of your phone every 5 seconds or
+5 minutes.
+amaan_1000 07/22/2026 9:54 AM
+But u can root your tv
+[oh46897]
+oh46897 07/22/2026 9:54 AM
+kim joung goon
+ 1
+07/22/2026 9:53 AM
+xD
+[oh46897]
+[] exxxxkc so join North Korea
+oh46897 07/22/2026 9:53 AM
+they will take a screenshot of your phone every 5 seconds or 5 minutes.
+[amaan_1000]
+amaan_1000 07/22/2026 9:53 AM
+Hail Kim joung Burger
+[exxxxkc]
+exxxxkc 07/22/2026 9:53 AM
+xD
+07/22/2026 9:53 AM
+so join North Korea
+[amaan_1000]
+[] exxxxkc i mean this North Korea might have spy in lg
+amaan_1000 07/22/2026 9:53 AM
+I believe they have spy in everything
+[oh46897]
+oh46897 07/22/2026 9:52 AM
+(no content)
+[2026-07-22T1040340700.png]
+ 2026-07-22T1040340700.png
+2.79 MB External
+07/22/2026 9:52 AM
+i so love your app xD
+[exxxxkc]
+exxxxkc 07/22/2026 9:52 AM
+so who know those spy has the key ot not (edited)
+[exxxxkc]
+[] amaan_1000 What's more worth my freedom or lasting my root
+exxxxkc 07/22/2026 9:51 AM
+i mean this North Korea might have spy in lg
+[exxxxkc]
+[] amaan_1000 What's more worth my freedom or lasting my root
+exxxxkc 07/22/2026 9:51 AM
+https://hackaday.com/2022/03/30/whats-that-accessusb-menu-in-my-lg-smarttv/
+https://xdaforums.com/t/lg-accessusb-webos-debug-root-access.3982339/
+Arya Voronova
+What’s That AccessUSB Menu In My LG SmartTV?
+One boring evening, [XenRE] was looking through service menus on their
+LG Smart TV (Russian, Google Translate), such menus accessible through
+use of undocumented IR remote codes. In other words, a …
+[]
+[amaan_1000]
+amaan_1000 07/22/2026 9:51 AM
+Freedom doens't matters if my root last !? But how on Earth I'll have
+internet there
+07/22/2026 9:50 AM
+Ig it's root
+[amaan_1000]
+[] exxxxkc u can try to join North Korea gov for thta
+amaan_1000 07/22/2026 9:50 AM
+What's more worth my freedom or lasting my root
+[amaan_1000]
+[] oh46897 
+amaan_1000 07/22/2026 9:50 AM
+Actually sad but they said there are many ways
+[exxxxkc]
+[] amaan_1000 
+exxxxkc 07/22/2026 9:50 AM
+u can try to join North Korea gov for thta
+[djs38943]
+djs38943 07/22/2026 9:50 AM
+im sure it has uart pins
+[oh46897]
+oh46897 07/22/2026 9:49 AM
+07/22/2026 9:49 AM
+my tv dont
+[oh46897]
+[] djs38943 Get UART access
+oh46897 07/22/2026 9:49 AM
+it work only your tv have uart
+[amaan_1000]
+[] exxxxkc but u cant
+amaan_1000 07/22/2026 9:49 AM
+[djs38943]
+djs38943 07/22/2026 9:49 AM
+done
+[exxxxkc]
+exxxxkc 07/22/2026 9:49 AM
+but u cant
+[djs38943]
+djs38943 07/22/2026 9:49 AM
+Run root script
+[exxxxkc]
+[] amaan_1000 How can I access it ?
+exxxxkc 07/22/2026 9:49 AM
+ask lg for [:ausb:] then u can root any tv
+[amaan_1000]
+amaan_1000 07/22/2026 9:49 AM
+Console!
+[djs38943]
+djs38943 07/22/2026 9:48 AM
+Get UART access
+07/22/2026 9:48 AM
+Attach some cables to it
+[exxxxkc]
+[] amaan_1000 And what's a consolve
+exxxxkc 07/22/2026 9:48 AM
+*console
+[djs38943]
+djs38943 07/22/2026 9:48 AM
+Open up the TV
+[amaan_1000]
+amaan_1000 07/22/2026 9:48 AM
+How can I access it ?
+[amaan_1000]
+[] exxxxkc Service menu in the consolve
+amaan_1000 07/22/2026 9:48 AM
+And what's a consolve
+[exxxxkc]
+exxxxkc 07/22/2026 9:48 AM
+that is a special one that locked behide hw key
+[exxxxkc]
+[] amaan_1000 Service menu?
+exxxxkc 07/22/2026 9:47 AM
+Service menu in the consolve
+[oh46897]
+oh46897 07/22/2026 9:47 AM
+service menu
+[djs38943]
+djs38943 07/22/2026 9:47 AM
+or direct uART access
+[oh46897]
+oh46897 07/22/2026 9:47 AM
+(no content)
+[2026-07-22T1041280700.png]
+ 2026-07-22T1041280700.png
+4.64 MB External
+[amaan_1000]
+[] exxxxkc unless u have service menu
+amaan_1000 07/22/2026 9:47 AM
+Service menu?
+[exxxxkc]
+exxxxkc 07/22/2026 9:47 AM
+thta is the officla way to get root
+[oh46897]
+oh46897 07/22/2026 9:47 AM
+[exxxxkc]
+[] amaan_1000 
+exxxxkc 07/22/2026 9:47 AM
+unless u have service menu
+[djs38943]
+[] oh46897 lg pls renew my tv
+djs38943 07/22/2026 9:47 AM
+pls lg i want xfce4 on my tv
+[exxxxkc]
+[] exxxxkc root may or not survivaled after update even if it do then u
+will be carefull to not break it
+exxxxkc 07/22/2026 9:46 AM
+bc there are no way to root it
+[oh46897]
+oh46897 07/22/2026 9:46 AM
+fuck u lg
+[amaan_1000]
+[] djs38943 its known to not work with newer webos 11 builds
+amaan_1000 07/22/2026 9:46 AM
+[oh46897]
+oh46897 07/22/2026 9:46 AM
+lg pls renew my tv
+[djs38943]
+djs38943 07/22/2026 9:46 AM
+and renew webos 11 is always the newest webos
+[exxxxkc]
+[] exxxxkc https://www.youtube.com/watch?v=IPFiKEm-oNI thta is how u
+treat updating
+exxxxkc 07/22/2026 9:46 AM
+root may or not survivaled after update even if it do then u will be
+carefull to not break it
+[amaan_1000]
+[] oh46897 and cant root again now
+amaan_1000 07/22/2026 9:46 AM
+I waited for it like a year to witness this historical moment
+[djs38943]
+djs38943 07/22/2026 9:46 AM
+its known to not work with newer webos 11 builds
+[djs38943]
+[] amaan_1000 Is it even launched?
+djs38943 07/22/2026 9:46 AM
+yes
+[exxxxkc]
+[] amaan_1000 Ok I'll not update it
+exxxxkc 07/22/2026 9:45 AM
+https://www.youtube.com/watch?v=IPFiKEm-oNI thta is how u treat updating
+raxdflipnote
+gamblecore
+story of my life join this channel to get early access on videos:
+https://www.youtube.com/channel/UC4z8nBfrXuWWx3noqd1I5Xw/join discord
+server and other socials: https://linktr.ee/raxdflipnote #flipnote
+#animation #3ds
+[] Watch video
+[amaan_1000]
+[] djs38943 webos 11 patched slopbro
+amaan_1000 07/22/2026 9:45 AM
+Is it even launched?
+[oh46897]
+oh46897 07/22/2026 9:45 AM
+and cant root again now (edited)
+[djs38943]
+djs38943 07/22/2026 9:45 AM
+webos 11 patched slopbro
+[oh46897]
+[] amaan_1000 So it's safe to say for me even if I updated it to webos
+11 it will last Now I can get good sleep
+oh46897 07/22/2026 9:45 AM
+u can lost root
+[amaan_1000]
+[] djs38943 no
+amaan_1000 07/22/2026 9:45 AM
+Ok I'll not update it
+[exxxxkc]
+[] amaan_1000 So it's safe to say for me even if I updated it to webos
+11 it will last Now I can get good sleep
+exxxxkc 07/22/2026 9:45 AM
+not fully safe
+[djs38943]
+djs38943 07/22/2026 9:45 AM
+no
+[amaan_1000]
+amaan_1000 07/22/2026 9:44 AM
+So it's safe to say for me even if I updated it to webos 11 it will last
+Now I can get good sleep
+[exxxxkc]
+exxxxkc 07/22/2026 9:44 AM
+unless u updated to patched version (edited)
+[oh46897]
+[] oh46897 but if root access is lost, you can still root again using
+Slopbro
+oh46897 07/22/2026 9:44 AM
+If not webos 26
+[exxxxkc]
+[] oh46897 but if root access is lost, you can still root again using
+Slopbro
+exxxxkc 07/22/2026 9:43 AM
+or dualbro
+[exxxxkc]
+exxxxkc 07/22/2026 9:43 AM
+but getting into is another story (edited)
+[djs38943]
+djs38943 07/22/2026 9:43 AM
+credit for kitsuned for dumping epk key
+[oh46897]
+oh46897 07/22/2026 9:43 AM
+but if root access is lost, you can still root again using Slopbro
+[exxxxkc]
+[] exxxxkc tbh there are serical menu thta has root shell acess
+exxxxkc 07/22/2026 9:43 AM
+u can use proby able to use thta as perm root
+[amaan_1000]
+[] oh46897 yeah
+amaan_1000 07/22/2026 9:43 AM
+https://e.nya.je/getroot/
+[oh46897]
+oh46897 07/22/2026 9:43 AM
+yeah
+[amaan_1000]
+[] oh46897 huh
+amaan_1000 07/22/2026 9:42 AM
+Ah I used a link
+[exxxxkc]
+[] amaan_1000 HyperHDR for ambient light, Kodi etc
+exxxxkc 07/22/2026 9:42 AM
+tbh there are serical menu thta has root shell acess (edited)
+[oh46897]
+[] amaan_1000 HyperHDR for ambient light, Kodi etc
+oh46897 07/22/2026 9:42 AM
+huh
+[oh46897]
+oh46897 07/22/2026 9:42 AM
+yeah it have patch i think (edited)
+[amaan_1000]
+[] oh46897 what u use to root
+amaan_1000 07/22/2026 9:42 AM
+HyperHDR for ambient light, Kodi etc
+[djs38943]
+[] oh46897 what u use to root
+djs38943 07/22/2026 9:42 AM
+dualbro
+[oh46897]
+oh46897 07/22/2026 9:42 AM
+i mean exploit
+[oh46897]
+[] amaan_1000 The thing most of the methods get's patched very soon
+oh46897 07/22/2026 9:41 AM
+what u use to root
+[djs38943]
+djs38943 07/22/2026 9:41 AM
+dangbro is already patched
+[exxxxkc]
+exxxxkc 07/22/2026 9:41 AM
+but new webos is kowned to be patched (edited)
+[amaan_1000]
+[] oh46897 If you lose it, you can root it again
+amaan_1000 07/22/2026 9:41 AM
+The thing most of the methods get's patched very soon
+[exxxxkc]
+[] amaan_1000 So even if I update my tv the root is likely to survive?
+exxxxkc 07/22/2026 9:41 AM
+yeah but if it not then u may not able to root it agina
+[djs38943]
+djs38943 07/22/2026 9:41 AM
+with root
+07/22/2026 9:41 AM
+i already updated my tv many times
+[amaan_1000]
+amaan_1000 07/22/2026 9:41 AM
+So even if I update my tv the root is likely to survive?
+[oh46897]
+oh46897 07/22/2026 9:41 AM
+If you lose it, you can root it again
+[exxxxkc]
+exxxxkc 07/22/2026 9:40 AM
+to be survivaled after update
+07/22/2026 9:40 AM
+but root may not be not guaranteed
+07/22/2026 9:40 AM
+it is useually fine
+[oh46897]
+oh46897 07/22/2026 9:39 AM
+i think
+[oh46897]
+[] amaan_1000 1 thing to ask if just in case I update my tv then what
+will happen?
+oh46897 07/22/2026 9:39 AM
+If it's not webOS 26, root access is still retained
+[amaan_1000]
+amaan_1000 07/22/2026 9:38 AM
+1 thing to ask if just in case I update my tv then what will happen?
+[djs38943]
+[] amaan_1000 Thanks to both of you I really appreciate 
+djs38943 07/22/2026 9:38 AM
+no problem
+[exxxxkc]
+[] amaan_1000 This is what I should see?
+exxxxkc 07/22/2026 9:37 AM
+yes
+[amaan_1000]
+amaan_1000 07/22/2026 9:37 AM
+Thanks to both of you I really appreciate 
+[djs38943]
+djs38943 07/22/2026 9:37 AM
+yes
+[amaan_1000]
+amaan_1000 07/22/2026 9:37 AM
+This is what I should see?
+07/22/2026 9:37 AM
+(no content)
+[rn_image_picker_lib_temp_fb21c73b-c397-48b1-87f2-ca5947dbf486.jpg]
+ rn_image_picker_lib_temp_fb21c73b-c397-48b1-87f2-ca5947dbf486.jpg
+4 MB External
+ 1
+[exxxxkc]
+exxxxkc 07/22/2026 9:36 AM
+then it work
+07/22/2026 9:36 AM
+if it said so (edited)
+[amaan_1000]
+[] exxxxkc it said ok right?
+amaan_1000 07/22/2026 9:36 AM
+Root status Ok
+[exxxxkc]
+exxxxkc 07/22/2026 9:36 AM
+no?
+07/22/2026 9:36 AM
+it said ok right?
+[amaan_1000]
+amaan_1000 07/22/2026 9:36 AM
+So it worked!?
+[exxxxkc]
+exxxxkc 07/22/2026 9:35 AM
+then mean u r rooted
+07/22/2026 9:35 AM
+if it said OK
+07/22/2026 9:35 AM
+thta all u need to see
+[exxxxkc]
+[] amaan_1000 All I can see is this
+exxxxkc 07/22/2026 9:35 AM
+(no content)
+[image.png]
+ image.png
+10.97 MB External
+[amaan_1000]
+amaan_1000 07/22/2026 9:35 AM
+All I can see is this (edited)
+[rn_image_picker_lib_temp_45780c6e-913a-4313-903e-f8ccc99932e7.jpg]
+ rn_image_picker_lib_temp_45780c6e-913a-4313-903e-f8ccc99932e7.jpg
+2 MB External
+[exxxxkc]
+exxxxkc 07/22/2026 9:34 AM
+especially the place that tell u the root stats
+07/22/2026 9:34 AM
+read the epage
+[djs38943]
+djs38943 07/22/2026 9:33 AM
+check if root status is ok
+[amaan_1000]
+amaan_1000 07/22/2026 9:33 AM
+After settings
+07/22/2026 9:33 AM
+Next
+07/22/2026 9:33 AM
+Opened
+[exxxxkc]
+exxxxkc 07/22/2026 9:33 AM
+click setting
+[amaan_1000]
+amaan_1000 07/22/2026 9:33 AM
+Ok opening
+[exxxxkc]
+exxxxkc 07/22/2026 9:33 AM
+(no content)
+[76105412.png]
+ 76105412.png
+1.47 KB External
+07/22/2026 9:33 AM
+open this
+[amaan_1000]
+amaan_1000 07/22/2026 9:33 AM
+So how will I know root is successful
+07/22/2026 9:32 AM
+Now it's again on
+[exxxxkc]
+exxxxkc 07/22/2026 9:32 AM
+u are good then
+[amaan_1000]
+amaan_1000 07/22/2026 9:32 AM
+Reboot ?
+[exxxxkc]
+exxxxkc 07/22/2026 9:32 AM
+click reboot now
+[amaan_1000]
+amaan_1000 07/22/2026 9:32 AM
+(no content)
+[rn_image_picker_lib_temp_64954f96-3b7e-4ba0-80e4-53ff65408112.jpg]
+ rn_image_picker_lib_temp_64954f96-3b7e-4ba0-80e4-53ff65408112.jpg
+2 MB External
+[djs38943]
+djs38943 07/22/2026 9:31 AM
+my tv is very expensive i still put homebrew on it
+07/22/2026 9:31 AM
+yes
+[exxxxkc]
+exxxxkc 07/22/2026 9:31 AM
+yes
+[amaan_1000]
+[] exxxxkc just click yes
+amaan_1000 07/22/2026 9:31 AM
+Is it secure?
+[exxxxkc]
+exxxxkc 07/22/2026 9:31 AM
+and watch it root (edited)
+07/22/2026 9:30 AM
+just click yes
+[amaan_1000]
+amaan_1000 07/22/2026 9:30 AM
+Should I connect my device? The Galaxy Tab
+[exxxxkc]
+exxxxkc 07/22/2026 9:30 AM
+click yes
+[amaan_1000]
+amaan_1000 07/22/2026 9:30 AM
+(no content)
+[rn_image_picker_lib_temp_a2dd4a4e-4deb-45cf-abb5-62d7266d92bd.jpg]
+ rn_image_picker_lib_temp_a2dd4a4e-4deb-45cf-abb5-62d7266d92bd.jpg
+2 MB External
+[exxxxkc]
+exxxxkc 07/22/2026 9:30 AM
+yep prass 5
+[amaan_1000]
+amaan_1000 07/22/2026 9:30 AM
+Now 5?
+07/22/2026 9:29 AM
+(no content)
+[rn_image_picker_lib_temp_e62cc44b-d3e5-48d6-b08a-c394e0cb37ae.jpg]
+ rn_image_picker_lib_temp_e62cc44b-d3e5-48d6-b08a-c394e0cb37ae.jpg
+4 MB External
+[djs38943]
+djs38943 07/22/2026 9:29 AM
+then you can press 5
+[djs38943]
+[] amaan_1000 But nothing is happening for pressing 9
+djs38943 07/22/2026 9:29 AM
+if it says tinybrowser up there
+[exxxxkc]
+[] amaan_1000 But nothing is happening for pressing 9
+exxxxkc 07/22/2026 9:29 AM
+scroll up
+[amaan_1000]
+amaan_1000 07/22/2026 9:28 AM
+But nothing is happening for pressing 9
+[rn_image_picker_lib_temp_fab51736-99d6-40a0-9e11-746872f9fd14.jpg]
+ rn_image_picker_lib_temp_fab51736-99d6-40a0-9e11-746872f9fd14.jpg
+4 MB External
+[djs38943]
+djs38943 07/22/2026 9:27 AM
+and then the last number 5
+07/22/2026 9:27 AM
+then press 9
+07/22/2026 9:27 AM
+yes
+[amaan_1000]
+amaan_1000 07/22/2026 9:27 AM
+Now close (2) pressing right?
+07/22/2026 9:26 AM
+Ok
+[exxxxkc]
+exxxxkc 07/22/2026 9:26 AM
+it should be getroot
+07/22/2026 9:26 AM
+> geroot (edited)
+[amaan_1000]
+amaan_1000 07/22/2026 9:26 AM
+(no content)
+[rn_image_picker_lib_temp_0caf739e-c45d-41f3-b833-19e1e603277a.jpg]
+ rn_image_picker_lib_temp_0caf739e-c45d-41f3-b833-19e1e603277a.jpg
+2 MB External
+[djs38943]
+djs38943 07/22/2026 9:25 AM
+i miss the colorful no signal blob (edited)
+07/22/2026 9:25 AM
+and then your tv is rooted
+[amaan_1000]
+amaan_1000 07/22/2026 9:24 AM
+I'm currently typing that link
+[djs38943]
+djs38943 07/22/2026 9:24 AM
+press reboot
+07/22/2026 9:24 AM
+then you should see this
+[IMG_0859.jpg]
+ IMG_0859.jpg
+241.28 KB External
+[exxxxkc]
+exxxxkc 07/22/2026 9:24 AM
+prass 5 to start
+07/22/2026 9:23 AM
+prass 9 to Select "tinybrowser"
+[djs38943]
+djs38943 07/22/2026 9:23 AM
+(no content)
+[IMG_0858.jpg]
+ IMG_0858.jpg
+304.15 KB External
+[amaan_1000]
+amaan_1000 07/22/2026 9:23 AM
+Wait
+[exxxxkc]
+[] amaan_1000 Can yaa tell me step by step
+exxxxkc 07/22/2026 9:23 AM
+click 2 to close the welcome pop up
+[amaan_1000]
+amaan_1000 07/22/2026 9:23 AM
+Can yaa tell me step by step
+07/22/2026 9:22 AM
+Ok
+[exxxxkc]
+exxxxkc 07/22/2026 9:22 AM
+try all util one work (edited)
+[djs38943]
+djs38943 07/22/2026 9:22 AM
+Just use tinybrowser
+[exxxxkc]
+exxxxkc 07/22/2026 9:22 AM
+since we have that many pro
+[exxxxkc]
+[] amaan_1000 What's exactly DVB tuner
+exxxxkc 07/22/2026 9:22 AM
+u can ignore that (edited)
+[amaan_1000]
+amaan_1000 07/22/2026 9:22 AM
+What's exactly DVB tuner
+[exxxxkc]
+exxxxkc 07/22/2026 9:21 AM
+~~beer~~ (edited)
+[djs38943]
+[] amaan_1000 Any thing for safety purpose?
+djs38943 07/22/2026 9:21 AM
+Turn off telnet after rooting
+[amaan_1000]
+amaan_1000 07/22/2026 9:21 AM
+Any thing for safety purpose?
+[djs38943]
+djs38943 07/22/2026 9:21 AM
+dangbei-overlay is only for tvs equipped with a DVB tuner
+[amaan_1000]
+amaan_1000 07/22/2026 9:21 AM
+Ok
+[djs38943]
+djs38943 07/22/2026 9:21 AM
+Open https://e.nya.je/getroot/ on your tv
+[amaan_1000]
+amaan_1000 07/22/2026 9:20 AM
+Then what ?
+[exxxxkc]
+exxxxkc 07/22/2026 9:20 AM
+rootmytv is for older one
+07/22/2026 9:20 AM
+no
+[amaan_1000]
+amaan_1000 07/22/2026 9:20 AM
+So I just open root my tv on my tv browser and use all it's methods
+07/22/2026 9:20 AM
+Ok thanks
+[exxxxkc]
+[] amaan_1000 It means if root didn't worked than nothing happens at
+all?
+exxxxkc 07/22/2026 9:20 AM
+yep
+[djs38943]
+[] amaan_1000 It means if root didn't worked than nothing happens at
+all?
+djs38943 07/22/2026 9:19 AM
+Yes
+[exxxxkc]
+exxxxkc 07/22/2026 9:19 AM
+try all util one work
+[amaan_1000]
+amaan_1000 07/22/2026 9:19 AM
+It means if root didn't worked than nothing happens at all?
+[exxxxkc]
+[] amaan_1000 What it means if it didn't work will something could harm
+my TV?
+exxxxkc 07/22/2026 9:19 AM
+there are jsbro dualbro
+[djs38943]
+[] amaan_1000 What it means if it didn't work will something could harm
+my TV?
+djs38943 07/22/2026 9:19 AM
+No
+[amaan_1000]
+amaan_1000 07/22/2026 9:19 AM
+What it means if it didn't work will something could harm my TV?
+[djs38943]
+[] amaan_1000 Greetings, Can anyone of you please tell me the safest and
+easiest way to root my UR8050PSB TV , tel...
+djs38943 07/22/2026 9:18 AM
+you can use slopbro if dangbro wont work
+[amaan_1000]
+amaan_1000 07/22/2026 9:17 AM
+Greetings, Can anyone of you please tell me the safest and easiest way
+to root my UR8050PSB TV , tell me in a way that Imma trainee
+[Screenshot_20260722_124458_Chrome.jpg]
+ Screenshot_20260722_124458_Chrome.jpg
+81.37 KB External
+[20260722_124517.jpg]
+ 20260722_124517.jpg
+321.4 KB External
+July 20, 2026
+[] valnjes. So after webos3 its all chromium.
+hellobox. 07/20/2026 8:38 PM
+Yes
+[valnjes.]
+valnjes. 07/20/2026 8:28 PM
+So after webos3 its all chromium.
+hellobox. 07/20/2026 8:27 PM
+And they don't have that vulnerable Luna method iirc
+[] valnjes. Or webkit
+hellobox. 07/20/2026 8:26 PM
+That's only webOS 1 and 2
+[valnjes.]
+valnjes. 07/20/2026 8:25 PM
+Or webkit
+hellobox. 07/20/2026 8:24 PM
+And webOS 3.0 is using Chromium -1000
+07/20/2026 8:24 PM
+Yeah it's probably using Chromium -72
+[valnjes.]
+valnjes. 07/20/2026 8:24 PM
+That makes sense, 4.1 is ancient
+hellobox. 07/20/2026 8:24 PM
+Should be a pretty trivial fix
+07/20/2026 8:23 PM
+It's just using JS syntax that's too new
+[valnjes.]
+valnjes. 07/20/2026 8:23 PM
+Good
+hellobox. 07/20/2026 8:23 PM
+No it's always the same
+[valnjes.]
+valnjes. 07/20/2026 8:23 PM
+not if it is needed for the project
+ 1
+[] valnjes. i asked if you need it from my tv, i can upload it here
+hellobox. 07/20/2026 8:23 PM
+Oh
+[valnjes.]
+valnjes. 07/20/2026 8:23 PM
+i asked if you need it from my tv, i can upload it here
+hellobox. 07/20/2026 8:23 PM
+Unlike certain projects with 3 files doing the same thing
+[valnjes.]
+valnjes. 07/20/2026 8:23 PM
+lol
+hellobox. 07/20/2026 8:22 PM
+I didn't slop the whole thing
+[] valnjes. Do you need the main.js file?
+hellobox. 07/20/2026 8:22 PM
+Of course it's needed
+hellobox. 07/20/2026 8:22 PM
+The problem is the ...
+[] valnjes. Thats the content of the main.js
+hellobox. 07/20/2026 8:22 PM
+What about it?
+[valnjes.]
+valnjes. 07/20/2026 8:21 PM
+Thats the content of the main.js
+hellobox. 07/20/2026 8:20 PM
+I'll fix it when I get home (if I remember)
+07/20/2026 8:20 PM
+It's just a JS thing
+[valnjes.]
+valnjes. 07/20/2026 8:20 PM
+Do you need the main.js file?
+hellobox. 07/20/2026 8:20 PM
+Shouldn't
+[valnjes.]
+valnjes. 07/20/2026 8:20 PM
+Does it depend what python version i have installed
+hellobox. 07/20/2026 8:16 PM
+It's a goddamn JS language thing ffs
+[] valnjes. Click to see attachment
+hellobox. 07/20/2026 8:16 PM
+Ah, thanks. Interesting
+[valnjes.]
+valnjes. 07/20/2026 8:15 PM
+(no content)
+[image.png]
+ image.png
+15.88 KB External
+07/20/2026 8:10 PM
+Awesome.
+[] valnjes. slopbro could work from webos4 to 25(11), maybe even 26, on
+older versions
+hellobox. 07/20/2026 8:09 PM
+I think it may go back to webOS 3
+[valnjes.]
+valnjes. 07/20/2026 8:08 PM
+slopbro could work from webos4 to 25(11), maybe even 26, on older
+versions
+hellobox. 07/20/2026 8:07 PM
+I guess I need to either order the apps better or choose one based on
+webOS version
+[valnjes.]
+valnjes. 07/20/2026 8:07 PM
+C:\temp>python slopbro.py 192.168.0.52 [20:06:07] connecting to
+wss://192.168.0.52:3001 [20:06:07] tracking 4 files in None
+(source=embedded) [20:06:08] serving files from None at
+http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js"
+target="_blank" rel="noopener
+noreferrer">http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js
+[20:06:08] no stored client key; pairing will be requested [20:06:08]
+accept the pairing prompt on the TV screen ... [20:06:11] registered;
+client key saved [20:06:11] confirmed app is installed:
+com.webos.app.dangbei-overlay [20:06:11] launching
+com.webos.app.dangbei-overlay ->
+http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js"
+target="_blank" rel="noopener
+noreferrer">http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js
+{"id": "com.webos.app.dangbei-overlay", "returnValue": true,
+"sessionId": "Y29tLndlYm9zLmFwcC5kYW5nYmVpLW92ZXJsYXk="} [20:06:11]
+waiting for all tracked files to be requested [20:06:11] served required
+file: index.html (1/4) 192.168.0.52 - - [20/Jul/2026 20:06:11] "GET
+/index.html?script=autoroot.sh&files=package.json;main.js HTTP/1.1"
+200 - [20:06:12] served required file: autoroot.sh (2/4)
+192.168.0.52 - - [20/Jul/2026 20:06:12] "GET /autoroot.sh HTTP/1.1"
+200 - [20:06:13] served required file: package.json (3/4)
+192.168.0.52 - - [20/Jul/2026 20:06:13] "GET /package.json HTTP/1.1"
+200 - [20:06:14] served required file: main.js (4/4) [20:06:14] done;
+all tracked files were requested (❛ ᴗ ❛) 192.168.0.52 - - [20/Jul/2026
+20:06:14] "GET /main.js HTTP/1.1" 200 -
+[] valnjes. Click to see attachment
+hellobox. 07/20/2026 8:07 PM
+Huh. I'll have to look into it
+[valnjes.]
+valnjes. 07/20/2026 8:07 PM
+Commented acroverlay out, it goes to this error
+[valnjes.]
+hellobox. Try commenting out acroverlay
+valnjes. 07/20/2026 8:07 PM
+(no content)
+[image.png]
+ image.png
+10.03 KB External
+[valnjes.]
+valnjes. 07/20/2026 8:07 PM
+Yes
+hellobox. 07/20/2026 8:06 PM
+Are you using the packed 0.0.4 slopbro?
+[valnjes.]
+valnjes. 07/20/2026 8:05 PM
+beats me
+[] valnjes. yes dejavuln works fine, and jsbro
+hellobox. 07/20/2026 8:04 PM
+What app does JsBro use?
+[valnjes.]
+valnjes. 07/20/2026 8:04 PM
+yes dejavuln works fine, and jsbro
+hellobox. 07/20/2026 8:04 PM
+And it's EOL
+07/20/2026 8:04 PM
+DejaVuln works though, right?
+07/20/2026 8:03 PM
+What input are you on?
+[] valnjes. C:\temp>python slopbro.py --debug 192.168.0.52 [20:02:25]
+connecting to wss://192.168.0.52:3001 [20:...
+hellobox. 07/20/2026 8:03 PM
+Try commenting out acroverlay
+[valnjes.]
+valnjes. 07/20/2026 8:03 PM
+Even with debug switch, it does nothing. Should i try the older slopbro
+versions?
+07/20/2026 8:03 PM
+C:\temp>python slopbro.py --debug 192.168.0.52 [20:02:25] connecting to
+wss://192.168.0.52:3001 [20:02:25] tracking 4 files in None
+(source=embedded) [20:02:25] serving files from None at
+http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js&debug"
+target="_blank" rel="noopener
+noreferrer">http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js&debug
+[20:02:25] no stored client key; pairing will be requested [20:02:25]
+accept the pairing prompt on the TV screen ... [20:02:29] registered;
+client key saved [20:02:29] confirmed app is installed:
+com.webos.app.acroverlay [20:02:29] launching com.webos.app.acroverlay
+->
+http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js&debug"
+target="_blank" rel="noopener
+noreferrer">http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js&debug
+{"id": "com.webos.app.acroverlay", "returnValue": true, "sessionId":
+"Y29tLndlYm9zLmFwcC5hY3JvdmVybGF5"} [20:02:29] waiting for all tracked
+files to be requested
+07/20/2026 7:56 PM
+After i confirm, nothing happens
+07/20/2026 7:56 PM
+(no content)
+[image.png]
+ image.png
+212.32 KB External
+07/20/2026 7:56 PM
+C:\temp>python slopbro.py 192.168.0.52 [19:54:51] connecting to
+wss://192.168.0.52:3001 [19:54:51] tracking 4 files in None
+(source=embedded) [19:54:51] serving files from None at
+http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js"
+target="_blank" rel="noopener
+noreferrer">http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js
+[19:54:51] no stored client key; pairing will be requested [19:54:51]
+accept the pairing prompt on the TV screen ... [19:55:24] registered;
+client key saved [19:55:24] confirmed app is installed:
+com.webos.app.acroverlay [19:55:24] launching com.webos.app.acroverlay
+->
+http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js"
+target="_blank" rel="noopener
+noreferrer">http://192.168.0.14:8080/index.html?script=autoroot.sh&files=package.json;main.js
+{"id": "com.webos.app.acroverlay", "returnValue": true, "sessionId":
+"Y29tLndlYm9zLmFwcC5hY3JvdmVybGF5"} [19:55:25] waiting for all tracked
+files to be requested
+[] valnjes. SM8600 Webos 4.10.0 FW 05.50.00 JsBro working on WebOS 4.x
+is fantastic news
+hellobox. 07/20/2026 7:50 PM
+Try SlopBro
+[valnjes.]
+valnjes. 07/20/2026 7:45 PM
+SM8600 Webos 4.10.0 FW 05.50.00 JsBro working on WebOS 4.x is fantastic
+news
+[image.png]
+ image.png
+198.87 KB External
+[image.png]
+ image.png
+41.42 KB External
+July 19, 2026
+[] deten Are you talking about using the website to type in the local
+IP?
+hellobox. 07/19/2026 9:32 PM
+https://github.com/throwaway96/slopbro/releases
+Releases · throwaway96/slopbro
+PoC for jsserver vulnerability in webOS 3.5+(?). Contribute to
+throwaway96/slopbro development by creating an account on GitHub.
+[]
+[deten]
+deten 07/19/2026 9:32 PM
+That didn't work and I don't know why. But that's what led me to trying
+to figure it out on my own and cloning the repo
+07/19/2026 9:31 PM
+Are you talking about using the website to type in the local IP?
+[] deten So I cloned the repo to Windows and Windows default config
+converts line endings from LF to CRLF and...
+hellobox. 07/19/2026 9:18 PM
+i don't think that would affect the packed release version, which is the
+preferred method
+[deten]
+deten 07/19/2026 9:15 PM
+Sorry I'm on my phone and my description is not context sensitive 
+07/19/2026 9:15 PM
+So I cloned the repo to Windows and Windows default config converts line
+endings from LF to CRLF and then AutoRoot.sh got mangled into window
+style ending so when the TVs shell tried to run it it failed
+immediately. However the way it was working it appeared like nothing
+happened which sounds similar to the flakiness flagged in one of the
+to-do comments. But I only figured out the real cause when I got it to
+send back progress without SSH. Once I got rid of the dash R's from the
+auto route and set the core.auto CRLF to false it rooted fine. If there
+was a dot get a tributes on the repo forcing eol=lf on the shell script
+that would stop this from biting windows users.
+[] deten That took some finagling but it did work. I had to use Claude
+to resolve a few issues but eventually...
+hellobox. 07/19/2026 9:09 PM
+what issues?
+[deten]
+deten 07/19/2026 9:08 PM
+That took some finagling but it did work. I had to use Claude to resolve
+a few issues but eventually I got root and it prompted me to restart.
+[the4anoni]
+[] deten For an LG65C1 on 03.53.45 Is there currently a way to root the
+TV. The can I root my TV page says ...
+the4anoni 07/19/2026 8:21 PM
+Try slopbro https://github.com/throwaway96/slopbro
+GitHub - throwaway96/slopbro: PoC for jsserver vulnerability in web...
+PoC for jsserver vulnerability in webOS 3.5+(?). Contribute to
+throwaway96/slopbro development by creating an account on GitHub.
+[]
+[deten]
+deten 07/19/2026 7:44 PM
+For an LG65C1 on 03.53.45 Is there currently a way to root the TV. The
+can I root my TV page says no but various other pages seem to think the
+answer is yes but I can't actually find a method to do it. I tried the
+JSBro-autoroot but it doesn't seem to be working (edited)
+[jayrockdabeast]
+jayrockdabeast 07/19/2026 7:42 PM
+Thanks
+[oh46897]
+[] jayrockdabeast Default ssh password?
+oh46897 07/19/2026 4:53 AM
+alpine
+ 2
+[jayrockdabeast]
+jayrockdabeast 07/19/2026 4:16 AM
+Default ssh password?
+July 18, 2026
+[exxxxkc]
+exxxxkc 07/18/2026 9:47 AM
+not bc secuity ssh is much better (edited)
+07/18/2026 9:46 AM
+i still recommand turning it off
+07/18/2026 9:46 AM
+in most cases it is fne (edited)
+07/18/2026 9:46 AM
+which unlikey
+07/18/2026 9:46 AM
+u have a fuck ton of ip and each device has it own ip
+[exxxxkc]
+[] slada1 No need to be paranoid about that, it is accessible only from
+the local network
+exxxxkc 07/18/2026 9:45 AM
+unless
+[djs38943]
+djs38943 07/18/2026 9:45 AM
+yeah but i like to turn it off lol
+[slada1]
+[] djs38943 dont forget to turn off telnet otherwise people could get
+unauthorized access to your tv
+slada1 07/18/2026 9:45 AM
+No need to be paranoid about that, it is accessible only from the local
+network
+[djs38943]
+djs38943 07/18/2026 9:34 AM
+no
+[mvrx.]
+mvrx. 07/18/2026 9:34 AM
+ou damn ok, i usually project from my laptop, would that interfere with
+that?
+[djs38943]
+djs38943 07/18/2026 9:21 AM
+dont forget to turn off telnet otherwise people could get unauthorized
+access to your tv
+[mvrx.]
+mvrx. 07/18/2026 9:20 AM
+Really appreciate the help brochachos. In case i dont see ya, good
+afternoon, good evening and good night
+[djs38943]
+djs38943 07/18/2026 9:18 AM
+since my tv is very expensive and servicing it can be very expensive
+(edited)
+07/18/2026 9:18 AM
+i still need to be careful lol
+[mvrx.]
+mvrx. 07/18/2026 9:17 AM
+for some reason the times i checked i would never have the correct
+firmware
+[djs38943]
+djs38943 07/18/2026 9:16 AM
+the root still survived
+07/18/2026 9:16 AM
+i rooted my tv and updated it many times
+[mvrx.]
+mvrx. 07/18/2026 9:16 AM
+Gentlemen, ive had this tv for a few years now and wanted to root it
+since day one, annoyingly accidentally updated it a few times along the
+way.
+[djs38943]
+djs38943 07/18/2026 9:12 AM
+now check if the homebrew channel exists
+[mvrx.]
+mvrx. 07/18/2026 9:11 AM
+oh quick start+ was the issue, it prompted me with a diff reboot now
+07/18/2026 9:10 AM
+yep
+[djs38943]
+[] mvrx. re ran and did not find the channel, evenwhen it hit me with
+sucess each time
+djs38943 07/18/2026 9:09 AM
+did you reboot the tv when there was a prompt
+[exxxxkc]
+exxxxkc 07/18/2026 9:08 AM
+turn quick start + off
+[mvrx.]
+mvrx. 07/18/2026 9:08 AM
+odd
+07/18/2026 9:07 AM
+re ran and did not find the channel, evenwhen it hit me with sucess each
+time
+[exxxxkc]
+[] djs38943 check if root status is ok
+exxxxkc 07/18/2026 8:57 AM
+then do ^ (edited)
+[exxxxkc]
+exxxxkc 07/18/2026 8:57 AM
+if so
+07/18/2026 8:57 AM
+maybe that is a success prompt (edited)
+07/18/2026 8:57 AM
+ah ic it restarted (edited)
+[djs38943]
+djs38943 07/18/2026 8:56 AM
+check if root status is ok
+07/18/2026 8:56 AM
+if yes open it and goto settings
+07/18/2026 8:56 AM
+check if the homebrew channel exists
+[exxxxkc]
+[] mvrx. Gave dualbro a run and it hit sucess after a while it gave me a
+failed prompt, restarted, idk how t...
+exxxxkc 07/18/2026 8:55 AM
+what it said
+[mvrx.]
+[] exxxxkc try dualbro
+mvrx. 07/18/2026 8:55 AM
+Gave dualbro a run and it hit sucess after a while it gave me a failed
+prompt, restarted, idk how to confirm if its rooted
+[oh46897]
+oh46897 07/18/2026 8:51 AM
+dualbro
+07/18/2026 8:51 AM
+or
+07/18/2026 8:51 AM
+slopbro
+07/18/2026 8:51 AM
+or
+[oh46897]
+[] mvrx. Hello lads, i got a 50NANO77SRA running on Webos24 9.2.2-61. im
+trying the js bro autoroot but it d...
+oh46897 07/18/2026 8:51 AM
+try dangbro
+[exxxxkc]
+exxxxkc 07/18/2026 8:39 AM
+that is all the link of issue when using dangbro and jsbro
+[exxxxkc]
+[] mvrx. Hello lads, i got a 50NANO77SRA running on Webos24 9.2.2-61. im
+trying the js bro autoroot but it d...
+exxxxkc 07/18/2026 8:38 AM
+See https://bugzilla.mozilla.org/show_bug.cgi?id=1973932
+https://codeberg.org/celenity/Phoenix/issues/162
+https://help.motorolanetwork.com/kb/general/troubleshooting-connection-isn-t-private-message
+https://discord.com/channels/407937994037919756/822443030761046017/1513291315700301885
+ 1
+[valnjes.]
+valnjes. 07/18/2026 8:38 AM
+Use Firefox
+[exxxxkc]
+exxxxkc 07/18/2026 8:38 AM
+try dualbro
+ 1
+[mvrx.]
+mvrx. 07/18/2026 8:38 AM
+Hello lads, i got a 50NANO77SRA running on Webos24 9.2.2-61. im trying
+the js bro autoroot but it denies the connection even whe opening the
+cert. Is slop the best optio rn?
+[exxxxkc]
+exxxxkc 07/18/2026 8:37 AM
+but u need ascessusb or root
+07/18/2026 8:37 AM
+downstream might be possiable
+07/18/2026 8:33 AM
+u ethier hope for a new expoilt or steal the ascess usb from lg (edited)
+[francesco_difiore]
+[] valnjes. Never update the new TV. Root first
+francesco_difiore 07/18/2026 8:32 AM
+unfortunately I made this mistake.. it fooled me because I was doing the
+root procedure and I thought it was the exploit consent message
+[valnjes.]
+[] francesco_difiore mmm yes
+valnjes. 07/18/2026 8:24 AM
+Never update the new TV. Root first
+ 1
+July 17, 2026
+[francesco_difiore]
+francesco_difiore 07/17/2026 7:36 PM
+ehhhh
+[] francesco_difiore mmm yes
+hellobox. 07/17/2026 5:13 PM
+whyyyy
+[francesco_difiore]
+francesco_difiore 07/17/2026 1:45 PM
+ok understood....I'm waiting for a new root exploit and blocking updates
+[slada1]
+[] slada1 He is on 43.11.73
+slada1 07/17/2026 1:04 PM
+This update was rolled out just one day ago. Block updates if you want
+to root
+[exxxxkc]
+exxxxkc 07/17/2026 1:01 PM
+xD
+07/17/2026 1:01 PM
+so i will break it
+07/17/2026 1:01 PM
+i only can desoler not solder bga
+07/17/2026 1:00 PM
+send the board to me and i would send @theubusu the emmc ig (edited)
+[theubusu]
+theubusu 07/17/2026 1:00 PM
+send board to [:lgbox:]
+[exxxxkc]
+exxxxkc 07/17/2026 1:00 PM
+what if they cant do bga
+[djs38943]
+djs38943 07/17/2026 12:59 PM
+if you break it dump the emmc for me
+[exxxxkc]
+[] slada1 He is on 43.11.73
+exxxxkc 07/17/2026 12:59 PM
+well idk which version is patched
+[exxxxkc]
+exxxxkc 07/17/2026 12:59 PM
+xD
+07/17/2026 12:59 PM
+hope u dont break the tv out of angry
+[slada1]
+[] francesco_difiore Click to see attachment
+slada1 07/17/2026 12:59 PM
+He is on 43.11.73
+[exxxxkc]
+[] francesco_difiore 
+exxxxkc 07/17/2026 12:58 PM
+also
+[francesco_difiore]
+francesco_difiore 07/17/2026 12:58 PM
+[exxxxkc]
+exxxxkc 07/17/2026 12:57 PM
+xD
+[exxxxkc]
+[] exxxxkc ~~time to conside selling your tv~~
+exxxxkc 07/17/2026 12:57 PM
+.
+[exxxxkc]
+exxxxkc 07/17/2026 12:57 PM
+so
+07/17/2026 12:57 PM
+well ig u have tried luck and u have bad luck
+07/17/2026 12:57 PM
+that is why i said u have a chance
+ 1
+07/17/2026 12:56 PM
+older aint
+[slada1]
+slada1 07/17/2026 12:56 PM
+Latest webos 26 is patched
+07/17/2026 12:56 PM
+Please if you want a chance to root 2026 tv, don't update it to latest
+[exxxxkc]
+exxxxkc 07/17/2026 12:55 PM
+so u dont even need to try and download (edited)
+07/17/2026 12:55 PM
+if jsbro dont work then slopbro wont work
+[francesco_difiore]
+francesco_difiore 07/17/2026 12:55 PM
+sorry I don't understand
+[exxxxkc]
+[] djs38943 i know
+exxxxkc 07/17/2026 12:55 PM
+or even download
+[djs38943]
+djs38943 07/17/2026 12:54 PM
+i know
+[slada1]
+[] djs38943 download slopbro first
+slada1 07/17/2026 12:54 PM
+There is one python file in the releases, no need to clone the repo
+[exxxxkc]
+exxxxkc 07/17/2026 12:54 PM
+~~time to conside selling your tv~~ (edited)
+[exxxxkc]
+[] francesco_difiore Click to see attachment
+exxxxkc 07/17/2026 12:53 PM
+same as jsbro (launch via dualbro)
+[exxxxkc]
+[] francesco_difiore Click to see attachment
+exxxxkc 07/17/2026 12:53 PM
+yep
+[francesco_difiore]
+francesco_difiore 07/17/2026 12:24 PM
+ok
+ 1
+[oh46897]
+[] francesco_difiore 
+oh46897 07/17/2026 12:23 PM
+wait for new exploit (edited)
+[francesco_difiore]
+[] djs38943 since webOS came fresh from lg's arse
+francesco_difiore 07/17/2026 12:23 PM
+Thanks and sorry
+[djs38943]
+djs38943 07/17/2026 12:23 PM
+since webOS came fresh from lg's arse
+07/17/2026 12:23 PM
+just wait for a new exploit
+07/17/2026 12:23 PM
+well then
+[francesco_difiore]
+francesco_difiore 07/17/2026 12:22 PM
+07/17/2026 12:22 PM
+(no content)
+[rn_image_picker_lib_temp_c5381c5b-6652-4579-aa44-473c53165dd7.jpg]
+ rn_image_picker_lib_temp_c5381c5b-6652-4579-aa44-473c53165dd7.jpg
+7.52 MB External
+[djs38943]
+djs38943 07/17/2026 12:14 PM
+run slopbro
+[image.png]
+ image.png
+25.03 KB External
+07/17/2026 12:13 PM
+cd to slopbro
+[image.png]
+ image.png
+4.49 KB External
+07/17/2026 12:13 PM
+(no content)
+[image.png]
+ image.png
+12.41 KB External
+07/17/2026 12:13 PM
+download slopbro
+[francesco_difiore]
+francesco_difiore 07/17/2026 12:12 PM
+Do I need to enter a path?
+07/17/2026 12:11 PM
+I downloaded Python and Slopbro, but I don't understand how to install
+them via the command prompt.
+[djs38943]
+djs38943 07/17/2026 12:07 PM
+or you can also download the packed slopbro

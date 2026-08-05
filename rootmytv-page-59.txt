@@ -1,0 +1,1586 @@
+March 24, 2023
+[commissionerg]
+commissionerg 03/24/2023 10:12 PM
+i still think that had something to do with my specific issue tbh
+hellobox. 03/24/2023 10:12 PM
+hmm
+[commissionerg]
+commissionerg 03/24/2023 10:11 PM
+this time with crashd, but was done ages ago with rootmytv
+hellobox. 03/24/2023 10:11 PM
+how did you root it? crashd or rootmytv?
+[commissionerg]
+commissionerg 03/24/2023 10:11 PM
+everything as in?
+hellobox. 03/24/2023 10:10 PM
+make sure everything still exists before you reboot
+03/24/2023 10:10 PM
+be careful though
+03/24/2023 10:10 PM
+yeah
+[commissionerg]
+commissionerg 03/24/2023 10:10 PM
+so I can remove dev mode app now finally?
+03/24/2023 10:10 PM
+apps install just fine
+03/24/2023 10:10 PM
+just opened hb and no error
+03/24/2023 10:10 PM
+yep!
+hellobox. 03/24/2023 10:09 PM
+it means you won't get that error anymore
+[commissionerg]
+commissionerg 03/24/2023 10:08 PM
+I assume that's good, but what does this mean now exactly?
+03/24/2023 10:08 PM
+    root@LGwebOSTV:~# luna-send -n 1 'luna://org.webosbrew.hbchannel.service/updateStart
+    upScript' '{}'
+    {"returnValue":true,"statusText":"Nothing changed","messages":[]}
+ 1
+03/24/2023 10:07 PM
+ooh
+hellobox. 03/24/2023 10:07 PM
+yeah
+[commissionerg]
+commissionerg 03/24/2023 10:06 PM
+do the luna command now?
+03/24/2023 10:06 PM
+ok done
+[] commissionerg ok lfg
+hellobox. 03/24/2023 10:04 PM
+(no content)
+ service.js
+1.65 MB External
+hellobox. 03/24/2023 10:04 PM
+it doesn't seem horribly broken at least
+03/24/2023 10:04 PM
+i tested it a bit myself
+[commissionerg]
+commissionerg 03/24/2023 9:55 PM
+ok lfg
+hellobox. 03/24/2023 9:52 PM
+@CommissionerG all right, i have a new service.js for you
+03/24/2023 9:52 PM
+i have to use NODE_OPTIONS=--openssl-legacy-provider to get webpack to
+work
+hellobox. 03/24/2023 9:43 PM
+huh, it's even doing it when i click raw on github
+https://gist.github.com/stek29/761232c6f7e1ffbc36b98da2a3a0f4d9
+[infowski]
+infowski 03/24/2023 9:43 PM
+rofl
+hellobox. 03/24/2023 9:42 PM
+(no content)
+[image.png]
+ image.png
+14.6 KB External
+03/24/2023 9:42 PM
+@infowski this url is giving me a cert error
+https://gist.githubusercontent.com/stek29/761232c6f7e1ffbc36b98da2a3a0f4d9/raw/f56660ab3f293d8a53de664ac66d0503d398baf3/install.sh
+hellobox. 03/24/2023 9:03 PM
+or should i put up a toast?
+03/24/2023 9:03 PM
+in case we ever get to see console messages....
+03/24/2023 9:03 PM
+i added a console.warn
+03/24/2023 9:02 PM
+which is fine
+03/24/2023 9:02 PM
+so that'll result in nothing happening to it
+[infowski]
+infowski 03/24/2023 9:02 PM
+Yeah
+hellobox. 03/24/2023 9:02 PM
+and treat it as empty?
+[infowski]
+infowski 03/24/2023 9:01 PM
+Imo just ignore it.
+hellobox. 03/24/2023 9:01 PM
+so what should we do if reading start-devmode.sh fails?
+[infowski]
+infowski 03/24/2023 8:56 PM
+another option, yeah
+hellobox. 03/24/2023 8:56 PM
+or have a debug setting
+[infowski]
+infowski 03/24/2023 8:56 PM
+or at least - the last stack trace, yeah\
+hellobox. 03/24/2023 8:55 PM
+maybe we should write them to a file
+ 1
+03/24/2023 8:55 PM
+well, in the catch block
+[] infowski yee. we should add `stack` to our generic error handler.
+hellobox. 03/24/2023 8:55 PM
+so you think we should return stack traces on all errors?
+hellobox. 03/24/2023 8:47 PM
+ugh, typescript
+03/24/2023 8:40 PM
+but i guess it doesn't matter
+03/24/2023 8:40 PM
+it doesn't look like createHash has an options param in old node.js
+[infowski]
+infowski 03/24/2023 8:37 PM
+it's pretty much the same
+03/24/2023 8:37 PM
+meh
+hellobox. 03/24/2023 8:36 PM
+browser javascript is bad enough... node takes it to another level
+[infowski]
+infowski 03/24/2023 8:33 PM
+and await is actually just "get the rest of the code and put it in
+then(...) handler, or throw an error/Promise rejection (handled in
+catch() normally...) as it normally would in synchronous code" (edited)
+03/24/2023 8:31 PM
+for example you could do something like
+return await asyncReadFile(a).catch(err => asyncReadFile(b)) which is
+essentially the same as:
+    try {
+      return await asyncReadFile(a);
+    } catch (err) {
+      return await asyncReadFile(b);
+    }
+(edited)
+03/24/2023 8:30 PM
+and an immediate value is... awaitable
+[infowski]
+[] infowski Not really - if you want to handle asyncReadFile errors you
+can: `await asyncReadFile(..., { encodin...
+infowski 03/24/2023 8:29 PM
+btw this works because catch/then handler function can return an
+awaitable/Promise, which will propagate upwards (edited)
+hellobox. 03/24/2023 8:29 PM
+i can test it on every version from 3.5 up
+03/24/2023 8:28 PM
+indeed
+[infowski]
+infowski 03/24/2023 8:27 PM
+no error handling is bad though
+hellobox. 03/24/2023 8:27 PM
+but i don't think it'll be that bad
+03/24/2023 8:27 PM
+that's true
+[infowski]
+infowski 03/24/2023 8:27 PM
+it's gonna be pita, and there's really no meaningful impact in reading
+that twice
+hellobox. 03/24/2023 8:27 PM
+i could use some typescript experience
+03/24/2023 8:27 PM
+i'll do it
+[infowski]
+infowski 03/24/2023 8:27 PM
+please don't make me refaactor that
+hellobox. 03/24/2023 8:26 PM
+once for the hash, and once for the contents
+03/24/2023 8:26 PM
+we actually read start-devmode.sh twice
+[rooshoes]
+rooshoes 03/24/2023 8:25 PM
+thanks for your help!
+03/24/2023 8:24 PM
+yeah, init.d script, got it
+[infowski]
+[] rooshoes thanks!!
+infowski 03/24/2023 8:24 PM
+Not sure how knowledgable are you, but tl;dr is that you need to create
+a text file in /var/lib/webosbrew/init.d (eg called blocknetwork) and
+put these contents in there.
+hellobox. 03/24/2023 8:24 PM
+asyncReadFile shouldn't fail because the existence of start-devmode.sh
+is checked
+[infowski]
+infowski 03/24/2023 8:23 PM
+and probably will.
+03/24/2023 8:23 PM
+readFile has been pretty stable
+hellobox. 03/24/2023 8:23 PM
+because they seem to like changing shit like this
+03/24/2023 8:23 PM
+i hope it works that way on every node.js version
+[infowski]
+infowski 03/24/2023 8:23 PM
+not anything else
+03/24/2023 8:23 PM
+and readFile is supposed to either return string or buffer
+03/24/2023 8:23 PM
+this will resolve to an empty string on exception
+[infowski]
+hellobox. how about this?```js if (typeof(startDevmodeContents) !==
+'string') { console...
+infowski 03/24/2023 8:22 PM
+Not really - if you want to handle asyncReadFile errors you can:
+await asyncReadFile(..., { encoding: 'utf-8' }).catch(err => '')
+hellobox. 03/24/2023 8:22 PM
+although that might not be the right thing to set it to
+03/24/2023 8:22 PM
+then at least it won't totally fail
+03/24/2023 8:22 PM
+how about this?
+              if (typeof(startDevmodeContents) !== 'string')  {
+                console.warn(`asyncReadFile didn't return a string: ${typeof(startDevmodeContents)}`);
+                startDevmodeContents = '';
+              }
+03/24/2023 8:21 PM
+service.ts could use more error checking
+[infowski]
+infowski 03/24/2023 8:21 PM
+you can still revert the config by manually changing network settings
+(or removing and re-adding wifi network configuration) if something bad
+happens
+[rooshoes]
+rooshoes 03/24/2023 8:20 PM
+thanks!!
+[infowski]
+[] infowski btw one of the "novel" ways of updates blocking I tried a
+while ago is: ``` [[ ! -d /var/lib/webosbr...
+infowski 03/24/2023 8:20 PM
+there
+[infowski]
+infowski 03/24/2023 8:20 PM
+Let me find my script.
+03/24/2023 8:19 PM
+Downside: no network until startup scripts run
+[rooshoes]
+rooshoes 03/24/2023 8:19 PM
+that's not a bad idea.
+03/24/2023 8:19 PM
+ooo
+[infowski]
+infowski 03/24/2023 8:19 PM
+Undocumented alternative: script that intentionally breaks networking
+(by setting invalid static IP addresses) in persistent storage, and
+fixes network after startup scripts run
+[rooshoes]
+rooshoes 03/24/2023 8:19 PM
+no, AT&T modem 
+hellobox. 03/24/2023 8:19 PM
+openwrt/dd-wrt?
+[rooshoes]
+rooshoes 03/24/2023 8:18 PM
+i'll need a new router for that
+03/24/2023 8:18 PM
+so DNS blocking is the only option now, got it.
+[infowski]
+infowski 03/24/2023 8:18 PM
+Possible.
+[rooshoes]
+rooshoes 03/24/2023 8:18 PM
+i remember it was fairly new
+[infowski]
+infowski 03/24/2023 8:18 PM
+Oh.
+[rooshoes]
+[] infowski It is, but you didn't read crashd guide FAQ
+rooshoes 03/24/2023 8:18 PM
+i did the crashd exploit last summer, so it may not have been in there
+yet, but thanks
+[infowski]
+infowski 03/24/2023 8:17 PM
+You should block snu domains on your router/upstream DNS server. It's
+all in the guide.
+03/24/2023 8:17 PM
+Startup script on these setups is executed after tv phones home for
+updates.
+[rooshoes]
+rooshoes 03/24/2023 8:17 PM
+is it possible my startup script isn't being run with the correct
+authorization
+[infowski]
+infowski 03/24/2023 8:17 PM
+It is, but you didn't read crashd guide FAQ
+[rooshoes]
+rooshoes 03/24/2023 8:16 PM
+isn't the Homebrew Channel's "disable updates" switch supposed to
+suppress the LG software update nag?
+[infowski]
+infowski 03/24/2023 8:15 PM
+afk vidya
+03/24/2023 8:15 PM
+but I don't think console uses that under the hood.
+03/24/2023 8:14 PM
+hm, there's definitely pmloglib nodejs module available
+hellobox. 03/24/2023 8:14 PM
+yeah, but how do we see console stuff?
+[infowski]
+infowski 03/24/2023 8:13 PM
+also log errors happening there via console.error too
+hellobox. 03/24/2023 8:13 PM
+yeah
+[infowski]
+infowski 03/24/2023 8:13 PM
+yee. we should add stack to our generic error handler.
+hellobox. 03/24/2023 8:13 PM
+god, that was painful
+03/24/2023 8:12 PM
+@infowski did you see the whole node debug effort?
+[infowski]
+infowski 03/24/2023 8:12 PM
+just how we like it
+03/24/2023 8:12 PM
+just return gibberish
+03/24/2023 8:12 PM
+    > Buffer([0xff, 0x00, 0xff, 0x00]).toString('utf-8')
+    '�\u0000�\u0000'
+nice, they even don't crash outright on invalid unicode
+hellobox. 03/24/2023 8:12 PM
+is there actually any non-ascii utf-8 in it? (edited)
+03/24/2023 8:11 PM
+but i guess utf-8 is fine
+03/24/2023 8:11 PM
+there's ascii and latin1
+[infowski]
+infowski 03/24/2023 8:11 PM
+it works. i guess no other option makes sense for us
+03/24/2023 8:11 PM
+    > fs.readFileSync('/etc/hostname')
+    <Buffer 4c 47 77 65 62 4f 53 54 56 0a>
+    > fs.readFileSync('/etc/hostname', { encoding: 'utf-8' })
+    'LGwebOSTV\n'
+hellobox. 03/24/2023 8:10 PM
+should it be utf-8?
+03/24/2023 8:09 PM
+already doing it
+03/24/2023 8:09 PM
+yep
+[infowski]
+infowski 03/24/2023 8:09 PM
+ok, I guess we should just add { encoding: 'utf-8' } there?
+03/24/2023 8:08 PM
+wtf, it's supposed to be the same one
+03/24/2023 8:08 PM
+>v0.12.2
+03/24/2023 8:07 PM
+I am absolutely sure I've tested that part on webOS 3.x
+hellobox. 03/24/2023 8:05 PM
+https://nodejs.org/docs/latest-v0.12.x/api/buffer.html
+03/24/2023 8:05 PM
+why have we never hit this before?
+[infowski]
+infowski 03/24/2023 8:05 PM
+hmmmmmmmmmm
+hellobox. 03/24/2023 8:05 PM
+that doesn't have indexOf in ancient node.js
+03/24/2023 8:04 PM
+it's supposed to be a Buffer?
+03/24/2023 8:04 PM
+hold on
+[commissionerg]
+commissionerg 03/24/2023 8:02 PM
+correct yes, that command anyway (edited)
+[infowski]
+infowski 03/24/2023 8:02 PM
+should be
+hellobox. 03/24/2023 8:02 PM
+but we're running as root, right?
+03/24/2023 8:02 PM
+interesting permissions
+[commissionerg]
+commissionerg 03/24/2023 8:02 PM
+    -rwx------    1 root     5000          9780 Feb 26 23:41 /media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/start-devmode.sh
+[infowski]
+infowski 03/24/2023 8:01 PM
+@CommissionerG can you check
+ls -la /media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/start-devmode.sh
+hellobox. 03/24/2023 8:01 PM
+let me add some logging
+03/24/2023 8:01 PM
+hmm
+03/24/2023 8:00 PM
+yeah
+03/24/2023 8:00 PM
+it's not a string
+[infowski]
+infowski 03/24/2023 8:00 PM
+asyncReadFile returns null for some reason?
+03/24/2023 8:00 PM
+no
+hellobox. 03/24/2023 8:00 PM
+              } else if (localChecksum !== bundledJumpstartChecksum && (await asyncReadFile(startDevmode)).indexOf('org.webosbrew') !== -1) {
+03/24/2023 8:00 PM
+asyncReadFile isn't a function maybe?
+[infowski]
+infowski 03/24/2023 8:00 PM
+what
+03/24/2023 7:59 PM
+indexOf is not a function
+03/24/2023 7:59 PM
+_context10.t3 = _context10.sent.indexOf('org.webosbrew');
+hellobox. 03/24/2023 7:59 PM
+from webos/nodejs hell
+[] infowski let me check that stack trace...
+hellobox. 03/24/2023 7:59 PM
+save me
+[infowski]
+infowski 03/24/2023 7:58 PM
+let me check that stack trace...
+hellobox. 03/24/2023 7:58 PM
+i really don't understand. it works for me on 4.0.0
+[commissionerg]
+commissionerg 03/24/2023 7:56 PM
+4.4.0
+hellobox. 03/24/2023 7:56 PM
+what version of webos is this again?
+[commissionerg]
+commissionerg 03/24/2023 7:55 PM
+I'd need you to walk me thru that tho
+03/24/2023 7:55 PM
+ok
+hellobox. 03/24/2023 7:54 PM
+the file isn't minified/packed
+03/24/2023 7:54 PM
+you can try commenting stuff out and see when the error doesn't happen
+03/24/2023 7:54 PM
+i guess node.js doesn't give useful stack traces
+03/24/2023 7:51 PM
+i'm confused
+03/24/2023 7:51 PM
+thanks
+03/24/2023 7:50 PM
+put \\\` around it
+[commissionerg]
+commissionerg 03/24/2023 7:50 PM
+    root@LGwebOSTV:~# luna-send -n 1 'luna://org.webosbrew.hbchannel.service/updateStart
+    upScript' '{}'
+    {"returnValue":false,"statusText":"Startup script update failed.","stack":"TypeError: undefined is not a function\n    at _callee10$ (/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/service.js:48114:45)\n    at tryCatch (/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/service.js:12563:17)\n    at GeneratorFunctionPrototype.invoke [as _invoke] (/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/service.js:12780:22)\n    at GeneratorFunctionPrototype.next (/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/service.js:12616:21)\n    at asyncGeneratorStep (/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/service.js:46861:103)\n    at _next (/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/service.js:46863:194)\n    at /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/service.js:41597:22\n    at __webpack_modules__../node_modules/core-js/internals/microtask.js.flush (/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/service.js:36493:9)","messages":["Startup script update failed!","Error: TypeError: undefined is not a function"]}
+(edited)
+hellobox. 03/24/2023 7:49 PM
+can you copy it as text?
+[commissionerg]
+commissionerg 03/24/2023 7:49 PM
+okay, file replaced and here is the output
+[image.png]
+ image.png
+136.76 KB External
+hellobox. 03/24/2023 7:35 PM
+it should reply with a stack trace
+03/24/2023 7:35 PM
+and send the broken luna request to it
+03/24/2023 7:35 PM
+after backing it up
+03/24/2023 7:35 PM
+just replace service.js
+03/24/2023 7:35 PM
+you don't need that
+[commissionerg]
+hellobox. run `./run-js-service -n -k -d
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.servi...
+commissionerg 03/24/2023 7:30 PM
+cool, should I do this first or after
+hellobox. 03/24/2023 7:29 PM
+yes
+[commissionerg]
+hellobox. <@334464345922600961> back up `service.js`
+commissionerg 03/24/2023 7:29 PM
+hey, are you about? gonna try this
+hellobox. 03/24/2023 12:07 PM
+did you elevate it?
+03/24/2023 12:07 PM
+i don't know anything about piccap/hyperion
+03/24/2023 12:02 PM
+or use telnet and delete /home/root/.ssh/authorized_keys
+03/24/2023 12:02 PM
+just use the key
+03/24/2023 12:01 PM
+don't do that
+03/24/2023 12:01 PM
+so the default password won't work
+03/24/2023 12:01 PM
+because getmein set up authorized_keys
+03/24/2023 12:00 PM
+yeah, use it
+03/24/2023 12:00 PM
+you might
+03/24/2023 12:00 PM
+wait
+Original message was deleted
+hellobox. 03/24/2023 12:00 PM
+no
+hellobox. 03/24/2023 11:59 AM
+and root:alpine doesn't work?
+03/24/2023 11:58 AM
+so you created devmode_enabled as a directory, uninstalled the dev mode
+app, and replaced start-devmode.sh with jumpstart.sh?
+03/24/2023 11:54 AM
+so when you reboot /etc/shadow reverts to default
+03/24/2023 11:53 AM
+getmein tries to set up some bind mount thing, but it's broken
+03/24/2023 11:53 AM
+https://gist.github.com/DavidBuchanan314/1d6ae10559c1e3c2c30265857892580b#file-kickstartjb-c-L57-L90
+hellobox. 03/24/2023 11:45 AM
+you're going to have trouble with homebrew channel if you don't undo the
+getmein stuff
+hellobox. 03/24/2023 11:35 AM
+i think there was another one though
+03/24/2023 11:35 AM
+maybe this
+https://discord.com/channels/407937994037919756/822443030761046017/1038364966706757642
+03/24/2023 11:32 AM
+you might be able to find it with discord search
+03/24/2023 11:32 AM
+i walked somebody else through removing the getmein stuff and setting up
+homebrew channel
+03/24/2023 11:31 AM
+getmein set up its own bullshit
+Original message was deleted
+hellobox. 03/24/2023 11:31 AM
+because it doesn't have root
+Original message was deleted
+hellobox. 03/24/2023 11:30 AM
+root
+Original message was deleted
+hellobox. 03/24/2023 11:29 AM
+alpine
+hellobox. 03/24/2023 11:29 AM
+did it give you a root shell?
+03/24/2023 11:28 AM
+so getmein worked?
+[itsyogsothoth]
+itsyogsothoth 03/24/2023 11:24 AM
+If you have it enabled in Homebrew Channel SSH is exposed on standard
+port 22
+hellobox. 03/24/2023 11:07 AM
+possibly certain places in /var; check findmnt (edited)
+03/24/2023 11:07 AM
+or /tmp
+03/24/2023 11:07 AM
+you can use /media/developer/temp
+03/24/2023 11:06 AM
+also you may need to overwrite jail_app.conf and reboot
+03/24/2023 11:05 AM
+you can't write to /media/developer anymore
+[aabytt]
+Original message was deleted
+aabytt 03/24/2023 11:01 AM
+you can also host the file somewhere and wget it in prisoner shell
+hellobox. 03/24/2023 10:54 AM
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#can-i-use-something-other-than-dev-manager
+03/24/2023 10:54 AM
+you'll need to download the key
+03/24/2023 10:54 AM
+use an sftp client
+Original message was deleted
+hellobox. 03/24/2023 10:51 AM
+sftp
+[aabytt]
+Original message was deleted
+aabytt 03/24/2023 9:38 AM
+you can try getmein
+https://forum.xda-developers.com/t/getmein-one-time-rooting-jailbreaking-tool-for-webos-lg-tvs.3887904/
+[aabytt]
+Original message was deleted
+aabytt 03/24/2023 9:37 AM
+which TV model do you have?
+March 23, 2023
+[] bennih Hey, I bought a G2 at the end of January, but I haven't
+unpacked it yet because I'm moving soon. (So...
+hellobox. 03/23/2023 5:25 PM
+it is currently rootable
+ 2
+[bennih]
+bennih 03/23/2023 5:19 PM
+Hey, I bought a G2 at the end of January, but I haven't unpacked it yet
+because I'm moving soon. (So I don't know what firmware is on it) I
+wanted to add Ambilight to this one, ideally I wanted to add the LEDs
+directly before I even hang the TV on the wall mount. For a long time I
+had planned to use Govee for this, then I discovered the possibility
+with Hyperion/Piccap etc., which works even better. Now I do not know if
+I should already buy LEDs, after all I do not know if that works with
+rooting. Can every TV actually be rooted with the crashd method, or are
+there exceptions? I have heard different things about it. (edited)
+hellobox. 03/23/2023 7:29 AM
+if you edit the service file to add -k -d
+[] infowski So... This change would theoretically let us enable nodejs
+service debugging? Hmmm... Sounds reasona...
+hellobox. 03/23/2023 7:29 AM
+yeah, it works on webos 6 at least
+[infowski]
+hellobox. <@501722020434673674> what do you think about making that
+permanent?
+infowski 03/23/2023 7:28 AM
+So... This change would theoretically let us enable nodejs service
+debugging? Hmmm... Sounds reasonable, though they usually just do ssh
+port forwarding for the toolbar/debugger protocol.
+hellobox. 03/23/2023 2:44 AM
+then do the luna request
+03/23/2023 2:44 AM
+and replace it with this
+ service.js
+1.63 MB External
+03/23/2023 2:41 AM
+@CommissionerG back up service.js
+[commissionerg]
+commissionerg 03/23/2023 2:28 AM
+oof
+hellobox. 03/23/2023 2:27 AM
+ffs
+      opensslErrorStack: [ 'error:03000086:digital envelope routines::initialization error' ],
+      library: 'digital envelope routines',
+      reason: 'unsupported',
+      code: 'ERR_OSSL_EVP_UNSUPPORTED'
+[commissionerg]
+commissionerg 03/23/2023 2:20 AM
+what should i do in the meantime?
+03/23/2023 2:20 AM
+i see
+hellobox. 03/23/2023 2:20 AM
+i'm going to have to build one that has extra debug stuff i guess
+03/23/2023 2:19 AM
+although it's minified (maybe it shouldn't be...) (edited)
+03/23/2023 2:18 AM
+maybe on createToast
+[commissionerg]
+commissionerg 03/23/2023 2:16 AM
+ok
+hellobox. 03/23/2023 2:16 AM
+need to set a breakpoint i guess
+03/23/2023 2:16 AM
+hmm
+[commissionerg]
+commissionerg 03/23/2023 2:15 AM
+(no content)
+[image.png]
+ image.png
+93.69 KB External
+hellobox. 03/23/2023 2:15 AM
+what happened in the debugger?
+[commissionerg]
+commissionerg 03/23/2023 2:14 AM
+(no content)
+[image.png]
+ image.png
+34.23 KB External
+hellobox. 03/23/2023 2:14 AM
+yes
+[commissionerg]
+commissionerg 03/23/2023 2:13 AM
+open another session?
+hellobox. 03/23/2023 2:13 AM
+not there
+[commissionerg]
+commissionerg 03/23/2023 2:12 AM
+(no content)
+[image.png]
+ image.png
+86.85 KB External
+hellobox. 03/23/2023 2:11 AM
+yes
+[commissionerg]
+hellobox. and in another session, run `luna-send -n 1
+'luna://org.webosbrew.hbchannel.service/updateStartupScr...
+commissionerg 03/23/2023 2:09 AM
+this?
+hellobox. 03/23/2023 2:07 AM
+preferably the broken one
+03/23/2023 2:07 AM
+try sending a luna request to it
+03/23/2023 2:06 AM
+i'm not sure if it's working
+[commissionerg]
+commissionerg 03/23/2023 2:03 AM
+(no content)
+[image.png]
+ image.png
+45 KB External
+hellobox. 03/23/2023 2:02 AM
+so try node debug -p 6535
+[commissionerg]
+commissionerg 03/23/2023 2:02 AM
+ok
+hellobox. 03/23/2023 2:02 AM
+ugh idk. probably the latter, since it has sockets (edited)
+[commissionerg]
+commissionerg 03/23/2023 2:01 AM
+did both just
+[image.png]
+ image.png
+171.13 KB External
+hellobox. 03/23/2023 2:00 AM
+ls -l /proc/3637/fd
+[commissionerg]
+commissionerg 03/23/2023 1:59 AM
+(no content)
+[image.png]
+ image.png
+28.51 KB External
+hellobox. 03/23/2023 1:58 AM
+ls -l
+[commissionerg]
+commissionerg 03/23/2023 1:58 AM
+am i doing this wrong
+03/23/2023 1:58 AM
+(no content)
+[image.png]
+ image.png
+22.54 KB External
+hellobox. 03/23/2023 1:57 AM
+maybe check /proc/<pid>/fd and see what they have open
+03/23/2023 1:56 AM
+you're going to have to figure out which of those is the right one
+[commissionerg]
+commissionerg 03/23/2023 1:56 AM
+3637 6535
+hellobox. 03/23/2023 1:55 AM
+try pgrep node
+[commissionerg]
+commissionerg 03/23/2023 1:53 AM
+how do I do that exactly?
+hellobox. 03/23/2023 1:52 AM
+try getting the pid and using -p (edited)
+03/23/2023 1:52 AM
+ugh
+[commissionerg]
+commissionerg 03/23/2023 1:49 AM
+(no content)
+[image.png]
+ image.png
+28.61 KB External
+hellobox. 03/23/2023 1:48 AM
+so in another session try node debug localhost:5885 i guess
+03/23/2023 1:47 AM
+ooh https://nodejs.org/docs/v0.12.2/api/debugger.html
+    The V8 debugger can be enabled and accessed either by starting Node with the --debug command-line flag or by signaling an existing Node process with SIGUSR1.
+(edited)
+[commissionerg]
+commissionerg 03/23/2023 1:47 AM
+yes
+hellobox. 03/23/2023 1:46 AM
+what version of node do you have? 0.12.2?
+03/23/2023 1:46 AM
+no, because it's checking that they're just digits
+03/23/2023 1:45 AM
+well
+03/23/2023 1:45 AM
+you might be able to create those files and set the ip there
+03/23/2023 1:45 AM
+                    ares_config="$SERVICE_PATH/_ares"
+                    if [ -f "$ares_config/debugger-port" ]; then
+                            debug=on
+                            debugger_port=`cat "$ares_config/debugger-port"`
+                            case "$debugger_port" in
+                                    [0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9]) ;;
+                                    * ) debugger_port=5885 ;;
+                            esac
+                            echo "setting debugger port to $debugger_port"
+                    fi
+                    if [ -f "$ares_config/inspector-port" ]; then
+                            debug=on
+                            inspector_port=`cat "$ares_config/inspector-port"`
+                            case "$inspector_port" in
+                                    [0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9]) ;;
+                                    * ) inspector_port=8080 ;;
+                            esac
+                            echo "setting inspector port to $inspector_port"
+                    fi
+03/23/2023 1:45 AM
+actually run-js-service from 4.0.0 doesn't have the "127.0.0.1" i'm
+replacing
+[commissionerg]
+[] commissionerg gettin this
+commissionerg 03/23/2023 1:43 AM
+i tried 0.0.0.0:8080 on the tv and got the exact same thing as this
+hellobox. 03/23/2023 1:41 AM
+this is in run-js-service from webos 4.0.0
+    if [ $debug = on ] ; then
+            timeouts=off
+            INSPECTOR_DIR="/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/"
+            if [ -f "${INSPECTOR_DIR}/node-inspector.sh" ] ; then
+                    # call node-inspector.sh script in DevMode app
+                    chmod +x ${INSPECTOR_DIR}/node-inspector.sh
+                    ${INSPECTOR_DIR}/node-inspector.sh ${inspector_port}
+            else
+                    # if DevMode app is not available, see if "node-inspector" is available (on path)
+                    inspector_interface="`ifconfig eth0|grep 'inet addr'|cut -d':' -f2|cut -d' ' -f1`"
+                    # check if node-inspector is not already running
+                    if [ -z "$(pgrep -f node-inspector)" ]; then
+                            node-inspector --web-port=${inspector_port} --web-host=${inspector_interface} &
+                    fi
+                    # unified services should send USR1 signal to node process
+                    if [ $unified = on ]; then
+                            pkill -USR1 -f unified_service_server
+                    fi
+            fi
+            COMMAND_STRING="$JS_ENGINE --debug=$debugger_port $COMMON_OPTIONS"
+    else
+            COMMAND_STRING="$JS_ENGINE $COMMON_OPTIONS"
+    fi
+03/23/2023 1:40 AM
+or you can change 0.0.0.0 to the tv's ip in run-js-service
+03/23/2023 1:40 AM
+maybe
+03/23/2023 1:40 AM
+eh
+[commissionerg]
+commissionerg 03/23/2023 1:40 AM
+try it on the tv's browser?
+hellobox. 03/23/2023 1:39 AM
+it's probably trying to connect to 0.0.0.0
+[commissionerg]
+commissionerg 03/23/2023 1:38 AM
+gettin this
+[image.png]
+ image.png
+24.22 KB External
+hellobox. 03/23/2023 1:37 AM
+there's probably an easier way to do this that i'm overlooking...
+03/23/2023 1:36 AM
+just replace 0.0.0.0 with your tv's ip
+03/23/2023 1:36 AM
+i guess you can try going to that url in your browser
+[commissionerg]
+commissionerg 03/23/2023 1:36 AM
+ok
+hellobox. 03/23/2023 1:36 AM
+in which case i guess you'd need node-inspector
+03/23/2023 1:36 AM
+oh, it might be the old node.js debug protocol
+[commissionerg]
+commissionerg 03/23/2023 1:35 AM
+(no content)
+[image.png]
+ image.png
+63.9 KB External
+03/23/2023 1:34 AM
+thanks
+hellobox. 03/23/2023 1:34 AM
+cd /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+(edited)
+[commissionerg]
+commissionerg 03/23/2023 1:34 AM
+how do I get to the directory to run it?
+hellobox. 03/23/2023 1:33 AM
+from the hbchannel service directory
+03/23/2023 1:33 AM
+run
+./run-js-service -n -k -d /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+03/23/2023 1:33 AM
+definitely don't reboot in case it broke something
+03/23/2023 1:32 AM
+no
+[commissionerg]
+commissionerg 03/23/2023 1:32 AM
+reboot and try?
+03/23/2023 1:32 AM
+okay that's the file updated
+hellobox. 03/23/2023 1:31 AM
+debugging still wouldn't be enabled without -d
+03/23/2023 1:30 AM
+@infowski what do you think about making that permanent?
+[commissionerg]
+commissionerg 03/23/2023 1:30 AM
+two secs
+03/23/2023 1:30 AM
+i'm so smart
+hellobox. 03/23/2023 1:30 AM
+yes
+[commissionerg]
+commissionerg 03/23/2023 1:29 AM
+that's two commands right?
+hellobox. 03/23/2023 1:28 AM
+fixed (edited)
+03/23/2023 1:28 AM
+try this
+    cp /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service.orig
+    cat >/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service <<"__EOF__"
+    #! /bin/sh
+    # :^)
+    eval "$(cat /usr/bin/run-js-service | sed -e 's/^thirdparty_jail=.*/thirdparty_jail=off/' -e 's@/var/luna/preferences/devmode_enabled@/etc/hosts@' -e 's/127\.0\.0\.1/0.0.0.0/')"
+    __EOF__
+(edited)
+[commissionerg]
+commissionerg 03/23/2023 1:26 AM
+how to replace the text in the file then?
+hellobox. 03/23/2023 1:26 AM
+wrong line ending
+[] commissionerg safe to just do this in notepad yeh?
+hellobox. 03/23/2023 1:26 AM
+probably not
+[commissionerg]
+commissionerg 03/23/2023 1:24 AM
+I have a copy backed up now
+[commissionerg]
+hellobox. back up
+`/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service`,
+an...
+commissionerg 03/23/2023 1:23 AM
+safe to just do this in notepad yeh?
+hellobox. 03/23/2023 1:22 AM
+and in another session, run
+luna-send -n 1 'luna://org.webosbrew.hbchannel.service/updateStartupScript' '{}'
+03/23/2023 1:21 AM
+then use chrome://inspect
+03/23/2023 1:19 AM
+back up
+/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service,
+and then replace its contents with that
+03/23/2023 1:19 AM
+    #! /bin/sh
+    # :^)
+    eval "$(cat /usr/bin/run-js-service | sed -e 's/^thirdparty_jail=.*/thirdparty_jail=off/' -e 's@/var/luna/preferences/devmode_enabled@/etc/hosts@' -e 's/127\.0\.0\.1/0.0.0.0/')"
+[commissionerg]
+commissionerg 03/23/2023 1:18 AM
+root@LGwebOSTV:~# /usr/bin/run-js-service Service path not specified.
+Exiting.
+hellobox. 03/23/2023 1:17 AM
+we can just use hbchannel's run-js-service
+03/23/2023 1:16 AM
+actually
+03/23/2023 1:16 AM
+send me your /usr/bin/run-js-service
+03/23/2023 1:15 AM
+    root@lg-k8ap_1[k8ap 7.0.0]:~# ./run-js-service.hack -n -k -d /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+    SERVICE_PATH is /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+    <13>Mar 22 20:15:32 root: [run-js-service] FULL_SERVICE_NAME  org.webosbrew.hbchannel.service
+    Debugger listening on ws://127.0.0.1:5885/df5f3484-ee9a-432d-b8f8-4703f087e086
+    For help, see: https://nodejs.org/en/docs/inspector
+    Unable to get cgroup: Error: EACCES: permission denied, open '/tmp/run-js-service-no-cgroup'
+    (node:6574) [DEP0025] DeprecationWarning: sys is deprecated. Use util instead.
+    no active activities, would exit, but timeout is disabled
+[commissionerg]
+commissionerg 03/23/2023 1:15 AM
+if this is straightforward enough I'm willing to try
+03/23/2023 1:14 AM
+well I have no idea lol just relying on your guidance here
+hellobox. 03/23/2023 1:13 AM
+and either run the modified one elsewhere or bind mount over the
+original
+03/23/2023 1:13 AM
+i guess you could patch out the check for devmode_enabled
+03/23/2023 1:12 AM
+i'm not sure how run-js-service sets up the environment
+03/23/2023 1:07 AM
+hmm, it starts but quits
+    Deprecated security model is used. Please update configuration for ACG security model.
+    no active activities, exiting
+03/23/2023 1:05 AM
+            FRAMEWORKS_PATH=/usr/palm/frameworks
+            NODE_ADDONS=/usr/lib/nodejs:/usr/lib/node_modules
+            NODE=/usr/bin/node
+            BIN_PATH=/usr/bin
+            SERVICE_LAUNCHER=/usr/palm/services/jsservicelauncher
+03/23/2023 1:05 AM
+i'm not sure how exactly run-js-service runs node
+[commissionerg]
+commissionerg 03/23/2023 1:05 AM
+TV's IP is 192.168.0.19
+03/23/2023 1:04 AM
+4.4.0
+hellobox. 03/23/2023 1:03 AM
+what webos version do you have?
+03/23/2023 1:03 AM
+lg's dev mode app comes with node-inspector i think
+03/23/2023 1:02 AM
+https://nodejs.org/en/docs/guides/debugging-getting-started
+[commissionerg]
+commissionerg 03/23/2023 1:02 AM
+ok so how would I go about doing that exactly?
+hellobox. 03/23/2023 1:01 AM
+i guess you could just try to run it with node
+03/23/2023 1:01 AM
+lol actually it checks whether devmode_enabled is a file
+[commissionerg]
+commissionerg 03/23/2023 1:00 AM
+okay you've lost me there
+hellobox. 03/23/2023 12:59 AM
+but it might only bind to localhost
+03/23/2023 12:59 AM
+it's -d to run-js-service
+03/23/2023 12:59 AM
+i'm looking
+[commissionerg]
+commissionerg 03/23/2023 12:59 AM
+where is that option please?
+hellobox. 03/23/2023 12:56 AM
+you might be able to get it to launch with debugging enabled
+[commissionerg]
+commissionerg 03/23/2023 12:53 AM
+seems to be yeah
+hellobox. 03/23/2023 12:53 AM
+is the error message the only problem?
+[commissionerg]
+commissionerg 03/23/2023 12:52 AM
+I have auto updates disabled and domains blocked in pihole (edited)
+03/23/2023 12:52 AM
+I still have both dev app and hb app installed, should I just leave
+everything as it is and check back again in a while?
+03/23/2023 12:51 AM
+i see
+hellobox. 03/23/2023 12:50 AM
+the problem is in the service
+03/23/2023 12:50 AM
+not that i know of
+[commissionerg]
+commissionerg 03/23/2023 12:41 AM
+is there any log file for homebrew dash or something
+hellobox. 03/23/2023 12:40 AM
+although that probably wouldn't cause this error
+03/23/2023 12:40 AM
+i guess make sure all the other files are updated
+[commissionerg]
+commissionerg 03/23/2023 12:39 AM
+I wouldn't know how to check but happy to try
+[] commissionerg hey again, any further ideas on this? thanks
+hellobox. 03/23/2023 12:38 AM
+it would help if we knew what line that error was happening on
+[commissionerg]
+hellobox. he seems to have had old `service.js`, but even after getting
+the 0.6.3 version he was getting the s...
+commissionerg 03/23/2023 12:37 AM
+hey again, any further ideas on this? thanks
+hellobox. what region?
+cutthecord. 03/23/2023 12:18 AM
+Austria (EU)
+[enigmacarpc]
+[] infowski It's more likely to break *new* crashd installation flow,
+but not any existing rooted devices.
+enigmacarpc 03/23/2023 12:02 AM
+Trying it now thanks
+March 22, 2023
+cutthecord. I have now unchecked "Nutzungsbedingungen" (Terms of use)
+and answered the "Are you sure?" with yes....
+hellobox. 03/22/2023 11:39 PM
+what region?
+cutthecord. 03/22/2023 9:53 PM
+So thx @infowski for the hint. I was checking all faq's from the crash'd
+github and also checked the two EULA entries if they are true, and the
+was. So can anybody add a little note for "When autostart is not
+working, uncheck all EULAs and retry until they are unchecked. Then
+enable the the two (in my case just TOP one)"
+03/22/2023 9:51 PM
+I have now unchecked "Nutzungsbedingungen" (Terms of use) and answered
+the "Are you sure?" with yes. The TV rebooted and autostart IS working
+again! Checked the settings again and "Terms of use" was checked, but i
+have unchecked it!?!?! Unchecked it again and answered again with "Yes".
+TV set rebooted and now autostart did not work and "Terms of use" was
+unchecked. After checking it again and do a final reboot autostart is
+working again! This is weird, it now works as it should. The output from
+the json is the same as before but autostart is working: luna-send-pub
+-f -n 1 'luna://com.webos.settingsservice/getSystemSettings'
+'{"keys":["eulaStatus"]}' { "subscribed": false, "method":
+"getSystemSettings", "settings": { "eulaStatus": { "additional3Allowed":
+false, "additionalDataAllowed": false, "takeOnAllowed": false,
+"additional2Allowed": false, "additional1Allowed": false,
+"networkAllowed": true, "generalTermsAllowed": true, "chpAllowed": true,
+"veranceOnAllowed": false, "customAdAllowed": false, "acrOnAllowed":
+false, "remoteDiagAllowed": false, "thirdPartySharingAllowed": false,
+"shoppingOnAllowed": false, "cookiesAllowed": false, "customadsAllowed":
+false, "additional5Allowed": false, "acrAllowed": false,
+"voice2Allowed": false, "voiceAllowed": false, "additional4Allowed":
+false, "acrGdprAllowed": false, "acrAdAllowed": false } },
+"returnValue": true }
+cutthecord. 03/22/2023 9:39 PM
+i am missing the second point!? Can anyone confirm that is is missing in
+a similar webos version?
+03/22/2023 9:39 PM
+And this is mine:
+[IMG_20230322_213252.jpg]
+ IMG_20230322_213252.jpg
+630.64 KB External
+03/22/2023 9:37 PM
+BUT, This is the screen from the crash'd:
+[216712611-7231e361-32f4-4f99-b95b-9fc62b65000c.png]
+ 216712611-7231e361-32f4-4f99-b95b-9fc62b65000c.png
+76.99 KB External
+03/22/2023 9:36 PM
+Should be ok, as stated on the crash'd link FAQ: The "Terms of Use" and
+"Privacy Policy" agreements correspond to networkAllowed and
+generalTermsAllowed, respectively.
+03/22/2023 9:35 PM
+Output from cmd: /var/lib/webosbrew/init.d# luna-send-pub -f -n 1
+'luna://com.webos.settingsservice/getSystemSettings'
+'{"keys":["eulaStatus"]}'
+03/22/2023 9:34 PM
+not to my knowledge. but my wife and son are also using the tv. Maybe
+they have changed something. Here is the output: { "subscribed": false,
+"method": "getSystemSettings", "settings": { "eulaStatus": {
+"additional3Allowed": false, "additionalDataAllowed": false,
+"takeOnAllowed": false, "additional2Allowed": false,
+"additional1Allowed": false, "networkAllowed": true,
+"generalTermsAllowed": true, "chpAllowed": true, "veranceOnAllowed":
+false, "customAdAllowed": false, "acrOnAllowed": false,
+"remoteDiagAllowed": false, "thirdPartySharingAllowed": false,
+"shoppingOnAllowed": false, "cookiesAllowed": false, "customadsAllowed":
+false, "additional5Allowed": false, "acrAllowed": false,
+"voice2Allowed": false, "voiceAllowed": false, "additional4Allowed":
+false, "acrGdprAllowed": false, "acrAdAllowed": false } },
+"returnValue": true }
+[infowski]
+infowski 03/22/2023 9:17 PM
+make sure general terms are allowed
+03/22/2023 9:17 PM
+have you changed something in EULAs?
+cutthecord. 03/22/2023 9:15 PM
+I have crash'd my TV back over a half year, blocked updates and it was
+flawless up until now. Have not made an firmware update or apps update.
+03/22/2023 9:14 PM
+Any hints what i can check why autostart (startup.sh) is not running but
+when ill open HBC piccap & hyperion immidiattly starts up.
+hellobox. check if (symlinks to) the piccap/hyperion startup scripts
+exist in `/var/lib/webosbrew/init.d`
+cutthecord. 03/22/2023 9:12 PM
+yes, they are there: lrwxrwxrwx 1 root root 93 Aug 16 2022
+90-start_hyperiond ->
+/media/developer/apps/usr/palm/services/org.webosbrew.hyperion.ng.loader.service/autostart.sh
+lrwxrwxrwx 1 root root 84 Oct 22 19:46 piccapautostart ->
+/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/piccapautostart
+cutthecord. 03/22/2023 9:11 PM
+/var/lib/webosbrew/startup.sh is there and the curent one
+03/22/2023 9:11 PM
+also /var/luna/preferences/webosbrew_failsafe does not exist
+hellobox. webos 6?
+cutthecord. 03/22/2023 9:11 PM
+Yes, version is: WebOS Version: 6.3.1-411 (kisscurl-kinglake)
+[infowski]
+infowski 03/22/2023 8:31 PM
+It's more likely to break new crashd installation flow, but not any
+existing rooted devices.
+[enigmacarpc]
+timcook4825 I updated to 03.30.45 on my G2 without problems
+enigmacarpc 03/22/2023 7:44 PM
+Thanks. (edited)
+timcook4825 03/22/2023 7:38 PM
+I updated to 03.30.45 on my G2 without problems
+[enigmacarpc]
+enigmacarpc 03/22/2023 7:27 PM
+Does anyone know if the latest LG updates break CrasHD? My C2 is asking
+to update to 03.34.70 and my G2 03.30.45. Thanks
+[infowski]
+infowski 03/22/2023 9:37 AM
+(by break I mean - set invalid static IP address - I had a script
+somewhere that did that and it seemed to work pretty well, but your
+mileage may vary. Blocking domains on local DNS server is the preferred
+method)
+03/22/2023 9:36 AM
+If you don't use your TV solely for streaming or something, that can
+work pretty well...
+03/22/2023 9:36 AM
+Yeah. There's an alternative option - which will intentionally break
+networking on your TV until startup scripts run.
+[jaz1140]
+[] infowski
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#why-do-i-still-see-update-notif...
+jaz1140 03/22/2023 9:35 AM
+I see. Thank you. So auto updates are off but will still see the
+notification as it loads before the homebrew 
+[infowski]
+[] jaz1140 I did this exploit on my CX OLED and has been working great.
+Just now I got the notification that a ...
+infowski 03/22/2023 9:33 AM
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f#why-do-i-still-see-update-notifications
+crashd instructions
+crashd instructions. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+[jaz1140]
+jaz1140 03/22/2023 9:24 AM
+I did this exploit on my CX OLED and has been working great. Just now I
+got the notification that a software update in available. I obviously
+hit no. But when following this guide I thought it would turn off update
+and notifications? crashd exploit guide, working as of 2023-02-09:
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f
+hellobox. 03/22/2023 12:54 AM
+they've only tried to do it through the dev mode app/config so far
+03/22/2023 12:54 AM
+i don't know why they haven't
+03/22/2023 12:53 AM
+it would be pretty trivial to fix
+[rama6392]
+rama6392 03/22/2023 12:52 AM
+But funny
+03/22/2023 12:52 AM
+Lol, i though if they wanted to fix it they would, or it's easy, like
+disallowing to execute crashd over telnet simply 
+hellobox. 03/22/2023 12:50 AM
+the jail_app.conf stuff
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f
+[rama6392]
+rama6392 03/22/2023 12:50 AM
+Really? Or just kidding? 
+hellobox. 03/22/2023 12:50 AM
+well, more of a workaround or mitigation than "patch"
+03/22/2023 12:49 AM
+at least twice now
+[] rama6392 Update: TV: LG C1 New Firmware: 03.34.80 Result: Update went
+fine, still rooted, custom ch341 driver...
+hellobox. 03/22/2023 12:48 AM
+they tried to patch crashd, but they failed
+ 1
+[rama6392]
+[] rama6392 Hey Boys, small update: TV: LG C1 New Firmware: 03.34.70
+Result: Update went fine, still rooted, cus...
+rama6392 03/22/2023 12:46 AM
+Update: TV: LG C1 New Firmware: 03.34.80 Result: Update went fine, still
+rooted, custom ch341 driver still works (thx to @hellobox ) Changelog:
+Not available/Unknown Warning: This update was somewhat big and took a
+lot of time, including that on the first boot after the update, the TV
+showed an Update screen that i never seen on any updates before. So
+whatever they changed it felt like a big update. Nothing changed,
+everything is looking the same, at least i can't spot anything new. But
+webos, or the Homescreen feels somewhat a little bit slower now.
+However, be warned, while here the update worked and i still have root,
+it is actually possible this time that they fixed the telnet hole. I
+don't believe it, but it's possible. Cheers
+March 21, 2023
+hellobox. 03/21/2023 10:52 PM
+check if (symlinks to) the piccap/hyperion startup scripts exist in
+/var/lib/webosbrew/init.d (edited)
+03/21/2023 10:51 PM
+so autostart should be fine
+03/21/2023 10:51 PM
+oh, yeah
+cutthecord. Hey guys, i have the following setup: OLED65B19LA Firmware
+03.33.11 HBC 0.6.3 -> Root status ok Pic...
+hellobox. 03/21/2023 10:51 PM
+webos 6?
+cutthecord. 03/21/2023 10:50 PM
+Hey guys, i have the following setup: OLED65B19LA Firmware 03.33.11 HBC
+0.6.3 -> Root status ok Piccap 0.4.3 Hyperion.NG 0.1.10 Since a few days
+autostart of piccap and Hyperion doesn't work. Today I have updated to
+versions above. Except the OLED Firmware which is from 06/2022 and
+updates are blocked in the router. When I'll start HBC manually, it
+starts piccap and Hyperion and all is working. In HBC SSH and telnet are
+active. Autostart always worked with this firmware. Any hints what could
+be the issue? Thx
+hellobox. 03/21/2023 10:14 PM
+he's on webos 3.9; it's just not going to work
+[] wetter1 Click to see attachment
+tail0r 03/21/2023 10:13 PM
+Do you have the dev mode add installed when you did the exploit?
+t is required to remove "Developer Mode" app before rooting. Otherwise it will interfere with the startup script used to bootstrap the jailbreak. SSH service exposed by Homebrew Channel is compatible with webOS SDK tooling.
+Deleted User 03/21/2023 7:55 PM
+i dont think so
+[wetter1]
+wetter1 03/21/2023 7:53 PM
+maybe i can change jail_app ?@Deleted User
+[image.png]
+ image.png
+26.96 KB External
+Deleted User 03/21/2023 7:35 PM
+it might not be necessary since the timer should now last 1000 hours
+03/21/2023 7:35 PM
+im not sure
+03/21/2023 7:35 PM
+hm
+[wetter1]
+wetter1 03/21/2023 7:34 PM
+i click on but nothing happening
+03/21/2023 7:34 PM
+yes
+[] wetter1 devmode timer ipk not working for me.. not opening
+Deleted User 03/21/2023 7:34 PM
+did you install it on the tv?
+[wetter1]
+wetter1 03/21/2023 7:33 PM
+devmode timer ipk not working for me.. not opening
+[wetter1]
+Deleted User and currently the only way to root a tv on that version is
+by disassembling the tv and writing to an...
+wetter1 03/21/2023 7:32 PM
+how i can auto reset dev mode?
+[wetter1]
+wetter1 03/21/2023 7:14 PM
+sad news
+Deleted User 03/21/2023 7:11 PM
+and currently the only way to root a tv on that version is by
+disassembling the tv and writing to an EEPROM on the motherboard
+ 1
+[wetter1]
+wetter1 03/21/2023 7:11 PM
+so i cant root?
+Deleted User 03/21/2023 7:11 PM
+i dont think crashd is supported on that version
+03/21/2023 7:10 PM
+oh, youre on webos 3.9.0
+[] wetter1 Click to see attachment
+Deleted User 03/21/2023 7:10 PM
+hmm
+[wetter1]
+Deleted User im not sure how you accept all of them
+wetter1 03/21/2023 7:06 PM
+This?
+[wetter1]
+wetter1 03/21/2023 7:05 PM
+(no content)
+[IMG_20230321_200521.jpg]
+ IMG_20230321_200521.jpg
+763.8 KB External
+Deleted User 03/21/2023 7:01 PM
+it might be in the settings somewhere
+03/21/2023 7:01 PM
+im not sure how you accept all of them
+03/21/2023 7:00 PM
+it might be the EULAs
+03/21/2023 7:00 PM
+hm
+[wetter1]
+Deleted User ok, what command did you enter?
+wetter1 03/21/2023 6:59 PM
+@Deleted User
+[wetter1]
+wetter1 03/21/2023 6:58 PM
+no outputs in terminal
+03/21/2023 6:58 PM
+touch /var/log/crashd/"x;telnetd -l sh"
+03/21/2023 6:58 PM
+echo lol>/media/developer/jail_app.conf
+03/21/2023 6:57 PM
+(no content)
+[image.png]
+ image.png
+13.02 KB External
+Deleted User 03/21/2023 6:56 PM
+it should output a number
+03/21/2023 6:56 PM
+also, run pgrep telnetd
+03/21/2023 6:56 PM
+the touch command
+03/21/2023 6:56 PM
+for crashd
+[] wetter1 This command will tell you which EULAs have been accepted:
+Deleted User 03/21/2023 6:56 PM
+ok, what command did you enter?
+[wetter1]
+wetter1 03/21/2023 6:55 PM
+im trying with this tutorial
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f
+crashd instructions
+crashd instructions. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+[wetter1]
+Deleted User whats that?
+wetter1 03/21/2023 6:55 PM
+This command will tell you which EULAs have been accepted:
+[] wetter1 Click to see attachment
+Deleted User 03/21/2023 6:50 PM
+whats that?
+[wetter1]
+wetter1 03/21/2023 6:48 PM
+i stuck on part 9, cant connect to putty
+03/21/2023 6:48 PM
+(no content)
+[image.png]
+ image.png
+28.46 KB External
+[sevastianisback]
+sevastianisback 03/21/2023 6:47 PM
+emoji fail
+03/21/2023 6:47 PM
+[:rtk:]
+[] wetter1 Click to see attachment
+Deleted User 03/21/2023 6:46 PM
+that looks connected
+[] sevastianisback Back in my day I had to work with
+<@456226577798135808> all night and do it manually and look at log...
+Deleted User 03/21/2023 6:45 PM
+lol
+[wetter1]
+wetter1 03/21/2023 6:15 PM
+downgrade not working 
+03/21/2023 6:14 PM
+.
+[image.png]
+ image.png
+25.58 KB External
+03/21/2023 6:13 PM
+(no content)
+[image.png]
+ image.png
+6.16 KB External
+03/21/2023 6:12 PM
+tried
+[kitsuned]
+kitsuned 03/21/2023 6:12 PM
+try putty
+[wetter1]
+wetter1 03/21/2023 6:12 PM
+(no content)
+[image.png]
+ image.png
+7.14 KB External
+[wetter1]
+[] kitsuned
+https://discord.com/channels/407937994037919756/822443030761046017/1070115955851677726
+wetter1 03/21/2023 6:12 PM
+cant connect
+[kitsuned]
+[] wetter1 lg 06.10.30 possible to root?
+kitsuned 03/21/2023 6:09 PM
+https://discord.com/channels/407937994037919756/822443030761046017/1070115955851677726
+[wetter1]
+wetter1 03/21/2023 5:49 PM
+i have dev app, cant connect with putty or dev mannager..
+03/21/2023 5:48 PM
+(no content)
+[image.png]
+ image.png
+5.62 KB External
+[wetter1]
+wetter1 03/21/2023 5:31 PM
+After reboot no homebrew app
+03/21/2023 5:30 PM
+(no content)
+[IMG_20230321_182913.jpg]
+ IMG_20230321_182913.jpg
+584.53 KB External
+03/21/2023 5:24 PM
+lg 06.10.30 possible to root? (edited)
+[sevastianisback]
+sevastianisback 03/21/2023 1:34 PM
+[]
+[sevastianisback]
+[] infowski
+https://gist.github.com/Simon34545/fc5c91e0456789dd7a56a947c1148939#file-keymap-txt-L348
+here's a li...
+sevastianisback 03/21/2023 1:33 PM
+Back in my day I had to work with @Deleted User all night and do it
+manually and look at logs on pc to find each button id
+March 20, 2023
+[coderrrs]
+coderrrs 03/20/2023 2:06 AM
+No problem. Good to know.
+[zactrife]
+[] coderrrs What's webOS are you on? Tv? I can't find a way for it to
+work.
+zactrife 03/20/2023 1:51 AM
+Sorry for the late reply, mine's 49UM7300PPA. 4.9.71(goldilocks2) at
+5.30.30 sv, im using magic remote.
+March 19, 2023
+[coderrrs]
+[] zactrife Okay, it worked! Thanks a lot
+coderrrs 03/19/2023 8:01 PM
+What's webOS are you on? Tv? I can't find a way for it to work.
+[qmuath]
+qmuath 03/19/2023 3:41 PM
+Thank you brother
+hellobox. 03/19/2023 3:41 PM
+you can try this
+https://forum.xda-developers.com/t/getmein-one-time-rooting-jailbreaking-tool-for-webos-lg-tvs.3887904/
+[qmuath]
+qmuath 03/19/2023 3:41 PM
+I found it, webos 2.2.3
+hellobox. 03/19/2023 3:41 PM
+in which case it's too old for rootmytv and crashd
+03/19/2023 3:40 PM
+i think it might have webos 2
+03/19/2023 3:40 PM
+that's the firmware version, not the webos version
+[qmuath]
+qmuath 03/19/2023 3:39 PM
+Uf830T
+[qmuath]
+hellobox. i.e., what webos version?
+qmuath 03/19/2023 3:39 PM
+04.26.35
+[qmuath]
+qmuath 03/19/2023 3:38 PM
+It’s old maybe 2016
+hellobox. 03/19/2023 3:37 PM
+i.e., what webos version?
+03/19/2023 3:36 PM
+how old is that tv?
+03/19/2023 3:36 PM
+wait
+03/19/2023 3:36 PM
+it's patched. see pinned messages for crashd
+[qmuath]
+qmuath 03/19/2023 3:35 PM
+Stuck here, what i have to do?
+[A42BF040-70AA-4575-B186-FBA9A05C0646.jpg]
+ A42BF040-70AA-4575-B186-FBA9A05C0646.jpg
+4.42 MB External
+03/19/2023 3:35 PM
+Im sorry but there is another issue
+03/19/2023 3:33 PM
+Thank you so much
+[] qmuath When I press on arrow to slide it’s not moving
+hellobox. 03/19/2023 3:33 PM
+try pressing 5
+[qmuath]
+[] qmuath Hello there, I have an issue that’s i can’t slide to root
+qmuath 03/19/2023 3:32 PM
+When I press on arrow to slide it’s not moving
+[qmuath]
+qmuath 03/19/2023 3:30 PM
+Hello there, I have an issue that’s i can’t slide to root
+hellobox. 03/19/2023 3:30 PM
+see pinned messages
+[abde93_]
+abde93_ 03/19/2023 3:23 PM
+Hello my tv 43UM7340PVA rootmytv on work is there a solution ?
+[zactrife]
+[] infowski I've linked a specific line with its code 
+zactrife 03/19/2023 3:15 PM
+Okay, it worked! Thanks a lot
+[zactrife]
+zactrife 03/19/2023 3:11 PM
+I see it, thanksss
+[infowski]
+infowski 03/19/2023 3:10 PM
+It's called "Amazon".
+ 1
+03/19/2023 3:10 PM
+I've linked a specific line with its code 
+[zactrife]
+[] infowski
+https://gist.github.com/Simon34545/fc5c91e0456789dd7a56a947c1148939#file-keymap-txt-L348
+here's a li...
+zactrife 03/19/2023 3:10 PM
+Oww thankss! Ill look if it includes the prime video button
+[zactrife]
+zactrife 03/19/2023 3:09 PM
+Ok i will try
+[infowski]
+infowski 03/19/2023 3:09 PM
+https://gist.github.com/Simon34545/fc5c91e0456789dd7a56a947c1148939#file-keymap-txt-L348
+here's a list of buttons though 
+Keycodes extracted from decompiled network-input-service binary (LG)
+Keycodes extracted from decompiled network-input-service binary (LG) -
+keymap.txt
+[]
+03/19/2023 3:08 PM
+Theres a URL and password at the top of lginput configuration UI
+03/19/2023 3:08 PM
+Try connecting to the configuration interface via separate browser on
+the local network
+03/19/2023 3:07 PM
+I think the button id should still show up in the logs
+[zactrife]
+zactrife 03/19/2023 3:02 PM
+Hi guys! I have a magic remote and im trying to assign the prime video
+button with disney+. The problem is i need the button ID but pressing
+the button to check id in the LG input hook app it just open store page
+for prime video, does anyone know the button ID? To thanks a lot!
+March 18, 2023
+[sevastianisback]
+[] infowski truly poggers.
+sevastianisback 03/18/2023 11:14 PM
+Indeed
+[infowski]
+infowski 03/18/2023 10:03 PM
+truly poggers.
+[sevastianisback]
+[] andreasilvestri <@638002657268596765>
+sevastianisback 03/18/2023 9:47 PM
+Alright, very pog, I don't see any reason to mod then except for the
+things that require root lol
+[eikichi_ed]
+eikichi_ed 03/18/2023 9:16 PM
+Because I can't find bluetooth on my TV
+03/18/2023 9:15 PM
+Does an homebrew exist to have bluetooth on your LG TV
+[yolofant]
+yolofant 03/18/2023 8:18 PM
+check the pins for crashd
+[slash4k]
+slash4k 03/18/2023 8:00 PM
+Anyone knows how to root WebOs 6.3.2 ? I can install homebrew, but since
+i dont have root is allways uninstaling due dev mode timout
+[eikichi_ed]
+eikichi_ed 03/18/2023 4:12 PM
+how to connect your controller on moonlight
+[andreasilvestri]
+andreasilvestri 03/18/2023 4:05 PM
+@Sevastian
+03/18/2023 4:05 PM
+to send that request every 48 hrs
