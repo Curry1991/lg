@@ -1,0 +1,1444 @@
+October 20, 2020
+[inntremux6471]
+inntremux6471 10/20/2020 10:16 PM
+i think for my pkg structure is different (int8_t product_name[40]
+doean't get in) (edited)
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 10/20/2020 10:16 PM
+meh shouldn't matter it looks like? (edited)
+[smx2460]
+smx2460 10/20/2020 10:15 PM
+    struct __attribute__((packed)) mtkupg_header {
+        int8_t vendor_magic[4];
+        int8_t mtk_magic[8]; //MTK_FIRMWARE_MAGIC
+        int8_t vendor_info[60]; //version and other stuff
+        uint32_t fileSize;
+        uint32_t platform; //0x50 on sharp. Platform type? (unsure)
+        int8_t product_name[40];
+        uint32_t unk; //0x51
+        uint32_t unk1; //0
+        uint8_t hmac[16];
+    };
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 10/20/2020 10:15 PM
+would the first 16 bytes being wrong matter for extraction? what else is
+there other than the magic value
+[smx2460]
+smx2460 10/20/2020 10:15 PM
+Which has a vendor magic in it
+10/20/2020 10:15 PM
+"mtkupg_header" structure (edited)
+[inntremux6471]
+inntremux6471 10/20/2020 10:14 PM
+what supossed to be first 16bytes, some magic?
+[smx2460]
+smx2460 10/20/2020 10:14 PM
+And I will do, probably not now
+10/20/2020 10:14 PM
+I need to see if the code didn't break
+10/20/2020 10:13 PM
+Try manually
+10/20/2020 10:13 PM
+And not 0
+[inntremux6471]
+inntremux6471 10/20/2020 10:13 PM
+i've tryed, not working
+[smx2460]
+smx2460 10/20/2020 10:13 PM
+If so IV is 555*
+10/20/2020 10:13 PM
+Try swapping key and iv
+10/20/2020 10:13 PM
+When I was given the key it was like that and it worked, so I don't know
+if it was luck or they changed it
+[inntremux6471]
+inntremux6471 10/20/2020 10:12 PM
+but the second is working as the key, first doesn't work as key nor iv
+(edited)
+[smx2460]
+smx2460 10/20/2020 10:12 PM
+The second half is the iv
+10/20/2020 10:12 PM
+The first half is the key
+[inntremux6471]
+inntremux6471 10/20/2020 10:11 PM
+55555555555555555555555555555555,B1BFAA407F70C80C650379DFEAFAA40F // TCL
+2017
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 10/20/2020 10:11 PM
+do you know what the plaintext of the first 16 bytes is supposed to be?
+take that, XOR it with the output you actually get and that's your IV
+[smx2460]
+smx2460 10/20/2020 10:11 PM
+No it's not
+[inntremux6471]
+inntremux6471 10/20/2020 10:10 PM
+it is in MTK.key
+[smx2460]
+smx2460 10/20/2020 10:10 PM
+I mean where did you obtain that key
+10/20/2020 10:10 PM
+How did you find aes (edited)
+[inntremux6471]
+inntremux6471 10/20/2020 10:10 PM
+aes key is ok but how i can find IV?
+[smx2460]
+smx2460 10/20/2020 10:07 PM
+And writing them requires some effort or samples
+10/20/2020 10:07 PM
+Sadly epk2extract misses unit tests
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 10/20/2020 10:07 PM
+so the IV is wrong
+[smx2460]
+smx2460 10/20/2020 10:06 PM
+But it's not supposed to segfault
+[inntremux6471]
+inntremux6471 10/20/2020 10:06 PM
+key is right, only first 16bytes are wrong
+[smx2460]
+smx2460 10/20/2020 10:06 PM
+I haven't tested that code in a while
+[inntremux6471]
+inntremux6471 10/20/2020 10:06 PM
+also i don't understand structure of 'sysm' image
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 10/20/2020 10:06 PM
+are you sure the key is right?
+[inntremux6471]
+inntremux6471 10/20/2020 10:05 PM
+Segmentation fault
+10/20/2020 10:05 PM
+***
+10/20/2020 10:05 PM
+PAK #1 [ENCRYPTED] (name='�ۭZ���&i�)�g0��x����&(
+[smx2460]
+smx2460 10/20/2020 10:03 PM
+(or copy the file to the build directory) (edited)
+10/20/2020 10:03 PM
+rebuild after
+10/20/2020 10:02 PM
+did you add the key to MTK.key?
+[inntremux6471]
+inntremux6471 10/20/2020 10:02 PM
+zero
+[smx2460]
+smx2460 10/20/2020 10:02 PM
+> aes cbc key B1BFAA407F70C80C650379DFEAFAA40F works btw @inntremux what
+IV
+10/20/2020 10:01 PM
+i'll put it away for later
+10/20/2020 10:01 PM
+i'm not feeling too well atm so i won't look into it
+10/20/2020 10:01 PM
+@inntremux send a link to the pkg
+[inntremux6471]
+inntremux6471 10/20/2020 9:38 PM
+it is slow as fuck
+10/20/2020 9:38 PM
+but now i understand pkg format and can extract manually
+10/20/2020 9:37 PM
+but epk2extract doesn't recognizes pkg format
+10/20/2020 9:36 PM
+successfully compiled on linux
+ww8543 10/20/2020 9:36 PM
+thats why you need to compile with cygwin
+[inntremux6471]
+inntremux6471 10/20/2020 7:35 PM
+tried compiling only lzhs but it depands on linux headers
+10/20/2020 7:34 PM
+found lzhs partitions but cannot unpack
+10/20/2020 7:33 PM
+aes cbc key B1BFAA407F70C80C650379DFEAFAA40F works btw
+10/20/2020 7:33 PM
+i tried manually decrypt fw but without luck
+[smx2460]
+smx2460 10/20/2020 7:32 PM
+yeah i added support for that stuff
+[inntremux6471]
+inntremux6471 10/20/2020 7:31 PM
+used on TCL and others
+[smx2460]
+smx2460 10/20/2020 7:31 PM
+i see
+[inntremux6471]
+inntremux6471 10/20/2020 7:31 PM
+pkg format
+10/20/2020 7:31 PM
+Mstar/Mediatek
+10/20/2020 7:31 PM
+i need it to reverse firmware
+[smx2460]
+smx2460 10/20/2020 7:30 PM
+by splitting software updates in individual partitions that you can
+manually write back
+10/20/2020 7:30 PM
+epk2extract has been used to unbrick LG TVs
+10/20/2020 7:30 PM
+unless you know what you're doing, that is
+10/20/2020 7:30 PM
+i can give you a cygwin build of epk2extract, but the output of
+epk2extract shouldn't be repacked or anything
+[inntremux6471]
+inntremux6471 10/20/2020 7:28 PM
+tried compiling on live cd but failed
+10/20/2020 7:28 PM
+currently installing ubuntu-20.04.1-desktop-amd64
+[smx2460]
+smx2460 10/20/2020 7:27 PM
+me too
+[inntremux6471]
+inntremux6471 10/20/2020 7:27 PM
+haha i'm windows guy
+[smx2460]
+smx2460 10/20/2020 7:00 PM
+if you can't get a build of epk2extract going, it's likely you don't
+need the tool at all
+10/20/2020 7:00 PM
+but not mingw/native win32, which is not supported (edited)
+10/20/2020 6:59 PM
+or use WSL
+ww8543 10/20/2020 6:59 PM
+@inntremux you can compile it yourself using cygwin (edited)
+[inntremux6471]
+inntremux6471 10/20/2020 4:42 PM
+i need to extract TCL Android TV pkg
+10/20/2020 4:36 PM
+is there any way to get epk2extract.exe, Windows version?
+10/20/2020 4:35 PM
+hi everyone
+September 13, 2020
+[kenny08105]
+kenny08105 09/13/2020 2:32 PM
+I'm just looking for a root for my set. I extrcted the filesystem from
+the 3.0 emulator (the encrypted one) but it seems to differ quite a bit
+from the latest version on my set (besides being a different arch)
+[smx2460]
+smx2460 09/13/2020 2:27 PM
+what are you looking for?
+09/13/2020 2:27 PM
+out of curiosity (edited)
+09/13/2020 2:27 PM
+> Awesome. Thank you. I'll give that a try @Kenny no problem
+[] Smx pinned a message to this channel. See all pinned messages.
+9/13/20, 2:26 PM
+[smx2460]
+smx2460 09/13/2020 2:26 PM
+List of LG models by year:
+https://24imedia.atlassian.net/wiki/spaces/2KB/pages/88771621/List+of+available+Smart+TV+models#ListofavailableSmartTVmodels-LG
+(edited)
+09/13/2020 2:25 PM
+J is 2015, H is 2014
+09/13/2020 2:25 PM
+where x is either J or H
+ 1
+09/13/2020 2:25 PM
+otherwise i'd look for Ux6 TVs
+[kenny08105]
+kenny08105 09/13/2020 2:23 PM
+Awesome. Thank you. I'll give that a try
+[smx2460]
+smx2460 09/13/2020 2:23 PM
+without the inches
+09/13/2020 2:23 PM
+or just UJ6200
+09/13/2020 2:23 PM
+try without that and you should see more
+09/13/2020 2:23 PM
+-UA is the north america variant
+[kenny08105]
+kenny08105 09/13/2020 2:23 PM
+(and I'm not sure)
+[smx2460]
+smx2460 09/13/2020 2:23 PM
+you have 55UJ6200-UA
+[kenny08105]
+kenny08105 09/13/2020 2:22 PM
+would you have a model number for an EU m16p one?
+[smx2460]
+smx2460 09/13/2020 2:22 PM
+or does canada use DVB too?
+[kenny08105]
+kenny08105 09/13/2020 2:22 PM
+perfect. That's no issue at all
+[smx2460]
+smx2460 09/13/2020 2:22 PM
+although it will be DVB and not ATSC (edited)
+09/13/2020 2:22 PM
+but yeah if you download an EU firmware it should be extractable
+09/13/2020 2:21 PM
+it's probably different
+09/13/2020 2:21 PM
+our key is EU
+09/13/2020 2:21 PM
+ok that's why
+[kenny08105]
+kenny08105 09/13/2020 2:21 PM
+Canada
+[smx2460]
+smx2460 09/13/2020 2:21 PM
+where are you from
+09/13/2020 2:21 PM
+strange tho, we have an m16p key
+09/13/2020 2:20 PM
+LX1.3 (edited)
+09/13/2020 2:20 PM
+kdrv_lg1313.m16p_core_avs=0x2 (edited)
+[kenny08105]
+kenny08105 09/13/2020 2:20 PM
+    root=/dev/mmcblk0p28 ro  rootfstype=squashfs vmalloc=1284M hma=476M@0x61400000;288M@0xae000000 kdrv_lg1313.use_vmap=1 hma.use_vmap=1 use_vmap=1 usb_storage.initial_slow_delay=1250 cma_on  ethaddr=38:8C:50:7D:62:25 rev=1 console=ttyAMA0,115200n81 chip=M16PB1 sver=4.03.20 bver=4.03.20 quiet loglevel=0 snapshot resume=/dev/mmcblk0p50 devtmpfs.mount=1 rootwait emmc_size=0x0e9000000 sbkey=0x7f0e0000 modelopt=0001000100000011100 hwopt=010207011003002321 portProtection mmcoops=dumpwdtlog=dump@1M ToolOpt=98926:7354404:295174:64774:34051:134669:655499:0:166400 countryGrp=2 debugMode=5 modelName=55UJ6200-UA serialNum=X kdrv_lg1313.m16p_avsinfo=0x34066 kdrv_lg1313.m16p_cpu_avs=0x2 kdrv_lg1313.m16p_core_avs=0x2 cmdEnd
+(edited)
+[smx2460]
+smx2460 09/13/2020 2:19 PM
+/proc/cmdline ? (edited)
+09/13/2020 2:19 PM
+it looks like LX but i'm not 100% sure
+09/13/2020 2:19 PM
+hmm
+[kenny08105]
+kenny08105 09/13/2020 2:18 PM
+interrupts
+ message.txt
+3.86 KB External
+[smx2460]
+smx2460 09/13/2020 2:18 PM
+how about /proc/interrupts
+[kenny08105]
+kenny08105 09/13/2020 2:17 PM
+    /media/developer $ cat /proc/devices
+    Character devices:
+      1 mem
+      2 pty
+      3 ttyp
+      4 /dev/vc/0
+      4 tty
+      5 /dev/tty
+      5 /dev/console
+      5 /dev/ptmx
+      7 vcs
+     10 misc
+     13 input
+    270 lgbus
+     21 sg
+    1810 logm
+     29 fb
+    1818 vo
+    1819 hma_drv
+    290 slt
+    1100 aad
+     81 video4linux
+    1102 afe
+    1103 audio
+    1104 ci
+    1105 de
+    1106 demod
+    1107 denc
+     89 i2c
+    1111 gfx
+    1112 gpio
+    1113 spi
+    1114 iic
+    1116 pe
+    1117 pvr
+    1118 sdec
+    1119 se
+    1120 vbi
+    1122 venc
+    1123 sys
+    1124 clk
+    1125 monitor
+    1127 sci
+    108 ppp
+    1128 mjpeg
+    1129 apr
+    1130 be
+    1133 ovi
+    116 alsa
+    1136 hdmi20
+    1137 pm
+    1138 te
+    1139 ciplus
+    1140 emmc
+    1141 atsc3
+    1142 swcec
+    128 ptm
+    136 pts
+    153 spi
+    161 vdec
+    166 ttyACM
+    180 usb
+    188 ttyUSB
+    189 usb_device
+    1212 fwload
+    1213 ipc
+    199 galcore
+    204 ttyAMA
+    212 DVB
+    248 ump
+    249 ttyLXIPC
+    250 hidraw
+    251 usbmon
+    252 uio
+    253 macvtap
+    254 watchdog
+    Block devices:
+    259 blkext
+      7 loop
+      8 sd
+     65 sd
+     66 sd
+     67 sd
+     68 sd
+     69 sd
+     70 sd
+     71 sd
+    128 sd
+    129 sd
+    130 sd
+    131 sd
+    132 sd
+    133 sd
+    134 sd
+    135 sd
+    179 mmc
+    253 device-mapper
+    254 zram
+[smx2460]
+smx2460 09/13/2020 2:17 PM
+/proc/interrupts
+09/13/2020 2:17 PM
+/proc/devices
+[kenny08105]
+kenny08105 09/13/2020 2:17 PM
+    /media/developer $ cat /proc/cpuinfo
+    processor    : 0
+    model name    : ARMv7 Processor rev 4 (v7l)
+    BogoMIPS    : 48.00
+    Features    : half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae evtstrm aes pmull sha1 sha2 crc32
+    CPU implementer    : 0x41
+    CPU architecture: 7
+    CPU variant    : 0x0
+    CPU part    : 0xd03
+    CPU revision    : 4
+    processor    : 1
+    model name    : ARMv7 Processor rev 4 (v7l)
+    BogoMIPS    : 48.00
+    Features    : half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae evtstrm aes pmull sha1 sha2 crc32
+    CPU implementer    : 0x41
+    CPU architecture: 7
+    CPU variant    : 0x0
+    CPU part    : 0xd03
+    CPU revision    : 4
+    Hardware    : LG Electronics DTV SoC
+    Revision    : 0000
+    Serial        : 0000000000000000
+[smx2460]
+smx2460 09/13/2020 2:16 PM
+try /proc/cpuinfo, @Kenny (edited)
+[kenny08105]
+kenny08105 09/13/2020 2:15 PM
+^that help?
+09/13/2020 2:15 PM
+    /var/run/nyx $ cat dev*
+    {
+        "board_type": "M16P_DVB",
+        "device_name": "m16p",
+        "hardware_id": "HE_DTV_W17M_AFADATAA",
+        "hardware_revision": "BOARD_DV_1ST",
+        "keyboard_type": "virtual",
+        "modem_present": "N",
+        "nduid": "X",
+        "product_id": "55UJ6200-UA",
+        "ram_size": "1.5 GB",
+        "serial_number": "X",
+        "storage_size": "4 GB",
+        "wifi_addr": "X"
+    }
+09/13/2020 2:13 PM
+okay, I'll take a look for them. Anything I can pull from developer mode
+that might help?
+[smx2460]
+smx2460 09/13/2020 2:11 PM
+then we can tell you similar TVs
+09/13/2020 2:11 PM
+download the linux sources and check what platform they are for
+09/13/2020 2:11 PM
+otherwise you could do that
+09/13/2020 2:11 PM
+i'd need to look at the GPL package
+09/13/2020 2:11 PM
+hmm not sure what chipset m16plite is
+[kenny08105]
+kenny08105 09/13/2020 2:10 PM
+My set's running
+starfish-atsc-secured-m16plite-612.dunggir.m16plite-61208-05.80.30-prodkey_usb_V3_SECURED.epk.
+Can anyone recommend a similar firmware that has a key already that I
+could take a look at?
+September 8, 2020
+[smx2460]
+smx2460 09/08/2020 3:25 PM
+Good luck
+09/08/2020 3:25 PM
+Each face selects a 16 bytes combination (edited)
+09/08/2020 3:24 PM
+If you guess it right you have my admiration
+09/08/2020 3:24 PM
+It's a dice with 2^128 faces
+09/08/2020 3:23 PM
+Or you can throw a dice
+ 2
+ww8543 09/08/2020 5:33 AM
+complex
+September 7, 2020
+giovo3937 09/07/2020 9:54 PM
+how can I get the pvr key?, Is it an easy or complex process obtain that
+value?
+ww8543 09/07/2020 9:45 PM
+yes you need the pvr key of your tv
+giovo3937 09/07/2020 6:19 PM
+Good morning all, sorry for my question, I'm new. Any body know how to
+convert the recordings made on an LG Smart TV to a video format like
+mp4?, Is this possible?. I read something like I will need the pvr key
+September 2, 2020
+[smx2460]
+smx2460 09/02/2020 10:52 PM
+Not sure if Australia needs a separate Key (edited)
+09/02/2020 10:52 PM
+we should have m16p
+August 29, 2020
+ww8543 08/29/2020 9:35 PM
+IF you have the right aes key for that model range
+08/29/2020 9:35 PM
+you can use epk2extract for that of course
+mkk85lam2211 08/29/2020 3:05 PM
+It has the file name:
+starfish-dvb-secured-m16p-571.drto.m16p-5711401-04.70.36-prodkey_usb_V3_SECURED.epk
+08/29/2020 3:05 PM
+Any body know how I would go abouts "unpacking" OR "un-zipping" the
+following LG OLED55B7t-t OLED t.v. firmware file for my LG t.v. in
+Australia ?
+August 10, 2020
+[retr0id]
+retr0id 08/10/2020 2:53 PM
+not planning on it, that was just a hypothetical
+ww8543 08/10/2020 2:49 PM
+> if some high-profile project ends up drawing attention to the repo,
+that might change @retr0id are you gonna link to it or something?
+[retr0id]
+retr0id 08/10/2020 2:43 PM
+All I'm saying is, you might wanna move those keys to a pastebin or
+similar, because it will be annoying if the repo gets taken down
+[smx2460]
+smx2460 08/10/2020 2:42 PM
+If it goes away, it will have served a purpose (edited)
+08/10/2020 2:42 PM
+It's not a big deal, I'm doing this as a hobby and the keys have been
+used to unbrick half bricked devices
+08/10/2020 2:42 PM
+So let them
+[retr0id]
+retr0id 08/10/2020 2:41 PM
+there is legal precedent to say that the keys themselves could be the
+intellectual property of LG, regardless of what you use them for. It's
+still kinda a grey area, but GitHub aren't gonna take any legal risk for
+you, they'll just nuke the repo
+[smx2460]
+smx2460 08/10/2020 2:39 PM
+If you use it to decrypt pirated recordings it's on you
+08/10/2020 2:39 PM
+Openssl itself is a benign tool
+08/10/2020 2:39 PM
+> Whether or not those keys can be used for media piracy is kinda
+irrelevant @retr0id it kinda is because the scope and intent is
+important in a legal proceeding
+[retr0id]
+retr0id 08/10/2020 2:39 PM
+if some high-profile project ends up drawing attention to the repo, that
+might change
+08/10/2020 2:38 PM
+Personally I think if LG wanted to DMCA the repo, they could. But right
+now I guess they have no real reason to
+08/10/2020 2:37 PM
+Whether or not those keys can be used for media piracy is kinda
+irrelevant
+[smx2460]
+smx2460 08/10/2020 2:37 PM
+If they are present in the EPK, they come encrypted and cannot be
+decrypted unless you have the root key
+08/10/2020 2:37 PM
+DRM keys are stored in a secure storage
+08/10/2020 2:36 PM
+It's impossible to do piracy with those keys alone, and we are strongly
+against doing piracy on LG hardware anyways (edited)
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 08/10/2020 2:36 PM
+If the repo gets screwed, is there any "nice" way to rewrite history and
+make it as if the keys file never existed, and start distributing it
+some other way?
+[smx2460]
+smx2460 08/10/2020 2:35 PM
+They simply allow analysis of LG firmwares
+08/10/2020 2:35 PM
+The keys weren't there initially. We added them as the products in
+question were getting obsolete and, the keys alone, don't enable any
+copyright circumvention
+[retr0id]
+retr0id 08/10/2020 2:34 PM
+^
+ww8543 08/10/2020 2:32 PM
+github is owned by microsoft tho, and if they get slapped by dmca they
+will just suspend/delete the repo/account i suspect
+[smx2460]
+smx2460 08/10/2020 2:31 PM
+Besides that, a key doesn't infringe on anyone's copyright by itself
+08/10/2020 2:30 PM
+DMCA is a US law
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 08/10/2020 2:20 PM
+We'll burn that bridge when we get to it, I suppose
+08/10/2020 2:20 PM
+Interesting
+[retr0id]
+retr0id 08/10/2020 2:19 PM
+Intuitively/morally I agree, but unfortunately the DMCA and legal
+precedent says otherwise
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 08/10/2020 2:06 PM
+I don't think it can be claimed that LG or anyone else owns these keys,
+or at least I hope not
+ww8543 08/10/2020 11:31 AM
+yea might be a bit risky indeed
+08/10/2020 11:31 AM
+yes you can get them once you have root
+[retr0id]
+retr0id 08/10/2020 11:03 AM
+isn't having those keys in the repo a bit of a DMCA risk?
+08/10/2020 11:02 AM
+so once I privesc to root I can get the key
+08/10/2020 11:01 AM
+ahhhhh, lol
+[substanc3]
+substanc3 08/10/2020 11:01 AM
+they are the final derived EPK crypto keys (obtained by asking the SoC
+nicely to derive the key using root code execution)
+[retr0id]
+retr0id 08/10/2020 11:00 AM
+So the keys in the repo, have they been obtained via glitching or
+something?
+[substanc3]
+substanc3 08/10/2020 10:58 AM
+afaik there is an embedded SoC-type-specific key in the CPU, and a key
+source in emmc that is sent to some decryption HW in the SoC to derive
+the EPK crypto key (edited)
+[retr0id]
+retr0id 08/10/2020 10:55 AM
+Generally, where are the AES decryption keys stored? Will I be able to
+get it by dumping the emmc, or is it in some kind of secure enclave?
+August 6, 2020
+ww8543 08/06/2020 4:43 PM
+ah
+[smx2460]
+smx2460 08/06/2020 4:17 PM
+where there was some instruction on how to develop and test apps
+08/06/2020 4:17 PM
+however i didn't check the latest dev docs
+08/06/2020 4:17 PM
+no it doesn't exist afaik @ww (edited)
+mertd._ 08/06/2020 10:18 AM
+I will try thanks
+ww8543 08/06/2020 9:44 AM
+i am not sure if the developer mode app from lg also exists for netcast
+tvs
+08/06/2020 9:43 AM
+there is a recommended way for webos tvs, but i dont know that for
+netcast ones
+08/06/2020 9:43 AM
+have you checked if epk2extract can unpack a firmware epk file for your
+tv? that would mean someone already rooted a tv like yours
+mertd._ 08/06/2020 9:40 AM
+Do you have a recommed way to root it?
+ww8543 08/06/2020 9:39 AM
+i am not sure which the ones are tho
+08/06/2020 9:38 AM
+if it is netcast it seems to be older, so there should be a few that
+still work i suppose
+mertd._ 08/06/2020 9:37 AM
+Hmm I have 55La640s, do you know how can i root it?
+ww8543 08/06/2020 9:35 AM
+and then once you have root, you need to extract a device specific key
+with which your recordings are encrypted
+08/06/2020 9:35 AM
+to get root
+08/06/2020 9:35 AM
+you need an exploit that works on your tv
+08/06/2020 9:34 AM
+well rooting it is a bit more complicated
+08/06/2020 9:34 AM
+oh
+mertd._ 08/06/2020 9:32 AM
+I think its unrooted, I dont modify it. I Just find epk2extract
+yesterday. What should i need to do?
+ww8543 08/06/2020 8:33 AM
+@763
+ww8543 08/06/2020 7:45 AM
+well yes, if your tv is rooted, you might be able to
+August 5, 2020
+mertd._ 08/05/2020 10:11 PM
+Is it possible extract recorded TV from hdd? I have 55La640s (I think
+its netcast). I recorded old casette using recorder feature on my TV but
+unable export it to my computer
+08/05/2020 10:09 PM
+Hello
+July 26, 2020
+ww8543 07/26/2020 9:05 AM
+or it is a version older than whats on your tv
+07/26/2020 9:05 AM
+maybe the file is not for your tv (edited)
+07/26/2020 9:04 AM
+then you are still doing something wrong
+mohammadatahir 07/26/2020 2:57 AM
+i think i did
+mohammadatahir 07/26/2020 2:33 AM
+life is not good
+07/26/2020 2:33 AM
+no luck using their site
+July 24, 2020
+ww8543 07/24/2020 10:19 AM
+indeed 
+astemeto 07/24/2020 10:10 AM
+Like I said, read the official instructions for updating first
+https://www.lg.com/us/support/help-library/updating-firmware-tv-CT10000018-1430510575535
+Updating Firmware - TV | LG USA Support
+Updating Firmware - TV. Learn how to use, update, maintain and
+troubleshoot your LG devices and appliances.
+[]
+ww8543 07/24/2020 6:18 AM
+you need to put it in a folder called LG_DTV
+mohammadatahir 07/24/2020 5:35 AM
+GP3_DVB_AU_3D_RevNo2114_V04.03.05_ota_V2_SECURED
+07/24/2020 5:35 AM
+i tried but it says no fie on usb
+mohammadatahir 07/24/2020 4:15 AM
+thankssssssssssssss
+astemeto 07/24/2020 4:14 AM
+Anytime, good luck
+mohammadatahir 07/24/2020 4:14 AM
+ok i will try today thank u sir
+astemeto 07/24/2020 4:14 AM
+Yup
+mohammadatahir 07/24/2020 4:14 AM
+just pu epk file on usb
+astemeto 07/24/2020 4:12 AM
+Try that first
+07/24/2020 4:12 AM
+If you look up the official LG instruction you will see you can just use
+the epk
+mohammadatahir 07/24/2020 4:00 AM
+thats what you tube video said
+astemeto 07/24/2020 3:02 AM
+Why do you think you need to unpack it before installing it?
+mohammadatahir 07/24/2020 1:01 AM
+07/24/2020 1:00 AM
+manual upgrade putting the file on usb and upgrading firmware
+07/24/2020 12:56 AM
+i have a epk package want to extract bin file so i can upgrade my lG tv
+which i purchased in oman
+July 22, 2020
+ww8543 07/22/2020 10:19 PM
+huh? what exactly are you trying to do?
+mohammadatahir 07/22/2020 9:35 PM
+cant figure it out how to extract lg file so i can install it
+ww8543 07/22/2020 5:56 PM
+epk firmware update file?
+07/22/2020 5:56 PM
+@MOHAMMAD A TAHIR what file?
+mohammadatahir 07/22/2020 5:31 PM
+how do i extract lg file
+July 4, 2020
+[jafooley]
+jafooley 07/04/2020 10:43 PM
+Didn't have any luck with serial console, got a feeling it's just not
+enabled (edited)
+[smx2460]
+smx2460 07/04/2020 12:21 AM
+You should get a message saying you're not authorized
+07/04/2020 12:20 AM
+To confirm it works, try typing "debug"
+07/04/2020 12:20 AM
+Shell is disabled in RELEASE
+July 3, 2020
+[jafooley]
+jafooley 07/03/2020 10:27 PM
+got a max3232 board attached, not getting a linux shell which would've
+been nice
+ww8543 07/03/2020 10:19 PM
+and have you tried any of them?
+07/03/2020 10:19 PM
+cool
+[jafooley]
+jafooley 07/03/2020 9:25 PM
+I found a service manual for a TV with the same board, I count 4 places
+where the soc_tx and soc_rx are available
+07/03/2020 9:23 PM
+thanks Smx (edited)
+[smx2460]
+smx2460 07/03/2020 8:51 AM
+@jafooley 1) yes if you are not careful 2) usually near the RJ45 Port
+(you'll see 2, one for MICOM and one labelled SOC) 3) technically yes
+but out of memory is not a bug 4) you get interesting output of you
+enter EVENT or DEBUG modes
+ww8543 07/03/2020 8:38 AM
+what
+ 1
+v3lj0 07/03/2020 7:21 AM
++
+07/03/2020 7:21 AM
+/8*-+ x0ulni|
+ 1
+June 27, 2020
+[jafooley]
+jafooley 06/27/2020 1:49 PM
+I've got an old mt5396 based (netcast) lg tv. Hopefully someone can
+answer some of the following (can't find anywhere else to ask): 1) Can I
+brick it by using USB software update? 2) Where are the pins for the
+serial console (ttyMT0?)? I see a blank spot for a DE-9 but no solder
+pads there. 3) Is it possible to root using a browser / flash vuln, or
+does TrustZone stop this? I can get an out of memory error from the
+browser - don't know if it's worth continuing working on that. 4) Is
+there anything interesting I can do with a PL2303 and logic analyser? Or
+is PL2303 only enabled in a debug mode?
+June 22, 2020
+ww8543 06/22/2020 10:48 PM
+funny how a bunch of people were asking about getting lg keys to extract
+firmware on github, but didnt bother to come in here
+Deleted User 06/22/2020 10:08 PM
+So much
+06/22/2020 10:08 PM
+Thx
+06/22/2020 10:07 PM
+Cool fhx
+ww8543 06/22/2020 10:07 PM
+@Deleted User now you can check out the new epk2extract sources and
+unpack it yourself
+06/22/2020 10:03 PM
+heh :)
+[smx2460]
+smx2460 06/22/2020 10:03 PM
+injection is more fun tho
+ww8543 06/22/2020 10:03 PM
+i would not do that either way
+[smx2460]
+smx2460 06/22/2020 10:02 PM
+or jffs2
+ww8543 06/22/2020 10:02 PM
+of course not!
+[smx2460]
+smx2460 06/22/2020 10:02 PM
+we don't want to rewrite squashfs in Python
+06/22/2020 10:02 PM
+each implementing a format
+06/22/2020 10:02 PM
+we want to have an oop matcher that loads .so files
+06/22/2020 10:02 PM
+nah we don't want to rewrite it from scratch
+06/22/2020 10:02 PM
+i notice that it could be better
+ww8543 06/22/2020 10:01 PM
+it would probably be complex even in python
+[smx2460]
+smx2460 06/22/2020 10:01 PM
+well when i touch the code
+ww8543 06/22/2020 10:01 PM
+then i dont wanna hear any complaining 
+[smx2460]
+smx2460 06/22/2020 10:01 PM
+@ww do you think a python base would be simple?
+06/22/2020 10:00 PM
+it might not be perfect, but it does the job
+06/22/2020 10:00 PM
+it's supposed to be a quick tool
+06/22/2020 10:00 PM
+how worth is it to re-engineer epk2extract?
+06/22/2020 10:00 PM
+@ww the real question is
+Deleted User 06/22/2020 9:58 PM
+Thanks
+[smx2460]
+smx2460 06/22/2020 9:58 PM
+@ww @Deleted User
+06/22/2020 9:58 PM
+https://github.com/openlgtv/epk2extract/commit/ef8ec91d00b3f8507497dbda8036e3f6180ea451
+mtkpkg: fixed support for OLD + PHILIPS combination · openlgtv/epk2...
+added support for "firm" partition
+[]
+06/22/2020 9:55 PM
+probably
+ww8543 06/22/2020 9:55 PM
+this is from 2016 after all
+06/22/2020 9:55 PM
+maybe you already made those changes obsolete by now
+[smx2460]
+smx2460 06/22/2020 9:54 PM
+maybe i remember now
+06/22/2020 9:54 PM
+that name is not new
+06/22/2020 9:54 PM
+actually
+06/22/2020 9:53 PM
+i did NOT know that
+ww8543 06/22/2020 9:53 PM
+btw someone forked epk2extract and it seems added some philips stuff
+https://github.com/dpeddi/epk2extract/commits/master
+dpeddi/epk2extract
+Firmware extraction tool for LG,Hisense,Sharp,Philips and similar TVs -
+dpeddi/epk2extract
+[]
+Deleted User 06/22/2020 9:50 PM
+Oh so is it possible to mess with
+ww8543 06/22/2020 9:48 PM
+i may not show you my source tho 
+[smx2460]
+smx2460 06/22/2020 9:47 PM
+or i could assume 0x20 has "TPV"
+06/22/2020 9:46 PM
+so the obvious dirty hack is to try and lzhs decode at 0x90 (edited)
+06/22/2020 9:45 PM
+there's a tiny header with the model name (edited)
+06/22/2020 9:45 PM
+(no content)
+[unknown.png]
+ unknown.png
+23.23 KB External
+06/22/2020 9:45 PM
+so firm.pak has this
+ww8543 06/22/2020 9:45 PM
+in python using construct
+[smx2460]
+smx2460 06/22/2020 9:45 PM
+    Found possible LZHS header  at offset @0x00000090 (Checksum: 0x42, compressedSize: 0x00DC5D3F, uncompressedSize: 0x01035590)
+06/22/2020 9:45 PM
+ww8543 06/22/2020 9:45 PM
+i wrote a parser for some binary drm format the other day, and literally
+took me only a few minutes (edited)
+[smx2460]
+smx2460 06/22/2020 9:44 PM
+but if your data is dynamic or variable, that's the only way (edited)
+06/22/2020 9:44 PM
+i hate using a Reader and reading field by field
+06/22/2020 9:43 PM
+but you gotta use unsafe for fixed arrays
+06/22/2020 9:43 PM
+https://github.com/smx-smx/PDBSharp/blob/master/PDBSharp/DSHeader.cs#L15
+smx-smx/PDBSharp
+Fast and cross-platform parser for Microsoft PDB files -
+smx-smx/PDBSharp
+[]
+ww8543 06/22/2020 9:43 PM
+of course
+[smx2460]
+smx2460 06/22/2020 9:42 PM
+well you can do that in C# too
+Deleted User 06/22/2020 9:42 PM
+Well i could help with mac osx support
+ww8543 06/22/2020 9:42 PM
+only maybe a little easier and quicker
+06/22/2020 9:42 PM
+handling binary data in python is really neat btw, using construct, you
+can just define structs and enums just like in c
+Deleted User 06/22/2020 9:42 PM
+Or messed up
+[smx2460]
+smx2460 06/22/2020 9:42 PM
+particularly Span<T> and Memory<T>
+Deleted User 06/22/2020 9:42 PM
+So guys the firmware files are not corrupted
+[smx2460]
+smx2460 06/22/2020 9:42 PM
+handling binary data in C# is a bit PITA but the new C# 7 changes make
+it better
+ww8543 06/22/2020 9:41 PM
+the concepts of channels and go routines are soooooo amazing
+[smx2460]
+smx2460 06/22/2020 9:41 PM
+a little tho
+06/22/2020 9:41 PM
+yes
+ww8543 06/22/2020 9:41 PM
+@Smx have you ever worked with go btw?
+[smx2460]
+smx2460 06/22/2020 9:41 PM
+each plugin will handle a format
+06/22/2020 9:41 PM
+but split them in plugins
+06/22/2020 9:41 PM
+i can keep the same code in epk2extract
+ww8543 06/22/2020 9:40 PM
+you are 13, you are made of free time! 
+[smx2460]
+smx2460 06/22/2020 9:40 PM
+@ww .NET is probably the better choice
+06/22/2020 9:40 PM
+programs don't rewrite themselves...yet
+06/22/2020 9:40 PM
+06/22/2020 9:40 PM
+@Deleted User well feel free to help
+06/22/2020 9:40 PM
+but not as a library
+Deleted User 06/22/2020 9:40 PM
+Python would be cool
+[smx2460]
+smx2460 06/22/2020 9:40 PM
+which makes sense for this scope
+Deleted User 06/22/2020 9:40 PM
+And mac osx compiling is not very good
+[smx2460]
+smx2460 06/22/2020 9:40 PM
+in the assumption that i'll call the extract function later
+06/22/2020 9:39 PM
+the mtkpkg detection routine stores some global
+06/22/2020 9:39 PM
+e.g
+06/22/2020 9:39 PM
+some functions are not reentrant
+ww8543 06/22/2020 9:39 PM
+well that will never be any better i suppose
+[smx2460]
+smx2460 06/22/2020 9:39 PM
+so it's far from ideal
+06/22/2020 9:39 PM
+because they have a high chance of false positives
+06/22/2020 9:39 PM
+and some formats must come after
+06/22/2020 9:39 PM
+(no content)
+[unknown.png]
+ unknown.png
+109.47 KB External
+06/22/2020 9:38 PM
+the main routing looks like this
+ww8543 06/22/2020 9:38 PM
+maybe reimplement in python or go? 
+[smx2460]
+smx2460 06/22/2020 9:38 PM
+is have a different handling of the file detection
+06/22/2020 9:38 PM
+what i would like to do
+06/22/2020 9:38 PM
+not sure
+ww8543 06/22/2020 9:38 PM
+@Smx does it need a rewrite soon?
+[smx2460]
+smx2460 06/22/2020 9:38 PM
+lot of combinations, cases, stuff to consider (edited)
+06/22/2020 9:37 PM
+epk2extract is getting so hacky
+06/22/2020 9:37 PM
+not for me tho
+Deleted User 06/22/2020 9:37 PM
+This is gettin cool
+06/22/2020 9:37 PM
+Wow
+[smx2460]
+smx2460 06/22/2020 9:37 PM
+    ---LZHS details---
+    Compressed:     14441791
+    Uncompressed:   16995728
+    Checksum:       0x42
+    [LZHS] Decoding Huffman...
+    [LZHS] Decoding LZSS...
+    [LZHS] Converting Thumb => ARM...
+    [LZHS] Calculating checksum...
+    Calculated checksum = 0x42
+06/22/2020 9:37 PM
+it is!
+06/22/2020 9:37 PM
+interesting
+06/22/2020 9:36 PM
+let me check
+06/22/2020 9:36 PM
+unless it's lzhs fs
+ww8543 06/22/2020 9:36 PM
+aaawwww  (edited)
+Deleted User 06/22/2020 9:36 PM
+Can you send them please
+[smx2460]
+smx2460 06/22/2020 9:36 PM
+firm.pak looks encrypted tho
+06/22/2020 9:35 PM
+(no content)
+[unknown.png]
+ unknown.png
+5.83 KB External
+Deleted User 06/22/2020 9:34 PM
+Cool thx
+ww8543 06/22/2020 9:33 PM
+you can git pull the new sources once @Smx has them checked in
+Deleted User 06/22/2020 9:33 PM
+So when it works can you send me the output or do i have to do it myself
+[smx2460]
+smx2460 06/22/2020 9:28 PM
+    Input file: /mnt/r/lg/LG_N/19pfl3606h_12_fus_nld/Autorun.upg
+    Destination directory: /mnt/r/lg/LG_N/19pfl3606h_12_fus_nld
+    PAK #1  (name='ixml', offset='0x124', size='16372 bytes')
+    Saving partition (ixml) to file /mnt/r/lg/LG_N/19pfl3606h_12_fus_nld/Autorun/ixml.pak
+    PAK #2  (name='firm', offset='0x4124', size='14442208 bytes')
+    Saving partition (firm) to file /mnt/r/lg/LG_N/19pfl3606h_12_fus_nld/Autorun/firm.pak
+    Found valid partpak magic 0x35333950 in /mnt/r/lg/LG_N/19pfl3606h_12_fus_nld/Autorun/firm.pak
+    PAK #3  (name='load', offset='0xdca010', size='213888 bytes')
+    Saving partition (load) to file /mnt/r/lg/LG_N/19pfl3606h_12_fus_nld/Autorun/load.pak
+    Found valid PBL/ROM magic: MTK/DTV/ROMCODE/NANDBOOT
+    [MTK] Extracting 1BL to mtk_1bl.bin...
+    [MTK] PBL Size: 0x00004000
+    [MTK] Extracting embedded LZHS files...
+06/22/2020 9:28 PM
+will have to fix that too
+06/22/2020 9:28 PM
+getting a crash later on tho
+06/22/2020 9:28 PM
+fixed
+Deleted User 06/22/2020 9:23 PM
+this is the best support and community i have ever seen
+[smx2460]
+smx2460 06/22/2020 9:23 PM
+yes
+Deleted User 06/22/2020 9:23 PM
+wait what are you doing this for me ??
+[smx2460]
+smx2460 06/22/2020 9:23 PM
+let me fix this
+06/22/2020 9:22 PM
+and i didn't support this combination before
+06/22/2020 9:22 PM
+but it's mixed with the philips header
+06/22/2020 9:22 PM
+which i support
+06/22/2020 9:22 PM
+ok so it's an UPG "OLD" variant
+Deleted User 06/22/2020 9:22 PM
+could be so
+[smx2460]
+smx2460 06/22/2020 9:21 PM
+it might mean that it has 2 extra fields
+06/22/2020 9:21 PM
+(no content)
+[unknown.png]
+ unknown.png
+34.75 KB External
+06/22/2020 9:21 PM
+no idea (edited)
+Deleted User 06/22/2020 9:21 PM
+what does that mean
+[smx2460]
+smx2460 06/22/2020 9:20 PM
+there are extra 8 bytes in the header (edited)
+Deleted User 06/22/2020 9:17 PM
+yea so its encrypted or messed with somewhere
+[smx2460]
+smx2460 06/22/2020 9:16 PM
+because the heuristic to find the first partition, ixml (clearly visible
+at 0x118) also fails (edited)
+06/22/2020 9:16 PM
+but maybe the structure is also different
+Deleted User 06/22/2020 9:15 PM
+is that firmware encrypted
+[smx2460]
+smx2460 06/22/2020 9:15 PM
+it looks like we don't have the mtkpkg header encryption key
+Deleted User 06/22/2020 9:15 PM
+?
+06/22/2020 9:15 PM
+mediatek >
+[smx2460]
+smx2460 06/22/2020 9:14 PM
+not sure why epk2extract is not handling it
+06/22/2020 9:14 PM
+that file is a mtkupg
+Deleted User 06/22/2020 9:13 PM
+like use epk
+06/22/2020 9:13 PM
+do you have a file that i can mess with
+06/22/2020 9:13 PM
+yea
+ww8543 06/22/2020 9:13 PM
+epk2extract can pick apart lg tv firmwares pretty well, if the
+encryption key of the model line is known
+Deleted User 06/22/2020 9:12 PM
+just like the firmware so i can use like binwalk and hex dump and dd and
+all that stuff
+06/22/2020 9:11 PM
+or do you guys have a firmware to see if i can find cool stuff in
+06/22/2020 9:10 PM
+and some other fun stuff and i want to do that again
+06/22/2020 9:10 PM
+but i made my own version of debian for the stora
+06/22/2020 9:09 PM
+i made linux for a netgear stora on my own before i found out that there
+were people doing it already
+06/22/2020 9:09 PM
+but understand how it works
+06/22/2020 9:09 PM
+like show a video
+06/22/2020 9:08 PM
+to understand a firmware and exploit it like an update the does
+something
+[smx2460]
+smx2460 06/22/2020 9:08 PM
+    MT5365 Boot Loader v%u.%u
+ww8543 06/22/2020 9:08 PM
+whats your goal, here?
+06/22/2020 9:08 PM
+not necessarily
+Deleted User 06/22/2020 9:08 PM
+?
+06/22/2020 9:08 PM
+an amazon ip cam
+06/22/2020 9:08 PM
+to mess with firmware
+06/22/2020 9:07 PM
+i should pick a newer device
+ww8543 06/22/2020 9:07 PM
+interesting
+06/22/2020 9:07 PM
+19"
+Deleted User 06/22/2020 9:07 PM
+yea
+ww8543 06/22/2020 9:07 PM
+it is from 2011
+Deleted User 06/22/2020 9:07 PM
+but every device i have is fucked
+06/22/2020 9:07 PM
+i want to reverse engineer a firmware
+06/22/2020 9:06 PM
+should i pick a newer tv
+06/22/2020 9:06 PM
+yea
+ww8543 06/22/2020 9:06 PM
+but also the tv is... kinda old?
+06/22/2020 9:06 PM
+very tiny indeed
+Deleted User 06/22/2020 9:06 PM
+nice
+ww8543 06/22/2020 9:06 PM
+@Deleted User no problem, i understand dutch 
+[smx2460]
+smx2460 06/22/2020 9:05 PM
+the update
+Deleted User 06/22/2020 9:05 PM
+?
+[smx2460]
+smx2460 06/22/2020 9:05 PM
+that's very tiny
+Deleted User 06/22/2020 9:05 PM
+its bestand downloaden
+06/22/2020 9:05 PM
+https://www.philips.be/c-p/19PFL3606H_12/3000-series-lcd-tv-met-digital-crystal-clear/ondersteuning
+Naar de ondersteuningspagina voor uw Philips LCD-TV 19PFL3606H/12
+Registreer uw product of bekijk gebruikershandleidingen, veelgestelde
+vragen, tips en downloads voor uw Philips LCD-TV 19PFL3606H/12. Wij zijn
+er om u te helpen.
+ww8543 06/22/2020 9:04 PM
+whats the link?
+Deleted User 06/22/2020 9:04 PM
+from philips
+ww8543 06/22/2020 9:04 PM
+@Deleted User where did you get the firmware image from? is it on the
+philips website?
+06/22/2020 9:00 PM
+@Deleted User https://github.com/wsargent/docker-cheat-sheet
+wsargent/docker-cheat-sheet
+Docker Cheat Sheet. Contribute to wsargent/docker-cheat-sheet
+development by creating an account on GitHub.
+[]
+Deleted User 06/22/2020 9:00 PM
+ww8543 06/22/2020 9:00 PM
+not very creative
+06/22/2020 9:00 PM
+also wth kinda docker container name is "default"?! 
+06/22/2020 8:59 PM
+[...] docker run is equivalent to the API /containers/create then /containers/(id)/start. A stopped container can be restarted with all its previous changes intact using docker start. See docker ps -a to view a list of all containers.
+06/22/2020 8:58 PM
+shouldnt it be start instead of run, after you initially created it?
+06/22/2020 8:57 PM
+run is for creation and starting in one?
+06/22/2020 8:55 PM
+uhm then give it the password?
+Deleted User 06/22/2020 8:46 PM
+asks for a passwords
+06/22/2020 8:45 PM
+docker wont start
+ww8543 06/22/2020 8:45 PM
+just recreate the docker?
+Deleted User 06/22/2020 8:42 PM
+docker run -it default
+06/22/2020 8:41 PM
+start docker
+ww8543 06/22/2020 8:40 PM
+what are you trying to do there?
+06/22/2020 8:40 PM
+huh
+Deleted User 06/22/2020 8:38 PM
+rip
+06/22/2020 8:38 PM
+unable to resolve docker endpoint: open
+/Users/joranosinga/.docker/machine/machines/default/ca.pem: no such file
+or directory
+[smx2460]
+smx2460 06/22/2020 8:34 PM
+or run strings
+Deleted User 06/22/2020 8:34 PM
+so if i open em with like a hex editor i should find like uboot for
+example
+[smx2460]
+smx2460 06/22/2020 8:34 PM
+they should be tiny
+06/22/2020 8:34 PM
+you can't extract them further
+06/22/2020 8:34 PM
+those should be bootloaders
+Deleted User 06/22/2020 8:34 PM
+yep mode 2
+06/22/2020 8:34 PM
+file5 file file199 and file unlzhs
+[smx2460]
+smx2460 06/22/2020 8:33 PM
+with mode 2?
+Deleted User 06/22/2020 8:33 PM
+no i get like 3 files as an output
+[smx2460]
+smx2460 06/22/2020 8:33 PM
+assuming you're not getting a checksum mismatch
+Deleted User 06/22/2020 8:33 PM
+the images inside
+[smx2460]
+smx2460 06/22/2020 8:33 PM
+extract what
+Deleted User 06/22/2020 8:32 PM
+i know but how do i extract it please
+[smx2460]
+smx2460 06/22/2020 8:32 PM
+ah i do
+06/22/2020 8:32 PM
+i'm not sure i even check the checksum there
+06/22/2020 8:32 PM
+lzhs scanner just looks for padding bytes iirc
+06/22/2020 8:32 PM
+> but lzhs scanner does @Deleted User don't consider that to be
+something
+Deleted User 06/22/2020 12:16 PM
+yep
+ww8543 06/22/2020 12:16 PM
+rx, tx, gnd
+06/22/2020 12:16 PM
+3 pin sounds like a serial port tho
+06/22/2020 12:15 PM
+well i have zero experience with philips tvs
+06/22/2020 12:15 PM
+hmm
+Deleted User 06/22/2020 12:14 PM
+all i see is there a 3 pin header on the back named serv.u
+ww8543 06/22/2020 12:13 PM
+ok
+Deleted User 06/22/2020 12:13 PM
+but it runs linuz
+ww8543 06/22/2020 12:13 PM
+ah
+Deleted User 06/22/2020 12:13 PM
+its quite old
+ww8543 06/22/2020 12:13 PM
+or is this some custom os?
+06/22/2020 12:13 PM
+doesnt philips do android?
+Deleted User 06/22/2020 12:13 PM
+oh ill look
+ww8543 06/22/2020 12:13 PM
+or similar
+06/22/2020 12:13 PM
+ssh access
+Deleted User 06/22/2020 12:13 PM
+it has a weak service mode
+ww8543 06/22/2020 12:12 PM
+no i mean, like
+Deleted User 06/22/2020 12:12 PM
+its right in front of me
+ww8543 06/22/2020 12:12 PM
+does it have a developer mode or something?
+Deleted User 06/22/2020 12:12 PM
+i do
+ww8543 06/22/2020 12:12 PM
+you dont have access to the tv yet, right?
+Deleted User 06/22/2020 12:12 PM
+yep
+ww8543 06/22/2020 12:12 PM
+ooooh it is part of the actual fw file, interesting
+Deleted User 06/22/2020 12:10 PM
+(no content)
+ message.txt
+7.28 KB External
+06/22/2020 12:10 PM
+the beginning ofc
+06/22/2020 12:10 PM
+this is the whole thing
+06/22/2020 12:10 PM
+its the beginning of the autorun.upg file
+ww8543 06/22/2020 12:09 PM
+where is that xml from you pasted?
+06/22/2020 12:09 PM
+ah
+Deleted User 06/22/2020 12:09 PM
+it spams a lot of files
+06/22/2020 12:09 PM
+but lzhs scanner does
+06/22/2020 12:09 PM
+epk2extract finds nothing
+ww8543 06/22/2020 12:09 PM
+epk2extract usually creates a directory with everything it managed to
+unpack
+Deleted User 06/22/2020 12:08 PM
+what do you mean exactly
+06/22/2020 12:07 PM
+i used the info i got from the file with offsets to use dd to extract
+files
+ww8543 06/22/2020 12:07 PM
+didnt epk2extract already unpack these "files" for you?
+06/22/2020 12:07 PM
+it simply is a copy tool
+Deleted User 06/22/2020 12:07 PM
+i know
+ww8543 06/22/2020 12:07 PM
+dd's purpose is not to "find" stuff
+Deleted User 06/22/2020 12:04 PM
+and binwalk didnt either
+06/22/2020 12:04 PM
+so the beginning of the file it says something about offsets i tried the
+dd command but it didnt find anything
+06/22/2020 12:02 PM
+thanks
+ww8543 06/22/2020 12:02 PM
+06/22/2020 12:01 PM
+thats awesome!
+Deleted User 06/22/2020 12:01 PM
+yep
+ww8543 06/22/2020 12:01 PM
+haha 13, are you serious?
+Deleted User 06/22/2020 12:01 PM
+(no content)
+ message.txt
+2.39 KB External
+06/22/2020 12:01 PM
+idk how to do that i am just a 13 year old trying to see how it works
+ww8543 06/22/2020 12:00 PM
+mount what file?
+06/22/2020 12:00 PM
+if not carve it out manually?
+Deleted User 06/22/2020 12:00 PM
+and how do i mount that file tho
+06/22/2020 12:00 PM
+hope binwalk can see it
+06/22/2020 12:00 PM
+and scanner found a file
+ww8543 06/22/2020 12:00 PM
+yes, you already mentioned that
+Deleted User 06/22/2020 12:00 PM
+the file says it has a lzhs thing somewere
+ww8543 06/22/2020 11:59 AM
+yea that will always work, of course

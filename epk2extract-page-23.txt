@@ -1,0 +1,1402 @@
+February 23, 2021
+[waam.]
+waam. 02/23/2021 1:17 AM
+which is fine, I can understand them well enough
+02/23/2021 1:17 AM
+02/23/2021 1:17 AM
+I need to start looking at the source files, it seems
+[smx2460]
+smx2460 02/23/2021 1:17 AM
+these are the emmc commands
+02/23/2021 1:17 AM
+    U_BOOT_CMD(
+        mmc, 7, 1, do_mmcops,
+        "MMC sub system",
+        "read <device num> addr blk# cnt\n"
+        "mmc write <device num> addr blk# cnt\n"
+        "mmc eraseall\n"
+        "mmc erase <device num> byte_addr length mode\n"
+        "mmc wp <device num> byte_addr level type en\n"
+        "mmc rescan <device num>\n"
+        "mmc part <device num> - lists available partition on mmc\n"
+        "mmc list - lists available devices");
+02/23/2021 1:16 AM
+those are for RAM modification
+02/23/2021 1:16 AM
+oh
+[waam.]
+waam. 02/23/2021 1:16 AM
+again, the memory commands ;p
+[smx2460]
+smx2460 02/23/2021 1:16 AM
+so you can skip signature checks
+02/23/2021 1:16 AM
+you can chainload it
+02/23/2021 1:16 AM
+if you can flash a modified uboot to an unused partition
+02/23/2021 1:15 AM
+you can safely do that with unsigned partitions only
+[waam.]
+waam. 02/23/2021 1:15 AM
+ideally, I want to be able to manipulate emmc partitions while in uboot
+first
+02/23/2021 1:15 AM
+mmm, nothing; it's more me wanting to learn a different aspect of the
+system
+[smx2460]
+smx2460 02/23/2021 1:14 AM
+what does this have to do with a custom kernel
+02/23/2021 1:14 AM
+i don't get you
+[waam.]
+waam. 02/23/2021 1:14 AM
+a lot of the directorys/files in the rootfs aren't able to be read or
+edited by shell user
+[smx2460]
+[] waam. can't cat a lot of the files that would show the boot scripts,
+etc
+smx2460 02/23/2021 1:13 AM
+what do you mean
+[smx2460]
+smx2460 02/23/2021 1:07 AM
+    #if CONFIG_ANDROID
+            #if CONFIG_ANDROID_BOOT
+                #ifndef CC_UBOOT_MINIGUNZIP_SUPPORT
+                #define BOOTCMD_ENV "bootcmd=eboot.lzo boot\0"
+                #else
+                 #define BOOTCMD_ENV "bootcmd=eboot boot\0"
+                #endif
+            #else
+                #ifndef CC_UBOOT_MINIGUNZIP_SUPPORT
+                #define BOOTCMD_ENV "bootcmd=eboot.lzo kernel rootfs\0"
+                #else
+                #define BOOTCMD_ENV "bootcmd=eboot kernel rootfs\0"
+                #endif
+            #endif //CONFIG_ANDROID_BOOT
+        #else
+02/23/2021 1:07 AM
+    U_BOOT_CMD(eboot, 3, 1, do_emmcboot,
+        "eboot   - boot from EMMC device\n",
+        "[.lzo] [partition] | [[[loadAddr] dev] offset]\n");
+02/23/2021 1:06 AM
+    #if defined(CC_EMMC_BOOT)
+        #define BOOTCMD_ENV \
+            "bootcmd=eboot kernelA rootfsA\0"
+    #elif !defined(CC_KERNEL_ON_NOR)
+        #define BOOTCMD_ENV \
+            "bootcmd=nboot.jffs2 kernelA rootfsA\0"
+    #else
+        #define BOOTCMD_ENV \
+            "bootcmd=bootm 0xf8090000 0x200000\0"
+    #endif
+[waam.]
+waam. 02/23/2021 1:05 AM
+can't cat a lot of the files that would show the boot scripts, etc
+[smx2460]
+smx2460 02/23/2021 1:04 AM
+you need to look at the sources to be sure (edited)
+[waam.]
+waam. 02/23/2021 1:04 AM
+boot being the partition?
+02/23/2021 1:04 AM
+so when you run eboot boot, it's (I think?) doing eboot update boot
+boot.img
+[smx2460]
+smx2460 02/23/2021 1:04 AM
+worst case scenario you just wipe the partition
+02/23/2021 1:03 AM
+after flashing a boot image to the cache partition
+[waam.]
+waam. 02/23/2021 1:03 AM
+boot is already defined as boot=update boot boot.img
+[smx2460]
+smx2460 02/23/2021 1:03 AM
+eboot cache
+02/23/2021 1:03 AM
+you could try
+02/23/2021 1:03 AM
+so i guess boot is the name of the partition
+[waam.]
+waam. 02/23/2021 1:03 AM
+right, boot is above it
+[smx2460]
+smx2460 02/23/2021 1:03 AM
+eboot is the command, boot is the argument
+02/23/2021 1:02 AM
+    bootcmd=eboot boot
+02/23/2021 1:02 AM
+damn it's been a while since i looked at mtk's uboot code
+[waam.]
+waam. 02/23/2021 1:02 AM
+(no content)
+ message.txt
+3.55 KB External
+02/23/2021 1:01 AM
+sec
+[smx2460]
+smx2460 02/23/2021 1:01 AM
+how about printenv?
+[waam.]
+waam. 02/23/2021 1:01 AM
+mt5886 # mm mm - memory modify (auto-incrementing address) mt5886 # help
+mm mm - memory modify (auto-incrementing address)
+[smx2460]
+smx2460 02/23/2021 1:01 AM
+but you can just download the uboot sources
+02/23/2021 1:01 AM
+they were just lazy to add help
+02/23/2021 1:01 AM
+i STRONGLY doubt it's obfucation
+02/23/2021 1:00 AM
+help <cmd>?
+02/23/2021 1:00 AM
+really?
+[waam.]
+waam. 02/23/2021 1:00 AM
+they don't show sub command syntax
+02/23/2021 1:00 AM
+the help has been obfuscated
+[smx2460]
+smx2460 02/23/2021 1:00 AM
+to print the command table
+02/23/2021 1:00 AM
+then you should do help (edited)
+02/23/2021 1:00 AM
+first of all, you should do printenv to see the current env
+[waam.]
+waam. 02/23/2021 12:59 AM
+whoops. md*
+[smx2460]
+smx2460 02/23/2021 12:59 AM
+i don't get you
+02/23/2021 12:59 AM
+to read?
+[smx2460]
+[] waam. So, how would I go about using md on a mmc partition?
+smx2460 02/23/2021 12:59 AM
+!?
+[smx2460]
+smx2460 02/23/2021 12:59 AM
+but it's not automatic, you need to drop in mtkloader to change JTAG
+pinmuxing
+02/23/2021 12:59 AM
+i want to see or try the magic hdmi Y cable 
+[waam.]
+waam. 02/23/2021 12:59 AM
+mm mmc0,13 address length?
+02/23/2021 12:58 AM
+So, how would I go about using md on a mmc partition?
+[smx2460]
+smx2460 02/23/2021 12:58 AM
+0:dedicate
+02/23/2021 12:58 AM
+it can exist
+[waam.]
+waam. 02/23/2021 12:58 AM
+that should be a 10 pin ARM jtag header
+[smx2460]
+smx2460 02/23/2021 12:58 AM
+it also has a dedicated jtag port on some
+[waam.]
+waam. 02/23/2021 12:58 AM
+(no content)
+[20210222_185757.jpg]
+ 20210222_185757.jpg
+6.24 MB External
+[smx2460]
+smx2460 02/23/2021 12:58 AM
+hm ok
+02/23/2021 12:58 AM
+    $ strings mtkloader.unlzhs | grep -i jtag
+    %s [jtag_type]
+       jtag_type, 0:dedicate, 1:hdmi0_1, 2:usb, 3:hdmi1_2,4:hdmi2_3
+    jtag to Jtag
+    hdmi 0-1 to Jtag
+    usb to Jtag
+    hdmi 1-2 to Jtag
+    hdmi 2-3 to Jtag
+    Restore Jtag related pins' function to initial state!
+    jtag
+    Select JTAG input
+02/23/2021 12:56 AM
+basically you must make a kind of Y cable since 2 pins aren't enough for
+JTAG and you need 2 HDMI ports (edited)
+[waam.]
+waam. 02/23/2021 12:56 AM
+sec
+[smx2460]
+smx2460 02/23/2021 12:56 AM
+you sure it's really JTAG?
+02/23/2021 12:56 AM
+since it expects you to use HDMI for JTAG
+02/23/2021 12:56 AM
+mine doesn't have it
+02/23/2021 12:56 AM
+strange
+[waam.]
+waam. 02/23/2021 12:56 AM
+I noticed the jtag header when I was soldering the serial pins
+[smx2460]
+smx2460 02/23/2021 12:56 AM
+it can use 2 pins per port
+02/23/2021 12:55 AM
+by pinmuxing
+02/23/2021 12:55 AM
+it can run on either JTAG or USB ports
+02/23/2021 12:55 AM
+i've not seen anyone building or trying a cable for it yet
+02/23/2021 12:55 AM
+mtk has a proprietary JTAG interface running on HDMI
+[waam.]
+waam. 02/23/2021 12:55 AM
+mt5886 # md md - memory display mt5886 # mm mm - memory modify
+(auto-incrementing address)
+02/23/2021 12:55 AM
+nah, never used jtag
+[smx2460]
+smx2460 02/23/2021 12:54 AM
+@Waam are you experienced with JTAG?
+02/23/2021 12:54 AM
+and see what's there
+02/23/2021 12:54 AM
+you should printenv
+[waam.]
+waam. 02/23/2021 12:53 AM
+the uboot commands are where I've halted progress
+[smx2460]
+smx2460 02/23/2021 12:53 AM
+you should look into a boot script that makes it untethered (edited)
+02/23/2021 12:52 AM
+the problem is that if you do that it's a tethered modification
+02/23/2021 12:52 AM
+since uboot is loaded in RAM and you have md/mw commands to patch it
+[smx2460]
+[] waam. is it feasible to boot uboot while inside uboot?
+smx2460 02/23/2021 12:52 AM
+if you're already in uboot, it makes little sense to boot to another one
+[smx2460]
+smx2460 02/23/2021 12:52 AM
+but there are LG TVs with CFE (old Broadcom models)
+02/23/2021 12:51 AM
+and just kept using that repo for lazyness (edited)
+02/23/2021 12:51 AM
+i actually played with CFE for my router
+02/23/2021 12:51 AM
+lxboot, uboot, cfe
+02/23/2021 12:51 AM
+there are 3 samples in that repo
+[waam.]
+waam. 02/23/2021 12:51 AM
+would have saved me hours lol
+02/23/2021 12:51 AM
+should have talked to you yesterday
+02/23/2021 12:51 AM
+ahh, excellent
+[smx2460]
+smx2460 02/23/2021 12:51 AM
+yes
+02/23/2021 12:51 AM
+this is an SDK / toolkit i wrote for that purpose
+[waam.]
+waam. 02/23/2021 12:51 AM
+have any experience with uboot commands?
+[smx2460]
+smx2460 02/23/2021 12:50 AM
+https://github.com/openlgtv/bootSdk
+openlgtv/bootSdk
+Run custom binaries in lxboot or uboot. Contribute to openlgtv/bootSdk
+development by creating an account on GitHub.
+[]
+02/23/2021 12:50 AM
+or you can extend it with custom commands
+02/23/2021 12:50 AM
+you can also mem patch it
+[waam.]
+waam. 02/23/2021 12:50 AM
+ah, perfect
+[smx2460]
+smx2460 02/23/2021 12:50 AM
+yes
+[waam.]
+waam. 02/23/2021 12:50 AM
+is it feasible to boot uboot while inside uboot?
+[smx2460]
+smx2460 02/23/2021 12:50 AM
+-> the partition table -> the boot partition (edited)
+02/23/2021 12:50 AM
+as long as you keep 2 vital elements
+02/23/2021 12:49 AM
+you technically can trash all the eMMC (edited)
+[waam.]
+waam. 02/23/2021 12:49 AM
+any idea of what this secondary uart might be labelled?
+[smx2460]
+[] waam. But, the easiest way for me to progress will be booting a linux
+kernel that I compiled, and then usi...
+smx2460 02/23/2021 12:49 AM
+if you can trick uboot into bootin from another source
+[smx2460]
+smx2460 02/23/2021 12:49 AM
+and it's used to test the kernel driver / kdriver (edited)
+02/23/2021 12:48 AM
+not the OS
+02/23/2021 12:48 AM
+which is controlled by the kernel itself
+02/23/2021 12:48 AM
+you'll have a kernel debug shell
+02/23/2021 12:48 AM
+if you connect to the secondary UART once booted
+[waam.]
+waam. 02/23/2021 12:48 AM
+But, the easiest way for me to progress will be booting a linux kernel
+that I compiled, and then using that to access the emmc partitions to do
+with as I please?
+[smx2460]
+smx2460 02/23/2021 12:48 AM
+so they are blind
+02/23/2021 12:48 AM
+but some mtkloader's are compiled to have printf() nopped out
+02/23/2021 12:47 AM
+iirc the mtkloader uart can be accessed by holding ESC on boot (edited)
+[czsnp]
+czsnp 02/23/2021 12:47 AM
+ok, thanks
+[smx2460]
+smx2460 02/23/2021 12:47 AM
+@Waam np 
+02/23/2021 12:47 AM
+if you have root, have fun but the APIs are nonstandard
+[waam.]
+waam. 02/23/2021 12:47 AM
+Thanks Smx
+02/23/2021 12:47 AM
+there's definitely 2 uarts.. holy shit, I'm so dumb!
+[smx2460]
+smx2460 02/23/2021 12:47 AM
+afaik
+02/23/2021 12:47 AM
+@snp not without root
+[czsnp]
+czsnp 02/23/2021 12:46 AM
+@Smx i have an offtopic question. Can an app on smarttv access DVB
+tunner ?
+[smx2460]
+smx2460 02/23/2021 12:46 AM
+and you might even have a secondary UART for it (edited)
+02/23/2021 12:46 AM
+mtkloader is for ISP (edited)
+[waam.]
+waam. 02/23/2021 12:46 AM
+Ah, I see/
+[smx2460]
+smx2460 02/23/2021 12:46 AM
+it decides to boot from mtkloader or uboot
+02/23/2021 12:46 AM
+preloader is uncompressed at the beginning of the boot partition
+02/23/2021 12:45 AM
+it has a different code path that loads preloader from eMMC
+[waam.]
+waam. 02/23/2021 12:45 AM
+T8032 init A/C on case loader stage... Load T8032 FW (addr: 0x d62b88,
+size: 23017)success!! clock:0x0 up_cfg:0x2aaa1 T8032 FW version: 37
+T8032 change to loader stage... LDR_FlashCoConnect interrupt = 0x10,
+pBase = 0xf0051000. py 0xf010 0x66880 0x80 Boot reason: Watch dog0 reset
+(0x1ff0000)
+[smx2460]
+smx2460 02/23/2021 12:45 AM
+if it boots from eMMC, it doesn't use it
+[waam.]
+waam. 02/23/2021 12:45 AM
+DC wakeup Power ready check time : 88ms. Preloader T8032 ack !
+[smx2460]
+smx2460 02/23/2021 12:45 AM
+the CPU has a ROM that can boot from NAND
+[waam.]
+waam. 02/23/2021 12:45 AM
+I've been trying to use my google fu for this.. but, as you know, tons
+of fragmented linux/android info
+02/23/2021 12:44 AM
+poi-fekt!
+[smx2460]
+smx2460 02/23/2021 12:44 AM
+and i wrote a part of the LZHS decompressor
+02/23/2021 12:44 AM
+i'm an MTK owner here 
+02/23/2021 12:44 AM
+that's true
+[waam.]
+waam. 02/23/2021 12:44 AM
+I could be wrong, but I think there's an initial bootrom that decrypts
+the lzhs header
+[smx2460]
+smx2460 02/23/2021 12:43 AM
+since MT53xx rom is interesting
+02/23/2021 12:43 AM
+it'd be interesting to see a dump of the bootrom btw
+02/23/2021 12:42 AM
+what do you mean
+[waam.]
+waam. 02/23/2021 12:28 AM
+(no content)
+ message.txt
+3.27 KB External
+02/23/2021 12:27 AM
+or, rather, preloader?
+02/23/2021 12:27 AM
+Is that a bootloader?
+02/23/2021 12:27 AM
+I'm interested in OF: fdt:Machine model: Mediatek DTV MT53xx
+02/23/2021 12:27 AM
+(no content)
+ message.txt
+3.86 KB External
+02/23/2021 12:26 AM
+Linux version 4.9.125 (gfkfcmo@90c1eb3a4a95) (gcc version 5.5.0 (Linaro
+GCC 5.5-2017.10) ) #1 SMP PREEMPT Mon Aug 17 11:22:18 CST 2020 CPU:
+ARMv7 Processor [410fd032] revision 2 (ARMv7), cr=10c5383d CPU: div
+instructions available: patching division code CPU: PIPT / VIPT
+nonaliasing data cache, VIPT aliasing instruction cache OF: fdt:Machine
+model: Mediatek DTV MT53xx
+[smx2460]
+smx2460 02/23/2021 12:11 AM
+since you should be able to control the bootscript
+02/23/2021 12:11 AM
+the easiest are likely from a USB pendrive or putting it on an unsigned
+partition
+02/23/2021 12:11 AM
+@Waam i'd say there is a handful of ways one could use to boot a custom
+kernel
+[waam.]
+waam. 02/23/2021 12:07 AM
+Let me pastebin some console output for ya
+02/23/2021 12:06 AM
+Since I'm able to disable dm-verity, etc with uboot
+02/23/2021 12:05 AM
+Well, I'd like to just be able to modify the factory boot image
+initially
+02/23/2021 12:05 AM
+Yeah, end goal
+[smx2460]
+smx2460 02/23/2021 12:04 AM
+@Waam you're trying to boot a custom kernel?
+[waam.]
+waam. 02/23/2021 12:02 AM
+Emmc device 0, partition 13 is Boot
+02/23/2021 12:02 AM
+Any tips?
+02/23/2021 12:02 AM
+I'm want to access my boot.img but I can't for the life of me seem to
+manage.
+02/23/2021 12:01 AM
+So, ive been running into walls the past few days on this Hisense H8F.
+I've connected a serial header to it's uart pins and can access uboot to
+set env parameters. I'm definitely failing with the memory accessing
+commands in uboot ...
+February 14, 2021
+ssteell. 02/14/2021 6:19 PM
+yeah it would seem that was for non-webos tvs
+ww8543 02/14/2021 5:51 PM
+i think it was there on netcast tvs (edited)
+ssteell. 02/14/2021 5:45 PM
+dont' have much time at hand these days and got it rooted last night
+thinking the key would be in /mnt/lg/cmn_data/dvr
+02/14/2021 5:42 PM
+much appreciated
+02/14/2021 5:42 PM
+thanks so much
+ssteell. model is 42LB671V
+ww8543 02/14/2021 5:42 PM
+alright i will take a look and get back to you tomorrow
+ww8543 more important would be to know what your model is, so i can
+download your firmware and look at how ...
+ssteell. 02/14/2021 5:41 PM
+model is 42LB671V
+ww8543 02/14/2021 5:38 PM
+no
+ssteell. 02/14/2021 5:38 PM
+so there's no other easier way to get to the secure zone than
+debugging/instrumenting libdidle or libhal?
+02/14/2021 5:37 PM
+thanks for the clear explanations
+02/14/2021 5:37 PM
+aha... yeah I know the basics but I guess I was mixing some things up
+[smx2460]
+smx2460 02/14/2021 5:36 PM
+Video and audio accelerators (VPU) etc (edited)
+ww8543 02/14/2021 5:36 PM
+more important would be to know what your model is, so i can download
+your firmware and look at how the secure store works on your system...
+[smx2460]
+smx2460 02/14/2021 5:36 PM
+Like Crypto Accelerators
+02/14/2021 5:36 PM
+Then Realtek/LG etc. Are free to put custom components on the bus
+02/14/2021 5:35 PM
+Etc
+02/14/2021 5:35 PM
+So the CPU is ARM Licensed, the GPU is Mali licensed or PowerVR licensed
+02/14/2021 5:35 PM
+And they integrate everything into a package
+02/14/2021 5:35 PM
+And custom conponents
+02/14/2021 5:35 PM
+They apply customizations if permitted
+02/14/2021 5:34 PM
+A SoC manufacturer acquires licenses from a CPU vendor and a GPU vendor
+[] smx2460 It's a SoC which means it has multiple ICs in one package
+ww8543 02/14/2021 5:34 PM
+thats why they call it system on a chip
+ssteell. 02/14/2021 5:34 PM
+thought cpu was realtek (arm av7 arch) within an lg SoC
+[smx2460]
+smx2460 02/14/2021 5:34 PM
+It's a SoC which means it has multiple ICs in one package
+ssteell. 02/14/2021 5:34 PM
+ah ok
+[smx2460]
+ssteell. yep I mean I supposed the realtek was the cpu not the SoC
+smx2460 02/14/2021 5:33 PM
+Realtek is both CPU and SOC
+[smx2460]
+smx2460 02/14/2021 5:33 PM
+Arm is just the architecture, the version, features and SoC change
+ssteell. 02/14/2021 5:33 PM
+yep I mean I supposed the realtek was the cpu not the SoC
+[smx2460]
+smx2460 02/14/2021 5:33 PM
+But I mean so is my old TomTom Go 910
+[smx2460]
+ssteell. yeah, seen those but wrongly assumed that was the arm cpu...
+smx2460 02/14/2021 5:32 PM
+It Is arm
+ww8543 02/14/2021 5:32 PM
+the lg soc IS an arm cpu
+ssteell. 02/14/2021 5:32 PM
+Hi @Smx
+02/14/2021 5:32 PM
+guess it's the soc, yeah
+02/14/2021 5:32 PM
+yeah, seen those but wrongly assumed that was the arm cpu...
+[smx2460]
+ssteell. so it seems, others don't?
+smx2460 02/14/2021 5:31 PM
+Others do too, it's a common SOC
+ww8543 02/14/2021 5:31 PM
+they also use realtek for example
+[smx2460]
+smx2460 02/14/2021 5:31 PM
+Hi @ssteell
+ww8543 02/14/2021 5:31 PM
+it depends on the model
+ssteell. 02/14/2021 5:31 PM
+so it seems, others don't?
+ww8543 02/14/2021 5:31 PM
+ah interesting you have a lg soc
+ssteell. 02/14/2021 5:30 PM
+processor : 0 model name : ARMv7 Processor rev 0 (v7l) BogoMIPS : 2007.04 Features : swp half thumb fastmult vfp edsp neon vfpv3 tls CPU implementer : 0x41 CPU architecture: 7 CPU variant : 0x3 CPU part : 0xc09 CPU revision : 0 processor : 1 model name : ARMv7 Processor rev 0 (v7l) BogoMIPS : 2007.04 Features : swp half thumb fastmult vfp edsp neon vfpv3 tls CPU implementer : 0x41 CPU architecture: 7 CPU variant : 0x3 CPU part : 0xc09 CPU revision : 0 Hardware : LG Electronics DTV SoC Revision : 0000 Serial : 0000000000000000
+ww8543 02/14/2021 5:30 PM
+ah yes
+ssteell. 02/14/2021 5:29 PM
+I used GetMeIn binary (from xda forum) to root it
+02/14/2021 5:28 PM
+oops sorry was afk
+ww8543 02/14/2021 5:12 PM
+@ssteell?
+ww8543 02/14/2021 4:55 PM
+what model is it?
+02/14/2021 4:54 PM
+whats the output of cat /proc/cpuinfo?
+02/14/2021 4:54 PM
+what method did you use to root it?
+ssteell. 02/14/2021 4:51 PM
+2014, yep
+ww8543 02/14/2021 4:47 PM
+2014?
+02/14/2021 4:47 PM
+webos 1.4 sounds as old as one of my own tvs
+02/14/2021 4:42 PM
+maybe also libkadaptor
+02/14/2021 4:42 PM
+depending on what soc it is
+ssteell. I mean, any way that doesn't require hw or instrumenting sw or?
+ww8543 02/14/2021 4:41 PM
+you would have to use libdile or libhal most likely (edited)
+ssteell. 02/14/2021 4:25 PM
+I mean, any way that doesn't require hw or instrumenting sw or?
+02/14/2021 4:23 PM
+thanks, any way to get in there with root access?
+ssteell. no dvr file in /mnt/lg/cmn_data
+ww8543 02/14/2021 3:03 PM
+webos tvs have that in secure store
+ssteell. 02/14/2021 1:27 PM
+no dvr file in /mnt/lg/cmn_data
+02/14/2021 1:27 PM
+gday, anyone here can help getting the pvr encryption key in a rooted
+webos 1.4.0 tv
+February 9, 2021
+mayurraj3896 I will provide you firmware link . Please help to unpack
+ww8543 02/09/2021 8:10 PM
+have you tried it with epk2extract?
+mayurraj3896 02/09/2021 8:08 PM
+I will provide you firmware link . Please help to unpack
+February 7, 2021
+[smx2460]
+smx2460 02/07/2021 1:12 PM
+It should be supported
+ww8543 02/07/2021 10:47 AM
+any known header on that upg file?
+mayurraj3896 Hi, i want to decompile Philips autorun.upg file.
+ww8543 02/07/2021 10:46 AM
+epk2extract cant do it, yet?
+mayurraj3896 02/07/2021 5:05 AM
+Need help for unpacking autorun.upg . And want to unpack system
+partician also
+02/07/2021 5:03 AM
+Hi, i want to decompile Philips autorun.upg file.
+February 3, 2021
+[] smx2460 depending on the bootloader you might be able to boot from
+another device, but don't touch the flash
+gawanimyd 02/03/2021 12:33 PM
+thanks a lot. do you know where can we download Hisense Firmware? I have
+Hisense smart tv. it was stock in logo only.
+January 31, 2021
+[smx2460]
+smx2460 01/31/2021 3:08 AM
+depending on the bootloader you might be able to boot from another
+device, but don't touch the flash (edited)
+01/31/2021 3:07 AM
+it's pointless to even try
+01/31/2021 3:07 AM
+the TV checks for signatures
+01/31/2021 3:07 AM
+the gpl package has no repack tools
+01/31/2021 3:07 AM
+@gawanimyd sorry but it's impossible
+[] smx2460 <@804728204660047903> you can't
+gawanimyd 01/31/2021 3:01 AM
+Thanks a lot....
+January 30, 2021
+Deleted User 01/30/2021 8:47 PM
+@Smx Hello and many thanks for this wonderful tool  With it i
+successfully downgraded my LG C8 (o18 2018) from firmware 5.30.02(.10)
+WebOS 4.3 (the version that adds AirPlay 2 and HomeKit) to firmware
+5.20.02. LG blocked the downgrade process with version 5.* and until now
+it seems impossible. The discovery cost me 2 days, but I am happier now.
+I would share the procedure with anyone interested, but only in PM,
+because I guess if it goes public, the last hole will be filled and then
+ 1
+[smx2460]
+smx2460 01/30/2021 4:09 PM
+through memory mapped files
+01/30/2021 4:09 PM
+MFILE is a custom API i made to simplify binary loading (edited)
+01/30/2021 4:08 PM
+which uses this
+01/30/2021 4:08 PM
+https://github.com/alitrack/mman-win32 (edited)
+alitrack/mman-win32
+mman library for Windows. mirror of
+https://code.google.com/p/mman-win32/ - alitrack/mman-win32
+[]
+01/30/2021 4:08 PM
+i have an adaptation the MFILE APIs, which work on native win32 (edited)
+01/30/2021 4:08 PM
+the mtkpkg code doesn't use squashfs
+[smx2460]
+[] inntremux6471 but problem is i have epk2extract compiled on linux but
+i don't use linux so much, can i adopt your ...
+smx2460 01/30/2021 4:08 PM
+however...
+[smx2460]
+smx2460 01/30/2021 4:07 PM
+otherwise you need to rewrite or reconsider things like squashfs-tools
+01/30/2021 4:07 PM
+but still under cygwin
+01/30/2021 4:07 PM
+there is an experiment on my drive to make epk2extract object oriented
+and plugin-based
+01/30/2021 4:06 PM
+because it's too much effort for little gain
+01/30/2021 4:06 PM
+and it will likely never be
+01/30/2021 4:06 PM
+the code hasn't been ported to native win32 yet
+01/30/2021 4:06 PM
+not without cygwin
+[inntremux6471]
+inntremux6471 01/30/2021 4:06 PM
+but problem is i have epk2extract compiled on linux but i don't use
+linux so much, can i adopt your lzhs code using windows without cygwin?
+(edited)
+[smx2460]
+[] win0026d Hello, is it possible to dump keys from 2020 lg smart tv to
+decrypt epk firmware?
+smx2460 01/30/2021 4:05 PM
+likely, depends on the model
+[smx2460]
+smx2460 01/30/2021 4:05 PM
+for 3rd_rw that'd be an ext4 one
+[inntremux6471]
+inntremux6471 01/30/2021 4:05 PM
+oh, that would be great
+[smx2460]
+smx2460 01/30/2021 4:05 PM
+you'll get a squashfs partition you can mount (edited)
+01/30/2021 4:05 PM
+once you run lzhs_fs on the file you showed me
+[inntremux6471]
+inntremux6471 01/30/2021 4:04 PM
+actually i only need one or two files from this firmware, it doesn't
+matter rest
+[smx2460]
+smx2460 01/30/2021 4:04 PM
+    typedef struct {
+        char *config_dir; <-- unused in MTKPKG
+        char *dest_dir;
+        int enableSignatureChecking; <-- unused in MTKPKG
+    } config_opts_t;
+01/30/2021 4:03 PM
+config_opts is a structure you need to allocate (stack/heap). it has a
+member called dest_dir that you also need to set
+01/30/2021 4:03 PM
+dest_file is the path to extract it to
+01/30/2021 4:03 PM
+mf is the input file, which you can obtain by using mopen
+01/30/2021 4:03 PM
+it's pretty self explanatory
+01/30/2021 4:03 PM
+    void extract_lzhs_fs(MFILE *mf, const char *dest_file, config_opts_t *config_opts){
+01/30/2021 4:03 PM
+then use this API
+01/30/2021 4:02 PM
+you can build the source file into a library
+01/30/2021 4:02 PM
+if you feel brave enough
+01/30/2021 4:02 PM
+or we add support for the different mtkpkg structure to it
+01/30/2021 4:01 PM
+so that you can run it directly on the extracted file
+01/30/2021 4:01 PM
+@inntremux either we hack mtkpkg to split it from lzhs_fs
+01/30/2021 4:01 PM
+i'm pretty sure it's lzhs fs then
+01/30/2021 4:01 PM
+yes
+01/30/2021 4:01 PM
+aha
+01/30/2021 4:01 PM
+    #define SHARP_PKG_HEADER_SIZE 0x40
+[win0026d]
+win0026d 01/30/2021 4:01 PM
+Hello, is it possible to dump keys from 2020 lg smart tv to decrypt epk
+firmware?
+[smx2460]
+smx2460 01/30/2021 4:01 PM
+only as part of MTKPKG
+[smx2460]
+[] inntremux6471 so it can be extracted, how?
+smx2460 01/30/2021 4:01 PM
+epk2extract won't handle LZHS_FS standalone
+[smx2460]
+smx2460 01/30/2021 4:00 PM
+so there might be an extra padding there too
+01/30/2021 4:00 PM
+which displaces the start
+01/30/2021 4:00 PM
+there's this thing i forgot about
+01/30/2021 4:00 PM
+        if(is_nfsb_mem(mf, SHARP_PKG_HEADER_SIZE)){
+            start += SHARP_PKG_HEADER_SIZE;
+        }
+01/30/2021 4:00 PM
+however
+01/30/2021 4:00 PM
+they are not right on the 0x100000 boundary it seems
+[inntremux6471]
+inntremux6471 01/30/2021 4:00 PM
+so it can be extracted, how?
+[smx2460]
+smx2460 01/30/2021 3:59 PM
+hmm wait tho
+01/30/2021 3:59 PM
+or 2 "rows"
+01/30/2021 3:59 PM
+(16 * 2) bytes (edited)
+01/30/2021 3:59 PM
+        if(
+            is_lzhs_mem(mf, start) &&
+            is_lzhs_mem(mf, start + sizeof(struct lzhs_header)) &&
+            // First LZHS header contains number of segment in checksum. Make sure that it is the first segment
+            ((struct lzhs_header *)&data[start])->checksum == 1
+        ){
+            return mf;
+        }
+[smx2460]
+[] inntremux6471 Click to see attachment
+smx2460 01/30/2021 3:58 PM
+you can see the 2 lzhs headers there
+[inntremux6471]
+inntremux6471 01/30/2021 3:58 PM
+(no content)
+[vend_1.png]
+ vend_1.png
+38.18 KB External
+[smx2460]
+smx2460 01/30/2021 3:58 PM
+    #define MTK_EXT_LZHS_OFFSET 0x100000
+(edited)
+01/30/2021 3:58 PM
+then the rest are LZHS chunks
+01/30/2021 3:58 PM
+i.e. copied as-is
+01/30/2021 3:58 PM
+in LZHS-FS, the first MB is uncompressed
+01/30/2021 3:57 PM
+as well as that offset
+01/30/2021 3:57 PM
+that header looks very familiar
+01/30/2021 3:56 PM
+@inntremux maybe it's LZHS compressed? (edited)
+[inntremux6471]
+inntremux6471 01/30/2021 3:55 PM
+there are lot of these patterns in the file, maybe it's encrypted, maybe
+compressed
+01/30/2021 3:53 PM
+(no content)
+[vend_0x00100000.png]
+ vend_0x00100000.png
+51.79 KB External
+01/30/2021 3:53 PM
+here is extracted vend image hex dump from offset 0x00100000
+01/30/2021 3:48 PM
+yeah, but it's some different kind
+[smx2460]
+smx2460 01/30/2021 3:47 PM
+hsqs should be squashfs
+[inntremux6471]
+inntremux6471 01/30/2021 3:46 PM
+i cannot extract none of them
+01/30/2021 3:45 PM
+there 2 types of file images, one is some kind plain img and other is
+hsqsx
+[smx2460]
+smx2460 01/30/2021 3:44 PM
+or it's a totally different format? (edited)
+01/30/2021 3:44 PM
+is it something that can be fixed?
+01/30/2021 3:44 PM
+oh 
+[inntremux6471]
+inntremux6471 01/30/2021 3:44 PM
+your tool doesn't work at all for this one, but i have my own tool to
+extract and decrypt partitions, problem is with extraction files from
+them
+[smx2460]
+smx2460 01/30/2021 3:44 PM
+i don't own any "pure" MTK TV actually (edited)
+01/30/2021 3:44 PM
+the tool can improve only if users give me keys to work with 
+01/30/2021 3:43 PM
+if you have the key, i could look at it
+01/30/2021 3:43 PM
+i've never seen it decrypted before
+[smx2460]
+[] inntremux6471 that's ok, i decrypted them, but it's some kind weird
+image
+smx2460 01/30/2021 3:43 PM
+interesting
+[smx2460]
+smx2460 01/30/2021 3:43 PM
+and you'll see [ENCRYPTED] in the output
+01/30/2021 3:43 PM
+but if you don't have the key, i'll keep them crypted
+01/30/2021 3:43 PM
+so i can extract the partitions always
+[inntremux6471]
+inntremux6471 01/30/2021 3:43 PM
+that's ok, i decrypted them, but it's some kind weird image
+[smx2460]
+smx2460 01/30/2021 3:42 PM
+the MTKPKG header is always plain
+01/30/2021 3:41 PM
+you need the AES key to decrypt them @inntremux (edited)
+01/30/2021 3:41 PM
+yes
+[inntremux6471]
+inntremux6471 01/30/2021 3:40 PM
+@Smx @ww is there any way to extract MTK pkg extracted partitions for
+example *vend*, *sysm*?
+[win0026d]
+win0026d 01/30/2021 2:53 PM
+Hello guys, do anyone know if unpacking of 2020 models of LG smart tv
+firmware is possible or not? how can i dump the AES and RSA keys
+required to unpack epk firmware from my tv? i have 43UN7340PVC LG Smart
+tv
+[smx2460]
+smx2460 01/30/2021 11:46 AM
+And it wouldn't work anyways
+01/30/2021 11:46 AM
+Not from that repository alone
+01/30/2021 11:45 AM
+@gawanimyd you can't
+[] inntremux6471 <@!804728204660047903> which tv model do you have?
+gawanimyd 01/30/2021 4:51 AM
+I have 43a5605 hisense. do you have firmware for that? I have firmware
+for 42atv630 but I already try it doesnt work. do you have any tutorial
+on how to compile that source file to .pkg? (edited)
+gawanimyd 01/30/2021 4:15 AM
+do you have any tutorial on how to compile that source file to .pkg?
+01/30/2021 4:14 AM
+I have 43a5605 hisense. do you have firmware for that? I have firmware
+for 42atv630 but I already try it doesnt work.
+January 29, 2021
+[inntremux6471]
+inntremux6471 01/29/2021 6:29 PM
+@gawanimyd which tv model do you have?
+ww8543 01/29/2021 5:07 PM
+hisense doesnt check a signature?
+gawanimyd 01/29/2021 4:12 PM
+hi guys good eve/ morning to all. Im new here. does anyone here know how
+to use this source file to make .pkg for hisense TV?
+https://github.com/opensource-hisense/SmartTV-Series9
+opensource-hisense/SmartTV-Series9
+Productions List: HS32A5600HWB HS43A5600FWB HS39A5600FWB HS32A5605HWB
+HS43A5605FWB HS49N2173FWB HS32N1800HWB HS43N1800FWB HS50N1800FWB
+HS32A5608HWB HE39A5600FWTS HE32A5600HWTS HE...
+[]
+January 26, 2021
+[mathieulh]
+mathieulh 01/26/2021 2:27 PM
+thanks, will do
+ww8543 01/26/2021 2:22 PM
+interesting lib to start with would be libkadaptor.so
+01/26/2021 2:22 PM
+well go and see if you can unpack your tv's firmware, then you can take
+a look at all the libs, etc
+01/26/2021 2:21 PM
+01/26/2021 2:21 PM
+what if the bootloader is involved
+01/26/2021 2:21 PM
+might even be more complicated than that
+[mathieulh]
+mathieulh 01/26/2021 2:20 PM
+yah, if it's the driver that'd be a pain
+ww8543 01/26/2021 2:20 PM
+maybe it gets exposed further up in some higher level lib if you are
+lucky (edited)
+01/26/2021 2:19 PM
+sounds to me like it would at least be a kernel driver module
+[mathieulh]
+mathieulh 01/26/2021 2:19 PM
+yeah
+ww8543 01/26/2021 2:19 PM
+you would first need to figure out where they do that, and where that
+something gets its settings from
+[mathieulh]
+mathieulh 01/26/2021 2:18 PM
+and trigger the "invalid format" message
+01/26/2021 2:18 PM
+and anything not in the range, even if it's technically supported, will
+not display
+ww8543 01/26/2021 2:18 PM
+could be
+[mathieulh]
+mathieulh 01/26/2021 2:18 PM
+I think they either blacklist or whitelist whole resolution ranges
+01/26/2021 2:17 PM
+darn xD
+ww8543 01/26/2021 2:17 PM
+01/26/2021 2:17 PM
+but dont expect there to be a panel.conf in /etc
+01/26/2021 2:16 PM
+no they dont
+01/26/2021 2:16 PM
+it seems like in newer webos versions, a lot of settings have moved from
+nvram to indb8
+[mathieulh]
+mathieulh 01/26/2021 2:16 PM
+what would stop me? do they use obfuscation on their config files?
+ww8543 01/26/2021 2:15 PM
+even if you have root, dont expect it to be easy to change the internals
+01/26/2021 2:15 PM
+no you can not, the epk's signature is checked
+[mathieulh]
+mathieulh 01/26/2021 2:12 PM
+so the only way to change the internal configuration to allow arbitrary
+resolutions would be to root the tv
+01/26/2021 2:12 PM
+I assume there is a signature
+01/26/2021 2:12 PM
+I haven't tested that yet, it should, but I can't really repack and
+flash can I ?
+ww8543 01/26/2021 2:11 PM
+the key we have does not unpack your firmware?
+01/26/2021 2:08 PM
+ok
+[mathieulh]
+mathieulh 01/26/2021 2:08 PM
+yeah, it's their current OLED model xD
+ww8543 01/26/2021 2:08 PM
+oh a new-ish tv
+[mathieulh]
+mathieulh 01/26/2021 2:08 PM
+2020
+ww8543 01/26/2021 2:07 PM
+from what year?
+[mathieulh]
+mathieulh 01/26/2021 2:04 PM
+LG CX
+ww8543 01/26/2021 2:02 PM
+@Mathieulh what kind of lg tv do you have?
+ww8543 01/26/2021 1:53 PM
+well http://webostv.developer.lge.com/ actually
+webOS TV Developer
+The webOS TV Developer site is an open place for people wanting to
+create web apps on the webOS TV of LG Electronics.
+01/26/2021 1:52 PM
+https://developer.lge.com/main/Intro.dev
+LG Developer
+The official developer resources for LG products and platforms.
+01/26/2021 1:52 PM
+@Mathieulh if you havent worked with lg before i suggest you get their
+sdk so you can ssh into it
+01/26/2021 1:50 PM
+and
+999 1064 0.4 2.9 275468 43644 ? SLsl 16:23 0:03 /usr/bin/WebAppMgr -platform wayland
+01/26/2021 1:49 PM
+there is stuff like this running too:
+999 1125 0.6 4.3 266324 66004 ? SLl 16:23 0:05 /usr/bin/QtWebProcess 12
+[mathieulh]
+mathieulh 01/26/2021 1:43 PM
+ok
+ww8543 01/26/2021 1:42 PM
+uhm most of the apps are html
+[mathieulh]
+mathieulh 01/26/2021 1:42 PM
+I haven't spotted anything that looks like a web browser on the thing,
+maybe it works with captive portals
+01/26/2021 1:41 PM
+ok, that may be a way then, is it just some app in the app store?
+ww8543 01/26/2021 1:40 PM
+yes there is
+[mathieulh]
+mathieulh 01/26/2021 1:40 PM
+I am kinda new on LG so I haven't looked for entry points or the such,
+is there a webkit implementation running on it?
+ww8543 01/26/2021 1:40 PM
+an unpublished one
+[mathieulh]
+mathieulh 01/26/2021 1:40 PM
+what exploit was used?
+01/26/2021 1:39 PM
+how was it rooted then?
+ww8543 01/26/2021 1:39 PM
+i dont know of any write up
+[mathieulh]
+ww8543 you need to root to use these libs anyway
+mathieulh 01/26/2021 1:38 PM
+Is there a writeup on the method used? I would like to root my set
+myself and disable the arbitrary resolution limits set by LG, they
+prevent you from running 720p@120, 960p@120 or 1080p@240 even though the
+panel is capable of it and you can see the signals in the VRR and HDMI
+diagnostics menu but you get the dreaded "invalid format" message
+ww8543 01/26/2021 1:38 PM
+why?
+01/26/2021 1:38 PM
+yes
+[mathieulh]
+mathieulh 01/26/2021 1:36 PM
+https://github.com/openlgtv/epk2extract/commit/0c25da8811f64c1ff792f1de12e15e88115305c4
+Added O20 WebOS 5 key · openlgtv/epk2extract@0c25da8
+[]
+01/26/2021 1:36 PM
+Hi, I have a question, do you know how the LG CX key was dumped?
+January 23, 2021
+ww8543 01/23/2021 8:40 PM
+thats only possible if you have your tv's decryption key
+Deleted User 01/23/2021 8:29 PM
+How i convert all in the format video?
+ 1
+01/23/2021 8:29 PM
+Now I have the record folder the STR files
+01/23/2021 8:28 PM
+@ww
+01/23/2021 8:25 PM
+Ok thank you are installed now
+ww8543 01/23/2021 8:13 PM
+you need the zlib dev files
+01/23/2021 8:13 PM
+the error message clearly tells you whats wrong
+Deleted User 01/23/2021 7:59 PM
+Building epk2extract CMake Error at
+/usr/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake:146
+(message): Could NOT find ZLIB (missing: ZLIB_LIBRARY ZLIB_INCLUDE_DIR)
+Call Stack (most recent call first):
+/usr/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake:393
+(_FPHSA_FAILURE_MESSAGE)
+/usr/share/cmake-3.16/Modules/FindZLIB.cmake:115
+(FIND_PACKAGE_HANDLE_STANDARD_ARGS) CMakeLists.txt:25 (find_package)
+01/23/2021 7:58 PM
+How can i use the program? I Download the files and when i make
+./build.sh shows me Build Failed!
+January 20, 2021
+ww8543 01/20/2021 7:21 AM
+@nicoarg it sort of is, but it most likely wont work anyway
+ 1  1
+[nicoarg1448]
+nicoarg1448 01/20/2021 12:34 AM
+Guys do you know if this is safe?
+https://forum.xda-developers.com/t/rooting-the-webos-tv.3656027/ This
+link give me a cyrilic script zalil.su/6937580 (I have to root the os)
+Rooting the webOS TV
+pivotce.com informs that instructions have been published on gaining
+root access to a webOS TV. This is much harder than on the old phones
+and tablets. When this was done on legacy webOS, there was a wave of
+enhancements and tweaks made available...
+[]
+January 19, 2021
+ww8543 01/19/2021 6:41 PM
+oh he meant the otp key
+[smx2460]
+smx2460 01/19/2021 6:37 PM
+But the PVR key is likely random
+01/19/2021 6:37 PM
+@Deleted User no OTP key dumped so far
+Deleted User 01/19/2021 12:34 PM
+I had access to them before
+Deleted User So why we don't have LG epk key for M2, M2R platform?
+ww8543 01/19/2021 12:33 PM
+do you have one of those?
+[hosaka.eth]
+hosaka.eth 01/19/2021 11:27 AM
+cool
+ww8543 01/19/2021 11:27 AM
+yes it is
+[hosaka.eth]
+hosaka.eth 01/19/2021 11:27 AM
+it is installed with ares-install right? i was looking at the source
+code of the npm package
+01/19/2021 11:26 AM
+alright, cheers
+ww8543 01/19/2021 11:25 AM
+since it is just debian packaging, you should be able to test on any
+system that can handle those deb packages
+[hosaka.eth]
+hosaka.eth 01/19/2021 11:24 AM
+haven't had time to test at home yesterday
+ww8543 01/19/2021 11:23 AM
+but if you are able to do this, you can also dump the epk key
+01/19/2021 11:22 AM
+you could dump each partition from inside linux tho
+01/19/2021 11:22 AM
+if you mean hardware dump
+01/19/2021 11:22 AM
+not everyone has the means to do this, tho
+[inntremux6471]
+inntremux6471 01/19/2021 11:21 AM
+that is why i insist in emmc dump 
+ww8543 01/19/2021 11:21 AM
+it depends on the people who are here and willing to contribute their
+keys
+01/19/2021 11:21 AM
+we cant buy every model 
+01/19/2021 11:20 AM
+because nobody extracted it yet
+Deleted User 01/19/2021 11:20 AM
+So why we don't have LG epk key for M2, M2R platform?
+ww8543 01/19/2021 11:15 AM
+they are ALWAYS the same
+01/19/2021 11:15 AM
+especially since they dont even change per model
+01/19/2021 11:15 AM
+definitely not
+Deleted User 01/19/2021 11:15 AM
+They think it will increase security, but no
+ww8543 01/19/2021 11:15 AM
+01/19/2021 11:14 AM
+the people who manage to extract these files, can also manage to look
+them up in the libs
+01/19/2021 11:14 AM
+no idea why they thought this to be necessary
+01/19/2021 11:14 AM
+@inntremux they dont use a translation list or anything, they just have
+the names hardcoded in each lib btw
+01/19/2021 11:13 AM
+@inntremux what files are you looking for?
+01/19/2021 11:12 AM
+and 66B22074 is sfu_rsa
+01/19/2021 11:11 AM
+BEDCD7B8 is sfu_aes for example
+01/19/2021 11:11 AM
+otherwise i know of nobody who documented this
+01/19/2021 11:10 AM
+for playready i have a list
+01/19/2021 11:10 AM
+@inntremux i know a bunch
+01/19/2021 11:10 AM
+but you can figure out what is what, by looking at the specific libs, to
+see which obfuscated name they use for what
+[inntremux6471]
+ww8543 around 2016 or 2017 they have also started obfuscating the
+filenames in their secure storage
+inntremux6471 01/19/2021 11:10 AM
+is there a hash map for these, to the real names? (edited)
+ww8543 01/19/2021 11:09 AM
+so instead of the actual file name it is a hash value
+01/19/2021 11:09 AM
+around 2016 or 2017 they have also started obfuscating the filenames in
+their secure storage
+01/19/2021 11:08 AM
+depending on what it is, you wanna do
+01/19/2021 11:08 AM
+some stuff is only available in libkadaptor tho
+01/19/2021 11:08 AM
+libkadaptor is always platform specific (edited)
+01/19/2021 11:08 AM
+so you can use the same functions on many different socs
+01/19/2021 11:07 AM
+usually libdile and libhal are pretty abstracted away
+01/19/2021 11:07 AM
+and you can extract them using their names and whatever function is
+necessary on each platform for doing so (edited)
+01/19/2021 11:07 AM
+the keys and drm files are usually located on a special partition that
+is encrypted
+Deleted User 01/19/2021 11:06 AM
+Is the key inside binary (obfuscated, encrypted etc) or in separate
+file/partition?
+ww8543 01/19/2021 11:05 AM
+anything interesting?
+01/19/2021 11:05 AM
+what do you want to do with your lg tv?
+01/19/2021 11:05 AM
+that is no problem
+Deleted User 01/19/2021 11:05 AM
+I'm pretty new to LG TV's, thank you for answering me 
+ww8543 01/19/2021 11:03 AM
+and if you have root, you have access to the whole filesystem
+01/19/2021 11:03 AM
+you need to root to use these libs anyway
+01/19/2021 11:03 AM
+for sure
+01/19/2021 11:03 AM
+RELEASE/tvservice/update->libdile->libhal->libkadaptor
+Deleted User 01/19/2021 11:02 AM
+But you first need to extract these from working tv, is that so?
+ww8543 01/19/2021 11:01 AM
+anyone who can make sense of disassembled/decompiled libs can find out
+01/19/2021 11:01 AM
+not really
+01/19/2021 11:01 AM
+well
+Deleted User 01/19/2021 11:01 AM
+So it is secret or?
+ww8543 01/19/2021 11:01 AM
+no
+Deleted User 01/19/2021 11:01 AM
+Is there any writeup?
+01/19/2021 11:00 AM
+Ok
+ww8543 01/19/2021 11:00 AM
+the same way as before
+01/19/2021 11:00 AM
+they switched to 256 bit in the latest models
+Deleted User 01/19/2021 11:00 AM
+I know that, but how is extracted?
+ww8543 01/19/2021 11:00 AM
+thats just a 256bit aes key
+01/19/2021 10:59 AM
+which one is that? the latest firmware key?
+Deleted User 01/19/2021 10:50 AM
+It's very interesting to know...
+01/19/2021 10:49 AM
+Also, how is this key extracted
+*c9ef645424a625bbae7521394564025ec6252658fb650d33633111bd40c76011*?
+01/19/2021 10:43 AM
+Not recordings, recordings key is encrypted with boot key like
+everything else which is done inside trusted environment
+ww8543 01/19/2021 10:42 AM
+and it is unique to each tv, not each model
+01/19/2021 10:42 AM
+the recordings are not encrypted with a "boot key"
+Deleted User 01/19/2021 10:41 AM
+Yes but it's encrypted with boot key which is unique per tv model
+ww8543 01/19/2021 10:41 AM
+thats why you wont find those anywhere
+01/19/2021 10:41 AM
+you always have to get that from the tv that made the recordings to
+decrypt them
+01/19/2021 10:40 AM
+the key for recordings is unique to each tv
+Deleted User 01/19/2021 10:40 AM
+The key with which we can decrypt protected stuff, like DVR recordings
+ww8543 01/19/2021 10:39 AM
+if they are not in there, we dont have them
+01/19/2021 10:39 AM
+the keys we have are in the epk2extract repo on github
+01/19/2021 10:39 AM
+@Deleted User what do you mean by "boot keys"?
+01/19/2021 10:38 AM
+hi @Deleted User 
+Deleted User 01/19/2021 10:37 AM
+@Smx @ww can you or do you have boot keys for O20 lxboot platform?
+01/19/2021 10:36 AM
+Hi there
+January 18, 2021
+[nicoarg1448]
+nicoarg1448 01/18/2021 3:23 PM
+trying to get those familiar recordings I think I will sell the TV with
+them ! heheh
+01/18/2021 3:17 PM
+ww8543 01/18/2021 3:17 PM
+lg just does not want you to be root
+01/18/2021 3:17 PM
+for that you would need an exploit
+01/18/2021 3:17 PM
+you cant
+[nicoarg1448]
+nicoarg1448 01/18/2021 3:16 PM
+well I am in with prisoner user though shh but how can I switch to root?
+ww8543 01/18/2021 3:09 PM
+you have to be on the tv and be root to be able to decrypt it
+01/18/2021 3:09 PM
+thats the key file, but it is encrypted
+01/18/2021 3:09 PM
+even normal ssh you have to use prisoner user of course
+01/18/2021 3:09 PM
+you never could get in as root
+[nicoarg1448]
+nicoarg1448 01/18/2021 2:54 PM
+does it seem like the key file? Maybe I can do a hex dump though stdout
+and the save the key manually
+01/18/2021 2:54 PM
+    ares-novacom  --run "cat /tmp/96B14BF8" -d comedor
+    MSTAR_SECURE_STORE_FILE_MAGIC_ID�`��+�a��S8i"%���-d���d!FO�O#�-au�C���]�%��jO$�����s�
+    <i�����6�kwn
+01/18/2021 2:54 PM
+however, I found this file
+01/18/2021 2:50 PM
+may they improved the security to avoid root user do stuff
+01/18/2021 2:49 PM
+but with "root" user can not get into ssh
+01/18/2021 2:48 PM
+maybe the problem is, with ares command I am "prisoner" user
+01/18/2021 2:48 PM
+through ssh I got "Permisson denied" for root user, after typing the
+passpharse
+01/18/2021 2:47 PM
+    ares-novacom  --run "ls /mnt/lg" -d comedor
+    ciplus
+    flash
+    lgapp
+    model
+    res
+    tvservice
+01/18/2021 2:47 PM
+because I can execute commands with ares
+01/18/2021 2:47 PM
+I am pretty sure the passpharse is ok
+01/18/2021 2:44 PM
+Yes I could even download the key with ares-novacom
+ww8543 01/18/2021 2:31 PM
+the key server is enabled btw?

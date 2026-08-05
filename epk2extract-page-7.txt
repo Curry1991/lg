@@ -1,0 +1,1597 @@
+February 7, 2026
+[smx2460]
+smx2460 02/07/2026 3:07 PM
+    $ git diff | grep -E "^[+-]"
+    --- a/Yafex/Support/MFile.cs
+    +++ b/Yafex/Support/MFile.cs
+    -        public Span<T> GetData<T>(int offset = 0) where T : unmanaged
+    +        public Span64<T> GetData<T>(int offset = 0) where T : unmanaged
+    -        private void CreateMapping(int length)
+    +        private void CreateMapping(long length)
+    -            if (this.fs.Length >= int.MaxValue)
+    -            {
+    -                throw new NotSupportedException("Files bigger than 4GB are currently not supported");
+    -            }
+    -
+    --- a/Yafex/Support/MemoryMappedSpan.cs
+    +++ b/Yafex/Support/MemoryMappedSpan.cs
+    +using Smx.SharpIO.Memory.Buffers;
+    +
+    -    public unsafe class MemoryMappedSpan<T> : MemoryManager<T>, IDisposable where T : unmanaged
+    +    public unsafe class MemoryMappedSpan<T> : MemoryManager64<T>, IDisposable where T : unmanaged
+    -        public override Span<T> GetSpan()
+    +        public override Span64<T> GetSpan()
+    -            return new Span<T>((void*)dptr, (int)Length);
+    +            return new Span64<T>((void*)dptr, (int)Length);
+    -        public override MemoryHandle Pin(int elementIndex = 0)
+    +        public override MemoryHandle Pin(long elementIndex = 0)
+[theubusu]
+theubusu 02/07/2026 3:06 PM
+i was looking for MemoryMappedSpan64 lol
+02/07/2026 3:06 PM
+ohhh yeah i was wondering what to change it too
+[smx2460]
+smx2460 02/07/2026 3:05 PM
+you need to change MemoryMappedSpan to Span64 too
+[theubusu]
+theubusu 02/07/2026 3:05 PM
+when i changed int to long it just fails on everything
+[image.png]
+ image.png
+33.63 KB External
+[smx2460]
+[] theubusu i tried to fix it but couldnt
+smx2460 02/07/2026 3:05 PM
+how so
+[smx2460]
+smx2460 02/07/2026 3:04 PM
+so all you have to do is change the type (edited)
+[theubusu]
+theubusu 02/07/2026 3:04 PM
+i tried to fix it but couldnt
+02/07/2026 3:04 PM
+nice
+[smx2460]
+smx2460 02/07/2026 3:04 PM
+seems to accept long, yay! (edited)
+02/07/2026 3:04 PM
+@theubusu
+https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedfile.createfromfile?view=net-10.0
+MemoryMappedFile.CreateFromFile Method (System.IO.MemoryMappedFiles)
+Creates a memory-mapped file from an existing file.
+[]
+02/07/2026 3:00 PM
+if CreateFromFile accepts only int, we might need native P/Invoke
+02/07/2026 2:59 PM
+i didn't consider that
+02/07/2026 2:59 PM
+hm
+[theubusu]
+theubusu 02/07/2026 2:46 PM
+for the lenght
+02/07/2026 2:46 PM
+i think the problem is that its still using an int
+[image.png]
+ image.png
+42.31 KB External
+[smx2460]
+smx2460 02/07/2026 2:44 PM
+Change it to Span/Memory64 and remove that check
+02/07/2026 2:44 PM
+In Yafex
+[smx2460]
+[] theubusu <@310158180728700929> is this error still supposed to
+happen? on Sharpio 2.0 beta and latest yafex
+smx2460 02/07/2026 2:44 PM
+MFile.cs
+[theubusu]
+theubusu 02/07/2026 12:50 PM
+@Smx is this error still supposed to happen? on Sharpio 2.0 beta and
+latest yafex
+[image.png]
+ image.png
+12.07 KB External
+[smx2460]
+smx2460 02/07/2026 3:27 AM
+it would fail if the span is too small
+[theubusu]
+theubusu 02/07/2026 3:27 AM
+it should be added
+02/07/2026 3:27 AM
+some formats do have a size check
+[smx2460]
+smx2460 02/07/2026 3:27 AM
+it tries to read the header
+02/07/2026 3:27 AM
+well
+02/07/2026 3:27 AM
+            public DetectionResult Detect(IDataSource source)
+            {
+                var data = source.Data;
+                LzhsHeader hdr;
+                try
+                {
+                    hdr = new LzhsHeader(data.Span);
+                }
+                catch (InvalidDataException)
+                {
+                    return new DetectionResult(0, null);
+                }
+                 <-- no size checks
+                var decoder = new LzhsDecoder(data);
+                foreach (var item in decoder.AsEnumerable()) ;
+                if (decoder.VerifyChecksum())
+                {
+                    return new DetectionResult(50, null);
+                }
+                else
+                {
+                    return new DetectionResult(0, null);
+                }
+            }
+[theubusu]
+theubusu 02/07/2026 3:26 AM
+im tired...
+02/07/2026 3:26 AM
+not extractor
+[smx2460]
+smx2460 02/07/2026 3:26 AM
+that's the problem
+[theubusu]
+theubusu 02/07/2026 3:26 AM
+i meant to say detector yeah
+[smx2460]
+smx2460 02/07/2026 3:26 AM
+wait but that's used by the detector too, yeah
+02/07/2026 3:26 AM
+the code is technically assuming it's Lzhs by then
+02/07/2026 3:25 AM
+should be a factory method or checked by caller
+02/07/2026 3:25 AM
+it's in a ctor, so you can't fail without an exception
+02/07/2026 3:25 AM
+but this for example is bad
+02/07/2026 3:25 AM
+            private static unsafe LzhsHeader ReadHeader(ReadOnlySpan64<byte> data)
+            {
+                return data.Slice(0, LzhsHeader.SIZE).ReadStruct<LzhsHeader>();
+            }
+            private IEnumerable<byte> data;
+            public LzhsDecoder(ReadOnlyMemory64<byte> data)
+            {
+                header = ReadHeader(data.Span);
+                this.data = data.ToEnumerable();
+            }
+02/07/2026 3:24 AM
+we should probably add a TrySlice
+02/07/2026 3:23 AM
+we should fix them
+02/07/2026 3:23 AM
+yes that's not "supposed to happen"
+[theubusu]
+theubusu 02/07/2026 3:23 AM
+also we could do something about a lot of extractors failing because the
+input file is too small
+[image.png]
+ image.png
+29.74 KB External
+02/07/2026 3:22 AM
+i can work on migrating my changes to mtk pkg now
+02/07/2026 3:20 AM
+it compiled
+ 1
+[smx2460]
+smx2460 02/07/2026 3:19 AM
+and there's a ini file... either in USERPROFILE/HOME or APPDATA
+02/07/2026 3:19 AM
+you can add one with dotnet nuget add source
+02/07/2026 3:18 AM
+    >dotnet nuget list source
+    Registered Sources:
+      1.  nuget.org [Enabled]
+          https://api.nuget.org/v3/index.json
+      2.  Local [Enabled]
+          P:\projects\nuget
+      3.  Microsoft Visual Studio Offline Packages [Enabled]
+          C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\
+      4.  appveyor-peachpie [Enabled]
+          https://ci.appveyor.com/nuget/peachpie
+02/07/2026 3:18 AM
+(even if your nuget feed is local, it's treated as a remote)
+02/07/2026 3:18 AM
+because it copies from your local nuget feed to that (the first time)
+02/07/2026 3:18 AM
+if you don't wipe the cache it will keep installing the previous build
+02/07/2026 3:17 AM
+say you're iterating on 2.0-beta
+02/07/2026 3:17 AM
+%USERPROFILE%\.nuget\smx.sharpio must be wiped if you had a matching
+version
+02/07/2026 3:17 AM
+P:\projects\nuget is a local nuget feed (edited)
+02/07/2026 3:17 AM
+    dotnet build -c Debug && deploy.bat
+02/07/2026 3:17 AM
+so
+02/07/2026 3:17 AM
+you need to run this after build
+02/07/2026 3:16 AM
+    >type deploy.bat
+    del SharpIO\bin\Debug\*.nupkg
+    dotnet pack -c Debug -v n
+    copy /Y SharpIO\bin\Debug\*.nupkg P:\projects\nuget\
+    rd /s /q %USERPROFILE%\.nuget\smx.sharpio
+02/07/2026 3:16 AM
+here's my script for locally testing Smx.SharpIO
+02/07/2026 3:16 AM
+and use long everywhere for offsets
+02/07/2026 3:15 AM
+the gist of it is: - existing Span/Memory should work right away - it
+might not compile as-is (due to the new explicit casts and some things
+now being long instead of int) - but it should work with minimal changes
+but - you will need to migrate the code to Span64, ReadOnlySpan64,
+Memory64, ReadOnlyMemory64 to get the ability to seek beyond 2G (edited)
+[theubusu]
+theubusu 02/07/2026 3:14 AM
+yeah with my code
+[smx2460]
+smx2460 02/07/2026 3:14 AM
+if you want
+02/07/2026 3:14 AM
+see if it even builds and runs
+[theubusu]
+theubusu 02/07/2026 3:14 AM
+i'll probably be going to sleep soon too so might not be able to do it
+right away
+[smx2460]
+smx2460 02/07/2026 3:14 AM
+https://github.com/smx-smx/yafex/commit/12fd0dbbd0cf0f4962764c7a222526e51c51c355
+Migrate from Span/Memory to Span64/Memory64 (first pass) · smx-smx...
+- add related extension methods for Span64/Memory64
+[]
+02/07/2026 3:14 AM
+it's out
+[theubusu]
+[] smx2460 that is, update it with the new changes i'm about to push
+theubusu 02/07/2026 3:11 AM
+sure
+[smx2460]
+smx2460 02/07/2026 3:11 AM
+i'm tired and the commit message won't be super detailed, it's just to
+get it out there
+02/07/2026 3:10 AM
+as i'm going to sleep soon
+02/07/2026 3:10 AM
+that is, update it with the new changes i'm about to push
+02/07/2026 3:10 AM
+p.s. if you could sync the commit to HEAD, it would be lovely
+02/07/2026 3:10 AM
+now the commit in yafex to use it
+[theubusu]
+theubusu 02/07/2026 3:09 AM
+alright
+[smx2460]
+smx2460 02/07/2026 3:08 AM
+@theubusu
+02/07/2026 3:08 AM
+https://github.com/smx-smx/Smx.SharpIO/commit/6088ba8f44d8f33ca7525303be9909064e33db32
+(edited)
+Various fixes and improvements · smx-smx/Smx.SharpIO@6088ba8
+- make down-casting explicit for Memory/Span. the developer must be
+explicit about converting a Span64 to a Span32 - add missing CopyTo
+extension methods - add a few Span extension methods (IndexOf...
+[]
+02/07/2026 3:04 AM
+but it's beta  (edited)
+02/07/2026 3:04 AM
+I need more test coverage, heh
+02/07/2026 3:04 AM
+commit soon 
+02/07/2026 3:04 AM
+ok so I keep 2)
+02/07/2026 3:04 AM
+this means you first create a 32bit-sized view, then explictly create a
+32bit span out of it
+02/07/2026 3:04 AM
+    (Span<byte>)span.Slice(0, int.MaxValue)
+02/07/2026 3:03 AM
+you should do
+[theubusu]
+theubusu 02/07/2026 3:03 AM
+i think the same
+[smx2460]
+smx2460 02/07/2026 3:03 AM
+because if you REALLY want to do that
+[theubusu]
+theubusu 02/07/2026 3:03 AM
+yeah
+[smx2460]
+smx2460 02/07/2026 3:03 AM
+I actually think 3) is bad
+02/07/2026 3:03 AM
+I'm wrapping up the commit that makes it 2), still WITH the exception
+(edited)
+02/07/2026 3:03 AM
+I started with 1), WITH the exception
+02/07/2026 3:02 AM
+or rather, they will no longer be addressable in the new Span
+02/07/2026 3:02 AM
+3) make the cast explicit AND remove the exception. > 2G items will be
+"dropped" (edited)
+02/07/2026 3:02 AM
+2) make the cast explicit. if it fails, it's the developer's fault (he
+ack'd it in the code)
+02/07/2026 3:01 AM
+1) keep the exception and the implicit cast (subtle, the developer might
+be bitten at runtime)
+02/07/2026 3:01 AM
+there are some options here
+02/07/2026 3:01 AM
+I currently throw an exception if you try to cast a Span64 to Span if it
+has more than 2b items
+02/07/2026 3:00 AM
+the thing is
+02/07/2026 3:00 AM
+rather than implicit?
+02/07/2026 3:00 AM
+do you think it makes sense to force the downcast from Memory64 to
+Memory to be explicit
+[theubusu]
+theubusu 02/07/2026 3:00 AM
+sharpio
+02/07/2026 3:00 AM
+should i build it in debug or release
+02/07/2026 3:00 AM
+alr
+[smx2460]
+smx2460 02/07/2026 2:57 AM
+i'm not sure if the APIs need more work
+02/07/2026 2:56 AM
+i've not published it yet
+02/07/2026 2:56 AM
+in your local nuget
+02/07/2026 2:56 AM
+you'll need to build the beta Smx.SharpIO to test
+02/07/2026 2:56 AM
+then check your commit
+02/07/2026 2:56 AM
+i'll push what I have IG
+[theubusu]
+theubusu 02/07/2026 2:56 AM
+nice
+[smx2460]
+smx2460 02/07/2026 2:55 AM
+(no content)
+[immagine.png]
+ immagine.png
+25.83 KB External
+02/07/2026 2:55 AM
+now we're gold
+02/07/2026 2:54 AM
+heh
+02/07/2026 2:54 AM
+i was passing the buffer with the output
+02/07/2026 2:54 AM
+instead of passing the buffer with the input to the decryption code
+(edited)
+02/07/2026 2:54 AM
+nvm I had a typo in my code
+02/07/2026 2:48 AM
+hmm what
+02/07/2026 2:45 AM
+but it's strangely always the same across runs
+02/07/2026 2:45 AM
+and we read total garbage
+02/07/2026 2:45 AM
+I think the issue is that the underlying memory is being freed
+02/07/2026 2:44 AM
+yep
+[theubusu]
+theubusu 02/07/2026 2:44 AM
+yeah but kinda makes no sense if epk extractor already knows the key
+[smx2460]
+smx2460 02/07/2026 2:44 AM
+only once
+02/07/2026 2:44 AM
+there's currently a redundant step where we guess the EPK key for PAKs
+02/07/2026 2:43 AM
+nope
+[theubusu]
+[] smx2460 PAK one doesn't
+theubusu 02/07/2026 2:43 AM
+aren't PAKs passed to the pak extractor already decrypted?
+[smx2460]
+smx2460 02/07/2026 2:41 AM
+PAK one doesn't
+02/07/2026 2:41 AM
+EPK decryption succeeds
+02/07/2026 2:41 AM
+i have a weird bug
+[theubusu]
+[] theubusu ive got a 3gb mtk pkg
+theubusu 02/07/2026 2:30 AM
+gosh, the super part decompresses to 5gbs
+[image.png]
+ image.png
+7.28 KB External
+[theubusu]
+theubusu 02/07/2026 2:30 AM
+sure
+[smx2460]
+smx2460 02/07/2026 2:30 AM
+i'm just wrapping up this before I can take a look
+02/07/2026 2:29 AM
+yeah ik
+[theubusu]
+theubusu 02/07/2026 2:29 AM
+also i still have that PR for mtk pkg
+[smx2460]
+smx2460 02/07/2026 2:29 AM
+i'm checking why EPK2 now booms
+[theubusu]
+theubusu 02/07/2026 2:29 AM
+that could be good to test
+02/07/2026 2:29 AM
+ive got a 3gb mtk pkg
+[smx2460]
+smx2460 02/07/2026 2:24 AM
+        // Must be a ref struct because it holds a Span<T>
+        public ref struct ChunkEnumerator
+        {
+            private readonly ReadOnlySpan64<T> _source;
+            private long _position;
+            private ReadOnlySpan<T> _current;
+            internal ChunkEnumerator(ReadOnlySpan64<T> source) {
+                _source = source;
+                _position = 0;
+                _current = default;
+            }
+            public readonly ReadOnlySpan<T> Current => _current;
+            public bool MoveNext() {
+                if (_position >= _source.Length) {
+                    return false;
+                }
+                long remaining = _source.Length - _position;
+                // Cap the size at int.MaxValue (standard Span limit)
+                int currentChunkSize = (remaining > int.MaxValue)
+                    ? int.MaxValue
+                    : (int)remaining;
+                var slice64 = _source.Slice(_position, currentChunkSize);
+                _current = (ReadOnlySpan<T>)slice64;
+                _position += currentChunkSize;
+                return true;
+            }
+            public readonly ChunkEnumerator GetEnumerator() => this;
+        }
+02/07/2026 2:24 AM
+so you need a sliding window, 2GB in size
+02/07/2026 2:24 AM
+but you can't reference anything above 2GB (edited)
+02/07/2026 2:24 AM
+which means it's still pointing to the original memory
+02/07/2026 2:23 AM
+it converts the 64bit span into a 32bit span (hence the 2GB limit -
+signed int) (edited)
+02/07/2026 2:23 AM
+it doesn't make an intermediate 2GB copy
+02/07/2026 2:23 AM
+for bulk copying, you'd do it in 2GB chunks (edited)
+02/07/2026 2:22 AM
+you can do that since Span64 abstracts the large array away (edited)
+02/07/2026 2:22 AM
+for pieces that need to see the full contiguous memory
+[theubusu]
+theubusu 02/07/2026 2:22 AM
+i think its fine
+[smx2460]
+smx2460 02/07/2026 2:22 AM
+2GB at a time should be good enough 
+02/07/2026 2:21 AM
+which tries to inver the maximum copy size, maybe vectorize it, handle
+the trailing part, yadda yadda (edited)
+02/07/2026 2:21 AM
+or you'd be rolling your own optimized memcpy
+02/07/2026 2:21 AM
+it can represent virtual arrays, but then you'd be copying them
+byte-by-byte with an overloaded [] operator (edited)
+02/07/2026 2:21 AM
+because C# can't represent bigger arrays
+02/07/2026 2:20 AM
+you need to use GetChunks to get it 2GB at a time
+02/07/2026 2:20 AM
+but since you might have > 2GB at once
+02/07/2026 2:20 AM
+then you need to feed data to CryptoStream
+02/07/2026 2:20 AM
+we then wrap it into a Stream which we can use for CryptoStream
+02/07/2026 2:19 AM
+that buffer is essentially a raw malloc
+02/07/2026 2:19 AM
+        public unsafe Memory64<byte> Decrypt(ReadOnlySpan64<byte> data)
+        {
+            ICryptoTransform decryptor = aes.CreateDecryptor();
+            var buffer = new NativeMemoryManager64<byte>(data.Length);
+            var outStream = new SpanStream(buffer.Memory);
+            var cs = new CryptoStream(outStream, decryptor, CryptoStreamMode.Write);
+            foreach (var chunk in data.GetChunks())
+            {
+                cs.Write(chunk);
+            }
+            cs.Flush();
+            return buffer.Memory;
+        }
+02/07/2026 2:19 AM
+example of a function I just converted
+02/07/2026 2:19 AM
+since .NET APIs don't support my custom 64bit spans 
+02/07/2026 2:19 AM
+the thing to consider is that you now need to handle 2GB chunks
+02/07/2026 2:18 AM
+which is why I'm doing a follow up commit for changing SOME of the Yafex
+parts
+02/07/2026 2:18 AM
+or rather, it will throw an exception on you (edited)
+02/07/2026 2:18 AM
+but if you don't change the code, you won't take advantage of > 2GB
+02/07/2026 2:17 AM
+very minimal
+02/07/2026 2:17 AM
+@theubusu slight modification
+February 6, 2026
+[theubusu]
+theubusu 02/06/2026 11:01 AM
+so old code will need some modification or won't ? I'm kinda lost
+[smx2460]
+smx2460 02/06/2026 2:30 AM
+since it's not a good idea to have this happen silently
+[smx2460]
+[] smx2460 but old code will continue to work, by creating an alias
+smx2460 02/06/2026 2:30 AM
+not for long though, I'm updating the cast to be explicit
+[smx2460]
+smx2460 02/06/2026 2:06 AM
+which is probably the same idea as doing std::move in C++
+02/06/2026 2:05 AM
+    Foo foo = (owned) bar;
+02/06/2026 2:05 AM
+https://docs.vala.dev/tutorials/programming-language/main/04-00-advanced-features/04-10-ownership.html
+4.10. Ownership | Vala Documentation
+Official documentation for the Vala programming language
+02/06/2026 2:05 AM
+Vala has a nice ownership transfer model
+02/06/2026 2:05 AM
+the problem is that Memory<T> and Memory64<T> have different memory
+managers
+02/06/2026 2:04 AM
+and if you don't Pin the memory, well the lifecycle of the original
+would control the other
+02/06/2026 2:04 AM
+but then I break compat 
+02/06/2026 2:04 AM
+maybe it shouldn't be implicit
+02/06/2026 2:04 AM
+but if you're NOT doing this implicit conversion, then there's no need
+to Dispose (edited)
+02/06/2026 2:03 AM
+handle is IDisposable, so it "infects" Memory64 with this requirement
+02/06/2026 2:03 AM
+        public static unsafe implicit operator Memory64<T>(Memory<T> value) {
+            var handle = value.Pin();
+            var dptr = handle.Pointer;
+            var length = value.Length;
+            return new Memory64<T>(handle, (long)dptr, length);
+        }
+02/06/2026 2:03 AM
+here
+02/06/2026 2:02 AM
+if, and only if, you downcast a Memory64 to a Memory instance, the code
+will borrow its memory
+02/06/2026 2:02 AM
+in other words
+02/06/2026 2:02 AM
+        public void Dispose() {
+            if(_object is MemoryHandle handle) {
+                handle.Dispose();
+            }
+        }
+02/06/2026 2:02 AM
+so it's not "ideal"
+02/06/2026 2:02 AM
+for Memory64 -> Memory, I Pin memory forever (you should free it, I made
+Memory64 IDisposable) (edited)
+02/06/2026 2:01 AM
+but old code will continue to work, by creating an alias
+02/06/2026 2:01 AM
+you should use Span64/Memory64 where you can
+02/06/2026 2:01 AM
+almost drop in 
+02/06/2026 2:00 AM
+https://github.com/smx-smx/yafex/commit/f4789b0b9ef6e247a01ea9b05d45c13b94d70f97
+update Smx.SharpIO to v2 beta · smx-smx/yafex@f4789b0
+this will allow Yafex to support files > 2GB
+[]
+02/06/2026 2:00 AM
+@theubusu hi
+February 4, 2026
+[smx2460]
+smx2460 02/04/2026 11:50 PM
+https://github.com/smx-smx/Smx.SharpIO/commit/fab7a87f1625aa190d35f6a4d4ef5b9cd7a6d69c
+add implicit conversion operators for Memory64 -> Memory and Span64...
+…> Span
+[]
+02/04/2026 11:50 PM
+fixed
+[smx2460]
+smx2460 02/04/2026 11:29 PM
+to downcast it to Span
+02/04/2026 11:29 PM
+I can make an implicit conversion operator
+[theubusu]
+[] smx2460 but then you still need to rewrite 
+theubusu 02/04/2026 11:20 PM
+well in that case i guess its better to rewrite to use the new system
+instead
+[smx2460]
+smx2460 02/04/2026 11:19 PM
+otherwise I have to acceot both in the ctor
+02/04/2026 11:19 PM
+but then you still need to rewrite 
+02/04/2026 11:19 PM
+through an interface maybe
+02/04/2026 11:19 PM
+I'm looking into adding it back
+[theubusu]
+theubusu 02/04/2026 11:19 PM
+hmm well
+[smx2460]
+smx2460 02/04/2026 11:19 PM
+yep
+[theubusu]
+[] smx2460 right now I broke it
+theubusu 02/04/2026 11:19 PM
+so we would have to rewrite everything that used it?
+[smx2460]
+smx2460 02/04/2026 11:18 PM
+right now I broke it (edited)
+02/04/2026 11:18 PM
+do you think I should keep backward compatibility with Span32?
+[theubusu]
+theubusu 02/04/2026 11:18 PM
+nice!
+[smx2460]
+smx2460 02/04/2026 11:15 PM
+@theubusu
+https://github.com/smx-smx/Smx.SharpIO/commit/a80e268ca08e207018b7732c781c9ada04906c14
+Span64/Memory64 implementation · smx-smx/Smx.SharpIO@a80e268
+[]
+February 3, 2026
+[smx2460]
+smx2460 02/03/2026 10:51 PM
+(no content)
+[image.png]
+ image.png
+140.7 KB External
+02/03/2026 10:50 PM
+i'm checking openssl code, don't see it doing that
+02/03/2026 10:49 PM
+according to Gemini no
+02/03/2026 10:47 PM
+oh you mean for ERR_print_errors_fp
+[smx2460]
+smx2460 02/03/2026 10:39 PM
+what do you mean by this
+02/03/2026 10:39 PM
+@hellobox
+        /* I hope this can't affect OpenSSL's error queue. */
+        EVP_MD_CTX_free(ctx);
+[] smx2460 ```c typedef struct { uint8_t *ptr; off_t offset; size_t
+size; } cursor_t; ```
+ww8543 02/03/2026 10:35 PM
+that looks suspiciously like a dynamic array 
+[smx2460]
+smx2460 02/03/2026 10:27 PM
+with an out parameter
+02/03/2026 10:27 PM
+and maybe do like C# returning bool
+02/03/2026 10:26 PM
+we could extend it to accept an arbitrary size
+02/03/2026 10:26 PM
+but this is only for chars
+02/03/2026 10:26 PM
+(this is already there)
+02/03/2026 10:26 PM
+    inline int cgetc(cursor_t *stream){
+        if(UNLIKELY(stream->offset >= stream->size))
+            return EOF;
+        return (unsigned int)(
+            *(&(
+                ((unsigned char *)(stream->ptr))[stream->offset++]
+            ))
+        );
+    }
+    int cputc(int c, cursor_t *stream){
+        if(UNLIKELY(stream->offset >= stream->size))
+            return EOF;
+        ((unsigned char *)(stream->ptr))[stream->offset++] = (unsigned char)c;
+        return c;
+    }
+02/03/2026 10:26 PM
+it's very simple really
+02/03/2026 10:26 PM
+    typedef struct {
+        uint8_t *ptr;
+        off_t offset;
+        size_t size;
+    } cursor_t;
+02/03/2026 10:25 PM
+the idea being that you request some size from the MFILE, and it would
+return false if there's not enough data
+02/03/2026 10:25 PM
+I think cursors were my attempt to do that
+02/03/2026 10:25 PM
+basically something like spans in C#
+02/03/2026 10:25 PM
+@hellobox we could add a try_read in epk2extract
+February 2, 2026
+[] smx2460 Or no
+ww8543 02/02/2026 9:14 AM
+no
+hellobox. 02/02/2026 1:03 AM
+i left out the C11/static_assert stuff for now
+[smx2460]
+smx2460 02/02/2026 12:35 AM
+Yep
+hellobox. 02/02/2026 12:35 AM
+notably, with set(CMAKE_CXX_STANDARD 11)
+02/02/2026 12:34 AM
+the jffs2 stuff already uses it
+[] smx2460 Do you think migrating epk2ex to lightweight C++ is a good
+idea?
+hellobox. 02/02/2026 12:34 AM
+was thinking about it. idk
+[smx2460]
+smx2460 02/02/2026 12:33 AM
+Or no
+02/02/2026 12:33 AM
+Do you think migrating epk2ex to lightweight C++ is a good idea?
+02/02/2026 12:33 AM
+Then [:lg:] 
+hellobox. 02/02/2026 12:32 AM
+and static_assert() has been in assert.h since glibc 2.16
+[smx2460]
+smx2460 02/02/2026 12:32 AM
+Yeah see
+hellobox. 02/02/2026 12:32 AM
+gcc has supported _Static_assert() since 4.6
+[smx2460]
+smx2460 02/02/2026 12:32 AM
+As in, we expect people to have modern tooling
+02/02/2026 12:31 AM
+And people should be using modern tooling
+02/02/2026 12:31 AM
+We are in 2026
+02/02/2026 12:31 AM
+Or who cares
+02/02/2026 12:31 AM
+Or runtime if nothing works but yeh
+02/02/2026 12:31 AM
+And then you can also check for which syntax it accepts based on std
+(edited)
+02/02/2026 12:30 AM
+If compiler supports it (cmake check) use it
+02/02/2026 12:30 AM
+The clean way would be to make it a macro I think
+hellobox. 02/02/2026 12:30 AM
+introduced in C11, deprecated in C23
+[] smx2460 How did they introduce and "immediately" deprecate
+_Static_assert
+hellobox. 02/02/2026 12:30 AM
+no
+[smx2460]
+smx2460 02/02/2026 12:30 AM
+Sounds odd
+02/02/2026 12:30 AM
+How did they introduce and "immediately" deprecate _Static_assert
+hellobox. 02/02/2026 12:29 AM
+no idea whether it's available before as a GCC extension
+02/02/2026 12:29 AM
+https://en.cppreference.com/w/c/language/_Static_assert.html
+[smx2460]
+smx2460 02/02/2026 12:29 AM
+You could do some ifdefs
+02/02/2026 12:28 AM
+Maybe as a GCC extension?
+02/02/2026 12:28 AM
+Isn't static assert available in C99 too?
+hellobox. 02/02/2026 12:23 AM
+what do you think?
+02/02/2026 12:23 AM
+or i could add #include <assert.h> to common.h
+02/02/2026 12:23 AM
+i could switch to _Static_assert(), which is built into the language
+(but deprecated as of C23)
+02/02/2026 12:23 AM
+which leaves it up to consumers of common.h to include it
+02/02/2026 12:23 AM
+although... i put static_assert(), which requires assert.h, in common.h
+but didn't add assert.h
+02/02/2026 12:20 AM
+i am moving the less "controversial" ones to the beginning
+[smx2460]
+smx2460 02/02/2026 12:19 AM
+And probably merge your other changes (edited)
+02/02/2026 12:19 AM
+I think we can do yes
+02/02/2026 12:19 AM
+And was literally about to check your commits
+[smx2460]
+hellobox. <@310158180728700929> can we at least update epk2extract to
+C11 so i can use `static_assert()`?
+smx2460 02/02/2026 12:19 AM
+I was literally just checking my GitHub news feed
+hellobox. 02/02/2026 12:19 AM
+who would even be building it with a non-C11 compiler?
+02/02/2026 12:18 AM
+@Smx can we at least update epk2extract to C11 so i can use
+static_assert()?
+[smx2460]
+smx2460 02/02/2026 12:09 AM
+We had conflicting opinions on this before
+[theubusu]
+theubusu 02/02/2026 12:09 AM
+on epk2extract
+02/02/2026 12:09 AM
+well all of those keys are public anyway
+02/02/2026 12:09 AM
+hmm
+[smx2460]
+smx2460 02/02/2026 12:08 AM
+Yes
+[theubusu]
+theubusu 02/02/2026 12:08 AM
+the secrets?
+[smx2460]
+smx2460 02/02/2026 12:08 AM
+Should it be part of the repo or not
+[smx2460]
+[] theubusu <@310158180728700929> made PR, if you need it i can send you
+the secrets.json for the new mtkpkg fo...
+smx2460 02/02/2026 12:08 AM
+The big question is
+February 1, 2026
+[theubusu]
+theubusu 02/01/2026 7:29 PM
+@Smx made PR, if you need it i can send you the secrets.json for the new
+mtkpkg format https://github.com/smx-smx/yafex/pull/3
+MediatekPkg - add support for New format, fix Philips type extracti...
+[]
+January 31, 2026
+[theubusu]
+[] smx2460 <@631872127934660609> if you fixed the && feel free to PR
+theubusu 01/31/2026 3:55 PM
+haven't yet, I will when I get back home
+[smx2460]
+smx2460 01/31/2026 3:44 PM
+I have some further improvement ideas though
+01/31/2026 3:43 PM
+(jk)
+01/31/2026 3:43 PM
+Before I go ahead and break all APIs
+01/31/2026 3:42 PM
+@theubusu if you fixed the && feel free to PR
+[smx2460]
+smx2460 01/31/2026 3:30 PM
+Yeah I'll bump the major
+01/31/2026 3:29 PM
+    Summary
+    Given a version number MAJOR.MINOR.PATCH, increment the:
+        MAJOR version when you make incompatible API changes
+        MINOR version when you add functionality in a backward compatible manner
+        PATCH version when you make backward compatible bug fixes
+    Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+ 1
+01/31/2026 3:29 PM
+I should try I guess
+[smx2460]
+[] theubusu I mean it's a pretty major change
+smx2460 01/31/2026 3:28 PM
+I can't do versions
+[annplusplus]
+annplusplus 01/31/2026 9:43 AM
+not with us (edited)
+[flylow9801]
+flylow9801 01/31/2026 9:26 AM
+Hi Guys, Can i root webos 25 on qned99tua?
+[theubusu]
+theubusu 01/31/2026 7:46 AM
+I mean it's a pretty major change
+[smx2460]
+smx2460 01/31/2026 12:50 AM
+Technically I should bump the major?
+01/31/2026 12:50 AM
+The question is which version I should use for SharpIO lol
+[smx2460]
+smx2460 01/31/2026 12:24 AM
+Which is most likely never
+01/31/2026 12:24 AM
+It only impacts if you really need a huge bytearray
+01/31/2026 12:23 AM
+You would use the overloaded [] operator
+[smx2460]
+[] smx2460 ⁨```csharp public T[] ToArray() { if (_length > int.MaxValue)
+{ throw new Ov...
+smx2460 01/31/2026 12:23 AM
+Actually if you just need to read/write individual elements you don't
+even need to do that
+[smx2460]
+smx2460 01/31/2026 12:14 AM
+(no content)
+[image.png]
+ image.png
+12.94 KB External
+01/31/2026 12:13 AM
+just consider the Span issue fixed
+01/31/2026 12:13 AM
+but will do eventually
+01/31/2026 12:13 AM
+i need to sleep somewhat early
+01/31/2026 12:13 AM
+will not commit today
+[theubusu]
+theubusu 01/31/2026 12:12 AM
+nice!
+[smx2460]
+smx2460 01/31/2026 12:11 AM
+I'll update it to use Span64
+01/31/2026 12:11 AM
+since i'm not gonna bother keeping the old class around
+01/31/2026 12:11 AM
+this will probably be a breaking change for Smx.SharpIO
+01/31/2026 12:11 AM
+⁨
+        public T[] ToArray() {
+            if (_length > int.MaxValue) {
+                throw new OverflowException(
+                     DCPH0 quot;Cannot convert Span64 to Array because the length ({_length}) exceeds int.MaxValue. " +
+                    "Standard .NET arrays are limited to 32-bit lengths.");
+            }
+            if (_length == 0) {
+                return Array.Empty<T>();
+            }
+            // cast _length to int (safe due to check above)
+            var destination = new T[(int)_length];
+            // reuse existing CopyTo logic
+            this.CopyTo(new Span64<T>(destination));
+            return destination;
+        }
+⁩
+01/31/2026 12:09 AM
+where we read it in chunks
+01/31/2026 12:09 AM
+we might be doing it when writing, but we will change it to a streaming
+write anyways
+01/31/2026 12:09 AM
+nonetheless, we don't care because we're not going to do ⁨Span.ToArray()⁩
+at once
+01/31/2026 12:09 AM
+but that's a more historical one
+01/31/2026 12:09 AM
+probably for the same reason that they are backed by int (edited)
+01/31/2026 12:08 AM
+Btw a (technical reason) why Microsoft made Span ⁨int⁩ is that C# arrays
+are limited to 2M elements (edited)
+01/31/2026 12:08 AM
+negative length would go from the end of the memory, backwards, but it's
+supposed to just throw (edited)
+01/31/2026 12:08 AM
+which is not what the standard ⁨Memory⁩ does
+01/31/2026 12:08 AM
+had to change it slightly because it made ⁨Memory64⁩ accept a negative
+length
+01/31/2026 12:07 AM
+i vibe-coded a span64/memory64 impl
+January 30, 2026
+[theubusu]
+theubusu 01/30/2026 12:23 PM
+mistake
+01/30/2026 12:23 PM
+yeah && (edited)
+ 1
+[theubusu]
+[] smx2460 <@631872127934660609>
+https://github.com/theubusu/yafex/commit/98534a3bd5c91825c8f2a346a9de685eb2ab4...
+theubusu 01/30/2026 12:21 PM
+hm ?
+[smx2460]
+smx2460 01/30/2026 12:05 PM
+&& ?
+01/30/2026 12:05 PM
+@theubusu
+https://github.com/theubusu/yafex/commit/98534a3bd5c91825c8f2a346a9de685eb2ab498c#diff-7e06e74adbf410ff3749cd63c22ae1e521ef4d81055eacc0021a9d27ddb0aef6R169
+MediatekPkg - add support for "new" format, fix extraction for Phil...
+…s, add logging
+[]
+[smx2460]
+smx2460 01/30/2026 1:31 AM
+all this just to change intto long, gee
+01/30/2026 1:29 AM
+(no content)
+[image.png]
+ image.png
+4.52 KB External
+01/30/2026 1:29 AM
+down to 54 errors
+[smx2460]
+smx2460 01/30/2026 12:37 AM
+i'm copying .NET classes
+[theubusu]
+theubusu 01/30/2026 12:37 AM
+so this will require a modification to .net itself ?
+[smx2460]
+smx2460 01/30/2026 12:27 AM
+so yeah we'd lose a tiny bit of perf
+01/30/2026 12:27 AM
+here are the span ones
+01/30/2026 12:27 AM
+https://github.com/dotnet/runtime/blob/062177e34e2b01a7bcdaf6351a3b6ceff5f73357/src/coreclr/jit/namedintrinsiclist.h#L251
+runtime/src/coreclr/jit/namedintrinsiclist.h at 062177e34e2b01a7bcd...
+.NET is a cross-platform runtime for cloud, mobile, desktop, and IoT
+apps. - dotnet/runtime
+[]
+01/30/2026 12:27 AM
+interesting
+01/30/2026 12:26 AM
+https://github.com/dotnet/runtime/blob/062177e34e2b01a7bcdaf6351a3b6ceff5f73357/src/coreclr/interpreter/intrinsics.cpp#L130
+runtime/src/coreclr/interpreter/intrinsics.cpp at 062177e34e2b01a7b...
+.NET is a cross-platform runtime for cloud, mobile, desktop, and IoT
+apps. - dotnet/runtime
+[]
+[] theubusu I wouldn't be surprised if LG started dropping 2gb epks
+either
+hellobox. 01/30/2026 12:25 AM
+they're getting there...
+ 1
+[smx2460]
+smx2460 01/30/2026 12:25 AM
+because Span is an intrinsic in C#, meaning the JIT compiler knows some
+optimizations (edited)
+01/30/2026 12:25 AM
+but whatever
+01/30/2026 12:25 AM
+we might lose some specific optimizations
+01/30/2026 12:23 AM
+thta's it, i'm forking this stuff (edited)
+01/30/2026 12:23 AM
+which is pointer-sized
+01/30/2026 12:22 AM
+under the hood it uses nint
+01/30/2026 12:22 AM
+this is just silly
+01/30/2026 12:22 AM
+            /// <summary>
+            /// Forms a slice out of the given span, beginning at 'start', of given length
+            /// </summary>
+            /// <param name="start">The zero-based index at which to begin this slice.</param>
+            /// <param name="length">The desired length for the slice (exclusive).</param>
+            /// <exception cref="ArgumentOutOfRangeException">
+            /// Thrown when the specified <paramref name="start"/> or end index is not in range (&lt;0 or &gt;Length).
+            /// </exception>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public Span<T> Slice(int start, int length)
+            {
+    #if TARGET_64BIT
+                // Since start and length are both 32-bit, their sum can be computed across a 64-bit domain
+                // without loss of fidelity. The cast to uint before the cast to ulong ensures that the
+                // extension from 32- to 64-bit is zero-extending rather than sign-extending. The end result
+                // of this is that if either input is negative or if the input sum overflows past Int32.MaxValue,
+                // that information is captured correctly in the comparison against the backing _length field.
+                // We don't use this same mechanism in a 32-bit process due to the overhead of 64-bit arithmetic.
+                if ((ulong)(uint)start + (ulong)(uint)length > (ulong)(uint)_length)
+                    ThrowHelper.ThrowArgumentOutOfRangeException();
+    #else
+                if ((uint)start > (uint)_length || (uint)length > (uint)(_length - start))
+                    ThrowHelper.ThrowArgumentOutOfRangeException();
+    #endif
+                return new Span<T>(ref Unsafe.Add(ref _reference, (nint)(uint)start /* force zero-extension */), length);
+            }
+01/30/2026 12:22 AM
+hmm wtf
+[theubusu]
+theubusu 01/30/2026 12:10 AM
+No rush
+[smx2460]
+smx2460 01/30/2026 12:09 AM
+in 5 mins
+[theubusu]
+theubusu 01/30/2026 12:06 AM
+also can you check if this is ok
+https://github.com/theubusu/yafex/commit/98534a3bd5c91825c8f2a346a9de685eb2ab498c
+MediatekPkg - add support for "new" format, fix extraction for Phil...
+…s, add logging
+[]
+01/30/2026 12:06 AM
+I wouldn't be surprised if LG started dropping 2gb epks either
+[smx2460]
+smx2460 01/30/2026 12:06 AM
+ 1
+01/30/2026 12:05 AM
+it will be fixed
+01/30/2026 12:05 AM
+we shall fix this
+[theubusu]
+theubusu 01/30/2026 12:05 AM
+I mean I have a 2gb mtk PKG so it's kinda a bummer
+[smx2460]
+smx2460 01/30/2026 12:05 AM
+lemme prototype this
+01/30/2026 12:05 AM
+shouldn't be too hard
+01/30/2026 12:05 AM
+and call them LongSpan and LongMemory
+01/30/2026 12:04 AM
+I might have to roll my own Span and Memory APIs in Smx.SharpIO (edited)
+01/30/2026 12:04 AM
+without going raw pointers
+01/30/2026 12:04 AM
+thinking what's the best way to workaround
+01/30/2026 12:04 AM
+I am not happy (at all) about this
+[theubusu]
+[] smx2460 so this effectively means I can't process any file bigger
+than 2GB
+theubusu 01/30/2026 12:03 AM
+yeah actually I tried to open a 2gb file and it said cannot open files
+larger than 4gb (even though it was 2gb)
+[smx2460]
+smx2460 01/30/2026 12:03 AM
+still, if you cast it to byte you effectively lose data (edited)
+01/30/2026 12:03 AM
+then it's larger
+01/30/2026 12:03 AM
+if you have 2 bilion ulong items
+01/30/2026 12:03 AM
+> Note Span<T> can go above 2GB; it just can't go above 2,147,483,648
+elements (as T can be larger than 1 byte) I mean... yeah
+01/30/2026 12:02 AM
+lol
+01/30/2026 12:02 AM
+> Microsoft thinks 2GB ought to be enough for anybody.
+01/30/2026 12:02 AM
+lol reddit
+01/30/2026 12:01 AM
+C# has very great APIs, but this is a very very weird choice too
+(edited)
+01/30/2026 12:01 AM
+this is even more nonsense imo
+01/30/2026 12:01 AM
+(no content)
+[image.png]
+ image.png
+29.57 KB External
+01/30/2026 12:00 AM
+and adding all sort of problems when data spans across two 2GB chunks
+(edited)
+01/30/2026 12:00 AM
+unless I chunk the file in 2GB
+01/30/2026 12:00 AM
+so this effectively means I can't process any file bigger than 2GB
+01/30/2026 12:00 AM
+I have Span -> custom MemoryManager -> MemoryMappedFile
+January 29, 2026
+01/29/2026 11:59 PM
+lol
+01/29/2026 11:59 PM
+> We don't believe we actually need to have spans that are larger than
+what a signed-int can represent, which is 2 GB. If the need arises in
+the future, we will take another look. Chances are this also requires
+changes in other parts, specifically arrays.
+01/29/2026 11:59 PM
+reasoning being: meh it's complex, we'll see
+01/29/2026 11:59 PM
+and specifically
+https://github.com/dotnet/corefxlab/issues/896#issuecomment-258896543
+01/29/2026 11:58 PM
+also hi @theubusu
+01/29/2026 11:58 PM
+https://github.com/dotnet/corefxlab/issues/896
+Span<T> needs to be support long length and indices · Issue #896 ...
+Half of the time we use native memory is to break the 32-bits barriers.
+Designing a new API in 2016 that is not ready for 64-bits is
+questionable.
+[]
+01/29/2026 11:58 PM
+this is a bit of a bummer
+[theubusu]
+theubusu 01/29/2026 9:19 PM
+also we did get rid of that key spam, but i think it would be useful if
+it printed out which key it has decided to use
+[theubusu]
+theubusu 01/29/2026 8:53 PM
+i can try to do that
+01/29/2026 8:53 PM
+also for new format key can be passed in context, because it has already
+been found at the detector stage
+01/29/2026 8:50 PM
+but there is a lot annoying messages because the files are too small and
+epk extractors are failing
+01/29/2026 8:49 PM
+i got new format running
+[image.png]
+ image.png
+44.04 KB External
+[theubusu]
+theubusu 01/29/2026 8:32 PM
+but then would have to swap Aes with the collection or have 2 decryptors
+01/29/2026 8:32 PM
+or maybe its better to detect new mtk pkg in the current detector
+[theubusu]
+theubusu 01/29/2026 8:15 PM
+@Smx how can you implement multiple detectors for a format? do they have
+to be seperate addons? (edited)
+[theubusu]
+theubusu 01/29/2026 2:15 AM
+I still don't get it
+01/29/2026 2:15 AM
+for some reason....
+01/29/2026 2:14 AM
+instead of using some standard padding
+01/29/2026 2:14 AM
+basically all encrypted data that isn't aligned to 16 bytes at the end
+is XORed with the AES key
+[smx2460]
+smx2460 01/29/2026 2:13 AM
+I need to find back the info you gave me
+01/29/2026 2:13 AM
+I didn't look at it yet
+[theubusu]
+theubusu 01/29/2026 2:13 AM
+where unaligned data is XORed with the key
+01/29/2026 2:12 AM
+also do you have any idea on how to implement that unaligned encrypted
+data issue in mtk PKG?
+01/29/2026 2:09 AM
+yeah
+[smx2460]
+smx2460 01/29/2026 2:09 AM
+unless you maintain the rewrite
+01/29/2026 2:09 AM
+rewriting it will not work
+[smx2460]
+[] theubusu but still feels kinda hacky but easier than rewriting whole
+squashfs in C#
+smx2460 01/29/2026 2:09 AM
+squashfs is a moving target
+[theubusu]
+theubusu 01/29/2026 2:07 AM
+but still feels kinda hacky but easier than rewriting whole squashfs in
+C# (edited)
+01/29/2026 2:06 AM
+well I can understand most of that
+[smx2460]
+smx2460 01/29/2026 2:01 AM
+then the "managed libc" would solve it
+01/29/2026 2:01 AM
+if the native code is NOT predisposed to do that (like libarchive is)
+01/29/2026 2:01 AM
+what I'm saying is
+01/29/2026 2:00 AM
+becauase libarchive exposes something similar to stream_wrapper_register
+01/29/2026 2:00 AM
+I already wrote an abstraction of System.IO.Stream there
+01/29/2026 2:00 AM
+well actually this is not needed for libarchive-sharp (edited)
+01/29/2026 1:59 AM
+this would also enable us to use my "new" (a few months old now)
+https://github.com/smx-smx/libarchive-sharp binding 
+GitHub - smx-smx/libarchive-sharp: libarchive C# bindings
+libarchive C# bindings. Contribute to smx-smx/libarchive-sharp
+development by creating an account on GitHub.
+[]
+01/29/2026 1:59 AM
+and map it to a MemoryStream
+01/29/2026 1:59 AM
+because we can override fopen or open of the input filesystem file
+01/29/2026 1:58 AM
+we could even unsquashfs from RAM
+01/29/2026 1:58 AM
+but present a VFS
+01/29/2026 1:58 AM
+so that you can compile it unmodified (edited)
+01/29/2026 1:58 AM
+I would like to be able to do something like this with Squashfs
+01/29/2026 1:58 AM
+and in this case I used them to create uboot memory commands
+01/29/2026 1:57 AM
+this allows you to implement what should happen on fwrite and fread and
+fseek (edited)
+01/29/2026 1:57 AM
+of course after first registering "uboot" via stream_wrapper_register
+01/29/2026 1:57 AM
+    $fh = fopen("uboot:///dev/ttyUSB0,speed=115200", "w+");
+01/29/2026 1:57 AM
+which would allow me to do
+01/29/2026 1:56 AM
+I used this to write an uboot "driver" once
+01/29/2026 1:56 AM
+https://www.php.net/manual/en/function.stream-wrapper-register.php
+PHP: stream_wrapper_register - Manual
+Register a URL wrapper implemented as a PHP class
+[]
+01/29/2026 1:56 AM
+    fopen("protocol://parameters")
+01/29/2026 1:56 AM
+we could also do like PHP
+01/29/2026 1:55 AM
+then we override fopen, fwrite, fclose (and the likes) to be nops
+(edited)
+01/29/2026 1:55 AM
+because in Yafex we passed -n or whatever
+01/29/2026 1:55 AM
+say we don't want to write to disk
+01/29/2026 1:55 AM
+and we could install detours, hooks for select C functions
+01/29/2026 1:54 AM
+because we can map fopen to FileStream
+01/29/2026 1:54 AM
+and for C# this is a System.IO.Stream
+01/29/2026 1:54 AM
+    FILE *fh = fopen("output.bin", "wb");
+    fprintf(fh, "Foobar\n");
+    fclose(fh)
+01/29/2026 1:53 AM
+C code could then do
+01/29/2026 1:53 AM
+WDYT?
+01/29/2026 1:53 AM
+you could make a magic function called crt_init and call it manually
+from C#
+01/29/2026 1:53 AM
+or, since we "drive" this process from Yafex
+01/29/2026 1:52 AM
+a custom entry point/library constructor (__attribute__((constructor)))
+would initialize the vtable before anyone accesses it
+01/29/2026 1:52 AM
+or, if you want to do it nicer, have a proper prototype calling out to
+the fptr
+01/29/2026 1:51 AM
+    #define fopen (gCsharpOps.fopen)
+01/29/2026 1:51 AM
+think of it as
+01/29/2026 1:51 AM
+then the header files would define inline functions to call this global
+vtable array
+01/29/2026 1:50 AM
+I was thinking about having C# expose a vtable
+01/29/2026 1:50 AM
+as to "how would you do this?"
+01/29/2026 1:50 AM
+(or, well, as we go - probably not everything up front)
+01/29/2026 1:50 AM
+and reimplement each C99 function as a C# function
+01/29/2026 1:50 AM
+was to write a custom libc
+01/29/2026 1:49 AM
+and a crazy idea I had in mind
+01/29/2026 1:49 AM
+so that C code can expose Stream-like data to C# (edited)
+01/29/2026 1:49 AM
+I'm mulling about making a custom fopen wrapper, similar to PHP
+01/29/2026 1:49 AM
+because it is completely incompatible with the IDataSource / artifact
+approach
+01/29/2026 1:49 AM
+but I don't like it at all
+01/29/2026 1:48 AM
+both of which are epk2extract functions
+01/29/2026 1:48 AM
+        public class SquashfsNative
+        {
+            [DllImport("squashfs", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int is_squashfs([MarshalAs(UnmanagedType.LPStr)] string filename);
+            [DllImport("squashfs", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int unsquashfs([MarshalAs(UnmanagedType.LPStr)] string sourceFile,
+                                                 [MarshalAs(UnmanagedType.LPStr)] string destDir);
+            public bool IsSquashfs(string sourceFile)
+            {
+                return is_squashfs(sourceFile) == 1;
+            }
+            public bool ExtractSquashfs(string sourceFile, string destDir)
+            {
+                return unsquashfs(sourceFile, destDir) == 0;
+            }
+        }
+01/29/2026 1:48 AM
+and then doing
+01/29/2026 1:48 AM
+and re-linking them in a .dll
+01/29/2026 1:48 AM
+it was compiled literally by taking epk2extract .o files
+[theubusu]
+theubusu 01/29/2026 1:48 AM
+ohh yeah
+[smx2460]
+smx2460 01/29/2026 1:48 AM
+because I have a (very very hacky) Format plugin to use squashfs
+01/29/2026 1:48 AM
+yes
+[theubusu]
+theubusu 01/29/2026 1:47 AM
+is there any reason you're using it in cygwin?
+[smx2460]
+smx2460 01/29/2026 1:47 AM
+^ the entry point in step 1)
+01/29/2026 1:47 AM
+            static void Launch(IEnumerator<string> args)
+            {
+                var thisPath = Assembly.GetExecutingAssembly().Location;
+                var thisDir = Path.GetDirectoryName(thisPath);
+                MethodInfo x = (methodof<Func<IntPtr, int, int>>)Program.Entry;
+                var klass = x.DeclaringType;
+                var targetAsm = klass.Assembly;
+                var targetAsmName = targetAsm.GetName().Name;
+                var basedir = "external";
+                var pi = new ProcessStartInfo()
+                {
+                    FileName = Path.Combine(basedir, "ezdotnet.exe"),
+                };
+                pi.ArgumentList.Add(Path.Combine(basedir, "cygcoreclrhost.dll"));
+                pi.ArgumentList.Add( DCPH0 quot;{targetAsmName}.dll");
+                pi.ArgumentList.Add(klass.FullName);
+                pi.ArgumentList.Add(x.Name);
+                while (args.MoveNext())
+                {
+                    pi.ArgumentList.Add(args.Current);
+                }
+                Process.Start(pi);
+            }
+01/29/2026 1:47 AM
+and that's why it slows down
+01/29/2026 1:47 AM
+so for each step, the debugger is re-attaching to the new process
+01/29/2026 1:47 AM
+I installed an addon for Visual Studio that propagates the debugger
+through child processes
+01/29/2026 1:46 AM
+3) it loads a new .NET instance and loads Yafex
+01/29/2026 1:46 AM
+2) it calls EzDotnet, which is a native program, in this case compiled
+for cygwin (edited)
+01/29/2026 1:46 AM
+1) Yafex.CygwinLauncher is invoked, which is a C# program (edited)
+[theubusu]
+theubusu 01/29/2026 1:46 AM
+you're launching it in cygwin though no ?
+[smx2460]
+smx2460 01/29/2026 1:45 AM
+because what actually goes on is
+01/29/2026 1:45 AM
+it's super slow to launch only during debugging
+01/29/2026 1:45 AM
+I forgot to tell you the other day (edited)
+[theubusu]
+theubusu 01/29/2026 1:45 AM
+i can try to implement the new format when I'll have time
+[smx2460]
+smx2460 01/29/2026 1:44 AM
+@theubusu
+https://github.com/smx-smx/yafex/commit/9819606a6b128a5f1c9d44a89b010a1073df3151
+preliminary MtkPkg support · smx-smx/yafex@9819606
+[]
+01/29/2026 1:42 AM
+but we'll still print them
+01/29/2026 1:42 AM
+so that uncaught errors don't crash it
+01/29/2026 1:42 AM
+I will probably leave it but also fix them
+01/29/2026 1:41 AM
+for now I did the bad practice
+01/29/2026 1:41 AM
+or we go and fix them
+01/29/2026 1:41 AM
+either we catch and ignore these errors (but it's bad practice)
+01/29/2026 1:41 AM
+here we get a nice exception
+01/29/2026 1:41 AM
+in epk2extract this would just crash the program
+01/29/2026 1:41 AM
+we instead go past the end of stream
+01/29/2026 1:41 AM
+here EpkV2 assumes we have enough room to read something
+01/29/2026 1:41 AM
+    [ERROR] Yafex.FormatFinder - Detector for EpkV2 failed
+    System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values.
+       at Yafex.Support.SpanExtensions.GetField[T,TStruct,TField](ReadOnlySpan`1 span, String fieldName) in P:\projects\Yafex\Yafex\Support\SpanExtensions.cs:line 292
+       at Yafex.FileFormats.EpkV2.EPK_V2_STRUCTURE.GetHeader[T](ReadOnlySpan`1 epk) in P:\projects\Yafex\Yafex\FileFormats\EpkV2\Epk2Structures.cs:line 187
+       at Yafex.FileFormats.EpkV2.Epk2Detector.Detect(IDataSource source) in P:\projects\Yafex\Yafex\FileFormats\EpkV2\Epk2Detector.cs:line 64
+       at Yafex.FormatFinder.Detect(FileFormat fmt, IDataSource source) in P:\projects\Yafex\Yafex\FormatFinder.cs:line 40
+       at Yafex.FormatFinder.DetectFormatAddon(IDataSource source) in P:\projects\Yafex\Yafex\FormatFinder.cs:line 62
+01/29/2026 1:40 AM
+take for example this
+01/29/2026 1:40 AM
+what I mean is (edited)
+01/29/2026 1:40 AM
+it should be fixed
+01/29/2026 1:40 AM
+but that's a workaround
+01/29/2026 1:40 AM
+i added a try..catch for the detector
+[theubusu]
+theubusu 01/29/2026 1:40 AM
+than the ota id
+01/29/2026 1:40 AM
+so more like it's the version of the partition
+[smx2460]
+smx2460 01/29/2026 1:40 AM
+improvements welcome 
+[theubusu]
+theubusu 01/29/2026 1:40 AM
+and sometimes they will have different ones in the same pkg
+[smx2460]
+smx2460 01/29/2026 1:40 AM
+ok have first impl for mtkpkg (edited)
+[theubusu]
+theubusu 01/29/2026 1:39 AM
+idk why
+[theubusu]
+[] smx2460 <@631872127934660609> hmm some paks have otaID some don't
+theubusu 01/29/2026 1:39 AM
+yes that's true
+[smx2460]
+smx2460 01/29/2026 1:39 AM
+probably won't though
+01/29/2026 1:39 AM
+i mean for using it as a directory name
+01/29/2026 1:39 AM
+so if we want to consider it, we would need to do a first loop
+01/29/2026 1:39 AM
+@theubusu hmm some paks have otaID some don't
+[theubusu]
+theubusu 01/29/2026 1:32 AM
+why doesn't discord do code highlighting on mobile...
+[smx2460]
+smx2460 01/29/2026 1:31 AM
+(untested)
+01/29/2026 1:31 AM
+my take (edited)
+01/29/2026 1:31 AM
+        private const string MTK_MAGIC_META = "iMtK";
+        private const string MTK_MAGIC_PAD = "iPAd";
+        private string? ReadOptionalOtaId(Memory<byte> meta)
+        {
+            var st = new SpanStream(meta);
+            var endOrLength = st.ReadBytes(4);
+            if(endOrLength.AsString(Encoding.ASCII) == MTK_MAGIC_PAD)
+            {
+                return null;
+            }
+            var otaIdLength = BinaryPrimitives.ReadInt32LittleEndian(endOrLength);
+            var otaId = st.ReadBytes(otaIdLength).AsString(Encoding.ASCII);
+            return otaId;
+        }
+        private void ReadMtkMetadata(SpanStream st)
+        {
+            var iMtk = st.PerformAt(st.Position, st.ReadStruct<iMtkHeader>);
+            if(iMtk.Magic != MTK_MAGIC_META)
+            {
+                return;
+            }
+            st.Position += Unsafe.SizeOf<iMtkHeader>();
+            var metaData = st.ReadBytes((int)iMtk.Length);
+            ReadOptionalOtaId(metaData);
+        }
+[theubusu]
+[] smx2460 we read 4 bytes, it's either iPad or length of otaID
+theubusu 01/29/2026 1:29 AM
+yes
+[theubusu]
+theubusu 01/29/2026 1:29 AM
+but the one you showed does not have one
+[smx2460]
+smx2460 01/29/2026 1:29 AM
+we read 4 bytes, it's either iPad or length of otaID (edited)
+[theubusu]
+theubusu 01/29/2026 1:28 AM
+there can be an ota ID
+[smx2460]
+smx2460 01/29/2026 1:28 AM
+so there should be nothing else

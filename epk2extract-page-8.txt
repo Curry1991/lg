@@ -1,0 +1,1732 @@
+January 29, 2026
+[theubusu]
+theubusu 01/29/2026 1:28 AM
+i know that iMtK is magic always the same 4 bytes is length of whole
+iMtK header - 8 THEN the next 4 bytes is either - the length of ota ID -
+or iPAD . If it's IPAD, there is no ota I'd
+[smx2460]
+smx2460 01/29/2026 1:28 AM
+unless each attribute is positional
+01/29/2026 1:28 AM
+because otherwise how would the code know where iPAd is
+01/29/2026 1:28 AM
+also, does it mean that each property is 4 bytes?
+01/29/2026 1:27 AM
+but have you found some data in there besides iPAd?
+01/29/2026 1:27 AM
+so iPAd is the end marker
+01/29/2026 1:26 AM
+(no content)
+[image.png]
+ image.png
+4.31 KB External
+01/29/2026 1:26 AM
+@theubusu what do you know about the iMtk header
+January 27, 2026
+[theubusu]
+theubusu 01/27/2026 10:47 PM
+only if it needs a special decryption logic that isnt AES
+[smx2460]
+smx2460 01/27/2026 10:47 PM
+it's pretty easy to do DI with Microsoft APIs
+01/27/2026 10:47 PM
+yep
+[theubusu]
+theubusu 01/27/2026 10:47 PM
+yeah i was thinking it doesnt make sense to make a whole service and a
+factory and everything for each format
+[smx2460]
+smx2460 01/27/2026 10:47 PM
+so I can then create the KeyRepository as a service
+01/27/2026 10:47 PM
+actually maybe I should do that first
+01/27/2026 10:46 PM
+so that you can inject services in your file format addons (edited)
+01/27/2026 10:46 PM
+not sure if right now though
+01/27/2026 10:46 PM
+I will probably switch to Dependency Injection too (edited)
+01/27/2026 10:45 PM
+technically I could already do it now, but finishing this
+01/27/2026 10:45 PM
+then I can marge your PR
+01/27/2026 10:45 PM
+but the AES key parameters need to become options
+01/27/2026 10:45 PM
+well, it's already doing that
+01/27/2026 10:44 PM
+by having it call a user defined function (edited)
+01/27/2026 10:44 PM
+and the CreateEpkDecryptor can also be made global
+01/27/2026 10:44 PM
+that's what I'll do shortly
+01/27/2026 10:43 PM
+that FIXME
+01/27/2026 10:43 PM
+        public class EpkServicesFactory
+        {
+            private readonly Config config;
+            private readonly KeyBundle KeyFile;
+            private static readonly ILog logger = LogManager.GetLogger(typeof(EpkServicesFactory));
+            public EpkServicesFactory(Config config) {
+                this.config = config;
+                // $FIXME: should be made global
+                var keyFilePath = Path.Combine(config.ConfigDir, "secrets.json");
+                logger.InfoFormat("Using AES key file: {0}", keyFilePath);
+                if (File.Exists(keyFilePath)) {
+                    this.KeyFile = new KeyBundle(keyFilePath);
+                }
+            }
+            public EpkDecryptionService? CreateEpkDecryptor(ReadOnlySpan<byte> data, CryptoResultChecker validator) {
+                if (KeyFile == null) {
+                    return null;
+                }
+                var keyFinder = new AesKeyFinder(this.KeyFile, "lg-epk-keys");
+                if(!keyFinder.FindAesKey(data, validator, out var result))
+                {
+                    return null;
+                }
+                var keyEntry = result.Value.Key;
+                var aes = Aes.Create();
+                aes.BlockSize = 128;
+                aes.KeySize = keyEntry.key.Length * 8;
+                aes.Key = keyEntry.key;
+                if (keyEntry.keyMode == CipherMode.CBC)
+                {
+                    aes.IV = keyEntry.iv;
+                }
+                aes.Mode = keyEntry.keyMode;
+                aes.Padding = PaddingMode.None;
+                return new EpkDecryptionService(aes);
+            }
+        }
+01/27/2026 10:43 PM
+what I mean is
+01/27/2026 10:43 PM
+so that EpkServices would kinda disappear
+01/27/2026 10:43 PM
+I want to centralize the Key Repository
+01/27/2026 10:43 PM
+for EPK keys it's a hex string
+[theubusu]
+theubusu 01/27/2026 10:43 PM
+should i just copy logic of EPK?
+[smx2460]
+smx2460 01/27/2026 10:42 PM
+key format depends on the type
+[theubusu]
+theubusu 01/27/2026 10:42 PM
+i was planning to work on the mtk pkg extractor, but not sure how to do
+the AES decryption
+01/27/2026 10:42 PM
+looks good
+[smx2460]
+smx2460 01/27/2026 10:42 PM
+wdyt?
+01/27/2026 10:42 PM
+    [
+        {
+            "type": "collection",
+            "id": "lg-epk-keys",
+            "description": "LG Electronics EPK Keys",
+            "keys": [
+                {
+                    "type": "aes-128-ecb",
+                    "key": "[redacted]",
+                    "description": ""
+                },
+                {
+                    "type": "aes-128-ecb",
+                    "key": "[redacted]",
+                    "description": "BCM35230/early MTK5369 and LG1152"
+                },
+                {
+                    "type": "aes-128-ecb",
+                    "key": "[redacted]",
+                    "description": "mtk5369 - Mediatek GP4 - HE_DTV_GP4I_AFAAATAA"
+                },
+01/27/2026 10:41 PM
+https://github.com/smx-smx/yafex/commit/e0467a92f5f54b54849dc96890fabe6aa22c2c6d
+is up
+KeyBundle: migrate to JSON format · smx-smx/yafex@e0467a9
+[]
+01/27/2026 10:40 PM
+@theubusu , sup (edited)
+January 25, 2026
+[theubusu]
+theubusu 01/25/2026 11:45 PM
+I think they are just used in cheap android tv boxes though
+01/25/2026 11:45 PM
+amlogic?
+hellobox. 01/25/2026 11:43 PM
+@theubusu what SoC vendors don't you have experience with? any?
+[smx2460]
+smx2460 01/25/2026 10:56 PM
+testing
+01/25/2026 10:56 PM
+I have some prototype
+[theubusu]
+theubusu 01/25/2026 10:51 PM
+it is like this in mtk pkg if header can be decrypted using custom
+crypto with key 09291094 -> this is OLD variant -> the header size is
+0x98 -> if the pak is encrypted, the key is the vendor magic if header
+can be decrypted using AES with key 09291094092910940929109409291094 ->
+this is "STANDARD" variant -> header size is 0x90 -> if the pak is
+encrypted, the key is the vendor magic repeated 4 times, or optionally
+one of custom keys (Philips) if the header can be decrypted using AES
+with one of custom keys -> this is NEW variant -> header size is 0x170
+-> if the pak is encrypted, the key is the same as the matched header
+key.
+[smx2460]
+smx2460 01/25/2026 10:46 PM
+then the key collection shold be a type of "secret"
+[theubusu]
+theubusu 01/25/2026 10:46 PM
+yeah thats what i was wondering about as well
+[smx2460]
+smx2460 01/25/2026 10:45 PM
+I don't know if it makes sense to define a collection with 1 item
+01/25/2026 10:45 PM
+how do we represent that hardcoded key
+01/25/2026 10:44 PM
+hmmm (edited)
+[theubusu]
+theubusu 01/25/2026 10:42 PM
+also i created PR for the nfwb extractor
+01/25/2026 10:40 PM
+also i wanted to ask how this logic could be implemented with this key
+system try to decrypt header with hardcoded key if it succeded - set
+some flag "A" and do extraction if it failed - try all other keys, if
+one matches set some flag "B" and do extraction
+[smx2460]
+smx2460 01/25/2026 10:37 PM
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+    [JsonDerivedType(typeof(BasicKeyDTO), "aes-128-ecb")]
+    [JsonDerivedType(typeof(BasicKeyDTO), "aes-256-ecb")]
+    [JsonDerivedType(typeof(KeyWithIVDTO), "aes-128-cbc")]
+    [JsonDerivedType(typeof(KeyWithIVDTO), "aes-256-cbc")]
+    public class KeyDTO
+    {
+        [JsonPropertyName("type")]
+        public required string KeyType { get; set; }
+    }
+    public class BasicKeyDTO : KeyDTO
+    {
+        [JsonPropertyName("key")]
+        public required string KeyMaterial { get; set; }
+    }
+    public class KeyWithIVDTO: BasicKeyDTO
+    {
+        [JsonPropertyName("iv")]
+        public required string KeyIV { get; set; }
+    }
+[theubusu]
+[] smx2460 i'm refactoring the keybundle
+theubusu 01/25/2026 10:37 PM
+and yeah also wanted to wait for that
+[smx2460]
+smx2460 01/25/2026 10:37 PM
+i'm wondering if this is good enough
+01/25/2026 10:36 PM
+i'm refactoring the keybundle
+[theubusu]
+theubusu 01/25/2026 10:36 PM
+I wanted to start with this format since it's much simpler
+ 1
+[theubusu]
+[] smx2460 I thought you were doing MTKPKG for some reason
+theubusu 01/25/2026 10:36 PM
+yes I will work on it next
+[smx2460]
+[] theubusu hey I committed the extractor to my fork if it's alrigjt
+maybe it can be merged to your main reposi...
+smx2460 01/25/2026 10:36 PM
+LGTM!
+[smx2460]
+smx2460 01/25/2026 10:35 PM
+01/25/2026 10:35 PM
+but that's also good
+01/25/2026 10:35 PM
+I thought you were doing MTKPKG for some reason
+01/25/2026 10:34 PM
+nice!
+[theubusu]
+theubusu 01/25/2026 10:34 PM
+hey I committed the extractor to my fork if it's alrigjt maybe it can be
+merged to your main repository
+https://github.com/theubusu/yafex/commit/bb12f37920e3b51813f75dd37fbe8dfe74ecc2ca
+Add Novatek NFWB extractor · theubusu/yafex@bb12f37
+[smx2460]
+smx2460 01/25/2026 10:30 PM
+@theubusu sup
+[theubusu]
+theubusu 01/25/2026 4:43 PM
+annoyingly some files dont have a firmware name so youll end up with
+"-2.550". ideally that minus shouldnt be added when theres no name i
+guess
+[image.png]
+ image.png
+12.5 KB External
+[smx2460]
+smx2460 01/25/2026 4:36 PM
+not that it changes anything, it's xplat
+[theubusu]
+theubusu 01/25/2026 4:36 PM
+i dont use linux
+[smx2460]
+smx2460 01/25/2026 4:36 PM
+I didn't know you were developing on Windows
+01/25/2026 4:35 PM
+wait I thought you were a GNU/Linux user
+01/25/2026 4:35 PM
+awesome ^_^
+[theubusu]
+theubusu 01/25/2026 4:35 PM
+[image.png]
+ image.png
+53.04 KB External
+ 1
+01/25/2026 4:31 PM
+yes
+[smx2460]
+smx2460 01/25/2026 4:31 PM
+the output logic is in the caller
+01/25/2026 4:31 PM
+which you yield return
+01/25/2026 4:31 PM
+you're saying "I processed the EPK file and I found an artifact"
+01/25/2026 4:30 PM
+technically, this is not an "output"
+01/25/2026 4:29 PM
+            public IEnumerable<IDataSource> Extract(IDataSource source, DataSourceFlags outputFlags) {
+                var fileData = source.Data;
+                var hdr = _ctx.Header;
+                logger.Info("Firmware Info");
+                logger.Info("-------------");
+                logger.Info( DCPH0 quot;Firmware magic: {hdr.FileType}");
+                logger.Info( DCPH0 quot;Firmware type: {hdr.EpkMagic}");
+                logger.Info( DCPH0 quot;Firmware otaID: {hdr.OtaId}");
+                logger.Info( DCPH0 quot;Firmware version: {hdr.EpkVersion}");
+                logger.Info( DCPH0 quot;PAK count: {hdr.FileNum}");
+                logger.Info( DCPH0 quot;PAKs total size: {hdr.FileSize}");
+                logger.Info( DCPH0 quot;Header length: 0x{hdr.GetImageOffset(0):X}");
+                var fwVersion =  DCPH0 quot;{hdr.EpkVersion}-{hdr.OtaId}";
+                //var sigSize = EPK_V2_STRUCTURE.SIGNATURE_SIZE;
+                var sigSize = SignatureSize;
+                int numSignatures = 1; //header signature
+                for(int curPak=0; curPak<hdr.FileNum; curPak++) {
+                    int pakLoc = (int)hdr.GetImageOffset(curPak) + (numSignatures * sigSize);
+                    (string pakName,
+                     string pakOutputPath,
+                     IDataSource pak) = HandlePak(
+                         fileData.Span,
+                         pakLoc,
+                         baseDir: fwVersion,
+                         out int numberOfSegments,
+                         outputFlags
+                    );
+                    pak.SetChildOf(source);
+                    numSignatures += numberOfSegments;
+                    logger.Info( DCPH0 quot;#{curPak + 1}/{_ctx.Header.FileNum} saved PAK ({pakName}) to file {pakOutputPath}");
+                    yield return pak;
+                }
+            }
+01/25/2026 4:29 PM
+epk2 code
+01/25/2026 4:29 PM
+I probably would put it there
+[theubusu]
+theubusu 01/25/2026 4:28 PM
+also if im reading parts in this loop should i put the data reading and
+output logic here directly or make another loop
+    var parts = new PartEntry[hdr.partCount];
+    for (int i = 0; i < hdr.partCount; i++)
+    {
+        var partEntry = dataStream.ReadStruct<PartEntry>();
+        parts[i] = partEntry;
+        log.Info( DCPH0 quot;Part #{i + 1} - ID: {partEntry.partitionID}, Offset: {partEntry.offset}, Size: {partEntry.size}");
+    }
+01/25/2026 4:26 PM
+the partitions are small so i think its ok
+[smx2460]
+smx2460 01/25/2026 4:26 PM
+and then we can swap it with another output method
+01/25/2026 4:26 PM
+so for now you can just use the memory one
+01/25/2026 4:26 PM
+and applies transformations if needed
+01/25/2026 4:26 PM
+we can introduce one that instead takes an offset-length pair in the
+file
+01/25/2026 4:26 PM
+it's not idea, but since there is an IDataSource
+01/25/2026 4:25 PM
+NOTE (or fixme): the output is currently implemented as
+MemoryDataSource, which forces you to store the partition in RAM
+01/25/2026 4:24 PM
+like you did
+01/25/2026 4:24 PM
+and expose a formatted version string
+01/25/2026 4:24 PM
+you can use this to hide firmware versions with their native int type
+01/25/2026 4:23 PM
+regardless of visibility
+01/25/2026 4:23 PM
+properties don't take up struct space but fields do
+01/25/2026 4:23 PM
+yep
+[theubusu]
+theubusu 01/25/2026 4:23 PM
+it was using firmwarename twice public FirmwareName FirmwareName;
+private FirmwareName _firmwareName;
+[smx2460]
+smx2460 01/25/2026 4:23 PM
+some alignment?
+01/25/2026 4:23 PM
+what was the issue
+01/25/2026 4:23 PM
+[theubusu]
+theubusu 01/25/2026 4:23 PM
+now it works
+01/25/2026 4:22 PM
+okay i know the issue
+01/25/2026 4:21 PM
+well, its better, the data size and part count is ok but somehow it read
+the firmware name as ""??? idk how that happened
+[image.png]
+ image.png
+2.84 KB External
+[smx2460]
+smx2460 01/25/2026 4:20 PM
+lmk if it works now
+01/25/2026 4:18 PM
+[theubusu]
+theubusu 01/25/2026 4:18 PM
+yeah
+01/25/2026 4:18 PM
+ohhh
+[smx2460]
+smx2460 01/25/2026 4:17 PM
+@theubusu
+01/25/2026 4:16 PM
+not using it
+01/25/2026 4:16 PM
+you're declaring the type
+01/25/2026 4:16 PM
+not USES
+01/25/2026 4:16 PM
+because they are just DECLARATIONS
+01/25/2026 4:16 PM
+you could as well move those struct declarations outside
+01/25/2026 4:16 PM
+    public unsafe struct Header
+    {
+        private fixed byte nfwbMagic[4];
+        private UInt32 versionMajor;
+        private UInt32 versionMinor;
+        private UInt32 unused;
+        [InlineArray(16)]
+        public struct FirmwareName { private byte _element0; }
+        public FirmwareName FirmwareName;
+        public UInt32 dataSize;
+        [InlineArray(16)]
+        public struct MD5Checksum { private byte _element0; }
+        public MD5Checksum MD5Checksum ;
+        public UInt32 partCount;
+        public UInt32 headerSize;
+        [InlineArray(128)]
+        public struct Signature { private byte _element0; }
+        public Signature Signature;
+        public UInt32 headerChecksum; //CRC32, calculated with this field set to 0
+        public string FirmwareVersion => string.Format("{0}.{1}", versionMajor, versionMinor);
+        private FirmwareName _firmwareName;
+        public byte[] FirmwareNameBytes => ((ReadOnlySpan<byte>)_firmwareName).ToArray();
+        public string FirmwareNameString => FirmwareNameBytes.AsString(Encoding.ASCII);
+    }
+(edited)
+01/25/2026 4:15 PM
+then you will understand
+01/25/2026 4:15 PM
+let me show you the fix
+01/25/2026 4:15 PM
+not sure If i was clear
+01/25/2026 4:15 PM
+the problem is you're not using the struct
+[theubusu]
+theubusu 01/25/2026 4:13 PM
+It did work with the basic approach without span stream
+01/25/2026 4:12 PM
+I mean I didn't change anything in the extraction code since switching
+to that InlineArray approach
+[smx2460]
+smx2460 01/25/2026 4:12 PM
+and you never actually use it
+01/25/2026 4:12 PM
+so you're saying "I have a struct called FirmwareName" (edited)
+01/25/2026 4:11 PM
+you can't declare anonymous structs in C#
+01/25/2026 4:11 PM
+is declaring inner structures, that you don't use
+[smx2460]
+[] theubusu something isnt right Firmex# NfwbExtractor - Firmware Info
+NfwbExtractor - ------------- NfwbExtract...
+smx2460 01/25/2026 4:11 PM
+so what you're doing here
+[smx2460]
+smx2460 01/25/2026 4:11 PM
+I know why 
+01/25/2026 4:11 PM
+oh wait
+[theubusu]
+theubusu 01/25/2026 4:10 PM
+    public IEnumerable<IDataSource> Extract(IDataSource source) {
+        var fileData = source.Data;
+        var dataStream = new SpanStream(fileData);
+        var hdr = dataStream.ReadStruct<Header>();
+        log.Info("Firmware Info");
+        log.Info("-------------");
+        log.Info( DCPH0 quot;Firmware name: {hdr.FirmwareNameString}");
+        log.Info( DCPH0 quot;Firmware version: {hdr.FirmwareVersion}");
+        log.Info( DCPH0 quot;Data size: {hdr.dataSize}");
+        log.Info( DCPH0 quot;Part count: {hdr.partCount}");
+        var basedir = Path.Combine(source.RequireBaseDirectory(),  DCPH0 quot;{hdr.FirmwareNameString}-{hdr.FirmwareVersion}");
+        source.AddMetadata(new BaseDirectoryPath(basedir));
+        var parts = new PartEntry[hdr.partCount];
+        for (int i = 0; i < hdr.partCount; i++)
+        {
+            var partEntry = dataStream.ReadStruct<PartEntry>();
+            parts[i] = partEntry;
+            log.Info( DCPH0 quot;Part #{i + 1} - ID: {partEntry.partitionID}, Offset: {partEntry.offset}, Size: {partEntry.size}");
+        }
+        return Enumerable.Empty<IDataSource>();
+    }
+[smx2460]
+smx2460 01/25/2026 4:09 PM
+so I can tell you if there's something that looks off
+01/25/2026 4:09 PM
+you should show me the code that uses that struct
+[theubusu]
+theubusu 01/25/2026 4:09 PM
+ill try with pack 0
+[theubusu]
+[] smx2460 I sometimes do `[StructLayout(LayoutKind.Sequential)]` but
+it's the default
+theubusu 01/25/2026 4:08 PM
+i did add that
+[smx2460]
+smx2460 01/25/2026 4:08 PM
+but I'm not sure if that works with Span and casting
+01/25/2026 4:08 PM
+if you do [StructLayout(LayoutKind.Sequential, Pack = 0)] you're
+disabling packing
+01/25/2026 4:08 PM
+I sometimes do [StructLayout(LayoutKind.Sequential)] but it's the
+default
+01/25/2026 4:07 PM
+though actually it shouldn't be needed
+01/25/2026 4:07 PM
+@theubusu hmm try setting the pack explicitly maybe (edited)
+[theubusu]
+theubusu 01/25/2026 4:03 PM
+something isnt right Firmex# NfwbExtractor - Firmware Info
+NfwbExtractor - ------------- NfwbExtractor - Firmware name:
+NfwbExtractor - Firmware version: 2.300 NfwbExtractor - Data size:
+827215956 NfwbExtractor - Part count: 4535094 Unhandled exception.
+System.ArgumentOutOfRangeException: Specified argument was out of the
+range of valid values. at Smx.SharpIO.SpanStream.ReadStruct[T]() at
+Yafex.FileFormats.Nfwb.NfwbExtractor.Extract(IDataSource source) in
+C:\Users\tomek\Documents\yafex\Yafex\FileFormats\Nfwb\NfwbExtractor.cs:line
+41 at Yafex.Program.Process(IVfsNode root, IDataSource input)+MoveNext()
+in C:\Users\tomek\Documents\yafex\Yafex\Program.cs:line 79 at
+Yafex.Program.Run(String[] args) in
+C:\Users\tomek\Documents\yafex\Yafex\Program.cs:line 212 at
+Yafex.Program.Main(String[] args) in
+C:\Users\tomek\Documents\yafex\Yafex\Program.cs:line 225 at
+Yafex.Cmdline.Program.Main(String[] args) in
+C:\Users\tomek\Documents\yafex\Yafex.Cmdline\Program.cs:line 22
+    public unsafe struct Header
+    {
+        private fixed byte nfwbMagic[4];
+        private UInt32 versionMajor;
+        private UInt32 versionMinor;
+        private UInt32 unused;
+        [InlineArray(16)]
+        public struct FirmwareName { private byte _element0; }
+        public UInt32 dataSize;
+        [InlineArray(16)]
+        public struct MD5Checksum { private byte _element0; }
+        public UInt32 partCount;
+        public UInt32 headerSize;
+        [InlineArray(128)]
+        public struct Signature { private byte _element0; }
+        public UInt32 headerChecksum; //CRC32, calculated with this field set to 0
+        public string FirmwareVersion => string.Format("{0}.{1}", versionMajor, versionMinor);
+        private FirmwareName _firmwareName;
+        public byte[] FirmwareNameBytes => ((ReadOnlySpan<byte>)_firmwareName).ToArray();
+        public string FirmwareNameString => FirmwareNameBytes.AsString(Encoding.ASCII);
+    }
+[smx2460]
+smx2460 01/25/2026 3:50 PM
+    fixed (byte* dptr = fooFixed) {
+      return Encoding.ASCII.GetString(new Span<byte>(dptr, length));
+    }
+(edited)
+01/25/2026 3:50 PM
+or
+01/25/2026 3:50 PM
+    fixed (byte* dptr = fooFixed) {
+        return Encoding.ASCII.GetString(dptr, length);
+    }
+[smx2460]
+[] theubusu `public fixed byte xxx[n]` works, but i cant convert it to a
+string though
+smx2460 01/25/2026 3:49 PM
+you can do it with fixed but it's a bit more cumbersome
+[smx2460]
+[] theubusu so i should use this instead of `public fixed byte
+md5Checksum[16];` ?
+smx2460 01/25/2026 3:48 PM
+yes
+[smx2460]
+smx2460 01/25/2026 3:48 PM
+    [InlineArray(16)]
+    public struct Foo { private byte _element0; }
+    ...
+    private Foo _foo;
+    public byte[] FooBytes => ((ReadOnlySpan<byte>)_foo).ToArray();
+    public string FooString => FooBytes.AsString(Encoding.ASCII);
+(edited)
+01/25/2026 3:47 PM
+on the property that converts it to a byte[]
+[smx2460]
+[] theubusu `public fixed byte xxx[n]` works, but i cant convert it to a
+string though
+smx2460 01/25/2026 3:46 PM
+use .AsString
+[theubusu]
+theubusu 01/25/2026 3:20 PM
+(no content)
+[image.png]
+ image.png
+6.92 KB External
+01/25/2026 3:19 PM
+(no content)
+[image.png]
+ image.png
+24.86 KB External
+01/25/2026 3:19 PM
+public fixed byte xxx[n] works, but i cant convert it to a string though
+[theubusu]
+[] smx2460 ```csharp [InlineArray(16)] public struct Md5Checksum {
+private byte _element0; } ... private Md5C...
+theubusu 01/25/2026 3:11 PM
+so i should use this instead of public fixed byte md5Checksum[16]; ?
+ 1
+[theubusu]
+theubusu 01/25/2026 3:05 PM
+64 gb it is
+01/25/2026 3:04 PM
+this is my file collection taht i was talking about
+[image.png]
+ image.png
+123.89 KB External
+ 1
+[theubusu]
+Original message was deleted
+theubusu 01/25/2026 3:03 PM
+ugh come on
+[smx2460]
+smx2460 01/25/2026 3:01 PM
+or maybe not, don't remember
+01/25/2026 3:01 PM
+you need an M$ account i think
+[theubusu]
+theubusu 01/25/2026 3:01 PM
+i've never done that
+[smx2460]
+smx2460 01/25/2026 3:00 PM
+if you want we can do a VSCode Liveshare session, if you're into that
+lol
+[theubusu]
+theubusu 01/25/2026 2:59 PM
+ah
+[smx2460]
+[] theubusu it is
+smx2460 01/25/2026 2:58 PM
+the reason why it threw me off is that VS colors structs in yellow and
+classes in green
+[smx2460]
+smx2460 01/25/2026 2:58 PM
+or an array of structs
+01/25/2026 2:57 PM
+so you could also do say int _element0 for an array of ints
+01/25/2026 2:57 PM
+and the annotation tells the compiler how long to extend the array
+[smx2460]
+[] smx2460 ```csharp [InlineArray(16)] public struct ChunkDigestBuffer {
+private byte _element0; } ```
+smx2460 01/25/2026 2:57 PM
+the way this works is that byte _element0 is used to specify the type of
+the first element
+[smx2460]
+smx2460 01/25/2026 2:56 PM
+pro: it's fast con: you need some boilerplate 
+01/25/2026 2:56 PM
+it requires that T and all its subfields are C-blittable
+01/25/2026 2:56 PM
+that where T : unmanaged is what generates the error you're seeing
+01/25/2026 2:55 PM
+so there's no marshalling anymore in this way
+01/25/2026 2:55 PM
+that's it
+01/25/2026 2:55 PM
+we just cast the bytes to the native type and dereference it
+01/25/2026 2:55 PM
+        public unsafe T ReadStruct<T>() where T : unmanaged
+        {
+            int num = sizeof(T);
+            Span<byte> span = Memory.Span.Slice(pos, num);
+            T data = MemoryMarshal.Cast<byte, T>(span)[0];
+            data = RespectEndianness(data);
+            pos += num;
+            return data;
+        }
+01/25/2026 2:55 PM
+the actual "reading" is this
+01/25/2026 2:54 PM
+it's maybe a bit of boilerplate but this way it maps to the native bytes
+01/25/2026 2:54 PM
+    [InlineArray(16)]
+    public struct Md5Checksum { private byte _element0; }
+    ...
+    private Md5Checksum _md5Checksum;
+    public byte[] Md5Checksum => ((ReadOnlySpan<byte>)_md5Checksum).ToArray();
+01/25/2026 2:53 PM
+so you replace pubic byte[] md5Checksum with
+01/25/2026 2:52 PM
+    [InlineArray(16)]
+    public struct ChunkDigestBuffer
+    {
+        private byte _element0;
+    }
+01/25/2026 2:52 PM
+this is how you do it in modern .NET
+01/25/2026 2:52 PM
+I forgot
+01/25/2026 2:52 PM
+no wait
+01/25/2026 2:52 PM
+the Digest property is what you want
+01/25/2026 2:52 PM
+    /// <summary>
+    /// CKHR, in Stream file
+    /// </summary>
+    public unsafe struct ChunkRecordHeader
+    {
+        public const int SIZE = 0x38;
+        public CommonHeader CommonHeader;
+        public CommonChunkHeader ChunkHeader;
+        public fixed byte _Unknown4[0x18];
+        private ChunkDigestBuffer _digest;
+        public fixed byte _Unknown5[16];
+        public ulong _Unknown6;
+        public ulong Checksum;
+        public byte[] Digest => ((ReadOnlySpan<byte>)_digest).ToArray();
+    }
+01/25/2026 2:52 PM
+(this is taken from another project of mine)
+01/25/2026 2:51 PM
+so you can do a trick
+01/25/2026 2:51 PM
+you will notice that then reading the fixed byte foo[] becomes annoying
+01/25/2026 2:51 PM
+instead of (de)serializing it with Marshal
+01/25/2026 2:50 PM
+the reason for doing this is that the struct can then be mapped directly
+to the file bytes
+01/25/2026 2:50 PM
+and remove MarshalAs attribute (edited)
+01/25/2026 2:50 PM
+then repeat this change for other byte arrays
+01/25/2026 2:50 PM
+private fixed byte firmwareName[16]
+01/25/2026 2:50 PM
+public unsafe struct Header
+01/25/2026 2:50 PM
+do this
+01/25/2026 2:50 PM
+the problem is that it must be an unmanaged struct
+[theubusu]
+theubusu 01/25/2026 2:49 PM
+(no content)
+[image.png]
+ image.png
+35.88 KB External
+[smx2460]
+smx2460 01/25/2026 2:49 PM
+show me
+[theubusu]
+theubusu 01/25/2026 2:49 PM
+it is
+[smx2460]
+smx2460 01/25/2026 2:49 PM
+not a class
+01/25/2026 2:49 PM
+Header must be a struct
+[theubusu]
+theubusu 01/25/2026 2:49 PM
+whats this mean
+[image.png]
+ image.png
+26.43 KB External
+[smx2460]
+smx2460 01/25/2026 2:43 PM
+then that reader is sequential (tracks Position)
+01/25/2026 2:42 PM
+(no content)
+[immagine.png]
+ immagine.png
+8.12 KB External
+[smx2460]
+[] theubusu and my way doesnt work because fileData.ReadStruct always
+reads at offset 0 ```csharp var fileDat...
+smx2460 01/25/2026 2:41 PM
+you need to make a SpanStream
+[smx2460]
+smx2460 01/25/2026 2:41 PM
+but you can choose what fits you best
+01/25/2026 2:41 PM
+2) is likely faster since it seeks in the raw bytes
+01/25/2026 2:41 PM
+sorry I got a visit
+[theubusu]
+theubusu 01/25/2026 1:54 PM
+hmm alright
+[smx2460]
+smx2460 01/25/2026 1:53 PM
+When you construct the class
+01/25/2026 1:53 PM
+But you're also reading all the fields early
+01/25/2026 1:53 PM
+1) is probably the one that looks the best from a code style perspective
+01/25/2026 1:52 PM
+3) the old school way, just read it sequentially
+01/25/2026 1:51 PM
+Or Slice, Cast (edited)
+01/25/2026 1:51 PM
+You do that by doing something similar to GetField
+01/25/2026 1:51 PM
+2) you read the header without the variable length part, and add a
+getter that seeks to the offset of the variable length array, then
+creates a new Span of the item type (edited)
+01/25/2026 1:50 PM
+1) similar to the Kotlin case, you make a record class that accepts a
+Span<byte> and breaks the fields down using a SpanStream
+01/25/2026 1:49 PM
+You have several options to handle this
+01/25/2026 1:48 PM
+Your structure stops there
+01/25/2026 1:48 PM
+I.e. if your header had some fields and then a variable length array
+[smx2460]
+[] theubusu <@310158180728700929> what should be the approach if the
+part entry count is not known at compile t...
+smx2460 01/25/2026 1:48 PM
+Then you stop there with the field definition
+[theubusu]
+theubusu 01/25/2026 1:46 PM
+and my way doesnt work because fileData.ReadStruct always reads at
+offset 0
+      var fileData = source.Data;
+      var hdr = fileData.ReadStruct<Header>();
+      log.Info( DCPH0 quot;Firmware version: {hdr.FirmwareVersion}");
+      log.Info( DCPH0 quot;Firmware name: {hdr.FirmwareName}");
+      var parts = new PartEntry[hdr.partCount];
+      for (int i = 0; i < hdr.partCount; i++)
+      {
+        var partEntry = fileData.ReadStruct<PartEntry>();
+        parts[i] = partEntry;
+        log.Info( DCPH0 quot;#{i} - ID: {partEntry.partitionID}, Offset: {partEntry.offset}, Size: {partEntry.size}");
+      }
+(edited)
+01/25/2026 1:44 PM
+i am starting with a simpler format (novatek NFWB) before mtk pkg,
+doesnt use any encryption
+01/25/2026 1:44 PM
+the partcount is read from the header
+01/25/2026 1:43 PM
+@Smx what should be the approach if the part entry count is not known at
+compile time so i can't do this?
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = n)]
+    public PartEntry[] partEntries;
+[smx2460]
+smx2460 01/25/2026 2:54 AM
+https://github.com/Ithamar/awutils/blob/master/imagewty.h
+awutils/imagewty.h at master · Ithamar/awutils
+Tools for handling Allwinner images. Contribute to Ithamar/awutils
+development by creating an account on GitHub.
+[]
+01/25/2026 2:54 AM
+        internal class AllWinnerExtractor : IFormatExtractor
+        {
+            public IEnumerable<IDataSource> Extract(IDataSource source)
+            {
+                var hdr = source.Data.ReadStruct<imagewty_file_header>();
+                throw new NotImplementedException();
+            }
+        }
+01/25/2026 2:53 AM
+that I didn't even commit
+01/25/2026 2:53 AM
+lol i have an incomplete Allwinner firmware one too
+01/25/2026 2:53 AM
+but the Epk v1 is the one with the most recent metadata changes
+01/25/2026 2:53 AM
+Lxboot is more complete
+01/25/2026 2:52 AM
+you can use LxBoot or Freescale as simple ones to look at, probably
+[theubusu]
+theubusu 01/25/2026 2:52 AM
+I'm glad I can share my interests
+ 1
+[smx2460]
+smx2460 01/25/2026 2:52 AM
+your entry point will be a IFormatAddon
+[theubusu]
+theubusu 01/25/2026 2:52 AM
+And thanks for the talk as well 
+01/25/2026 2:51 AM
+I'll work on mtk PKG later
+ 1
+01/25/2026 2:51 AM
+Yeah I need to go too
+[smx2460]
+smx2460 01/25/2026 2:50 AM
+thanks for the talk @theubusu! (edited)
+01/25/2026 2:50 AM
+but i should probably sleep too
+01/25/2026 2:49 AM
+lol
+01/25/2026 2:49 AM
+just in case 0xI_LOVE_LG is the next gen LGU key
+01/25/2026 2:49 AM
+or we can do it selectively based on the key type
+01/25/2026 2:49 AM
+but we can attach a custom deserializer that converts strings starting
+with 0x to byte arrays
+01/25/2026 2:49 AM
+    "bytes": [0, 1, 2, 3, 4]
+01/25/2026 2:49 AM
+like
+01/25/2026 2:48 AM
+normal JSON would force you to express the key as an array of signed
+integers I think
+01/25/2026 2:48 AM
+and you can attach custom deserializers to it
+01/25/2026 2:48 AM
+System.Text.Json would already fill that via the polymorphic
+deserialization
+01/25/2026 2:47 AM
+which we can downcast
+01/25/2026 2:47 AM
+basically the key collection would contain an array of object
+01/25/2026 2:46 AM
+    if(key is not SonyBdpSubstitutionTable tbl) throw new InvalidArgumentException( DCPH0 quot;{key.GetType()} is not the expected key type")
+    var bytes = tbl.TableBytes;
+(edited)
+[theubusu]
+theubusu 01/25/2026 2:46 AM
+Makes sense
+[smx2460]
+smx2460 01/25/2026 2:46 AM
+you can do something like
+01/25/2026 2:45 AM
+already deserialized
+01/25/2026 2:45 AM
+and then the body will be the byte[] of the table
+01/25/2026 2:45 AM
+then you check if it exists, if its type is the correct one
+01/25/2026 2:45 AM
+you don't expect more than one
+01/25/2026 2:45 AM
+    var key = keyRepo.GetKeyCollection(KeyCollections.SonyBDP)).FirstOrDefault();
+(edited)
+01/25/2026 2:44 AM
+or, in your case, well
+01/25/2026 2:44 AM
+    foreach(var key in keyRepo.GetKeyCollection(KeyCollections.SonyBDP))
+01/25/2026 2:44 AM
+technically yes
+[theubusu]
+theubusu 01/25/2026 2:44 AM
+I mean technically
+01/25/2026 2:44 AM
+But does it count as a key?
+[smx2460]
+smx2460 01/25/2026 2:43 AM
+or something like this
+01/25/2026 2:43 AM
+0xdeadbeef1234deadbeef1234deadbeef1234deadbeef1234
+01/25/2026 2:43 AM
+aka hex string
+[theubusu]
+theubusu 01/25/2026 2:43 AM
+Yeah, it's sorted from 00 to FF
+[smx2460]
+smx2460 01/25/2026 2:43 AM
+but that's an array in your code (edited)
+[theubusu]
+theubusu 01/25/2026 2:43 AM
+Yes
+[smx2460]
+smx2460 01/25/2026 2:43 AM
+is it sony bdp?
+[theubusu]
+theubusu 01/25/2026 2:42 AM
+Hmmm
+[smx2460]
+smx2460 01/25/2026 2:42 AM
+...could it work?
+01/25/2026 2:42 AM
+you could encode it as a json dictionary
+[theubusu]
+theubusu 01/25/2026 2:42 AM
+Yes
+[smx2460]
+smx2460 01/25/2026 2:42 AM
+is it a map?
+[theubusu]
+theubusu 01/25/2026 2:42 AM
+What if it's a byte substitution table
+[smx2460]
+smx2460 01/25/2026 2:41 AM
+consider it as such
+01/25/2026 2:41 AM
+> secrets.json (edited)
+01/25/2026 2:41 AM
+it's like
+[theubusu]
+theubusu 01/25/2026 2:41 AM
+Alright
+[smx2460]
+[] theubusu Also, if a format has only one hardcoded key should that be
+stored in the key file or inside the ext...
+smx2460 01/25/2026 2:41 AM
+key file
+[theubusu]
+theubusu 01/25/2026 2:41 AM
+For example Panasonic SDDL.SEC files, those only ever used one paid of
+key + IV
+01/25/2026 2:40 AM
+Also, if a format has only one hardcoded key should that be stored in
+the key file or inside the extractor?
+[smx2460]
+smx2460 01/25/2026 2:39 AM
+what about xor tables too, you'd need to hex encode them
+01/25/2026 2:39 AM
+meh
+01/25/2026 2:39 AM
+so you'd need to list them in the JSON by path (edited)
+01/25/2026 2:39 AM
+but we need additional metadata
+01/25/2026 2:39 AM
+or probe
+01/25/2026 2:38 AM
+it's not too bad but then you need a way to reference them
+[theubusu]
+theubusu 01/25/2026 2:38 AM
+A folder full of pem files isn't that neat
+01/25/2026 2:38 AM
+I was wondering about those too
+[smx2460]
+smx2460 01/25/2026 2:37 AM
+pasing them in JSON is a kind of mess
+01/25/2026 2:37 AM
+hmm we also need RSA keys
+[theubusu]
+[] smx2460 if it really grows too large (which I doubt) we could migrate
+it to SQLite
+theubusu 01/25/2026 2:36 AM
+I think that's a bit overkill
+[smx2460]
+smx2460 01/25/2026 2:36 AM
+but not as step 0, or that's premature optimization 
+01/25/2026 2:35 AM
+then you would be able to do
+    SELECT keySpec FROM keys WHERE group='lg'
+01/25/2026 2:34 AM
+if it really grows too large (which I doubt) we could migrate it to
+SQLite
+01/25/2026 2:34 AM
+i.e. read the json and deserialize it immediatley, up-front (edited)
+01/25/2026 2:34 AM
+and all keys are parsed at startup
+01/25/2026 2:33 AM
+foreach(var key in keyRepo.GetKeyCollection(KeyCollections.LG))
+[theubusu]
+theubusu 01/25/2026 2:33 AM
+So that needs to be stored too
+01/25/2026 2:33 AM
+Like for Samsung i match by the firmware prefix
+[smx2460]
+smx2460 01/25/2026 2:33 AM
+the extractor would probably do something like
+[theubusu]
+theubusu 01/25/2026 2:33 AM
+There's a lot of different formats
+01/25/2026 2:33 AM
+https://github.com/theubusu/unixtract/blob/main/src/keys.rs
+unixtract/src/keys.rs at main · theubusu/unixtract
+Extractor for various firmware formats. Contribute to theubusu/unixtract
+development by creating an account on GitHub.
+[]
+[smx2460]
+smx2460 01/25/2026 2:32 AM
+epk2extract only does LG / MTK
+01/25/2026 2:32 AM
+yeah maybe it's too granular
+[theubusu]
+theubusu 01/25/2026 2:32 AM
+Since it makes more sense
+01/25/2026 2:32 AM
+So all epk formats use the same key pool
+01/25/2026 2:32 AM
+But I changed it today
+[smx2460]
+smx2460 01/25/2026 2:32 AM
+hmmm
+[theubusu]
+theubusu 01/25/2026 2:32 AM
+I just put all the keys that didn't say WebOS into epk2
+[theubusu]
+[] smx2460 if you split by format it means you must know which keys are
+EPK2 keys and which are EPK3, and so fo...
+theubusu 01/25/2026 2:32 AM
+I actually did that
+[smx2460]
+smx2460 01/25/2026 2:31 AM
+(doable, but not sure)
+01/25/2026 2:31 AM
+if you split by format it means you must know which keys are EPK2 keys
+and which are EPK3, and so forth
+01/25/2026 2:31 AM
+not by formats
+01/25/2026 2:31 AM
+or collections
+01/25/2026 2:31 AM
+but I was thinking about separating them by bundles
+[theubusu]
+theubusu 01/25/2026 2:31 AM
+Yeah
+[smx2460]
+smx2460 01/25/2026 2:31 AM
+clearly you don't want the EPK extractor to try mtkpkg AES keys
+01/25/2026 2:31 AM
+does it make sense to split by format?
+01/25/2026 2:30 AM
+hmmm
+[theubusu]
+[] smx2460 ``` { "type": "aes128-cbc" ... }, { "type": "aes128-ecb", ...
+}, { "type": "aes256-ecb", ...
+theubusu 01/25/2026 2:30 AM
+So then each format would look for keys with its needed type?
+[smx2460]
+smx2460 01/25/2026 2:30 AM
+you can use the "type" field as Discriminated union
+01/25/2026 2:30 AM
+which tells C# how to deserialize each type
+01/25/2026 2:30 AM
+then you have a JsonPolymprohicAttribute
+JsonPolymorphicAttribute Class (System.Text.Json.Serialization)
+When placed on a type, indicates that the type should be serialized
+polymorphically.
+[]
+01/25/2026 2:29 AM
+whatever
+01/25/2026 2:29 AM
+"type": "lgu-xorzip"
+01/25/2026 2:29 AM
+or
+01/25/2026 2:29 AM
+    {
+      "type": "aes128-cbc"
+      ...
+    },
+    {
+      "type": "aes128-ecb",
+      ...
+    },
+    {
+      "type": "aes256-ecb",
+      ...
+    }
+01/25/2026 2:28 AM
+and each item should be something like
+01/25/2026 2:28 AM
+I would argue that there should be an "items" array
+01/25/2026 2:28 AM
+actually
+01/25/2026 2:27 AM
+then the contents is type-dependent
+01/25/2026 2:27 AM
+then we could have a "type" field
+01/25/2026 2:27 AM
+name could be "lg", "mtk", whatever
+01/25/2026 2:27 AM
+    public class KeyCollectionDTO
+    {
+        [JsonPropertyName("name")]
+        public required string Name { get; set; }
+    }
+    public class KeyBundleDTO
+    {
+        [JsonPropertyName("collections")]
+        public List<KeyCollectionDTO> Collections { get; set; } = new List<KeyCollectionDTO>();
+    }
+01/25/2026 2:27 AM
+consider this
+[theubusu]
+theubusu 01/25/2026 2:27 AM
+So not great
+01/25/2026 2:27 AM
+But they are compile time
+01/25/2026 2:27 AM
+I have all in one file
+01/25/2026 2:27 AM
+hmmm that would be kinda messy
+[smx2460]
+smx2460 01/25/2026 2:26 AM
+but do you think each should have its own key file?
+01/25/2026 2:26 AM
+that can be done with JSON
+01/25/2026 2:26 AM
+hm
+[theubusu]
+theubusu 01/25/2026 2:26 AM
+Sometimes you need some special fields
+[smx2460]
+smx2460 01/25/2026 2:26 AM
+yes (edited)
+[theubusu]
+theubusu 01/25/2026 2:26 AM
+I think each format should have its own definition of the key format
+[smx2460]
+smx2460 01/25/2026 2:25 AM
+i'm migrating KeyBundle to JSON
+[theubusu]
+theubusu 01/25/2026 2:23 AM
+Though with the amount of epk keys that would be a lot of files
+01/25/2026 2:22 AM
+I do also try to keep one fw per key that I have
+[smx2460]
+smx2460 01/25/2026 2:22 AM
+I think max repo size is 5gb though
+[theubusu]
+theubusu 01/25/2026 2:22 AM
+I could upload the files there
+01/25/2026 2:21 AM
+it's not the fastest but it does exist
+[smx2460]
+smx2460 01/25/2026 2:21 AM
+with 2gb per file
+01/25/2026 2:21 AM
+(no content)
+[immagine.png]
+ immagine.png
+7.31 KB External
+[theubusu]
+theubusu 01/25/2026 2:21 AM
+I do have my own server that's publicly accessible
+[smx2460]
+smx2460 01/25/2026 2:21 AM
+well git-lfs is a thing
+[theubusu]
+theubusu 01/25/2026 2:21 AM
+Noo probably not
+[smx2460]
+smx2460 01/25/2026 2:21 AM
+I'm not sure if uploading them to a github repo is a good idea (edited)
+[theubusu]
+theubusu 01/25/2026 2:21 AM
+I'll check exactly later
+01/25/2026 2:20 AM
+Well that would bring it down a lot
+[smx2460]
+smx2460 01/25/2026 2:20 AM
+we only really need one per format
+[theubusu]
+theubusu 01/25/2026 2:20 AM
+Though that does include when I scraped Panasonics website to download
+all bluray firmwares ever released
+[smx2460]
+smx2460 01/25/2026 2:19 AM
+hmmm where could we host it
+[theubusu]
+theubusu 01/25/2026 2:19 AM
+Something like 50 gigs probably
+[smx2460]
+smx2460 01/25/2026 2:19 AM
+how big would it be roughly
+[smx2460]
+[] theubusu I have a folder for each of fw formats
+smx2460 01/25/2026 2:19 AM
+that's perfect
+[smx2460]
+smx2460 01/25/2026 2:19 AM
+what would be the best way to make a test dataset, I'm wondering
+[theubusu]
+theubusu 01/25/2026 2:19 AM
+I have a folder for each of fw formats
+[smx2460]
+smx2460 01/25/2026 2:19 AM
+but it's disorganized
+01/25/2026 2:19 AM
+me too
+[theubusu]
+theubusu 01/25/2026 2:19 AM
+I have way too much on my PC now
+[smx2460]
+smx2460 01/25/2026 2:18 AM
+though I probably lack the test files
+[theubusu]
+theubusu 01/25/2026 2:18 AM
+Also added support for the old mtk pkgs which use custom crypto scheme
+[smx2460]
+smx2460 01/25/2026 2:18 AM
+epic
+[theubusu]
+theubusu 01/25/2026 2:18 AM
+That was missing in epk2extract
+01/25/2026 2:18 AM
+Yes, added support for the new mtk pkgs with 0x170 header
+[smx2460]
+smx2460 01/25/2026 2:17 AM
+did you fix epk2extract shortcomings in your rust rewrite?
+01/25/2026 2:17 AM
+[theubusu]
+theubusu 01/25/2026 2:17 AM
+I'll work on it in the day , I'm off my PC for now. I'll listen to C#
+tutorials in my sleep
+[smx2460]
+smx2460 01/25/2026 2:17 AM
+to something like JSON or yaml or whatever
+01/25/2026 2:16 AM
+thinking if I should change the keybundle format
+01/25/2026 2:16 AM
+it's empty for now
+01/25/2026 2:16 AM
+I just created a MediatekPkgAddon, are you trying it too though?
+[smx2460]
+smx2460 01/25/2026 2:07 AM
+Kotlin does but it's a hack
+01/25/2026 2:07 AM
+but then again Java doesn't have proper unsigned types still
+01/25/2026 2:06 AM
+iirc the way to load Java from C is standard
+01/25/2026 2:06 AM
+shouldn't be too hard though
+01/25/2026 2:06 AM
+and for JN(A/I) i'd need to do something like EzDotnet for Java, since
+I'd need to bootstrap Java from Cygwin (edited)
+01/25/2026 2:05 AM
+if I have to run Squashfs code in Kotlin I either: - find a library
+reimplementing it - use JNA (PITA) - use JNI (PITA++)
+01/25/2026 2:05 AM
+the reasons for going C# are: - it's much easier to interop with native
+code - it's faster when doing so
+01/25/2026 2:04 AM
+or you can use an Interface, duplicating members / adding extension
+methods (edited)
+01/25/2026 2:03 AM
+in contrast C# struct serialization is limited to C types, and you then
+need another class to "abstract it further"
+01/25/2026 2:03 AM
+3) it's a record/data class and you can already attach methods to it
+01/25/2026 2:02 AM
+2) being able to handle any type (not just the C blittable type) -
+because you can handle them in the fromByteBuffer factory method
+(edited)
+01/25/2026 2:02 AM
+1) expressing a high level parsed representation of the struct
+01/25/2026 2:02 AM
+but it has the added benefit of doing everything in one go
+01/25/2026 2:02 AM
+doing structs this way in Kotlin is a bit annoying
+01/25/2026 2:01 AM
+    data class MtkUpgHeader(
+            val vendorMagic:String,
+            val mtkMagic:String,
+            val vendorInfo:ByteArray,
+            val fileSize:UInt,
+            val platform:UInt,
+            val unk0:UInt,
+            val unk1:UInt,
+            val hmac:ByteArray
+    ) {
+        companion object {
+            const val SIZE = 4 + 8 + 80 + 16 + 16
+            fun fromByteBuffer(buf: ByteBuffer): MtkUpgHeader {
+                return MtkUpgHeader(
+                        buf.getBytes(4).toString(StandardCharsets.UTF_8),
+                        buf.getBytes(8).toString(StandardCharsets.UTF_8),
+                        buf.getBytes(80),
+                        buf.int.toUInt(), buf.int.toUInt(),
+                        buf.int.toUInt(), buf.int.toUInt(),
+                        buf.getBytes(16)
+                )
+            }
+        }
+    }
+01/25/2026 2:01 AM
+    class MtkPkgDetector(val keyFile: KeyFile) : FormatDetector {
+        val KNOWN_MAGIC_VALUES = arrayOf(
+                "hise",
+                "Shar",
+                "TPV_", "TPV" + 0.toChar(),
+                "PHIL", "Phil"
+        )
+        val UPG_HEADER_SIZE = 0x70
+        val PHILIPS_HEADER_SIZE = 0x80 //at the beginning before MTK header
+        val PHILIPS_SIGNATURE_SIZE = 0x100 //RSA-2048 at the end
+        val MTK_FIRMWARE_MAGIC = "#DH@FiRm"
+        fun readHeader(data:Sequence<Byte>): MtkUpgHeader {
+            return data.takeBytes(MtkUpgHeader.SIZE)
+                .toByteBuffer()
+                .let { MtkUpgHeader.fromByteBuffer(it) }
+        }
+        override fun detect(source: DataSource): Flow<DetectionResult> = flow {
+            val data = source.data
+            val hdr = data.slice(0, UPG_HEADER_SIZE)
+            keyFile.findAesKey(data.asSequence()){
+                flow {
+                    val hdr = readHeader(it)
+                    if(hdr.mtkMagic == MTK_FIRMWARE_MAGIC) {
+                        emit(DetectionResult(100, MtkPkgContext(hdr)))
+                    }
+                }
+            }
+            //keyFile.findAesKey(hdr.asSequence()) { data -> isPkgHeader(data) }
+        }
+    }
+01/25/2026 2:00 AM
+trying to decide which to move forward
+01/25/2026 2:00 AM
+back when I was maintaining Yafex in C# and Kotlin
+01/25/2026 2:00 AM
+I have a partial implementation of MtkPkg in Kotlin (edited)
+01/25/2026 1:59 AM
+https://github.com/smx-smx/yafex/commit/39817b6a483f8c983ead5bddabe96cc1a4cb4703
+add support for nested artifact paths during extraction · smx-smx/...
+[]
+[theubusu]
+theubusu 01/25/2026 1:55 AM
+And I don't feel like there is a need to hardcode the vendor magics
+01/25/2026 1:55 AM
+but still doesn't have some stuff
+01/25/2026 1:55 AM
+I did actually make some patches for mtk pkg in epk2extract
+[smx2460]
+smx2460 01/25/2026 1:54 AM
+I didn't port all formats to it (edited)
+[theubusu]
+theubusu 01/25/2026 1:54 AM
+epk2extract's support for mtk pkg is very botched
+[smx2460]
+smx2460 01/25/2026 1:54 AM
+let me first commit what I have for nested files
+[theubusu]
+theubusu 01/25/2026 1:54 AM
+I can try
+[smx2460]
+smx2460 01/25/2026 1:54 AM
+wanna add mtkpkg to yafex?
+[theubusu]
+theubusu 01/25/2026 1:54 AM
+there's a bunch of commands
+01/25/2026 1:53 AM
+yeah I have that too
+[smx2460]
+smx2460 01/25/2026 1:53 AM
+which some MStar TVs use
+01/25/2026 1:53 AM
+            private IEnumerable<MStarPartition> ParseMBootScript(string mbootScript) {
+                string search = "# File Partition: ";
+                var parts = mbootScript.Split(search);
+                if (parts.Length < 2) {
+                    yield break;
+                }
+                for(int i=1; i<parts.Length; i++) {
+                    var lines = Regex.Split(parts[i], "\r?\n")
+                        .Where(x => !string.IsNullOrWhiteSpace(x))
+                        .ToList();
+                    if (lines.Count < 1) continue;
+                    var partName = lines[0];
+                    var partLoad = lines.Where(x => x.StartsWith("filepartload ")).FirstOrDefault();
+                    if (partLoad == null) continue;
+                    var args = partLoad.Split(' ');
+                    if (args.Length < 5) continue;
+                    var partOffset = args[3];
+                    if (partOffset == null) continue;
+                    var partSize = args[4];
+                    if (partSize == null) continue;
+                    yield return new MStarPartition() {
+                        Name = partName,
+                        Offset = Convert.ToUInt32(partOffset, 16),
+                        Size = Convert.ToUInt32(partSize, 16)
+                    };
+                }
+                yield break;
+            }
+01/25/2026 1:53 AM
+MStarPkg is an experimental parser for uboot scripts
+01/25/2026 1:53 AM
+not yet*
+01/25/2026 1:53 AM
+it does not
+01/25/2026 1:53 AM
+no actually no
+[theubusu]
+theubusu 01/25/2026 1:52 AM
+wasn't it mstar
+[smx2460]
+smx2460 01/25/2026 1:52 AM
+wait
+01/25/2026 1:52 AM
+yes
+[theubusu]
+theubusu 01/25/2026 1:52 AM
+does yafex have mtk pkgs support?
+[smx2460]
+smx2460 01/25/2026 1:52 AM
+lol it doesn't implement rate limiting so you can get banned
+01/25/2026 1:49 AM
+https://github.com/EionRobb/purple-discord interesting
+GitHub - EionRobb/purple-discord: A libpurple/Pidgin plugin for Dis...
+A libpurple/Pidgin plugin for Discord. Contribute to
+EionRobb/purple-discord development by creating an account on GitHub.
+[]
+01/25/2026 1:49 AM
+lol
+[theubusu]
+theubusu 01/25/2026 1:49 AM
+rendering super ultra animated discord nitro profile banner for every
+user in the server
+[smx2460]
+smx2460 01/25/2026 1:48 AM
+and what they are doing
+01/25/2026 1:48 AM
+then try the Firefox profile to see how many JS threads it's using
+01/25/2026 1:48 AM
+maybe I should keep it in a Firefox tab for some hours
+[theubusu]
+theubusu 01/25/2026 1:48 AM
+When I do : to select an emoji it freezes for a good 5 seconds loading
+them in
+[smx2460]
+smx2460 01/25/2026 1:46 AM
+it clearly slows down over time though
+01/25/2026 1:46 AM
+it froze the whole thing
+01/25/2026 1:46 AM
+I tried to make a trace recording (edited)
+01/25/2026 1:44 AM
+but that's not the issue, there must be something slowing down
+everything
+01/25/2026 1:44 AM
+mine is ~1gb (edited)
+[theubusu]
+theubusu 01/25/2026 1:44 AM
+But discord is infamous for memory leaks
+01/25/2026 1:44 AM
+Right now I'm on mobile so can't see
+[smx2460]
+smx2460 01/25/2026 1:43 AM
+how much RAM is yours using
+[theubusu]
+theubusu 01/25/2026 1:43 AM
+So you have 20 browsers running at once
+01/25/2026 1:43 AM
+Everythings gotta be an electron app nowadays
+[smx2460]
+smx2460 01/25/2026 1:42 AM
+there's a horrible input lag too (edited)
+01/25/2026 1:42 AM
+it's unusable
+01/25/2026 1:42 AM
+why does Discord keep on getting slower and slower with updates
+01/25/2026 1:42 AM
+¯\_(ツ)_/¯
+01/25/2026 1:42 AM
+well I could do that
+[theubusu]
+theubusu 01/25/2026 1:42 AM
+at the start
+01/25/2026 1:42 AM
+yes
+[smx2460]
+[] theubusu Well I just do the file name with a _ by default
+smx2460 01/25/2026 1:42 AM
+prefix right?
+[smx2460]
+smx2460 01/25/2026 1:41 AM
+hmm
+[theubusu]
+[] smx2460 i'd just strip the extension and make a dir
+theubusu 01/25/2026 1:41 AM
+What if the file has no extension
+[theubusu]
+theubusu 01/25/2026 1:41 AM
+I think it's the least confusing
+[smx2460]
+smx2460 01/25/2026 1:41 AM
+i'd just strip the extension and make a dir
+[theubusu]
+theubusu 01/25/2026 1:41 AM
+Well I just do the file name with a _ by default
+[smx2460]
+smx2460 01/25/2026 1:40 AM
+GP3_DVB_AU_BB_MP_C0_RevNo62276_V05.10.15_usb_V2_SECURED\blaversion-HE_DTV_GP3B_AFAAAGAA\root.pak
+(edited)
+01/25/2026 1:40 AM
+or
+01/25/2026 1:40 AM
+GP3_DVB_AU_BB_MP_C0_RevNo62276_V05.10.15_usb_V2_SECURED\root.pak ?
+01/25/2026 1:40 AM
+what should the output be?
+01/25/2026 1:40 AM
+input: GP3_DVB_AU_BB_MP_C0_RevNo62276_V05.10.15_usb_V2_SECURED.epk
+01/25/2026 1:40 AM
+OR, that dir could be nested inside
+01/25/2026 1:40 AM
+you would see a directory
+01/25/2026 1:40 AM
+instead of seeing fwVer-otaID
+01/25/2026 1:39 AM
+but then it would be the case for the root epk too
+[theubusu]
+[] smx2460 I was thinking if maybe the folder should be based on the
+filename
+theubusu 01/25/2026 1:39 AM
+Yeah I think that would make the most sense
+[smx2460]
+smx2460 01/25/2026 1:39 AM
+there are 1337 ways to do this
+01/25/2026 1:39 AM
+not sure
+01/25/2026 1:39 AM
+an alternative is to always prepend the filename
+01/25/2026 1:38 AM
+and then think it's a bug
+01/25/2026 1:38 AM
+and you might be wondering "why the fuck do I have a nested directory"
+01/25/2026 1:38 AM
+then it always "wins"
+01/25/2026 1:38 AM
+but if the EPK sets its own preferred name
+01/25/2026 1:38 AM
+what I have now is a priority queue of directory names
+01/25/2026 1:37 AM
+                // example for nested files:
+                // - BaseDirectoryPath[0]: directory of the source file
+                // - BaseDirectoryPath[1]: auto-generated subdirectory name
+                // - BaseDirectoryPath[2]: preferred subdirectory name
+                var sourceDir = parent.GetMetadata<BaseDirectoryPath>().LastOrDefault();
+                if (sourceDir == null)
+                {
+                    // missing source directory, cannot inherit
+                    return;
+                }
+01/25/2026 1:37 AM
+or something like this
+01/25/2026 1:37 AM
+I was thinking if maybe the folder should be based on the filename
+01/25/2026 1:37 AM
+not sure if I like the 00.00.00.00- in the nested folder
+01/25/2026 1:37 AM
+extracting epk1 with nested epk
+01/25/2026 1:37 AM
+@theubusu
+[image.png]
+ image.png
+3.58 KB External
+[theubusu]
+theubusu 01/25/2026 12:41 AM
+sooo idk why they did that
+01/25/2026 12:41 AM
+the next one is a normal one (20 entries)
+https://gscs-b2c.lge.com/downloadFile?fileId=LGEKR_203724 (edited)
+01/25/2026 12:38 AM
+lol i subtracted 1 from that URL and its another one
+https://gscs-b2c.lge.com/downloadFile?fileId=LGEKR_203722
+[image.png]
+ image.png
+10.59 KB External
+01/25/2026 12:37 AM
+this is the original URL
+https://gscs-b2c.lge.com/downloadFile?fileId=LGEKR_203723
+[smx2460]
+smx2460 01/25/2026 12:36 AM
+[theubusu]
+theubusu 01/25/2026 12:36 AM
+yes
+[smx2460]
+smx2460 01/25/2026 12:36 AM
+but it has more (edited)
+01/25/2026 12:36 AM
+so it reports it having < 21
+[theubusu]
+theubusu 01/25/2026 12:36 AM
+anyway, i found it on korean lg website
+[smx2460]
+smx2460 01/25/2026 12:35 AM
+[theubusu]
+theubusu 01/25/2026 12:35 AM
+its cursed
+[smx2460]
+smx2460 01/25/2026 12:35 AM
+wait if it has 32 it can't be old 
+[theubusu]
+theubusu 01/25/2026 12:35 AM
+the one with 32 entries?
+[smx2460]
+smx2460 01/25/2026 12:35 AM
+@theubusu where did you find that epk1old?
+[theubusu]
+theubusu 01/25/2026 12:32 AM
+looks like they realized 60 bytes for the file name might not be enough
+so there is some kind of "extended name" attribute that will add extra
+name bytes and set the og name to "NULL"
+[theubusu]
+theubusu 01/25/2026 12:18 AM
+i need to fix that
+01/25/2026 12:18 AM
+and theres some bug
+01/25/2026 12:18 AM
+an old philips file format uses folders pretty extensively
+[image.png]
+ image.png
+6.52 KB External
+[smx2460]
+smx2460 01/25/2026 12:15 AM
+let me do that
+[theubusu]
+theubusu 01/25/2026 12:14 AM
+yeah
+[smx2460]
+smx2460 01/25/2026 12:14 AM
+then the code can use that as base directory
+01/25/2026 12:14 AM
+not the output
+01/25/2026 12:14 AM
+which is the path of the artifact itself
+01/25/2026 12:13 AM
+we need to attach a metadata called, say Path to the artifact
+01/25/2026 12:13 AM
+but can be fixed (edited)
+01/25/2026 12:13 AM
+no because the path is relative to Config
+01/25/2026 12:12 AM
+hmm
+[theubusu]
+theubusu 01/25/2026 12:12 AM
+would this work for file formats that can have folders inside of them?

@@ -1,0 +1,1497 @@
+December 22, 2025
+[theubusu]
+theubusu 12/22/2025 9:43 PM
+very simple
+[smx2460]
+smx2460 12/22/2025 9:43 PM
+it's just literally the sum of all bytes
+12/22/2025 9:42 PM
+you at least get a simple checksum you can use to check
+12/22/2025 9:42 PM
+and the first MB is always raw for some reason
+[theubusu]
+theubusu 12/22/2025 9:42 PM
+I already tried by fishing out some segments from inside the file
+[smx2460]
+smx2460 12/22/2025 9:42 PM
+that's all there is to it (edited)
+12/22/2025 9:42 PM
+they added a secondary header to indicate the chunk number
+[theubusu]
+theubusu 12/22/2025 9:41 PM
+yeah
+[smx2460]
+smx2460 12/22/2025 9:41 PM
+nothing more
+12/22/2025 9:41 PM
+LZHS FS is just a stream of LZHS packets
+12/22/2025 9:41 PM
+then run the same with our code and make sure our output was binary
+identical
+[theubusu]
+theubusu 12/22/2025 9:41 PM
+i just need something to decompress those lzhs FS things in mtk pkgs
+[smx2460]
+smx2460 12/22/2025 9:41 PM
+./lzhsenc input output
+12/22/2025 9:41 PM
+so we would do
+12/22/2025 9:41 PM
+and we wanted to make sure we could reproduce its code
+12/22/2025 9:41 PM
+we made it because lzhsenc was closed source
+12/22/2025 9:41 PM
+yeah you don't have to
+[theubusu]
+theubusu 12/22/2025 9:40 PM
+I probably won't make an encoder tho
+12/22/2025 9:40 PM
+that makes sense
+12/22/2025 9:40 PM
+yeah
+[smx2460]
+smx2460 12/22/2025 9:40 PM
+in other words it's huffman, but it takes two different paths based on
+the LZSS symbol being encoded/decoded (raw vs reference) (edited)
+12/22/2025 9:39 PM
+clear?
+12/22/2025 9:39 PM
+because it has to select between the different tables
+12/22/2025 9:38 PM
+and also the decoder does something similar
+12/22/2025 9:38 PM
+it's an LZSS-Aware huffman encoder
+12/22/2025 9:38 PM
+huffman isn't "general purpose"
+12/22/2025 9:38 PM
+so in other words
+12/22/2025 9:37 PM
+and the match pos, which is an int16 (edited)
+12/22/2025 9:37 PM
+the match length, which is a int8 (edited)
+12/22/2025 9:37 PM
+then it expects to read exactly 3 bytes
+12/22/2025 9:37 PM
+if LZSS indicates "this is a reference"
+[theubusu]
+[] smx2460 well, basically Huffman is special cased for LZSS input
+theubusu 12/22/2025 9:37 PM
+hmm alright
+[smx2460]
+smx2460 12/22/2025 9:37 PM
+if LZSS indicates "this is a raw character", it uses the corresponding
+char/len table (edited)
+12/22/2025 9:37 PM
+the encoder reads LZSS
+12/22/2025 9:36 PM
+this is part of the encoder btw (edited)
+12/22/2025 9:36 PM
+you have 2 cases
+12/22/2025 9:36 PM
+it's pretty clear here
+[smx2460]
+[] smx2460 ```c if (flags & 1) { if ((c = getc(in)) == EOF) break; ...
+smx2460 12/22/2025 9:36 PM
+like here
+[smx2460]
+smx2460 12/22/2025 9:35 PM
+well, basically Huffman is special cased for LZSS input
+12/22/2025 9:35 PM
+as to why it makes references to LZSS
+12/22/2025 9:35 PM
+then you unroll LZSS
+12/22/2025 9:35 PM
+and get the LZSS one as output
+12/22/2025 9:35 PM
+when you decode, you will read the huffman bitstream
+12/22/2025 9:34 PM
+(when you encode)
+[smx2460]
+[] theubusu big thanks for this explanation, LZSS wasnt really a problem
+cuz I already implemented it for someth...
+smx2460 12/22/2025 9:34 PM
+huffman input is always LZSS output
+[theubusu]
+theubusu 12/22/2025 9:34 PM
+big thanks for this explanation, LZSS wasnt really a problem cuz I
+already implemented it for something else, I think it was panasonic Blu
+ray players I had to modify it a bit tho. I worked on the Huffman stuff
+for a while and I got something kinda ugly and slow that works most of
+the time but does lose some bytes at the end sometimes . have to look
+into it. The arm to thumb also isn't that hard. I also found some .Net
+program called "lzhsdec" with a mediatek logo but Im not sure it's
+official. The only thing I don't understand now is that in the Huffman
+decoding code it makes references to LZSS in the Huffman process. is
+this something to connect the two for it to be faster? I do all stages
+separately so Huffman decode > LZSS decode > arm to thumb and then also
+calculate the checksum
+[Screenshot_20251222-213251.png]
+ Screenshot_20251222-213251.png
+238.8 KB External
+ 1
+[smx2460]
+smx2460 12/22/2025 9:23 PM
+I have a Java/Kotlin implementation of the same
+12/22/2025 9:23 PM
+if it might help you
+12/22/2025 9:21 PM
+we had to reverse engineer their changes (there were a few) compared to
+the reference implementation
+12/22/2025 9:20 PM
+lzhsenc was closed source when we looked at it
+12/22/2025 9:20 PM
+taken from MTK binary before they opensourced it (edited)
+12/22/2025 9:20 PM
+and the huffman tables are its dictionary
+[smx2460]
+[] smx2460 now the way LZHS works
+smx2460 12/22/2025 9:19 PM
+and this is why it's called LZHS, as LZSS + HUFFMAN
+[smx2460]
+smx2460 12/22/2025 9:18 PM
+the code is copy pasted from 7z (and probably lzma specifically), which
+does the same in one of the compressors (edited)
+12/22/2025 9:17 PM
+or it compresses better
+12/22/2025 9:17 PM
+iirc it's because the thumb branch is smaller
+12/22/2025 9:16 PM
+that is performed before even starting
+12/22/2025 9:16 PM
+the only remaining piece of the algorithm is an Arm2Thumb conversion of
+branches
+12/22/2025 9:15 PM
+            if (flags & 1) {
+                if ((c = getc(in)) == EOF)
+                    break;
+                putChar(ctx, huff_charlen[c]->code, huff_charlen[c]->len, out);    // lookup in char table
+            } else {
+                if ((j = getc(in)) == EOF)
+                    break;            // match length
+                if ((i = getc(in)) == EOF)
+                    break;            // byte1 of match position
+                if ((m = getc(in)) == EOF)
+                    break;            // byte0 of match position
+                putChar(ctx, huff_charlen[256 + j]->code, huff_charlen[256 + j]->len, out);    // lookup in len table
+                i = m | (i << 8);
+                putChar(ctx, huff_pos[(i >> 7)]->code, huff_pos[(i >> 7)]->len, out);    // lookup in pos table
+                putChar(ctx, i - (i >> 7 << 7), 7, out);
+            }
+12/22/2025 9:15 PM
+We copied the table from the MTK binary and never split the two
+12/22/2025 9:15 PM
+and 256-288 are length
+12/22/2025 9:15 PM
+because indices 0-256 are the raw bytes
+12/22/2025 9:14 PM
+well actually it's 2 distinct tables
+12/22/2025 9:14 PM
+if one table has both the Raw chars and the length?
+12/22/2025 9:14 PM
+so how does it work, you might ask
+12/22/2025 9:13 PM
+the offset/match position is encoded separately with the "pos" table
+(edited)
+12/22/2025 9:12 PM
+one is called "charlen" and is used to encode both the "raw bytes" and
+the "length of match" component
+12/22/2025 9:12 PM
+    /*** Huffman decoding tables ***/
+    static t_code(*huff_charlen)[1] = (void *)&charlen_table;    // Raw LZSS Characters + Length of LZSS match
+    static t_code(*huff_pos)[1] = (void *)&pos_table;        // Position of LZSS match
+12/22/2025 9:12 PM
+MTK created 2 precomputed tables for this
+12/22/2025 9:11 PM
+now you take these 3 things, and pass them through huffman to compress
+them further
+12/22/2025 9:11 PM
+- a match length (how long the matching substring is)
+12/22/2025 9:11 PM
+- a match position (where I've seen it before)
+12/22/2025 9:11 PM
+- a raw bytes sequence (if never seen)
+12/22/2025 9:11 PM
+so in LZSS you have 3 entities
+12/22/2025 9:10 PM
+that's basically what LZSS is
+12/22/2025 9:10 PM
+otherwise you say "see chapter X, page Y", aka a (code pos, len) pair
+(edited)
+12/22/2025 9:10 PM
+you write a "raw" entry if you've never seen it before
+12/22/2025 9:09 PM
+now think of LZSS like a "reference" book
+12/22/2025 9:09 PM
+and then passes LZSS into Huffman
+12/22/2025 9:09 PM
+is that it first runs LZSS onto the input
+12/22/2025 9:09 PM
+now the way LZHS works
+12/22/2025 9:08 PM
+so the next time the lookup is basically O(1)
+12/22/2025 9:08 PM
+then it loops the table and, once a entry is found, it gets cached
+12/22/2025 9:08 PM
+(since symbols have a minimum length)
+12/22/2025 9:07 PM
+it accumulates enough bits to do a lookup
+12/22/2025 9:07 PM
+rather than traversing the tree, epk2extract uses a brute force approach
+12/22/2025 9:07 PM
+in huffman the sequence forms a symbol
+12/22/2025 9:06 PM
+it's like a cheat code (sequence of buttons) having an effect
+12/22/2025 9:06 PM
+and the path you take is the code
+12/22/2025 9:06 PM
+the bits form a path into a tree
+12/22/2025 9:05 PM
+in huffman you basically accumulate bits
+12/22/2025 9:05 PM
+it's the "alphabet"
+[smx2460]
+[] theubusu it has a hardcoded table
+smx2460 12/22/2025 9:05 PM
+the table is what maps codes to symbols
+[nxhda]
+nxhda 12/22/2025 5:40 PM
+December 21, 2025
+[theubusu]
+theubusu 12/21/2025 11:25 PM
+it has a hardcoded table
+12/21/2025 11:25 PM
+it doesnt match what i see in online descriptions
+12/21/2025 11:24 PM
+basically everything
+[] theubusu i dont get the whole huffman thign
+ww8543 12/21/2025 11:24 PM
+what do you not get about it?
+[theubusu]
+[] smx2460 Why
+theubusu 12/21/2025 11:10 PM
+i dont get the whole huffman thign
+December 20, 2025
+[smx2460]
+smx2460 12/20/2025 2:39 PM
+Why
+[theubusu]
+theubusu 12/20/2025 1:45 PM
+but it scares me
+12/20/2025 1:45 PM
+i wanted to add support for LZHS fs
+[smx2460]
+smx2460 12/20/2025 1:23 PM
+Effort of patching: 1
+12/20/2025 1:23 PM
+Effort of replacing: 9
+12/20/2025 1:23 PM
+Realistically: it gets the job done and it's easier to patch it
+12/20/2025 1:23 PM
+Ideally: let's not do that, epk2extract needs to be rewritten
+[theubusu]
+theubusu 12/20/2025 1:15 PM
+i would contribute this to epk2extract but with my C skills it would
+probably end up segfaulting every timr
+12/20/2025 1:13 PM
+but the default is the vendor magic
+12/20/2025 1:13 PM
+some vendors use custom keys
+[smx2460]
+smx2460 12/20/2025 1:12 PM
+They don't always repeat*4 though
+[theubusu]
+theubusu 12/20/2025 1:12 PM
+also like the new ones
+12/20/2025 1:12 PM
+and they use the vendor magic to decrypt actual contents
+[theubusu]
+[] theubusu 09291094092910940929109409291094
+theubusu 12/20/2025 1:12 PM
+this is old*4
+[smx2460]
+smx2460 12/20/2025 1:12 PM
+Is actually old*4
+[theubusu]
+theubusu 12/20/2025 1:12 PM
+yes
+[smx2460]
+smx2460 12/20/2025 1:12 PM
+So the SharSharShar thing
+[theubusu]
+theubusu 12/20/2025 1:11 PM
+09291094092910940929109409291094
+[smx2460]
+smx2460 12/20/2025 1:11 PM
+Ah
+[theubusu]
+theubusu 12/20/2025 1:11 PM
+its the same one thats repeated 4 times for the newer AES ones
+[smx2460]
+smx2460 12/20/2025 1:11 PM
+Lol
+[theubusu]
+theubusu 12/20/2025 1:11 PM
+very secure
+12/20/2025 1:11 PM
+they use a 4 byte key
+[smx2460]
+smx2460 12/20/2025 1:11 PM
+Didn't know that!
+12/20/2025 1:10 PM
+Interesting
+[theubusu]
+[] smx2460 How, do you have a key we don't have?
+theubusu 12/20/2025 1:10 PM
+yes - old mtk pkgs use a custom crypto scheme
+[smx2460]
+[] theubusu here you have extracted parts
+smx2460 12/20/2025 1:10 PM
+How, do you have a key we don't have?
+December 15, 2025
+[theubusu]
+theubusu 12/15/2025 8:42 PM
+if you want to decrypt it yourself or similar files you can use my tool
+https://github.com/theubusu/unixtract/
+12/15/2025 8:41 PM
+i dont think it even runs linux
+12/15/2025 8:41 PM
+this is ancient though
+[theubusu]
+dte781 Sorry I will send
+theubusu 12/15/2025 8:41 PM
+here you have extracted parts
+ upgrade.pkg.zip
+8.42 MB External
+dte781 12/15/2025 8:30 PM
+Sorry I will send
+ upgrade.pkg
+9.22 MB External
+[theubusu]
+dte781 Hello all. I to use epk 2extract to extract update of old
+panasonic Tv. And i installed in linux and...
+theubusu 12/15/2025 2:59 PM
+can you send the file you are trying to extract?
+dte781 12/15/2025 12:44 PM
+Hello all. I to use epk 2extract to extract update of old panasonic Tv.
+And i installed in linux and it dected the file , but all the file are
+encripted. On epk 2 extract website it says i need to Dump key of tv.
+Does anyone know how to decript the file or get te key from tv ?? Thank
+you
+[IMG_1555.jpeg]
+ IMG_1555.jpeg
+475.9 KB External
+October 17, 2025
+Original message was deleted
+hellobox. 10/17/2025 3:16 AM
+lol nobody here is going to fall for this shit
+ 1
+October 14, 2025
+[smx2460]
+smx2460 10/14/2025 1:26 AM
+lol
+[theubusu]
+theubusu 10/14/2025 1:26 AM
+we can boot Linux off EPKs 
+10/14/2025 1:26 AM
+next step : Linux kernel driver for epk files
+[smx2460]
+smx2460 10/14/2025 1:25 AM
+I (instead) wrote my own Fuse compatibility layer for this (edited)
+10/14/2025 1:25 AM
+(no content)
+[image.png]
+ image.png
+1.67 KB External
+10/14/2025 1:25 AM
+maybe should migrate it to this
+10/14/2025 1:25 AM
+https://github.com/LTRData/DiscUtils/tree/LTRData.DiscUtils-initial/Library/DiscUtils.VirtualFileSystem
+DiscUtils/Library/DiscUtils.VirtualFileSystem at LTRData.DiscUtils-...
+Utility libraries to interact with discs, filesystem formats and more -
+LTRData/DiscUtils
+[]
+10/14/2025 1:25 AM
+this whole thing is based on cygwin stuff to make it fuse compatible
+[theubusu]
+theubusu 10/14/2025 1:24 AM
+EPKs are already segmented so maybe it won't be that hard
+[smx2460]
+smx2460 10/14/2025 1:24 AM
+need to make it decrypt on the fly
+10/14/2025 1:24 AM
+yep
+[theubusu]
+theubusu 10/14/2025 1:23 AM
+it can be a problem now that EPKs are almost always larger than 1gb
+[smx2460]
+smx2460 10/14/2025 1:23 AM
+(no content)
+[image.png]
+ image.png
+37.25 KB External
+10/14/2025 1:23 AM
+then exposes its partitions
+10/14/2025 1:23 AM
+it decrypts the whole EPK in RAM
+10/14/2025 1:22 AM
+aka poor
+10/14/2025 1:22 AM
+the state of the art of yafex
+10/14/2025 1:22 AM
+(no content)
+[image.png]
+ image.png
+11.26 KB External
+10/14/2025 1:22 AM
+(no content)
+[image.png]
+ image.png
+14.88 KB External
+[theubusu]
+theubusu 10/14/2025 12:50 AM
+and 3rd partition
+10/14/2025 12:50 AM
+android mediatek Tvs still have basic partition thats usually in linux
+tvs
+10/14/2025 12:50 AM
+yeah i saw that
+[smx2460]
+smx2460 10/14/2025 12:50 AM
+perfection 
+10/14/2025 12:50 AM
+so they have a GNU/Linux world and an Android/Linux world
+ 1
+10/14/2025 12:50 AM
+because Mediatek couldn't be bored to port all their stuff to bionic
+10/14/2025 12:50 AM
+it has 2 rootfs
+10/14/2025 12:49 AM
+yeah it's mediatek
+[theubusu]
+theubusu 10/14/2025 12:49 AM
+im interested in vendors' own OS
+10/14/2025 12:49 AM
+but android is boring for me
+10/14/2025 12:49 AM
+android
+[smx2460]
+smx2460 10/14/2025 12:49 AM
+and I would realistically need a spare board
+[theubusu]
+theubusu 10/14/2025 12:49 AM
+i have a mediatek based sony tv from ~2017
+[smx2460]
+smx2460 10/14/2025 12:49 AM
+I wanted to look into it but -ENOTIME
+10/14/2025 12:49 AM
+my parents have an ATV2
+[theubusu]
+theubusu 10/14/2025 12:49 AM
+but its sony so what do you know
+[smx2460]
+smx2460 10/14/2025 12:49 AM
+yeah
+[theubusu]
+theubusu 10/14/2025 12:48 AM
+i hate sony cuz they encrypt nand of tvs
+[smx2460]
+smx2460 10/14/2025 12:48 AM
+brotli 
+10/14/2025 12:48 AM
+sonyguys<something>pipe
+10/14/2025 12:48 AM
+but in the end it gets the job done
+[theubusu]
+theubusu 10/14/2025 12:48 AM
+its funny how decryption key for sony is just "SonySonySonySony"
+ 1
+[smx2460]
+smx2460 10/14/2025 12:48 AM
+I've been wanting to rewrite it for a while
+10/14/2025 12:47 AM
+so I just slapped a threadpool on top
+10/14/2025 12:47 AM
+the initial version just did one segment at a time but was very slow
+[theubusu]
+theubusu 10/14/2025 12:47 AM
+i load it partition by partition
+[smx2460]
+smx2460 10/14/2025 12:47 AM
+just write things out and join
+10/14/2025 12:47 AM
+but that was a quick hack to basically not track the final file size
+(edited)
+10/14/2025 12:46 AM
+instead of writing and joining
+10/14/2025 12:46 AM
+I should have allocated the whole file in place
+10/14/2025 12:46 AM
+I don't like how I implemented the package extraction
+[theubusu]
+theubusu 10/14/2025 12:46 AM
+yes, its very different across
+[smx2460]
+smx2460 10/14/2025 12:46 AM
+the "problem" with MTK PKG is that it's been customized by many
+different vendors
+[theubusu]
+theubusu 10/14/2025 12:46 AM
+i was about to but then i realized it must be a bug
+[smx2460]
+smx2460 10/14/2025 12:46 AM
+to some extent
+10/14/2025 12:46 AM
+I still remember it
+10/14/2025 12:46 AM
+you could have asked me
+[theubusu]
+theubusu 10/14/2025 12:45 AM
+(the ai didnt either)
+[smx2460]
+smx2460 10/14/2025 12:45 AM
+as if AI doesn't already have the code from the repo
+[theubusu]
+theubusu 10/14/2025 12:45 AM
+because i couldnt figure it out
+10/14/2025 12:45 AM
+i hope you dont mind i gave mtk pkg extraction code to AI
+[smx2460]
+smx2460 10/14/2025 12:45 AM
+specifically 10 years ago
+10/14/2025 12:44 AM
+all that stuff was reverse engineered years ago
+[theubusu]
+theubusu 10/14/2025 12:44 AM
+it was a learning experience for sure
+10/14/2025 12:44 AM
+no need to
+[smx2460]
+smx2460 10/14/2025 12:44 AM
+I apologize in advance
+[theubusu]
+theubusu 10/14/2025 12:44 AM
+which doesnt make sense
+10/14/2025 12:43 AM
+and thats supposed to be the HMAC
+[smx2460]
+[] theubusu i spent hours wondering what im doing wrong by not gettting
+same header as epk2extract, but i think ...
+smx2460 10/14/2025 12:43 AM
+sorry...
+[theubusu]
+theubusu 10/14/2025 12:43 AM
+also, a completely different file somehow gets the same last 32 bytes
+[image.png]
+ image.png
+10.33 KB External
+10/14/2025 12:42 AM
+i spent hours wondering what im doing wrong by not gettting same header
+as epk2extract, but i think this is just wrong
+10/14/2025 12:41 AM
+and beacuse epk2extract only decrypts 112 bytes of the header , i think
+those 32 bytes are garbage
+10/14/2025 12:40 AM
+the last 32 bytes header on the same file is different on windows and
+linux
+[image.png]
+ image.png
+13.22 KB External
+[smx2460]
+smx2460 10/14/2025 12:40 AM
+also I need to use Squashfs from cygwin so it's kind of janky
+10/14/2025 12:40 AM
+it's been a while since I looked at it
+10/14/2025 12:39 AM
+probably not completely
+10/14/2025 12:39 AM
+yafex reimplements it
+[theubusu]
+theubusu 10/14/2025 12:38 AM
+and least 32 bytes are garbage
+[smx2460]
+smx2460 10/14/2025 12:38 AM
+quite a while ago
+10/14/2025 12:38 AM
+since I wrote all of that code
+10/14/2025 12:38 AM
+wouldn't be surprised, but I'd like to hear about it
+[theubusu]
+theubusu 10/14/2025 12:38 AM
+because it only decrypts 112 bytes of header and then it shows 144 bytes
+10/14/2025 12:38 AM
+also , i think theres a bug in epk2extract mtk pkg extraction
+10/14/2025 12:37 AM
+like samsung's MSD format
+10/14/2025 12:37 AM
+there are some formats that are pretty easy to implement
+[smx2460]
+[] theubusu by FUSE?
+smx2460 10/14/2025 12:37 AM
+yes but it's not at the block level
+[smx2460]
+smx2460 10/14/2025 12:36 AM
+I need to replicate the same concept in Yafex (edited)
+[theubusu]
+theubusu 10/14/2025 12:36 AM
+by FUSE?
+10/14/2025 12:36 AM
+i looked at the code, and does that mean you can mount an epk file ?
+[smx2460]
+smx2460 10/14/2025 12:36 AM
+@infowski had some code to do it on the fly (edited)
+10/14/2025 12:36 AM
+but it's kinda requiring ram == max size
+10/14/2025 12:36 AM
+then offers it via FUSE
+10/14/2025 12:36 AM
+A big limitation of Yafex is that it unpacks everything in RAM
+10/14/2025 12:35 AM
+might motivate me to resume Yafex
+10/14/2025 12:35 AM
+the fact that you're looking at these
+[theubusu]
+theubusu 10/14/2025 12:35 AM
+might be too early
+[smx2460]
+smx2460 10/14/2025 12:35 AM
+these are all GP1 stuff
+10/14/2025 12:35 AM
+maybe he has others but we'll see another day
+10/14/2025 12:35 AM
+(no content)
+[image.png]
+ image.png
+4.41 KB External
+[theubusu]
+theubusu 10/14/2025 12:34 AM
+so epk1(new) still remains a mystery
+[smx2460]
+smx2460 10/14/2025 12:34 AM
+but all EPK1 old
+10/14/2025 12:34 AM
+I got some files from lprot btw
+[theubusu]
+theubusu 10/14/2025 12:34 AM
+yeah..
+[smx2460]
+smx2460 10/14/2025 12:34 AM
+but it was kinda like cheating :p
+10/14/2025 12:34 AM
+I was also considering that
+10/14/2025 12:34 AM
+i mean
+[smx2460]
+[] theubusu i made one
+smx2460 10/14/2025 12:34 AM
+nice!
+October 11, 2025
+[theubusu]
+theubusu 10/11/2025 8:40 PM
+but for epk2extract to detect it the pak count needs to be set to at
+least 21 even if there is less
+[theubusu]
+theubusu 10/11/2025 7:59 PM
+i made one
+[image.png]
+ image.png
+17.83 KB External
+ 1  4
+[smx2460]
+[] theubusu wonder if there ever was an x86 based tv
+smx2460 10/11/2025 3:49 PM
+Doubtful
+[theubusu]
+theubusu 10/11/2025 10:31 AM
+wonder if there ever was an x86 based tv
+10/11/2025 10:31 AM
+fascinating stuff
+[theubusu]
+[] smx2460 Click to see attachment
+theubusu 10/11/2025 10:31 AM
+powerpc!!!!???
+[smx2460]
+smx2460 10/11/2025 4:28 AM
+(no content)
+[image.png]
+ image.png
+334.54 KB External
+10/11/2025 4:28 AM
+this one uses hex though
+10/11/2025 4:28 AM
+(no content)
+[image.png]
+ image.png
+233.18 KB External
+10/11/2025 4:28 AM
+or the TV does
+10/11/2025 4:28 AM
+i wonder if the loader decrypts them
+10/11/2025 4:27 AM
+they seem encrypted
+10/11/2025 4:27 AM
+wow
+10/11/2025 4:26 AM
+(no content)
+[image.png]
+ image.png
+3.26 KB External
+10/11/2025 4:26 AM
+> LG Plasma TV and LCD TV 2006 Firmware.zip
+[] smx2460
+https://www.jabse.com/L0xHL1BsYXNtYS9zb2Z0d2FyZSBmb3IgTEcgcGxhc21h
+hellobox. 10/11/2025 4:25 AM
+https://www.bulcomp-eng.com/datasheet/GM1601-LF.pdf
+[smx2460]
+smx2460 10/11/2025 4:22 AM
+there are hex files
+10/11/2025 4:22 AM
+https://www.jabse.com/L0xHL1BsYXNtYS9zb2Z0d2FyZSBmb3IgTEcgcGxhc21h
+software for LG plasma LG Plasma Service and user manuals free dow...
+Download software for LG plasma LG Plasmaservice and user manuals for
+free.  Jabse Service Manuals Search Engine provides repair
+documentation for electronics aplliances dor free download. No
+registration required.
+10/11/2025 4:21 AM
+"hello LG box" (edited)
+10/11/2025 4:20 AM
+[] smx2460 https://lgparts.com/products/692791171ad
+hellobox. 10/11/2025 4:20 AM
+(no content)
+[pV1QyuN.webp]
+ pV1QyuN.webp
+15.84 KB External
+[smx2460]
+smx2460 10/11/2025 4:20 AM
+https://lgparts.com/products/692791171ad
+LG Firmware Sw - 692791171AD
+Find genuine LG parts and accessories online. Explore a wide selection
+of LG replacement parts for your appliances. Shop with confidence for LG
+parts.
+[smx2460]
+smx2460 10/11/2025 3:57 AM
+which is like the optimized version of this with less chips (edited)
+10/11/2025 3:57 AM
+I think it's way more likely it's S3 or S4
+10/11/2025 3:57 AM
+and it's not Plasma but LCD HD Ready
+10/11/2025 3:57 AM
+I remember that menu
+10/11/2025 3:57 AM
+not sure if it's PPC
+[] smx2460 I think my grandmother had something like this
+hellobox. 10/11/2025 3:57 AM
+the PPC one?
+[smx2460]
+smx2460 10/11/2025 3:56 AM
+I can check next time I go home, it's rotting in the basement
+10/11/2025 3:56 AM
+I think my grandmother had something like this
+10/11/2025 3:56 AM
+(no content)
+[image.png]
+ image.png
+597.49 KB External
+10/11/2025 3:54 AM
+    File: 42LP1DU_V313_rom.epk
+10/11/2025 3:53 AM
+(no content)
+[image.png]
+ image.png
+23.2 KB External
+[] smx2460 Click to see attachment
+hellobox. 10/11/2025 3:53 AM
+i have something a bit like this. no PCMCIA slot i think
+[] smx2460 please tell me "Squirrel cage fan" is some technical term I'm
+oblivious about
+hellobox. 10/11/2025 3:52 AM
+they were worried about batteries leaking so they decided to use a
+squirrel on a treadmill for backup power
+ 1
+[smx2460]
+smx2460 10/11/2025 3:52 AM
+that should be the scaler
+10/11/2025 3:52 AM
+LGDT1102C
+10/11/2025 3:51 AM
+it has a PPC one (edited)
+10/11/2025 3:51 AM
+it's like the other one but instead of having the Samsung SoC
+10/11/2025 3:51 AM
+interesting
+10/11/2025 3:51 AM
+(no content)
+[image.png]
+ image.png
+293.02 KB External
+10/11/2025 3:50 AM
+this has even more chips
+10/11/2025 3:50 AM
+(no content)
+[image.png]
+ image.png
+1.6 MB External
+10/11/2025 3:50 AM
+is it this? 
+10/11/2025 3:50 AM
+https://en.wikipedia.org/wiki/Squirrel-cage_rotor
+Squirrel-cage rotor
+A squirrel-cage rotor is the rotating part of the common squirrel-cage
+induction motor. It consists of a cylinder of steel laminations, with
+aluminum or copper conductors cast in its surface. In operation, the
+non-rotating stator winding is connected to an alternating current power
+source; the alternating current in the stator produces a rotat...
+[]
+10/11/2025 3:49 AM
+xD
+10/11/2025 3:49 AM
+please tell me "Squirrel cage fan" is some technical term I'm oblivious
+about
+10/11/2025 3:49 AM
+(no content)
+[image.png]
+ image.png
+1.91 MB External
+10/11/2025 3:49 AM
+probably the first impl of expert download mode too
+hellobox. 10/11/2025 3:48 AM
+hmm 02... did it not mean preproduction back then?
+[] smx2460 Click to see attachment
+hellobox. 10/11/2025 3:48 AM
+For Experts
+[smx2460]
+smx2460 10/11/2025 3:48 AM
+uncluttered PDF (edited)
+10/11/2025 3:48 AM
+https://www.manualslib.com/manual/967869/Lg-60py2dr.html?page=81
+10/11/2025 3:48 AM
+BOOTROM.EPK
+10/11/2025 3:48 AM
+(no content)
+[image.png]
+ image.png
+80.52 KB External
+10/11/2025 3:47 AM
+(no content)
+[image.png]
+ image.png
+95.93 KB External
+ 1
+[] smx2460 wtf PPC CPU
+hellobox. 10/11/2025 3:47 AM
+i have at least one of the PPC boards (edited)
+[smx2460]
+smx2460 10/11/2025 3:47 AM
+I wanna see that
+10/11/2025 3:47 AM
+EPK for PPC
+10/11/2025 3:47 AM
+wtf PPC CPU
+hellobox. 10/11/2025 3:47 AM
+maldischarge is some kind of plasma thing
+[smx2460]
+smx2460 10/11/2025 3:46 AM
+2005
+10/11/2025 3:46 AM
+probably the earliest IN_START ever
+10/11/2025 3:46 AM
+(no content)
+[image.png]
+ image.png
+309.74 KB External
+hellobox. 10/11/2025 3:46 AM
+i don't think so
+[smx2460]
+smx2460 10/11/2025 3:46 AM
+download gone wrong
+10/11/2025 3:45 AM
+"if download fails" I guess
+hellobox. 10/11/2025 3:45 AM
+wtf is "maldischarge ROM"?
+[smx2460]
+smx2460 10/11/2025 3:45 AM
+right
+[smx2460]
+hellobox. it's just a 4-bit binary display with LEDs
+smx2460 10/11/2025 3:45 AM
+oh
+[smx2460]
+smx2460 10/11/2025 3:45 AM
+then they made it into Global Platform
+[] smx2460 you can check temperature with a diode?
+hellobox. 10/11/2025 3:45 AM
+it's just a 4-bit binary display with LEDs
+[smx2460]
+smx2460 10/11/2025 3:45 AM
+or Great Product
+10/11/2025 3:45 AM
+GP - Great People? 
+10/11/2025 3:45 AM
+(no content)
+[image.png]
+ image.png
+15.86 KB External
+10/11/2025 3:45 AM
+(no content)
+[image.png]
+ image.png
+754.15 KB External
+10/11/2025 3:44 AM
+https://it.scribd.com/doc/117424954/LG-Plasma
+DVR Service Manual for Technicians | PDF | Home & Garden
+The document provides information about the user interface and functions
+of a digital video recorder (DVR) product. It describes the home menu
+layout and options, including recorded TV, photos, music, setup, and
+timeshift/recording controls. It also outlines the on-screen displays,
+progress bars, and key commands for navigation and using differe...
+[]
+10/11/2025 3:44 AM
+you can check temperature with a diode?
+10/11/2025 3:43 AM
+what's that
+hellobox. 10/11/2025 3:43 AM
+this is kind of cool
+[ydTi04Q.png]
+ ydTi04Q.png
+13.56 KB External
+[smx2460]
+smx2460 10/11/2025 3:42 AM
+https://electro404.rssing.com/chan-13553321/all_p98.html
+10/11/2025 3:41 AM
+    - File : 50PY2DR-NA_V3_09_0_050510.epk
+10/11/2025 3:41 AM
+this is the uncluttered pdf
+10/11/2025 3:41 AM
+https://archive.espec.ws/files/LG_Fallas_TV_PLASMA_training.pdf
+10/11/2025 3:40 AM
+it has Firewire!
+10/11/2025 3:39 AM
+https://www.lg.com/us/support/product/lg-50PY2DR.*****
+LG 50PY2DR.*******<!-- -->: Support, Manuals, Warranty & More | LG ...
+Get product support, user manuals and software drivers for the LG
+50PY2DR.*******. View LG 50PY2DR.******* warranty information & schedule
+repair service.
+10/11/2025 3:37 AM
+(no content)
+[image.png]
+ image.png
+229.78 KB External
+10/11/2025 3:36 AM
+"System CPLD 1"
+10/11/2025 3:36 AM
+no it's the same
+10/11/2025 3:36 AM
+I see 4 CPLDs
+[smx2460]
+[] smx2460 Click to see attachment
+smx2460 10/11/2025 3:36 AM
+with this diagram
+[smx2460]
+smx2460 10/11/2025 3:34 AM
+in that sea of chips
+10/11/2025 3:34 AM
+mindblowing
+10/11/2025 3:34 AM
+it truly has an HDD in it
+10/11/2025 3:34 AM
+(no content)
+[image.png]
+ image.png
+1.66 MB External
+hellobox. 10/11/2025 3:33 AM
+so many chips
+[smx2460]
+smx2460 10/11/2025 3:33 AM
+(no content)
+[image.png]
+ image.png
+547.04 KB External
+10/11/2025 3:31 AM
+P.s. I hate scribd
+ 1
+10/11/2025 3:31 AM
+oh
+hellobox. 10/11/2025 3:30 AM
+https://discord.com/channels/407937994037919756/713852484170547222/1356067303179161712
+[smx2460]
+smx2460 10/11/2025 3:30 AM
+why
+hellobox. 10/11/2025 3:30 AM
+lmao blue ocean
+[smx2460]
+smx2460 10/11/2025 3:29 AM
+(no content)
+[image.png]
+ image.png
+360.96 KB External
+[] smx2460 Click to see attachment
+hellobox. 10/11/2025 3:29 AM
+it's an STB for a plasma TV?
+[smx2460]
+smx2460 10/11/2025 3:29 AM
+can't find the original one
+10/11/2025 3:29 AM
+this is the one with the HDD in it
+10/11/2025 3:29 AM
+https://it.scribd.com/doc/59961473/7580885-LG-TV-Plasma-Training-Manual
+LG TV Plasma Training Manual | PDF | Printed Circuit Board | Power ...
+Scribd è il più grande sito di social reading e publishing al mondo.
+[]
+10/11/2025 3:28 AM
+(no content)
+[image.png]
+ image.png
+1.3 MB External
+10/11/2025 3:28 AM
+this old
+[] smx2460 Click to see attachment
+hellobox. 10/11/2025 3:27 AM
+how old is that?
+[smx2460]
+smx2460 10/11/2025 3:25 AM
+(no content)
+[image.png]
+ image.png
+202.3 KB External
+[] smx2460 epk key upgrade probably
+hellobox. 10/11/2025 3:22 AM
+i want to see that
+[smx2460]
+smx2460 10/11/2025 3:22 AM
+All those FPGAs!
+10/11/2025 3:22 AM
+(no content)
+[image.png]
+ image.png
+118.15 KB External
+10/11/2025 3:22 AM
+(no content)
+[image.png]
+ image.png
+1.29 MB External
+[] theubusu lol someone left a random excel sheet with an update
+hellobox. 10/11/2025 3:20 AM
+ooh
+[smx2460]
+smx2460 10/11/2025 3:13 AM
+WTF there's a 3.5" HDD! (edited)
+10/11/2025 3:12 AM
+wow there's an S3C44
+10/11/2025 3:11 AM
+(no content)
+[image.png]
+ image.png
+594.36 KB External
+10/11/2025 3:11 AM
+this is
+10/11/2025 3:11 AM
+https://it.scribd.com/doc/59961473/7580885-LG-TV-Plasma-Training-Manual
+LG TV Plasma Training Manual | PDF | Printed Circuit Board | Power ...
+Scribd è il più grande sito di social reading e publishing al mondo.
+[]
+10/11/2025 3:11 AM
+ok it's not old
+10/11/2025 3:11 AM
+> 10/13/2014
+10/11/2025 3:11 AM
+no it can't be
+10/11/2025 3:10 AM
+oh is it unofficial?
+10/11/2025 3:10 AM
+LOL someone forgot to delete those gaps in MSPaint  (edited)
+10/11/2025 3:10 AM
+(no content)
+[image.png]
+ image.png
+244.74 KB External
+10/11/2025 3:09 AM
+wow that looks OLD
+10/11/2025 3:09 AM
+https://assets.yoreparo.com/attachments/WtaEVzFPNMzRVsaT09WPGusbUOfZ4xxE3zFos3OG.pdf
+[smx2460]
+[] theubusu what about this ancient epk I once. found in an old training
+manual
+smx2460 10/11/2025 3:08 AM
+that's north america
+[] smx2460 I wonder if it was AEON
+hellobox. 10/11/2025 3:05 AM
+Weren't they MIPS?
+[smx2460]
+smx2460 10/11/2025 3:02 AM
+hmm
+[theubusu]
+theubusu 10/11/2025 2:34 AM
+https://archive.org/details/LG_Plasma_Training/page/n62/mode/1up
+Tech Manual: LG Plasma Training : Free Download, Borrow, and Stream...
+Tech Manual: LG Plasma Training
+[]
+10/11/2025 2:32 AM
+I don't think that's even Linux
+10/11/2025 2:32 AM
+what about this ancient epk I once. found in an old training manual
+[Screenshot_20251011-023036.png]
+ Screenshot_20251011-023036.png
+622.08 KB External
+[smx2460]
+smx2460 10/11/2025 2:23 AM
+lol
+[theubusu]
+theubusu 10/11/2025 2:23 AM
+fun fact the busybox binary inside the firmware triggers Windows
+Defender
+ 1
+[smx2460]
+smx2460 10/11/2025 2:23 AM
+it's probably the oldest one that exists
+[theubusu]
+theubusu 10/11/2025 2:22 AM
+lg6000 is the oldest linux based that I know of
+[smx2460]
+smx2460 10/11/2025 2:22 AM
+    LG6*, LG7*, PG4*, PG6*, PG7*    Douglas    EP4H    2008    Mips 4K 200 mhz    198.14    64    64    douglas_map0
+10/11/2025 2:22 AM
+the oldest Linux based set would be EP4H, or EPK1 BE
+10/11/2025 2:22 AM
+"BCM3548 BCM3549 BCM3556" are dated 2010 by lprot
+10/11/2025 2:22 AM
+back to the topic
+10/11/2025 2:22 AM
+the thing is
+10/11/2025 2:21 AM
+NC ones already were on eMMC iirc
+10/11/2025 2:21 AM
+via NAND dumps
+10/11/2025 2:21 AM
+10/11/2025 2:21 AM
+we had some guys that were trying to unbrick them
+[theubusu]
+theubusu 10/11/2025 2:21 AM
+netcast I didn't know
+10/11/2025 2:21 AM
+WebOS I know
+[smx2460]
+smx2460 10/11/2025 2:21 AM
+enlightened theubusu
+[smx2460]
+[] theubusu back then at least
+smx2460 10/11/2025 2:20 AM
+they even made/make Netcast and WebOS projectors  (edited)
+[smx2460]
+smx2460 10/11/2025 2:20 AM
+EPK v1 new didn't
+10/11/2025 2:20 AM
+EPK v2 unencrypted still has encrypted data afaict
+10/11/2025 2:20 AM
+but doubtful
+10/11/2025 2:19 AM
+so that code might not trigger anymore
+10/11/2025 2:19 AM
+and it's EPK v2 unencrypted
+[theubusu]
+theubusu 10/11/2025 2:19 AM
+back then at least
+10/11/2025 2:19 AM
+lol didn't even know LG made projectors
+[smx2460]
+smx2460 10/11/2025 2:19 AM
+i'm starting to wonder if EPK v1 new is a mistake
+10/11/2025 2:19 AM
+Projector
+10/11/2025 2:19 AM
+    HE_PJT_GP2B_AFAAAIAA
+10/11/2025 2:19 AM
+but it's V2
+10/11/2025 2:18 AM
+I have an HW300G EPK
+10/11/2025 2:18 AM
+    HW300G, LD48*, LD49*, LD55*USA, LD56*, LD65*, LD66*, LD68*, LD69*, LD75*, LD76*, LD79*, LD84*, LD85*, LD86*, LD88*, LD89*, LD96*, LD98*, LD99*, LE49*, LE53*USA, LE54*USA, LE55* (excluding 22/26LE55*), LE56* (excl. Brazil), LE57*, LE58*, LE59*, LE73*, LE75*, LE78*, LE79*, LE83*, LE85*, LE86*, LE88*, LE89*, LEX8, LEX9, LV53*, LX65*, LX68*, LX69*, LX95*, LX96*, LX98*, LX99*, PK55*, PK59*, PK75*, PK76*, PK78*, PK79*, PK95*, PK96*, PK98*, PK99*, PX95*, PX96*, PX98*, PX99*, PZ54*USA, PZ55*USA    "BCM3548
+    BCM3549
+    BCM3556"    GP2B    2010    Broadcom BMIPS4380 V4.4  FPU V0.1 405MHz    DualCore: 403.45    "512
+    @513MHz"    512    bcm35xx_map0
+10/11/2025 2:18 AM
+GP2B
+10/11/2025 2:18 AM
+indeed IS Linux
+10/11/2025 2:18 AM
+so BCM3549...
+10/11/2025 2:17 AM
+the CPU is the BCM
+10/11/2025 2:17 AM
+ok LGE7329 is the LVDS/FRC chip (edited)
+10/11/2025 2:16 AM
+it seems it has at least 2 CPUs (edited)
+10/11/2025 2:15 AM
+(no content)
+[image.png]
+ image.png
+5.94 KB External
+10/11/2025 2:15 AM
+BCM3549
+10/11/2025 2:15 AM
+it could actually be a BCM chip
+10/11/2025 2:14 AM
+it talks about BCM/Broadcom too
+10/11/2025 2:14 AM
+it could be descrambling stuff (edited)
+10/11/2025 2:14 AM
+but it has connections to URSA
+10/11/2025 2:13 AM
+so I don't get why it's called "Netflix"
+10/11/2025 2:13 AM
+that's a RAM chip
+10/11/2025 2:13 AM
+(no content)
+[image.png]
+ image.png
+2.8 KB External
+[theubusu]
+theubusu 10/11/2025 2:12 AM
+huh????
+[smx2460]
+smx2460 10/11/2025 2:12 AM
+it has a dedicated Netflix chip
+10/11/2025 2:12 AM
+wtf
+10/11/2025 2:11 AM
+maybe gdb/toolchain could be but that's about it
+[theubusu]
+theubusu 10/11/2025 2:11 AM
+that no
+[smx2460]
+smx2460 10/11/2025 2:11 AM
+I find it hard to believe it will be Linux based (edited)
+[smx2460]
+[] smx2460 Click to see attachment
+smx2460 10/11/2025 2:11 AM
+this is 7363C
+[smx2460]
+smx2460 10/11/2025 2:11 AM
+and this is the CPU
+10/11/2025 2:11 AM
+(no content)
+[image.png]
+ image.png
+3.75 KB External
+10/11/2025 2:11 AM
+so any LA91L manual will have the same design and CPU (edited)
+10/11/2025 2:10 AM
+chassis LA91L
+10/11/2025 2:10 AM
+(no content)
+[image.png]
+ image.png
+113.22 KB External
+10/11/2025 2:10 AM
+https://www.ebay.com/itm/235590151156
+LG 47LH50-UC (AUSVLJR) MAIN BOARD # EBU60694002,EBR62156701,EAX6062...
+LG MAIN BOARD # EBU60694002, BUY IT NOW! IT WAS REMOVED FROM A WORKING
+GREAT LG 4K TV MODEL:47LH50-UC Service code: ( AUSVLJR ). BOARD IS IN
+GREAT WORKING CONDITIONS, MONEY BACK IF NOT AS DESCRIBED!
+[]
+10/11/2025 2:09 AM
+let's see LG 47lh50
+10/11/2025 2:09 AM
+lprot is the ultimate Saturn guru lol
+10/11/2025 2:09 AM
+and lprot is right
+[theubusu]
+theubusu 10/11/2025 2:09 AM
+some Samsung tvs run VxWorks
+[smx2460]
+smx2460 10/11/2025 2:09 AM
+so we're talking 2007
+10/11/2025 2:08 AM
+https://ecos.sourceware.org/
+eCos
+Information concerning the embedded Configurable operating system
+(eCos).
+10/11/2025 2:08 AM
+eCos is something I wasn't expecting to see
+10/11/2025 2:08 AM
+    MstarTypeGE
+    eCos GDB stubs - built Sep  4 2007 / 10:51:33
+    MB_CLASS_MVF
+    MB_CLASS_SYSTEM
+    MSVC00F000000000011063A70000000T
+(edited)
+10/11/2025 2:07 AM
+    MStar MHEG5 Version: %s
+(edited)
+[theubusu]
+theubusu 10/11/2025 2:07 AM
+LG 47lh50 for me probably runs linux
+[smx2460]
+smx2460 10/11/2025 2:07 AM
+leaving it here for @hellobox since it's small enough
+10/11/2025 2:07 AM
+(no content)
+ 37-42-47-52LG5000-ZA_IC101-IC102LGE7363C_V3.54.01_2010-03-15.bin
+4 MB External
+10/11/2025 2:07 AM
+i'm not sure if this is AEON
+10/11/2025 2:06 AM
+then no change lg50/lh will
+10/11/2025 2:06 AM
+if this is newer and is S3, and indeed has no Linux/EPK
+[theubusu]
+theubusu 10/11/2025 2:06 AM
+wait
+10/11/2025 2:06 AM
+LH*
+[smx2460]
+smx2460 10/11/2025 2:06 AM
+are you claiming it's newer?
+[theubusu]
+theubusu 10/11/2025 2:06 AM
+ok but that's lg5700 not lg50
+[smx2460]
+smx2460 10/11/2025 2:05 AM
+    (MHGTMD026)
+    (DSMTMD026)
+10/11/2025 2:05 AM
+    ~//ColourPalette/scene0.mheg
+    ~//6.5.4.2-Transmpeg/scene2.mheg
+    ~//3.12.7.2-DecOffsetPerf/scene1.mheg
+    ..//Middleware/MHEG5/BooleanVariableClass.c
+    /dir/newdir/data.txt
+    /dir/subdir/data.txt
+    ..//Middleware/MHEG5/ContentRefVariableClass.c
+    ~//PixelTransparency/startup
+    ~//4.5-ZeroSize/startup
+    ~//FatLines/startup
+    ~//roulette.asn
+    ~//keno.asn
+    ~//faceup.asn
+    ~//Drawsector/scene3.mheg
+    ..//Middleware/MHEG5/DynamicLineArtClass.c
+10/11/2025 2:05 AM
+it's definitely not a Linux OS
+10/11/2025 2:04 AM
+@hellobox might find this interesting 
+10/11/2025 2:04 AM
+so it's still S3
+10/11/2025 2:04 AM
+LGE7363C
+10/11/2025 2:04 AM
+it's not epk
+10/11/2025 2:04 AM
+    37-42-47-52LG5000-ZA_IC101-IC102(LGE7363C)_V3.54.01_2010-03-15.bin
+[theubusu]
+theubusu 10/11/2025 2:04 AM
+thats not the same model
+[smx2460]
+smx2460 10/11/2025 2:03 AM
+https://www.lg.com/it/supporto/supporto-prodotto/cs-32LG5700.ARUZ/
+LG 32LG5700.ARUZ Supporto al prodotto: Manuali, garanzia e altro an...
+Ricevi supporto al prodotto per LG 32LG5700.ARUZ. Scarica 32LG5700.ARUZ.
+Scarica 32LG5700.ARUZ Vedi informazioni sulla garanzia e programmazione
+dei servizi.
+[]
+10/11/2025 2:03 AM
+there's a firmware update
+10/11/2025 2:03 AM
+oh wow
+[theubusu]
+theubusu 10/11/2025 2:03 AM
+(no content)
+[57.png]
+ 57.png
+1.63 MB External
+[smx2460]
+smx2460 10/11/2025 2:02 AM
+so LD84D
+[theubusu]
+theubusu 10/11/2025 2:01 AM
+that came our 2009
+10/11/2025 2:01 AM
+2007 is not right
+[smx2460]
+smx2460 10/11/2025 2:00 AM
+he said Saturn3 and 4 weren't linux based
+10/11/2025 2:00 AM
+    LG5*, W22*    Saturn3+    Non linux    2007
+    LG2*, LG3*, LG4*, PG2*, PG3*, PQ1*, PQ20*, PQ30*, PQ60*, PS20*, PS30*, PS40*, PV25*R, PN45*USA, PN53*USA, PN65*USA    Saturn4    Non linux    2008
+10/11/2025 2:00 AM
+lprot claimed that
+[theubusu]
+theubusu 10/11/2025 2:00 AM
+you sure it's not linux?
+[Screenshot_20251011-020006.png]
+ Screenshot_20251011-020006.png
+530.29 KB External
+[smx2460]
+smx2460 10/11/2025 1:58 AM
+wow! (edited)
+[theubusu]
+theubusu 10/11/2025 1:58 AM
+the manual says so
+10/11/2025 1:58 AM
+(no content)
+[Screenshot_20251011-015824.png]
+ Screenshot_20251011-015824.png
+451.98 KB External
+[smx2460]
+smx2460 10/11/2025 1:58 AM
+if so, it's probably some arcane stuff
+10/11/2025 1:57 AM
+do they?
+[theubusu]
+theubusu 10/11/2025 1:57 AM
+how they run Netflix and yahoo widgets on that
+[smx2460]
+smx2460 10/11/2025 1:56 AM
+because they didn't exist probably (edited)
+10/11/2025 1:56 AM
+so it will have no EPK
+10/11/2025 1:55 AM
+then it's most likely still a Saturn3
+10/11/2025 1:55 AM
+if 7363 > 7329
+10/11/2025 1:55 AM
+LGE7363C
+10/11/2025 1:54 AM
+that's 47lg5000
+10/11/2025 1:54 AM
+sorry that's a different model
+10/11/2025 1:53 AM
+(no content)
+[image.png]
+ image.png
+167.6 KB External
+10/11/2025 1:53 AM
+I wonder if it was AEON
+10/11/2025 1:53 AM
+and Saturn3 didn't run Linux
+10/11/2025 1:52 AM
+https://monitor.espec.ws/files/lg_47lg5000_196.pdf
+10/11/2025 1:52 AM
+that's Saturn3 @hellobox
+10/11/2025 1:52 AM
+oh
+10/11/2025 1:51 AM
+(no content)
+[image.png]
+ image.png
+83.5 KB External
+10/11/2025 1:51 AM
+LGE7329A
+[theubusu]
+theubusu 10/11/2025 1:50 AM
+but there's no firmware available
+10/11/2025 1:50 AM
+I think this was the first Lg smart Tv
+10/11/2025 1:50 AM
+what about this tv https://www.lg.com/us/support/product/lg-47LH50.AUS
+LG 47LH50.AUS<!-- -->: Support, Manuals, Warranty & More | LG USA P...
+Get product support, user manuals and software drivers for the LG
+47LH50.AUS. View LG 47LH50.AUS warranty information & schedule repair
+service.
+10/11/2025 1:48 AM
+yeah
+[smx2460]
+smx2460 10/11/2025 1:48 AM
+there were even .c files in an EPK once
+[theubusu]
+theubusu 10/11/2025 1:48 AM
+but I guess that is already known
+10/11/2025 1:48 AM
+I found makefiles for the tv system leftover in the firmware onxe

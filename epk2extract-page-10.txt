@@ -1,0 +1,1716 @@
+January 23, 2026
+[smx2460]
+smx2460 01/23/2026 11:25 PM
+and then the ""extraction"" writes it out
+01/23/2026 11:25 PM
+            public DetectionResult Detect(IDataSource source) {
+                var data = source.Data;
+                LzhsHeader hdr;
+                try {
+                    hdr = new LzhsHeader(data.Span);
+                } catch (InvalidDataException) {
+                    return new DetectionResult(0, null);
+                }
+                var decoder = new LzhsDecoder(data);
+                foreach (var item in decoder.AsEnumerable()) ;
+                if (decoder.VerifyChecksum()) {
+                    return new DetectionResult(50, null);
+                } else {
+                    return new DetectionResult(0, null);
+                }
+            }
+01/23/2026 11:24 PM
+if it matches, then just store the decoded file in the "detection
+context" (edited)
+01/23/2026 11:24 PM
+my "detection" logic: extract it and see if the checksum matches
+01/23/2026 11:24 PM
+(no content)
+ mtkloader.lzhs
+164.16 KB External
+[theubusu]
+theubusu 01/23/2026 11:24 PM
+but idk how to do detection for that
+01/23/2026 11:24 PM
+well i do have an lzhs decompressor that i did in rust
+[smx2460]
+smx2460 01/23/2026 11:24 PM
+do you want one?
+[theubusu]
+theubusu 01/23/2026 11:23 PM
+it will only decompress LZHS FS inside an mtk pkg
+01/23/2026 11:23 PM
+well i dont have LZHS decompression as in you cant give it an lzhs file
+[smx2460]
+smx2460 01/23/2026 11:23 PM
+LZHS enters the scene 
+[theubusu]
+theubusu 01/23/2026 11:23 PM
+but most formats just rely on having some magic bytes
+01/23/2026 11:23 PM
+with the confidence
+01/23/2026 11:22 PM
+i liked your approach in yafex
+ 1
+[smx2460]
+smx2460 01/23/2026 11:22 PM
+to some extent
+01/23/2026 11:22 PM
+I was trying to do that in Yafex
+01/23/2026 11:22 PM
+but then we should reason on the format detection probably
+01/23/2026 11:22 PM
+we can make it work
+[theubusu]
+theubusu 01/23/2026 11:22 PM
+and epk signature checking
+01/23/2026 11:22 PM
+its not meant to be an LG centric program, so probably wont get stuff
+like DVR decryption, partinfo, symbol parsing and all that
+[smx2460]
+smx2460 01/23/2026 11:22 PM
+why not?
+[theubusu]
+[] smx2460 and unixtract becomes the new epk2extract
+theubusu 01/23/2026 11:21 PM
+i dont think it will be
+[smx2460]
+smx2460 01/23/2026 11:21 PM
+and I tell everyone to use his
+01/23/2026 11:21 PM
+I deprecated epk2extract
+01/23/2026 11:21 PM
+and unixtract becomes the new epk2extract
+[theubusu]
+theubusu 01/23/2026 11:21 PM
+ill fix it and it will still segfault
+[smx2460]
+smx2460 01/23/2026 11:21 PM
+maybe I should let @theubusu fix it
+01/23/2026 11:21 PM
+or
+01/23/2026 11:20 PM
+as I'm doing the different PakRec handling, I'm wondering if maybe I
+should just fix it in Yafex lol
+01/23/2026 11:20 PM
+but not the PAK handling (yet?) (edited)
+01/23/2026 11:20 PM
+i fixed the header detection
+01/23/2026 11:20 PM
+    [+] EPK v2 Detected
+    Firmware info
+    -------------
+    Firmware magic: epak
+    Firmware type: EPK2
+    Firmware otaID: HE_LCD_GP_B_AIAAAHAA
+    Firmware version: 00.03.20.00
+    PAK count: 9
+    PAKs total size: 87354499
+    Header length: 132
+    Trying known AES keys...
+    [src/epk.c:275] ERROR: Cannot decrypt EPK content (proper AES key is missing).
+[theubusu]
+theubusu 01/23/2026 11:20 PM
+i tried finding another one but didnt
+01/23/2026 11:20 PM
+is it worth it for just 1 epk file
+[smx2460]
+smx2460 01/23/2026 11:19 PM
+shoving epkv2 beta support in epk2extract is a mess
+[theubusu]
+theubusu 01/23/2026 10:43 PM
+its an EPK inside an EPK
+01/23/2026 10:43 PM
+this one is pretty funny
+[image.png]
+ image.png
+14.43 KB External
+[theubusu]
+theubusu 01/23/2026 10:10 PM
+windows CE???
+01/23/2026 10:10 PM
+wtf is going on in korea
+[image.png]
+ image.png
+14.47 KB External
+01/23/2026 10:06 PM
+yeah
+[smx2460]
+smx2460 01/23/2026 10:06 PM
+that's probably what they did with v3 (edited)
+[theubusu]
+theubusu 01/23/2026 10:06 PM
+they couldnt bother making a new tool for v2
+[theubusu]
+[] smx2460 `imgmake` converts them to V2
+theubusu 01/23/2026 10:06 PM
+lol really
+[smx2460]
+smx2460 01/23/2026 10:06 PM
+imgmake converts them to V2
+[theubusu]
+theubusu 01/23/2026 10:06 PM
+i guess its null terminated so its alright
+[smx2460]
+smx2460 01/23/2026 10:06 PM
+mkepk creates EPK v1
+01/23/2026 10:06 PM
+well dunno what they were doing there (edited)
+01/23/2026 10:05 PM
+actually it's likely imgmake
+[theubusu]
+theubusu 01/23/2026 10:05 PM
+mkepk...
+[smx2460]
+[] theubusu is it meant to have this garbage in modelName ?
+smx2460 01/23/2026 10:05 PM
+no, unless it's random memory from mkepk lol
+[theubusu]
+theubusu 01/23/2026 10:05 PM
+other than that it seems like this is it
+[theubusu]
+[] smx2460 isn't it this one? ```c typedef struct { char imageType[4];
+uint32_t imageSize; //excluded h...
+theubusu 01/23/2026 10:04 PM
+is it meant to have this garbage in modelName ?
+[image.png]
+ image.png
+22.38 KB External
+[theubusu]
+theubusu 01/23/2026 10:03 PM
+(they all download the same file lol)
+hellobox. 01/23/2026 10:03 PM
+Also "UNIX"
+[] theubusu and it has downloads for MS-DOS 6.0 and WINDOWS 3.1 !!???
+hellobox. 01/23/2026 10:03 PM
+Windows ME, my beloved 
+[smx2460]
+smx2460 01/23/2026 10:03 PM
+it should be, I counted the bytes
+[theubusu]
+theubusu 01/23/2026 10:03 PM
+or hm
+01/23/2026 10:03 PM
+it seems
+[theubusu]
+[] smx2460 isn't it this one? ```c typedef struct { char imageType[4];
+uint32_t imageSize; //excluded h...
+theubusu 01/23/2026 10:03 PM
+yes
+[theubusu]
+theubusu 01/23/2026 10:02 PM
+and it has downloads for MS-DOS 6.0 and WINDOWS 3.1 !!???
+[smx2460]
+smx2460 01/23/2026 10:02 PM
+isn't it this one?
+    typedef struct {
+        char imageType[4];
+        uint32_t imageSize; //excluded headers and signatures
+        char modelName[64];
+        uint32_t swVersion;
+        uint32_t swDate;
+        BUILD_TYPE_T devMode;
+        uint32_t segmentCount;
+        uint32_t segmentSize;
+        uint32_t segmentIndex;
+        char pakMagic[4];
+        unsigned char reserved[24];
+        uint32_t segmentCrc32;
+    } PAK_V2_HEADER_T;
+[theubusu]
+theubusu 01/23/2026 10:02 PM
+i found this epk on korean site
+[image.png]
+ image.png
+88.26 KB External
+[smx2460]
+smx2460 01/23/2026 10:02 PM
+                if not i == 0:
+                    file.read(88) #un
+                    segment_size = struct.unpack('<L', file.read(4))[0]
+                    segment_id = struct.unpack('<L', file.read(4))[0]
+                    file.read(32) #un
+hellobox. 01/23/2026 10:02 PM
+[:lg:] CONFIDENTIAL
+EPK spec
+- whatever we feel like at the time [:lg:] CONFIDENTIAL
+[smx2460]
+smx2460 01/23/2026 10:02 PM
+it has the MPAKs
+01/23/2026 10:02 PM
+nvm it is
+01/23/2026 10:01 PM
+but wait it's not chunked
+[theubusu]
+theubusu 01/23/2026 10:01 PM
+yeah, tho it only seems to have space for 10 PAKs, and epk1(new) is said
+to have 20
+[smx2460]
+smx2460 01/23/2026 10:01 PM
+or, likely, EPK v2 beta
+01/23/2026 10:01 PM
+lol
+01/23/2026 10:01 PM
+so this is like epk1(new)+
+[theubusu]
+theubusu 01/23/2026 10:01 PM
+yes
+[smx2460]
+smx2460 01/23/2026 10:01 PM
+so it has the epk1 pakLoc struct
+[theubusu]
+theubusu 01/23/2026 10:00 PM
+it works but obv needs improvement
+01/23/2026 10:00 PM
+i made this dirty script to extract it
+ cursed_epk1.py
+2.09 KB External
+[smx2460]
+smx2460 01/23/2026 10:00 PM
+[theubusu]
+theubusu 01/23/2026 10:00 PM
+than epk2
+01/23/2026 10:00 PM
+its much more closer to epk1
+[smx2460]
+smx2460 01/23/2026 9:59 PM
+so far 
+[theubusu]
+theubusu 01/23/2026 9:59 PM
+well its not
+[smx2460]
+smx2460 01/23/2026 9:58 PM
+that's what I can see for now
+01/23/2026 9:58 PM
+    struct epk2_structure {
+        signature_t signature; <-- missing
+        EPK_V2_HEADER_T epkHeader;
+        uint32_t crc32Info[64];
+        uint32_t reserved;
+        char platformVersion[16];
+        char sdkVersion[16];
+    };
+01/23/2026 9:58 PM
+so basically it's an epk2 without the header signature
+hellobox. 01/23/2026 9:55 PM
+But is there something that checks it?
+01/23/2026 9:55 PM
+I think it may identify what the contents are signed with
+01/23/2026 9:55 PM
+Prod/devel EPKs seem to be encrypted and (I think) signed with the same
+keys
+[theubusu]
+theubusu 01/23/2026 9:55 PM
+maybe they just the same key for devel and prod
+[] theubusu but still extracted
+hellobox. 01/23/2026 9:54 PM
+I'm not sure what effect prodke(y) and develkey in EPK headers has, if
+any
+[theubusu]
+theubusu 01/23/2026 9:54 PM
+also versions are weird
+01/23/2026 9:53 PM
+but still extracted
+01/23/2026 9:53 PM
+it says develkey
+[image.png]
+ image.png
+8.94 KB External
+hellobox. 01/23/2026 9:53 PM
+Testing? Not sure tbh
+[theubusu]
+theubusu 01/23/2026 9:52 PM
+only updating one partition?
+01/23/2026 9:52 PM
+what's the purpose of these?
+[] theubusu lol it only has the boot logo
+hellobox. 01/23/2026 9:51 PM
+Some have just micom fw or something from what I remember
+[smx2460]
+smx2460 01/23/2026 9:43 PM
+back
+[theubusu]
+theubusu 01/23/2026 8:59 PM
+so useful
+01/23/2026 8:59 PM
+lol it only has the boot logo
+01/23/2026 8:58 PM
+dang it you beat me
+hellobox. `sdk_*.epk`. Don't remember the size offhand.
+<@524362336644104215> have any?
+ww8543 01/23/2026 8:57 PM
+(no content)
+ sdk_5.08FjKcGQl.0_nsu_V3_SECURED.epk
+128.92 KB External
+[theubusu]
+theubusu 01/23/2026 8:14 PM
+these 2 seem to be segment size and segment ID
+[image.png]
+ image.png
+2.37 KB External
+01/23/2026 8:11 PM
+never seen that
+01/23/2026 8:10 PM
+also this .pak file is a singular pak from epk
+01/23/2026 8:10 PM
+RELEASE is not even named release, there is a symlink though
+[image.png]
+ image.png
+4.74 KB External
+01/23/2026 8:08 PM
+maybe the segment size is in that header with the pak name
+[smx2460]
+[] theubusu segmentsize 4mb
+smx2460 01/23/2026 8:08 PM
+Hopefully not hardcoded
+[theubusu]
+theubusu 01/23/2026 8:07 PM
+yes
+ LA91M_MPJ_SL90QD_SL95QD_V3.202.1.32.41_100429.epk
+83.31 MB External
+01/23/2026 8:07 PM
+segmentsize 4mb
+01/23/2026 8:07 PM
+it seems like it actually is segmented
+[image.png]
+ image.png
+18.94 KB External
+[smx2460]
+smx2460 01/23/2026 8:07 PM
+I'll TAL after dinner
+[theubusu]
+theubusu 01/23/2026 8:07 PM
+yes sending
+[smx2460]
+[] theubusu also i think i found the smallest epk ever
+smx2460 01/23/2026 8:07 PM
+Is this one?
+[smx2460]
+smx2460 01/23/2026 8:07 PM
+Can you send me?
+[theubusu]
+theubusu 01/23/2026 8:01 PM
+too cursed
+[image.png]
+ image.png
+3.17 KB External
+01/23/2026 8:00 PM
+this is imposter epk2
+[smx2460]
+smx2460 01/23/2026 8:00 PM
+Right, sdk version was introduced by epk2 iirc
+[theubusu]
+theubusu 01/23/2026 8:00 PM
+EPK info: File size: 87354499 Pak count: 9 OTA ID: HE_LCD_GP_B_AIAAAHAA
+Version: 03.20.00 (1/9) - lgap, Offset: 132, Size: 7774468, Platform:
+ATSC-BCM3549 - Saved file!
+01/23/2026 8:00 PM
+no sdk version
+[smx2460]
+smx2460 01/23/2026 8:00 PM
+If it has it
+01/23/2026 7:59 PM
+What does the sdk version say
+[theubusu]
+theubusu 01/23/2026 7:59 PM
+ota id is HE_LCD_GP_B_AIAAAHAA
+[smx2460]
+smx2460 01/23/2026 7:59 PM
+It's probably a super ancient revision of EPK2 that I never saw before
+01/23/2026 7:59 PM
+Wait thats GP_B
+[theubusu]
+theubusu 01/23/2026 7:59 PM
+so weird
+01/23/2026 7:59 PM
+yeah no idea
+[smx2460]
+smx2460 01/23/2026 7:59 PM
+I meant magic
+[theubusu]
+theubusu 01/23/2026 7:59 PM
+its not even the epk2 header
+[smx2460]
+smx2460 01/23/2026 7:58 PM
+But why does it have the epk2 header 
+[theubusu]
+theubusu 01/23/2026 7:57 PM
+i think this is epk1(new)
+01/23/2026 7:57 PM
+even thouugh the magic says "EPK2" it is not segmented and looks like
+epk1
+ 1
+[smx2460]
+smx2460 01/23/2026 7:57 PM
+01/23/2026 7:57 PM
+Wut
+[theubusu]
+theubusu 01/23/2026 7:57 PM
+no, it segfaults
+[smx2460]
+smx2460 01/23/2026 7:57 PM
+It's regular epk2 without aes
+[smx2460]
+[] theubusu it says epk2, but has no signature and is not encrypted
+smx2460 01/23/2026 7:57 PM
+It's handled by epk2extract
+hellobox. `sdk_*.epk`. Don't remember the size offhand.
+<@524362336644104215> have any?
+ww8543 01/23/2026 7:52 PM
+hmmm i used to... not sure where i would have them right now
+hellobox. 01/23/2026 7:51 PM
+sdk_*.epk. Don't remember the size offhand. @ww have any?
+[] theubusu also i think i found the smallest epk ever
+hellobox. 01/23/2026 7:50 PM
+There are some small ones on SNU
+[theubusu]
+theubusu 01/23/2026 7:48 PM
+also i think i found the smallest epk ever
+ wireless_picmicom.epk
+392.45 KB External
+01/23/2026 7:46 PM
+but this is kinda similar to the description of epkv1(new)
+01/23/2026 7:45 PM
+which support for is in epk2extract, but i cant for the life of me find
+one
+[theubusu]
+hellobox. What was that kind you needed examples of... EPKv1 BE or
+something? Perhaps <@631872127934660609> c...
+theubusu 01/23/2026 7:44 PM
+that was me that needed epk1(new)
+hellobox. 01/23/2026 7:43 PM
+What was that kind you needed examples of... EPKv1 BE or something?
+Perhaps @theubusu could come across one (edited)
+01/23/2026 7:43 PM
+Need to ask the EPK historian @Smx
+[theubusu]
+theubusu 01/23/2026 7:41 PM
+maybe this is what "epk1(new)" is
+01/23/2026 7:41 PM
+it says epk2, but has no signature and is not encrypted
+[image.png]
+ image.png
+17.48 KB External
+01/23/2026 7:41 PM
+cursed EPK
+[image.png]
+ image.png
+7.36 KB External
+January 18, 2026
+[smx2460]
+hellobox. fixed
+smx2460 01/18/2026 12:33 AM
+thx!
+[] smx2460
+https://github.com/openlgtv/epk2extract/pull/131/files#diff-e73c9551b27e1e7bda1836c0b39be3991fe4cb11...
+hellobox. 01/18/2026 12:24 AM
+fixed
+[] smx2460 does it actually work with it
+hellobox. 01/18/2026 12:22 AM
+yeah
+[] smx2460 <@803885040827629628> is this line intended?
+hellobox. 01/18/2026 12:21 AM
+no lol
+January 17, 2026
+[smx2460]
+smx2460 01/17/2026 9:15 PM
+does it actually work with it
+01/17/2026 9:14 PM
+https://github.com/openlgtv/epk2extract/pull/131/files#diff-e73c9551b27e1e7bda1836c0b39be3991fe4cb117495123e1ae76d89f36ff532R1
+Add o22n28k and k8hpt RSA keys by throwaway96 · Pull Request #131 ...
+RSA keys for OTAIDs HE_DTV_W24K_AFADATAA and HE_DTV_N22D_AFAAATAA.
+[]
+01/17/2026 9:14 PM
+@hellobox is this line intended?
+[theubusu]
+theubusu 01/17/2026 9:58 AM
+no...
+[umeaman]
+umeaman 01/17/2026 6:49 AM
+https://fileinfo.com/extension/pak
+.PAK File Extension - How to open .pak files
+Verified information about the .pak file format and a list of apps that
+open .pak files.
+ 1
+January 16, 2026
+[theubusu]
+theubusu 01/16/2026 11:09 PM
+pretty sure 7zip can open these
+hellobox. 01/16/2026 11:02 PM
+it's the same format android uses
+ 2
+[merlux._]
+merlux._ 01/16/2026 11:00 PM
+hi! I'm currently trying to unpack a fw. epk2extract runs through with
+the epk file, but in the output folder-structure i then have the
+"super.pak" which pas not unpacked. epk2extract on that .pak gives me
+then: Unsupported input file format:
+../../23.23.30.01-HE_DTV_W24P_AFADATAA/super.pak is this FW not
+supported? or did i something wrong?
+January 13, 2026
+hellobox. 01/13/2026 8:12 PM
+If somebody reminds me while I have like half an hour free, I'll see
+what I can do
+[] theubusu These are some patches for mtk pkg in epk2extract
+https://github.com/theubusu/epk2extract/commit/667...
+hellobox. 01/13/2026 8:12 PM
+I can try to integrate it. I'll put it on my to-do list, which means
+I'll get to it, uh... probably never 
+January 10, 2026
+[theubusu]
+theubusu 01/10/2026 5:14 PM
+These are some patches for mtk pkg in epk2extract
+https://github.com/theubusu/epk2extract/commit/667de6ea197cdd6ce1655df9df3cab082a60c679 -
+Add support of new 0x170 header - Add new decryption keys for
+Common(Hisense, CVT, TCL..), Sony, Philips - Changes to iMtK handling -
+Changes to Header structs - Some formatting fix if someone can check it
+maybe it can be added to epk2extract However for full support, also
+would need to implement - XOR tail handling - Support for old mtk pkg -
+fixes in lzhs: for lz4 segment and for uncompressed segment (this is
+important as its commonly used in new mtk pkg) but thats outside of my C
+skill to make it safe (edited)
+Improvements to MTK pkg handling · theubusu/epk2extract@667de6e
+ 5  2
+January 7, 2026
+[theubusu]
+theubusu 01/07/2026 6:47 PM
+i realized how dumb this is when implementing it
+01/07/2026 6:47 PM
+thanks
+[smx2460]
+smx2460 01/07/2026 6:43 PM
+nice job, @theubusu !
+[smx2460]
+[] theubusu there's a fun design flaw in mtk pkgs all data in a pak
+aligned to 16 bytes is AES encrypted, but fo...
+smx2460 01/07/2026 6:43 PM
+this is epic!
+[theubusu]
+theubusu 01/07/2026 6:22 PM
+if the trailing bytes are zeros, then part of the key is just in the
+firmware
+ww8543 01/07/2026 6:21 PM
+but good for us, in this case 
+01/07/2026 6:21 PM
+pretty dumb
+[:mtk:] 1
+01/07/2026 6:21 PM
+yea exactly
+01/07/2026 6:21 PM
+also wtf, if you dont wanna deal with padding, just use ctr.... and if
+you dont mind padding, pad according to something that is widely used
+like pkcs7 or whatever
+[theubusu]
+theubusu 01/07/2026 6:21 PM
+i just dont get why they didnt use PCKS or something
+[] theubusu even XORing with IV would prevent this
+ww8543 01/07/2026 6:20 PM
+and thats why you dont just try to roll your own crypto shit
+[theubusu]
+theubusu 01/07/2026 6:03 PM
+(no content)
+[image.png]
+ image.png
+3.93 KB External
+ 1
+[theubusu]
+theubusu 01/07/2026 5:55 PM
+even XORing with IV would prevent this
+[theubusu]
+hellobox. I often see some kind of like knockoff CTS for short blocks. I
+forget what is usually XORed with the...
+theubusu 01/07/2026 5:54 PM
+Yeah, I have no idea why they decided to XOR with the key
+hellobox. 01/07/2026 5:50 PM
+I often see some kind of like knockoff CTS for short blocks. I forget
+what is usually XORed with the extra bytes, but iirc it's not the key 
+(edited)
+[] theubusu there's a fun design flaw in mtk pkgs all data in a pak
+aligned to 16 bytes is AES encrypted, but fo...
+hellobox. 01/07/2026 5:46 PM
+Nice!
+[theubusu]
+theubusu 01/07/2026 5:40 PM
+there's a fun design flaw in mtk pkgs all data in a pak aligned to 16
+bytes is AES encrypted, but for some reason, they don't use any standard
+padding, and the data that's left unaligned is just XORed with the AES
+KEY! so, for example if most of last 16 bytes were left unaligned, and
+you know the plaintext(or use your brain) you can recover most of the
+key, and you'll just have to brute force the rest. (if you can recover
+12 bytes, you can just brute force 4 which is trivial). IV can be easily
+recovered too by the "reserved mtk inc" header. this way we can have
+some cool new mtk pkg keys:
+("DB7D510A8DA635645A844B2F55C0B5BA", "93A97FF5C4BCE585122C7109FC2E1A3F", "Sony 2017 Linux"), ("9320FC32BCDCE3178B7B2BA2A1AF3391", "D93F84B9BDDC9E1BD3E7C114AAA2FAA3", "Sony 2015 Android"), ("F888FC0268C6692D7EB76243E53D47E5", "EE40FE4700EC3197336940D4B30D4BE8", "Sony 2016 Android"), ("07A30C2E4AAE4849EC3DD2301C381868", "BC1443A0D17AAB2DB1EA0302EF280717", "Philips Android")
+The philips key seems to work from 2017 up to 2022 (worked on
+TPM171E(2017), TPM191E(2019), TPM211E(2021)) although to add this to
+epk2extract it would need modification to work with 0x170 header, right
+now it will fail when you add these keys
+ 1 [:UwU:] 1  2  2
+January 6, 2026
+ww8543 01/06/2026 9:19 PM
+also completely wrong channel
+ 1
+[] amazegummier Does anyone have keys to decrypt IPK files?
+hellobox. 01/06/2026 7:23 PM
+DRM stuff is against the rules
+[amazegummier]
+amazegummier 01/06/2026 6:57 PM
+Does anyone have keys to decrypt IPK files?
+January 4, 2026
+fuchsia12 01/04/2026 6:05 PM
+January 3, 2026
+[tomas.vala]
+hankhubert <@524362336644104215> I got it working by fixing the STR
+filename extraction from the PIF file to ma...
+tomas.vala 01/03/2026 1:12 AM
+Hi. Years later I hit the same problem with PIF handler and have
+implemented similar custom fix myself before finding your posts. However
+it quickly turns out there is a follow up problem to deal with. It often
+(like in every recording) happens that my device (LG WebOS25) produces
+PIF file that references the same STR file multiple times, so PIF
+handler includes it to output TS multiple times as well which makes the
+output unusable. To circumvent that I have implemented a custom fix to
+make PIF handler skip already processed STR files. With that, PIF/STR
+extraction seems to work well in my conditions.
+December 28, 2025
+[theubusu]
+theubusu 12/28/2025 12:40 AM
+I didn't find another firmware that does this so can't be sure though
+12/28/2025 12:39 AM
+Yeah, but I check for all 3 just in case
+[smx2460]
+smx2460 12/28/2025 12:37 AM
+2. Sounds like the most likely logic (edited)
+[theubusu]
+theubusu 12/28/2025 12:29 AM
+Now I don't know how the bootloader decides if it is uncompressed but
+this is what I figured
+12/28/2025 12:28 AM
+But basically if 1. lzhs header (the 2nd one) uncompressed size >
+segment header uncompressed size 2. lzhs_header.compressed_size ==
+lzhs_header.uncompressed_size) 3. checksum is 0x00 You can assume it is
+uncompressed I tried on the partitions in the hisense fw and they seem
+to extract correctly with this logic
+12/28/2025 12:26 AM
+And what I had failed as well , because it is based on epk2extract logic
+12/28/2025 12:25 AM
+Epk2extract will fail because of this
+[smx2460]
+smx2460 12/28/2025 12:25 AM
+New to me that is 
+[smx2460]
+[] theubusu I noticed that some segments actually are uncompressed at
+all
+smx2460 12/28/2025 12:25 AM
+Ok this is new
+[smx2460]
+smx2460 12/28/2025 12:25 AM
+Raw/reference *
+[theubusu]
+theubusu 12/28/2025 12:25 AM
+I noticed that some segments actually are uncompressed at all
+[smx2460]
+smx2460 12/28/2025 12:25 AM
+Which has the types raw/nonraw
+12/28/2025 12:24 AM
+Lzhs just stores LZSS afaik
+12/28/2025 12:24 AM
+Segment type?
+12/28/2025 12:24 AM
+[theubusu]
+theubusu 12/28/2025 12:24 AM
+If you try to decompress this it will not be correct
+12/28/2025 12:23 AM
+Basically } else if (lzhs_header.uncompressed_size >
+segment_header.uncompressed_size) && (lzhs_header.compressed_size ==
+lzhs_header.uncompressed_size) && lzhs_header.checksum_or_seg_idx ==
+0x00 {
+12/28/2025 12:23 AM
+There is this weird segment type in LZHS FS that stores uncompressed
+data
+[smx2460]
+smx2460 12/28/2025 12:22 AM
+12/28/2025 12:22 AM
+Nice job nonetheless
+[theubusu]
+theubusu 12/28/2025 12:22 AM
+Yeah. but didn't add the changes
+[smx2460]
+smx2460 12/28/2025 12:22 AM
+Oh cool, you implemented it
+12/28/2025 12:22 AM
+https://github.com/theubusu/lzhs
+GitHub - theubusu/lzhs: MediaTek Inc. (Chinese: 聯發科技股份...
+MediaTek Inc. (Chinese: 聯發科技股份有限公司; pinyin: Liánfā Kējì Gǔfèn
+Yǒuxiàn Gōngsī), sometimes informally abbreviated as MTK, is a Taiwanese
+fabless semiconductor company that designs and markets a range...
+[]
+12/28/2025 12:21 AM
+Otherwise the update might be slow :p (edited)
+[theubusu]
+theubusu 12/28/2025 12:21 AM
+When it's used so commonly
+12/28/2025 12:20 AM
+They probably do
+[smx2460]
+smx2460 12/28/2025 12:20 AM
+Could be wrong
+12/28/2025 12:20 AM
+I have vague memory of some sort of accelerated decoding but don't take
+my word for it
+12/28/2025 12:20 AM
+I don't remember if MTK has accelerated LZHS decoding or not
+[theubusu]
+theubusu 12/28/2025 12:19 AM
+I think LZO or ZTSD
+12/28/2025 12:19 AM
+It can be LZ4 lzhs and something else
+12/28/2025 12:19 AM
+Yes , the bootloader checks a flag in the header and decides the
+compression method
+[smx2460]
+smx2460 12/28/2025 12:19 AM
+So 
+[smx2460]
+[] theubusu maybe its LZ4 or zstd then
+smx2460 12/28/2025 12:19 AM
+Though LZHS is indeed there (edited)
+[theubusu]
+theubusu 12/28/2025 12:19 AM
+I still have no idea what the checksum is though
+[smx2460]
+smx2460 12/28/2025 12:18 AM
+Ok then forget what I said earlier
+[theubusu]
+[] smx2460 Wait so it's not LZHS?
+theubusu 12/28/2025 12:18 AM
+No, it seems like this is some alternate variant by Mstar that uses LZ4
+[smx2460]
+smx2460 12/28/2025 12:18 AM
+I guess not
+[smx2460]
+[] theubusu it is lz4 raw block decompression
+smx2460 12/28/2025 12:18 AM
+Wait so it's not LZHS?
+[smx2460]
+smx2460 12/28/2025 12:17 AM
+I guess MTK carried over their LZHS crap on top of Mstar's bsp
+12/28/2025 12:17 AM
+The BSP seemed somewhat better in MStar than in MTK
+12/28/2025 12:16 AM
+Bootloader was crappy code slapped together but that's only used during
+boot
+12/28/2025 12:16 AM
+Mstar had good system design imo
+[smx2460]
+[] theubusu hmmm this tv uses mboot? soo mstar? but why does it use mtk
+pkgs then...
+smx2460 12/28/2025 12:16 AM
+Well mstar was (unfortunately) acquired by MTK
+December 27, 2025
+[theubusu]
+theubusu 12/27/2025 3:56 PM
+it detects the type of compression based on the byte in the main header
+[theubusu]
+theubusu 12/27/2025 3:48 PM
+but yeah it does work with lz4
+[image.png]
+ image.png
+52.7 KB External
+[theubusu]
+theubusu 12/27/2025 3:38 PM
+crc32 doesnt match
+12/27/2025 3:38 PM
+im still not sure what the checksum is though
+12/27/2025 3:38 PM
+this works on it
+ lz4_block.py
+259 Bytes External
+[theubusu]
+[] theubusu <@310158180728700929> sorry for the ping, but have you ever
+seen this? Lzhs with a 4 byte checksum.....
+theubusu 12/27/2025 3:37 PM
+it is lz4 raw block decompression
+[theubusu]
+theubusu 12/27/2025 2:38 PM
+plain swearing in the bootloader
+12/27/2025 2:37 PM
+(no content)
+[image.png]
+ image.png
+6.73 KB External
+ 2
+[theubusu]
+theubusu 12/27/2025 2:29 PM
+tho it still says LZHS
+12/27/2025 2:29 PM
+maybe its LZ4 or zstd then
+[image.png]
+ image.png
+1.99 KB External
+12/27/2025 2:27 PM
+that would make sense why it doesnt use LZHS. so maybe mstar has their
+own method
+12/27/2025 2:25 PM
+hmmm this tv uses mboot? soo mstar? but why does it use mtk pkgs then...
+[theubusu]
+theubusu 12/27/2025 2:03 PM
+so idk what checksum it is
+12/27/2025 2:03 PM
+yeah although i wasnt able to match crc32 to any of the zeroed segments
+[image.png]
+ image.png
+3.86 KB External
+[smx2460]
+smx2460 12/27/2025 2:02 PM
+Perhaps crc32
+12/27/2025 2:02 PM
+Then it could be upgraded checksum
+[theubusu]
+theubusu 12/27/2025 2:02 PM
+different of course
+[smx2460]
+smx2460 12/27/2025 2:02 PM
+That might as well be garbage data
+[theubusu]
+theubusu 12/27/2025 2:02 PM
+in every segment theres these 4 bytes
+[smx2460]
+smx2460 12/27/2025 2:02 PM
+There is passing afterwards iirc
+12/27/2025 2:02 PM
+Are you sure the cksum is 4 bytes?
+[theubusu]
+[] smx2460 Do you see the next header if you skip that many compressed
+bytes?
+theubusu 12/27/2025 2:01 PM
+yes
+[theubusu]
+theubusu 12/27/2025 2:01 PM
+but the header of the data differs
+12/27/2025 2:01 PM
+yes, compressed size matches
+[smx2460]
+smx2460 12/27/2025 2:01 PM
+Do you see the next header if you skip that many compressed bytes?
+(edited)
+12/27/2025 2:01 PM
+Does the chunk size work?
+[theubusu]
+theubusu 12/27/2025 2:00 PM
+yeah, i have a feeling this is not LZHS at all
+[smx2460]
+[] theubusu <@310158180728700929> sorry for the ping, but have you ever
+seen this? Lzhs with a 4 byte checksum.....
+smx2460 12/27/2025 2:00 PM
+Odd
+[smx2460]
+smx2460 12/27/2025 2:00 PM
+Hmm
+[theubusu]
+theubusu 12/27/2025 1:11 PM
+@Smx sorry for the ping, but have you ever seen this? Lzhs with a 4 byte
+checksum.. kinda doesnt look like lzhs anyway its used on compressed
+partitions on some philco TV
+[image.png]
+ image.png
+17.49 KB External
+[theubusu]
+theubusu 12/27/2025 2:28 AM
+also there is some very weird things in this firmware including an
+LZHS-fs-compressed squashfs
+[theubusu]
+theubusu 12/27/2025 2:12 AM
+i found this new mediatek pkg key for hisense:
+B1BFAA407F70C80C650379DFEAFAA40F,BC1443A0D17AAB2DB1EA0302EF280717
+however, it uses a 0x170 header (in mediatek_pkg.h its called
+SIZEOF_THOMPSON_HEADER) i had to set what is in the second picture for
+it to work, otherwise it will try to decrypt the rest of the big header
+as a PAK, which will fail. obviously this is not the solution because
+not all hisense packages have the big header. so im wondering how to
+even detect it? maybe check if an ascii string appears at 0x170(big
+header) or 0x90(small header)? (also, what is up with the weird
+characters after the partition name?) (edited)
+[image.png]
+ image.png
+27.42 KB External
+[image.png]
+ image.png
+5.76 KB External
+ww8543 12/27/2025 12:16 AM
+but i hear there is some white bunny with good news, that you could
+follow
+[] gladosc I managed to find a file "keyfile.dat" on the tv inside
+"cmn_data" (first I tried some webos key rea...
+ww8543 12/27/2025 12:16 AM
+webos tvs dont have the key inside the regular filesystem
+December 26, 2025
+[gladosc]
+gladosc 12/26/2025 10:01 PM
+I managed to find a file "keyfile.dat" on the tv inside "cmn_data"
+(first I tried some webos key reader script but that didnt work so I
+went in to find something that might resemble a key but Im pretty sure
+thats not it)
+[gladosc]
+gladosc 12/26/2025 9:51 PM
+ok my bad, I thought it would be some generic keys for each version of
+webos. thanks anyway!
+[theubusu]
+[] gladosc I was hoping there are some generic keys within epk2extract
+because I couldnt dump the key from my t...
+theubusu 12/26/2025 9:50 PM
+well, each tv has a different key so its not possible for epk2extract to
+include it
+[gladosc]
+gladosc 12/26/2025 9:50 PM
+I was hoping there are some generic keys within epk2extract because I
+couldnt dump the key from my tv. I rooted it, I accessed it but couldnt
+find/get the key
+[theubusu]
+theubusu 12/26/2025 9:48 PM
+it is possible , but you need to retrieve the decryption key from your
+tv
+[gladosc]
+gladosc 12/26/2025 9:48 PM
+any help would be appreciated even if its a "no, you cant", I just need
+a closure after trying pretty much everything internet suggested to
+decrypt those files
+12/26/2025 9:44 PM
+hey, is it possible to use epk2extract with STR files that have no
+actual type (STR only in the name; also got some other files like THM,
+IDX and one PIF)? I got PVR videos from 1.4 webos tv (and before anyone
+asks, its videos from my cam, nothing illegal). I built the epk2extract
+with cygwin successfully (edited)
+December 22, 2025
+[] theubusu lol
+https://auronen.cokoliv.eu/gmc/zengin/tools/vdfs_tools/gothic_vdfs/
+hellobox. 12/22/2025 11:00 PM
+i've got *gothic VD*!
+[theubusu]
+theubusu 12/22/2025 10:57 PM
+lol https://auronen.cokoliv.eu/gmc/zengin/tools/vdfs_tools/gothic_vdfs/
+GothicVDFS - Gothic Modding Community
+Gothic Modding Community is a collection of helpful resources for
+modding Gothic and Risen games.
+[]
+12/22/2025 10:54 PM
+also a package "vdfs-tools" but as of now it only consits of mkfs
+12/22/2025 10:54 PM
+in the open source releases for TVs
+12/22/2025 10:53 PM
+yeah the driver source is provided
+[reisxd]
+reisxd 12/22/2025 10:53 PM
+iirc there is open source drivers/libraries for vdfs
+[theubusu]
+theubusu 12/22/2025 10:51 PM
+never thought of that
+12/22/2025 10:51 PM
+hmmm you are right
+[] theubusu and as the kernel driver only compiles on linux 5.4 for some
+reason, i wanted to make it something t...
+ww8543 12/22/2025 10:50 PM
+yea or a lib... which can then be used to build an app that can unpack
+it, OR also as a base for a fuse driver
+ 1
+[smx2460]
+smx2460 12/22/2025 10:49 PM
+https://www.youtube.com/watch?v=4cmYCK9PBkM
+Qt Group
+QtWS17 - Intro to the WebOS QtWayland Compositor, Florian Haenel, ...
+A brief tour of the anatomy of the WebOS compositor. Using QtWayland and
+QtDeclarative, we give an overview of how Qt helped to ship Wayland with
+our acclaimed UI to a range of devices and formfactors.
+[] Watch video
+12/22/2025 10:49 PM
+this is not the presentation I'm talking about, but it's interesting
+[theubusu]
+theubusu 12/22/2025 10:49 PM
+and as the kernel driver only compiles on linux 5.4 for some reason, i
+wanted to make it something that works in userspace like FUSE
+[reisxd]
+[] reisxd if i ever see a tizen engineer i will question them and ask
+them why the fuck are they still using t...
+reisxd 12/22/2025 10:48 PM
+you know instead of dealing with this os why not use android just like
+how yall switched to wearos on watches and stopped making tizen phones
+[theubusu]
+ww8543 why not just make it a lib that you can use to extract stuff?
+theubusu 12/22/2025 10:48 PM
+well its a kernel driver currently, samsung used to provide an "unpack"
+binary but they don't anymore for current versions for some reason
+[smx2460]
+smx2460 12/22/2025 10:47 PM
+I remember there was a presentation by LG at the QT conference where the
+dude was completely unbothered (edited)
+ 1
+[] theubusu I kinda want to convert the VDFS kernel driver into a FUSE
+driver
+ww8543 12/22/2025 10:47 PM
+why not just make it a lib that you can use to extract stuff?
+[reisxd]
+reisxd 12/22/2025 10:46 PM
+if i ever see a tizen engineer i will question them and ask them why the
+fuck are they still using tizen
+ 1
+[erfanoabdi]
+erfanoabdi 12/22/2025 10:45 PM
+by translating the libc and some wrappers
+12/22/2025 10:44 PM
+libhybris is for having wayland but using android egl libs only
+ 1
+[smx2460]
+smx2460 12/22/2025 10:44 PM
+by translating the APIs between the two
+12/22/2025 10:43 PM
+the one that lets you run Wayland on top of surfaceflinger
+12/22/2025 10:43 PM
+that was libhybris
+12/22/2025 10:43 PM
+or wait, that is probably the other way around
+12/22/2025 10:42 PM
+funny thing being that a big waydroid dev is @Erfan Abdi, here with us
+ (edited)
+[reisxd]
+[] smx2460 not sure what Samsung does
+reisxd 12/22/2025 10:42 PM
+samsung uses elementary as its ui framework, also uses wayland
+[smx2460]
+smx2460 12/22/2025 10:42 PM
+waydroid iirc (edited)
+12/22/2025 10:42 PM
+similar to how it was made to work on Android
+12/22/2025 10:42 PM
+getting Wayland running is easier since it uses libGLES
+12/22/2025 10:41 PM
+all custom
+12/22/2025 10:41 PM
+with no DRI drivers or KMS or anything like that
+12/22/2025 10:41 PM
+or I should say MTK/Mali/PowerVR
+12/22/2025 10:41 PM
+but LG basically has libGLES as the translation layer
+12/22/2025 10:40 PM
+not sure what Samsung does
+12/22/2025 10:40 PM
+the problem is that all of the graphics stack on TVs is custom
+12/22/2025 10:39 PM
+how much effort it would take and how well it would run are another
+story 
+12/22/2025 10:39 PM
+I mean... given time and will, getting something running is possible
+12/22/2025 10:35 PM
+but you could give it a try
+12/22/2025 10:35 PM
+and probably won't implement protocol X that app Y expects
+12/22/2025 10:35 PM
+since LG's Wayland is old
+12/22/2025 10:35 PM
+it will probably not be a smooth ride
+12/22/2025 10:35 PM
+MAYBE you could run XWayland or try to run plasmashell or whatever
+[theubusu]
+[] smx2460 dating back to 2014 
+theubusu 12/22/2025 10:34 PM
+well, pretty sure the Samsung tv in that PDF is a 2012 model
+[smx2460]
+smx2460 12/22/2025 10:34 PM
+(no content)
+[IMG_20140910_223606.jpg]
+ IMG_20140910_223606.jpg
+1.26 MB External
+12/22/2025 10:34 PM
+dating back to 2014 
+12/22/2025 10:33 PM
+but these are QT demos
+12/22/2025 10:33 PM
+(no content)
+[IMG_20140906_190731.jpg]
+ IMG_20140906_190731.jpg
+1.34 MB External
+12/22/2025 10:33 PM
+(no content)
+[IMG_20140906_190908.jpg]
+ IMG_20140906_190908.jpg
+1.3 MB External
+12/22/2025 10:33 PM
+on Wayland you can do some things
+12/22/2025 10:33 PM
+and no drivers
+12/22/2025 10:33 PM
+not sure if you can run X11 under directfb but it sounds like a mess
+[theubusu]
+theubusu 12/22/2025 10:33 PM
+it has no X server
+12/22/2025 10:33 PM
+yeah
+[smx2460]
+smx2460 12/22/2025 10:32 PM
+if you're running under nc4 you have to use directfb
+12/22/2025 10:32 PM
+well (edited)
+[theubusu]
+theubusu 12/22/2025 10:32 PM
+i wonder if it would be possible on a similar-era lg tv
+[smx2460]
+[] theubusu And if you want to see actual Ubuntu on a Samsung tv 
+smx2460 12/22/2025 10:31 PM
+oh yeah I remember this
+[yolofant]
+yolofant 12/22/2025 10:31 PM
+put into /tmp?
+ 1
+[smx2460]
+smx2460 12/22/2025 10:31 PM
+yeah
+hellobox. 12/22/2025 10:30 PM
+ugh
+12/22/2025 10:30 PM
+yeah you can't
+[] smx2460 it would mean their jailer is REALLY broken
+hellobox. 12/22/2025 10:30 PM
+what, being able to access other apps?
+[smx2460]
+smx2460 12/22/2025 10:30 PM
+it would mean their jailer is REALLY broken
+[smx2460]
+hellobox. you may not be able to access other app dirs
+smx2460 12/22/2025 10:30 PM
+sounded too weird to be true, even for LG
+[smx2460]
+smx2460 12/22/2025 10:29 PM
+we could try
+12/22/2025 10:29 PM
+if it is, and someone wants to give it a go
+hellobox. 12/22/2025 10:29 PM
+you may not be able to access other app dirs
+[smx2460]
+smx2460 12/22/2025 10:29 PM
+i don't know if that's possible
+hellobox. 12/22/2025 10:29 PM
+actually
+[smx2460]
+smx2460 12/22/2025 10:29 PM
+providing libs
+hellobox. 12/22/2025 10:29 PM
+and set their LD_LIBRARY_PATH accordingly
+[smx2460]
+smx2460 12/22/2025 10:29 PM
+if you can do that then yeah you could make a fake app
+hellobox. 12/22/2025 10:29 PM
+and have other packages depend on it
+[smx2460]
+hellobox. can jailed apps not read other apps' files?
+smx2460 12/22/2025 10:28 PM
+dunno
+hellobox. 12/22/2025 10:28 PM
+i mean like org.webosbrew.lib.dotnet.12345
+[smx2460]
+smx2460 12/22/2025 10:28 PM
+making it large
+12/22/2025 10:28 PM
+then you're shipping it with each app
+hellobox. 12/22/2025 10:28 PM
+can jailed apps not read other apps' files?
+12/22/2025 10:28 PM
+couldn't you just keep it in its own app dir
+[smx2460]
+smx2460 12/22/2025 10:28 PM
+yes
+[] smx2460 and that we could read from prisoner?
+hellobox. 12/22/2025 10:28 PM
+like without root?
+[smx2460]
+smx2460 12/22/2025 10:28 PM
+and that we could read from prisoner? (edited)
+12/22/2025 10:28 PM
+can we find a location that apps can access under jail (edited)
+[smx2460]
+hellobox. why?
+smx2460 12/22/2025 10:27 PM
+depends
+[theubusu]
+theubusu 12/22/2025 10:27 PM
+but that would probably a lot of work
+12/22/2025 10:26 PM
+I kinda want to convert the VDFS kernel driver into a FUSE driver
+12/22/2025 10:24 PM
+thankfully its open source
+hellobox. 12/22/2025 10:23 PM
+i guess russia and korea are very close geographically (although north
+korea...)
+[] theubusu Click to see attachment
+hellobox. 12/22/2025 10:22 PM
+huh, they have a russian office too
+[theubusu]
+theubusu 12/22/2025 10:22 PM
+VD software group in Russia of all places
+12/22/2025 10:22 PM
+(no content)
+[image-7.png]
+ image-7.png
+42.23 KB External
+[reisxd]
+[] theubusu in VDFS , which is used on Samsung tvs it stands for
+"Vertically Deliberate"
+reisxd 12/22/2025 10:21 PM
+[] theubusu VD has to go back even before tizen
+hellobox. 12/22/2025 10:21 PM
+VD goes back a long way...
+[] reisxd https://samsungtizenos.com/blog/android-on-tizen/ they do talk
+about VD (samsung tv platform) but it...
+hellobox. 12/22/2025 10:21 PM
+"VD"? 
+[] smx2460 if you had to install .NET system-wide on LG, then you
+wouldn't be able to write .NET apps without r...
+hellobox. 12/22/2025 10:20 PM
+why?
+[theubusu]
+theubusu 12/22/2025 10:20 PM
+whatever that means
+[theubusu]
+[] reisxd well i dont know what it really means but i do know that the
+platform name is VD
+theubusu 12/22/2025 10:20 PM
+in VDFS , which is used on Samsung tvs it stands for "Vertically
+Deliberate"
+[theubusu]
+theubusu 12/22/2025 10:19 PM
+just Ubuntu user space
+12/22/2025 10:19 PM
+well it's still using the tvs kernel
+[reisxd]
+reisxd 12/22/2025 10:19 PM
+dont have a spare usb drive to try
+[reisxd]
+[] theubusu And if you want to see actual Ubuntu on a Samsung tv 
+reisxd 12/22/2025 10:19 PM
+i have seen this before
+[theubusu]
+theubusu 12/22/2025 10:18 PM
+And if you want to see actual Ubuntu on a Samsung tv 
+ Ubuntu_Smart.pdf
+1.44 MB External
+[reisxd]
+[] theubusu VD has to go back even before tizen
+reisxd 12/22/2025 10:17 PM
+well i dont know what it really means but i do know that the platform
+name is VD (edited)
+[smx2460]
+smx2460 12/22/2025 10:17 PM
+lol
+[theubusu]
+theubusu 12/22/2025 10:17 PM
+I'm still waiting
+[theubusu]
+[] smx2460 they don't show behind ¯\_(ツ)_/¯
+theubusu 12/22/2025 10:17 PM
+(no content)
+[Screenshot_20251222-221612.png]
+ Screenshot_20251222-221612.png
+76.63 KB External
+[theubusu]
+theubusu 12/22/2025 10:17 PM
+on a 2013 tv I think when I connected to a root shell it said "VDLinux"
+[smx2460]
+[] theubusu i doubt it was running on the actual tv
+smx2460 12/22/2025 10:17 PM
+they don't show behind ¯\_(ツ)_/¯
+[theubusu]
+theubusu 12/22/2025 10:16 PM
+VD has to go back even before tizen
+[reisxd]
+[] reisxd i really wonder why they didnt push it to the tvs
+reisxd 12/22/2025 10:16 PM
+https://samsungtizenos.com/blog/android-on-tizen/ they do talk about VD
+(samsung tv platform) but it's nowhere to be seen on tvs
+Android on Tizen – Tizen
+You can use Android apps on Tizen devices.
+[]
+[]
+[smx2460]
+smx2460 12/22/2025 10:15 PM
+https://www.youtube.com/watch?v=FpXSeFsywfQ
+Austin Evans
+Ubuntu TV at CES 2012
+In this live video from CES 2012 I give a demo of Ubuntu TV. Ubuntu TV
+is a version of Ubuntu Linux which has been modified to work as a smart
+TV platform.
+[] Watch video
+[theubusu]
+[] smx2460 demoed exactly on a Samsung TV
+theubusu 12/22/2025 10:15 PM
+i doubt it was running on the actual tv
+[smx2460]
+smx2460 12/22/2025 10:14 PM
+then the project silently and misteriously died
+12/22/2025 10:14 PM
+demoed exactly on a Samsung TV
+12/22/2025 10:14 PM
+well there was ubuntu tv too
+[reisxd]
+[] reisxd fun fact there is android on tizen (waydroid tizen port) but
+it was not pushed to samsung tvs
+reisxd 12/22/2025 10:14 PM
+i really wonder why they didnt push it to the tvs
+[smx2460]
+[] reisxd cant you do a package that has the runtime and the other apps
+use it?
+smx2460 12/22/2025 10:14 PM
+doubt due to sandboxing
+[smx2460]
+[] theubusu so that's where all the TV R&D money went
+smx2460 12/22/2025 10:14 PM
+[reisxd]
+reisxd 12/22/2025 10:13 PM
+cant you do a package that has the runtime and the other apps use it?
+[smx2460]
+smx2460 12/22/2025 10:13 PM
+similar to how MonoAndroid used to work (edited)
+12/22/2025 10:13 PM
+if you ship it in the app, then the app gets huge
+12/22/2025 10:13 PM
+if you had to install .NET system-wide on LG, then you wouldn't be able
+to write .NET apps without root
+[reisxd]
+[] smx2460 how does tizen manage the .NET runtime, is it installed once
+and all apps use the same?
+reisxd 12/22/2025 10:13 PM
+all apps use a single runtime
+[reisxd]
+[] smx2460 but then you would need to think how you're gonna code apps,
+make bindings, ship the runtime etc.
+reisxd 12/22/2025 10:12 PM
+yeaah
+[smx2460]
+smx2460 12/22/2025 10:12 PM
+how does tizen manage the .NET runtime, is it installed once and all
+apps use the same?
+[reisxd]
+reisxd 12/22/2025 10:12 PM
+fun fact there is android on tizen (waydroid tizen port) but it was not
+pushed to samsung tvs
+[smx2460]
+smx2460 12/22/2025 10:12 PM
+like
+12/22/2025 10:12 PM
+but then you would need to think how you're gonna code apps, make
+bindings, ship the runtime etc.
+12/22/2025 10:12 PM
+I did get it built
+12/22/2025 10:12 PM
+I actually tried to patch that very same code to build for LG
+12/22/2025 10:12 PM
+yeah yeah
+[reisxd]
+[] smx2460 Tizen has an official C# port
+reisxd 12/22/2025 10:11 PM
+Tizen does have dotnet runtime
+[smx2460]
+smx2460 12/22/2025 10:11 PM
+I wanted to get it done for LG unofficially too
+12/22/2025 10:11 PM
+Tizen has an official C# port
+[theubusu]
+[] smx2460 https://www.youtube.com/watch?v=i3s6OB2d1Sc
+theubusu 12/22/2025 10:11 PM
+so that's where all the TV R&D money went
+ 1
+[smx2460]
+smx2460 12/22/2025 10:11 PM
+ohh right (edited)
+[reisxd]
+reisxd 12/22/2025 10:11 PM
+need to do some c# interop thing with elementary but not that smart for
+it
+12/22/2025 10:10 PM
+if i was smart enough id port cobalt to tizen so i could run tizentube
+cobalt on tizens aswell so tizenbrew would be obsolete pretty much
+(tizenbrew being the module loader that loads tizentube, its unstable on
+newer tvs and idk why)
+[smx2460]
+smx2460 12/22/2025 10:10 PM
+https://www.youtube.com/watch?v=i3s6OB2d1Sc
+Vera Medeiros
+Robô LG
+50 Anos Gazin
+[] Watch video
+[reisxd]
+reisxd 12/22/2025 10:08 PM
+but no one is willing to make software for it
+[theubusu]
+[] smx2460 they had some strange idea of encrypting the `telnetd` binary
+for whatever reason, on netcast
+theubusu 12/22/2025 10:08 PM
+but leave an option in the service menu that just executes a binary off
+a USB stick
+ 1  1 [:lg:] 1
+[reisxd]
+reisxd 12/22/2025 10:08 PM
+also, without root you can do some things on tizen
+[smx2460]
+smx2460 12/22/2025 10:08 PM
+12/22/2025 10:07 PM
+probably to make sure it can't be ran accidentally, LOL
+12/22/2025 10:07 PM
+they had some strange idea of encrypting the telnetd binary for whatever
+reason, on netcast
+ 1
+[reisxd]
+reisxd 12/22/2025 10:07 PM
+what synacktivs exploit does is spoof the status
+[smx2460]
+smx2460 12/22/2025 10:07 PM
+(aka not very much)
+12/22/2025 10:06 PM
+yeah that's already light years ahead of anything LG has done so far
+(edited)
+[reisxd]
+reisxd 12/22/2025 10:06 PM
+any unsigned executable thats not in /bin, /usr/bin, etc. are not
+allowed to run
+[smx2460]
+smx2460 12/22/2025 10:06 PM
+and enforce signatures on binaries?
+12/22/2025 10:06 PM
+do they use SELinux?
+[reisxd]
+reisxd 12/22/2025 10:06 PM
+its unauthorized execution preventation
+[reisxd]
+[] theubusu they have some sort of antivirus
+reisxd 12/22/2025 10:06 PM
+its not an antivirus
+[theubusu]
+theubusu 12/22/2025 10:05 PM
+they have some sort of antivirus
+[Screenshot_20251222-220545.png]
+ Screenshot_20251222-220545.png
+670.08 KB External
+[reisxd]
+reisxd 12/22/2025 10:05 PM
+i mean tizen was built on top of multiple oses made by different
+companies aswell
+[smx2460]
+smx2460 12/22/2025 10:05 PM
+when they tried doing it from scratch (netcast), we all saw how it went
+(edited)
+12/22/2025 10:05 PM
+and they acquired WebOS from Palm instead of building it from scratch
+[reisxd]
+[] smx2460 Samsung is also active in the Android phone market and
+probably shares some R&D
+reisxd 12/22/2025 10:05 PM
+it has "knox" though idk how true it is
+[smx2460]
+smx2460 12/22/2025 10:05 PM
+and it also closed the smartphone market
+ 1
+12/22/2025 10:04 PM
+LG has always treated DTV like its own thing
+12/22/2025 10:04 PM
+Samsung is also active in the Android phone market and probably shares
+some R&D
+[theubusu]
+theubusu 12/22/2025 10:04 PM
+I think the last Samsung root exploit was for 2020 tvs
+[smx2460]
+smx2460 12/22/2025 10:04 PM
+I was in touch with a samygo developer
+12/22/2025 10:04 PM
+it's better
+[theubusu]
+[] reisxd openlgtv survived longer than samygo huh
+theubusu 12/22/2025 10:04 PM
+Samsung's security is too good I guess
+[reisxd]
+[] smx2460 and then noticed WebosBrew going basically parallel to us,
+and reached out to Mariotaku to join our ...
+reisxd 12/22/2025 10:03 PM
+oh i see
+[reisxd]
+reisxd 12/22/2025 10:03 PM
+i guess im the only guy that knows somewhat a lot about the internals of
+tizen there is probably more people but theyre in the dark so
+[smx2460]
+smx2460 12/22/2025 10:03 PM
+and then noticed WebosBrew going basically parallel to us, and reached
+out to Mariotaku to join our efforts
+12/22/2025 10:02 PM
+met many awesome people too
+12/22/2025 10:02 PM
+didn't expect it to come as far as it did 
+[reisxd]
+reisxd 12/22/2025 10:02 PM
+unlike samygo which is still online but dead completely
+[smx2460]
+smx2460 12/22/2025 10:02 PM
+yeah then I resurrected it
+[reisxd]
+reisxd 12/22/2025 10:02 PM
+well it was resurrected
+[smx2460]
+smx2460 12/22/2025 10:01 PM
+managed to save some of it before the server was shutdown
+12/22/2025 10:01 PM
+had a forum and a wiki
+12/22/2025 10:01 PM
+well it technically died
+[reisxd]
+reisxd 12/22/2025 10:01 PM
+openlgtv survived longer than samygo huh
+[smx2460]
+smx2460 12/22/2025 9:59 PM
+also didn't have a config for keys (edited)
+12/22/2025 9:59 PM
+see? told you 
+[theubusu]
+theubusu 12/22/2025 9:59 PM
+and wtf is a "KIDS" partition
+12/22/2025 9:59 PM
+why are pak names hard coded lol
+[Screenshot_20251222-215848.png]
+ Screenshot_20251222-215848.png
+211.06 KB External
+[smx2460]
+smx2460 12/22/2025 9:56 PM
+state right before lprot took over (edited)
+12/22/2025 9:56 PM
+https://github.com/openlgtv/epk2extract/tree/75d710bd4f4bcc62a3bb32007a13f498ff21b0a3
+GitHub - openlgtv/epk2extract at 75d710bd4f4bcc62a3bb32007a13f498ff...
+Extraction tool for LG, Hisense, Sharp, Philips/TPV, Thompson and
+similar TVs/Embedded Devices - GitHub - openlgtv/epk2extract at
+75d710bd4f4bcc62a3bb32007a13f498ff21b0a3
+[]
+12/22/2025 9:56 PM
+2011 is when epk2extract was created
+12/22/2025 9:55 PM
+but they are two different things
+12/22/2025 9:55 PM
+I re-created the community once the old one died
+12/22/2025 9:54 PM
+yep
+[theubusu]
+[] smx2460 back when openlgtv was hosted on a Russian site and it was
+all about MIPS
+theubusu 12/22/2025 9:54 PM
+so that's what openlgtv.ru was
+[smx2460]
+smx2460 12/22/2025 9:54 PM
+and secureboot wasn't even implemented
+12/22/2025 9:54 PM
+back when openlgtv was hosted on a Russian site and it was all about
+MIPS
+12/22/2025 9:54 PM
+it was started on SVN by iirc sirius
+12/22/2025 9:53 PM
+nor did lprot
+12/22/2025 9:53 PM
+I didn't start it either
+12/22/2025 9:53 PM
+yeah
+[theubusu]
+theubusu 12/22/2025 9:53 PM
+the problem with epk2extract is that it wasn't really built to be
+extensible
+[smx2460]
+smx2460 12/22/2025 9:52 PM
+so 12 years ago
+12/22/2025 9:52 PM
+October
+12/22/2025 9:52 PM
+first contribution was in 2013
+[theubusu]
+theubusu 12/22/2025 9:51 PM
+15 years ago I probably didn't even know what a computer is
+[smx2460]
+smx2460 12/22/2025 9:50 PM
+yep
+[theubusu]
+theubusu 12/22/2025 9:50 PM
+that's crazy you've been at it for so long
+[smx2460]
+smx2460 12/22/2025 9:50 PM
+more like 15 in fact (edited)
+12/22/2025 9:49 PM
+over 10 years ago now
+12/22/2025 9:49 PM
+we're talking uhh
+12/22/2025 9:49 PM
+epk2extract was that project that allowed me to do real-world stuff
+12/22/2025 9:49 PM
+when I started with epk2extract I knew some C concepts but I never had a
+good project to use them on
+12/22/2025 9:49 PM
+I actually learned C with epk2extract
+ 1
+[theubusu]
+theubusu 12/22/2025 9:48 PM
+before that I should get better at C
+[smx2460]
+smx2460 12/22/2025 9:48 PM
+just be warned, the pay sucks
+12/22/2025 9:48 PM
+12/22/2025 9:48 PM
+and then you take the throne as the next epk2extract maintainer 
+12/22/2025 9:48 PM
+maybe that someone could be you
+12/22/2025 9:48 PM
+someone should fix it 
+12/22/2025 9:47 PM
+good to know!
+12/22/2025 9:47 PM
+hah
+[theubusu]
+theubusu 12/22/2025 9:47 PM
+the thing that's the platform in epk2extract "iMtK8" - well 4 bytes are
+actually iMtK but the 4 bytes after are actually the length of the
+entire extra header - 8. just coincidence it is almost always the
+equivalent to the ASCII character "8" 
+[smx2460]
+smx2460 12/22/2025 9:46 PM
+then there's the iPad stuff 
+[theubusu]
+theubusu 12/22/2025 9:45 PM
+the format is very simple
+[smx2460]
+smx2460 12/22/2025 9:45 PM
+which actually was completely guessed
+12/22/2025 9:45 PM
+All I saw back then was the encryption flag
+12/22/2025 9:45 PM
+cool!
+[theubusu]
+[] smx2460 is it in the same field that stores the encryption flag?
+theubusu 12/22/2025 9:45 PM
+yes
+[theubusu]
+theubusu 12/22/2025 9:45 PM
+fn is_encrypted(&self) -> bool { (self.flags & 1 << 0) != 0 } fn
+is_compressed(&self) -> bool { //lzhs fs (self.flags & 1 << 8) != 0 }
+[smx2460]
+smx2460 12/22/2025 9:45 PM
+is it in the same field that stores the encryption flag? (edited)
+[theubusu]
+theubusu 12/22/2025 9:44 PM
+so I don't have to do detection
+[smx2460]
+smx2460 12/22/2025 9:44 PM
+oh that's cool
+[theubusu]
+theubusu 12/22/2025 9:44 PM
+also I figured out there's a flag in mtk pkg that indicates if the pak
+is an LZHS FS
+12/22/2025 9:44 PM
+that's mediatek
+[smx2460]
+smx2460 12/22/2025 9:44 PM
+I guess it's good enough to detect a few stray bytes if you're lucky 
+12/22/2025 9:43 PM
+which also means you could get the same output in countless combinations
+of inputs but heh 
+12/22/2025 9:43 PM
+:p
+[theubusu]
+theubusu 12/22/2025 9:43 PM
+the simplest checksum I've ever seen

@@ -1,0 +1,1560 @@
+February 11, 2026
+[smx2460]
+smx2460 02/11/2026 12:03 AM
+wait let me try something
+02/11/2026 12:02 AM
+that seems like the more sensible approach
+02/11/2026 12:02 AM
+then I delegate to it
+02/11/2026 12:02 AM
+and if the struct inherits from Memory<T> or Memory64<T>
+02/11/2026 12:02 AM
+that I add an extra check in AsString
+02/11/2026 12:01 AM
+the alternative is
+02/11/2026 12:01 AM
+or read it
+02/11/2026 12:01 AM
+you wouldn't want to write a Memory64 instance to disk, normally
+(edited)
+02/11/2026 12:01 AM
+or files
+02/11/2026 12:01 AM
+an unmanaged struct has the same characteristics, but we also intend to
+marshal it to native code
+02/11/2026 12:01 AM
+a managed struct is used when we prefer stack over heap
+02/11/2026 12:00 AM
+what changes is the intent
+02/11/2026 12:00 AM
+we can't differentiate from Managed structs and Unmanaged structs easily
+02/11/2026 12:00 AM
+which I think is not possible
+02/11/2026 12:00 AM
+or make it somehow not appear for Memory<T>
+02/11/2026 12:00 AM
+does it make sense to keep this extension method, since it's confusing
+February 10, 2026
+02/10/2026 11:59 PM
+I'm thinking
+[theubusu]
+theubusu 02/10/2026 11:59 PM
+makes sense
+[smx2460]
+smx2460 02/10/2026 11:59 PM
+and interpreting them as strings
+[theubusu]
+theubusu 02/10/2026 11:59 PM
+hmmm
+[smx2460]
+smx2460 02/10/2026 11:59 PM
+an object and 2 longs
+02/10/2026 11:59 PM
+    public readonly struct Memory64<T> : IEquatable<Memory64<T>>, IDisposable
+    {
+        private readonly object? _object;
+        private readonly long _indexOrPointer;
+        private readonly long _length;
+02/10/2026 11:59 PM
+which are
+02/10/2026 11:59 PM
+but if you do Memory64.AsString, you are reading the fields of Memory64
+02/10/2026 11:59 PM
+the "bug" is that Memory64 is a struct too
+02/10/2026 11:58 PM
+    [InlineArray(12)]
+    public struct StructWithStr
+    {
+        private byte _element0;
+    }
+    public class SpanExtensionsTests
+    {
+        [Test]
+        public void TestAsString()
+        {
+            var stuff = new StructWithStr();
+            Encoding.UTF8.GetBytes("Hello World").CopyTo(stuff);
+            Assert.AreEqual("Hello World", stuff.AsString(Encoding.UTF8));
+        }
+    }
+02/10/2026 11:58 PM
+@theubusu so this is how it's supposed to be used, and works
+02/10/2026 11:55 PM
+but I'm not sure if it even worked, let's test (edited)
+02/10/2026 11:54 PM
+this is supposed to work if you have a struct containing say 4 bytes of
+a magic
+02/10/2026 11:54 PM
+so I'm conflicted
+02/10/2026 11:54 PM
+except this is a Managed struct
+02/10/2026 11:54 PM
+so it's available there too
+02/10/2026 11:54 PM
+but Memory64 is a struct
+02/10/2026 11:53 PM
+technically it's supposed to work for structs
+02/10/2026 11:53 PM
+but the managed one
+02/10/2026 11:53 PM
+that AsString
+02/10/2026 11:53 PM
+I think it's printing &span
+02/10/2026 11:53 PM
+lol it's broken
+[theubusu]
+theubusu 02/10/2026 11:52 PM
+i made a mess in git
+02/10/2026 11:52 PM
+can i like get rid of this
+[image.png]
+ image.png
+15.65 KB External
+[smx2460]
+smx2460 02/10/2026 11:49 PM
+let me fix
+02/10/2026 11:49 PM
+        [Test]
+        public void TestAsString()
+        {
+            var stuff = Encoding.UTF8.GetBytes("Hello, World");
+            var mem = new Memory64<byte>(stuff);
+            var str = mem.AsString(Encoding.UTF8);
+            Assert.AreEqual("Hello, World", str);
+        }
+    }
+02/10/2026 11:49 PM
+yep, can reproduce
+02/10/2026 11:47 PM
+but that's not the issue you're seeing
+02/10/2026 11:46 PM
+it would still be foo<null>bar
+02/10/2026 11:46 PM
+foo<null>bar<null>
+02/10/2026 11:46 PM
+if you have
+02/10/2026 11:46 PM
+well TrimEnd('\0') is wrong
+[theubusu]
+theubusu 02/10/2026 11:45 PM
+its just byte[]
+02/10/2026 11:45 PM
+the later one isnt Memory64<byte>
+02/10/2026 11:45 PM
+nvm
+02/10/2026 11:45 PM
+or no
+[smx2460]
+smx2460 02/10/2026 11:45 PM
+            public static string AsString<TBuffer>(
+                this TBuffer buffer,
+                Encoding encoding
+            )
+                where TBuffer : struct
+            {
+                int length = Unsafe.SizeOf<TBuffer>();
+                ref var bufferRef = ref Unsafe.AsRef(in buffer);
+                ref var start = ref Unsafe.As<TBuffer, byte>(ref bufferRef);
+                var span = MemoryMarshal.CreateReadOnlySpan(ref start, length);
+                return span.AsString(encoding);
+            }
+            public static string AsString(this ReadOnlySpan<byte> data, Encoding encoding)
+            {
+                var bytes = data.ToArray();
+                return encoding.GetString(bytes).TrimEnd('\0');
+            }
+            public static string AsString(this Span<byte> data, Encoding encoding)
+            {
+                var bytes = data.ToArray();
+                return encoding.GetString(bytes).TrimEnd('\0');
+            }
+02/10/2026 11:45 PM
+hmm what why did I do it like this
+[theubusu]
+theubusu 02/10/2026 11:45 PM
+but that one is null terminated
+[theubusu]
+[] smx2460 can you do `AsSstring` directly on that?
+theubusu 02/10/2026 11:44 PM
+yeah and it actually does work for me later
+[smx2460]
+smx2460 02/10/2026 11:44 PM
+            public static string AsString<TBuffer>(
+                this TBuffer buffer,
+                Encoding encoding
+            )
+                where TBuffer : struct
+            {
+                int length = Unsafe.SizeOf<TBuffer>();
+                ref var bufferRef = ref Unsafe.AsRef(in buffer);
+                ref var start = ref Unsafe.As<TBuffer, byte>(ref bufferRef);
+                var span = MemoryMarshal.CreateReadOnlySpan(ref start, length);
+                return span.AsString(encoding);
+            }
+02/10/2026 11:44 PM
+aha! there's a double
+02/10/2026 11:44 PM
+what method does it go to
+02/10/2026 11:44 PM
+can you do AsSstring directly on that? (edited)
+02/10/2026 11:43 PM
+ah.
+[theubusu]
+theubusu 02/10/2026 11:43 PM
+Memory64<byte>
+[smx2460]
+smx2460 02/10/2026 11:43 PM
+what is fileData
+02/10/2026 11:43 PM
+wtf 
+02/10/2026 11:43 PM
+oh wait
+[smx2460]
+[] theubusu ```csharp var infoString =
+Encoding.UTF8.GetString(fileData.ToArray()); var infoString2 =
+fileData.A...
+smx2460 02/10/2026 11:43 PM
+yeah see
+[smx2460]
+smx2460 02/10/2026 11:42 PM
+like this
+02/10/2026 11:42 PM
+            public Aes GetAes(PaddingMode paddingMode = PaddingMode.Zeros)
+02/10/2026 11:42 PM
+try it and see if it still spams
+[theubusu]
+theubusu 02/10/2026 11:42 PM
+hmmm
+[smx2460]
+smx2460 02/10/2026 11:42 PM
+it will fill any missing byte in the AES chunk to 0
+02/10/2026 11:42 PM
+wdyt about changing the padding mode to zeros by default? (edited)
+[theubusu]
+theubusu 02/10/2026 11:41 PM
+    var infoString = Encoding.UTF8.GetString(fileData.ToArray());
+    var infoString2 = fileData.AsString(Encoding.UTF8);
+[image.png]
+ image.png
+4.11 KB External
+[smx2460]
+smx2460 02/10/2026 11:40 PM
+odd
+[theubusu]
+theubusu 02/10/2026 11:40 PM
+it didnt for me
+[smx2460]
+smx2460 02/10/2026 11:40 PM
+otherwise it will use the whole array
+02/10/2026 11:40 PM
+it stops there
+02/10/2026 11:40 PM
+then, IF there is a null terminator
+02/10/2026 11:40 PM
+it first gets all bytes
+02/10/2026 11:40 PM
+            public static string AsString(this byte[] arr, Encoding encoding)
+            {
+                var str = encoding.GetString(arr);
+                var nullOffset = str.IndexOf('\0');
+                if (nullOffset > -1)
+                {
+                    return str.Substring(0, nullOffset);
+                }
+                return str;
+            }
+02/10/2026 11:40 PM
+wait though, it should work
+[theubusu]
+theubusu 02/10/2026 11:39 PM
+they are
+[smx2460]
+smx2460 02/10/2026 11:39 PM
+yesthat's the way if all the bytes are chars
+[theubusu]
+theubusu 02/10/2026 11:39 PM
+i used var infoString = Encoding.UTF8.GetString(fileData.ToArray());
+instrad
+[smx2460]
+smx2460 02/10/2026 11:39 PM
+do you know the string length?
+[theubusu]
+theubusu 02/10/2026 11:39 PM
+it was producing garbage
+02/10/2026 11:39 PM
+yeah
+[smx2460]
+smx2460 02/10/2026 11:39 PM
+yes
+02/10/2026 11:39 PM
+iirc yes, lemme check
+02/10/2026 11:38 PM
+hmm
+[theubusu]
+theubusu 02/10/2026 11:27 PM
+does .AsString() only work if the string is null-terminated?
+[smx2460]
+smx2460 02/10/2026 11:24 PM
+or we need to catch and silence that
+02/10/2026 11:24 PM
+so either all LG paks/epks are multiple of 16 (they should be) and we
+check that
+02/10/2026 11:24 PM
+IF it's also NOT multiple of 16, well you get that error
+02/10/2026 11:24 PM
+and the data we pass is not an EPK
+02/10/2026 11:24 PM
+this is the detector
+02/10/2026 11:24 PM
+but, wait (edited)
+02/10/2026 11:24 PM
+what if they aren't perfect multiples of 16?
+02/10/2026 11:24 PM
+we're just passing the EPK/PAK contents
+[theubusu]
+theubusu 02/10/2026 11:24 PM
+hm
+[smx2460]
+smx2460 02/10/2026 11:24 PM
+I mean, that's what the error is telling us
+[theubusu]
+[] smx2460 but the data we're passing is not multiple of 16
+theubusu 02/10/2026 11:23 PM
+why?
+[smx2460]
+smx2460 02/10/2026 11:23 PM
+previously it was just silently dropped
+02/10/2026 11:23 PM
+we probably should switch to zero padding then
+02/10/2026 11:23 PM
+but the data we're passing is not multiple of 16
+02/10/2026 11:23 PM
+so now it complains because we have no padding on EPKs
+02/10/2026 11:23 PM
+ah crap
+[theubusu]
+theubusu 02/10/2026 11:23 PM
+but PCKS works properly now
+02/10/2026 11:22 PM
+but now epk detectors are complaining
+[image.png]
+ image.png
+28.57 KB External
+02/10/2026 11:22 PM
+yes!
+02/10/2026 11:21 PM
+sure
+ 1
+[smx2460]
+smx2460 02/10/2026 11:21 PM
+can you try it?
+02/10/2026 11:21 PM
+https://github.com/smx-smx/yafex/commit/b0c5c0a02449af34e22952ba8786192702600a0a
+AES: fix missing trailing block when padding is used · smx-smx/yaf...
+We're not flushing the last block, but we can get CryptoStream's Dispose
+method to do it for us
+[]
+02/10/2026 11:20 PM
+@theubusu fox pushed
+02/10/2026 11:18 PM
+this is easy to fix, let me do
+02/10/2026 11:17 PM
+we need to wrap CryptoStream in a using block
+02/10/2026 11:17 PM
+the Dispose method of the CryptoStream would do it for us
+02/10/2026 11:17 PM
+           protected override void Dispose(bool disposing)
+           {
+               try
+               {
+                   if (disposing)
+                   {
+                       if (!_finalBlockTransformed)
+                       {
+                           FlushFinalBlock();
+                       }
+                       if (!_leaveOpen)
+                       {
+                           _stream.Dispose();
+                       }
+                   }
+               }
+02/10/2026 11:17 PM
+but, we shouldn't be doing that
+02/10/2026 11:17 PM
+@theubusu we're not doing CryptoStream.FlushFinalBlock
+02/10/2026 11:16 PM
+i know why
+02/10/2026 11:15 PM
+oh
+02/10/2026 11:15 PM
+it's seeing an empty block
+02/10/2026 11:15 PM
+it's as if
+[theubusu]
+theubusu 02/10/2026 11:10 PM
+oh
+[smx2460]
+smx2460 02/10/2026 11:10 PM
+instead of 5
+02/10/2026 11:10 PM
+oh it thinks it's 16 bytes of padding
+02/10/2026 11:10 PM
+and with that, it's truncating?
+[theubusu]
+theubusu 02/10/2026 11:10 PM
+(no content)
+[image.png]
+ image.png
+6.12 KB External
+[smx2460]
+smx2460 02/10/2026 11:09 PM
+hmmm
+[theubusu]
+theubusu 02/10/2026 11:09 PM
+thats where it came from
+02/10/2026 11:09 PM
+yes
+[smx2460]
+[] theubusu thats what im using
+smx2460 02/10/2026 11:09 PM
+do you get this from yafex too without pkcs?
+[theubusu]
+theubusu 02/10/2026 11:08 PM
+and it works
+02/10/2026 11:08 PM
+in my extractor
+02/10/2026 11:08 PM
+thats what im using
+[image.png]
+ image.png
+13.75 KB External
+[theubusu]
+[] smx2460 wait if it decrypts properly without PKCS....
+theubusu 02/10/2026 11:08 PM
+yea
+[smx2460]
+smx2460 02/10/2026 11:08 PM
+is it PKCS?
+02/10/2026 11:08 PM
+wait if it decrypts properly without PKCS....
+[theubusu]
+theubusu 02/10/2026 11:07 PM
+yes
+[smx2460]
+smx2460 02/10/2026 11:07 PM
+so it has nothing to do with XOR (edited)
+02/10/2026 11:07 PM
+this is Peaks right?
+[theubusu]
+theubusu 02/10/2026 11:07 PM
+with PCKS
+02/10/2026 11:07 PM
+yes, it decrypts properly without PCKS, but unpadded size is 24 and it
+returns only 16 bytes
+[smx2460]
+smx2460 02/10/2026 11:06 PM
+keymode is CBC right?
+02/10/2026 11:06 PM
+is blocksize and keysize right?
+02/10/2026 11:05 PM
+check the input going to Aes decryption (edited)
+02/10/2026 11:05 PM
+not sure how I can help you
+[theubusu]
+theubusu 02/10/2026 11:05 PM
+but something is wrong
+02/10/2026 11:05 PM
+then no
+[smx2460]
+smx2460 02/10/2026 11:05 PM
+you think that's the issue?
+[theubusu]
+theubusu 02/10/2026 11:05 PM
+hmm
+[smx2460]
+smx2460 02/10/2026 11:05 PM
+GetChunks splits the output in 2GB though
+[theubusu]
+theubusu 02/10/2026 11:04 PM
+i think its because of this .GetChunks()
+02/10/2026 11:04 PM
+andthe same thing happened when i tried to add it
+[theubusu]
+[] smx2460 is it because of my change?
+theubusu 02/10/2026 11:04 PM
+well, before there was no option for PCKS
+[smx2460]
+smx2460 02/10/2026 11:04 PM
+revert my commit in case
+02/10/2026 11:04 PM
+i'm back to working on it but need more time
+02/10/2026 11:03 PM
+is it because of my change?
+[theubusu]
+theubusu 02/10/2026 11:01 PM
+instead of 24 bytes decrypted im only getting 16
+02/10/2026 11:01 PM
+PCKS7 is still broken though
+02/10/2026 11:00 PM
+oh alr
+[smx2460]
+smx2460 02/10/2026 10:59 PM
+yes, you can use out var or out string btw
+[theubusu]
+[] smx2460 use `TryGetValue` instead
+theubusu 02/10/2026 10:59 PM
+    string saveExtra = "";
+    if(args.TryGetValue("save-extra", out saveExtra))
+    {
+        if (saveExtra == "sdit"){
+            _ctx.SaveSDIT = true;
+        }
+        if (saveExtra == "info"){
+            _ctx.SaveInfo = true;
+        }
+        if (saveExtra == "all"){
+            _ctx.SaveSDIT = true;
+            _ctx.SaveInfo = true;
+        }
+    }
+ok?
+[theubusu]
+theubusu 02/10/2026 10:55 PM
+we dont want every segement to be a seperate artifact
+02/10/2026 10:55 PM
+i mean to yield artifacts properly
+02/10/2026 10:54 PM
+so it can work properly
+02/10/2026 10:54 PM
+but it only does that to get the count of segments in each module
+02/10/2026 10:54 PM
+well i guess it parses the SDIT, mine doesnt
+[smx2460]
+[] theubusu ```csharp public SddlSecDetector(IDictionary<string, string>
+args) { _ctx = new SddlSecContext()...
+smx2460 02/10/2026 10:54 PM
+use TryGetValue instead
+[smx2460]
+smx2460 02/10/2026 10:54 PM
+why better? 
+02/10/2026 10:54 PM
+@theubusu back
+[theubusu]
+theubusu 02/10/2026 10:30 PM
+pcks7 still dropping unaligned bytes tho
+02/10/2026 10:24 PM
+at this point the yafex extractor is better than sddl_dec lol
+02/10/2026 10:23 PM
+just wondering
+02/10/2026 10:23 PM
+its nothing important
+[smx2460]
+smx2460 02/10/2026 10:23 PM
+i'm playing with a Huawei USB Modem lol
+02/10/2026 10:22 PM
+sec
+[theubusu]
+theubusu 02/10/2026 10:22 PM
+usually its something like this gbl16's peaks soft update contents.
+pal11's peaks soft update contents. us13's peaks soft update contents.
+gbl23_neoarch's companion soft update contents. gbl18_neoarch's peaks
+soft update contents. thfs630d : gbl18's peaks soft update contents.
+ST50 PEAKS Japan R3 PEAKS-sLD2 download L-19/23/26/32/37 C5
+PEAKSのダウンロードテスト New Version : $NEW_VER
+02/10/2026 10:22 PM
+wtf
+[theubusu]
+[] theubusu also im wondering if we could use the first line of these
+text files as the folder name
+theubusu 02/10/2026 10:22 PM
+nvm
+[image.png]
+ image.png
+26.31 KB External
+[theubusu]
+theubusu 02/10/2026 9:47 PM
+is this good?
+02/10/2026 9:47 PM
+    public SddlSecDetector(IDictionary<string, string> args)
+    {
+        _ctx = new SddlSecContext();
+        if (args.ContainsKey("save-extra"))
+        {
+            if (args["save-extra"] == "sdit"){
+                _ctx.SaveSDIT = true;
+            }
+            if (args["save-extra"] == "info"){
+                _ctx.SaveInfo = true;
+            }
+            if (args["save-extra"] == "all"){
+                _ctx.SaveSDIT = true;
+                _ctx.SaveInfo = true;
+            }
+        }
+    }
+[smx2460]
+smx2460 02/10/2026 9:47 PM
+i'm writing MemoryStream64
+02/10/2026 9:43 PM
+since either way, MemoryStream is limited to 2GB accumulated data
+02/10/2026 9:43 PM
+we need a MemoryStream64 otherwise
+02/10/2026 9:41 PM
+I don't think we'd need to decode more than 2GB at once though
+02/10/2026 9:41 PM
+but... it's limited to int
+02/10/2026 9:41 PM
+MemoryStream accepts memory size as the first argument
+02/10/2026 9:41 PM
+I will fix it
+02/10/2026 9:41 PM
+it's my bad
+02/10/2026 9:41 PM
+wait actually
+02/10/2026 9:40 PM
+the fixed buffer and the dynamic buffer one
+[theubusu]
+theubusu 02/10/2026 9:40 PM
+i can try
+[smx2460]
+smx2460 02/10/2026 9:40 PM
+or do we need to keep both variants
+02/10/2026 9:40 PM
+@theubusu can you fix the XOR thing with the new API?
+02/10/2026 9:36 PM
+I can introduce that format though
+02/10/2026 9:36 PM
+hmm for now it can't be anything other than -o a:b=c
+[theubusu]
+theubusu 02/10/2026 9:34 PM
+can it be -o xxx:bool, or does it need to have some value?
+[smx2460]
+smx2460 02/10/2026 9:28 PM
+-o mediatekpkg:forcetype=bar
+02/10/2026 9:28 PM
+        public enum FileFormat
+        {
+            Squashfs,
+            Gzip,
+            EpkV1,
+            EpkV2,
+            EpkV2Beta,
+            EPKV3,
+            Partinfo,
+            LZHS,
+            LZHSFS,
+            EpkV3b,
+            MStarPkg,
+            FreescaleNand,
+            Xex,
+            LxSecureBoot,
+            Nfwb,
+            MediatekPkg
+        }
+02/10/2026 9:28 PM
+fmt is the lowercase name of the format enum name
+02/10/2026 9:27 PM
+-o fmt:para=val
+[theubusu]
+theubusu 02/10/2026 9:27 PM
+i wanna do it for SDDL.sec
+02/10/2026 9:27 PM
+also, how can i add format specific cmdline args
+02/10/2026 9:26 PM
+i added that when i was doing that
+[smx2460]
+smx2460 02/10/2026 9:26 PM
+ah
+[theubusu]
+theubusu 02/10/2026 9:26 PM
+because it requires a set buffer size for the XOR tail thing
+[smx2460]
+[] theubusu so mediatekpkg is broken now
+smx2460 02/10/2026 9:26 PM
+why?
+[smx2460]
+smx2460 02/10/2026 9:25 PM
+https://github.com/smx-smx/yafex/commit/a2d2ae021618a3c6643f3f23d2eb507231f7e8da
+Make it possible to override the Aes PaddingMode · smx-smx/yafex@a...
+[]
+[theubusu]
+theubusu 02/10/2026 9:23 PM
+so mediatekpkg is broken now
+[smx2460]
+smx2460 02/10/2026 9:22 PM
+https://github.com/smx-smx/yafex/commit/6c81cb0b7d5cd883fcf7fd25458e35ba4bee8398
+AES: use MemoryStream instead of NativeMemoryManager64 · smx-smx/y...
+this will be required for formats that use AES Padding, since the output
+data size won't be equal to the input data size
+[]
+[theubusu]
+theubusu 02/10/2026 9:22 PM
+Oh
+[smx2460]
+smx2460 02/10/2026 9:22 PM
+no, I changed that
+[theubusu]
+theubusu 02/10/2026 9:22 PM
+the AesDecryptor is not built for that because it allocates the size of
+the encrypted data
+[smx2460]
+smx2460 02/10/2026 9:21 PM
+which defaults to none
+02/10/2026 9:21 PM
+why not provide the padding as an option
+[theubusu]
+theubusu 02/10/2026 9:21 PM
+i think there should be a decryptor.DecryptPcks7
+[smx2460]
+smx2460 02/10/2026 9:21 PM
+and I agreed
+02/10/2026 9:21 PM
+that shouldn't be configurable
+02/10/2026 9:21 PM
+because it's a format specific quirk
+[theubusu]
+theubusu 02/10/2026 9:21 PM
+yeah
+[smx2460]
+smx2460 02/10/2026 9:21 PM
+you said you didn't want it there
+02/10/2026 9:21 PM
+or wait
+02/10/2026 9:21 PM
+do you need help to bake it in the JSON?
+[theubusu]
+theubusu 02/10/2026 9:21 PM
+pcks still dont work but it doesnt matter for now
+[smx2460]
+smx2460 02/10/2026 9:20 PM
+based
+[theubusu]
+theubusu 02/10/2026 9:20 PM
+everything is  now
+[image.png]
+ image.png
+24.33 KB External
+[smx2460]
+smx2460 02/10/2026 9:19 PM
+I thought it wouldn't work
+02/10/2026 9:19 PM
+it means you can have a Span of unaligned structs
+02/10/2026 9:19 PM
+interesting though
+02/10/2026 9:18 PM
+[theubusu]
+theubusu 02/10/2026 9:18 PM
+yes i forgot to uncomment what i commented out in the struct
+[smx2460]
+smx2460 02/10/2026 9:18 PM
+in the struct declaration
+02/10/2026 9:18 PM
+I made a mistake on my size too
+02/10/2026 9:18 PM
+it does work
+02/10/2026 9:18 PM
+actually yes
+[theubusu]
+theubusu 02/10/2026 9:18 PM
+with pack =1
+02/10/2026 9:18 PM
+yes now it works 
+02/10/2026 9:17 PM
+i will try again
+02/10/2026 9:17 PM
+i made a mistake
+[smx2460]
+smx2460 02/10/2026 9:17 PM
+it works?!
+02/10/2026 9:17 PM
+hm?
+[theubusu]
+theubusu 02/10/2026 9:17 PM
+ignore that
+[smx2460]
+smx2460 02/10/2026 9:17 PM
+let me fix that
+[theubusu]
+theubusu 02/10/2026 9:17 PM
+NO
+[smx2460]
+smx2460 02/10/2026 9:17 PM
+that's probably because of the sizeof
+02/10/2026 9:16 PM
+I forgot
+02/10/2026 9:16 PM
+Pack = 0 is default
+[theubusu]
+theubusu 02/10/2026 9:16 PM
+let me try
+[smx2460]
+smx2460 02/10/2026 9:16 PM
+my bad
+02/10/2026 9:16 PM
+not Pack=0
+02/10/2026 9:16 PM
+@theubusu it's Pack=1
+02/10/2026 9:16 PM
+OOPS
+02/10/2026 9:14 PM
+which would be similar to what msbuild does (edited)
+02/10/2026 9:14 PM
+-v d maybe
+02/10/2026 9:14 PM
+or whatever
+02/10/2026 9:14 PM
+it should be controlled by -vvvvvv
+02/10/2026 9:13 PM
+unless you think it's not 
+02/10/2026 9:13 PM
+I think
+02/10/2026 9:13 PM
+it's a hack
+[theubusu]
+theubusu 02/10/2026 9:13 PM
+nice
+02/10/2026 9:13 PM
+ohhh
+[smx2460]
+smx2460 02/10/2026 9:13 PM
+export YAFEX_DEBUG=1
+02/10/2026 9:13 PM
+            Program(IEnumerable<string> args)
+            {
+                try
+                {
+                    IEnumerable<string> trueStrings = ["1", "true"];
+                    var isDebug = trueStrings.Contains((Environment.GetEnvironmentVariable("YAFEX_DEBUG") ?? "0").ToLowerInvariant());
+                    Logger.Setup(enableDebug: isDebug);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine("Warning: log4net setup failed");
+                    Console.Error.WriteLine(ex);
+                }
+                _opts = ProcessArgs(args);
+            }
+[theubusu]
+theubusu 02/10/2026 9:13 PM
+how
+[smx2460]
+smx2460 02/10/2026 9:13 PM
+no you don't
+[theubusu]
+theubusu 02/10/2026 9:13 PM
+right now i have to change this
+[image.png]
+ image.png
+10.03 KB External
+[smx2460]
+smx2460 02/10/2026 9:13 PM
+it's already there but it's a hack
+[theubusu]
+theubusu 02/10/2026 9:13 PM
+would it be possible to have a commandline flag to enable debug output?
+[smx2460]
+smx2460 02/10/2026 9:11 PM
+but I can avoid a copy
+02/10/2026 9:10 PM
+probably yes
+02/10/2026 9:10 PM
+thinking if the only solution is to switch to slow reads always
+02/10/2026 9:10 PM
+which ignores padding
+02/10/2026 9:10 PM
+i'm doing a fast read here
+02/10/2026 9:09 PM
+            public unsafe T ReadStruct<T>() where T : unmanaged {
+                int length = sizeof(T);
+                var start = Memory.Span.Slice(pos, length);
+                T ret;
+                ret = MemoryMarshal64.Cast<byte, T>(start)[0];
+                ret = RespectEndianness(ret);
+                pos += length;
+                return ret;
+            }
+02/10/2026 9:09 PM
+and, well
+02/10/2026 9:09 PM
+ok the issue is that sizeof(T) ignores padding
+02/10/2026 9:09 PM
+can reproduce
+02/10/2026 9:06 PM
+hold tight
+02/10/2026 9:06 PM
+let me write a unit test
+[theubusu]
+theubusu 02/10/2026 9:06 PM
+maybe its because its first? idk
+02/10/2026 9:06 PM
+what is odd i am reading "byte" in many other structs and there is no
+issue
+02/10/2026 9:05 PM
+yes
+[smx2460]
+smx2460 02/10/2026 9:05 PM
+with st.ReadStruct() ? (edited)
+[smx2460]
+[] theubusu doesnt fix it 
+smx2460 02/10/2026 9:05 PM
+hmm
+[theubusu]
+theubusu 02/10/2026 9:02 PM
+all the SpanStream issues are now resolved though
+ 1
+[theubusu]
+[] smx2460 ``` [StructLayout(LayoutKind.Sequential, Pack = 0)] ```
+theubusu 02/10/2026 9:00 PM
+doesnt fix it 
+[theubusu]
+theubusu 02/10/2026 8:42 PM
+[smx2460]
+smx2460 02/10/2026 8:42 PM
+@theubusu
+https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR21QQY5Bl2lqhuSWbbzmvqJUhupDMNJhhrFQ&s
+[]
+02/10/2026 8:38 PM
+(no content)
+[image.png]
+ image.png
+6.42 KB External
+[theubusu]
+theubusu 02/10/2026 8:38 PM
+[smx2460]
+smx2460 02/10/2026 8:37 PM
+no, never  (edited)
+[theubusu]
+theubusu 02/10/2026 8:36 PM
+will you upload the new sharpio version?
+[smx2460]
+smx2460 02/10/2026 8:34 PM
+for that
+02/10/2026 8:34 PM
+I just pushed a commit that will help you
+[theubusu]
+theubusu 02/10/2026 8:33 PM
+still thinking how to do PCKS7
+[smx2460]
+smx2460 02/10/2026 8:30 PM
+or outright remove it (edited)
+02/10/2026 8:30 PM
+pondering if I should [Obsolete] it
+[theubusu]
+theubusu 02/10/2026 8:30 PM
+i want to fix it
+02/10/2026 8:30 PM
+yeah thats why
+[smx2460]
+smx2460 02/10/2026 8:30 PM
+I will probably remove [Endian]
+[theubusu]
+theubusu 02/10/2026 8:29 PM
+nah, i wanna add the fixes from SharpIO
+ 1
+[smx2460]
+smx2460 02/10/2026 8:29 PM
+I can review
+[smx2460]
+[] theubusu
+https://github.com/theubusu/yafex/commit/07582d4046ab2ba3abcee7459cd7916d32e5bfdb
+smx2460 02/10/2026 8:29 PM
+ready to merge?
+[smx2460]
+smx2460 02/10/2026 8:25 PM
+It was apparently a debugger-induced error
+02/10/2026 8:24 PM
+it wasn't broken
+02/10/2026 8:24 PM
+nvm
+02/10/2026 8:17 PM
+New is
+[theubusu]
+theubusu 02/10/2026 8:17 PM
+in yafex
+02/10/2026 8:17 PM
+is epk3 even finished?
+[smx2460]
+smx2460 02/10/2026 8:15 PM
+the epk3 one
+02/10/2026 8:15 PM
+i think it's been broken for a while
+[theubusu]
+theubusu 02/10/2026 8:15 PM
+apparentally i broke mine as well
+[image.png]
+ image.png
+10.31 KB External
+[smx2460]
+smx2460 02/10/2026 8:15 PM
+02/10/2026 8:15 PM
+wait but then
+02/10/2026 8:13 PM
+which contains the sig
+02/10/2026 8:13 PM
+but we check at offset 0
+02/10/2026 8:13 PM
+this is what gets decrypted
+02/10/2026 8:13 PM
+(no content)
+[image.png]
+ image.png
+8.13 KB External
+[theubusu]
+theubusu 02/10/2026 8:13 PM
+i get "Unhandled exception. System.InvalidOperationException: Missing
+decryptor for MPAK"
+[smx2460]
+smx2460 02/10/2026 8:12 PM
+ok I know why
+[theubusu]
+theubusu 02/10/2026 8:08 PM
+I never copied the keys from epk2extract
+02/10/2026 8:08 PM
+I can check
+[theubusu]
+[] smx2460 <@631872127934660609> is EPK decryption working for you?
+theubusu 02/10/2026 8:08 PM
+hm can't tell you cuz my secrets look like this right now
+    {
+            "type": "collection",
+            "id": "lg-epk-keys",
+            "description": "epk keys",
+            "keys": [
+                {
+                    "type": "aes-128-ecb",
+                    "description": "dummy",
+                    "key": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+                }
+            ]    
+        }
+[smx2460]
+smx2460 02/10/2026 8:07 PM
+I think it broke
+02/10/2026 8:07 PM
+@theubusu is EPK decryption working for you? (edited)
+[smx2460]
+smx2460 02/10/2026 7:40 PM
+need more tests
+02/10/2026 7:40 PM
+not sure how long it's been there
+02/10/2026 7:40 PM
+https://github.com/smx-smx/Smx.SharpIO/commit/2c2a219787345498ea209804a2cfb13764d29530
+Fix BigEndian SpanStream · smx-smx/Smx.SharpIO@2c2a219
+[]
+02/10/2026 7:39 PM
+there was an old duplicate field
+02/10/2026 7:39 PM
+lol it's a bug
+[theubusu]
+theubusu 02/10/2026 7:35 PM
+make a struct that has no endiannes specified with Uint16 and then read
+bytes in spanstream big endian 00 01 (edited)
+[smx2460]
+smx2460 02/10/2026 7:34 PM
+how can I repro the SpanStream issue with BE?
+02/10/2026 7:33 PM
+https://github.com/smx-smx/Smx.SharpIO/commit/f75edaad1f413c86983ec552873acad8f06dda27
+fix two Big Endian struct issues: · smx-smx/Smx.SharpIO@f75edaa
+- InlineArray<byte> fields within BigEndian structs were being
+reversed - static fields within BigEndian structs were being erroneously
+considered reported by @theubusu
+[]
+[theubusu]
+theubusu 02/10/2026 7:31 PM
+this is what works
+02/10/2026 7:31 PM
+https://github.com/theubusu/yafex/commit/07582d4046ab2ba3abcee7459cd7916d32e5bfdb
+add initial support for SddlSec format · theubusu/yafex@07582d4
+[]
+02/10/2026 7:26 PM
+i will commit what works
+02/10/2026 7:25 PM
+and the fiest def not 12800
+02/10/2026 7:25 PM
+the second one should be 1
+[image.png]
+ image.png
+2.77 KB External
+02/10/2026 7:25 PM
+idk the values are reading as little endian
+[smx2460]
+smx2460 02/10/2026 7:24 PM
+why
+02/10/2026 7:24 PM
+shouldn't be
+[theubusu]
+theubusu 02/10/2026 7:24 PM
+spanstream Endianness.BigEndian is Broke
+[smx2460]
+smx2460 02/10/2026 7:22 PM
+yep can repro
+02/10/2026 7:21 PM
+then we can think about removing
+02/10/2026 7:21 PM
+i'll fix it anyways
+[theubusu]
+theubusu 02/10/2026 7:21 PM
+well no now i remove it
+[smx2460]
+smx2460 02/10/2026 7:21 PM
+hah
+[theubusu]
+theubusu 02/10/2026 7:21 PM
+yes
+[smx2460]
+smx2460 02/10/2026 7:21 PM
+is that part of a struct that is BE?
+02/10/2026 7:21 PM
+wait
+[smx2460]
+[] theubusu [Endian(Endianness.BigEndian)] also reverses these though
+```csharp [InlineArray(4)] public struct ...
+smx2460 02/10/2026 7:20 PM
+nvm
+[smx2460]
+[] theubusu see the visual representation of the issue
+smx2460 02/10/2026 7:20 PM
+and did the fix for this work?
+[smx2460]
+[] theubusu [InlineArray(4)] is 9999999% reversed
+smx2460 02/10/2026 7:20 PM
+can you give me the definition?
+[theubusu]
+theubusu 02/10/2026 7:20 PM
+so now i need two seperate magics anyway
+02/10/2026 7:20 PM
+but the detector uses data which is little endian
+02/10/2026 7:19 PM
+when i use BE spanstream i need to check for [0x44, 0x33, 0x22, 0x11]
+instaed of [0x11, 0x22, 0x33, 0x44]
+[smx2460]
+[] theubusu also seems like when i put any static element in that
+BigEndian struct it will crash ``` Unhandled e...
+smx2460 02/10/2026 7:19 PM
+this is foxed  (edited)
+[theubusu]
+theubusu 02/10/2026 7:19 PM
+[InlineArray(4)] is 9999999% reversed
+[smx2460]
+smx2460 02/10/2026 7:17 PM
+I can reproduce the crash with [Endian] (edited)
+02/10/2026 7:16 PM
+(WDYT?)
+02/10/2026 7:16 PM
+for BE/LE
+02/10/2026 7:16 PM
+I will think if it's worth duplicating all members
+02/10/2026 7:16 PM
+then restore it
+02/10/2026 7:16 PM
+change its endianness before you read
+02/10/2026 7:16 PM
+or
+02/10/2026 7:16 PM
+yes
+[theubusu]
+theubusu 02/10/2026 7:16 PM
+so i should make my SpanStream BE
+[smx2460]
+smx2460 02/10/2026 7:16 PM
+maybe I should just remove it (edited)
+02/10/2026 7:16 PM
+i.e. to the SpanStream
+02/10/2026 7:15 PM
+but to the interpretation of the struct
+02/10/2026 7:15 PM
+because Endianness shouldn't be tied to a struct
+02/10/2026 7:15 PM
+technically Endian makes little sense
+[theubusu]
+theubusu 02/10/2026 7:15 PM
+ok tell that to samsung
+[smx2460]
+smx2460 02/10/2026 7:15 PM
+same for LE
+02/10/2026 7:15 PM
+if it's all BE, your SpanStream should be BE
+02/10/2026 7:15 PM
+it makes no sense to have mixed endianness in a binary
+02/10/2026 7:15 PM
+but, IN GENERAL
+02/10/2026 7:14 PM
+with BE/LE suffixes (though it's more verbose) (edited)
+02/10/2026 7:14 PM
+though maybe I should expose an interface similar to BinaryPrimitives
+02/10/2026 7:14 PM
+you can do st.Endianness to change it at runtime
+02/10/2026 7:14 PM
+and actually
+02/10/2026 7:14 PM
+the [Endian] overrides the endianness for one specific struct
+02/10/2026 7:13 PM
+if they are, as I said, it's a bug
+02/10/2026 7:13 PM
+bytes are NEVER swapped
+[theubusu]
+theubusu 02/10/2026 7:13 PM
+hm ok
+[smx2460]
+[] theubusu would the bytes also be swapped?
+smx2460 02/10/2026 7:13 PM
+no
+[smx2460]
+smx2460 02/10/2026 7:13 PM
+uints, ulongs, ushorts, structs
+[smx2460]
+[] theubusu but when you would make a BE spanstream
+smx2460 02/10/2026 7:13 PM
+when everything needs to be read as BE
+[theubusu]
+theubusu 02/10/2026 7:13 PM
+would the bytes also be swapped?
+02/10/2026 7:13 PM
+and then use .ReadBytes(n)
+[smx2460]
+smx2460 02/10/2026 7:13 PM
+then LE
+[theubusu]
+theubusu 02/10/2026 7:13 PM
+but when you would make a BE spanstream
+02/10/2026 7:13 PM
+the defaulr
+[smx2460]
+smx2460 02/10/2026 7:13 PM
+is your SpanStream LE or BE?
+02/10/2026 7:12 PM
+that's how I made it
+02/10/2026 7:12 PM
+so the struct one overrides the SpanStream
+02/10/2026 7:12 PM
+                var structEndianness = this.defaultEndianess;
+                var type = typeof(T);
+                if (type.IsDefined(typeof(EndianAttribute), false)) {
+                    var attr = type.GetCustomAttribute<EndianAttribute>();
+                    if(attr == null) {
+                        throw new InvalidOperationException("Missing [Endian] attribute");
+                    }
+                    structEndianness = attr.Endianness;
+                }
+02/10/2026 7:11 PM
+I mean, it's on both
+02/10/2026 7:11 PM
+instead of the SpanStream
+02/10/2026 7:11 PM
+I'm thinking if it makes sense to have endianness in the struct
+02/10/2026 7:11 PM
+hmmm
+02/10/2026 7:10 PM
+good catch
+02/10/2026 7:10 PM
+ah right
+[theubusu]
+theubusu 02/10/2026 7:10 PM
+this thing
+02/10/2026 7:10 PM
+[Endian(Endianness.BigEndian)]
+02/10/2026 7:10 PM
+like
+[theubusu]
+[] smx2460 ```csharp public struct TestCrashStruct { public static
+byte[] DO_NOT_CRASH = [0x11, 0x22, 0x33,...
+theubusu 02/10/2026 7:10 PM
+you didnt put big endian on the struct though
+[theubusu]
+theubusu 02/10/2026 7:10 PM
+then my computer is cursed
+[smx2460]
+smx2460 02/10/2026 7:10 PM
+    public struct TestCrashStruct {
+        public static byte[] DO_NOT_CRASH = [0x11, 0x22, 0x33, 0x44];
+        public uint Foo;
+        public uint Bar;
+    }
+        [Test]
+        public void TestBigEndianStructCrash_WithStaticElement() {
+            var buf = new byte[] {
+                0xDE, 0xAD, 0xBE, 0xEF,
+                0xDE, 0xAD, 0xBE, 0xEF
+            };
+            var st = new SpanStream(buf, Endianness.BigEndian);
+            var arr = st.ReadStruct<TestCrashStruct>();
+        }
+[smx2460]
+[] theubusu put in this ```csharp public static byte[]
+SDDL_SEC_HEADER_MAGIC = [0x11, 0x22, 0x33, 0x44]; ```
+smx2460 02/10/2026 7:10 PM
+also cannot reproduce this
+[theubusu]
+theubusu 02/10/2026 7:09 PM
+i need to set up some testing ground
+[smx2460]
+smx2460 02/10/2026 7:07 PM
+one at a time 
+02/10/2026 7:07 PM
+the reverse InlineArray (edited)
+[theubusu]
+theubusu 02/10/2026 7:07 PM
+ohhh
+[smx2460]
+smx2460 02/10/2026 7:07 PM
+no the very first
+02/10/2026 7:07 PM
+yes
+[theubusu]
+theubusu 02/10/2026 7:07 PM
+or the 2nd one
+[smx2460]
+smx2460 02/10/2026 7:07 PM
+that should be ignored
+[theubusu]
+theubusu 02/10/2026 7:07 PM
+the 1st issue
+02/10/2026 7:07 PM
+wait you mean reproduce what
+[smx2460]
+smx2460 02/10/2026 7:07 PM
+but static?
+02/10/2026 7:07 PM
+in the struct? 
+[theubusu]
+theubusu 02/10/2026 7:06 PM
+in the struct
+02/10/2026 7:06 PM
+put in this
+    public static byte[] SDDL_SEC_HEADER_MAGIC = [0x11, 0x22, 0x33, 0x44];
+[smx2460]
+smx2460 02/10/2026 7:06 PM
+am I doing something wrong?
+02/10/2026 7:06 PM
+(no content)
+[image.png]
+ image.png
+102.27 KB External
+02/10/2026 7:06 PM
+can't reproduce
+[theubusu]
+theubusu 02/10/2026 7:02 PM
+also seems like when i put any static element in that BigEndian struct
+it will crash
+    Unhandled exception. System.ArgumentException: Field passed in is not a marshaled member of the type 'Yafex.FileFormats.SddlSec.ModuleHeader'. (Parameter 'fieldName')
+       at System.Runtime.InteropServices.Marshal.OffsetOf(Type t, String fieldName)
+       at Smx.SharpIO.SpanStream.SwapEndian[T](Byte[] data, FieldInfo field)
+       at Smx.SharpIO.SpanStream.RespectEndianness[T](T data)
+       at Smx.SharpIO.SpanStream.ReadStruct[T]()
+       at Yafex.FileFormats.SddlSec.SddlSecExtractor.Extract(IDataSource source) in C:\Users\tomek\dev2nd\Projects\yafex\Yafex\FileFormats\SddlSec\SddlSecExtractor.cs:line 177
+       at Yafex.Extractor.Extract(IVfsNode root, IDataSource input)+MoveNext() in C:\Users\tomek\dev2nd\Projects\yafex\Yafex\Extractor.cs:line 49
+       at Yafex.Program.Run() in C:\Users\tomek\dev2nd\Projects\yafex\Yafex\Program.cs:line 208
+       at Yafex.Program.Main(String[] args) in C:\Users\tomek\dev2nd\Projects\yafex\Yafex\Program.cs:line 223
+       at Yafex.Cmdline.Program.Main(String[] args) in C:\Users\tomek\dev2nd\Projects\yafex\Yafex.Cmdline\Program.cs:line 23
+[smx2460]
+smx2460 02/10/2026 7:01 PM
+i'm going to fix the InlineArray Byteswap issue (edited)
+02/10/2026 7:00 PM
+using raw Spans would probably not work
+02/10/2026 7:00 PM
+which obeys those attributes
+02/10/2026 7:00 PM
+because it uses Marshal.PtrToStructure
+02/10/2026 7:00 PM
+NOTE: I'm pretty sure that works only with SpanStream again
+[theubusu]
+[] smx2460 ``` [StructLayout(LayoutKind.Sequential, Pack = 0)] ```
+theubusu 02/10/2026 6:59 PM
+ah alr
+[smx2460]
+smx2460 02/10/2026 6:59 PM
+(this makes it possible to encode unions) (edited)
+[theubusu]
+theubusu 02/10/2026 6:59 PM
+to write at offset
+02/10/2026 6:59 PM
+im using the MemoryDataSourceBuffer
+[smx2460]
+smx2460 02/10/2026 6:59 PM
+the alternative is Explicit, where you must give the byte offset of each
+individual member
+[theubusu]
+theubusu 02/10/2026 6:59 PM
+other than that it works good
+[image.png]
+ image.png
+24.06 KB External
+[smx2460]
+smx2460 02/10/2026 6:58 PM
+also default is LayoutKind.Sequential
+02/10/2026 6:58 PM
+packing is specified in StructLayout
+02/10/2026 6:58 PM
+packing is default
+02/10/2026 6:58 PM
+otherwise it applies struct packing
+02/10/2026 6:58 PM
+above or below Endian
+02/10/2026 6:58 PM
+    [StructLayout(LayoutKind.Sequential, Pack = 0)]
+02/10/2026 6:57 PM
+you need
+02/10/2026 6:57 PM
+ah
+02/10/2026 6:57 PM
+wow, pro
+[theubusu]
+theubusu 02/10/2026 6:57 PM
+see the visual representation of the issue
+[what.png]
+ what.png
+75.99 KB External
+[smx2460]
+smx2460 02/10/2026 6:57 PM
+I can help, but I need a repro
+[theubusu]
+theubusu 02/10/2026 6:57 PM
+i had to work around it
+[smx2460]
+smx2460 02/10/2026 6:57 PM
+repro?
+[theubusu]
+theubusu 02/10/2026 6:57 PM
+i didnt figure it out
+02/10/2026 6:57 PM
+no theres no inline array
+[smx2460]
+smx2460 02/10/2026 6:56 PM
+you need to cast it
+[smx2460]
+[] theubusu now i have some very weird issue where i have a byte in a
+struct and it SAYS its a byte and it SHOWS...
+smx2460 02/10/2026 6:56 PM
+if you're looking at an InlineArray, that's normal
+[smx2460]
+smx2460 02/10/2026 6:55 PM
+@theubusu yo
+[theubusu]
+theubusu 02/10/2026 2:16 PM
+now i have some very weird issue where i have a byte in a struct and it
+SAYS its a byte and it SHOWS as a byte in debugger but actuaally reads 4
+BYTES from the spanstream even though i use the same BYTE before and it
+does NOT do that and i am lost
+[smx2460]
+smx2460 02/10/2026 1:37 PM
+Then just remove it
+02/10/2026 1:37 PM
+That inverts the byte array
+02/10/2026 1:37 PM
+Make a function called FixSharpIoReversedArray
+02/10/2026 1:36 PM
+Or even better
+02/10/2026 1:36 PM
+Keep a comment 
+[theubusu]
+[] smx2460 You shouldn't check for the reversed magic because I'll fix
+this
+theubusu 02/10/2026 1:36 PM
+for now i will but i will change it
+[smx2460]
+smx2460 02/10/2026 1:36 PM
+You can try to fix it yourself if you like
+02/10/2026 1:35 PM
+But not before this evening
+02/10/2026 1:35 PM
+You shouldn't check for the reversed magic because I'll fix this
+02/10/2026 1:34 PM
+So it would cover both
+02/10/2026 1:34 PM
+So I should update the check to instead see if it's Enumerable
+02/10/2026 1:33 PM
+Now it can also be an IEnumerable<T> that is not an array (as
+InlineArray is an array-like *struct*) (edited)
+02/10/2026 1:33 PM
+"it's an array / it's not an array"
+02/10/2026 1:33 PM
+So back then it was either
+02/10/2026 1:33 PM
+The problem is that the caller copies the bytes on a temporary buffer,
+then checks what it copied (edited)
+02/10/2026 1:32 PM
+So I need to add a case there
+02/10/2026 1:32 PM
+It's a struct that repsesents an array that gets expanded on the stack
+02/10/2026 1:31 PM
+Because it's not an array type
+02/10/2026 1:31 PM
+The problem is that we 99% land in the else
+02/10/2026 1:31 PM
+                if (field.FieldType.IsArray) {
+                    var attr = field.GetCustomAttribute<MarshalAsAttribute>();
+                    if(attr == null) {
+                        throw new InvalidOperationException("Missing [MarshalAs] attribute");
+                    }
+                    var t = field.FieldType.GetElementType();
+                    if(t == null) {
+                        throw new InvalidOperationException("Cannot get field type");
+                    }
+                    int subSize = Marshal.SizeOf(t);
+                    for (int i = 0; i < attr.SizeConst; i++) {
+                        Array.Reverse(data, offset + (i * subSize), subSize);
+                    }
+                } else {
+                    Array.Reverse(data, offset, FieldSize(field));
+                }
+            }
+02/10/2026 1:30 PM
+That is a bug if true, but I didn't have InlineArray when I made that
+[theubusu]
+theubusu 02/10/2026 1:30 PM
+0x11, 0x22, 0x33, 0x44 becomes 0x44, 0x33, 0x22, 0x11
+[smx2460]
+smx2460 02/10/2026 1:30 PM
+De, ad, be, ef It becomes ef, be, ad, de?
+02/10/2026 1:30 PM
+So if you have
+02/10/2026 1:30 PM
+It reverses the array?
+02/10/2026 1:29 PM
+Oh
+[smx2460]
+[] theubusu [Endian(Endianness.BigEndian)] also reverses these though
+```csharp [InlineArray(4)] public struct ...
+smx2460 02/10/2026 1:29 PM
+Does it reverse only the first item or all?
+[theubusu]
+theubusu 02/10/2026 1:28 PM
+also it will crash if i have any static value in the BigEndian struct
+for some reason
+02/10/2026 1:23 PM
+so i will have to check the magic in reverse
+02/10/2026 1:23 PM
+[Endian(Endianness.BigEndian)] also reverses these though
+    [InlineArray(4)]
+    public struct HeaderMagicBytes
+    {
+        private byte _element0;
+    }
+(edited)
+02/10/2026 1:18 PM
+and data was 32 bytes, 24 unpad
+[smx2460]
+smx2460 02/10/2026 1:18 PM
+Wut
+[theubusu]
+theubusu 02/10/2026 1:18 PM
+for some reason
+02/10/2026 1:18 PM
+i only got the first 16 bytes
+02/10/2026 1:18 PM
+at least when i tried it
+02/10/2026 1:18 PM
+i think
+02/10/2026 1:18 PM
+it dont work cuz chunk is 16 bytes
+[smx2460]
+[] smx2460 ```diff --- a/Yafex/AesDecryptor.cs +++
+b/Yafex/AesDecryptor.cs @@ -26,16 +26,14 @@ public class Aes...
+smx2460 02/10/2026 1:17 PM
+Have you considered this?
+[theubusu]
+theubusu 02/10/2026 1:17 PM
+and PCKS7 still broken
+02/10/2026 1:17 PM
+though its kinda long

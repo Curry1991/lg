@@ -1,0 +1,1485 @@
+February 25, 2021
+[smx2460]
+smx2460 02/25/2021 8:34 PM
+don't worrry, it happens 
+[waam.]
+waam. 02/25/2021 8:34 PM
+-.-
+02/25/2021 8:34 PM
+"Oh yeah, I need to plug the ethernet cable into the tv mainboard"
+02/25/2021 8:33 PM
+"Why isn't this pinging my tftp server?"
+02/25/2021 8:33 PM
+LOL. I'm a dummy..
+02/25/2021 8:30 PM
+if not, I'll just try again
+[smx2460]
+smx2460 02/25/2021 8:29 PM
+maybe it's just broken
+[waam.]
+waam. 02/25/2021 8:29 PM
+lemme see if I saved the log output
+[smx2460]
+smx2460 02/25/2021 8:29 PM
+did it try to load it?
+02/25/2021 8:29 PM
+i wonder if the kernel even works
+02/25/2021 8:29 PM
+oh yeah
+[waam.]
+waam. 02/25/2021 8:29 PM
+mediatek likes to "release" their source code, but then leaves tons of
+symlinks to shit they didn't include in the repo
+[smx2460]
+smx2460 02/25/2021 8:29 PM
+good that you learned and succeded 
+[waam.]
+waam. 02/25/2021 8:28 PM
+I learned how to compile a kernel.. but holy shit was it a test in
+patience, lol
+02/25/2021 8:28 PM
+so I moved on
+02/25/2021 8:28 PM
+the one I tried (literally only one) didn't work
+02/25/2021 8:28 PM
+if I have a valid linux image
+02/25/2021 8:28 PM
+well, I can load via tftp
+[smx2460]
+smx2460 02/25/2021 8:27 PM
+maybe you can do something similar as a quick test
+02/25/2021 8:27 PM
+and loading it via fastboot into RAM (edited)
+02/25/2021 8:27 PM
+by packaging it into an android boot image
+02/25/2021 8:27 PM
+a while back i tried running buildroot on my Android phone
+[waam.]
+waam. 02/25/2021 8:27 PM
+hence the mtdblock experience
+02/25/2021 8:26 PM
+only routers
+02/25/2021 8:26 PM
+I've never messed around with android roms
+02/25/2021 8:26 PM
+gotcha
+[smx2460]
+smx2460 02/25/2021 8:22 PM
+linux_rootfs is a MTK thingy to put GNU/Linux stuff on top of Android
+afaik
+02/25/2021 8:21 PM
+on Android i mean
+02/25/2021 8:21 PM
+usually boot
+[waam.]
+waam. 02/25/2021 8:20 PM
+is uImage stored in the linux_rootfs partition, or boot?
+02/25/2021 8:19 PM
+mt5886 # fsload
+JFFS2 loading 'uImage' to 0x400000
+Scanning JFFS2 FS: get_fl_mem: unknown device type, using raw offset!
+get_fl_mem: unknown device type, using raw offset! get_fl_mem: unknown
+device type, using raw offset! get_fl_mem: unknown device type, using
+raw offset! get_fl_mem: unknown device type, using raw offset!
+get_fl_mem: unknown device type, using raw offset! get_fl_mem: unknown
+device type, using raw offset! get_fl_mem: unknown device type, using
+raw offset! done. find_inode failed for name=uImage load: Failed to find
+inode
+JFFS2 LOAD ERROR<0> for uImage!
+02/25/2021 8:19 PM
+hmmmm interesting
+[waam.]
+waam. 02/25/2021 8:01 PM
+too large
+02/25/2021 8:01 PM
+```
+ message.txt
+3.04 KB External
+[smx2460]
+smx2460 02/25/2021 8:01 PM
+\\\`
+[waam.]
+waam. 02/25/2021 8:01 PM
+how do I put text into a code block on discord?
+[smx2460]
+smx2460 02/25/2021 7:57 PM
+yeah that's likely ISP mode
+[waam.]
+waam. 02/25/2021 7:57 PM
+I think that puts the SoC into download mode
+02/25/2021 7:57 PM
+0 - 0.stop - program flash using MTKTool
+[smx2460]
+smx2460 02/25/2021 7:56 PM
+still unsure
+02/25/2021 7:56 PM
+mtkpkg_plat is 8 bytes
+02/25/2021 7:56 PM
+tho
+02/25/2021 7:56 PM
+    struct __attribute__((packed)) mtkpkg_data {
+        struct mtkpkg_crypted_header header;    
+        union {
+            struct mtkpkg_plat platform; //package header, followed by optional mtkpkg_pad
+            uint8_t pkgData[0]; //first package doesn't have headers
+        } data;
+    };
+02/25/2021 7:55 PM
+have they added more crap to it?
+02/25/2021 7:55 PM
++8 is 56
+02/25/2021 7:55 PM
+that's 48 bytes
+02/25/2021 7:55 PM
+    struct __attribute__((packed)) mtkpkg_crypted_header {
+        uint8_t mtk_reserved[16]; //MTK_RESERVED_MAGIC
+        uint8_t hmac[16];
+        uint8_t vendor_reserved[16];
+    };
+02/25/2021 7:55 PM
+HM!
+02/25/2021 7:55 PM
+    Note!!!!!! extra append data length +8 must align with 16 bytes.    Real extra_app_hdr_len = 56
+02/25/2021 7:53 PM
+it matches with what i have
+02/25/2021 7:53 PM
+    #define MTK_PAK_MAGIC "iMtK8"
+    #define MTK_PAD_MAGIC "iPAd"
+    #define MTK_EXTHDR_SIZE 64
+02/25/2021 7:53 PM
+iMtK8
+[waam.]
+waam. 02/25/2021 7:52 PM
+from the update logs
+02/25/2021 7:52 PM
+open File = /mnt/usb_0/upgrade_loader.pkg Append file length = 4207216
+Append file length = 1048640 Append file length = 383 Append file length
+= 1721904 Append file length = 956992 .. Process tag "load" length =
+956992, 00.0e.9a.40 Encrypted Append Hdr a7 0e 72 cf 8f b3 c5 2f
+Decrypted Append Hdr 69 4d 74 4b 38 00 00 00 Note!!!!!! extra append
+data length +8 must align with 16 bytes. Real extra_app_hdr_len = 56
+Adjust extra_app_hdr_len = 64 extra data a7 0e 72 cf 8f b3 c5 2f d0 3b
+53 3f ae 9b 37 2e ..r..../.;S?..7. 76 11 1b 42 ca f7 f0 5f 9a aa 9f 8e
+31 f4 37 56 v..B..._....1.7V 7e fc bb 65 df 82 62 53 70 b6 cc 2d 9c 89
+72 17 ~..e..bSp..-..r. 3a b8 a1 0a 83 ee 5a 0c 64 93 f5 90 4c fc d6 7b
+:.....Z.d...L..{
+02/25/2021 7:51 PM
+open File = /mnt/usb_0/upgrade_loader.pkg Append file length = 4207216
+Append file length = 1048640 Append file length = 383 .. Process tag
+"cfig" length = 383, 00.00.01.7f Encrypted Append Hdr f2 e5 56 7f 20 5b
+02 db Decrypted Append Hdr 53 54 41 52 54 0a 75 65 download cfig
+percentage = 100
+[smx2460]
+smx2460 02/25/2021 7:51 PM
+it fails to decrypt anything (edited)
+02/25/2021 7:50 PM
+and the most you can get out of it is encrypted partitions
+02/25/2021 7:50 PM
+i updated the detection heuristic
+02/25/2021 7:50 PM
+(no content)
+[unknown.png]
+ unknown.png
+148.66 KB External
+02/25/2021 7:49 PM
+unless you prove otherwise (i don't trust that log)
+02/25/2021 7:49 PM
+i still doubt the key is correct
+[waam.]
+waam. 02/25/2021 7:49 PM
+yeah, that's as far as it went
+[smx2460]
+[] waam. idk, once I did that, your tool printed a line about finding a
+magic value for pak
+smx2460 02/25/2021 7:49 PM
+i doubt it went any further
+[smx2460]
+smx2460 02/25/2021 7:49 PM
+now that i remember
+[waam.]
+waam. 02/25/2021 7:49 PM
+idk, once I did that, your tool printed a line about finding a magic
+value for pak
+[smx2460]
+smx2460 02/25/2021 7:49 PM
+the header key could be different than the data key
+02/25/2021 7:48 PM
+hmm actually
+02/25/2021 7:48 PM
+if the key is that one, it should work
+02/25/2021 7:48 PM
+ok but
+[waam.]
+waam. 02/25/2021 7:48 PM
+rinse and repeat
+02/25/2021 7:48 PM
+replace that with 68
+[smx2460]
+smx2460 02/25/2021 7:48 PM
+yes
+[waam.]
+waam. 02/25/2021 7:48 PM
+See b7?
+[smx2460]
+smx2460 02/25/2021 7:48 PM
+i don't get it
+[waam.]
+waam. 02/25/2021 7:47 PM
+go to offsets, replace hex with decrypted hex values
+[smx2460]
+smx2460 02/25/2021 7:47 PM
+"replace"? (edited)
+[waam.]
+waam. 02/25/2021 7:46 PM
+I just manually replaced the header with a hex editor
+[smx2460]
+smx2460 02/25/2021 7:46 PM
+the key isn't working out for me
+02/25/2021 7:46 PM
+i don't know how they do that
+02/25/2021 7:46 PM
+    b7 ae c2 b9 98 fa ea a7 1b ca e4 1e 80 e8 95 32    ...............2
+    c9 1e 40 e7 cc b7 80 e6 87 ac 93 aa b4 0a d9 1f    ..@.............
+    e4 cb a5 c6 a5 99 bd f3 5a 67 f9 c1 7d 69 c3 f4    ........Zg..}i..
+    bb bc 0b bb c5 57 44 fe e2 1e 33 29 2d 47 e6 d8    .....WD...3)-G..
+    45 8f 10 cc 0e 39 90 93 03 d4 fc d3 61 8f 22 69    E....9......a."i
+    5a bc 2a d0 55 d2 e4 6a e1 c8 a5 8f 94 f1 43 ce    Z.*.U..j......C.
+    b4 2a f7 35 0f c0 88 81 c4 62 a8 d2 a1 f6 9f 99    .*.5.....b......
+    Header :
+    68 69 73 65 23 44 48 40 46 69 52 6d 4b 30 38 31    hise#DH@FiRmK081
+    37 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00    7...............
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00    ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00    ................
+    00 00 00 00 00 00 00 00 34 7a dc 46 00 00 00 00    ........4z.F....
+    68 69 73 65 6e 73 65 5f 75 73 5f 6c 6f 77 63 6f    hisense_us_lowco
+    73 74 00 00 00 00 00 00 00 00 00 00 00 00 00 00    st..............
+(edited)
+[waam.]
+waam. 02/25/2021 7:43 PM
+I tried using ext4write to modify a boot script, but it didn't persist
+through the boot process
+[smx2460]
+smx2460 02/25/2021 7:42 PM
+and tftpboot it
+02/25/2021 7:42 PM
+then repack boot img
+[waam.]
+waam. 02/25/2021 7:42 PM
+well, coding's out of the bag for me, tbh; I'm not nearly versed enough
+in bare metal protocols
+[smx2460]
+smx2460 02/25/2021 7:42 PM
+fast,medium: modify initrd to spawn a shell over UART
+02/25/2021 7:42 PM
+fast,hard: write some code that uses uboot's network code to send it to
+your PC
+02/25/2021 7:41 PM
+easy,slow: read it out through uart (hexdump)
+02/25/2021 7:41 PM
+i think there is a third option, in between
+02/25/2021 7:41 PM
+but really
+[waam.]
+waam. 02/25/2021 7:41 PM
+that's on the Vendor partition
+[smx2460]
+smx2460 02/25/2021 7:41 PM
+one is fast but hard
+02/25/2021 7:41 PM
+one is easy but slow
+[waam.]
+waam. 02/25/2021 7:41 PM
+mt5886 # ext4ls emmc 0:24 firmware <DIR> 4096 . <DIR> 4096 .. 1024
+EEPROM_MT7668.bin 19064 TxPwrLimit_MT76x8.dat 55816
+WIFI_RAM_CODE2_USB_MT7668.bin 463000 WIFI_RAM_CODE_MT7668.bin 181134
+mt7668_patch_e2_hdr.bin 973 wifi.cfg
+[smx2460]
+smx2460 02/25/2021 7:41 PM
+you have 2 options
+[waam.]
+waam. 02/25/2021 7:39 PM
+ext4load- load binary file from a Ext4 filesystem ext4ls - list files in
+a directory (default /) ext4write- create a file in the root directory
+fatinfo - print information about filesystem fatload - load binary file
+from a dos filesystem fatls - list files in a directory (default /)
+fdt - flattened device tree utility commands
+02/25/2021 7:39 PM
+ext4write is the only command available related to write
+[smx2460]
+smx2460 02/25/2021 7:39 PM
+not sure if it can even write at all to USB
+[smx2460]
+[] waam. I can load that to memory and paste the hex values if you wanna
+dump it into a hex editor and save i...
+smx2460 02/25/2021 7:39 PM
+maybe the usb drive needs to be FAT formatted
+[smx2460]
+smx2460 02/25/2021 7:38 PM
+ok then
+[waam.]
+waam. 02/25/2021 7:38 PM
+yeah
+[smx2460]
+smx2460 02/25/2021 7:38 PM
+are they listed as available commands?
+[waam.]
+waam. 02/25/2021 7:38 PM
+I can load files into RAM and read them
+02/25/2021 7:38 PM
+md, mm, mw work
+[smx2460]
+smx2460 02/25/2021 7:38 PM
+maybe it's just unlisted
+02/25/2021 7:38 PM
+but is md and co there? (edited)
+[waam.]
+waam. 02/25/2021 7:38 PM
+a bunch more, but that's the only tftp related command
+[smx2460]
+smx2460 02/25/2021 7:37 PM
+just that?
+[waam.]
+waam. 02/25/2021 7:37 PM
+reloadenv- reloadenv - reload default environment variables reset -
+Perform RESET of the CPU saveenv - save environment variables to
+persistent storage setenv - set environment variables tftpboot- boot
+image via network using TFTP protocol upgrade - upgrade - Upgrade Linux
+kernel/rootfs using USB usb - usb - USB sub-system usbboot - usbboot -
+boot from USB device version - print monitor, compiler and linker
+version
+02/25/2021 7:36 PM
+one moment, I'll show ya 
+[smx2460]
+smx2460 02/25/2021 7:36 PM
+do you have tftp?
+02/25/2021 7:36 PM
+uh
+[waam.]
+waam. 02/25/2021 7:36 PM
+tftpput doesn't exist in this build
+[smx2460]
+smx2460 02/25/2021 7:36 PM
+tftpPUT
+02/25/2021 7:36 PM
+not tftpBOOT
+[waam.]
+waam. 02/25/2021 7:36 PM
+nah, tried tftpboot last night;
+[smx2460]
+smx2460 02/25/2021 7:36 PM
++ tftpput
+02/25/2021 7:36 PM
+then use emmc read
+02/25/2021 7:36 PM
+he needs to hook it up to the network
+[waam.]
+waam. 02/25/2021 7:36 PM
+there's definitely a second uart on mediatek SoCs, though
+[smx2460]
+smx2460 02/25/2021 7:35 PM
+but i told him what he could do
+02/25/2021 7:35 PM
+there's no "option"
+[waam.]
+waam. 02/25/2021 7:35 PM
+unfortunately no
+[retr0id]
+retr0id 02/25/2021 7:35 PM
+is there an option to dump over uart?
+[waam.]
+waam. 02/25/2021 7:34 PM
+I can load that to memory and paste the hex values if you wanna dump it
+into a hex editor and save it that way. Every time I try to write the
+file from a memory address to the usb drive it freezes the shell
+02/25/2021 7:33 PM
+I saw an eeprom bin when I was poking around the uboot ext4ls command
+ww8543 02/25/2021 7:33 PM
+02/25/2021 7:33 PM
+there are some cheap ones
+[] retr0id fair enough - I have a hot air station but I'm not very
+confident with the re-soldering phase yet
+ww8543 02/25/2021 7:33 PM
+just get a temperature controlled infrared oven
+[smx2460]
+smx2460 02/25/2021 7:30 PM
+it would be great for me
+02/25/2021 7:30 PM
+in your TV firmware
+02/25/2021 7:30 PM
+@Waam if you could send me the updater binary
+02/25/2021 7:30 PM
+@Waam wow you're an expert then
+[waam.]
+waam. 02/25/2021 7:29 PM
+I use quikchip low temp solder paste for resoldering bga chips.
+[retr0id]
+retr0id 02/25/2021 7:28 PM
+fair enough - I have a hot air station but I'm not very confident with
+the re-soldering phase yet (edited)
+[waam.]
+waam. 02/25/2021 7:28 PM
+I have emmc break out pcbs also
+02/25/2021 7:28 PM
+Quicker to just use a hot air station if you have one
+[retr0id]
+retr0id 02/25/2021 7:28 PM
+I wanna try this on my tv motherboard at some point
+02/25/2021 7:27 PM
+if you desolder those, you can solder wires to the pads
+02/25/2021 7:27 PM
+there will likely be resistor packs in series with the data lines
+02/25/2021 7:27 PM
+you might not even need to desolder it
+[waam.]
+waam. 02/25/2021 6:45 PM
+Hi hi
+[smx2460]
+smx2460 02/25/2021 6:35 PM
+hi @Waam
+[waam.]
+waam. 02/25/2021 5:09 PM
+I'm so close to desoldering the emmc from this board and dumping/modding
+it's contents X_X
+[waam.]
+waam. 02/25/2021 10:44 AM
+but, it seems as though he modified epk2extract to read the new .pkg
+format
+02/25/2021 10:44 AM
+no clue what version of firmware this guy was extracting
+02/25/2021 10:43 AM
+https://forum.xda-developers.com/t/rooting-mediatek-based-linux-smart-tv.3150281/post-80042203
+Rooting MediaTek Based Linux Smart TV
+Hi Guys, I am looking for methods to get root on my Linux smart tv.
+Anyone have any ideas? I ran metasploit against it and had no luck, it
+did find some open ports for upnp and something called twonkymedia but I
+was not able to get anywhere...
+[]
+02/25/2021 10:43 AM
+anything I could provide to help ?
+02/25/2021 10:43 AM
+hmm
+[smx2460]
+smx2460 02/25/2021 10:42 AM
+It doesn't decrypt to anything reasonable
+02/25/2021 10:42 AM
+It looked like the key was different from first look
+[smx2460]
+[] waam. <@310158180728700929> did you have a chance to look at the .pkg
+to see what changes were made to the...
+smx2460 02/25/2021 10:42 AM
+Briefly
+[waam.]
+waam. 02/25/2021 5:30 AM
+definitely need to create a VM for building images on my 3900x PC.. this
+notebook is sloooow
+[waam.]
+waam. 02/25/2021 5:09 AM
+@Smx did you have a chance to look at the .pkg to see what changes were
+made to the format?
+02/25/2021 5:03 AM
+apparently the lockfile was an issue, had to install procmail
+02/25/2021 5:03 AM
+welp, figured it out
+[waam.]
+waam. 02/25/2021 4:18 AM
+make -f ./scripts/Makefile.build obj=scripts make -f
+./scripts/Makefile.build obj=scripts/mod (cat /dev/null; ) >
+scripts/mod/modules.order /bin/sh: 1: lockfile: not found make[2]:
+[scripts/Makefile.build:306: scripts/mod/empty.o] Error 127 make[1]:
+[scripts/Makefile.build:451: scripts/mod] Error 2 make: ***
+[Makefile:578: scripts] Error 2
+02/25/2021 4:17 AM
+but nothing from this console output gives any idea of why the make is
+failing
+02/25/2021 4:17 AM
+I've figured out the toolchain issues, etc
+02/25/2021 4:13 AM
+any ideas, guys?
+02/25/2021 4:13 AM
+/bin/sh: 1: lockfile: not found make[2]: [scripts/Makefile.build:306:
+scripts/mod/empty.o] Error 127 make[1]: [scripts/Makefile.build:451:
+scripts/mod] Error 2 make: *** [Makefile:578: scripts] Error 2
+February 24, 2021
+[waam.]
+waam. 02/24/2021 2:49 AM
+annnnnnnnnnd I fucked up by using a 16.04 distro -.-
+02/24/2021 2:43 AM
+hmm
+02/24/2021 2:43 AM
+*** Your GCC is older than 6.0 and is not supported
+arch/arm/config.mk:66: recipe for target 'checkgcc6' failed
+[waam.]
+waam. 02/24/2021 2:22 AM
+good thing is, I won't forget this shit once I do gain headway, lol
+02/24/2021 2:21 AM
+well, I've got it now.. I think
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 02/24/2021 2:18 AM
+@Smx can explain how to use it with cmake
+🇾 1 🇪 1 🇸 1 [:meep:] 1
+[waam.]
+waam. 02/24/2021 2:18 AM
+Self learning can be a double edged sword if you don't know the right
+things to look up
+02/24/2021 2:18 AM
+-.-
+02/24/2021 2:18 AM
+And you just explained it in 2 seconds
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 02/24/2021 2:17 AM
+is the basics of it
+02/24/2021 2:17 AM
+right, so someone correct me if I'm wrong, but basically you download
+it, add that bin to your PATH and build whatever it is that you want to
+build with CROSS_COMPILE=arm-linux-whatever-lol- ARCH=arm
+ 1
+[waam.]
+waam. 02/24/2021 2:16 AM
+<-- linux novice
+ 1
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 02/24/2021 2:16 AM
+not really, looks fairly what I would expect a cross toolchain to look
+like
+ 1
+[waam.]
+waam. 02/24/2021 2:15 AM
+is a cluster fuck
+ 1
+02/24/2021 2:15 AM
+so, for example: https://github.com/p0isk/gnu-toolchain_4.8.2
+p0isk/gnu-toolchain_4.8.2
+gnu-toolchain_4.8.2_2.6.35_cortex-a9-neon for HiSense TV -
+p0isk/gnu-toolchain_4.8.2
+[]
+02/24/2021 2:15 AM
+names**
+02/24/2021 2:15 AM
+yeah
+02/24/2021 2:15 AM
+these repos I find are just.. bad; bunch of random directories all with
+duplicate nams, etc
+ 1
+[smx2460]
+smx2460 02/24/2021 2:15 AM
+@Waam is that the same package you installed?
+[waam.]
+waam. 02/24/2021 2:14 AM
+Ehhh, never mind 
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 02/24/2021 2:14 AM
+what do you mean installing?
+[waam.]
+waam. 02/24/2021 2:04 AM
+what's the proper way to go about installing a tool chain from a github
+repo?
+02/24/2021 2:01 AM
+I haven't been able to compile a single image in.. 3 hours? 4?
+02/24/2021 2:01 AM
+setting up build environments for cross compiling linux images.. meh
+February 23, 2021
+[waam.]
+waam. 02/23/2021 5:25 PM
+https://mega.nz/file/lEtgwQhK#27UeFsRpo9-si9lyhNiFMT0MefSVw2jDeozpuJ6S5bo
+65H8F_65A6501EU_K0817.zip (edited)
+1.11 GB file on MEGA
+[]
+[waam.]
+waam. 02/23/2021 5:13 PM
+lemme g drive it
+02/23/2021 5:12 PM
+kk
+02/23/2021 5:12 PM
+they do a lot of appends in the upgrade process
+[smx2460]
+smx2460 02/23/2021 5:12 PM
+i need the package then
+[waam.]
+waam. 02/23/2021 5:12 PM
+yeah
+ww8543 02/23/2021 5:12 PM
+maybe the format changed slightly
+[waam.]
+waam. 02/23/2021 5:12 PM
+so it's in the headers then
+[smx2460]
+smx2460 02/23/2021 5:12 PM
+ya probably (edited)
+[waam.]
+waam. 02/23/2021 5:12 PM
+hmm
+[smx2460]
+smx2460 02/23/2021 5:12 PM
+so it's already supported by epk2extract
+ww8543 02/23/2021 5:12 PM
+probably a mtk standard key?
+02/23/2021 5:12 PM
+exactly the same
+02/23/2021 5:12 PM
+yea
+[smx2460]
+smx2460 02/23/2021 5:12 PM
+it's the same
+ww8543 02/23/2021 5:12 PM
+isnt it
+[smx2460]
+smx2460 02/23/2021 5:12 PM
+this is the TCL key
+02/23/2021 5:12 PM
+    55555555555555555555555555555555,B1BFAA407F70C80C650379DFEAFAA40F // TCL 2017
+ww8543 02/23/2021 5:12 PM
+the 55555 is the iv
+[smx2460]
+smx2460 02/23/2021 5:11 PM
+i mean
+02/23/2021 5:11 PM
+i think one of those is the IV xD
+02/23/2021 5:11 PM
+    ##########aes key######
+    55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55    UUUUUUUUUUUUUUUU
+    ##########AES Key######
+    b1 bf aa 40 7f 70 c8 0c 65 03 79 df ea fa a4 0f    ...@.p..e.y.....
+02/23/2021 5:11 PM
+but
+02/23/2021 5:11 PM
+so i need the IV too
+02/23/2021 5:11 PM
+@Waam if it's like others it's CBC
+ww8543 02/23/2021 5:11 PM
+send the pkg file!
+02/23/2021 5:11 PM
+upgrade log?!
+[waam.]
+waam. 02/23/2021 5:07 PM
+I'll send ya the upgrade log
+[smx2460]
+smx2460 02/23/2021 5:06 PM
+maybe it's a simple fix in epk2extract then
+[waam.]
+waam. 02/23/2021 5:06 PM
+it's really not much different than previous hisense pkgs
+[smx2460]
+smx2460 02/23/2021 5:06 PM
+it's under evaluation as to which will prevail (edited)
+02/23/2021 5:06 PM
+i'm porting epk2extract's logic to C#/Kotlin
+[waam.]
+waam. 02/23/2021 5:06 PM
+well, I worded it.. poorly
+[smx2460]
+smx2460 02/23/2021 5:06 PM
+in my infinite spare time
+ww8543 02/23/2021 5:06 PM
+someone has to add that support
+[] waam. any suggestions to get epk2extract to recognize the file
+format?
+ww8543 02/23/2021 5:06 PM
+well if it says that it doesnt support it, then it does not support it
+[smx2460]
+[] waam. any clue why this address started 0x200100 instead of 0x200000?
+smx2460 02/23/2021 5:06 PM
+it doesn't, it starts at 0x200000
+[waam.]
+waam. 02/23/2021 5:05 PM
+haha
+[smx2460]
+[] waam. they echo the keys lol
+smx2460 02/23/2021 5:05 PM
+lol
+ww8543 02/23/2021 5:05 PM
+no
+[waam.]
+waam. 02/23/2021 3:49 PM
+Also, anyone familiar with a frc.bin ??
+[waam.]
+waam. 02/23/2021 3:36 PM
+any suggestions to get epk2extract to recognize the file format?
+02/23/2021 3:36 PM
+(I know, cygwin.. ew) lol
+02/23/2021 3:36 PM
+Current directory: /build_cygwin Input file:
+/cygdrive/c/hisense/build_cygwin/upgrade_loader_mod.pkg Destination
+directory: /cygdrive/c/hisense/build_cygwin Found valid partpak magic
+0x65736968 in /cygdrive/c/hisense/build_cygwin/upgrade_loader_mod.pkg
+Unsupported input file format:
+/cygdrive/c/hisense/build_cygwin/upgrade_loader_mod.pkg
+02/23/2021 3:35 PM
+modified the .pkg header to match the decrypted one
+02/23/2021 3:35 PM
+hmm
+ww8543 02/23/2021 3:24 PM
+unless you changed the source code
+02/23/2021 3:24 PM
+no need to rebuild
+02/23/2021 3:24 PM
+you can just add them
+[waam.]
+waam. 02/23/2021 3:06 PM
+Or, can I just add them to the key files?
+02/23/2021 3:06 PM
+Do I need to build epk2extract again now that I have the AES and public
+RSA keys?
+02/23/2021 3:03 PM
+lol, they refer to this firmware as hisense_us_lowcost
+ww8543 02/23/2021 3:01 PM
+how considerate of them
+[waam.]
+waam. 02/23/2021 3:01 PM
+and they were even nice enough to give me the header before and after
+decryption
+02/23/2021 3:00 PM
+(no content)
+ message.txt
+3.38 KB External
+02/23/2021 3:00 PM
+yeah, definitely
+ww8543 02/23/2021 3:00 PM
+that's.... bad (for them)
+02/23/2021 3:00 PM
+oh wow 
+[waam.]
+waam. 02/23/2021 2:59 PM
+they echo the keys lol
+02/23/2021 2:59 PM
+messing around with upgrade_loader.pkg usb recovery and logged the
+console output
+ww8543 02/23/2021 2:58 PM
+where was it? (edited)
+02/23/2021 2:58 PM
+cool
+[waam.]
+waam. 02/23/2021 2:53 PM
+so, I found my TV's AES key for decryption
+02/23/2021 2:53 PM
+mmmm
+[waam.]
+waam. 02/23/2021 1:49 PM
+Well, I figured it would have started at 0x200000 since that was the
+starting address for the mmc read command?
+[] waam. any clue why this address started 0x200100 instead of 0x200000?
+ww8543 02/23/2021 9:56 AM
+what do you mean it started there? how do YOU know it starts there? just
+cause you see a text string at that offset?
+[waam.]
+waam. 02/23/2021 3:28 AM
+any clue why this address started 0x200100 instead of 0x200000?
+[waam.]
+waam. 02/23/2021 3:11 AM
+thanks again
+02/23/2021 3:11 AM
+finally 
+02/23/2021 3:11 AM
+mt5886 # md 0x2000000 02000000: ea000071 e59ff018 e59ff018 e59ff018
+q............... 02000010: e59ff018 e59ff018 e59ff018 e59ff018
+................ 02000020: fb0001cc fb000198 fb00019c fb0001a0
+................ 02000030: fb0001a4 fb0001a8 fb0001ac fb0001b0
+................ 02000040: e3a00000 ee070f15 ee110f10 e3c00a01
+................ 02000050: ee010f10 f57ff04f f57ff06f e59f0010
+....O...o....... 02000060: e3a01039 e5801000 f57ff04f f57ff06f
+9.......O...o... 02000070: ea000055 f000801c 00000000 00000000
+U............... 02000080: 00000000 00000000 00000000 00000000
+................ 02000090: 00000000 00000000 00000000 00000000
+................ 020000a0: 00000000 00000000 00000000 00000000
+................ 020000b0: 00000000 00000000 00000000 00000000
+................ 020000c0: 00000000 00000000 00000000 00000000
+................ 020000d0: 00000000 00000000 00000000 00000000
+................ 020000e0: 00000000 00000000 00000000 00000000
+................ 020000f0: 00000000 00000000 00000000 00000000
+................ 02000100: 2f4b544d 2f565444 434d4f52 2f45444f
+MTK/DTV/ROMCODE/ 02000110: 4344534d 544f4f42 3130562f 0030302e
+MSDCBOOT/V01.00. 02000120: 00000000 00000000 00000000 00000000
+................ 02000130: 00000000 00000000 00000000 00000000
+................ 02000140: 544f4f42 00000000 00000000 00000000
+BOOT............ 02000150: 00000000 00000000 00000000 00000000
+................ 02000160: 00000000 00000000 00000000 00000000
+................ 02000170: 00000000 00000000 00000000 00000000
+................ 02000180: 74530d0a 20747261 69616d50 000d0a6e ..Start
+Pmain... 02000190: 6c480d0a 000d0a74 ea000005 ea000004 ..Hlt...........
+****
+02/23/2021 3:11 AM
+@Smx
+[waam.]
+waam. 02/23/2021 2:47 AM
+I'll let you know as I make progress 
+02/23/2021 2:47 AM
+help***
+02/23/2021 2:47 AM
+you've been a ton of hellp
+02/23/2021 2:47 AM
+np np man
+02/23/2021 2:47 AM
+I was looking at the size, not the offset
+[smx2460]
+smx2460 02/23/2021 2:47 AM
+sorry i gotta go
+[waam.]
+waam. 02/23/2021 2:47 AM
+nvm I fucked up
+02/23/2021 2:44 AM
+now, do I need to convert that 4096 block length to base16?
+02/23/2021 2:44 AM
+2097152 / 512 = 4096
+[smx2460]
+smx2460 02/23/2021 2:40 AM
+y
+[waam.]
+waam. 02/23/2021 2:39 AM
+0-9 A-F?
+02/23/2021 2:39 AM
+right?
+02/23/2021 2:38 AM
+base 16 = 16 hex values
+[smx2460]
+smx2460 02/23/2021 2:38 AM
+a hexadecagon has 16 edges
+[waam.]
+waam. 02/23/2021 2:37 AM
+I'm a mechanic by trade, lol
+02/23/2021 2:37 AM
+I never talk to anyone about this stuff, if you can't tell; so idk the
+nomenclature to use at times
+[smx2460]
+smx2460 02/23/2021 2:37 AM
+"hexa" means 6 "Hexadeca" means 16 (edited)
+[waam.]
+waam. 02/23/2021 2:36 AM
+do most people refer to hex as base 16 in software dev?
+02/23/2021 2:36 AM
+erm, are all hex values base 16?
+[smx2460]
+smx2460 02/23/2021 2:36 AM
+either you see 0x, or they tell you, or you see ABCDEF (edited)
+[waam.]
+waam. 02/23/2021 2:35 AM
+how do I know when they're base 16?
+[smx2460]
+smx2460 02/23/2021 2:35 AM
+so yes
+02/23/2021 2:35 AM
+0x is hex notation
+[waam.]
+waam. 02/23/2021 2:35 AM
+from mtdpart
+02/23/2021 2:35 AM
+where I'm confused, I guess, is, these are hex addresses?
+02/23/2021 2:34 AM
+decimal to base 16?
+[smx2460]
+smx2460 02/23/2021 2:34 AM
+the one you wrote
+[waam.]
+waam. 02/23/2021 2:34 AM
+what's a good query to google to read about it
+02/23/2021 2:32 AM
+I haven't looked at decimal to base 16 conversion yet, btw
+02/23/2021 2:32 AM
+no, no.. I mean did you multiply it?
+[smx2460]
+smx2460 02/23/2021 2:32 AM
+just use a calculator
+[waam.]
+waam. 02/23/2021 2:32 AM
+how'd you get to that?
+02/23/2021 2:31 AM
+[smx2460]
+smx2460 02/23/2021 2:30 AM
+2097152
+[waam.]
+waam. 02/23/2021 2:30 AM
+200,000 decimal?
+[smx2460]
+smx2460 02/23/2021 2:30 AM
+!?
+[waam.]
+waam. 02/23/2021 2:30 AM
+what's the proper way to read that as a value?
+02/23/2021 2:30 AM
+0x0000000000200000
+[smx2460]
+smx2460 02/23/2021 2:30 AM
+you could easily automate this in a script
+02/23/2021 2:29 AM
+tftpput 0x2000000 <some size> 192.168.1.123:chunk.bin
+02/23/2021 2:29 AM
+you then use this
+02/23/2021 2:29 AM
+    U_BOOT_CMD(
+        tftpput,    4,    1,    do_tftpput,
+        "TFTP put command, for uploading files to a server",
+        "Address Size [[hostIPaddr:]filename]"
+    );
+02/23/2021 2:29 AM
+if the partition is large i recommend splitting it in multiple commands
+02/23/2021 2:28 AM
+same for size
+[waam.]
+waam. 02/23/2021 2:28 AM
+I remember reading 512 block size in the log before
+[smx2460]
+smx2460 02/23/2021 2:28 AM
+addr / blockSize
+02/23/2021 2:28 AM
+you need to convert the starting address to a block number too
+02/23/2021 2:28 AM
+yep
+[waam.]
+waam. 02/23/2021 2:28 AM
+so, I need to look at the length value in mtdparts and calculate how
+many blocks to read ideally?
+[smx2460]
+smx2460 02/23/2021 2:27 AM
+hmm i think so, did you have that in any log? (edited)
+[waam.]
+waam. 02/23/2021 2:27 AM
+and each block = 512 bytes
+02/23/2021 2:27 AM
+so, it's reading a block
+02/23/2021 2:27 AM
+problem I have is.. I tend to run before walking
+02/23/2021 2:27 AM
+erm idk
+[smx2460]
+smx2460 02/23/2021 2:26 AM
+my sentence still holds true
+02/23/2021 2:26 AM
+why "but"
+[waam.]
+waam. 02/23/2021 2:26 AM
+fuck this base 16, lol
+[smx2460]
+smx2460 02/23/2021 2:25 AM
+i'd guess the starting block is #0
+[waam.]
+waam. 02/23/2021 2:25 AM
+but 100 = 256
+[smx2460]
+smx2460 02/23/2021 2:25 AM
+the one you just did
+02/23/2021 2:25 AM
+it reads from device 0, to address 0x2000000 in ram, reading 0x100
+blocks starting from block 0x1
+[waam.]
+waam. 02/23/2021 2:25 AM
+is this read command populating the blocks @ the address you specify
+with the dev specified?
+[smx2460]
+smx2460 02/23/2021 2:24 AM
+until you dumped all the chunks
+02/23/2021 2:24 AM
+you repeat this in a script
+02/23/2021 2:24 AM
+or tftp it to your server
+02/23/2021 2:24 AM
+then hexdump it
+[waam.]
+waam. 02/23/2021 2:23 AM
+mmc read 0 0x2000000 1 100
+[smx2460]
+smx2460 02/23/2021 2:23 AM
+which is the temporary TFTP address (probably the DRAM base)
+02/23/2021 2:22 AM
+you should use 0x2000000
+02/23/2021 2:22 AM
+you read to address 0
+[waam.]
+waam. 02/23/2021 2:22 AM
+I just don't understand how this shit works lol
+02/23/2021 2:22 AM
+mt5886 # mmc read 0 0 10 100 MMC block read: dev # 0, block # 16, count
+256 ... 256 blocks read: OK
+[smx2460]
+smx2460 02/23/2021 2:21 AM
+it's there
+02/23/2021 2:21 AM
+mmc read
+[waam.]
+waam. 02/23/2021 2:20 AM
+mhmmm
+[smx2460]
+smx2460 02/23/2021 2:20 AM
+https://discord.com/channels/407937994037919756/407945716342718476/813565077235564605
+[waam.]
+waam. 02/23/2021 2:19 AM
+hahah
+[smx2460]
+smx2460 02/23/2021 2:19 AM
+dude
+[waam.]
+waam. 02/23/2021 2:19 AM
+:p
+02/23/2021 2:19 AM
+taking emmc data and putting it into ram
+02/23/2021 2:19 AM
+but, back to the initial problem I've had
+[smx2460]
+smx2460 02/23/2021 2:19 AM
+you could then read the whole emmc out
+02/23/2021 2:18 AM
+if you want to transfer very large partitions you should read them in
+chunks
+02/23/2021 2:18 AM
+then do ram to tftp
+02/23/2021 2:18 AM
+read from emmc to ram
+[waam.]
+waam. 02/23/2021 2:18 AM
+https://forum.xda-developers.com/t/amazing-temp-root-for-mediatek-armv8-2020-08-24.3922213/
+Amazing Temp Root for MediaTek ARMv8 [2020-08-24]
+Software root method for MediaTek MT67xx, MT816x, and MT817x! So it's no
+big secret that not too long ago, I found a way to achieve temporary
+root on MediaTek chipsets. No preinstalled root solution or device
+unlock was needed. The tool I...
+[]
+[smx2460]
+smx2460 02/23/2021 2:17 AM
+    U_BOOT_CMD(
+        tftpput,    4,    1,    do_tftpput,
+        "TFTP put command, for uploading files to a server",
+        "Address Size [[hostIPaddr:]filename]"
+    );
+[waam.]
+waam. 02/23/2021 2:17 AM
+another thing that sucks, I'm pretty sure this would work on a lot of
+these MTK SoCs, but it's closed source.
+02/23/2021 2:16 AM
+I can't do that without having root access
+02/23/2021 2:16 AM
+it's piping stdout to a file
+02/23/2021 2:16 AM
+cat /dev/block/bootdevice/by-name/boot > /sdcard/boot.img
+[smx2460]
+smx2460 02/23/2021 2:15 AM
+or save it from uboot
+02/23/2021 2:15 AM
+get that from the firmware update
+02/23/2021 2:15 AM
+only to read the kernel partition
+[waam.]
+waam. 02/23/2021 2:15 AM
+adb shell su
+[smx2460]
+smx2460 02/23/2021 2:14 AM
+why?
+02/23/2021 2:14 AM
+??
+[waam.]
+waam. 02/23/2021 2:14 AM
+that github guide requires root
+[smx2460]
+smx2460 02/23/2021 2:13 AM
+only Hisense has that
+[waam.]
+waam. 02/23/2021 2:13 AM
+oh?
+[smx2460]
+smx2460 02/23/2021 2:13 AM
+that's impossible
+[waam.]
+waam. 02/23/2021 2:13 AM
+I also want to eventually obtain the RSA key used to sign the lzhs
+header
+[smx2460]
+smx2460 02/23/2021 2:13 AM
+https://gist.github.com/gregor160300/068c06c0314c19855e999473708c7635
+HOW TO: Modify boot.img to allow usb debugging from recovery adb
+HOW TO: Modify boot.img to allow usb debugging from recovery adb -
+default.prop
+[]
+[smx2460]
+[] waam. I added a bootarg of init=/bin/sh, but it's not a root shell
+smx2460 02/23/2021 2:11 AM
+it might not work on Android
+[smx2460]
+smx2460 02/23/2021 2:09 AM
+you'd need custom code
+02/23/2021 2:09 AM
+"no way" in the default bootloader
+[waam.]
+waam. 02/23/2021 2:09 AM
+gotcha
+[smx2460]
+smx2460 02/23/2021 2:09 AM
+especially if it's compressed
+[waam.]
+waam. 02/23/2021 2:09 AM
+ramdisk image?
+[smx2460]
+smx2460 02/23/2021 2:08 AM
+squashfs is usually meant to be loaded to RAM
+[waam.]
+waam. 02/23/2021 2:08 AM
+in uboot, that iss
+02/23/2021 2:08 AM
+so no way to view the contents of linux_rootfs?
+02/23/2021 2:08 AM
+hm
+[smx2460]
+smx2460 02/23/2021 2:08 AM
+no. (edited)
+[waam.]
+waam. 02/23/2021 2:07 AM
+no no , I mean, is there a squashfsls command like ext4 and fatls?
+[smx2460]
+smx2460 02/23/2021 2:07 AM
+i've haccessed it on the LG MTK TV
+02/23/2021 2:07 AM
+haven't accessed it yet
+[waam.]
+waam. 02/23/2021 2:07 AM
+no squashfs command in uboot?
+[smx2460]
+smx2460 02/23/2021 2:06 AM
+mt5891
+02/23/2021 2:06 AM
+then it's wrong
+02/23/2021 2:06 AM
+it's a53
+02/23/2021 2:06 AM
+no
+[waam.]
+waam. 02/23/2021 2:05 AM
+arm7a a9 cortex?
+02/23/2021 2:05 AM
+oh, so nearly the same as mine
+[smx2460]
+smx2460 02/23/2021 2:05 AM
+mt5882 iirc
+[waam.]
+waam. 02/23/2021 2:05 AM
+which SoC is your tv based on?
+02/23/2021 2:04 AM
+no /bin/bash binary in the system partition
+[smx2460]
+smx2460 02/23/2021 2:04 AM
+but you might need a special A-A cable to access it
+02/23/2021 2:04 AM
+i know it has fastboot implemented in uboot
+02/23/2021 2:04 AM
+besides the CPU being terribly slow, i haven't figured out a userland
+root yet
+[waam.]
+waam. 02/23/2021 2:04 AM
+I added a bootarg of init=/bin/sh, but it's not a root shell
+[smx2460]
+smx2460 02/23/2021 2:04 AM
+which is MTK based
+02/23/2021 2:03 AM
+i have a Sony Android TV
+[waam.]
+waam. 02/23/2021 2:03 AM
+you can't break the linux initd boot process, though
+[smx2460]
+smx2460 02/23/2021 2:03 AM
+lol
+02/23/2021 2:03 AM
+and it's not password protected or anything like that?
+[waam.]
+waam. 02/23/2021 2:03 AM
+yeah and sent SIGTERM signal through putty
+[smx2460]
+smx2460 02/23/2021 2:03 AM
+via UART directly?
+02/23/2021 2:03 AM
+how did you get to uboot?
+02/23/2021 2:03 AM
+that's interesting
+[waam.]
+waam. 02/23/2021 2:03 AM
+tv**
+02/23/2021 2:03 AM
+yeah it's android rv
+[smx2460]
+smx2460 02/23/2021 2:03 AM
+woah
+[waam.]
+waam. 02/23/2021 2:03 AM
+Android 9
+[smx2460]
+smx2460 02/23/2021 2:03 AM
+is it Android TV or some custom crap?
+[waam.]
+waam. 02/23/2021 2:03 AM
+Hisense 50H8F
+02/23/2021 2:03 AM
+yeah
+[smx2460]
+smx2460 02/23/2021 2:03 AM
+what device do you have?
+02/23/2021 2:02 AM
+you're on Android?
+[waam.]
+waam. 02/23/2021 2:02 AM
+yeah, I've found some repos with old kernel/uboot source
+[smx2460]
+smx2460 02/23/2021 2:02 AM
+but the kernel driver can't be recompiled (edited)
+02/23/2021 2:02 AM
+the base kernel can be recompiled, sources given (forget about updated
+sources)
+[waam.]
+waam. 02/23/2021 2:01 AM
+I'm mainly learning as I go
+02/23/2021 2:01 AM
+hence my uncertainty haha
+[smx2460]
+smx2460 02/23/2021 2:01 AM
+MTK53xx are heavily customized systems
+02/23/2021 2:01 AM
+not sure what kind of mods you want to do
+[waam.]
+waam. 02/23/2021 2:01 AM
+potentially
+02/23/2021 2:01 AM
+idk
+02/23/2021 2:01 AM
+ehhhhhhhhhhhhh
+[smx2460]
+smx2460 02/23/2021 2:01 AM
+do you plan to do kernel modding? (edited)
+02/23/2021 2:01 AM
+so
+[waam.]
+waam. 02/23/2021 2:00 AM
+haha
+02/23/2021 2:00 AM
+it sucks, but she still loves him
+[smx2460]
+smx2460 02/23/2021 2:00 AM
+the interface is also more complex
+[waam.]
+waam. 02/23/2021 2:00 AM
+it's like a wife that's been beaten for 20 years
+02/23/2021 1:59 AM
+only cause it's what I know better
+[smx2460]
+smx2460 02/23/2021 1:59 AM
+not sure how you can prefer it
+02/23/2021 1:59 AM
+bad block management
+[waam.]
+waam. 02/23/2021 1:59 AM
+yeah, lol
+02/23/2021 1:59 AM
+but, setting up block devices and shit is annoying
+[smx2460]
+smx2460 02/23/2021 1:59 AM
+MTD is more annoying
+[waam.]
+waam. 02/23/2021 1:59 AM
+only cause I'm used to it, I guess
+02/23/2021 1:59 AM
+if this were nand, I'd have been long done
+[smx2460]
+smx2460 02/23/2021 1:59 AM
+you prefer MTD? ugh (edited)
+[waam.]
+waam. 02/23/2021 1:58 AM
+I'm not a fan of emmc devices
+[smx2460]
+smx2460 02/23/2021 1:58 AM
+compared to "emmc"
+02/23/2021 1:58 AM
+maybe for some devices it makes more sense
+[waam.]
+waam. 02/23/2021 1:58 AM
+I wish android device manufacturers weren't so against modding their
+devices
+[smx2460]
+smx2460 02/23/2021 1:58 AM
+don't ask me why it's base16 tho (edited)
+02/23/2021 1:56 AM
+uboot is at the "code is documentation" level (edited)
+[waam.]
+waam. 02/23/2021 1:56 AM
+unless I overlooked it, which is very much a possibility
+02/23/2021 1:56 AM
+not one piece of documentation about uboot said anything about the
+mtdparts being in base 16
+02/23/2021 1:55 AM
+man, that's been a huge issue the whole time..
+02/23/2021 1:55 AM
+gotcha
+[smx2460]
+smx2460 02/23/2021 1:54 AM
+like 0x and leading zeros
+02/23/2021 1:54 AM
+omit prefixes
+[waam.]
+waam. 02/23/2021 1:54 AM
+didn't output anything
+02/23/2021 1:54 AM
+I'm sure I butchered that
+02/23/2021 1:54 AM
+mt5886 # ext4ls emmc0:0x010
+[smx2460]
+smx2460 02/23/2021 1:53 AM
+you do subsequent divisions and you take the remainder at each step
+(edited)
+02/23/2021 1:52 AM
+    How to convert from decimal to hex
+        Divide the number by 16.
+        Get the integer quotient for the next iteration.
+        Get the remainder for the hex digit.
+        Repeat the steps until the quotient is equal to 0.
+02/23/2021 1:52 AM
+if you REALLY want to do it by hand
+02/23/2021 1:52 AM
+most of the times you just use a calculator
+02/23/2021 1:52 AM
+when the number is small you can do it in your head
+[waam.]
+waam. 02/23/2021 1:51 AM
+or is that something that just comes from 20 years of software dev
+02/23/2021 1:51 AM
+what's the formula for calculating ?
+[smx2460]
+smx2460 02/23/2021 1:51 AM
+0x13 is 19 (edited)
+[waam.]
+waam. 02/23/2021 1:51 AM
+gotcha
+[smx2460]
+smx2460 02/23/2021 1:51 AM
+16 is 10 in hex
+02/23/2021 1:51 AM
+you want to list partition 16 don't you?
+[waam.]
+waam. 02/23/2021 1:51 AM
+mt5886 # ext4ls emmc 0:13 <DIR> 4096 . <DIR> 4096 .. <DIR> 4096 dlna
+<DIR> 4096 fonts <DIR> 4096 mpeg_dash <DIR> 4096 mss 170
+platform_info.txt <DIR> 4096 playready <DIR> 4096 upgrade <DIR> 4096
+vudu <DIR> 4096 widevine <SYM> 21 localtime <DIR> 4096 google_storage 25
+dhcp_server <DIR> 4096 lost+found
+[smx2460]
+smx2460 02/23/2021 1:50 AM
+wait
+[waam.]
+waam. 02/23/2021 1:50 AM
+it did on the one partition that I input as 0x16
+[smx2460]
+smx2460 02/23/2021 1:50 AM
+did ext4ls work?
+[waam.]
+waam. 02/23/2021 1:49 AM
+a lot of people want the answer to their question for the sake of saving
+time. I want to understand it so that I can progress once I actually do
+grasp the concept
+ 1
+02/23/2021 1:49 AM
+Well, I don't want to pretend that I know something if I don't
+02/23/2021 1:48 AM
+hahaha
+[smx2460]
+smx2460 02/23/2021 1:48 AM
+it's like looking in your car's fuel pump and saying you're no mechanic
+[waam.]
+waam. 02/23/2021 1:48 AM
+in terms of software dev
+02/23/2021 1:48 AM
+firmware hacking is the only thing that doesn't make me snooze
+02/23/2021 1:48 AM
+well, I have an interest, but any time I've sat down to "program", I get
+bored as shit
+[smx2460]
+smx2460 02/23/2021 1:47 AM
+you're asking specific questions
+02/23/2021 1:47 AM
+that's strange
+[waam.]
+waam. 02/23/2021 1:47 AM
+like I said, I don't program 
+02/23/2021 1:47 AM
+hahah, I know it's painful; appreciate the help
+[smx2460]
+smx2460 02/23/2021 1:47 AM
+you just ...yes
+[waam.]
+waam. 02/23/2021 1:47 AM
+base 16?
+02/23/2021 1:47 AM
+decimal to hex?
+02/23/2021 1:46 AM
+so how do I go about finding the hex value of each partition?
+[smx2460]
+smx2460 02/23/2021 1:46 AM
+partition is base16
+02/23/2021 1:46 AM
+yes
+[waam.]
+waam. 02/23/2021 1:46 AM
+device:partition ?
+[smx2460]
+smx2460 02/23/2021 1:45 AM
+it's saying partition 22 because you passed partition 0x16
+02/23/2021 1:45 AM
+it means it's hex
+[waam.]
+waam. 02/23/2021 1:45 AM
+not a programmer, so I'm pretty hazy on that term
+[smx2460]
+smx2460 02/23/2021 1:44 AM
+        fs = get_fs();
+        if (*ep) {
+            if (*ep != ':') {
+                puts("\n** Invalid boot device, use `dev[:part]' **\n");
+                return 1;
+            }
+            part = simple_strtoul(++ep, NULL, 16);
+        }
+02/23/2021 1:44 AM
+@Waam partition is in base 16 (edited)
+[waam.]
+waam. 02/23/2021 1:41 AM
+any idea why it's saying partition 22 when I passed 16 in the command?
+02/23/2021 1:40 AM
+mt5886 # ext4ls emmc 0:16 Failed to mount ext4 filesystem... Bad ext4
+partition or disk - emmc 0:22
+[smx2460]
+smx2460 02/23/2021 1:34 AM
+    U_BOOT_CMD(ext4load, 6, 0, do_ext4_load,
+           "load binary file from a Ext4 filesystem",
+           "<interface> <dev[:part]> [addr] [filename] [bytes]\n"
+           "      - load binary file 'filename' from 'dev' on 'interface'\n"
+           "         to address 'addr' from ext4 filesystem");
+[waam.]
+waam. 02/23/2021 1:34 AM
+mmhm
+[smx2460]
+smx2460 02/23/2021 1:33 AM
+that's actually a nice idea
+02/23/2021 1:33 AM
+to load a file from /data?
+02/23/2021 1:33 AM
+but why do you want to list them?
+[waam.]
+waam. 02/23/2021 1:33 AM
+that's the thing, idk what file system they are
+[smx2460]
+smx2460 02/23/2021 1:33 AM
+if it's ext2, you have ext2ls
+02/23/2021 1:33 AM
+if it's ext4, you have ext4ls (edited)
+[waam.]
+waam. 02/23/2021 1:33 AM
+no LS, etc
+02/23/2021 1:32 AM
+but I cannot interact with them
+02/23/2021 1:32 AM
+I can see the mtdpartions
+02/23/2021 1:32 AM
+maybe I'm not asking the correct question?
+02/23/2021 1:30 AM
+bleh
+[waam.]
+waam. 02/23/2021 1:20 AM
+MMC block read: dev # 0, block # 3, count 1298 ... 1298 blocks read: OK
+mt5886 # mmc rescan 0 mt5886 # mmc list : 0
+[smx2460]
+smx2460 02/23/2021 1:20 AM
+    U_BOOT_CMD(
+        update,    4,        1,    do_mtd_update,
+        "update - Update Linux mtd partition using the file read from USB\n",
+        "partname filename [filesystem(jffs2|yaffs|ubifs), ubifs is default]\n"
+    );
+02/23/2021 1:17 AM
+be careful with erase commands

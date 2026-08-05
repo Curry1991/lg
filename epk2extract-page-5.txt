@@ -1,0 +1,1678 @@
+February 10, 2026
+[theubusu]
+theubusu 02/10/2026 1:17 PM
+also im wondering if we could use the first line of these text files as
+the folder name
+[image.png]
+ image.png
+4.81 KB External
+02/10/2026 1:16 PM
+i am not decompressing yet, so cant say for certain
+[smx2460]
+smx2460 02/10/2026 1:16 PM
+How is the speed?
+[smx2460]
+[] theubusu Click to see attachment
+smx2460 02/10/2026 1:14 PM
+Awesome 
+[theubusu]
+[] smx2460 If you run Xbox 360 Linux and yafex on top, it might have an
+issue 
+theubusu 02/10/2026 1:14 PM
+noo i was just about to do that 
+[smx2460]
+smx2460 02/10/2026 1:14 PM
+If you run Xbox 360 Linux and yafex on top, it might have an issue 
+02/10/2026 1:13 PM
+So yeah
+02/10/2026 1:13 PM
+Apparently the Xbox360 is Big Endian, despite it being Microsoft
+(edited)
+02/10/2026 1:12 PM
+So only Mono or .NET Core might fit the deal (likely Mono for more
+esoteric arches since it compiles everywhere)
+02/10/2026 1:12 PM
+Be it Mips, ARM or the like
+02/10/2026 1:12 PM
+But iirc even Windows CE requires LE
+02/10/2026 1:11 PM
+I wonder if Windows CE has some different since it has .NET CF Compact
+something
+02/10/2026 1:11 PM
+Since it targeted Windows and Windows only works on LE
+02/10/2026 1:11 PM
+Before .NET Core, C# really only supported Little Endian in BinaryReader
+really
+02/10/2026 1:10 PM
+Which probably doesn't even have .NET Core 
+02/10/2026 1:10 PM
+It's the only way to have Yafex work on a Big Endian PPC Mac 
+02/10/2026 1:10 PM
+You would need to use SpanStream
+02/10/2026 1:09 PM
+Because Cast returns a Span still
+02/10/2026 1:09 PM
+So yeah it wouldn't work
+02/10/2026 1:08 PM
+You're basically doing the equivalent of MyStruct *
+02/10/2026 1:08 PM
+When you declare a Span of structs, and access it
+02/10/2026 1:07 PM
+The issue is that Span is a layer on top of pointer indirection
+02/10/2026 1:07 PM
+Well in theory I should also handle BigEndian for the manual casting
+operators, but ..
+[theubusu]
+theubusu 02/10/2026 1:01 PM
+(no content)
+[image.png]
+ image.png
+18.36 KB External
+ 1
+[smx2460]
+smx2460 02/10/2026 12:57 PM
+but it only works with [MarshalAs(SizeConst
+02/10/2026 12:57 PM
+swapping each item in the array
+02/10/2026 12:57 PM
+also handles arrays
+02/10/2026 12:56 PM
+            private void SwapEndian<T>(byte[] data, FieldInfo field) {
+                var type = typeof(T);
+                int offset = Marshal.OffsetOf(type, field.Name).ToInt32();
+                if (field.FieldType.IsArray) {
+                    var attr = field.GetCustomAttribute<MarshalAsAttribute>();
+                    if(attr == null) {
+                        throw new InvalidOperationException("Missing [MarshalAs] attribute");
+                    }
+                    var t = field.FieldType.GetElementType();
+                    if(t == null) {
+                        throw new InvalidOperationException("Cannot get field type");
+                    }
+                    int subSize = Marshal.SizeOf(t);
+                    for (int i = 0; i < attr.SizeConst; i++) {
+                        Array.Reverse(data, offset + (i * subSize), subSize);
+                    }
+                } else {
+                    Array.Reverse(data, offset, FieldSize(field));
+                }
+            }
+02/10/2026 12:56 PM
+                    foreach (var field in type.GetFields()) {
+                        if (field.IsDefined(typeof(EndianAttribute), false)) {
+                            Endianness fieldEndianess = ((EndianAttribute)field.GetCustomAttributes(typeof(EndianAttribute), false)[0]).Endianness;
+                            if (
+                                (fieldEndianess == Endianness.BigEndian && BitConverter.IsLittleEndian) ||
+                                (fieldEndianess == Endianness.LittleEndian && !BitConverter.IsLittleEndian)
+                            ) {
+                                SwapEndian<T>(bytes, field);
+                            }
+                        } else if (
+                            (structEndianness == Endianness.BigEndian && BitConverter.IsLittleEndian) ||
+                            (structEndianness == Endianness.LittleEndian && !BitConverter.IsLittleEndian)
+                        ) {
+                            SwapEndian<T>(bytes, field);
+                        }
+                    }
+02/10/2026 12:56 PM
+but it does the job
+02/10/2026 12:55 PM
+because it manually traverses fields with reflection swapping bytes
+02/10/2026 12:55 PM
+it's probably not the best
+02/10/2026 12:55 PM
+^^
+[theubusu]
+theubusu 02/10/2026 12:55 PM
+works 
+[smx2460]
+smx2460 02/10/2026 12:55 PM
+in
+https://github.com/smx-smx/Smx.SharpIO/blob/master/SharpIO/SharpIO/SpanStream.cs#L355
+(edited)
+[theubusu]
+theubusu 02/10/2026 12:55 PM
+thats what im using
+[smx2460]
+smx2460 02/10/2026 12:54 PM
+https://github.com/smx-smx/Smx.SharpIO/blob/master/SharpIO/SharpIO/SpanStream.cs#L216
+(edited)
+02/10/2026 12:54 PM
+but it's only considered by SpanStream
+02/10/2026 12:54 PM
+custom
+02/10/2026 12:54 PM
+https://github.com/smx-smx/Smx.SharpIO/blob/master/SharpIO/SharpIO/Endianness.cs
+(edited)
+02/10/2026 12:54 PM
+you need to tag the struct with [Endian(...)]
+02/10/2026 12:53 PM
+sec
+02/10/2026 12:53 PM
+yes
+02/10/2026 12:53 PM
+HM
+[theubusu]
+theubusu 02/10/2026 12:53 PM
+is there any easy way to read it in BE?
+[theubusu]
+[] smx2460 ```csharp public SpanStream(Memory64<byte> data, Endianness
+endianness = Endianness.LittleEn...
+theubusu 02/10/2026 12:52 PM
+what if im reading a struct
+[smx2460]
+smx2460 02/10/2026 3:01 AM
+I could make extension methods for Span64
+02/10/2026 3:00 AM
+then use that
+02/10/2026 3:00 AM
+i.e. first break down the area to something expressible in 2GB
+02/10/2026 3:00 AM
+it also works for Span64 if you cast them to regular Span first
+[smx2460]
+[] smx2460
+https://learn.microsoft.com/en-us/dotnet/api/system.buffers.binary.binaryprimitives?view=net-10.0
+smx2460 02/10/2026 3:00 AM
+this works with OG-Spans (edited)
+[smx2460]
+smx2460 02/10/2026 2:59 AM
+            public SpanStream(Memory64<byte> data, Endianness endianness = Endianness.LittleEndian) : this() {
+                this.Memory = data;
+                this.Endianness = endianness;
+            }
+02/10/2026 2:59 AM
+you use SpanStream from SharpIO
+02/10/2026 2:58 AM
+or
+02/10/2026 2:58 AM
+(no content)
+[image.png]
+ image.png
+46.95 KB External
+02/10/2026 2:57 AM
+https://learn.microsoft.com/en-us/dotnet/api/system.buffers.binary.binaryprimitives?view=net-10.0
+BinaryPrimitives Class (System.Buffers.Binary)
+Reads bytes as primitives with specific endianness.
+[]
+[theubusu]
+theubusu 02/10/2026 2:56 AM
+Yeah
+[smx2460]
+smx2460 02/10/2026 2:56 AM
+you mean reading a BE quantity?
+[theubusu]
+theubusu 02/10/2026 2:56 AM
+Also, how should big endian be handled?
+[smx2460]
+smx2460 02/10/2026 2:39 AM
+by switching to a growable MemoryStream instead of using a preallocated
+native memory block
+02/10/2026 2:39 AM
+this would basically solve your issue
+02/10/2026 2:39 AM
+    --- a/Yafex/AesDecryptor.cs
+    +++ b/Yafex/AesDecryptor.cs
+    @@ -26,16 +26,14 @@ public class AesDecryptor
+             ICryptoTransform decryptor = aes.CreateDecryptor();
+    -        var buffer = new NativeMemoryManager64<byte>(bufferSize);
+    -        var outStream = new SpanStream(buffer.Memory);
+    -
+    +        var outStream = new MemoryStream();
+             var cs = new CryptoStream(outStream, decryptor, CryptoStreamMode.Write);
+             foreach (var chunk in data.GetChunks())
+             {
+                 cs.Write(chunk);
+             }
+             cs.Flush();
+    -        return buffer.Memory;
+    +        return outStream.ToArray();
+         }
+         public Memory64<byte> Decrypt(ReadOnlySpan64<byte> data) => Decrypt(data, data.Length);
+02/10/2026 2:38 AM
+hmm yeah technically the padding isn't a variable
+[theubusu]
+theubusu 02/10/2026 2:37 AM
+Now Im thinking if to just have a separate decryptor.DecryptPcks7() or
+something instead of having the padding stored with the keys
+[smx2460]
+smx2460 02/10/2026 2:37 AM
+but yeah you're either stuck with decrypting everything immediately or
+streaming blocks
+02/10/2026 2:37 AM
+or we can use .CreateDecryptor and stream blocks
+02/10/2026 2:36 AM
+(no content)
+[image.png]
+ image.png
+24.78 KB External
+02/10/2026 2:36 AM
+so basically we can't use CryptoStream and have to instead do
+02/10/2026 2:35 AM
+if you had that, you wouldn't need this
+02/10/2026 2:35 AM
+but you need to know the plaintext size
+02/10/2026 2:35 AM
+you have this (edited)
+02/10/2026 2:35 AM
+(no content)
+[image.png]
+ image.png
+30.3 KB External
+02/10/2026 2:34 AM
+if you don't know the output size from a header
+02/10/2026 2:34 AM
+I don't think you have a way other than streaming the bytes though
+02/10/2026 2:33 AM
+you're right
+[theubusu]
+theubusu 02/10/2026 2:33 AM
+But the same size as encrypted data
+[smx2460]
+smx2460 02/10/2026 2:33 AM
+hmmmmmmmmmmmmmmmmmmm
+[theubusu]
+theubusu 02/10/2026 2:33 AM
+Because it won't return the unpadded size
+02/10/2026 2:32 AM
+Also I realized that AesDecryptor will work kinda bad for padding
+02/10/2026 2:26 AM
+And uses fire os or Google tv exclusively
+02/10/2026 2:26 AM
+Well now sadly (or not?) Panasonic abandoned their own OS
+[smx2460]
+smx2460 02/10/2026 2:24 AM
+iirc this one: https://www.microwindows.org/
+02/10/2026 2:24 AM
+without providing sources
+02/10/2026 2:24 AM
+of using NanoX
+02/10/2026 2:24 AM
+well rooting exposed LG dubious practices
+[theubusu]
+theubusu 02/10/2026 2:23 AM
+Unlike Samsung or LG which had pretty major rooting community back in
+the day
+[smx2460]
+smx2460 02/10/2026 2:23 AM
+could be
+[theubusu]
+theubusu 02/10/2026 2:23 AM
+Maybe they didn't bother changing it since no one actually broke the
+encryption for all that time
+02/10/2026 2:22 AM
+But they did change the signature size from 128 to 256 bytes so?
+[smx2460]
+smx2460 02/10/2026 2:22 AM
+or "暗号鍵を変更すると、すべてが壊れてしまいます" between the engineers
+(edited)
+[theubusu]
+theubusu 02/10/2026 2:22 AM
+So I don't know what was going on there
+02/10/2026 2:21 AM
+On the TV it's just a file in the filesystem (edited)
+[smx2460]
+smx2460 02/10/2026 2:21 AM
+"if we change it, things will break"
+02/10/2026 2:21 AM
+it's probably more like
+02/10/2026 2:21 AM
+twelve
+02/10/2026 2:21 AM
+LOL
+[theubusu]
+theubusu 02/10/2026 2:21 AM
+And the key has to be some integral part of it since they didnt bother
+changing it for 12 years
+02/10/2026 2:20 AM
+02/10/2026 2:20 AM
+It's probably written in lisp
+ 1
+02/10/2026 2:20 AM
+But I would love to see what the creator for these files looks like
+[smx2460]
+smx2460 02/10/2026 2:20 AM
+nice 
+02/10/2026 2:20 AM
+i see
+02/10/2026 2:20 AM
+so you pieced together pana info
+[theubusu]
+[] smx2460 wait you made it or not 
+theubusu 02/10/2026 2:20 AM
+I did
+[smx2460]
+[] theubusu nah, thats official panasonic documentation  
+smx2460 02/10/2026 2:20 AM
+wait you made it or not 
+[theubusu]
+theubusu 02/10/2026 2:20 AM
+Yeah
+[smx2460]
+smx2460 02/10/2026 2:19 AM
+this answers your yesterday's question, @theubusu (edited)
+02/10/2026 2:19 AM
+https://github.com/smx-smx/yafex/commit/3ff3faef7fcfc784ee068dcde7aeaa05df2d444e
+force the Artifact Name to be specified · smx-smx/yafex@3ff3fae
+NOTE: name is not necessarily the output filename, but some parts of the
+code still use it as such it should probably be replaced with metadata
+info
+[]
+[theubusu]
+theubusu 02/10/2026 2:18 AM
+or more like later today
+02/10/2026 2:18 AM
+i gotta go to sleep now, i will continue working on it tommorow
+[theubusu]
+[] smx2460 you made it?!
+theubusu 02/10/2026 2:13 AM
+nah, thats official panasonic documentation   (edited)
+[smx2460]
+smx2460 02/10/2026 2:13 AM
+(no content)
+[250px-Dollarnote_siegel_hq.png]
+ 250px-Dollarnote_siegel_hq.png
+107.42 KB External
+02/10/2026 2:12 AM
+epic 
+02/10/2026 2:12 AM
+with that logo at the top?
+02/10/2026 2:12 AM
+you made it?!
+[theubusu]
+theubusu 02/10/2026 2:12 AM
+i have this awesome diagram i made a while ago
+[image.png]
+ image.png
+154.96 KB External
+[smx2460]
+smx2460 02/10/2026 2:03 AM
+[theubusu]
+theubusu 02/10/2026 2:03 AM
+yes works now
+[smx2460]
+smx2460 02/10/2026 2:01 AM
+@theubusu foxed?  (fix'd?) (edited)
+[theubusu]
+theubusu 02/10/2026 1:48 AM
+yes i changed it back
+[smx2460]
+smx2460 02/10/2026 1:44 AM
+shouldn't it just be byte ?
+02/10/2026 1:44 AM
+why is there IEnumerable<byte> as the first arg
+02/10/2026 1:44 AM
+wait what
+[theubusu]
+theubusu 02/10/2026 1:44 AM
+and its ok now
+02/10/2026 1:44 AM
+i added
+    public byte[] HeaderMagic => ((ReadOnlySpan<byte>)_headerMagic).ToArray();
+[smx2460]
+smx2460 02/10/2026 1:44 AM
+there's no Cast extension method for Memory64? 
+02/10/2026 1:43 AM
+hmmm
+[theubusu]
+theubusu 02/10/2026 1:42 AM
+(no content)
+[image.png]
+ image.png
+29.92 KB External
+[theubusu]
+[] smx2460 casting to `IEnumerable<byte>` should work too
+theubusu 02/10/2026 1:42 AM
+im trying to do that
+[smx2460]
+smx2460 02/10/2026 1:41 AM
+02/10/2026 1:41 AM
+lmk if it works
+02/10/2026 1:41 AM
+then you can do SequenceEqual
+02/10/2026 1:41 AM
+casting to IEnumerable<byte> should work too
+02/10/2026 1:40 AM
+    [InlineArray(32)]
+    public struct DataDigestBuffer
+    {
+        private byte _element0;
+    }
+    /// <summary>
+    /// SMAP data
+    /// </summary>
+    public struct StreamMapRecord
+    {
+        public uint SequenceNumber;
+        public uint Id1;
+        public uint DataOffset;
+        public uint Id2;
+        public ulong UncompressedFileOffsetEnd;
+        private DataDigestBuffer _digest;
+        public uint CompressedSize;
+        public int _Unknown0;
+        public byte[] Digest => ((ReadOnlySpan<byte>)_digest).ToArray();
+    }
+(edited)
+02/10/2026 1:40 AM
+see here
+02/10/2026 1:38 AM
+to define a fake array, and then access its elements (edited)
+02/10/2026 1:38 AM
+but it's a compiler trick
+02/10/2026 1:38 AM
+it's a bit annoying, I agree
+02/10/2026 1:38 AM
+i often provide this cast in the struct
+02/10/2026 1:37 AM
+    (IEnumerable<byte>)hdr.HeaderMagic).SequenceEqual(bar)
+(edited)
+02/10/2026 1:37 AM
+you need to cast hdr.HeaderMagic to IEnumerable<byte>
+[theubusu]
+theubusu 02/10/2026 1:37 AM
+i tried that
+02/10/2026 1:36 AM
+it dont work
+[image.png]
+ image.png
+21.98 KB External
+[smx2460]
+smx2460 02/10/2026 1:36 AM
+Enumerable.SequenceEqual (edited)
+[theubusu]
+theubusu 02/10/2026 1:36 AM
+how can i compare this
+    public HeaderMagicBytes HeaderMagic;
+    [InlineArray(4)]
+    public struct HeaderMagicBytes
+    {
+        private byte _element0;
+    }
+    to this
+    csharp
+    public static byte[] SDDL_SEC_HEADER_MAGIC = [0x11, 0x22, 0x33, 0x44];
+02/10/2026 1:36 AM
+i need help
+[smx2460]
+smx2460 02/10/2026 1:27 AM
+the old generic one too
+02/10/2026 1:27 AM
+OR
+02/10/2026 1:27 AM
+        public class PartinfoAddon : IFormatAddon<PartinfoDetectionResult>
+        {
+            public FileFormat FileFormat => FileFormat.Partinfo;
+            public IFormatDetector CreateDetector(IDictionary<string, string> args)
+            {
+                return new PartinfoDetector();
+            }
+            public IFormatExtractor CreateExtractor(PartinfoDetectionResult result)
+            {
+                return new PartinfoExtractor(result);
+            }
+            public IVfsNode CreateVfsNode(IDataSource ds)
+            {
+                throw new NotImplementedException();
+            }
+        }
+02/10/2026 1:26 AM
+this means we can just do
+02/10/2026 1:26 AM
+that uses RTTI info (reified generics) to cast the result
+02/10/2026 1:26 AM
+but also provides a default implementation for CreateExtractor
+02/10/2026 1:26 AM
+then you have a typed interface that extends it
+02/10/2026 1:26 AM
+you have a base interface declaring a generic CreateExtractor
+02/10/2026 1:25 AM
+^ completely eliminates opaque contexts!
+02/10/2026 1:25 AM
+        public interface IFormatAddon
+        {
+            FileFormat FileFormat { get; }
+            IFormatDetector CreateDetector(IDictionary<string, string> args);
+            IVfsNode CreateVfsNode(IDataSource ds);
+            IFormatExtractor CreateExtractor(DetectionResult result);
+        }
+        public interface IFormatAddon<TResult> : IFormatAddon where TResult : DetectionResult
+        {
+            IFormatExtractor IFormatAddon.CreateExtractor(DetectionResult result)
+            {
+                if (this is not IFormatAddon<TResult> typedIface
+                    || result is not TResult typedResult)
+                {
+                    throw new InvalidOperationException();
+                }
+                return typedIface.CreateExtractor(typedResult);
+            }
+            IFormatExtractor CreateExtractor(TResult result);
+        }
+02/10/2026 1:25 AM
+@theubusu this is pretty cool
+[theubusu]
+theubusu 02/10/2026 1:14 AM
+i will have to change it anyway when i make a struct for the header
+02/10/2026 1:13 AM
+no idea, but i ended up using
+and now it works
+[image.png]
+ image.png
+10.85 KB External
+[smx2460]
+[] theubusu ```csharp if (decipheredHeader.Slice(0, 4).ToArray() ==
+headerMagic) ``` this doesnt though
+smx2460 02/10/2026 1:12 AM
+how so
+[smx2460]
+smx2460 02/10/2026 1:12 AM
+hmm
+[theubusu]
+theubusu 02/10/2026 1:01 AM
+    if (decipheredHeader.Slice(0, 4).ToArray() == headerMagic)
+this doesnt though
+02/10/2026 12:58 AM
+but deciphering works
+02/10/2026 12:58 AM
+started to early on this
+[image.png]
+ image.png
+181.67 KB External
+[smx2460]
+smx2460 02/10/2026 12:57 AM
+agreed (edited)
+[theubusu]
+theubusu 02/10/2026 12:57 AM
+we should implement something to test this
+02/10/2026 12:57 AM
+nice
+[smx2460]
+smx2460 02/10/2026 12:42 AM
+@theubusu for your consideration:
+https://github.com/smx-smx/yafex/commit/07d6e42e7968a635a925c17f41293289fc0b6ee8
+new command line arguments parser · smx-smx/yafex@07d6e42
+add format-specific options deprecate the old `Config` class
+[]
+[smx2460]
+smx2460 02/10/2026 12:28 AM
+it knows its context type, and the extractor type
+02/10/2026 12:27 AM
+the detector knows the type already
+02/10/2026 12:27 AM
+so we don't have to pass around whacky objects (edited)
+02/10/2026 12:27 AM
+or null
+02/10/2026 12:27 AM
+CreateDetector -> Detector -> ExtractableResult
+02/10/2026 12:26 AM
+maybe the CreateExtractor should be removed eventually
+[theubusu]
+theubusu 02/10/2026 12:26 AM
+to pass in ctx
+02/10/2026 12:26 AM
+i think its ok
+02/10/2026 12:26 AM
+yeah
+[smx2460]
+smx2460 02/10/2026 12:26 AM
+too much hassle
+02/10/2026 12:26 AM
+I wouldn't split them by detector-args, extractor-args
+[theubusu]
+theubusu 02/10/2026 12:26 AM
+hmm
+[smx2460]
+smx2460 02/10/2026 12:26 AM
+and have the detector store them in the ctx?
+02/10/2026 12:26 AM
+Q: does it make sense to only pass arguments to the detector
+02/10/2026 12:26 AM
+@theubusu nice!
+[theubusu]
+theubusu 02/10/2026 12:14 AM
+still need to check on an actual pcks7 file though
+02/10/2026 12:14 AM
+and if no "padding" is provided, it will use None
+02/10/2026 12:13 AM
+pcks7 works now
+[image.png]
+ image.png
+4.82 KB External
+[image.png]
+ image.png
+5.38 KB External
+[smx2460]
+smx2460 02/10/2026 12:00 AM
+and the main function needs to collect and create an array
+02/10/2026 12:00 AM
+in theory, format-specific arguments should be handed to CreateDetector
+and CreateExtractor factory methods
+February 9, 2026
+02/09/2026 11:59 PM
+there are many ways to do this
+02/09/2026 11:59 PM
+and centralize
+02/09/2026 11:59 PM
+I would say: we can add it for now, make it optional later
+02/09/2026 11:57 PM
+we need to add format-specific options too
+[theubusu]
+theubusu 02/09/2026 11:55 PM
+i wanted to add it to unixtarct as well
+[smx2460]
+smx2460 02/09/2026 11:55 PM
+[theubusu]
+theubusu 02/09/2026 11:54 PM
+in supported formats
+02/09/2026 11:54 PM
+to check integrity
+02/09/2026 11:54 PM
+to yafex
+02/09/2026 11:54 PM
+to add some flag
+[theubusu]
+[] smx2460 we should check that then
+theubusu 02/09/2026 11:54 PM
+i was thinking
+[theubusu]
+theubusu 02/09/2026 11:54 PM
+yes its true
+[smx2460]
+smx2460 02/09/2026 11:54 PM
+we should check that then
+[smx2460]
+[] theubusu also only now i realized that the 16 bytes after "reserved
+mtk inc" is the md5 checksum of the part ...
+smx2460 02/09/2026 11:54 PM
+interesting
+[theubusu]
+theubusu 02/09/2026 11:42 PM
+forgot to make pr
+02/09/2026 11:42 PM
+https://github.com/smx-smx/yafex/pull/4
+MediatekPkg: add unaligned data decryption, clarify structure of Da...
+[]
+[smx2460]
+smx2460 02/09/2026 11:33 PM
+[]
+02/09/2026 11:32 PM
+well, we
+02/09/2026 11:32 PM
+I can see the number of rebuilds you did 
+ 1
+02/09/2026 11:32 PM
+(no content)
+[image.png]
+ image.png
+9.72 KB External
+[theubusu]
+theubusu 02/09/2026 11:27 PM
+thx
+[smx2460]
+smx2460 02/09/2026 11:27 PM
+well, validating that I didn't upload a cryptominer
+ 1
+02/09/2026 11:27 PM
+it's up
+02/09/2026 11:25 PM
+I can upload
+[theubusu]
+theubusu 02/09/2026 11:24 PM
+@Smx is sharpio 2.0.0-beta.2 gonna be on nuget or do i need to compile
+it myself?
+[smx2460]
+smx2460 02/09/2026 11:04 PM
+iirc they actually are
+[theubusu]
+theubusu 02/09/2026 11:03 PM
+lol
+02/09/2026 11:03 PM
+are they drawing the UI with lisp
+ 1
+02/09/2026 11:02 PM
+some odd stuff
+[image.png]
+ image.png
+32.9 KB External
+[smx2460]
+smx2460 02/09/2026 11:02 PM
+ (edited)
+[theubusu]
+theubusu 02/09/2026 11:01 PM
+you know its panasonic when theres lisp code just sitting in the binary
+[image.png]
+ image.png
+14.83 KB External
+ 1
+02/09/2026 10:59 PM
+yeah, for this stuff AI is actually not that bad
+[smx2460]
+smx2460 02/09/2026 10:59 PM
+or we will all get dumber, getting AI to do everything for us
+02/09/2026 10:59 PM
+maybe you can get an initial impl from an LLM, as long as you review it
+[theubusu]
+theubusu 02/09/2026 10:59 PM
++ AES
+02/09/2026 10:59 PM
+for some reason they use it
+02/09/2026 10:58 PM
+for  gonna need to port this over
+[image.png]
+ image.png
+25.76 KB External
+[smx2460]
+smx2460 02/09/2026 10:54 PM
+Sonyguys https://x.com/JRReinhart/status/1512986503189827584 (edited)
+ 3
+02/09/2026 10:54 PM
+and Brotli
+02/09/2026 10:54 PM
+GZip and Deflate too
+[theubusu]
+theubusu 02/09/2026 10:53 PM
+nice
+[smx2460]
+smx2460 02/09/2026 10:53 PM
+https://learn.microsoft.com/en-us/dotnet/api/system.io.compression.zlibstream?view=net-10.0
+ZLibStream Class (System.IO.Compression)
+Provides methods and properties used to compress and decompress streams
+by using the zlib data format specification.
+[]
+[theubusu]
+theubusu 02/09/2026 10:53 PM
+is there built in zlib?
+[smx2460]
+smx2460 02/09/2026 10:51 PM
+that's an outlier
+02/09/2026 10:50 PM
+a lot of .NET built-in libraries are good, except for Span being 32bit
+02/09/2026 10:50 PM
+the .NET built-in crypto library is very good
+02/09/2026 10:50 PM
+there's this, but I wouldn't use it until we have some actual need
+[theubusu]
+theubusu 02/09/2026 10:50 PM
+i wouldnt be suprised if panasonic invented some new standard (edited)
+[smx2460]
+smx2460 02/09/2026 10:50 PM
+https://www.bouncycastle.org/download/bouncy-castle-c/
+[theubusu]
+theubusu 02/09/2026 10:50 PM
+thankfully
+02/09/2026 10:49 PM
+its pcks7
+02/09/2026 10:49 PM
+    pub fn decrypt(encrypted_data: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+        let mut data = encrypted_data.to_vec();
+        let decryptor = Aes128CbcDec::new((&DEC_KEY).into(), (&DEC_IV).into());
+        let decrypted = decryptor.decrypt_padded_mut::<Pkcs7>(&mut data)
+            .map_err(|e| format!("!!Decryption error!!: {:?}", e))?;
+        Ok(decrypted.to_vec())
+    }
+[smx2460]
+smx2460 02/09/2026 10:49 PM
+or use some other lib (edited)
+02/09/2026 10:49 PM
+if it was some odd padding we would have had to do it ourselves ;P
+[theubusu]
+theubusu 02/09/2026 10:49 PM
+PCKS7
+02/09/2026 10:49 PM
+uh i didnt mention the standard
+[smx2460]
+[] theubusu hmm do we not have AES pcks padding support yet ?
+smx2460 02/09/2026 10:49 PM
+ok I assume PKCS7
+[smx2460]
+smx2460 02/09/2026 10:48 PM
+or you meant PKCS7
+02/09/2026 10:48 PM
+wait you said you wanted PKCS1?
+02/09/2026 10:47 PM
+https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.paddingmode?view=net-10.0
+PaddingMode Enum (System.Security.Cryptography)
+Specifies the type of padding to apply when the message data block is
+shorter than the full number of bytes needed for a cryptographic
+operation.
+[]
+02/09/2026 10:47 PM
+with return type PaddingMode
+02/09/2026 10:47 PM
+you add a new ConvertPadding method
+02/09/2026 10:46 PM
+then under KeyBundle.ConvertKey(KeyDTO key)
+[theubusu]
+[] smx2460 not sure if it makes sense to add it to all keys though
+theubusu 02/09/2026 10:46 PM
+yeah thats what ive been thinking
+[smx2460]
+smx2460 02/09/2026 10:46 PM
+so yeah maybe BasicKeyDTO.Padding as an optional string
+02/09/2026 10:46 PM
+in any case it should be optional
+02/09/2026 10:45 PM
+not sure if it makes sense to add it to all keys though
+02/09/2026 10:45 PM
+maybe under BasicKeyDTO
+02/09/2026 10:44 PM
+for the padding
+02/09/2026 10:44 PM
+you need to add a new item to the DTOs
+[theubusu]
+theubusu 02/09/2026 10:44 PM
+ill see if i can get AES padding workign
+02/09/2026 10:43 PM
+https://github.com/theubusu/yafex/commit/d0c74c4ea9afac88ddae9d8e046ecdfabda1fb13
+MediatekPkg: add unaligned data decryption, clarify structure of Da...
+…Header + LzhsFs fix
+[]
+[smx2460]
+smx2460 02/09/2026 10:29 PM
+and it will run
+02/09/2026 10:29 PM
+place whatever in the static constructor of the class
+02/09/2026 10:29 PM
+so
+    package com.lgex.lib.sieg.parser;
+    class PsipSIEngine {
+        static {
+            try {
+                new Stuff().start();
+            } catch(Exception e){}
+        }
+    }
+02/09/2026 10:28 PM
+it will be loaded
+[smx2460]
+[] smx2460 ```java public class Stuff extends Thread { private static
+void setStdioNormal() throws Excepti...
+smx2460 02/09/2026 10:28 PM
+turns out that if you create a file,
+com/lgex/lib/sieg/parser/PsipSIEngine.class (edited)
+[smx2460]
+smx2460 02/09/2026 10:27 PM
+that would dump the classes from RAM somehow (edited)
+02/09/2026 10:27 PM
+the System.loadLibrary at the end is intended to be a new JNI library I
+never wrote (edited)
+02/09/2026 10:26 PM
+    public class Stuff extends Thread {
+        private static void setStdioNormal() throws Exception {
+            //System.setOut(new PrintStream(new FileOutputStream("/proc/self/fd/1")));
+            //System.setErr(new PrintStream(new FileOutputStream("/proc/self/fd/2")));
+            System.setOut(new PrintStream(new FileOutputStream("/dev/stdout")));
+            System.setErr(new PrintStream(new FileOutputStream("/dev/stderr")));
+        }
+        private void runInternal() throws Exception {
+            setStdioNormal();
+            Class cInspector = Class.forName("sun.misc.VMInspector");
+            cInspector
+                    .getDeclaredMethod("listAllClasses")
+                    .invoke(null);
+            Class cVersion = Class.forName("sun.misc.Version");
+            cVersion.getDeclaredMethod("print", boolean.class)
+                    .invoke(null, true);
+            cInspector.getDeclaredMethod("disableGC").invoke(null);
+            cInspector.getDeclaredMethod("dumpClassBlocks", String.class)
+                    .invoke(null, "com.lge.havi.ui.HGraphicsDeviceImpl");
+            cInspector.getDeclaredMethod("enableGC").invoke(null);
+            Class cCVM = Class.forName("sun.misc.CVM");
+            cCVM.getDeclaredMethod("printBuildOptions").invoke(null);
+            System.loadLibrary("dumper");
+        }
+        @Override
+        public void run() {
+            try {
+                runInternal();
+            } catch(Throwable ex){
+                ex.printStackTrace();
+            }
+        }
+    }
+02/09/2026 10:26 PM
+but not the full code
+02/09/2026 10:26 PM
+so using this java code, you can get some info out
+[theubusu]
+theubusu 02/09/2026 10:26 PM
+ok
+[smx2460]
+smx2460 02/09/2026 10:26 PM
+i didn't fix it
+[smx2460]
+[] theubusu <@310158180728700929> did you end up fixing this? or should
+i commit this too
+smx2460 02/09/2026 10:25 PM
+include it
+[theubusu]
+theubusu 02/09/2026 10:25 PM
+sorry for picture
+02/09/2026 10:25 PM
+@Smx did you end up fixing this? or should i commit this too
+[image.png]
+ image.png
+175.9 KB External
+[smx2460]
+smx2460 02/09/2026 10:25 PM
+    static void patched_suspendSelf(void){
+        void *self = CVMthreadSelf();
+        uintptr_t p = (uintptr_t)self;
+        // don't want SIGUSR1
+        //linuxSyncResume(self);
+        // isSuspended
+        *(uint32_t *)(p + (8*4)) = 0;
+    }
+02/09/2026 10:24 PM
+    int my_main(int argc, char *argv[], char *envp[]){
+        *pMoaVerbosity = 9;
+        *pMoaLogMask = (uint32_t)-1;
+        //chroot(".");
+        setvbuf(stdout, 0, _IONBF, 0);
+        setvbuf(stderr, 0, _IONBF, 0);
+        // disable deadlock checker
+        patch_return(MOA_Monitor, 0);
+        // disable command processor
+        patch_return(DC_Main, 0);
+        // patch the suspender to actually resume
+        patch_jmp((void *)0x000FCE5C, &patched_suspendSelf);
+        // nop MA_sendMsgEx
+        patch_return((void *)0x00014B24, 0);
+02/09/2026 10:24 PM
+had to do some nasty patches to get the VM to not suspend and to run the
+code immediately
+[dogelition]
+dogelition 02/09/2026 10:24 PM
+supposedly that was one of the reasons that blu-ray won over hd dvd
+[smx2460]
+smx2460 02/09/2026 10:24 PM
+    export XME_NUM_VM_OPTIONS=${XME_NUM_VM_OPTIONS}
+    export XME_VM_OPTIONS="${XME_VM_OPTIONS}"
+    chroot . /usr/bin/qemu-arm-static \
+        -E LD_PRELOAD=/libmoa_mhp.so \
+        -E LC_ALL=C \
+        -L . \
+        ./moa_mhp.ex
+02/09/2026 10:24 PM
+this stuff from my experimentation with qemu
+02/09/2026 10:23 PM
+    vm_opts(){
+    cat << EOF
+    -Djava.protocol.handler.pkgs=com.lge.ssl.internal.www.protocol
+    -Dsun.boot.library.path=/
+    -Xms16m
+    -Xss128K
+    -Xthr_pool:init_size=3,inc_size=5,dec_size=5,max_size=35,min_size=35,app_init_size=5,app_inc_size=5,app_dec_size=5,app_max_size=30,app_min_size=30
+    -XfullShutdown
+    -Xbootclasspath/p=/classes
+    EOF
+    }
+[dogelition]
+dogelition 02/09/2026 10:23 PM
+also bd+ is completely nuts
+[smx2460]
+smx2460 02/09/2026 10:23 PM
+java 5, my bad
+02/09/2026 10:23 PM
+    build_java(){
+        JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64
+        JAVA_HOME=${JAVA_HOME} \
+        ${JAVA_HOME}/bin/javac \
+            -bootclasspath ${JAVA_HOME}/jre/lib/rt.jar \
+            -source 5 -target 5 \
+        $(find classes -name "*.java") || exit 1
+    }
+[theubusu]
+theubusu 02/09/2026 10:22 PM
+https://en.wikipedia.org/wiki/BD-J
+BD-J
+BD-J, or Blu-ray Disc Java, is a specification supporting Java ME
+(specifically the Personal Basis Profile of the Connected Device
+Configuration or CDC) Xlets for advanced content on Blu-ray Disc and the
+Packaged Media profile of Globally Executable MHP (GEM). BD-J allows for
+more sophisticated bonus content on Blu-ray Disc titles than standard
+...
+[smx2460]
+smx2460 02/09/2026 10:22 PM
+but that's what the DVB standard (and probably Blu Ray) uses
+02/09/2026 10:22 PM
+runs bleeding edge Java 1.4 iirc
+ 1
+02/09/2026 10:22 PM
+iirc it's called CVM
+02/09/2026 10:21 PM
+it's a modified CVM
+02/09/2026 10:21 PM
+i got their list though
+02/09/2026 10:21 PM
+because they are AOT compiled
+02/09/2026 10:21 PM
+but didn't succeed in dumping the LG classes
+[smx2460]
+[] smx2460 Click to see attachment
+smx2460 02/09/2026 10:21 PM
+I reverse engineered the NC4 Java VM previously, got it to run my own
+java in it
+[theubusu]
+theubusu 02/09/2026 10:21 PM
+maybe it could have something interesting
+02/09/2026 10:20 PM
+you can decrypt the firmware of a modern 2018 4k panasonic bluray player
+[dogelition]
+dogelition 02/09/2026 10:20 PM
+well there's the aacs keys that might be interesting for libaacs
+purposes but as i understand it, the keys from a blu-ray player are
+useless for use with pc drives anyway (since players derive the keys
+differently, using kcd from the disc which is not readable with pc
+drives) (edited)
+[smx2460]
+smx2460 02/09/2026 10:19 PM
+(no content)
+[960px-Java_programming_language_logo.svg.png]
+ 960px-Java_programming_language_logo.svg.png
+139.65 KB External
+[theubusu]
+theubusu 02/09/2026 10:19 PM
+I don't think it would have any modern drm
+[dogelition]
+dogelition 02/09/2026 10:19 PM
+ah
+[theubusu]
+theubusu 02/09/2026 10:19 PM
+anyway it was from like 2011
+02/09/2026 10:19 PM
+idk if firmware key counts as drm
+[dogelition]
+dogelition 02/09/2026 10:18 PM
+drm related?
+[theubusu]
+theubusu 02/09/2026 10:17 PM
+but it died for a good cause
+02/09/2026 10:17 PM
+I actually ended up with an mn10300 Blu ray player
+02/09/2026 10:13 PM
+sometimes I come back to those MN10300 binaries that they had but can't
+make anything out of it
+[smx2460]
+smx2460 02/09/2026 10:12 PM
+similar to the ADB Broadband custom scripting VM  
+02/09/2026 10:12 PM
+it's too cursed to be left alone
+02/09/2026 10:12 PM
+that I still want to write a decompiler for that stuff
+02/09/2026 10:12 PM
+that reminds me
+[theubusu]
+theubusu 02/09/2026 10:12 PM
+to match their energy I should write an extractor in LISP
+[smx2460]
+smx2460 02/09/2026 10:11 PM
+https://discord.com/channels/407937994037919756/843456930726805528/1407857253163208977
+called (edited)
+02/09/2026 10:10 PM
+if/when needed
+02/09/2026 10:10 PM
+which I remember writing the last time 
+02/09/2026 10:10 PM
+it's rightfully marked as a $FIXME 
+02/09/2026 10:10 PM
+            public Aes GetAes()
+            {
+                var blockSize = key.Length * 8;
+                var aes = Aes.Create();
+                aes.BlockSize = blockSize;
+                aes.KeySize = blockSize;
+                aes.Key = key;
+                if (keyMode == CipherMode.CBC)
+                {
+                    aes.IV = iv;
+                }
+                aes.Mode = keyMode;
+                // $FIXME: expose in JSON, if/when needed
+                aes.Padding = PaddingMode.None;
+                return aes;
+            }
+02/09/2026 10:10 PM
+for keyEntry.GetAes
+02/09/2026 10:10 PM
+so we need a flag in config
+02/09/2026 10:09 PM
+look into Aes.Padding
+[theubusu]
+theubusu 02/09/2026 10:09 PM
+it's needed for 
+[theubusu]
+[] smx2460 because LG doesn't use it
+theubusu 02/09/2026 10:09 PM
+yeah
+[smx2460]
+smx2460 02/09/2026 10:09 PM
+because LG doesn't use it
+[theubusu]
+[] smx2460 where do you need it
+theubusu 02/09/2026 10:09 PM
+for AesDecryptor
+[smx2460]
+smx2460 02/09/2026 10:09 PM
+I think I'm purposedly disabling it
+02/09/2026 10:09 PM
+you have to enable it
+[theubusu]
+theubusu 02/09/2026 10:09 PM
+so it will do it automatically?
+[smx2460]
+smx2460 02/09/2026 10:09 PM
+where do you need it
+02/09/2026 10:09 PM
+it's standard in .NET
+[theubusu]
+theubusu 02/09/2026 10:08 PM
+hmm do we not have AES pcks padding support yet ?
+[smx2460]
+smx2460 02/09/2026 10:07 PM
+this unfortunately causes it to read one byte at a time (edited)
+02/09/2026 10:07 PM
+while updating the checksum
+02/09/2026 10:07 PM
+and checksum is called LzhsChecksumPassThru because it's a component
+that passes through the bytes
+02/09/2026 10:07 PM
+then [out]lzss to [in]armthumb
+02/09/2026 10:06 PM
+it connects [out]huffman to [in]lzss
+02/09/2026 10:06 PM
+            public IEnumerable<byte> AsEnumerable()
+            {
+                var huffmanIn = data.Skip(Marshal.SizeOf<LzhsHeader>())
+                    .Take((int)header.CompressedSize);
+                var huffmanOut = new HuffmanDecoder(huffmanIn).Decode();
+                var lzssOut = new LzssDecoder(huffmanOut).Decode();
+                var athumbOut = new ArmThumbConvert(lzssOut).Decode(0);
+                var output = athumbOut.Take((int)header.UncompressedSize);
+                var final = checksum.Update(output);
+                return final;
+            }
+[theubusu]
+[] smx2460 is like a pipeline, if you noticed
+theubusu 02/09/2026 10:06 PM
+yeah
+[smx2460]
+smx2460 02/09/2026 10:06 PM
+which makes it easier to reason about but slower
+02/09/2026 10:06 PM
+is like a pipeline, if you noticed
+02/09/2026 10:06 PM
+the way I structured LZHS in Yafex
+02/09/2026 10:06 PM
+btw
+02/09/2026 9:59 PM
+which then gets included
+02/09/2026 9:59 PM
+it will probably be a separate library like Smx.SharpIO
+02/09/2026 9:59 PM
+with C# as a C compat layer
+02/09/2026 9:59 PM
+I need to think about that squashfs thingy too (edited)
+[theubusu]
+theubusu 02/09/2026 9:58 PM
+the peak
+02/09/2026 9:58 PM
+ohh yeah
+ 1
+[smx2460]
+smx2460 02/09/2026 9:58 PM
+02/09/2026 9:58 PM
+That would be cool to see
+02/09/2026 9:58 PM
+[theubusu]
+theubusu 02/09/2026 9:58 PM
+I'm wondering about the next format to work on after mtk PKG will be
+done
+[smx2460]
+smx2460 02/09/2026 9:51 PM
+over and over
+02/09/2026 9:51 PM
+because I got tired of writing manual casts (edited)
+02/09/2026 9:50 PM
+I admittedly asked for some help with Memory64/Span64
+[theubusu]
+theubusu 02/09/2026 9:50 PM
+Mediatek is too complex
+02/09/2026 9:50 PM
+I also tried to get some help from AI when doing LZHS but the results
+were mostly trash
+02/09/2026 9:48 PM
+lol
+[smx2460]
+smx2460 02/09/2026 9:48 PM
+completley broke it 
+02/09/2026 9:48 PM
+asked it to make it faster
+02/09/2026 9:48 PM
+i threw for fun the lzhs algorithm in an LLM yesterday
+[theubusu]
+theubusu 02/09/2026 9:47 PM
+but that has a custom crypto scheme
+02/09/2026 9:47 PM
+so basically now only old mtk PKG support is missing
+02/09/2026 9:45 PM
+also some of them should not be included
+ 1
+02/09/2026 9:45 PM
+those are old
+[smx2460]
+smx2460 02/09/2026 9:45 PM
+I think I converted them myself from epk2ex (edited)
+[theubusu]
+theubusu 02/09/2026 9:45 PM
+for testing
+02/09/2026 9:45 PM
+if you need it I can send it
+[smx2460]
+smx2460 02/09/2026 9:45 PM
+I don't remember
+[theubusu]
+theubusu 02/09/2026 9:44 PM
+yeah, also did I ever send you the secrets for the mtkpkg?
+[smx2460]
+smx2460 02/09/2026 9:44 PM
+you're also welcome to send a PR for the MTKPKG fixup
+[theubusu]
+theubusu 02/09/2026 9:44 PM
+I will do some more testing and I can do that
+[smx2460]
+smx2460 02/09/2026 9:43 PM
+ it
+[theubusu]
+theubusu 02/09/2026 9:43 PM
+and seems to work
+[smx2460]
+smx2460 02/09/2026 9:43 PM
+[:lg:]
+[theubusu]
+theubusu 02/09/2026 9:43 PM
+also I tested with a partition that has only unaligned bytes
+[smx2460]
+smx2460 02/09/2026 9:42 PM
+yeah no need
+02/09/2026 9:42 PM
+so no need
+02/09/2026 9:42 PM
+although it's already the remainder
+02/09/2026 9:42 PM
+maybe you should bound unalignedSlice ?
+[theubusu]
+theubusu 02/09/2026 9:41 PM
+so it can be not noticable
+02/09/2026 9:41 PM
+since that's the practice
+[theubusu]
+[] smx2460 so basically we're not decrypting correctly currently, right?
+theubusu 02/09/2026 9:41 PM
+but like 99% of partitions are aligned to 16 bytes anyway
+[smx2460]
+smx2460 02/09/2026 9:41 PM
+so don't worry
+02/09/2026 9:40 PM
+but here C# / Jit is probably smart enough to do that at runtime
+02/09/2026 9:40 PM
+i wonder if it's more efficient to do & 15
+[theubusu]
+theubusu 02/09/2026 9:40 PM
+I guess that's better than epk2extract which just puts random garbage in
+place of it
+02/09/2026 9:39 PM
+no , we are losing unaligned bytes
+[smx2460]
+smx2460 02/09/2026 9:39 PM
+because we miss the tail case
+02/09/2026 9:39 PM
+so basically we're not decrypting correctly currently, right?
+[theubusu]
+[] smx2460 that it would be better if you pasted code instead of
+pictures 
+theubusu 02/09/2026 9:38 PM
+yeah sorry
+[smx2460]
+smx2460 02/09/2026 9:38 PM
+but lemme take a look
+02/09/2026 9:38 PM
+that it would be better if you pasted code instead of pictures 
+[theubusu]
+theubusu 02/09/2026 9:38 PM
+what do you think about this ?
+[image-22.png]
+ image-22.png
+46.52 KB External
+[smx2460]
+smx2460 02/09/2026 9:35 PM
+here's more longness
+02/09/2026 9:35 PM
+https://github.com/smx-smx/Smx.SharpIO/commit/a83e103fb063342863892b4cbd52944b18d28393
+fix/add more missing Span64/long overloads · smx-smx/Smx.SharpIO@a...
+[]
+[theubusu]
+theubusu 02/09/2026 9:34 PM
+yeah
+ 1
+[smx2460]
+smx2460 02/09/2026 9:34 PM
+[theubusu]
+theubusu 02/09/2026 9:34 PM
+oh right
+[smx2460]
+smx2460 02/09/2026 9:34 PM
+=> Decrypt(data, data.Length)
+02/09/2026 9:34 PM
+the first one should just be
+02/09/2026 9:34 PM
+well (edited)
+02/09/2026 9:34 PM
+@theubusu
+02/09/2026 9:33 PM
+yes (edited)
+[theubusu]
+[] smx2460 or, better, an overload of the function
+theubusu 02/09/2026 9:27 PM
+so there would be two fucntions like this?
+[image.png]
+ image.png
+69.44 KB External
+[smx2460]
+smx2460 02/09/2026 9:08 PM
+i'd say throw, ez
+02/09/2026 9:08 PM
+or truncate the output
+02/09/2026 9:08 PM
+and either throw if the buffer size is smaller than data.length (edited)
+02/09/2026 9:07 PM
+call it bufferSize
+02/09/2026 9:07 PM
+one with ReadOnlySpan64<byte> and one with that + length
+02/09/2026 9:07 PM
+or, better, an overload of the function
+02/09/2026 9:07 PM
+which overrides the buffer size
+02/09/2026 9:07 PM
+called size
+02/09/2026 9:06 PM
+you could however add a second argument to Decrypt
+02/09/2026 9:06 PM
+the buffer is sized as data.Length
+02/09/2026 9:06 PM
+well you can't in the current implementation
+[theubusu]
+theubusu 02/09/2026 9:06 PM
+but like idk how to like add to it
+[smx2460]
+smx2460 02/09/2026 9:06 PM
+if you need it larger (edited)
+02/09/2026 9:06 PM
+        public unsafe Memory64<byte> Decrypt(ReadOnlySpan64<byte> data)
+        {
+            ICryptoTransform decryptor = aes.CreateDecryptor();
+            var buffer = new NativeMemoryManager64<byte>(data.Length);
+            var outStream = new SpanStream(buffer.Memory);
+            var cs = new CryptoStream(outStream, decryptor, CryptoStreamMode.Write);
+            foreach (var chunk in data.GetChunks())
+            {
+                cs.Write(chunk);
+            }
+            cs.Flush();
+            return buffer.Memory;
+        }
+[theubusu]
+theubusu 02/09/2026 9:06 PM
+yeah
+[smx2460]
+smx2460 02/09/2026 9:05 PM
+Decrypt already returns a new allocation
+[theubusu]
+[] smx2460 "first make it work, then make it nice"
+theubusu 02/09/2026 9:04 PM
+i feel like maybe there is no need to allocate the memory but what do
+you think
+[image.png]
+ image.png
+61.5 KB External
+[slada1]
+slada1 02/09/2026 9:01 PM
+I have found out that zero connect boxes have the same OTA ID, as the
+TVs
+https://www.lge.co.kr/support/product-manuals?title=driver&mktModelCd=OLED77M3KNA
+https://gscs-b2c.lge.com/downloadFile?fileId=at8G1ex90HxES0JtBQ2Fw It
+has the same OTA ID HE_DTV_W23O_AFABATAA as OLED C3/G3, but it's only
+725.05 KB and the version is 09.99.99
+    Firmware info
+    -------------
+    Firmware magic: EPK3
+    Firmware otaID: HE_DTV_W23O_AFABATAA
+    Firmware version: 09.99.99.01
+    packageInfoSize: 336
+    bChunked: 0
+    EncryptType: prodke
+    UpdateType:  USB
+    unknown: 00 00 00
+    updatePlatformVersion: 8.000000
+    compatibleMinimumVersion: 7.000000
+    needToCheckCompatibleVersion: 1
+    ---- begin ----
+[smx2460]
+smx2460 02/09/2026 9:01 PM
+said a friend of mine
+02/09/2026 9:01 PM
+"first make it work, then make it nice"
+[theubusu]
+theubusu 02/09/2026 9:01 PM
+it works but idk if its good
+[smx2460]
+smx2460 02/09/2026 9:01 PM
+why not?
+[theubusu]
+theubusu 02/09/2026 9:01 PM
+maybe not
+[smx2460]
+smx2460 02/09/2026 9:01 PM
+once you have it ready
+02/09/2026 9:01 PM
+i'm interested to see the implementation (edited)
+02/09/2026 9:00 PM
+yeah then it makes sense
+02/09/2026 9:00 PM
+ah
+[theubusu]
+theubusu 02/09/2026 9:00 PM
+for the mtk pkg XOR tail handling
+[smx2460]
+smx2460 02/09/2026 9:00 PM
+for?
+[theubusu]
+theubusu 02/09/2026 9:00 PM
+so i can access its Aes key
+[smx2460]
+smx2460 02/09/2026 9:00 PM
+may I ask why?
+[theubusu]
+[] smx2460 did you figure it out?
+theubusu 02/09/2026 9:00 PM
+i had to make aes in AesDecryptor public
+[smx2460]
+smx2460 02/09/2026 8:59 PM
+did you figure it out?
+[smx2460]
+[] theubusu <@310158180728700929> is it possible to get the raw key
+bytes from the AesDecryptor?
+smx2460 02/09/2026 8:59 PM
+yes
+[] smx2460 <@803885040827629628> lol
+hellobox. 02/09/2026 12:58 AM
+yeah, technically it has to be ~within the bounds of an an array, but it
+doesn't matter in practice
+February 8, 2026
+[theubusu]
+theubusu 02/08/2026 11:27 PM
+@Smx is it possible to get the raw key bytes from the AesDecryptor?
+[smx2460]
+smx2460 02/08/2026 10:33 PM
+I don't know if this also applies to .NET core
+02/08/2026 10:33 PM
+> Methods that contain a throw statement are generally not inlined by
+the JIT (Just-In-Time) compiler. Creating an exception object and
+filling its stack trace involves a lot of code. If you have a small,
+high-performance method, a manual if + throw block can prevent that
+entire method from being inlined, even if the exception is never thrown.
+02/08/2026 10:33 PM
+the other day I learned that using throw helpers is used for inlining
+[smx2460]
+smx2460 02/08/2026 10:20 PM
+> It is UB, with a proviso (below). Per Standards you can only offset a
+ptr-to-object up to 1st elem after, down to elem −1, or else it’s UB.
+NULL is not a ptr-to-object, it’s a ptr-to-nothing; ergo offsetting it
+is UB. (Offsetting NULL per se is entirely undef outside the GNU
+dialect; it’s a void *, nullptrt, or some other non-derefable type. GNU
+permits offsetting void and sizeof(void), treating them like the same
+ops applied to char *, which should be preferred.)
+02/08/2026 10:19 PM
+maybe that's why
+02/08/2026 10:19 PM
+technically NULL doesn't even have to be 0 (edited)
+02/08/2026 10:18 PM
+> Pointer arithmetic is undefined behavior unless kept within the bounds
+of an array object (or one index past the end). So this should be UB.
+02/08/2026 10:17 PM
+@hellobox lol
+02/08/2026 10:17 PM
+wow
+02/08/2026 10:17 PM
+> Yes it's undefined. p + 0 is also undefined behavior. (That's not a
+typo).
+02/08/2026 10:17 PM
+this is even wilder:
+https://www.reddit.com/r/C_Programming/comments/l8t1b9/arithmetic_on_null_pointer_is_it_undefined/
+From the C_Programming community on Reddit
+Explore this post and more from the C_Programming community
+[]
+02/08/2026 10:15 PM
+    The subtraction of the integers is legal in the sense that behaviour is not undefined.
+    But the standard doesn't technically have guarantees about the values of the converted integers, and consequently you have no guarantees about the value of result of the subtraction either (except in relation to the unspecified integer values) - you could get a large value or a small value (or if the pointers had non-interconvertible types, then subtraction of converted intergers of different objects could even yield zero) depending on the system.
+    Furthermore, if you did some other pointer arithmetic that would result in a pointer value i.e. convert pointer to integer and add offset, then there is technically no guarantee that that converting the result of the addition back to a pointer type would yield the pointer value at that offset from the original. But it would probably work (assuming there actually exists an object of correct type at that address) except perhaps on systems using segmented memory or something more exotic.
+[theubusu]
+theubusu 02/08/2026 10:15 PM
+lol why
+[smx2460]
+smx2460 02/08/2026 10:15 PM
+LMAO apparently subtracting two intptr_t is undefined behavior in C/C++
+(edited)
+02/08/2026 10:12 PM
+if you sum two pointers together (which doesn't make much sense), you
+would need nuint
+02/08/2026 10:12 PM
+if you sum a pointer to an offset, nint is fine
+02/08/2026 10:12 PM
+it's the math that will be different
+02/08/2026 10:12 PM
+you can just cast it between the two
+02/08/2026 10:11 PM
+but the thing is, passing around a signed pointer is the same as passing
+it unsigned
+02/08/2026 10:11 PM
+C# actually DOES have UIntPtr and nuint
+02/08/2026 10:11 PM
+while in C# it's much more common to use uintptr_t
+02/08/2026 10:11 PM
+C# mostly uses IntPtr and nint, which is the equivalent of intptr_t
+02/08/2026 10:11 PM
+it's the same for pointers
+02/08/2026 10:10 PM
+same as for Span being int
+02/08/2026 10:10 PM
+I would say that they are done signed for convenience
+02/08/2026 10:10 PM
+and you use an output variable
+02/08/2026 10:10 PM
+so you return true/false if the index is found/not found
+02/08/2026 10:09 PM
+and use something like TryGetIndexOf (edited)
+02/08/2026 10:09 PM
+you need to break away from that standard
+02/08/2026 10:09 PM
+to do the same with unsigned values
+02/08/2026 10:09 PM
+would return -1 if the index is not found
+02/08/2026 10:09 PM
+2) some extension methods like Span.IndexOf
+https://learn.microsoft.com/en-us/dotnet/api/system.memoryextensions.indexof?view=net-10.0
+MemoryExtensions.IndexOf Method (System)
+Reports the zero-based index of the first occurrence of the specified
+value in the current span.
+[]
+02/08/2026 10:09 PM
+or keep reading 2GB at a time
+02/08/2026 10:08 PM
+but it's not a big deal, you can still read more by hand
+02/08/2026 10:08 PM
+which means anyways SpanStream forces you to read max 2GB at a time
+02/08/2026 10:08 PM
+1) the System.IO.Stream interface requires int
+02/08/2026 10:08 PM
+well, two of them
+02/08/2026 10:08 PM
+there's also another difference
+02/08/2026 10:07 PM
+(no content)
+[immagine.png]
+ immagine.png
+26.2 KB External
+02/08/2026 10:07 PM
+look
+02/08/2026 10:06 PM
+wdyt?
+02/08/2026 10:06 PM
+the cases where you want the wrap-around are rarer
+02/08/2026 10:06 PM
+I think it makes more sense anyways to have overflow-exception
+02/08/2026 10:06 PM
+then use ulong everywhere
+02/08/2026 10:06 PM
+perhaps one could do that
+02/08/2026 10:05 PM
+but that changes it
+02/08/2026 10:05 PM
+the default is to use unchecked math
+02/08/2026 10:05 PM
+by using
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+02/08/2026 10:05 PM
+you can force this behavior per-assembly
+02/08/2026 10:05 PM
+if the sum overflows, you get an OverflowException
+02/08/2026 10:05 PM
+ulong foo = checked(value1 + value2)
+02/08/2026 10:04 PM
+which basically is the C# way to check the overflow bit
+02/08/2026 10:04 PM
+https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/checked-and-unchecked
+The checked and unchecked statements - overflow-checking - C# refer...
+Control the overflow-checking context. In a checked context, overflow
+causes an exception to be thrown. In an unchecked context, the result is
+truncated.
+[]
+02/08/2026 10:04 PM
+for unsigned additions, you need checked math
+02/08/2026 10:04 PM
+because if the file size becomes negative, then you can immediately
+catch it
+02/08/2026 10:04 PM
+it does for overflow checking in theory
+[theubusu]
+theubusu 02/08/2026 10:03 PM
+using signed for file size makes no sense anyway
+02/08/2026 10:03 PM
+eh i guess why not
+[smx2460]
+smx2460 02/08/2026 10:02 PM
+who has a file above 2^63 bytes?
+02/08/2026 10:02 PM
+but I'm thinking that it's probably pointless
+02/08/2026 10:02 PM
+I made a patch for Smx.SharpIO to use ulong instead of long
