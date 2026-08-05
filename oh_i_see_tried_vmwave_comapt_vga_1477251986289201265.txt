@@ -1,0 +1,173 @@
+March 2, 2026
+[mouxon]
+mouxon 03/02/2026 5:49 PM
+Finally, I got it working with vkms and vgem module:
+        <video>
+          <model type='virtio' heads='1' vram='65536'>
+            <acceleration accel3d='yes'/>
+            <resolution x='1920' y='1200'/>
+          </model>
+        </video>
+        <graphics type='spice'>
+          <listen type='none'/>
+          <image compression='off'/>
+        </graphics>
+        <graphics type='egl-headless'>
+          <gl rendernode='/dev/dri/renderD129'/>
+        </graphics>
+[mouxon]
+mouxon 03/02/2026 4:25 PM
+Wait, I didn't start the good VM 
+03/02/2026 4:25 PM
+It finally works for webos 6 for the display. I had to use virtio with
+3d acceleration:
+        <video>
+          <model type='virtio' heads='1'>
+            <acceleration accel3d='yes'/>
+          </model>
+        </video>
+        <graphics type='spice' autoport='yes'>
+          <image compression='off'/>
+          <gl enable='yes' rendernode='/dev/dri/renderD128'/>
+        </graphics>
+(edited)
+ 1
+[mouxon]
+mouxon 03/02/2026 3:05 PM
+Found the way for webos 5:
+    gcc -m32 -static -o rootsh rootsh.c
+    mkdir -p /mnt/webos
+    qemu-nbd --connect=/dev/nbd0 Emulator-qemu/LG_webOS_TV_Emulator-5.0.0.qcow2
+    mount /dev/nbd0p2 /mnt/webos
+    cp rootsh /mnt/webos/var/rootsh
+    chmod 4755 /mnt/webos/var/rootsh
+    umount /mnt/webos
+    qemu-nbd --disconnect /dev/nbd0
+    ssh -i ./Emulator-qemu/webos-dev.key -p 5022 developer@localhost
+    /var/rootsh
+    mount -o remount,rw /etc
+    passwd
+    vi /lib/systemd/system/webos-rbd.target.wants/dropbear.service
+    sync
+[kitsuned]
+[] mouxon ``` -----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA0KX2ywyIejqJ5Chc5+p9MbYCR5re8KKlkK/V6n6KcSfMInpr...
+kitsuned 03/02/2026 1:16 PM
+oh, yeah, it works with any emulator
+[mouxon]
+mouxon 03/02/2026 12:56 PM
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIEpAIBAAKCAQEA0KX2ywyIejqJ5Chc5+p9MbYCR5re8KKlkK/V6n6KcSfMInpr
+    lvlJcMtkOxKVXYQ1dQmX407s9biRDZNjlb1VRmFs3FW0PM6p5E5yZzTuHcwHxXeY
+    ajg7Ooqp5RjUH/DUegFAiDXI5pGvQn4eOGAiosJBO3fqP/NFlqJIDV9XF8+GKISW
+    W/GZtVtnLT8fnyuoOMe/MvNz6YUVLbmYp5PASHoEz2BQ7YB6J2dUO/eU6GuWVQM0
+    MVjdPtDZjfWjPsSo927UEXj3o4gxfgP0CCiuFlbjw8glLzaH9HYHnyk0MO9cVo+g
+    THtyMBjZaMjQlD8jWvE2lQGCMFU9C/ITjYD68QIDAQABAoIBACnoG6B+vO6n0UhF
+    Hxvpigmw/9Y38e0tDcn4tyNpFQ9TKfoG0pM5MJn6EACZY+yrgD0olxwtnwRfdKrg
+    XpEVvQnsyXubrx7Dd3YGl43JIMZVU35C3hb/gk3oyeTczsY3jcWPeNGi094Thrr5
+    L8Ks9GfyUj3KgP8lMmXl5EjjTE/YnnVPxzfRMBLbxF+2ecHguG1tD7XMnSmMtUtm
+    VTjDOhqjPDsrsvsuKlAhpNPY2GxC4Ub2Doz5P22lGxZUDoFbKXKD46LUF6X2z3M9
+    tMdEnKDqRHhnbNoBRpuPaQXgyp/vl+btBlZKlruKQwTyi4MoRTLMDZjHSWPaaUkj
+    7BNWHY0CgYEA+ysfU8oBBmnr7yonpRTXNn39+ma6hs9cbW1jqsIEiXX6Mo9S3Kai
+    Lf/IbEX1PmXWO9vxXXYfTYeG0YrAGYPub2a0U8iAgT/NrC56rUW1xpDztK9axEeN
+    zJQEj5FewUoiYVNFgw55GMNCNm+OqVSFtn1XFPqt+CPRXrtq7SAuY2cCgYEA1Klz
+    kFU2umKaBHqa+t+zBCJ/TEdENP/71GInb3Xgr7JxD/28FDQs7/uXG6o0lmVsni0T
+    /NSM985iMQVYfXgilVRVo3QN3a3gavAFly3uz/9jvYvNzIsy3MXd2AbBC6K1GdkW
+    eTUzUe9ba3atnB7XWXlmFFyZZRMcrBaCV5Zzz+cCgYEAuh+xflDiQ5N4f+m4KS/x
+    b3McI1O/A6lkL77xLZfK7uZbOt5UpChjZDz4k6uf2dZzVDZffUfMWJKGyH7ObdoD
+    ddAg7zlUaPMUAXUL+Zz/4B6ISivr0inIHYLOgmlSU2ARbBfeGgk+magQR/CRQk/d
+    KmdlgalmA8zfGRk/WmsPlR8CgYB2wDjb+/mXkr/WiHBKbugUAv96pMEdp2QEcNr8
+    jqJs+gPQniuMTKZbS+5RcHX1FaXVne5vXHFrXz/Nh+KmDZOiN3mq0H99rj6G+Ijm
+    pquYUlBr48mD0qcQSR1cKElcKfte965o+KAzvKkcFSVU7JPsTrIF5L9zhXyZS+h0
+    6Hq7OQKBgQDIZ72uiKWgeRZEOnnYyjOZsjr5Gv8L8TfUNYcau9y86HuMHi0h5C/3
+    r3cnD117BawfjtrnOjj4RQsQmVVnO8nOwmfbRD2F3wXjUjhLUGAMIykDVxETp6ll
+    3vhLce1DDlW9LQxMZoxCNFGVIjF05rXOmLe5y6KwJ5H0xP31koEQyw==
+    -----END RSA PRIVATE KEY-----
+03/02/2026 12:56 PM
+I found the SSH key for webos 5 on webos6 dev mode (edited)
+ 1
+[mouxon]
+mouxon 03/02/2026 12:19 PM
+It worked perfectly for webos 4
+ 1
+[kitsuned]
+kitsuned 03/02/2026 12:12 PM
+brb, I'll send correct one
+[kitsuned]
+[] mouxon They provided a v4.0.0/webos_emul but it always asked me for a
+password
+kitsuned 03/02/2026 12:12 PM
+that key is invalid, for some reason they ship broken keys xD
+ 1
+[kitsuned]
+kitsuned 03/02/2026 12:11 PM
+webos 4 emulator: add serial port to vm press tab in syslinux menu add
+init=/bin/sh to cmdline go to serial port
+    mount -o remount,rw /dev/root /
+    mount /proc
+    /etc/init/mount-encrypted.sh
+patch dropbear init script (vi /home/root/init.enc/12.sh): remove -w -g
+flags set password using passwd root sync && umount / reset VM (edited)
+ 1  1
+[mouxon]
+mouxon 03/02/2026 12:10 PM
+They provided a v4.0.0/webos_emul but it always asked me for a password
+03/02/2026 12:08 PM
+I did a mount to insert my private key in /home/root and /home/devloper
+but it was maybe not the good way 
+[kitsuned]
+kitsuned 03/02/2026 12:07 PM
+i recommend you to jailbreak emulator tho :)
+[kitsuned]
+[] mouxon <@524209969374167040> how do you SSH on emulator for webos 4
+or 5 ? I don't find any information abo...
+kitsuned 03/02/2026 12:06 PM
+you should connect with private key. password authentication is
+disabled.
+[mouxon]
+mouxon 03/02/2026 12:05 PM
+@kitsuned how do you SSH on emulator for webos 4 or 5 ? I don't find any
+information about a password or user to use on LG doc. (I tried root or
+developer)
+February 28, 2026
+[mouxon]
+mouxon 02/28/2026 5:04 PM
+I moved to libvirt + qemu
+02/28/2026 5:03 PM
+Ah I got the same with this service:
+    ● surface-manager-daemon.service - webos - "surface-manager-daemon.service"
+       Loaded: loaded (/lib/systemd/system/surface-manager-daemon.service; static; vendor preset: enabled)
+       Active: activating (start) since Sat 2026-02-28 08:00:49 PST; 1min 24s ago
+     Main PID: 241 (surface-manager)
+        Tasks: 2 (limit: 4827)
+       Memory: 5.4M
+       CGroup: /system.slice/surface-manager-daemon.service
+               ├─241 /bin/sh /usr/bin/surface-manager.sh
+               └─789 sleep 10
+    Feb 28 08:01:30 webos-tv-6 PmLogCtl[746]: [] [pmlog] surface-manager LSM {"category":"startup"} Connector to scan: *
+    Feb 28 08:01:30 webos-tv-6 PmLogCtl[750]: [[0;1;31m[[0;1;39m[[0;1;31m[] [pmlog] surface-manager LSM {"category":"startup"} No display device detected[[0m
+[mouxon]
+mouxon 02/28/2026 5:03 PM
+oh i see, tried vmwave-comapt vga
+    ● surface-manager-daemon.service - webos - "surface-manager-daemon.service"
+       Loaded: loaded (/lib/systemd/system/surface-manager-daemon.service; static; vendor preset: enabled)
+       Active: activating (start) since Sat 2026-02-28 02:30:30 PST; 39s ago
+      Process: 710 ExecStartPre=/bin/ln -s ${XDG_RUNTIME_DIR} /var/run/xdg (code=exited, status=1/FAILURE)
+      Process: 709 ExecStartPre=/bin/chown root:compositor ${XDG_RUNTIME_DIR} (code=exited, status=0/SUCCESS)
+      Process: 708 ExecStartPre=/bin/chmod 0770 ${XDG_RUNTIME_DIR} (code=exited, status=0/SUCCESS)
+      Process: 707 ExecStartPre=/bin/mkdir -p ${XDG_RUNTIME_DIR} (code=exited, status=0/SUCCESS)
+     Main PID: 711 (surface-manager)
+        Tasks: 2 (limit: 4826)
+       Memory: 1.5M
+       CGroup: /system.slice/surface-manager-daemon.service
+               ├─711 /bin/sh /usr/bin/surface-manager.sh
+               └─751 sleep 10
+    Feb 28 02:30:30 qemux86 systemd[1]: Starting webos - "surface-manager-daemon.service"...
+    Feb 28 02:30:30 qemux86 ln[710]: ln: /var/run/xdg/xdg: File exists
+    Feb 28 02:30:30 qemux86 PmLogCtl[716]: [] [pmlog] surface-manager LSM {"category":"startup"} Processing /etc/surface-manager.d/product.env for product specific 
+    environment variables.
+    Feb 28 02:30:30 qemux86 PmLogCtl[720]: [] [pmlog] surface-manager LSM {"category":"startup"} Generating WEBOS_COMPOSITOR_DISPLAY_CONFIG based on /sys/class/drm 
+    ...
+    Feb 28 02:30:30 qemux86 PmLogCtl[722]: [] [pmlog] surface-manager LSM {"category":"startup"} Connector to scan: *
+    Feb 28 02:30:40 qemux86 PmLogCtl[730]: [] [pmlog] surface-manager LSM {"category":"startup"} Connector to scan: *
+    Feb 28 02:30:40 qemux86 PmLogCtl[734]: [] [pmlog] surface-manager LSM {"category":"startup"} No display device detected

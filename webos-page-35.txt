@@ -1,0 +1,1788 @@
+November 1, 2023
+[smx2460]
+smx2460 11/01/2023 10:41 PM
+and then checks if the input was aligned
+11/01/2023 10:41 PM
+it would matter if someone calls it with user input (edited)
+hellobox. 11/01/2023 10:41 PM
+https://github.com/bminor/glibc/blob/bc888a3976700a3607f6ec4a36dbf3030161cb3e/malloc/malloc.c#L3590-L3597
+11/01/2023 10:41 PM
+programs written pre-C17 may be expecting it to work though
+[smx2460]
+smx2460 11/01/2023 10:40 PM
+the yolo answer would be no
+11/01/2023 10:40 PM
+the correct answer would be yes
+hellobox. 11/01/2023 10:40 PM
+if not it will be faster
+[smx2460]
+smx2460 11/01/2023 10:40 PM
+hmmmmmmmmm
+hellobox. 11/01/2023 10:39 PM
+do you think we should actually return an error on invalid alignments?
+[smx2460]
+smx2460 11/01/2023 10:38 PM
+well that goes in the polyfill
+hellobox. 11/01/2023 10:38 PM
+forget C17
+11/01/2023 10:38 PM
+but we are nowhere near C11 support
+[smx2460]
+smx2460 11/01/2023 10:38 PM
+ah
+hellobox. 11/01/2023 10:38 PM
+oh, actually
+https://github.com/bminor/glibc/blob/bc888a3976700a3607f6ec4a36dbf3030161cb3e/malloc/malloc.c#L3545-L3565
+[smx2460]
+smx2460 11/01/2023 10:37 PM
+or they don't do it
+11/01/2023 10:37 PM
+either they already had it
+hellobox. 11/01/2023 10:37 PM
+i don't think they even do it
+[smx2460]
+smx2460 11/01/2023 10:37 PM
+which glibc probably doesn't even care about (edited)
+[smx2460]
+hellobox. > The obsolete function memalign() allocates size bytes and
+returns a pointer to the allocated memor...
+smx2460 11/01/2023 10:37 PM
+so it's just a "multiple of" check (edited)
+[smx2460]
+smx2460 11/01/2023 10:36 PM
+so it's identical
+11/01/2023 10:36 PM
+    strong_alias (__libc_memalign, __memalign)
+    weak_alias (__libc_memalign, memalign)
+11/01/2023 10:36 PM
+found
+hellobox. 11/01/2023 10:36 PM
+> The obsolete function memalign() allocates size bytes and returns a
+pointer to the allocated memory. The memory address will be a multiple
+of alignment, which must be a power of two. > > The function
+aligned_alloc() is the same as memalign(), except for the added
+restriction that size should be a multiple of alignment. (edited)
+11/01/2023 10:34 PM
+so should we use that?
+11/01/2023 10:34 PM
+oh, it's also on webOS
+        "memalign@GLIBC_2.4",
+https://github.com/webosbrew/compat-checker/blob/master/data/1.2.0/libc-2.14.1.so.json#L1087
+(edited)
+[smx2460]
+smx2460 11/01/2023 10:33 PM
+where is the impl even
+hellobox. 11/01/2023 10:33 PM
+only on x86 or something?
+11/01/2023 10:33 PM
+      544: 0000000000098910     52 FUNC    WEAK   DEFAULT       16 memalign@@GLIBC_2.2.5
+[smx2460]
+smx2460 11/01/2023 10:32 PM
+i can't find where the alias is
+11/01/2023 10:32 PM
+hmm
+hellobox. 11/01/2023 10:32 PM
+malloc.h (glibc 2.37):
+    /* Allocate SIZE bytes allocated to ALIGNMENT bytes.  */
+    extern void *memalign (size_t __alignment, size_t __size)
+      __THROW __attribute_malloc__ __attribute_alloc_align__ ((1))
+      __attribute_alloc_size__ ((2)) __wur __attr_dealloc_free;
+(edited)
+[smx2460]
+smx2460 11/01/2023 10:31 PM
+__libc_memalign is in 'dl-minimal' as i said before (edited)
+hellobox. 11/01/2023 10:31 PM
+so what about memalign?
+[smx2460]
+smx2460 11/01/2023 10:31 PM
+different functions
+11/01/2023 10:31 PM
+yeah
+11/01/2023 10:31 PM
+memalign/posix_memalign are different i think
+hellobox. 11/01/2023 10:30 PM
+hmm
+           #include <stdlib.h>
+           int posix_memalign(void **memptr, size_t alignment, size_t size);
+           void *aligned_alloc(size_t alignment, size_t size);
+           void *valloc(size_t size);
+           #include <malloc.h>
+           void *memalign(size_t alignment, size_t size);
+           void *pvalloc(size_t size);
+[smx2460]
+smx2460 11/01/2023 10:29 PM
+it will go here, since it's also in 2.16 like getauxval
+11/01/2023 10:29 PM
+https://github.com/smx-smx/glibc-polyfills/tree/master/src/2.16
+glibc-polyfills/src/2.16 at master · smx-smx/glibc-polyfills
+Contribute to smx-smx/glibc-polyfills development by creating an account
+on GitHub.
+[]
+11/01/2023 10:29 PM
+but let's be correct
+11/01/2023 10:29 PM
+yeah it should be the same since it's just a new alias
+hellobox. 11/01/2023 10:29 PM
+if it's not present, fall back to that
+[smx2460]
+smx2460 11/01/2023 10:29 PM
+and then we can merge it
+hellobox. 11/01/2023 10:28 PM
+yes
+[smx2460]
+smx2460 11/01/2023 10:28 PM
+so we theoretically could go with a polyfill which just uses
+__libc_memalign
+11/01/2023 10:27 PM
+it forces them as baseline
+11/01/2023 10:27 PM
+yeah so there you go
+hellobox. 11/01/2023 10:27 PM
+this is soversions.i:
+    DEFAULT libutil 1   GLIBC_2.4
+    DEFAULT libnss_files 2   GLIBC_2.4
+    DEFAULT libm 6   GLIBC_2.4
+    DEFAULT libnss_compat 2   GLIBC_2.4
+    DEFAULT libnss_dns 2   GLIBC_2.4
+    DEFAULT libnsl 1   GLIBC_2.4
+    DEFAULT libdl 2   GLIBC_2.4
+    DEFAULT libnss_nisplus 2   GLIBC_2.4
+    DEFAULT libc 6   GLIBC_2.4
+    DEFAULT libthread_db 1   GLIBC_2.4
+    DEFAULT libnss_hesiod 2   GLIBC_2.4
+    DEFAULT libresolv 2   GLIBC_2.4
+    DEFAULT libnss_nis 2   GLIBC_2.4
+    DEFAULT libpthread 0   GLIBC_2.4
+    DEFAULT libnss_ldap 2   GLIBC_2.4
+    DEFAULT libBrokenLocale 1   GLIBC_2.4
+    DEFAULT libanl 1   GLIBC_2.4
+    DEFAULT ld ld-linux.so.3   GLIBC_2.4
+    DEFAULT libcrypt 1   GLIBC_2.4
+    DEFAULT librt 1   GLIBC_2.4
+[smx2460]
+smx2460 11/01/2023 10:26 PM
+taken from the manual
+11/01/2023 10:26 PM
+this is valid awk for example ^ (edited)
+11/01/2023 10:26 PM
+    function rev(str, start)
+    {
+        if (start == 0)
+            return ""
+        return (substr(str, start, 1) rev(str, start - 1))
+    }
+11/01/2023 10:25 PM
+i never considered AWK for anything more than splitting fields until my
+old boss showed me fully fledged awk functions 
+11/01/2023 10:24 PM
+not even a comment lol
+[yolofant]
+yolofant 11/01/2023 10:24 PM
+[:kekdog:]
+hellobox. 11/01/2023 10:24 PM
+lol
+[smx2460]
+smx2460 11/01/2023 10:24 PM
+11/01/2023 10:24 PM
+    # Collect all lib lines before emitting anything, so DEFAULT
+    # can be interspersed.
+    {
+      lib = number = $2;
+      sub(/=.*$/, "", lib);
+      sub(/^.*=/, "", number);
+      if ((thiscf FS lib) in numbers) next;
+      numbers[thiscf FS lib] = number;
+      order[thiscf FS lib] = ++order_n;
+      if (NF > 2) {
+        $1 = $2 = "";
+        versions[thiscf FS lib] = $0
+      }
+    }
+    END {
+      for (elt in numbers) {
+        split(elt, x);
+        cf = x[1];
+        lib = x[2];
+        for (c in configs)
+          if (c ~ cf) {
+        if (elt in versions)
+          set = versions[elt];
+        else {
+          set = (c == config) ? default_setname : "";
+          for (i = 1; i <= ndefault_set; ++i) {
+            split(default_set[i], x, "\n");
+            if (c ~ x[1]) {
+              set = x[2];
+              break;
+            }
+          }
+        }
+        line = set ? (lib FS numbers[elt] FS set) : (lib FS numbers[elt]);
+        if (!((c FS lib) in lineorder) || order[elt] < lineorder[c FS lib]) {
+          lineorder[c FS lib] = order[elt];
+          lines[c FS lib] = configs[c] FS line;
+        }
+          }
+      }
+      if (abiname) {
+        print "ABI", abiname
+      }
+      for (c in lines) {
+        print lines[c]
+      }
+    }
+11/01/2023 10:24 PM
+the crap that comes after that likely changes them (edited)
+11/01/2023 10:24 PM
+    # Obey the first matching DEFAULT line.
+    $2 == "DEFAULT" {
+      $1 = $2 = "";
+      default_set[++ndefault_set] = thiscf "\n" $0;
+      next
+    }
+11/01/2023 10:24 PM
+    # awk script for shlib-versions.v -> soversions.i; see Makeconfig.
+11/01/2023 10:23 PM
+this awk awesomeness changes the stuff
+11/01/2023 10:23 PM
+https://github.com/openlgtv/glibc/blob/ddbe4400ebed0b7fb34e989a3ac7a73a71669bf9/scripts/soversions.awk#L4
+glibc/scripts/soversions.awk at ddbe4400ebed0b7fb34e989a3ac7a73a716...
+Contribute to openlgtv/glibc development by creating an account on
+GitHub.
+[]
+11/01/2023 10:23 PM
+i think it sets the baseline
+11/01/2023 10:23 PM
+    # This file defines the shared library version numbers we will install.
+    # The following lines list filename patterns matching canonical configurations,
+    # and the associated versions to use for various libraries.  The entire
+    # list is processed, with earlier entries taking precedence over later
+    # entries.  So loose patterns at the end of the list can give defaults.
+11/01/2023 10:23 PM
+https://github.com/openlgtv/glibc/blob/ddbe4400ebed0b7fb34e989a3ac7a73a71669bf9/shlib-versions#L4
+glibc/shlib-versions at ddbe4400ebed0b7fb34e989a3ac7a73a71669bf9 · ...
+Contribute to openlgtv/glibc development by creating an account on
+GitHub.
+[]
+hellobox. 11/01/2023 10:23 PM
+so anything older just gets bumped up?
+[smx2460]
+smx2460 11/01/2023 10:22 PM
+it DEFAULTs to GLIBC_2.4
+11/01/2023 10:22 PM
+    arm.*-.*-linux-gnueabi    DEFAULT            GLIBC_2.4
+    arm.*-.*-linux-gnueabi    ld=ld-linux.so.3
+    arm.*-.*-linux.*    ld=ld-linux.so.2
+11/01/2023 10:22 PM
+https://github.com/openlgtv/glibc/blob/ddbe4400ebed0b7fb34e989a3ac7a73a71669bf9/ports/sysdeps/arm/shlib-versions#L3
+glibc/ports/sysdeps/arm/shlib-versions at ddbe4400ebed0b7fb34e989a3...
+Contribute to openlgtv/glibc development by creating an account on
+GitHub.
+[]
+11/01/2023 10:22 PM
+unless there's a mininum
+11/01/2023 10:22 PM
+there are multiple abi lists
+hellobox. 11/01/2023 10:22 PM
+it is 2.4 though
+       12: 000158f0    328 FUNC    WEAK   DEFAULT       10 __libc_memalign@@GLIBC_2.4
+[smx2460]
+smx2460 11/01/2023 10:22 PM
+yeah not sure
+11/01/2023 10:21 PM
+wait
+11/01/2023 10:21 PM
+indeed
+11/01/2023 10:21 PM
+ah
+hellobox. 11/01/2023 10:20 PM
+it looks like it should be GLIBC_2.0 based on malloc/Versions
+[smx2460]
+smx2460 11/01/2023 10:20 PM
+it's available since glibc 2.4
+hellobox. 11/01/2023 10:20 PM
+why is it GLIBC_2.4?
+[smx2460]
+smx2460 11/01/2023 10:20 PM
+    #define public_mEMALIGn  __libc_memalign
+11/01/2023 10:20 PM
+ah yeah it is
+11/01/2023 10:19 PM
+public_mEMALIGn is from malloc.c
+11/01/2023 10:19 PM
+__libc_memalign is from dl-minimal.c
+11/01/2023 10:19 PM
+but is it the same?
+11/01/2023 10:19 PM
+yep
+11/01/2023 10:19 PM
+    $ nm -D libc-2.12.2.so | grep memalign
+    0006e018 T __libc_memalign@@GLIBC_2.4
+    00122478 V __memalign_hook@@GLIBC_2.4
+    0006e018 W memalign@@GLIBC_2.4
+    0006f788 W posix_memalign@@GLIBC_2.4
+11/01/2023 10:18 PM
+uh 2.4
+hellobox. 11/01/2023 10:18 PM
+        "__libc_memalign@GLIBC_2.4",
+11/01/2023 10:17 PM
+https://github.com/webosbrew/compat-checker/blob/master/data/1.2.0/ld-2.14.1.so.json
+[smx2460]
+smx2460 11/01/2023 10:17 PM
+well there's memalign and posix_memalign
+11/01/2023 10:17 PM
+i'm checking the exports table
+11/01/2023 10:17 PM
+NC4M
+11/01/2023 10:17 PM
+this is my baseline
+11/01/2023 10:17 PM
+(no content)
+ libc-2.12.2.so
+1.14 MB External
+hellobox. 11/01/2023 10:16 PM
+the oldest thing i have running right now is k2lp, which has glibc 2.19
+[smx2460]
+smx2460 11/01/2023 10:16 PM
+let me check
+hellobox. 11/01/2023 10:16 PM
+is __libc_memalign exported on those old versions? (edited)
+[smx2460]
+smx2460 11/01/2023 10:16 PM
+we cannot change the symbol version "lightheartedly"
+11/01/2023 10:16 PM
+or provide an alternative
+11/01/2023 10:16 PM
+we need a way to expose public_mEMALIGn < 2.16
+11/01/2023 10:15 PM
+yeah
+hellobox. 11/01/2023 10:15 PM
+aligned_alloc() is C11
+[smx2460]
+smx2460 11/01/2023 10:15 PM
+or say NC4
+11/01/2023 10:15 PM
+if you compile a program... running it on vanilla WebOS would complain
+that the symbol is not exported
+11/01/2023 10:15 PM
+which might be an issue for us
+11/01/2023 10:15 PM
+hm
+11/01/2023 10:15 PM
+they never go back to old glibcs and change it, or compiled programs
+would sometimes run and sometimes not
+11/01/2023 10:15 PM
+so for consistency, they changed the ABI and so they bumped it
+11/01/2023 10:15 PM
+it's just that it was made public in 2.16
+11/01/2023 10:14 PM
+theoretically the functionality is already there
+11/01/2023 10:14 PM
+or we need to lower the version to fool glibc into thinking it's
+available in 2.12
+11/01/2023 10:14 PM
+either we keep it like this, and add an unversioned polyfill
+11/01/2023 10:14 PM
+so i see 2 options
+11/01/2023 10:13 PM
+but the versioned symbol makes it unusable
+11/01/2023 10:13 PM
+GLIBC 2.16 changes it to be public
+11/01/2023 10:13 PM
+means it's visible only within glibc
+11/01/2023 10:13 PM
+but it's declared as a hidden function through libc_hidden_proto
+(edited)
+11/01/2023 10:13 PM
+    /*
+      memalign(size_t alignment, size_t n);
+      Returns a pointer to a newly allocated chunk of n bytes, aligned
+      in accord with the alignment argument.
+      The alignment argument should be a power of two. If the argument is
+      not a power of two, the nearest greater power is used.
+      8-byte alignment is guaranteed by normal malloc calls, so don't
+      bother calling memalign with an argument of 8 or less.
+      Overreliance on memalign is a sure way to fragment space.
+    */
+    #if __STD_C
+    Void_t*  public_mEMALIGn(size_t, size_t);
+    #else
+    Void_t*  public_mEMALIGn();
+    #endif
+    #ifdef libc_hidden_proto
+    libc_hidden_proto (public_mEMALIGn)
+    #endif
+11/01/2023 10:13 PM
+yep
+11/01/2023 10:12 PM
+now is aligned_alloc identical to public_mEMALIGn?
+11/01/2023 10:11 PM
+it should, theoretically, always be using the mangled name
+11/01/2023 10:11 PM
+since it's never defined, and it's an internal option
+11/01/2023 10:11 PM
+and it becomes int foo
+11/01/2023 10:11 PM
+it's like doing
+    #define main foo
+    int main(){
+    }
+11/01/2023 10:11 PM
+it's just a find and replace in this case
+11/01/2023 10:11 PM
+the USE_DL_PREFIX just renames the public_cALLOc and friends
+11/01/2023 10:10 PM
+OH i see
+11/01/2023 10:10 PM
+hm
+11/01/2023 10:10 PM
+    /*
+      USE_DL_PREFIX will prefix all public routines with the string 'dl'.
+      This is necessary when you only want to use this malloc in one part
+      of a program, using your regular system malloc elsewhere.
+    */
+    /* #define USE_DL_PREFIX */
+11/01/2023 10:09 PM
+but where is dlmalloc defined
+11/01/2023 10:09 PM
+they can either be routed to dl* or the actual implementation...
+11/01/2023 10:08 PM
+    /*------------------------ Public wrappers. --------------------------------*/
+    Void_t*
+    public_mALLOc(size_t bytes)
+    {
+11/01/2023 10:08 PM
+i'm confused
+11/01/2023 10:07 PM
+it can either be dlmalloc or __libc_malloc
+11/01/2023 10:07 PM
+hmmmmmmmmmmmmmmmmmmm
+11/01/2023 10:06 PM
+    /*
+       Two-phase name translation.
+       All of the actual routines are given mangled names.
+       When wrappers are used, they become the public callable versions.
+       When DL_PREFIX is used, the callable names are prefixed.
+    */
+    #ifdef USE_DL_PREFIX
+    #define public_cALLOc    dlcalloc
+    #define public_fREe      dlfree
+    #define public_cFREe     dlcfree
+    #define public_mALLOc    dlmalloc
+    #define public_mEMALIGn  dlmemalign
+    #define public_rEALLOc   dlrealloc
+    #define public_vALLOc    dlvalloc
+    #define public_pVALLOc   dlpvalloc
+    #define public_mALLINFo  dlmallinfo
+    #define public_mALLOPt   dlmallopt
+    #define public_mTRIm     dlmalloc_trim
+    #define public_mSTATs    dlmalloc_stats
+    #define public_mUSABLe   dlmalloc_usable_size
+    #define public_iCALLOc   dlindependent_calloc
+    #define public_iCOMALLOc dlindependent_comalloc
+    #define public_gET_STATe dlget_state
+    #define public_sET_STATe dlset_state
+    #else /* USE_DL_PREFIX */
+    #ifdef _LIBC
+11/01/2023 10:05 PM
+it's a define?
+11/01/2023 10:05 PM
+oh
+11/01/2023 10:05 PM
+    /* Special defines for the GNU C library.  */
+    #define public_cALLOc    __libc_calloc
+    #define public_fREe      __libc_free
+    #define public_cFREe     __libc_cfree
+    #define public_mALLOc    __libc_malloc
+    #define public_mEMALIGn  __libc_memalign
+    #define public_rEALLOc   __libc_realloc
+    #define public_vALLOc    __libc_valloc
+    #define public_pVALLOc   __libc_pvalloc
+    #define public_pMEMALIGn __posix_memalign
+    #define public_mALLINFo  __libc_mallinfo
+    #define public_mALLOPt   __libc_mallopt
+    #define public_mTRIm     __malloc_trim
+    #define public_mSTATs    __malloc_stats
+    #define public_mUSABLe   __malloc_usable_size
+    #define public_iCALLOc   __libc_independent_calloc
+    #define public_iCOMALLOc __libc_independent_comalloc
+    #define public_gET_STATe __malloc_get_state
+    #define public_sET_STATe __malloc_set_state
+    #define malloc_getpagesize __getpagesize()
+    #define open             __open
+    #define mmap             __mmap
+    #define munmap           __munmap
+    #define mremap           __mremap
+    #define mprotect         __mprotect
+    #define MORECORE         (*__morecore)
+    #define MORECORE_FAILURE 0
+hellobox. 11/01/2023 10:05 PM
+ask ulrich drepper
+[smx2460]
+smx2460 11/01/2023 10:05 PM
+i want to know why it's named like that
+11/01/2023 10:04 PM
+wtf??
+11/01/2023 10:04 PM
+(no content)
+[image.png]
+ image.png
+50.2 KB External
+[] smx2460 why is `EMALIG` uppercase?!
+hellobox. 11/01/2023 10:04 PM
+to hide it or something
+[smx2460]
+smx2460 11/01/2023 10:04 PM
+getauxval gets the possibly existing one via dlsym(RTLD_NEXT (edited)
+11/01/2023 10:03 PM
+    static unsigned long _getauxval_init_wrapper(unsigned long type) {
+        DBG("getauxval", "init\n");
+        bool skip_glibc = getauxval_default_skip_glibc;
+        const char *env;
+        if ((env = getenv("GLIBC_POLYFILLS_GETAUXVAL_SKIP_GLIBC")) != NULL) {
+            skip_glibc = (env[0] == '1');
+            DBG("getauxval", "skip_glibc: default=%d, env=%d\n", getauxval_default_skip_glibc, skip_glibc);
+        }
+        pfn_getauxval fptr = NULL;
+        if (!skip_glibc) {
+            fptr = dlsym(RTLD_NEXT, "getauxval");
+        }
+        if (fptr == NULL) {
+            /* either glibc wasn't searched or getauxval wasn't found */
+            int errsv = 0;
+            if (!_getauxval_read(&errsv)) {
+                fprintf(stderr, "_getauxval_read() failed: %s\n", strerror(errsv));
+                abort();
+            }
+            fptr = &_getauxval_polyfill;
+        }
+        getauxval_fn = fptr;
+        return getauxval_fn(type);
+    }
+11/01/2023 10:03 PM
+why is EMALIG uppercase?!
+11/01/2023 10:03 PM
+also
+11/01/2023 10:03 PM
+so you could re-export public_mEMALIGn as aligned_alloc
+11/01/2023 10:02 PM
+they're always there
+11/01/2023 10:02 PM
+so they kinda "break out" of the versioning stuff
+11/01/2023 10:02 PM
+polyfills are unversioned
+11/01/2023 10:02 PM
+yeah i was about to say that
+hellobox. 11/01/2023 10:02 PM
+i was planning on creating a polyfill i think
+[smx2460]
+smx2460 11/01/2023 10:02 PM
+which is > than the current 2.12
+11/01/2023 10:01 PM
+the problem is that it's versioned for glibc 2.16
+hellobox. 11/01/2023 10:01 PM
+oh, that was it
+[smx2460]
+smx2460 11/01/2023 10:01 PM
+this should define it as an alias
+11/01/2023 10:01 PM
+    weak_alias (public_mEMALIGn, aligned_alloc)
+11/01/2023 10:01 PM
+but
+11/01/2023 10:01 PM
+this isn't backward compatible
+11/01/2023 10:01 PM
+(no content)
+[image.png]
+ image.png
+8.29 KB External
+11/01/2023 10:01 PM
+hmm
+11/01/2023 10:01 PM
+if those are just headers
+11/01/2023 10:00 PM
+wait it's normal that it doesn't link
+11/01/2023 10:00 PM
+i could next weekend
+11/01/2023 10:00 PM
+though i'm not really in the mood to debug it now
+11/01/2023 10:00 PM
+#define issues
+hellobox. 11/01/2023 10:00 PM
+there might be issues with linking aligned_alloc and glibc versions
+where it's not present or something (edited)
+[smx2460]
+smx2460 11/01/2023 10:00 PM
+it's the outdated comment that caught me
+11/01/2023 9:59 PM
+then let's merge
+hellobox. 11/01/2023 9:59 PM
+i think i've been using it since then
+[smx2460]
+smx2460 11/01/2023 9:59 PM
+you mean you haven't compiled any binary with it?
+11/01/2023 9:59 PM
+This hasn't really been tested though. (edited)
+11/01/2023 9:59 PM
+    This PR adds some basic C11 support to glibc headers, mostly in order to get aligned_alloc working. This hasn't really been tested though.
+11/01/2023 9:59 PM
+i'm going to trust you on this one 
+11/01/2023 9:59 PM
+or can we go ahead?
+11/01/2023 9:58 PM
+i thought you were hesitant to merge it?
+11/01/2023 9:58 PM
+oh it's a PR
+hellobox. 11/01/2023 9:58 PM
+it hasn't been merged yet
+11/01/2023 9:58 PM
+among other things (edited)
+[smx2460]
+smx2460 11/01/2023 9:58 PM
+then maybe that hack can be removed
+11/01/2023 9:58 PM
+you added static_assert?
+[smx2460]
+hellobox. ahem
+<https://github.com/openlgtv/glibc/pull/2/commits/19351a0a312f19418d4d6ec1406ff3de5e974506>
+smx2460 11/01/2023 9:58 PM
+oh
+[yolofant]
+yolofant 11/01/2023 9:57 PM
+I guess alternatively we can move the headers into webos-userland and
+create a stub
+11/01/2023 9:56 PM
+[] smx2460 ```make define LIBPBNJSON_LOCAL_BUILD_FIXES $(SED)
+'s|static_assert|_Static_assert|g' -i $(@D)/s...
+hellobox. 11/01/2023 9:50 PM
+ahem
+https://github.com/openlgtv/glibc/pull/2/commits/19351a0a312f19418d4d6ec1406ff3de5e974506
+[smx2460]
+smx2460 11/01/2023 9:50 PM
+xD
+[yolofant]
+yolofant 11/01/2023 9:50 PM
+libpbnjson seems like an ancient legacy mess
+[smx2460]
+smx2460 11/01/2023 9:49 PM
+lovely (edited)
+11/01/2023 9:49 PM
+LOL
+[yolofant]
+yolofant 11/01/2023 9:49 PM
+and lemon segfaults
+[smx2460]
+smx2460 11/01/2023 9:49 PM
+    define LIBPBNJSON_LOCAL_BUILD_FIXES
+        $(SED) 's|static_assert|_Static_assert|g' -i $(@D)/src/pbnjson_c/jvalue/num_conversion.c
+    endef
+[yolofant]
+yolofant 11/01/2023 9:49 PM
+I am trying to compile libpbnjson for arm64
+[smx2460]
+smx2460 11/01/2023 9:48 PM
+it even needs hacks to build
+[yolofant]
+yolofant 11/01/2023 9:48 PM
+yeah
+[smx2460]
+smx2460 11/01/2023 9:48 PM
+https://github.com/openlgtv/buildroot-nc4/blob/79af0e655b4ae9252a93ec55a2cd786b335c4a6c/package/libpbnjson/libpbnjson.mk#L16
+buildroot-nc4/package/libpbnjson/libpbnjson.mk at 79af0e655b4ae9252...
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+[smx2460]
+[] yolofant question for <@310158180728700929> I guess
+smx2460 11/01/2023 9:48 PM
+stupid libpbnjson
+[yolofant]
+yolofant 11/01/2023 9:23 PM
+question for @Smx I guess
+11/01/2023 9:21 PM
+do you remember if there was a reason to choose an ancient lemon
+version?
+https://github.com/openlgtv/buildroot-nc4/blob/master/package/lemon/lemon.mk
+buildroot-nc4/package/lemon/lemon.mk at master · openlgtv/buildroot...
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+[] elordenador <@803885040827629628> Do I brick my TV if I update
+software?
+hellobox. 11/01/2023 2:30 PM
+no?
+[elordenador]
+elordenador 11/01/2023 2:30 PM
+@hellobox Do I brick my TV if I update software?
+[captainiveau]
+captainiveau 11/01/2023 9:48 AM
+Is it possible to get the home UI of the CX TVs on the C2s? It’s so much
+better, since it only covers a small part of the active content, instead
+of fully covering it
+October 31, 2023
+[yolofant]
+yolofant 10/31/2023 9:28 AM
+[smx2460]
+[] yolofant can someone execute `gst-inspect-1.0 | grep videosink` on an
+mtk board?
+smx2460 10/31/2023 8:54 AM
+mtk nc4 or mtk webos? 
+October 30, 2023
+[yolofant]
+yolofant 10/30/2023 7:41 PM
+mstar
+[] yolofant can someone execute `gst-inspect-1.0 | grep videosink` on an
+mtk board?
+hellobox. 10/30/2023 7:40 PM
+mtk?  (edited)
+[yolofant]
+yolofant 10/30/2023 7:39 PM
+can someone execute gst-inspect-1.0 | grep videosink on an mtk board?
+October 29, 2023
+[astur3l]
+astur3l 10/29/2023 12:49 AM
+or inspect the browser :d
+10/29/2023 12:49 AM
+stupid question but is there a way to clear cookies for a webpage only
+in WebOS browser? (without fcking with the db)?
+October 28, 2023
+hellobox. 10/28/2023 11:11 PM
+i just rooted it and enabled DEBUG, so i guess it'll show the old one
+now
+10/28/2023 11:10 PM
+has anyone with a 2023 model successfully restored the old instart (or
+ezadj)?
+10/28/2023 11:09 PM
+huh, so i set svcMenuFlag to false, and it was still giving me the fake
+instart
+October 27, 2023
+hellobox. 10/27/2023 9:34 PM
+you can try messing around with the region to get the store and stuff
+hellobox. is this what you're running now?
+orcad98 10/27/2023 9:31 PM
+Yes
+[astur3l]
+astur3l 10/27/2023 7:49 PM
+wol doesn't works after power outage or network loss on all WebOS board
+? or just mine
+hellobox. 10/27/2023 11:01 AM
+so i don't think it's really meant to receive updates
+10/27/2023 10:57 AM
+that is the latest firmware for HE_PJT_W17X_AAAAGLAA on snu, and it's
+not even released to production (edited)
+orcad98 This is my device reviewed below. Look at the 06:32 part of this
+device, it has all the stores and a...
+hellobox. 10/27/2023 10:56 AM
+idk. a region thing?
+orcad98 This is a very old image.
+http://su.lge.com/GlobalSWDownloadCdn.laf?IMG=/202007/starfish-dvb-se...
+hellobox. 10/27/2023 10:55 AM
+is this what you're running now?
+hellobox. I don't understand. You're saying you have some kind of
+rebranded version of it?
+orcad98 10/27/2023 10:51 AM
+This is my device reviewed below. Look at the 06:32 part of this device,
+it has all the stores and applications. Why don't I have it?
+https://www.youtube.com/watch?v=0pHwqLkg-m4&t=24s
+VRL Tecnologia
+VOCÊ PRECISA CONHECER ESSE PROJETOR!!! LG CineBeam PF50KS
+ Compre o LG CineBeam PF50KS Full HD - Shop LG:
+https://tidd.ly/45OdTXq - Girafa: https://bit.ly/3QXOs1q  GRUPO de
+OFERTAS no WHATSAPP: https://chat.whatsapp.com/JmI9hPRHO3zEYcTVyrGYrE 
+GRUPO de OFERTAS no TELEGRAM: https://t.me/vrlofertas  AVALIE ESTE
+VÍDEO E SE INSCREVA EM NOSSO CANAL! Seja membro:
+https://bit.ly/MembroVRL Instagram: h...
+[] Watch video
+orcad98 10/27/2023 10:47 AM
+This is a very old image.
+http://su.lge.com/GlobalSWDownloadCdn.laf?IMG=/202007/starfish-dvb-secured-m2r-574.drto.m2r-8008-03.00.09-prodkey_nsu_V3_SECURED.epk
+orcad98 Dost has the same product, but it is abroad, and the Market
+add-on has come with new updates. There ...
+hellobox. 10/27/2023 10:46 AM
+I don't understand. You're saying you have some kind of rebranded
+version of it?
+hellobox. Why do you want it?
+orcad98 10/27/2023 10:46 AM
+Dost has the same product, but it is abroad, and the Market add-on has
+come with new updates. There is no market on my device..
+hellobox. 10/27/2023 10:45 AM
+What SoC does it have?
+10/27/2023 10:44 AM
+If there's no existing image and you don't know the OTAID, there's not
+really any way to find it
+10/27/2023 10:44 AM
+Why do you want it?
+hellobox. It's not on the LG site?
+orcad98 10/27/2023 10:43 AM
+Unfortunately not
+hellobox. 10/27/2023 10:43 AM
+If not then all that I might be able to find is an NSU image, which you
+may not be able to install
+orcad98 Hello, can a friend share with me the link to the latest
+firmware of this((LG CineBeam PF50KS Full H...
+hellobox. 10/27/2023 10:43 AM
+It's not on the LG site?
+orcad98 10/27/2023 10:39 AM
+Hello, can a friend share with me the link to the latest firmware of
+this((LG CineBeam PF50KS Full HD) product with a discount? thanks.
+[kaletiano]
+kaletiano 10/27/2023 12:51 AM
+Thank you so much
+10/27/2023 12:51 AM
+Beautiful, now it stays with daemon running YES
+ 1
+[kaletiano]
+[] astur3l
+https://discord.com/channels/407937994037919756/931706504627773450/1142945388849025044
+kaletiano 10/27/2023 12:46 AM
+Sorry Im new on this. Should I write that through terminal??
+[astur3l]
+[] kaletiano Hi again! After rooting again yesterday night my LG C2, now
+when I turn on hyperion it says daemon s...
+astur3l 10/27/2023 12:45 AM
+https://discord.com/channels/407937994037919756/931706504627773450/1142945388849025044
+October 26, 2023
+[kaletiano]
+kaletiano 10/26/2023 11:54 PM
+So I dont know what is going on now and why is not working
+10/26/2023 11:54 PM
+Hi again! After rooting again yesterday night my LG C2, now when I turn
+on hyperion it says daemon startes but on the top where it says daemon
+running, it keeps saying yes for two seconda and then changes to no
+hellobox. 10/26/2023 11:10 PM
+LG does backport stuff all the time, or work from a shared codebase
+10/26/2023 11:09 PM
+You mean for LG or us?
+10/26/2023 11:08 PM
+What apps?
+[rkars]
+rkars 10/26/2023 11:07 PM
+how hard is it to just port the newer apps over to the older release?
+[rkars]
+hellobox. you can't update from one webOS major version to another
+(except the recent "pine" for 7->8 on OLEDs...
+rkars 10/26/2023 11:07 PM
+i wonder
+[marcioht]
+marcioht 10/26/2023 9:12 PM
+It might be a possibility, I'll check it out
+[] marcioht I'm having problems after an update on my LG uk6540psb TV,
+the bluetooth stopped working, the wifi i...
+hellobox. 10/26/2023 9:09 PM
+maybe the RF module is unplugged
+[marcioht]
+marcioht 10/26/2023 9:04 PM
+I'm having problems after an update on my LG uk6540psb TV, the bluetooth
+stopped working, the wifi is turned off, and the smartmagic pointer
+doesn't work either.
+hellobox. 10/26/2023 9:01 PM
+you can't update from one webOS major version to another (except the
+recent "pine" for 7->8 on OLEDs in korea only) (edited)
+[] marcioht Is there a way to force a webos update from 4.0 to 6.0
+directly via the pen drive?
+hellobox. 10/26/2023 9:01 PM
+no
+[marcioht]
+marcioht 10/26/2023 8:55 PM
+Is there a way to force a webos update from 4.0 to 6.0 directly via the
+pen drive?
+[v.rag]
+v.rag 10/26/2023 7:52 PM
+Does anyone use Plex or emby?
+[rkars]
+rkars 10/26/2023 6:56 PM
+https://www.reddit.com/r/netflix/s/QIVWJJuuz2
+From the netflix community on Reddit
+Explore this post and more from the netflix community
+[]
+10/26/2023 6:56 PM
+It's Netflix
+[rkars]
+[] yolofant did you consider contacting the netflix support?
+rkars 10/26/2023 6:56 PM
+They obviously won't do shit
+[yolofant]
+[] rkars Netflix suddenly won't play Dolby Vision content on my C1
+yolofant 10/26/2023 6:42 PM
+did you consider contacting the netflix support?
+[rkars]
+rkars 10/26/2023 6:36 PM
+Just HDR
+10/26/2023 6:36 PM
+Netflix suddenly won't play Dolby Vision content on my C1
+hellobox. 10/26/2023 5:53 PM
+there may be like a 3gb preloaded demo video
+[yaafsama]
+yaafsama 10/26/2023 5:42 PM
+So device_info of my TV says the total storage is 8GB But the usable
+storage is just 1.37GB. How much storage webos needs  (edited)
+[kaletiano]
+kaletiano 10/26/2023 2:53 AM
+Finally managed to root it again!! Thank you!
+[kaletiano]
+kaletiano 10/26/2023 1:33 AM
+Ill try that guide, thanks
+[Dyno]
+Dyno 10/26/2023 1:30 AM
+crashd exploit guide, working as of 2023-08-17
+https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f
+(only works on webOS 4+)
+hellobox. 10/26/2023 1:30 AM
+although that repo isn't ours; go to webOS chat on telegram for support
+i guess
+[kaletiano]
+kaletiano 10/26/2023 1:30 AM
+Is any way to root it back?
+hellobox. 10/26/2023 1:28 AM
+anyway, your photo cut off part of the error message, but it looks like
+a DNS issue
+10/26/2023 1:27 AM
+that's why you lost root when updating
+10/26/2023 1:26 AM
+so yes it's webOS 7
+[kaletiano]
+kaletiano 10/26/2023 1:26 AM
+C2
+hellobox. 10/26/2023 1:18 AM
+what model is it?
+[kaletiano]
+kaletiano 10/26/2023 1:18 AM
+How can i check my webos version?
+[] kaletiano Hello, ive just tried to update homebrew channel and looks
+like my root is gone 
+hellobox. 10/26/2023 1:18 AM
+on webOS 7?
+[kaletiano]
+kaletiano 10/26/2023 1:01 AM
+(no content)
+[IMG_20231026_010026.jpg]
+ IMG_20231026_010026.jpg
+469.16 KB External
+10/26/2023 1:00 AM
+Trying to reinstall runtelnet app and getting this message
+10/26/2023 1:00 AM
+Any ideas of what I can do to root it again? Thanks
+10/26/2023 12:59 AM
+Hello, ive just tried to update homebrew channel and looks like my root
+is gone 
+October 25, 2023
+hellobox. 10/25/2023 9:17 PM
+they seem to have a pattern of only changing the low-level stuff
+(including SoCs) significantly every other version (e.g. 5/6 are
+similar, as are 7/8)
+10/25/2023 9:15 PM
+i suspect webOS 8 -> 9 will be more work
+10/25/2023 9:15 PM
+i wonder if they plan on doing this for future versions
+10/25/2023 9:14 PM
+hmm
+[image.png]
+ image.png
+23.32 KB External
+.kriilunaus 10/25/2023 8:31 PM
+(and I assume the same applies to the A2/B2 models mentioned in the
+article)
+10/25/2023 8:30 PM
+In principle, however, the version also works on any other C2/G2 model,
+apart from the limitations already mentioned.
+10/25/2023 8:29 PM
+Yes, I assume that the update mechanism has been slightly adjusted so
+that the update can currently be limited to the Korean models via the
+new OTA-ID.
+hellobox. 10/25/2023 8:26 PM
+ooh, this is k8hp
+[image.png]
+ image.png
+4.11 KB External
+hellobox. downgrades would be the only reason i can think of to include
+an older version. so i guess it's just...
+.kriilunaus 10/25/2023 8:25 PM
+I have done LGE an injustice here. That 2 firmware versions are included
+in the archive is intentional. The webOS 7 version included is the min
+webOS22 version required to upgrade to webOS23. So it wasn't an intern
+who tripped over the cable after all. 
+hellobox. 10/25/2023 8:21 PM
+so did they hack update to allow that otaid on korean models or what?
+.kriilunaus 10/25/2023 8:17 PM
+By the way, here is an official support article about the webOS23 update
+that is currently being rolled out in Korea for some 2022 models:
+https://www.lge.co.kr/support/solutions-20153367803808 Those who do not
+speak Korean can simply have the page translated by Google or another
+translation tool. At the moment, as mentioned in the article, the
+following applies: > TVs purchased directly from overseas cannot be
+upgraded. (edited)
+스스로 해결 : 22년 올레드 일부 모델은 webOS22에서 webOS23으로 업데이트가
+가능합니다. | LG전자 고객지...
+LG전자 서비스는 올레드(20153367803808) 제품에 대한 문제를 빠르게
+진단하고 해결할 수 있도록 도와드리겠습니다. 제품별 다양한 문제를
+해결해보세요.
+[]
+ 1
+[] ericthegreat Will rooting webos void my warrenty, and if I do do it
+will Kodi play Dolby vision/Atmos files?
+.kriilunaus 10/25/2023 7:22 PM
+You can check the warranty conditions of LGE yourself on the respective
+support website of your country. It should be needless to mention that
+if you damage your TV by rooting it or by any other improper
+manipulation of the TV, that you will lose all warranty claims. However,
+as long as you do not damage anything by such actions, it is very
+unlikely that you will get into trouble. Conversely, you will have great
+problems making a warranty claim if, for example, you have bricked your
+TV by an obviously stupid action.
+October 24, 2023
+[ericthegreat]
+ericthegreat 10/24/2023 1:35 AM
+Sure lol thank you guys
+hellobox. 10/24/2023 1:35 AM
+just try it and see what happens
+[ericthegreat]
+ericthegreat 10/24/2023 1:35 AM
+Sorry it's hard to find too much info specifically to the webos kodi
+10/24/2023 1:33 AM
+Do you know of any issues I'll run into?
+ 1
+[yolofant]
+yolofant 10/24/2023 1:32 AM
+probably not
+[ericthegreat]
+ericthegreat 10/24/2023 1:32 AM
+@Yolofant sorry to bother you if you know, does webos version run as
+well as shield kodinerds? Like for remix files ect?
+[yolofant]
+yolofant 10/24/2023 1:29 AM
+¯\_(ツ)_/¯
+[ericthegreat]
+ericthegreat 10/24/2023 1:29 AM
+Normally I mod everything I own
+10/24/2023 1:28 AM
+Last TV blew up after 10 months, just got it replaced by them :p
+10/24/2023 1:28 AM
+I don't really care just I just got this TV and I got the 5 year panel
+burn in warrenty
+[yolofant]
+yolofant 10/24/2023 1:27 AM
+rooting might not even void your warranty depending on your local laws
+hellobox. 10/24/2023 1:27 AM
+(but why would an officially supported feature void your warranty?)
+[ericthegreat]
+ericthegreat 10/24/2023 1:27 AM
+I get it
+10/24/2023 1:26 AM
+Lol
+[] ericthegreat <@985035470708826122> does developer mode void warranty?
+hellobox. 10/24/2023 1:26 AM
+i don't think there are any lawyers here...
+[yolofant]
+yolofant 10/24/2023 1:26 AM
+how should he know, ask LG
+[ericthegreat]
+ericthegreat 10/24/2023 1:24 AM
+@wsnipex does developer mode void warranty?
+October 23, 2023
+wsnipex 10/23/2023 2:16 PM
+kodi plays is even without rooting
+[ericthegreat]
+ericthegreat 10/23/2023 3:50 AM
+Will rooting webos void my warrenty, and if I do do it will Kodi play
+Dolby vision/Atmos files?
+.kriilunaus 10/23/2023 1:05 AM
+In short, for all those who cannot install the update, my advice is to
+be patient. However, I do not expect the update to be released in all
+countries this year.
+hellobox. it makes (some) sense to move to a different otaid
+.kriilunaus 10/23/2023 1:04 AM
+I took a closer look at the officially released webOS 8 update v13.20.14
+for the 2022 models and indeed the restriction via OTA ID makes sense at
+the moment. The update is currently not yet ready for an international
+rollout, simply because various services do not yet work in all
+countries. This starts with the fact that not even the changed EULAs for
+this version are available for all countries and thus, for example, the
+installation of apps won't work in some countries. And it ends with the
+lack of availability of the new gaming services that LG offers.
+Otherwise, the update for the 2022 models includes the webOS 8
+experience that is already known from the 2023 models. Even a few new
+features like the 4:4:4 passthrough option are available through the
+update (but I have not yet tested whether it also does what it
+promises). The update also seems to have a few teething problems, the
+settings migration did not run smoothly for me. I could only make the
+cursor of my Magic Remote to appear after a factory reset. (edited)
+October 22, 2023
+[infowski]
+hellobox. if you interpret 3116164198 as a signed 32-bit integer and
+divide by (1024*1024), you get -1124
+infowski 10/22/2023 6:15 PM
+ 1
+[smx2460]
+smx2460 10/22/2023 6:11 PM
+lol
+[smx2460]
+hellobox. if you interpret 3116164198 as a signed 32-bit integer and
+divide by (1024*1024), you get -1124
+smx2460 10/22/2023 6:11 PM
+[]
+[mariotaku]
+mariotaku 10/22/2023 3:09 PM
+[slaurits]
+slaurits 10/22/2023 3:08 PM
+(no content)
+[image.png]
+ image.png
+42.85 KB External
+ 1
+[slaurits]
+slaurits 10/22/2023 3:00 PM
+Thanks I’ll check en out
+[yolofant]
+yolofant 10/22/2023 2:58 PM
+I use wireguard-go
+[] slaurits Any way to use a vpn on webos whilst rooted?
+hellobox. 10/22/2023 2:58 PM
+pretty sure tun/tap is available
+[slaurits]
+slaurits 10/22/2023 2:55 PM
+And without using it with a router
+10/22/2023 2:54 PM
+Or is there some hard coded lock that stops it
+10/22/2023 2:54 PM
+Any way to use a vpn on webos whilst rooted?
+October 20, 2023
+[astur3l]
+astur3l 10/20/2023 4:30 PM
+too pussy to update?:/
+ 1
+[kitsuned]
+.kriilunaus To answer your question: A few of the 13.xx.xx versions were
+distributed internally via NSU to the m...
+kitsuned 10/20/2023 3:13 PM
+what's TPU?
+.kriilunaus 10/20/2023 3:03 PM
+For those who would like to have a sneak peek of what a webOS 8 version
+looks like on your G2, I posted a few screenshots here back in the day.
+https://discord.com/channels/407937994037919756/413498235307425802/1138410194976653402
+But that was from a much earlier version.
+10/20/2023 2:59 PM
+Yes, that's why I wrote that this remains open as a question for
+"normal" users.
+[yolofant]
+yolofant 10/20/2023 2:58 PM
+ doesn't install via usb though
+.kriilunaus 10/20/2023 2:56 PM
+I will put the released webOS 8 update on my G2 soon and have a closer
+look. But since I currently only have my private device and no test
+device, this will most likely take a few days.
+hellobox. you mean that's the otaid in the EPK? or they appeared on snu
+for that otaid?
+.kriilunaus 10/20/2023 2:56 PM
+To answer your question: A few of the 13.xx.xx versions were distributed
+internally via NSU to the models with the TAA OTA ID, others only to
+those with TPU ID. However, since I used a different method to install
+these firmware versions, I actually didn't notice that these versions
+all internally already had the TPU OTA ID set in the model
+configuration. So it may well be that this is part of LGE's distribution
+strategy. But I simply don't know for sure. What remains as a question
+in any case is how normal users of a C2 / G2 should currently install
+the published USB variant of v13.20.14.
+ww8543 you mean once your korean colleagues wake up and get to their
+offices? 
+.kriilunaus 10/20/2023 11:55 AM
+It seems that this joke never gets old. 
+frens97 New Update for 2022 models: 03.33.85 "Fixing minor bugs in
+software"
+hellobox. 10/20/2023 1:16 AM
+only changes are in connman and webos-preload-manager
+frens97 10/20/2023 1:09 AM
+New Update for 2022 models: 03.33.85 "Fixing minor bugs in software"
+October 19, 2023
+.kriilunaus I'll have to check that later when I have access to the
+data.
+ww8543 10/19/2023 7:29 PM
+you mean once your korean colleagues wake up and get to their offices?
+ 3
+hellobox. 10/19/2023 6:20 PM
+it makes (some) sense to move to a different otaid
+.kriilunaus 10/19/2023 6:19 PM
+I'll have to check that later when I have access to the data.
+hellobox. 10/19/2023 6:14 PM
+several of them were available (with ignore_disable) on snu for
+HE_DTV_W22O_AFABATAA
+.kriilunaus I do have several versions using the TAA ID
+hellobox. 10/19/2023 6:13 PM
+you mean that's the otaid in the EPK? or they appeared on snu for that
+otaid?
+hellobox. 10/19/2023 6:12 PM
+same for 13.02.01 and 13.20.04
+[] yolofant 13.20.01 ?
+hellobox. 10/19/2023 6:12 PM
+    Firmware otaID: HE_DTV_W22O_AFABATPU
+    Firmware version: 13.20.01.01
+[yolofant]
+hellobox. all of the pine ones (for O22) have used that otaid
+yolofant 10/19/2023 6:10 PM
+13.20.01 ?
+.kriilunaus 10/19/2023 6:10 PM
+I do have several versions using the TAA ID
+.kriilunaus Yes, the OTA ID should be checked. If the wrong ID is
+actually in the EPK, then they have obviously ...
+hellobox. 10/19/2023 6:10 PM
+all of the pine ones (for O22) have used that otaid
+hellobox. does `update` not check otaid? (the pine ones use
+`HE_DTV_W22O_AFABATPU`)
+.kriilunaus 10/19/2023 6:09 PM
+Yes, the OTA ID should be checked. If the wrong ID is actually in the
+EPK, then they have obviously packed the wrong variant into the archive.
+So it seems that once again an intern is at work.  Of course, it's
+supposed be the "-TAA" version of the webOS 8 update. I have no idea
+what changed all of a sudden that they screw up the published archives
+multiple times in such a short time.
+[yolofant]
+yolofant 10/19/2023 11:11 AM
+maybe I need to repack the update and remove the webos 22 epk
+[yolofant]
+hellobox. have people successfully updated?
+yolofant 10/19/2023 11:11 AM
+doesn't work for me
+.kriilunaus 10/19/2023 10:48 AM
+It is also likely that there will be other webOS 7 updates besides the
+webOS 8 update.
+hellobox. 03.33.80 isn't on the korean site
+.kriilunaus 10/19/2023 10:46 AM
+03.33.80 has been rolled out in virtually all countries except South
+Korea. There, the version was skipped and version 13.20.14 was released
+instead.
+hellobox. oh lol, that's because they left up the original 03.33.65
+upload that was really 03.33.16
+.kriilunaus 10/19/2023 10:46 AM
+Yes exactly, that's the wrong archive I was talking about.
+[.ilucha]
+.ilucha 10/19/2023 8:20 AM
+Hmm, long time has gone by without a new update I guess. It would be
+nice to see the new UI, which was posted a few months ago ago
+hellobox. 10/19/2023 2:42 AM
+but the new 03.33.65 download doesn't seem to work for me
+10/19/2023 2:41 AM
+oh lol, that's because they left up the original 03.33.65 upload that
+was really 03.33.16
+hellobox. 10/19/2023 2:33 AM
+actually 03.33.65 is on there twice, with different sizes and dates
+(edited)
+10/19/2023 2:33 AM
+although i think there might be a couple other minor changes
+10/19/2023 2:33 AM
+the only documented change had to do with showing "home auto launch",
+which i guess was hidden in some regions, so elsewhere that version was
+basically pointless
+.kriilunaus Especially considering that the latest officially released
+03.33.xx version is actually v03.33.80
+hellobox. 10/19/2023 2:32 AM
+03.33.80 isn't on the korean site
+hellobox. 10/19/2023 2:31 AM
+if you interpret 3116164198 as a signed 32-bit integer and divide by
+(1024*1024), you get -1124
+ 1 [:lg:] 1
+10/19/2023 2:29 AM
+-1124MB
+[image.png]
+ image.png
+14.58 KB External
+hellobox. 10/19/2023 1:49 AM
+i guess as long as it can decrypt and verify...
+10/19/2023 1:48 AM
+does update not check otaid? (the pine ones use HE_DTV_W22O_AFABATPU)
+(edited)
+.kriilunaus 10/19/2023 1:41 AM
+I have tried a much earlier version of the webOS 8 update before and it
+worked fine for me. However, I eventually went back to the webOS 7
+version because I didn't want to use the test version permanently. I
+haven't tried the final webOS 8 update myself though (yet), if that's
+your question. (edited)
+hellobox. 10/19/2023 1:39 AM
+have people successfully updated?
+hellobox. downgrades would be the only reason i can think of to include
+an older version. so i guess it's just...
+.kriilunaus 10/19/2023 1:39 AM
+"typical LGE" would be my educated guess as well.
+[] smx2460 i don't see how else you'd know that
+.kriilunaus 10/19/2023 1:37 AM
+You don't have to work for LGE to know that. And it should be obvious
+who and how you are able to know what I've described. The circle of
+those who may know such things is larger than the employees of LGE. And
+no, I don't work for LGE - if I did, I would not be allowed to speak so
+freely here.
+.kriilunaus No, downgrades won't be allowed. Yes, the update should
+eventually be rolled out via NSU.
+hellobox. 10/19/2023 1:36 AM
+downgrades would be the only reason i can think of to include an older
+version. so i guess it's just typical [:lg:]
+[smx2460]
+smx2460 10/19/2023 1:35 AM
+i don't see how else you'd know that
+10/19/2023 1:34 AM
+@KriiLunAus do you happen to work for LGE?
+.kriilunaus 10/19/2023 1:33 AM
+No, downgrades won't be allowed. Yes, the update should eventually be
+rolled out via NSU.
+hellobox. 10/19/2023 1:28 AM
+is the "pine" upgrade going to appear on regular/production snu? or do
+people have to download it manually? (edited)
+10/19/2023 1:27 AM
+they don't allow you to downgrade from 13.xx.xx, do they?
+.kriilunaus 10/19/2023 1:26 AM
+Especially considering that the latest officially released 03.33.xx
+version is actually v03.33.80
+10/19/2023 1:25 AM
+Yeah, I know  Don't know if it's intentional or not. We just had the
+problem with the last update that something went wrong with the
+archiving. So it could be an oversight. At least I can't think of any
+reason why 2 versions should be in the archive.
+hellobox. 10/19/2023 1:24 AM
+they included 03.33.65 in that zip as well
+.kriilunaus 10/19/2023 1:21 AM
+Good question, I can't tell you at the moment. And I'd hate to
+speculate.
+hellobox. 10/19/2023 1:19 AM
+are they going to follow through with W22H as well?
+.kriilunaus 10/19/2023 1:16 AM
+Following on from what I described some time ago here in the channel:
+LGE has released a webOS 8 update for the 2022 C/G OLED TV models. This
+is an absolute novelty that the models of a previous year get the update
+of the next generation and shows the change in strategy that LGE is
+implementing with the webOS platform. The firmware version 13.20.14
+(webOS 8.2.0-14) can be downloaded here:
+https://gscs-b2c.lge.com/downloadFile?fileId=jV2ywKBZGR6LBwJpZqUOrQ
+(edited)
+October 18, 2023
+hellobox. 10/18/2023 6:43 PM
+(no content)
+[image.png]
+ image.png
+15.21 KB External
+10/18/2023 6:41 PM
+beautiful
+    <!DOCTYPE html>
+    <html>
+    <head>
+            <script>location.href='https://api-partner.spotify.com/tvapp?platform=webos#auth=M2UyOWNiMThjNGMzNGQ2MDgzN2VjOTRjZjMxZTlmM2U6NDZiYWQwZjE3MDVmNGU5MjllMmViOGU3YTM1YjQ5Mzk';</script>
+    </head>
+    <body>
+    </body>
+    </html>
+ 1
+10/18/2023 6:40 PM
+like a redirect
+10/18/2023 6:40 PM
+it's probably going to be something boring
+[d_rekk]
+d_rekk 10/18/2023 6:37 PM
+I see. Has anyone decrypted it yet?
+hellobox. 10/18/2023 6:36 PM
+yep
+[yolofant]
+yolofant 10/18/2023 6:36 PM
+it's encrypted not corrupted
+[d_rekk]
+d_rekk 10/18/2023 6:35 PM
+I wanted to debug the app, and if possible add adblock. I downloaded one
+from http://smsboxbkru.temp.swtest.ru/ipk/ but at the time of unzipping
+the .IPK the main .html gets corrupted
+[] d_rekk Hi, can somebody send the .ipk of spotify please?
+hellobox. 10/18/2023 6:33 PM
+what do you want to do with it?
+[d_rekk]
+d_rekk 10/18/2023 6:32 PM
+Hi, can somebody send the .ipk of spotify please?
+October 17, 2023
+[kaletiano]
+[] bennie8186 How did it went ? 
+kaletiano 10/17/2023 6:41 PM
+Hahaha smooth!! anyway Im still having connection problems with
+streaming apps like netflix and disney +, sometimes they work for a
+couple of minutes and then an error message is displaying
+ 1
+[bennie8186]
+[] kaletiano ok perfect!! going for it then, thank you!
+bennie8186 10/17/2023 6:37 PM
+How did it went ? 
+[kaletiano]
+kaletiano 10/17/2023 1:40 PM
+ok perfect!! going for it then, thank you!
+10/17/2023 1:40 PM
+because im tired of getting that message everytime I switch on my tv,
+and always looking to my son in case he takes the remote hahaah
+[plasma_uk]
+[] kaletiano hi! so you didnt lose the root or the picap etc. after
+updating os?
+plasma_uk 10/17/2023 1:39 PM
+Nope it kept everything just as was.
+[kaletiano]
+[] plasma_uk I'm all updated now, its a shame I still have the same
+issues I had with Apple TV and Dolby Vision g...
+kaletiano 10/17/2023 1:39 PM
+hi! so you didnt lose the root or the picap etc. after updating os?
+hellobox. 10/17/2023 3:18 AM
+well, somebody needs to fix it then
+https://github.com/webosbrew/youtube-webos/
+[diskodansing]
+diskodansing 10/17/2023 2:08 AM
+[:sadge:]
+10/17/2023 2:08 AM
+Starting to see ads on my YouTube ad free now
+October 16, 2023
+[plasma_uk]
+plasma_uk 10/16/2023 10:22 PM
+I'm all updated now, its a shame I still have the same issues I had with
+Apple TV and Dolby Vision guess I'll have to contact the shop or LG
+support neither of whom I expect to be very interested! (edited)
+[] plasma_uk Is FailSafe something I want enabled? Is there any downside
+to enabling it?
+hellobox. 10/16/2023 10:02 PM
+no. leave it disabled. it's automatic (edited)
+ 1
+[plasma_uk]
+plasma_uk 10/16/2023 10:01 PM
+Is FailSafe something I want enabled? Is there any downside to enabling
+it?
+10/16/2023 10:01 PM
+Yep that was it, thank you!
+10/16/2023 9:57 PM
+Let me go check that.
+10/16/2023 9:57 PM
+Ooooo I think you are right
+hellobox. 10/16/2023 9:57 PM
+you probably have updates blocked in hbchannel settings
+[plasma_uk]
+plasma_uk 10/16/2023 9:57 PM
+I can't get it to start the update 
+10/16/2023 9:56 PM
+(no content)
+[IMG_9022.jpg]
+ IMG_9022.jpg
+895.98 KB External
+10/16/2023 9:56 PM
+(no content)
+[IMG_9021.jpg]
+ IMG_9021.jpg
+1.77 MB External
+10/16/2023 9:56 PM
+(no content)
+[IMG_9020.jpg]
+ IMG_9020.jpg
+1.89 MB External
+10/16/2023 9:56 PM
+After reading on the guide that the root and Homebrew Channel should
+persist over an update I decided to take the plunge on the update.
+However .....
+[plasma_uk]
+plasma_uk 10/16/2023 8:31 PM
+Currently have my QNED91 running WebOS 7.3.1-38, TV Firmware is 3.33.60.
+I have it Rooted and am running PicCap and HyperHDR. I’ve had issues
+with Apple TV and Dolby Vision since I got the TV a couple of weeks ago.
+Just seen that there is a firmware update for the TV. How safe is it for
+me to take this update, and do I need to factory reset it to remove the
+Rooted status before I do the update?
+October 15, 2023
+[lilbossyisme]
+lilbossyisme 10/15/2023 9:49 PM
+[:ahegao:]
+10/15/2023 9:49 PM
+Yo someone help how do screen saver app work it ain’t working
+[:meep:] 1
+[astur3l]
+astur3l 10/15/2023 11:55 AM
+yeah, thats what im doing, but it adds 2 extra steps... scp + ssh  and
+yeah, usually works after few/several tries.. but it took soo long 
+(edited)
+wsnipex 10/15/2023 7:40 AM
+you can also install from the tv like this:
+    luna-send-pub -i 'luna://com.webos.appInstallService/dev/install' '{"id":"com.ares.defaultName","ipkUrl":"/tmp/org.xbmc.kodi_20.90.101_arm.ipk","subscribe":true}'
+10/15/2023 7:39 AM
+yeah, happens here as well. Usually trying again works
+October 14, 2023
+[] astur3l is there better cli tools than ares for installing ipks ?:D
+it keeps failing installing kodi again.....
+hellobox. 10/14/2023 9:46 PM
+ares-install always intermittently fails for me
+[astur3l]
+astur3l 10/14/2023 6:37 PM
+is there better cli tools than ares for installing ipks ?:D it keeps
+failing installing kodi again....
+`ares-install ERR! Error: Unable to exec` 
+Deleted User 10/14/2023 6:17 PM
+except webos homebrew
+[] mariotaku It's not gonna work because they're not built for the
+emulator
+Deleted User 10/14/2023 6:17 PM
+do you know where i can download ipk files?
+[mariotaku]
+Deleted User can i install homebrew with that
+mariotaku 10/14/2023 6:05 PM
+It's not gonna work because they're not built for the emulator
+Deleted User 10/14/2023 5:00 PM
+?
+[] mariotaku if so, https://github.com/webosbrew/emulator-hacking
+Deleted User 10/14/2023 5:00 PM
+can i install homebrew with that
+[mariotaku]
+mariotaku 10/14/2023 4:17 PM
+So you can try compiling doom for it (it's gonna be slow ofc)
+[mariotaku]
+Deleted User idk im doing it 4fun
+mariotaku 10/14/2023 4:16 PM
+I managed to build native toolchain for it too... hehe (edited)
+[] mariotaku BTW what would you like to do after rooting it?
+Deleted User 10/14/2023 4:15 PM
+idk im doing it 4fun
+ 1
+[mariotaku]
+Deleted User yes, thanks
+mariotaku 10/14/2023 4:15 PM
+BTW what would you like to do after rooting it?
+Deleted User 10/14/2023 4:13 PM
+yes, thanks (edited)
+[mariotaku]
+Deleted User i created webapp that links to rootmytv and other websites
+mariotaku 10/14/2023 4:09 PM
+if so, https://github.com/webosbrew/emulator-hacking
+GitHub - webosbrew/emulator-hacking
+Contribute to webosbrew/emulator-hacking development by creating an
+account on GitHub.
+[]
+[mariotaku]
+mariotaku 10/14/2023 4:07 PM
+I see. So you want to root the emulator right?
+Deleted User 10/14/2023 4:04 PM
+because there's no normal browser
+[] mariotaku What's the app you are trying to use?
+Deleted User 10/14/2023 4:04 PM
+i created webapp that links to rootmytv and other websites
+[mariotaku]
+Deleted User but other websites like youtube works fine
+mariotaku 10/14/2023 4:03 PM
+What's the app you are trying to use?
+.kriilunaus Looks like one of the certificates in the webOS 4 emulator
+VM image has expired. So normally you wou...
+Deleted User 10/14/2023 3:15 PM
+but other websites like youtube works fine
+.kriilunaus 10/14/2023 2:19 PM
+Looks like one of the certificates in the webOS 4 emulator VM image has
+expired. So normally you would need an update with a new certificate.
+But LGE has discontinued support for the emulator and now relies on a
+simulator:
+https://webostv.developer.lge.com/develop/tools/emulator-introduction
+Therefore, it is not expected that there will be another update. You can
+either switch to the new simulator or try to manipulate the system time
+of the VM. I can't tell you if the latter will work, but if the security
+is implemented correctly, it probably won't.
+Emulator Introduction
+[]
+Deleted User 10/14/2023 1:58 PM
+?
+10/14/2023 1:58 PM
+How can i fix that
+10/14/2023 1:58 PM
+(no content)
+[image.png]
+ image.png
+66.33 KB External
+[smx2460]
+[] kitsuned does Netcast has some kind of system bus (like Luna)?
+smx2460 10/14/2023 12:51 PM
+Yes, dbus
+ 1
+[smx2460]
+[] otusb youtube literally stutters on this even at 144p
+smx2460 10/14/2023 11:56 AM
+Lol
+[yolofant]
+hellobox. i'm sure <@195583665265311744> will get to it soon 
+yolofant 10/14/2023 11:10 AM
+[:homerhide:]
+[otusb]
+otusb 10/14/2023 10:14 AM
+nice
+10/14/2023 10:14 AM
+oh theres tftpd
+10/14/2023 10:12 AM
+because chariot loaded itself
+10/14/2023 10:12 AM
+is turning off via remote putting the tv into a sort of hibernation?
+[otusb]
+hellobox. sometimes lg uses "netflix" to refer to stuff that doesn't
+really have anything to do with netflix
+otusb 10/14/2023 10:11 AM
+didnt find that
+[otusb]
+[] otusb also is there a way to like turn off the display while the unit
+is on
+otusb 10/14/2023 10:11 AM
+.
+[] otusb half the directories here are for netflix
+hellobox. 10/14/2023 10:11 AM
+sometimes lg uses "netflix" to refer to stuff that doesn't really have
+anything to do with netflix
+[otusb]
+otusb 10/14/2023 10:10 AM
+real
+[kitsuned]
+kitsuned 10/14/2023 10:10 AM
+even flagship 8K tv renders 1080p UI (edited)
+[kitsuned]
+[] otusb why tf
+kitsuned 10/14/2023 10:09 AM
+this is what any vendor does, except Apple TV
+[otusb]
+otusb 10/14/2023 10:08 AM
+also is there a way to like turn off the display while the unit is on
+10/14/2023 10:07 AM
+half the directories here are for netflix
+10/14/2023 10:05 AM
+why tf
+hellobox. 10/14/2023 10:05 AM
+they always do the UI at a lower resolution than video
+[otusb]
+otusb 10/14/2023 10:04 AM
+yes
+hellobox. 10/14/2023 10:04 AM
+that might be referring to the graphics (UI) layer (edited)
+[otusb]
+otusb 10/14/2023 10:04 AM
+but the panel is 1080p
+10/14/2023 10:04 AM
+1280x720 is apparently the default output on the tv
+[] otusb why is my panel 1080p and the video being shown 720p
+hellobox. 10/14/2023 10:04 AM
+what's 720p?
+[otusb]
+otusb 10/14/2023 10:03 AM
+wtf lg
+10/14/2023 10:03 AM
+why is my panel 1080p and the video being shown 720p
+10/14/2023 10:02 AM
+nothing really
+[] otusb is /home a good place to put stuff in?
+hellobox. 10/14/2023 10:02 AM
+probably... see what's mounted there
+[otusb]
+otusb 10/14/2023 10:02 AM
+my bad
+10/14/2023 10:02 AM
+nope its RO
+[otusb]
+hellobox. it's probably on signed rootfs
+otusb 10/14/2023 10:02 AM
+would it be r/w then
+[otusb]
+otusb 10/14/2023 10:01 AM
+is /home a good place to put stuff in?
+[] otusb better place to hijack
+hellobox. 10/14/2023 10:01 AM
+it's probably on signed rootfs
+[otusb]
+otusb 10/14/2023 10:01 AM
+better place to hijack
+10/14/2023 10:00 AM
+    /etc/scripts # ls
+    ls
+    gen_env.sh           ins_dtv.sh           mkpts.sh
+    init_all.sh          ins_eth_mod.sh       mount_perm.sh
+    ins_all_mod.sh       ins_fs_mod.sh        rm_usb_mod.sh
+    ins_basic_mod.sh     ins_usb_core_mod.sh  ubi_mount.sh
+    ins_blk_mod.sh       ins_usb_sub_mod.sh   ubi_mount_3rd.sh
+    ins_drv.sh           manual_launch.sh
+    /etc/scripts # 
+10/14/2023 9:59 AM
+but i still cant find a way to get sshd onto this lmao
+10/14/2023 9:59 AM
+checkroot.sh is very interesting
+10/14/2023 9:58 AM
+definitely used
+10/14/2023 9:58 AM
+    checkroot.sh    init-functions  portmap         sendsigs
+    halt            mountall.sh     rc              single
+    ifupdown        mountvirtfs     rcS             udev
+    inetd           networking      reboot          umountfs
+[] otusb theres init.d
+hellobox. 10/14/2023 9:58 AM
+may or may not actually be used
+[otusb]
+otusb 10/14/2023 9:58 AM
+theres init.d
+10/14/2023 9:53 AM
+omg xconfig is so cool lmao
+10/14/2023 9:53 AM
+also i think i need some sort of an ndk
+10/14/2023 9:50 AM
+then qemu chroot into the rootfs ig?
+[otusb]
+hellobox. build `dropbear` with
+<https://github.com/openlgtv/buildroot-nc4>
+otusb 10/14/2023 9:50 AM
+just gonna do make on this
+[otusb]
+otusb 10/14/2023 9:49 AM
+nc with sh absolutely sucks ass
+10/14/2023 9:47 AM
+good
+10/14/2023 9:47 AM
+at 144p
+10/14/2023 9:47 AM
+5mb free when running yt
+10/14/2023 9:46 AM
+i can hijack an app open list
+10/14/2023 9:46 AM
+hmm
+10/14/2023 9:45 AM
+weird
+10/14/2023 9:45 AM
+theres an applist_customize.xml
+[] otusb script that i can copy paste into
+hellobox. 10/14/2023 9:44 AM
+would be signed anyway
+[otusb]
+otusb 10/14/2023 9:43 AM
+script that i can copy paste into
+10/14/2023 9:43 AM
+no sort of uh
+10/14/2023 9:43 AM
+everything init is a binary tho
+10/14/2023 9:43 AM
+yeah
+[kitsuned]
+kitsuned 10/14/2023 9:43 AM
+oh lol
+hellobox. 10/14/2023 9:43 AM
+just use epk2extract
+[kitsuned]
+kitsuned 10/14/2023 9:42 AM
+then explore rootfs 
+[kitsuned]
+[] otusb is there an init script on this
+kitsuned 10/14/2023 9:41 AM
+use dd | nc to dump partitions (edited)
+[otusb]
+otusb 10/14/2023 9:40 AM
+is there an init script on this
+10/14/2023 9:40 AM
+also
+10/14/2023 9:40 AM
+lginit_app seems to be the bus
+hellobox. 10/14/2023 9:39 AM
+this is how we do it for webOS
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/tools/build-binaries.sh
+[otusb]
+otusb 10/14/2023 9:38 AM
+nice
+10/14/2023 9:38 AM
+oh buildroot
+hellobox. 10/14/2023 9:38 AM
+build dropbear with https://github.com/openlgtv/buildroot-nc4
+[otusb]
+otusb 10/14/2023 9:38 AM
+what happens if i kill it
+10/14/2023 9:38 AM
+lginit_app
+10/14/2023 9:37 AM
+lemme check the processes
+[kitsuned]
+hellobox. maybe dbus
+kitsuned 10/14/2023 9:37 AM
+i think it's monolithic anyway

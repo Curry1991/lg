@@ -1,0 +1,1590 @@
+September 8, 2022
+[smx2460]
+hellobox. stm32 board?
+smx2460 09/08/2022 1:21 PM
+Have some
+hellobox. 09/08/2022 1:20 PM
+eModelInchType=50 eModelToolType=UP77 eModelModuleType=LGD (from
+/proc/cmdline) (edited)
+[smx2460]
+smx2460 09/08/2022 1:20 PM
+Not the TVs
+[smx2460]
+hellobox. btw why does lg refer to its models as "tools"?
+smx2460 09/08/2022 1:20 PM
+Wait, "tools" are set of values in ez adjust (edited)
+hellobox. 09/08/2022 1:19 PM
+stm32 board?
+[smx2460]
+smx2460 09/08/2022 1:19 PM
+Nope
+hellobox. 09/08/2022 1:19 PM
+@Smx do you have a rpi pico?
+hellobox. 09/08/2022 12:56 PM
+btw why does lg refer to its models as "tools"?
+09/08/2022 12:55 PM
+has anyone written a decoder for toolopt values? (edited)
+hellobox. 09/08/2022 12:48 PM
+KxLp/KxHp definitely has to do with memory size/layout and DDR3 vs. 4
+(edited)
+09/08/2022 12:44 PM
+i guess it only gives access to certain ranges, but still..
+09/08/2022 12:38 PM
+wait, what? crw-rw-rw- 1 root root 1, 14 Dec 31 1969 /dev/rtkmem
+[smx2460]
+hellobox. is scpu secure cpu?
+smx2460 09/08/2022 12:22 PM
+Yep2
+[smx2460]
+hellobox. (guessing ACPU and VCPU are for audio and video, respectively)
+smx2460 09/08/2022 12:21 PM
+Yep
+hellobox. 09/08/2022 11:40 AM
+there's an ioctl to enable jtag over hdmi
+09/08/2022 11:39 AM
+@Smx //default disable HDMI2JTAG
+hellobox. 09/08/2022 10:57 AM
+bool rtk_is_dobly_Vision_supported(void) (spelled "dobly" throughout the
+module) (edited)
+hellobox. 09/08/2022 10:30 AM
+    #define SCPU_SYNC_MAGIC   (0x2379)
+    #define MICOM_SYNC_MAGIC   (0xbeef)
+09/08/2022 10:24 AM
+slightly better than hardcoding the bare values:
+rtd_outl(DC2_SYS_DC_int_enable_reg, BIT(22) | BIT(21) | BIT(20) | BIT(19) | BIT(18) | BIT(17) | BIT(16) | BIT(15) | BIT(0));
+09/08/2022 10:21 AM
+i keep coming across things (e.g., meanings of acronyms) that should
+probably be compiled somewhere. is there a wiki for this stuff or
+something?
+hellobox. 09/08/2022 10:11 AM
+rtd2875 seems to be quad cortex-a55
+hellobox. 09/08/2022 9:57 AM
+(guessing ACPU and VCPU are for audio and video, respectively)
+09/08/2022 9:56 AM
+is scpu secure cpu?
+09/08/2022 9:56 AM
+for power management
+[] smx2460 i know MStar CPUs can have a 8051 coprocessor
+hellobox. 09/08/2022 9:56 AM
+i'm starting to think there's an 8051 within the realtek SoC, referred
+to as the emcu
+hellobox. 09/08/2022 9:52 AM
+and also that this guy seems to have never heard of the preprocessor
+09/08/2022 9:51 AM
+i like how unsigned int i is on its own line
+[infowski]
+infowski 09/08/2022 9:48 AM
+nice nop
+hellobox. 09/08/2022 9:45 AM
+rtd_outl(0xb805b880, 0); //Enable Snoop ? (you're not sure?)
+09/08/2022 9:44 AM
+hint: there are 3 copies in separate functions, only differing by the
+shift offsets
+09/08/2022 9:43 AM
+any guesses what this does?
+09/08/2022 9:43 AM
+        write_pm_dummy_register(2,1,0);
+        rtd_outl(0xb805b43c,(rtd_inl(0xb805b43c) & (~(1<<20))));
+        rtd_outl(0xb805b450,rtd_inl(0xb805b450) | (1<<24));
+        write_pm_dummy_register(2,1,1);
+        while((rtd_inl(0xb805b458) & (1<<27)) ==0);
+        write_pm_dummy_register(2,1,2);
+        rtd_outl(0xb805b450,rtd_inl(0xb805b450) & (~(1<<22)));
+        rtd_outl(0xb805b054,rtd_inl(0xb805b054) | (1<<6));
+        rtd_outl(0xb805b054,rtd_inl(0xb805b054) | (1<<4));
+        {
+            // Add Delay
+            unsigned int  i;
+            for(i=0; i<0x1000; i++)  {  asm volatile("nop"); }
+        }
+        write_pm_dummy_register(2,1,3);
+        rtd_outl(0xB805B888, rtd_inl(0xB805B888) | ((1<<15)));
+        write_pm_dummy_register(2,1,4);
+hellobox. 09/08/2022 8:46 AM
+like linux-4.4.3/arch/arm/mach-rtd2875/platsmp.c
+09/08/2022 8:45 AM
+some of the realtek kernel code is TERRIBLE
+ 1
+hellobox. 09/08/2022 8:29 AM
+anyone know what tv_frontend_test_shell is?
+hellobox. 09/08/2022 8:19 AM
+lg also uses "ucom" as a synonym for micom (e.g., libhal_ucom) (edited)
+hellobox. 09/08/2022 5:23 AM
+broadcom chipset with an 8051 from https://www.abovsemi.com/ as "front
+micom"
+09/08/2022 5:22 AM
+i just have the board from one, i think
+[smx2460]
+hellobox. closely related to this:
+https://www.manualslib.com/manual/768397/Samsung-Bd-P1500.html
+smx2460 09/08/2022 5:19 AM
+I have exactly that model of BD player
+[smx2460]
+smx2460 09/08/2022 5:16 AM
+Lol (edited)
+09/08/2022 5:16 AM
+Wipe first, check if the firmware to write exists later
+09/08/2022 5:15 AM
+lol
+09/08/2022 5:15 AM
+fancy, samsung upgrade micom feature wipes the chip
+hellobox. 09/08/2022 5:14 AM
+closely related to this:
+https://www.manualslib.com/manual/768397/Samsung-Bd-P1500.html
+SAMSUNG BD-P1500 SERVICE MANUAL Pdf Download
+View and Download Samsung BD-P1500 service manual online. Blu-Ray Disc
+Player. BD-P1500 blu-ray player pdf manual download.
+[]
+09/08/2022 5:13 AM
+found the board
+09/08/2022 5:09 AM
+it seems to be more common in a/v equipment
+09/08/2022 5:08 AM
+https://adjuntos.yoreparo.com/default/0006/61/0e2e8483145f4837ab0579771f9e621db6755652.pdf
+09/08/2022 5:07 AM
+https://forum.samygo.tv/viewtopic.php?t=4555
+09/08/2022 5:07 AM
+i still can't find the other board i have that used the term
+09/08/2022 5:06 AM
+they use it in urls in datasheets for mcus
+[smx2460]
+smx2460 09/08/2022 5:05 AM
+that's just a digikey listing tho
+09/08/2022 5:05 AM
+ah k
+hellobox. 09/08/2022 5:04 AM
+i mean the name
+[smx2460]
+smx2460 09/08/2022 5:04 AM
+not the same chip
+hellobox. 09/08/2022 5:04 AM
+https://www.digikey.com/en/products/detail/cypress-semiconductor-corp/MB90F023PF-G/5784488
+[smx2460]
+smx2460 09/08/2022 5:04 AM
+where
+hellobox. 09/08/2022 5:03 AM
+fujitsu (->spansion->cypress->infineon) used to use it, apparently
+[smx2460]
+smx2460 09/08/2022 5:00 AM
+oh.
+hellobox. 09/08/2022 4:59 AM
+https://www.ebay.com/itm/272232311153
+IC MICOM Intel D8752BH 8-Bit Micro Controller, EV Erasable, Embedde...
+Part Number : D8752BH. All of TIDES’s products are designed as well as
+manufactured in Koreawith care as if we embrace our loved one with love
+and care. We will work quickly to resolve the issue(s).
+[]
+09/08/2022 4:59 AM
+i think it's just a generic (if somewhat uncommon) term for
+microcontroller
+[smx2460]
+smx2460 09/08/2022 4:56 AM
+yeah i'm somewhat skeptical
+hellobox. 09/08/2022 4:56 AM
+maybe it's lg, idk
+[smx2460]
+smx2460 09/08/2022 4:56 AM
+strange
+hellobox. 09/08/2022 4:56 AM
+i'm almost positive i have some board with a holtek(?) mcu referred to
+as MICOM
+[smx2460]
+smx2460 09/08/2022 4:55 AM
+Timing-Controller
+hellobox. 09/08/2022 4:55 AM
+nope
+[smx2460]
+smx2460 09/08/2022 4:55 AM
+maybe you've seen TCON
+hellobox. 09/08/2022 4:55 AM
+i mean the name "MICOM"
+[smx2460]
+smx2460 09/08/2022 4:55 AM
+which serve the same purpose
+09/08/2022 4:55 AM
+in the form of ECs
+09/08/2022 4:55 AM
+all laptops for example have such MCUs
+09/08/2022 4:55 AM
+but not identical
+09/08/2022 4:54 AM
+the concept yes
+09/08/2022 4:54 AM
+i doubt it
+hellobox. 09/08/2022 4:54 AM
+i've seen it in other products, i'm pretty sure
+[smx2460]
+smx2460 09/08/2022 4:54 AM
+Management Interface Communication
+09/08/2022 4:54 AM
+our theory for MICOM is
+09/08/2022 4:53 AM
+lol blooper confirmed
+hellobox. 09/08/2022 4:53 AM
+or "8501" (they're also not sure whether it's a "MICOM" or "MICON")
+(edited)
+[smx2460]
+smx2460 09/08/2022 4:53 AM
+micom is not 8051, sounds like an LG blopper lol
+hellobox. 09/08/2022 4:52 AM
+it's setting up shared memory between scpu and 8051/micom
+[smx2460]
+smx2460 09/08/2022 4:52 AM
+i don't see why it should have changed
+09/08/2022 4:52 AM
+or at least was Mips in K3LP
+09/08/2022 4:52 AM
+but Realtek SCPU should be MIPS
+hellobox. 09/08/2022 4:51 AM
+COPYRIGHT(c) LGE CO.,LTD. 2006. SEOUL, KOREA.
+[smx2460]
+smx2460 09/08/2022 4:51 AM
+SCPU is clearly Realtek tho
+09/08/2022 4:51 AM
+which is probably used for power management purposes
+09/08/2022 4:51 AM
+i know MStar CPUs can have a 8051 coprocessor
+hellobox. 09/08/2022 4:51 AM
+i think they might just be calling the renesas part an 8051
+09/08/2022 4:50 AM
+void shareMemoryScpuInfo8051(void)
+[smx2460]
+smx2460 09/08/2022 4:50 AM
+post snippet
+hellobox. 09/08/2022 4:50 AM
+cmd_micom.c
+09/08/2022 4:50 AM
+uboot stuff
+[smx2460]
+smx2460 09/08/2022 4:50 AM
+where did you see it
+09/08/2022 4:50 AM
+or rather
+09/08/2022 4:49 AM
+why
+09/08/2022 4:49 AM
+?
+hellobox. 09/08/2022 4:49 AM
+wait, there's an 8051 somewhere?
+[smx2460]
+smx2460 09/08/2022 4:46 AM
+wonder who that is, seriously
+09/08/2022 4:45 AM
+    According to an OpenLGTV developer, there are no TVs with mainline support, because there are a lot of hardware customizations. Booting a custom kernel requires hacking the bootloader which is normally verifying signatures. 
+09/08/2022 4:43 AM
+    curprev 18:05, 29 June 2022‎ Ollieparanoid talk contribs‎ 5,958 bytes +152‎ →‎External links: we don't recommend using proprietary services like discord. added a note. maybe whoever created it want to make a matrix room instead?
+09/08/2022 4:43 AM
+has been there since 1.0
+09/08/2022 4:42 AM
+yes
+hellobox. 09/08/2022 4:42 AM
+does starfish refer to lg tv webos generally?
+[smx2460]
+smx2460 09/08/2022 4:40 AM
+https://www.youtube.com/watch?v=vuXUgTIB01Q
+Xyn Dotnest
+QT Wayland running in Arch Linux running on an LG TV
+[] Watch video
+hellobox. 09/08/2022 4:40 AM
+discord does kind of suck imo
+[smx2460]
+smx2460 09/08/2022 4:40 AM
+lol
+09/08/2022 4:40 AM
+    OpenLGTV Discord (Note that postmarketOS doesn't recommend proprietary platforms like Discord.)
+09/08/2022 4:39 AM
+lol
+09/08/2022 4:39 AM
+i didn't know this existed
+09/08/2022 4:39 AM
+uh
+09/08/2022 4:39 AM
+https://wiki.postmarketos.org/wiki/TVs
+TVs
+hellobox. 09/08/2022 4:39 AM
+#define LG_PCB_INFO (K5L | LG_PCB_TYPE1 | LG_PCB_VER1)
+09/08/2022 4:38 AM
+    #define LG_PCB_TYPE1    (0x00001000)
+    #define LG_PCB_TYPE2    (0x00002000)
+    #define LG_PCB_TYPE3    (0x00003000)
+09/08/2022 4:38 AM
+apparently there are three "types" of lg pcbs?
+09/08/2022 4:38 AM
+this is from the uboot bsp stuff
+ 1
+09/08/2022 4:37 AM
+    #define S2B             (0x00400000)
+    #define S2B_plus        (0x00800000)
+    #define K2H             (0x00C00000)
+    #define K2L             (0x01000000)
+    #define K3L             (0x02000000)
+    #define S4AP            (0x04000000)
+    #define K4L             (0x08000000)
+    #define K5L             (0x0C000000)
+[smx2460]
+smx2460 09/08/2022 4:35 AM
+using D+/D- in those cases
+09/08/2022 4:35 AM
+or even usb ports iirc
+09/08/2022 4:35 AM
+but the pinmuxing settings are clear, you choose pair of HDMI ports
+09/08/2022 4:34 AM
+or in other words to breakout the I2C signals from 2 HDMI cables
+(edited)
+09/08/2022 4:34 AM
+but it'd need a special HDMI Y cable
+09/08/2022 4:34 AM
+i haven't tried it yet (or seen someone try)
+09/08/2022 4:34 AM
+2 signals per cable (SDA/SCL) are routed to JTAG signals
+09/08/2022 4:33 AM
+via pinmuxing
+09/08/2022 4:33 AM
+just so you know, Mediatek runs JTAG over HDMI
+hellobox. 09/08/2022 4:33 AM
+how the hell does realtek assign part numbers? they seem pretty random
+[smx2460]
+smx2460 09/08/2022 4:31 AM
+it also has headers for I2C cables
+09/08/2022 4:31 AM
+for who uses VGA, for who uses HDMI, etc..
+09/08/2022 4:31 AM
+it has multiple ports for multiple devices
+09/08/2022 4:31 AM
+so it's not said RTK has it
+09/08/2022 4:30 AM
+you see it listed here with MStar too
+09/08/2022 4:30 AM
+https://it.aliexpress.com/item/1005001883690746.html
+40.96€ |Programmatore bruciatore Debug scheda driver USB aggiorname...
+Smarter Shopping, Better Living! Aliexpress.com
+[]
+09/08/2022 4:30 AM
+i think that's an universal dongle tho
+09/08/2022 4:28 AM
+you can just hook to UART on the board
+09/08/2022 4:28 AM
+you don't need that adapter tho
+09/08/2022 4:26 AM
+HDMI carries I2C
+09/08/2022 4:26 AM
+and HDMI is another
+09/08/2022 4:26 AM
+i'd say VGA/DVI are one option depending on the TV model
+09/08/2022 4:26 AM
+if i had to make a guess
+09/08/2022 4:25 AM
+i don't have confirmation if RTK supports that too
+09/08/2022 4:25 AM
+i know MStar can do ISP over the VGA port
+09/08/2022 4:25 AM
+ISP adapter
+hellobox. 09/08/2022 4:24 AM
+what is this? https://www.aliexpress.com/item/2255800835360549.html
+[smx2460]
+smx2460 09/08/2022 4:21 AM
+and then use RtICE
+09/08/2022 4:21 AM
+you can drop in ISP mode tho
+09/08/2022 4:20 AM
+but i know MStar has one and is disabled on boot
+09/08/2022 4:20 AM
+@hellobox i don't know for RTK
+hellobox. 09/08/2022 4:19 AM
+i wonder if there's a jtag header
+09/08/2022 4:14 AM
+so the 2nd opensource package (only ~500mb) has all the interesting
+stuff: bootcode, gstreamer, kernel, libkadaptor
+[smx2460]
+smx2460 09/08/2022 3:31 AM
+but we surely need to know the wayland version LG used
+09/08/2022 3:31 AM
+maybe it's not even needed anymore
+09/08/2022 3:31 AM
+ofc it won't be actual anymore
+09/08/2022 3:31 AM
+this is the patch we made for webos 1.x
+09/08/2022 3:30 AM
+(no content)
+ waylandhax.patch
+6.37 KB External
+09/08/2022 3:29 AM
+the strange thing is that you can't just ask EGL the default display
+09/08/2022 3:29 AM
+the caller will likely know how to get that one display
+09/08/2022 3:29 AM
+but in the case of webOS, where you only have one display
+09/08/2022 3:29 AM
+but already have the handle
+09/08/2022 3:29 AM
+and basically not pass NULL to egl
+09/08/2022 3:29 AM
+and/or connect to wayland and probe displays
+09/08/2022 3:29 AM
+probe for /dev/dri/*
+09/08/2022 3:28 AM
+i mean one could, if wanted
+09/08/2022 3:28 AM
+with wayland it involves opening sockets and pushing opcodes
+09/08/2022 3:28 AM
+and pass it to a function
+09/08/2022 3:28 AM
+in the case of gbm it's much simpler as you just open the device handle
+09/08/2022 3:28 AM
+they connect to the server, query displays, etc..
+09/08/2022 3:27 AM
+so in the case of wayland
+09/08/2022 3:27 AM
+they retrieve the display handle ahead of time
+[yolofant]
+yolofant 09/08/2022 3:27 AM
+but then still, how do applications handle this
+[smx2460]
+smx2460 09/08/2022 3:27 AM
+and even then, it had to be hacked
+hellobox. 09/08/2022 3:26 AM
+ugh
+[smx2460]
+smx2460 09/08/2022 3:26 AM
+to find the closest version
+09/08/2022 3:26 AM
+since wayland is not opensource, I had to do binary diffing
+09/08/2022 3:26 AM
+the thing is
+09/08/2022 3:26 AM
+we're not sure if they appeared because of corruption or because LG
+inserted them
+09/08/2022 3:26 AM
+in WebOS 1.x we did a very ugly hack to ignore certain unknown messages
+in the protocol
+09/08/2022 3:25 AM
+and hope they didn't customize the protocol
+09/08/2022 3:25 AM
+because we need to know the exact version LG used
+09/08/2022 3:25 AM
+i expect it to be more problematic for wayland
+09/08/2022 3:25 AM
+so you must first have a display handle
+09/08/2022 3:25 AM
+and Mali explicitly forbids this
+09/08/2022 3:24 AM
+the problem is that they all assume you can pass NULL to get the default
+display
+09/08/2022 3:24 AM
+or it's time to make a proper one 
+09/08/2022 3:24 AM
+maybe i'm searching incorrectly
+09/08/2022 3:24 AM
+it's strange that there isn't a fully fledged egl info
+[yolofant]
+yolofant 09/08/2022 3:24 AM
+maybe gstreamer just doesn't work
+09/08/2022 3:24 AM
+but there's no special hacks in there
+09/08/2022 3:23 AM
+we have sources for gstreamer
+[smx2460]
+smx2460 09/08/2022 3:23 AM
+you only have wayland in the supported extensions
+09/08/2022 3:23 AM
+RTK does not
+09/08/2022 3:23 AM
+it means LX somehow implements GBM
+09/08/2022 3:23 AM
+that's interesting
+09/08/2022 3:23 AM
+@hellobox notice you don't have gbm in the supported extensions
+hellobox. 09/08/2022 3:22 AM
+    EGL client extensions string:
+        EGL_EXT_client_extensions EGL_EXT_platform_base
+        EGL_KHR_client_get_all_proc_addresses EGL_KHR_platform_wayland
+        EGL_EXT_platform_wayland
+    failure to resolve gbm_create_device
+[yolofant]
+yolofant 09/08/2022 3:22 AM
+the only difference is that it does not crash on termination
+[smx2460]
+smx2460 09/08/2022 3:22 AM
+it ultimately was working even with bad handls
+09/08/2022 3:22 AM
+yeah
+[yolofant]
+yolofant 09/08/2022 3:22 AM
+but I think the output is actually the same as before
+09/08/2022 3:22 AM
+ye
+[smx2460]
+smx2460 09/08/2022 3:22 AM
+noice
+[yolofant]
+yolofant 09/08/2022 3:22 AM
+(no content)
+ message.txt
+5.31 KB External
+[smx2460]
+smx2460 09/08/2022 3:21 AM
+worked without dying?
+[yolofant]
+yolofant 09/08/2022 3:21 AM
+yep
+[smx2460]
+smx2460 09/08/2022 3:21 AM
+of the elf
+09/08/2022 3:21 AM
+it should resolve it in the loaded libEGL since it's in the dependency
+list
+09/08/2022 3:20 AM
+replaced it with this
+09/08/2022 3:20 AM
+    GBMCREATEDEVICEPROC gbm_create_device = (GBMCREATEDEVICEPROC)dlsym(RTLD_DEFAULT, "gbm_create_device");
+09/08/2022 3:20 AM
+(no content)
+ eglinfo
+18.16 KB External
+09/08/2022 3:19 AM
+it's not
+09/08/2022 3:19 AM
+ok i thought it was an alias to dlsym
+[yolofant]
+yolofant 09/08/2022 3:18 AM
+it should be
+[smx2460]
+smx2460 09/08/2022 3:18 AM
+no wait it is
+09/08/2022 3:18 AM
+lol (edited)
+09/08/2022 3:18 AM
+crap it's not exported
+09/08/2022 3:18 AM
+but if it's NULL it will just give bad display
+[yolofant]
+yolofant 09/08/2022 3:18 AM
+failure to resolve gbm_create_device
+[smx2460]
+smx2460 09/08/2022 3:18 AM
+i didn't add a check for the return of bgm_create_device
+09/08/2022 3:17 AM
+and commented wayland
+09/08/2022 3:17 AM
+(no content)
+ eglinfo
+18.07 KB External
+09/08/2022 3:17 AM
+wrote this
+09/08/2022 3:17 AM
+           if (strstr(clientext, "EGL_MESA_platform_gbm") ||
+               strstr(clientext, "EGL_KHR_platform_gbm"))
+               ret += doOneDisplay(getPlatformDisplay(EGL_PLATFORM_GBM_MESA,
+                                                      dev,
+                                                      NULL), "GBM platform");
+09/08/2022 3:17 AM
+    struct gbm_device;
+    typedef struct gbm_device* (*GBMCREATEDEVICEPROC)(int fd);
+       GBMCREATEDEVICEPROC gbm_create_device = (GBMCREATEDEVICEPROC)eglGetProcAddress("gbm_create_device");
+       if(!gbm_create_device){
+          fputs("failure to resolve gbm_create_device\n", stderr);
+          return 1;
+       }
+       int fd = open("/dev/dri/card0", O_RDWR);
+       if(fd < 0){
+          fputs("failure to open /dev/dri/card0\n", stderr);
+          return 1;
+       }
+       struct gbm_device *dev = gbm_create_device(fd);
+(edited)
+09/08/2022 3:13 AM
+i'll try that as it's quick and dirty enough
+09/08/2022 3:12 AM
+(and only use GBM backend)
+09/08/2022 3:12 AM
+that should fix things
+09/08/2022 3:12 AM
+and pass that return to getPlatformDisplay
+09/08/2022 3:12 AM
+so an alternative would be to call
+gbm_create_device(open("/dev/dri/card0", O_RDWR))
+[yolofant]
+yolofant 09/08/2022 3:11 AM
+yes
+[smx2460]
+smx2460 09/08/2022 3:10 AM
+do we really have that?
+09/08/2022 3:10 AM
+intel says  * /dev/dri/card0
+09/08/2022 3:09 AM
+do you see anything interesting there?
+09/08/2022 3:09 AM
+the fd is a device node in /dev
+09/08/2022 3:09 AM
+    GBM_EXPORT struct gbm_device *
+    gbm_create_device(int fd)
+09/08/2022 3:09 AM
+there is a gbm_create_device
+09/08/2022 3:08 AM
+it should be easier for gbm
+09/08/2022 3:08 AM
+because to get a wayland display you must now connect to the server and
+query displays
+09/08/2022 3:08 AM
+this becomes more involved tho
+09/08/2022 3:07 AM
+i want a better sample 
+09/08/2022 3:07 AM
+but i don't wanna write this myself
+09/08/2022 3:06 AM
+it wants an already initialized wayland connection
+09/08/2022 3:06 AM
+    struct wl_display {
+        struct wl_proxy proxy;
+        struct wl_connection *connection;
+        /* errno of the last wl_display error */
+        int last_error;
+        /* When display gets an error event from some object, it stores
+         * information about it here, so that client can get this
+         * information afterwards */
+        struct {
+            /* Code of the error. It can be compared to
+             * the interface's errors enumeration. */
+            uint32_t code;
+            /* interface (protocol) in which the error occurred */
+            const struct wl_interface *interface;
+            /* id of the proxy that caused the error. There's no warranty
+             * that the proxy is still valid. It's up to client how it will
+             * use it */
+            uint32_t id;
+        } protocol_error;
+        int fd;
+        struct wl_map objects;
+        struct wl_event_queue display_queue;
+        struct wl_event_queue default_queue;
+        pthread_mutex_t mutex;
+        int reader_count;
+        uint32_t read_serial;
+        pthread_cond_t reader_cond;
+    };
+09/08/2022 3:05 AM
+so passing a dummy int clearly breaks things 
+[yolofant]
+yolofant 09/08/2022 3:05 AM
+hmm ok
+[smx2460]
+smx2460 09/08/2022 3:05 AM
+it must be a struct
+09/08/2022 3:05 AM
+same deal
+09/08/2022 3:05 AM
+    The <native_display> parameter
+        specifies the GBM device to use and must either point to a `struct
+        gbm_device` or be EGL_DEFAULT_DISPLAY. If <native_display> is
+        EGL_DEFAULT_DISPLAY, then the resultant EGLDisplay will be backed by some
+        implementation-chosen GBM device.
+09/08/2022 3:05 AM
+as for gbm.
+09/08/2022 3:05 AM
+so i must pass a struct wl_display
+09/08/2022 3:04 AM
+so if we pass that it reports bad display (edited)
+09/08/2022 3:04 AM
+the problem is that Mali prohibits EGL_DEFAULT_DISPLAY
+09/08/2022 3:04 AM
+    to use and must
+        either point to a `struct wl_display` or be EGL_DEFAULT_DISPLAY. If
+        <native_display> is EGL_DEFAULT_DISPLAY, then EGL will create a new
+        wl_display structure by connecting to the default Wayland socket.
+[yolofant]
+yolofant 09/08/2022 3:04 AM
+    ./rootfs.pak.unsquashfs/usr/lib/libSDL2-2.0.so.0.14.0
+    eglGetPlatformDisplayEXT
+    eglGetPlatformDisplayEXT is missing (EXT_platform_base not supported by the drivers?)
+    eglGetPlatformDisplayEXT() failed.
+    ./rootfs.pak.unsquashfs/usr/lib/libQt5WaylandEglClientBufferIntegration.so.1.0.0
+    eglGetPlatformDisplayEXT
+    ./rootfs.pak.unsquashfs/usr/lib/libgstgl-1.0.so.0.1802.0
+    eglGetPlatformDisplayEXT
+    ./bsppart.pak.unsquashfs/bsp/usr/lib/libmali.so.0.28.0
+    eglGetPlatformDisplayEXT
+    eglGetPlatformDisplayEXT
+[smx2460]
+smx2460 09/08/2022 3:04 AM
+        To obtain an EGLDisplay backed by a Wayland display, call
+        eglGetPlatformDisplay with <platform> set to EGL_PLATFORM_WAYLAND_KHR.  The
+        <native_display> parameter specifies the Wayland display  to use and must
+        either point to a `struct wl_display` or be EGL_DEFAULT_DISPLAY. If
+        <native_display> is EGL_DEFAULT_DISPLAY, then EGL will create a new
+        wl_display structure by connecting to the default Wayland socket.  The
+        manual page wl_display_connect(3) defines the location of the default
+        Wayland socket.
+09/08/2022 3:04 AM
+it's documented wait wait
+09/08/2022 3:04 AM
+ah
+09/08/2022 3:03 AM
+and then we see how it does it
+09/08/2022 3:03 AM
+so we find who ever calls it
+09/08/2022 3:03 AM
+09/08/2022 3:03 AM
+@Yolofant if you grep for eglGetPlatformDisplayEXT anywhere? 
+09/08/2022 3:02 AM
+for the device on which the display sits
+09/08/2022 3:02 AM
+i should be passing a handle obtained somehow
+09/08/2022 3:02 AM
+so the question is, instead of a pointer to int
+09/08/2022 3:02 AM
+that's why
+09/08/2022 3:02 AM
+so i'm probably corrupting something by making the check pass
+09/08/2022 3:01 AM
+technically the device is an opaque handle
+09/08/2022 2:57 AM
+probably QT
+[yolofant]
+yolofant 09/08/2022 2:57 AM
+0xf6d946e0is the breakpoint address but it crashes already at 0xf6d946c8
+[smx2460]
+smx2460 09/08/2022 2:57 AM
+i mean whoever uses libEGL on the TV
+09/08/2022 2:57 AM
+at this point i'm curious how it's used by others
+09/08/2022 2:57 AM
+i can't find anywhere that you need to pass an int* to get the default
+display
+09/08/2022 2:57 AM
+this seems like a bad implementation by Mali btw
+[yolofant]
+yolofant 09/08/2022 2:56 AM
+but it's not from devmode ipk
+09/08/2022 2:56 AM
+actually not sure where my gdb is from
+[smx2460]
+smx2460 09/08/2022 2:56 AM
+or might need
+09/08/2022 2:56 AM
+you need a proper gdb
+09/08/2022 2:55 AM
+ah right
+[] yolofant yes, but I reused the existing gdb
+hellobox. 09/08/2022 2:55 AM
+are you using gdb from the devmode ipk?
+[yolofant]
+yolofant 09/08/2022 2:55 AM
+no idea it somehow doesn't trigger the breakpoint
+09/08/2022 2:52 AM
+oh
+09/08/2022 2:51 AM
+it's the same
+[smx2460]
+smx2460 09/08/2022 2:51 AM
+do it from scratch
+[yolofant]
+yolofant 09/08/2022 2:51 AM
+so it already knew the function
+09/08/2022 2:51 AM
+yes, but I reused the existing gdb
+[smx2460]
+smx2460 09/08/2022 2:50 AM
+right?
+09/08/2022 2:50 AM
+gdb should ask you that
+09/08/2022 2:50 AM
+it's a delay load lirbary
+[yolofant]
+yolofant 09/08/2022 2:50 AM
+but it still segfaults
+09/08/2022 2:50 AM
+b wl_proxy_marshal_constructor
+[smx2460]
+smx2460 09/08/2022 2:50 AM
+if it uses the 0 i passed earlier
+[yolofant]
+yolofant 09/08/2022 2:50 AM
+wait what
+[smx2460]
+smx2460 09/08/2022 2:50 AM
+let me check what eglInitialize  does tho
+09/08/2022 2:49 AM
+then print regs
+09/08/2022 2:49 AM
+at entry, yes
+[yolofant]
+yolofant 09/08/2022 2:49 AM
+I could set a breakpoint
+[smx2460]
+smx2460 09/08/2022 2:48 AM
+and at the time of the crash you're not seeing the original value
+09/08/2022 2:48 AM
+unless r2 got corrupted
+09/08/2022 2:48 AM
+it's an import...
+09/08/2022 2:48 AM
+it shouldn't be
+[yolofant]
+yolofant 09/08/2022 2:48 AM
+true
+[smx2460]
+smx2460 09/08/2022 2:48 AM
+but the interface is null
+09/08/2022 2:47 AM
+yes
+[yolofant]
+yolofant 09/08/2022 2:47 AM
+r0-r3 are the argument registers on arm?
+[smx2460]
+smx2460 09/08/2022 2:47 AM
+it's supposedly sending opcode 1
+[yolofant]
+yolofant 09/08/2022 2:46 AM
+    (gdb) info registers
+    r0             0x22078    139384
+    r1             0x1    1
+    r2             0x0    0
+    r3             0x0    0
+    r4             0x29d48    171336
+    r5             0x22078    139384
+    r6             0xf6da8cc4    4141518020
+    r7             0xf7de67b4    4158547892
+    r8             0x186a0    100000
+    r9             0xf7e3238c    4158858124
+    r10            0xf7de67bc    4158547900
+    r11            0x3f660    259680
+    r12            0x3    3
+    sp             0xfffef344    0xfffef344
+    lr             0xf707184b    -150529973
+    pc             0xf6d946c8    0xf6d946c8 <wl_proxy_marshal_constructor+12>
+    cpsr           0x808c0030    -2138308560
+[smx2460]
+smx2460 09/08/2022 2:46 AM
+     struct wl_proxy * wl_proxy_marshal_constructor (struct wl_proxy *proxy, uint32_t opcode, const struct wl_interface *interface,...) 
+(edited)
+09/08/2022 2:46 AM
+so i see if there's any obvious bad argument in r0,r1,r2
+09/08/2022 2:45 AM
+can you do info registers ?
+09/08/2022 2:45 AM
+while you're in gdb
+09/08/2022 2:45 AM
+hm
+[yolofant]
+yolofant 09/08/2022 2:45 AM
+at least no more information on stdout
+[smx2460]
+smx2460 09/08/2022 2:44 AM
+then run it again
+09/08/2022 2:44 AM
+export WAYLAND_DEBUG=1 
+09/08/2022 2:44 AM
+try
+09/08/2022 2:44 AM
+so it it gets to wl_proxy_marshal_constructor it means it passed
+wl_display_connect
+09/08/2022 2:43 AM
+or passing 0 is bad and it's passing an invalid display around
+09/08/2022 2:43 AM
+xD
+09/08/2022 2:43 AM
+libmali is not using wayland correctly
+09/08/2022 2:43 AM
+but that's strange
+09/08/2022 2:42 AM
+ah
+[yolofant]
+yolofant 09/08/2022 2:42 AM
+    (gdb) bt
+    #0  0xf6d946c8 in wl_proxy_marshal_constructor () from /usr/lib/libwayland-client.so.0
+    #1  0xf707184a in display_new_wl () from /usr/lib/libmali.so.0
+    #2  0xf706274c in eglInitialize () from /usr/lib/libmali.so.0
+    #3  0x000111f0 in doOneDisplay ()
+    #4  0x000113d0 in main ()
+[smx2460]
+smx2460 09/08/2022 2:42 AM
+lol
+[yolofant]
+yolofant 09/08/2022 2:42 AM
+    root@LGwebOSTV:~# /tmp/eglinfo
+    EGL client extensions string:
+        EGL_EXT_client_extensions EGL_EXT_platform_base
+        EGL_KHR_client_get_all_proc_addresses EGL_KHR_platform_gbm
+        EGL_KHR_platform_wayland EGL_EXT_platform_wayland
+    Wayland platform:
+    [1]+  Stopped (signal)           /tmp/eglinfo
+[smx2460]
+smx2460 09/08/2022 2:41 AM
+wayland only
+09/08/2022 2:41 AM
+(no content)
+ eglinfo
+16.66 KB External
+09/08/2022 2:41 AM
+lol, bad cleanup
+[yolofant]
+yolofant 09/08/2022 2:40 AM
+so seems to crash at termination
+09/08/2022 2:40 AM
+    (gdb) bt
+    #0  __libc_do_syscall () at libc-do-syscall.S:49
+    #1  0xf7ed2456 in __libc_signal_restore_set (set=0xfffef0e0)
+        at ../sysdeps/unix/sysv/linux/internal-signals.h:86
+    #2  __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:48
+    #3  0xf7ec3962 in __GI_abort () at abort.c:79
+    #4  0xf7ef9874 in __libc_message (action=action@entry=do_abort, fmt=<optimized out>)
+        at ../sysdeps/posix/libc_fatal.c:155
+    #5  0xf7efe646 in malloc_printerr (str=<optimized out>) at malloc.c:5346
+    #6  0xf7eff9e2 in _int_free (av=<optimized out>, p=0x22070 <vnames+20>, have_lock=<optimized out>)
+        at malloc.c:4173
+    #7  0xf707500a in display_delete () from /usr/lib/libmali.so.0
+    #8  0xf7062204 in eglp_try_display_finish_terminating () from /usr/lib/libmali.so.0
+    #9  0xf7064956 in eglTerminate () from /usr/lib/libmali.so.0
+    #10 0x000112a0 in doOneDisplay ()
+    #11 0x000113d0 in main ()
+[smx2460]
+smx2460 09/08/2022 2:40 AM
+and see what it reports for the Wayland backend instead
+09/08/2022 2:40 AM
+it would be interesting to comment out the GBM code
+09/08/2022 2:39 AM
+(no content)
+ eglinfo
+16.69 KB External
+[yolofant]
+yolofant 09/08/2022 2:39 AM
+(no content)
+ message.txt
+5.41 KB External
+[smx2460]
+smx2460 09/08/2022 2:39 AM
+i should built it with -g too
+hellobox. 09/08/2022 2:39 AM
+not for me
+[smx2460]
+smx2460 09/08/2022 2:38 AM
+PrintConfigs is in the demo code
+09/08/2022 2:38 AM
+it's a pointer to the display #0
+09/08/2022 2:38 AM
+see if this makes any difference
+09/08/2022 2:38 AM
+(no content)
+ eglinfo
+12.45 KB External
+[yolofant]
+yolofant 09/08/2022 2:37 AM
+that makes sense
+09/08/2022 2:37 AM
+    (gdb) bt
+    #0  strlen () at ../sysdeps/arm/armv6t2/strlen.S:126
+    #1  0xf7eed652 in __vfprintf_internal (s=0xf7f9eb58 <_IO_2_1_stdout_>,
+        format=0x11778 "0x%02x %2d %2d %2d %2d %2d %2d %2d %2d %2d%2d 0x%02x%s ",
+        format@entry=0x1 <error: Cannot access memory at address 0x1>, ap=..., ap@entry=...,
+        mode_flags=mode_flags@entry=0) at vfprintf-internal.c:1688
+    #2  0xf7ee1a1e in __printf (format=0x11778 "0x%02x %2d %2d %2d %2d %2d %2d %2d %2d %2d%2d 0x%02x%s ")
+        at printf.c:33
+    #3  0x00010efc in PrintConfigs ()
+    #4  0x00011298 in doOneDisplay ()
+    #5  0x000113d0 in main ()
+[smx2460]
+smx2460 09/08/2022 2:36 AM
+so it must be a pointer to EGL_DEFAULT_DISPLAY
+09/08/2022 2:36 AM
+it can also be 0
+09/08/2022 2:36 AM
+oh wait
+hellobox. 09/08/2022 2:36 AM
+    root@LGwebOSTV:~# ./eglinfo
+    EGL client extensions string:
+        EGL_EXT_client_extensions EGL_EXT_platform_base
+        EGL_KHR_client_get_all_proc_addresses EGL_KHR_platform_wayland
+        EGL_EXT_platform_wayland
+    Wayland platform:
+    ==>[WARN] (eglinfo) EGL: In file: egl/src/mali_egl_display.c  line: 2114 eglInitialize
+    Bad display
+    eglinfo: eglInitialize failed
+[yolofant]
+yolofant 09/08/2022 2:36 AM
+    root@LGwebOSTV:~# /tmp/eglinfo
+    EGL client extensions string:
+        EGL_EXT_client_extensions EGL_EXT_platform_base
+        EGL_KHR_client_get_all_proc_addresses EGL_KHR_platform_gbm
+        EGL_KHR_platform_wayland EGL_EXT_platform_wayland
+    GBM platform:
+    1662597356.080998 (25914:25914) ==>[WARN] (eglinfo) COBJ: In file: ../cobj/src/mali_cobj_surface_format.c  line: 2970 cobj_surface_format_is_supported
+    Bad indexed format FORMAT_Y10X6_U10X6_V10X6_444
+    1662597356.081218 (25914:25914) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_format.c  line: 610 egl_cobj_surface_format_create
+    fourcc_modifier 0x0 surface format is not supported.
+    1662597356.081264 (25914:25914) ==>[WARN] (eglinfo) COBJ: In file: ../cobj/src/mali_cobj_surface_format.c  line: 2970 cobj_surface_format_is_supported
+    Bad indexed format FORMAT_Y10X6_U10X6_V10X6_444
+    1662597356.081284 (25914:25914) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_format.c  line: 610 egl_cobj_surface_format_create
+    fourcc_modifier 0x0 surface format is not supported.
+    1662597356.081301 (25914:25914) ==>[WARN] (eglinfo) COBJ: In file: ../cobj/src/mali_cobj_surface_format.c  line: 2970 cobj_surface_format_is_supported
+    Bad indexed format FORMAT_Y10X6_U10X6_V10X6_444
+    1662597356.081319 (25914:25914) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_format.c  line: 610 egl_cobj_surface_format_create
+    fourcc_modifier 0x0 surface format is not supported.
+    1662597356.081335 (25914:25914) ==>[WARN] (eglinfo) COBJ: In file: ../cobj/src/mali_cobj_surface_format.c  line: 2970 cobj_surface_format_is_supported
+    Bad indexed format FORMAT_Y10X6_U10X6_V10X6_444
+    1662597356.081352 (25914:25914) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_format.c  line: 610 egl_cobj_surface_format_create
+    fourcc_modifier 0x0 surface format is not supported.
+    1662597356.081368 (25914:25914) ==>[WARN] (eglinfo) COBJ: In file: ../cobj/src/mali_cobj_surface_format.c  line: 2970 cobj_surface_format_is_supported
+    Bad indexed format FORMAT_Y10X6_U10X6_V10X6_444
+    1662597356.081385 (25914:25914) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_format.c  line: 610 egl_cobj_surface_format_create
+    fourcc_modifier 0x0 surface format is not supported.
+    1662597356.081401 (25914:25914) ==>[WARN] (eglinfo) COBJ: In file: ../cobj/src/mali_cobj_surface_format.c  line: 2970 cobj_surface_format_is_supported
+    Bad indexed format FORMAT_Y10X6_U10X6_V10X6_444
+    1662597356.081418 (25914:25914) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_format.c  line: 610 egl_cobj_surface_format_create
+    fourcc_modifier 0x0 surface format is not supported.
+    EGL API version: 1.4
+    EGL vendor string: ARM
+    EGL version string: 1.4 Bifrost-"r28p0-01eac0"
+    EGL client APIs: OpenGL_ES
+    EGL extensions string:
+        EGL_KHR_partial_update EGL_KHR_config_attribs EGL_KHR_image
+        EGL_KHR_image_base EGL_KHR_fence_sync EGL_KHR_wait_sync
+        EGL_KHR_gl_colorspace EGL_KHR_get_all_proc_addresses
+        EGL_IMG_context_priority EGL_KHR_no_config_context
+        EGL_EXT_image_dma_buf_import EGL_EXT_image_dma_buf_import_modifiers
+        EGL_EXT_yuv_surface EGL_EXT_pixel_format_float
+        EGL_ARM_pixmap_multisample_discard EGL_WL_bind_wayland_display
+        EGL_ARM_implicit_external_sync EGL_KHR_gl_texture_2D_image
+        EGL_KHR_gl_renderbuffer_image EGL_KHR_create_context
+        EGL_KHR_surfaceless_context EGL_KHR_gl_texture_cubemap_image
+        EGL_EXT_image_gl_colorspace EGL_EXT_create_context_robustness
+    Configurations:
+         bf lv colorbuffer dp st  ms    vis   cav bi  renderable  supported
+      id sz  l  r  g  b  a th cl ns b    id   eat nd gl es es2 vg surfaces
+    ---------------------------------------------------------------------
+    Segmentation fault
+[smx2460]
+smx2460 09/08/2022 2:35 AM
+      if ( arg2 && *arg2 != 0x3038 )
+        return 0x3004;
+      *arg3 = 1;
+      if ( arg1 && *arg1 >= 0 )
+        return 0x3000;
+      result = 0x3000;
+      *arg3 = 0;
+      return result;
+09/08/2022 2:35 AM
+(no content)
+ eglinfo
+12.43 KB External
+09/08/2022 2:35 AM
+this should do it
+09/08/2022 2:35 AM
+    static int egl_display_number = 1;
+    #undef EGL_DEFAULT_DISPLAY
+    #define EGL_DEFAULT_DISPLAY EGL_CAST(EGLNativeDisplayType, &egl_display_number)
+09/08/2022 2:34 AM
+yeah my bad
+hellobox. 09/08/2022 2:34 AM
+my libmesa is 28mb, so you're getting off easy (edited)
+[smx2460]
+smx2460 09/08/2022 2:33 AM
+it wants it to be a pointer to a value (edited)
+09/08/2022 2:33 AM
+oh it dereferences it
+09/08/2022 2:33 AM
+it crashed THERE
+09/08/2022 2:33 AM
+uh
+[yolofant]
+yolofant 09/08/2022 2:33 AM
+    Program received signal SIGSEGV, Segmentation fault.
+    0xf7075038 in validate_display () from /usr/lib/libmali.so.0
+    (gdb) bt
+    #0  0xf7075038 in validate_display () from /usr/lib/libmali.so.0
+    #1  0xf7062346 in eglp_get_display () from /usr/lib/libmali.so.0
+    #2  0x000113b4 in main ()
+[smx2460]
+smx2460 09/08/2022 2:32 AM
+what handle should i pass 
+[yolofant]
+yolofant 09/08/2022 2:32 AM
+it didn't like 1 (edited)
+09/08/2022 2:32 AM
+    root@LGwebOSTV:~# /tmp/eglinfo
+    EGL client extensions string:
+        EGL_EXT_client_extensions EGL_EXT_platform_base
+        EGL_KHR_client_get_all_proc_addresses EGL_KHR_platform_gbm
+        EGL_KHR_platform_wayland EGL_EXT_platform_wayland
+    [1]+  Stopped (signal)           /tmp/eglinfo
+[smx2460]
+smx2460 09/08/2022 2:31 AM
+(no content)
+ eglinfo
+12.4 KB External
+09/08/2022 2:29 AM
+i'll put 1
+09/08/2022 2:29 AM
+i'll pass a dummy value, hopefully it just wants any value
+09/08/2022 2:29 AM
+if wants it to be nonzero
+09/08/2022 2:29 AM
+the very first member, validate_display
+09/08/2022 2:29 AM
+it's checked in the winsys function
+[yolofant]
+yolofant 09/08/2022 2:29 AM
+it's not set anywhere
+[smx2460]
+smx2460 09/08/2022 2:27 AM
+i think the real issue is that display_list is somehow empty
+09/08/2022 2:26 AM
+which is why we're failing
+09/08/2022 2:26 AM
+but for both it returns NULL
+09/08/2022 2:26 AM
+the latter being 0
+09/08/2022 2:26 AM
+it accepts both EGL_NONE and EGL_DEFAULT_DISPLAY
+[yolofant]
+yolofant 09/08/2022 2:25 AM
+that sounds not right 
+[smx2460]
+smx2460 09/08/2022 2:25 AM
+no wait
+09/08/2022 2:25 AM
+oh it's EGL_NONE
+09/08/2022 2:25 AM
+not sure what that is
+09/08/2022 2:25 AM
+@Yolofant it wants 0x3038 as the display handle
+[yolofant]
+yolofant 09/08/2022 2:21 AM
+yes
+[smx2460]
+smx2460 09/08/2022 2:20 AM
+and shouldn't even depend on wayland
+09/08/2022 2:20 AM
+ok so that's more low level
+09/08/2022 2:20 AM
+        To obtain an EGLDisplay from an GBM device, call eglGetPlatformDisplayEXT with
+        <platform> set to EGL_PLATFORM_GBM_MESA. The <native_display> parameter
+        specifies the GBM device to use and must either point to a `struct
+        gbm_device` or be NULL. If <native_display> is NULL, then the resultant
+        EGLDisplay will be backed by some implementation-chosen GBM device.
+09/08/2022 2:20 AM
+ah
+09/08/2022 2:19 AM
+    GBM is a memory allocation API developed as a component of the Mesa project. Most Wayland compositors use the GBM API to initialize an EGLDisplay object directly on a GPU, and to allocate the EGLSurface representing the desktop. The NVIDIA driver includes a GBM backend enabling the use of such software on NVIDIA GPUs. A GBM EGL external platform library is also included to enable the use of GBM objects in EGL.
+09/08/2022 2:19 AM
+what is gbm tho
+09/08/2022 2:19 AM
+winsys_funcs => wayland functions
+[yolofant]
+yolofant 09/08/2022 2:18 AM
+0x31D7 would be gbm
+[smx2460]
+smx2460 09/08/2022 2:18 AM
+yeah looks right
+[yolofant]
+yolofant 09/08/2022 2:17 AM
+(no content)
+[Bildschirmfoto_2022-09-08_um_02.17.44.png]
+ Bildschirmfoto_2022-09-08_um_02.17.44.png
+114.58 KB External
+[smx2460]
+smx2460 09/08/2022 2:17 AM
+so we need to see what eglGetPlatformDisplayEXT does
+[yolofant]
+yolofant 09/08/2022 2:17 AM
+that sounds plausible
+[smx2460]
+smx2460 09/08/2022 2:16 AM
+EGL_DEFAULT_DISPLAY = 0
+09/08/2022 2:16 AM
+which gets passed EGL_PLATFORM_WAYLAND_EXT = 0x31D8
+09/08/2022 2:16 AM
+it's eglGetPlatformDisplayEXT
+09/08/2022 2:16 AM
+so...
+09/08/2022 2:16 AM
+the output of getPlatformDisplay gets passed to eglInitialize (edited)
+09/08/2022 2:15 AM
+we do this
+09/08/2022 2:15 AM
+    ret += doOneDisplay(getPlatformDisplay(EGL_PLATFORM_WAYLAND_EXT,
+                                                      EGL_DEFAULT_DISPLAY,
+                                                      NULL), "Wayland platform");
+09/08/2022 2:15 AM
+ah (edited)
+[yolofant]
+yolofant 09/08/2022 2:15 AM
+eglInitialize(0,...) 
+[smx2460]
+smx2460 09/08/2022 2:15 AM
+you're talking about eglInitialize right?
+09/08/2022 2:14 AM
+well, it is
+[yolofant]
+yolofant 09/08/2022 2:14 AM
+it should only print bad display if param_1 is 0
+[smx2460]
+smx2460 09/08/2022 2:11 AM
+i'm waiting too
+09/08/2022 2:11 AM
+yeah i was skeptical
+[yolofant]
+yolofant 09/08/2022 2:11 AM
+ok it's not obfuscated, ghidra just wasn't finished
+[smx2460]
+smx2460 09/08/2022 2:03 AM
+but it's using a global called _display_list
+09/08/2022 2:03 AM
+i'm having trouble working with the binary of that size
+[yolofant]
+yolofant 09/08/2022 2:01 AM
+control flow flattening
+[smx2460]
+smx2460 09/08/2022 2:01 AM
+[yolofant]
+yolofant 09/08/2022 2:00 AM
+however, I think they obfuscated it
+[smx2460]
+smx2460 09/08/2022 1:58 AM
+disassembling... lol (18mb of stuff)
+[yolofant]
+yolofant 09/08/2022 1:57 AM
+mine is still analyzing
+[smx2460]
+smx2460 09/08/2022 1:56 AM
+i'm gonna try ghidra too
+09/08/2022 1:55 AM
+but the strings are kept regardless
+09/08/2022 1:55 AM
+unless it's not there
+[yolofant]
+yolofant 09/08/2022 1:54 AM
+yeah, they've been lazy
+[smx2460]
+smx2460 09/08/2022 1:54 AM
+i guess so, but you don't need ppc support for that tho
+[yolofant]
+yolofant 09/08/2022 1:54 AM
+maybe they compile shaders?
+[smx2460]
+smx2460 09/08/2022 1:53 AM
+they didn't even remove the arches they didn't need
+09/08/2022 1:53 AM
+including stuff like ppc, mips, amd64
+09/08/2022 1:53 AM
+it has the full llvm too
+09/08/2022 1:53 AM
+WOW
+[yolofant]
+yolofant 09/08/2022 1:51 AM
+[smx2460]
+smx2460 09/08/2022 1:51 AM
+not sure what for
+09/08/2022 1:51 AM
+statically
+09/08/2022 1:51 AM
+lol it's big because it has llvm built in
+09/08/2022 1:50 AM
+besides "wayland-egl" but it's handled by QT
+09/08/2022 1:50 AM
+    QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+    QT_WAYLAND_HARDWARE_INTEGRATION=wayland-egl
+    QT_WAYLAND_SHELL_INTEGRATION=webos
+    QT_WAYLAND_XKB_RULE_NAMES=evdev:lgwebostv:us::
+09/08/2022 1:50 AM
+hmm not much
+09/08/2022 1:49 AM
+[yolofant]
+yolofant 09/08/2022 1:49 AM
+intersting, I didn't know stringscould also do that
+09/08/2022 1:48 AM
+    APPFRWK_MASK_PATH=/mnt/lg/cmn_data/appfrwk_maskATTR_FORCE_SCHEDNORMAL=YESCOMPONENTS_PATH=/mnt/lg/res/lglib/openmaxCRASH_REPORT=YESDBGFRWK_SYSLOG=GLOBALDELAYLOGIN=noEDITMOTD=noENABLE_ROOTFS_FSCK=noFSCKFIX=yesGDB_ROOT=$HOMEGIO_EXTRA_MODULES=/usr/lib/gio/modulesGLIBC_BACKTRACE=YESGST_PLUGIN_PATH=/usr/lib/gstreamer-0.10GST_PLUGIN_PATH_1_0=/usr/lib/gstreamer-1.0:/mnt/lg/res/lglib/gstreamer-1.0GST_PLUGIN_SCANNER=/usr/bin/gst-plugin-scannerGST_PLUGIN_SCANNER_1_0=/usr/libexec/gstreamer-1.0/gst-plugin-scannerGST_REGISTRY=/mnt/flash/data/gst_registry.arm.binGST_REGISTRY_1_0=/mnt/flash/data/gst_1_0_registry.arm.binGST_REGISTRY_UPDATE=noHOME=/home/rootHOOK_SEGV=NOHOOK_THR=NOINITSCRIPTS=webosKDRV_DIR=/mnt/lg/res/lglib/kdrvKLOG=/dev/kmsgLANG=CLD_LIBRARY_PATH=/mnt/bsppart/bsp/lib:/mnt/bsppart/bsp/usr/lib:/mnt/license/usr/libLGAPP_DIR=/mnt/lg/lgappLOAD_DSYM=1LOAD_SYM=2LOG_CALLER=NOOSAMEM_SIZE=0x200000PATH=/mnt/bsppart/bsp/usr/bin:/usr/sbin:/usr/bin:/sbin:/binQML2_IMPORT_PATH=/usr/lib/qt5/qmlQMLSCENE_DEVICE=customcontextQML_DISABLE_DISK_CACHE=1QSG_PROGRAM_BINARY_STORE=/var/cache/qsg-shader-cacheQT_HARFBUZZ=newQT_IM_MODULE=waylandQT_QPA_FONTDIR=/usr/share/fontsQT_QPA_PLATFORM=waylandQT_VER=qt5QT_WAYLAND_DISABLE_WINDOWDECORATION=1QT_WAYLAND_HARDWARE_INTEGRATION=wayland-eglQT_WAYLAND_SHELL_INTEGRATION=webosQT_WAYLAND_XKB_RULE_NAMES=evdev:lgwebostv:us::ROOTFS_READ_ONLY=noRWMOUNT_FLAG=/tmp/mount-readwrite.conf.doneSDL_VIDEODRIVER=waylandSDP_SYS_PATH=/mnt/cache/sdpSNAP_FLOCK=/tmp/snapshot_flockSULOGIN=noTERM=linuxTMPTIME=0USE_OSAMM=0VERBOSE=noVOLATILE_ENABLE_CACHE=yesWEBAPPFACTORY=netcast:hbbtvWEBOS_GL_DISABLE_THREADED_RENDERING=1XDG_DIR=/tmp/xdgXDG_RUNTIME_DIR=/tmp/xdgDEBUG_STATUS=5IS_NFS=NOIS_SNAP=YESIS_SNAP_PROFILE=NOLOG_LEVEL=0INVOCAroot@LGwebOSTV:~# strings /proc/$(pidof com.webos.app.home)/environ
+    APPFRWK_MASK_PATH=/mnt/lg/cmn_data/appfrwk_mask
+    ATTR_FORCE_SCHEDNORMAL=YES
+    COMPONENTS_PATH=/mnt/lg/res/lglib/openmax
+    CRASH_REPORT=YES
+    DBGFRWK_SYSLOG=GLOBAL
+    DELAYLOGIN=no
+    EDITMOTD=no
+    ENABLE_ROOTFS_FSCK=no
+    FSCKFIX=yes
+    GDB_ROOT=$HOME
+    GIO_EXTRA_MODULES=/usr/lib/gio/modules
+    GLIBC_BACKTRACE=YES
+    GST_PLUGIN_PATH=/usr/lib/gstreamer-0.10
+    GST_PLUGIN_PATH_1_0=/usr/lib/gstreamer-1.0:/mnt/lg/res/lglib/gstreamer-1.0
+    GST_PLUGIN_SCANNER=/usr/bin/gst-plugin-scanner
+    GST_PLUGIN_SCANNER_1_0=/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+    GST_REGISTRY=/mnt/flash/data/gst_registry.arm.bin
+    GST_REGISTRY_1_0=/mnt/flash/data/gst_1_0_registry.arm.bin
+    GST_REGISTRY_UPDATE=no
+    HOME=/home/root
+    HOOK_SEGV=NO
+    HOOK_THR=NO
+    INITSCRIPTS=webos
+    KDRV_DIR=/mnt/lg/res/lglib/kdrv
+    KLOG=/dev/kmsg
+    LANG=C
+    LD_LIBRARY_PATH=/mnt/bsppart/bsp/lib:/mnt/bsppart/bsp/usr/lib:/mnt/license/usr/lib
+    LGAPP_DIR=/mnt/lg/lgapp
+    LOAD_DSYM=1
+    LOAD_SYM=2
+    LOG_CALLER=NO
+    OSAMEM_SIZE=0x200000
+    PATH=/mnt/bsppart/bsp/usr/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    QML2_IMPORT_PATH=/usr/lib/qt5/qml
+    QMLSCENE_DEVICE=customcontext
+    QML_DISABLE_DISK_CACHE=1
+    QSG_PROGRAM_BINARY_STORE=/var/cache/qsg-shader-cache
+    QT_HARFBUZZ=new
+    QT_IM_MODULE=wayland
+    QT_QPA_FONTDIR=/usr/share/fonts
+    QT_QPA_PLATFORM=wayland
+    QT_VER=qt5
+    QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+    QT_WAYLAND_HARDWARE_INTEGRATION=wayland-egl
+    QT_WAYLAND_SHELL_INTEGRATION=webos
+    QT_WAYLAND_XKB_RULE_NAMES=evdev:lgwebostv:us::
+    ROOTFS_READ_ONLY=no
+    RWMOUNT_FLAG=/tmp/mount-readwrite.conf.done
+    SDL_VIDEODRIVER=wayland
+    SDP_SYS_PATH=/mnt/cache/sdp
+    SNAP_FLOCK=/tmp/snapshot_flock
+    SULOGIN=no
+    TERM=linux
+    TMPTIME=0
+    USE_OSAMM=0
+    VERBOSE=no
+    VOLATILE_ENABLE_CACHE=yes
+    WEBAPPFACTORY=netcast:hbbtv
+    WEBOS_GL_DISABLE_THREADED_RENDERING=1
+    XDG_DIR=/tmp/xdg
+    XDG_RUNTIME_DIR=/tmp/xdg
+    DEBUG_STATUS=5
+    IS_NFS=NO
+    IS_SNAP=YES
+    IS_SNAP_PROFILE=NO
+    LOG_LEVEL=0
+    INVOCATION_ID=9d615aa7473f41c4b02063d612dd2c4a
+    LD_PRELOAD=$LD_PRELOAD:/usr/lib/libsystrim.so.3
+[smx2460]
+smx2460 09/08/2022 1:48 AM
+use strings instead of cat
+[yolofant]
+yolofant 09/08/2022 1:48 AM
+    root@LGwebOSTV:~# cat /proc/$(pidof com.webos.app.home)/environ
+    APPFRWK_MASK_PATH=/mnt/lg/cmn_data/appfrwk_maskATTR_FORCE_SCHEDNORMAL=YESCOMPONENTS_PATH=/mnt/lg/res/lglib/openmaxCRASH_REPORT=YESDBGFRWK_SYSLOG=GLOBALDELAYLOGIN=noEDITMOTD=noENABLE_ROOTFS_FSCK=noFSCKFIX=yesGDB_ROOT=$HOMEGIO_EXTRA_MODULES=/usr/lib/gio/modulesGLIBC_BACKTRACE=YESGST_PLUGIN_PATH=/usr/lib/gstreamer-0.10GST_PLUGIN_PATH_1_0=/usr/lib/gstreamer-1.0:/mnt/lg/res/lglib/gstreamer-1.0GST_PLUGIN_SCANNER=/usr/bin/gst-plugin-scannerGST_PLUGIN_SCANNER_1_0=/usr/libexec/gstreamer-1.0/gst-plugin-scannerGST_REGISTRY=/mnt/flash/data/gst_registry.arm.binGST_REGISTRY_1_0=/mnt/flash/data/gst_1_0_registry.arm.binGST_REGISTRY_UPDATE=noHOME=/home/rootHOOK_SEGV=NOHOOK_THR=NOINITSCRIPTS=webosKDRV_DIR=/mnt/lg/res/lglib/kdrvKLOG=/dev/kmsgLANG=CLD_LIBRARY_PATH=/mnt/bsppart/bsp/lib:/mnt/bsppart/bsp/usr/lib:/mnt/license/usr/libLGAPP_DIR=/mnt/lg/lgappLOAD_DSYM=1LOAD_SYM=2LOG_CALLER=NOOSAMEM_SIZE=0x200000PATH=/mnt/bsppart/bsp/usr/bin:/usr/sbin:/usr/bin:/sbin:/binQML2_IMPORT_PATH=/usr/lib/qt5/qmlQMLSCENE_DEVICE=customcontextQML_DISABLE_DISK_CACHE=1QSG_PROGRAM_BINARY_STORE=/var/cache/qsg-shader-cacheQT_HARFBUZZ=newQT_IM_MODULE=waylandQT_QPA_FONTDIR=/usr/share/fontsQT_QPA_PLATFORM=waylandQT_VER=qt5QT_WAYLAND_DISABLE_WINDOWDECORATION=1QT_WAYLAND_HARDWARE_INTEGRATION=wayland-eglQT_WAYLAND_SHELL_INTEGRATION=webosQT_WAYLAND_XKB_RULE_NAMES=evdev:lgwebostv:us::ROOTFS_READ_ONLY=noRWMOUNT_FLAG=/tmp/mount-readwrite.conf.doneSDL_VIDEODRIVER=waylandSDP_SYS_PATH=/mnt/cache/sdpSNAP_FLOCK=/tmp/snapshot_flockSULOGIN=noTERM=linuxTMPTIME=0USE_OSAMM=0VERBOSE=noVOLATILE_ENABLE_CACHE=yesWEBAPPFACTORY=netcast:hbbtvWEBOS_GL_DISABLE_THREADED_RENDERING=1XDG_DIR=/tmp/xdgXDG_RUNTIME_DIR=/tmp/xdgDEBUG_STATUS=5IS_NFS=NOIS_SNAP=YESIS_SNAP_PROFILE=NOLOG_LEVEL=0INVOCATION_ID=9d615aa7473f41c4b02063d612dd2c4aLD_PRELOAD=$LD_PRELOAD:/usr/lib/libsystrim.so.3root@LGwebOSTV:~#
+[smx2460]
+smx2460 09/08/2022 1:46 AM
+but i want to see what an existing app uses first
+09/08/2022 1:46 AM
+or DISPLAY
+09/08/2022 1:46 AM
+you might need WAYLAND_DISPLAY
+09/08/2022 1:46 AM
+/proc/<pid>/environ
+09/08/2022 1:45 AM
+or any gui app
+09/08/2022 1:45 AM
+can you check the environment variables of say tvservice?
+09/08/2022 1:45 AM
+hmm
+09/08/2022 1:42 AM
+yeah... 18mb...
+[yolofant]
+yolofant 09/08/2022 1:42 AM
+takes forever to anaylze in ghidra
+[smx2460]
+smx2460 09/08/2022 1:41 AM
+it indeed calls out to wayland
+09/08/2022 1:41 AM
+it's also huge
+09/08/2022 1:41 AM
+nice
+09/08/2022 1:41 AM
+lol it's not stripped
+09/08/2022 1:40 AM
+but has libmali.so.0 in its dependency chain
+[yolofant]
+yolofant 09/08/2022 1:40 AM
+(no content)
+ libmali.so.0.28.0
+18.4 MB External
+[smx2460]
+smx2460 09/08/2022 1:40 AM
+aka it literally does nothing
+09/08/2022 1:39 AM
+which chainloads libmali.so.0
+09/08/2022 1:39 AM
+it's just an alias library
+[yolofant]
+yolofant 09/08/2022 1:38 AM
+the egl library size seems a bit low
+[smx2460]
+smx2460 09/08/2022 1:38 AM
+it's not disabled
+09/08/2022 1:38 AM
+no
+[yolofant]
+yolofant 09/08/2022 1:38 AM
+so egl was disabled in that binary?
+ libEGL.so.1.4.0
+8.31 KB External
+[smx2460]
+smx2460 09/08/2022 1:36 AM
+    IF(NOT WIN32)
+        # Wayland support
+        OPTION(FREEGLUT_WAYLAND "Use Wayland (no X11)" OFF)
+    ENDIF()
+09/08/2022 1:33 AM
+but there's no way it should be required for WebOS, since it doesn't use
+OSDs like NC4 (edited)
+09/08/2022 1:33 AM
+i used to open chromium before running directfb demos
+09/08/2022 1:33 AM
+i wonder what if you run the program after running anything graphical
+09/08/2022 1:32 AM
+send me the EGL libs otherwise so i'll try to see where that error comes
+from
+09/08/2022 1:30 AM
+so passing 0 is supposed to get the default display, but it obviously
+isn't working
+09/08/2022 1:28 AM
+so what is the value of EGLDisplay that LG wants
+09/08/2022 1:28 AM
+fails in eglInitialize
+09/08/2022 1:28 AM
+it tries to initialize GBM and Wayland and fails for both
+09/08/2022 1:27 AM
+ah it fails before
+09/08/2022 1:27 AM
+       printf("EGL API version: %d.%d\n", maj, min);
+       printf("EGL vendor string: %s\n", eglQueryString(d, EGL_VENDOR));
+       printf("EGL version string: %s\n", eglQueryString(d, EGL_VERSION));
+    #ifdef EGL_VERSION_1_2
+       printf("EGL client APIs: %s\n", eglQueryString(d, EGL_CLIENT_APIS));
+    #endif
+[smx2460]
+[] yolofant ```EGL client extensions string: EGL_EXT_client_extensions
+EGL_EXT_platform_base EGL_KHR_cli...
+smx2460 09/08/2022 1:27 AM
+what does it say about vendor
+[smx2460]
+smx2460 09/08/2022 1:26 AM
+      if (strstr(clientext, "EGL_EXT_platform_base")) {
+           PFNEGLGETPLATFORMDISPLAYEXTPROC getPlatformDisplay =
+               (PFNEGLGETPLATFORMDISPLAYEXTPROC)
+               eglGetProcAddress("eglGetPlatformDisplayEXT");
+           if (strstr(clientext, "EGL_KHR_platform_android"))
+               ret += doOneDisplay(getPlatformDisplay(EGL_PLATFORM_ANDROID_KHR,
+                                                      EGL_DEFAULT_DISPLAY,
+                                                      NULL), "Android platform");
+           if (strstr(clientext, "EGL_MESA_platform_gbm") ||
+               strstr(clientext, "EGL_KHR_platform_gbm"))
+               ret += doOneDisplay(getPlatformDisplay(EGL_PLATFORM_GBM_MESA,
+                                                      EGL_DEFAULT_DISPLAY,
+                                                      NULL), "GBM platform");
+           if (strstr(clientext, "EGL_EXT_platform_wayland") ||
+               strstr(clientext, "EGL_KHR_platform_wayland"))
+               ret += doOneDisplay(getPlatformDisplay(EGL_PLATFORM_WAYLAND_EXT,
+                                                      EGL_DEFAULT_DISPLAY,
+                                                      NULL), "Wayland platform");
+           if (strstr(clientext, "EGL_EXT_platform_x11") ||
+               strstr(clientext, "EGL_KHR_platform_x11"))
+               ret += doOneDisplay(getPlatformDisplay(EGL_PLATFORM_X11_EXT,
+                                                      EGL_DEFAULT_DISPLAY,
+                                                      NULL), "X11 platform");
+           if (strstr(clientext, "EGL_EXT_platform_device"))
+               ret += doOneDisplay(getPlatformDisplay(EGL_PLATFORM_DEVICE_EXT,
+                                                      EGL_DEFAULT_DISPLAY,
+                                                      NULL), "Device platform");
+       }
+09/08/2022 1:26 AM
+    #define EGL_DEFAULT_DISPLAY             ((EGLNativeDisplayType)0)
+09/08/2022 1:25 AM
+say $DISPLAY
+[smx2460]
+[] yolofant yeah probably from some library
+smx2460 09/08/2022 1:25 AM
+i wonder what's the environment of a running GUI app (edited)
+[yolofant]
+yolofant 09/08/2022 12:23 AM
+yeah probably from some library
+[smx2460]
+smx2460 09/08/2022 12:23 AM
+i wonder if it wants some environment variable or similar
+09/08/2022 12:22 AM
+or i should say the Mali DDK
+09/08/2022 12:22 AM
+including the warn
+09/08/2022 12:22 AM
+it comes from the LG libraries
+09/08/2022 12:22 AM
+where does that "Bad display" come from
+09/08/2022 12:22 AM
+that's interesting
+[smx2460]
+[] yolofant ```EGL client extensions string: EGL_EXT_client_extensions
+EGL_EXT_platform_base EGL_KHR_cli...
+smx2460 09/08/2022 12:21 AM
+uh
+[smx2460]
+smx2460 09/08/2022 12:21 AM
+aka non mesa
+09/08/2022 12:21 AM
+i wonder if it will like being built against a non-free gles
+09/08/2022 12:21 AM
+then naughty buildroot needs correction
+09/08/2022 12:21 AM
+    # libfreeglut depends on X.org and needs an OpenGL backend
+[yolofant]
+yolofant 09/08/2022 12:21 AM
+    EGL client extensions string:
+        EGL_EXT_client_extensions EGL_EXT_platform_base
+        EGL_KHR_client_get_all_proc_addresses EGL_KHR_platform_gbm
+        EGL_KHR_platform_wayland EGL_EXT_platform_wayland
+    GBM platform:
+    1662589231.543263 (19309:19309) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_display.c  line: 3067 eglInitialize
+    Bad display
+    eglinfo: eglInitialize failed
+    Wayland platform:
+    1662589231.545268 (19309:19309) ==>[WARN] (eglinfo) EGL: In file: ../egl/src/mali_egl_display.c  line: 3067 eglInitialize
+    Bad display
+    eglinfo: eglInitialize failed
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 09/08/2022 12:20 AM
+it works on Windows too doesn't it? so I would say "neither"
+[smx2460]
+smx2460 09/08/2022 12:20 AM
+09/08/2022 12:18 AM
+there's no "bcm" string in there anymore
+09/08/2022 12:18 AM
+so it should load the system EGL libs
+09/08/2022 12:18 AM
+it's dynamically linked
+09/08/2022 12:18 AM
+i built it like this this time
+[smx2460]
+[] yolofant ```/tmp/eglinfo: error while loading shared libraries:
+libbcm_host.so: cannot open shared object fil...
+smx2460 09/08/2022 12:18 AM
+    $CC -I../../util -I../../egl/eglut eglinfo.c -o eglinfo -lEGL -lGLESv2
+[smx2460]
+smx2460 09/08/2022 12:17 AM
+@meep is GLUT tied to X11 or Mesa?
+09/08/2022 12:16 AM
+same with this?
+09/08/2022 12:16 AM
+(no content)
+ eglinfo
+12.4 KB External
+09/08/2022 12:16 AM
+i see.
+09/08/2022 12:15 AM
+where did that come from
+09/08/2022 12:14 AM
+oof
+[yolofant]
+yolofant 09/08/2022 12:13 AM
+    /tmp/eglinfo: error while loading shared libraries: libbcm_host.so: cannot open shared object file: No such file or directory`
+September 7, 2022
+[infowski]
+infowski 09/07/2022 11:59 PM
+just a little bit
+[smx2460]
+smx2460 09/07/2022 11:52 PM
+come on guys, it won't wipe your bootloader

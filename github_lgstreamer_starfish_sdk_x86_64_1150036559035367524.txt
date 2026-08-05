@@ -1,0 +1,58 @@
+September 10, 2023
+[] hensur yes, unfortunately... I experimented with a few other out of
+tree modules for 2 other usb nics, but ...
+hellobox. 09/10/2023 11:44 PM
+what SoC do you have?
+September 9, 2023
+[hensur]
+hensur 09/09/2023 9:32 PM
+yes, unfortunately... I experimented with a few other out of tree
+modules for 2 other usb nics, but either the nics weren't detected at
+all, or the kernel paniced as well. Maybe there are some modules
+missing, or building against the G2 kernel source doesn't work for B2
+devices. I guess I have to live with wifi or 100mbit ethernet for now,
+as I don't know what to try next.
+[mariotaku]
+mariotaku 09/09/2023 4:07 PM
+Looks like the module caused a kernel panic.
+[hensur]
+hensur 09/09/2023 3:18 PM
+as soon as the nic has an ethernet link, this happens:
+https://md.init6.cc/SB5OdVdxTEebuV80E9GipA#
+HedgeDoc - Collaborative markdown notes
+[]
+[hensur]
+hensur 09/09/2023 3:05 PM
+    [ 1191.439554] (2)-3201 ax88179_178a 1-1:1.0 eth1: register 'ax88179_178a' at usb-18050000.xhci_top-1, ASIX AX88179 USB 3.0 Gigabit Ethernet, ea:7c:86:71:fb:53
+    [ 1191.440309] (2)-3201 usbcore: registered new interface driver ax88179_178a
+    [ 1191.444233] (0)-3207 systemd-udevd[3207]: Using default interface naming scheme 'v243'.
+    [ 1191.774136] (0)-3207 systemd-udevd[3207]: ethtool: autonegotiation is unset or enabled, the speed and duplex are not writable.
+    [ 1191.774734] (0)-3207 systemd-udevd[3207]: eth1: Could not generate persistent MAC: No medium found
+    [ 1192.189677] (3)-1723 [[HDMI][HDCP][L6]] HDMI[p0][BCH] HDCP mode:HDCP14, RxStatus(00, 00), hdcp_enc=1, bch err 1bit=0, 2bit err (detect,duration,cnt)=(0, 0, 0), bch_pkt_value=0, raw_tmds_phy_md_clk=1407
+    [ 1192.634565] (2)-0128 [VSC]  [debug]vsc_task_status:0x0 src:(2 5)
+    [ 1192.634577] (2)-0128 [VSC]  [debug]Semaphore 1 status(1 1 1 1 1)
+    [ 1192.634584] (2)-0128 [VSC]  [debug]Semaphore 2 status(1 1 1 1 1)
+    [ 1192.634591] (2)-0128 [VSC]  [debug]Semaphore 3 status(1 1 1 1 1)
+    [ 1192.634597] (2)-0128 [VSC]  [debug]Semaphore 4 status(1 1 1 1 1)
+    [ 1192.634604] (2)-0128 [VSC]  [debug]Semaphore 5 status(1 1 1 1 1)
+    [ 1192.874567] (2)-1807 [wlan][1807]mtk_p2p_cfg80211_remain_on_channel:(P2P EVENT) [2341] 2412
+    [ 1193.097557] (3)-0118 [VSC]  vsc_scaler_tsk alive
+    [ 1194.883354] (1)-0000 ax88179_178a 1-1:1.0 eth1: ax88179 - Link status is: 1
+    [ 1194.889316] (1)-0283 IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+but the tv crashes/reboots right after 
+[mariotaku]
+[] hensur apprently the download for the oledg2 series includes kernel
+sources and a toolchain. I managed to b...
+mariotaku 09/09/2023 3:04 PM
+I also have a TV that's not recognizing USB NIC
+[hensur]
+hensur 09/09/2023 2:23 PM
+apprently the download for the oledg2 series includes kernel sources and
+a toolchain. I managed to build the kernel and compiled the usb nic
+module against its headers. insmod succeeds, but the device is not
+detected as a usb nic.
+[hensur]
+hensur 09/09/2023 2:23 PM
+I found a link https://github.com/lgstreamer/starfish-sdk-x86_64 It's
+not exactly the same version but indeed contains very interesting info
+for building homebrews

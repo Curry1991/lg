@@ -1,0 +1,1963 @@
+January 21, 2023
+[infowski]
+infowski 01/21/2023 11:21 AM
+I did get to doing it though
+[astur3l]
+astur3l 01/21/2023 11:20 AM
+would be nice to sniff these requests once tho 
+[infowski]
+infowski 01/21/2023 11:20 AM
+let me find my golang sdp-and-ntp-client implementation I had...
+[smx2460]
+smx2460 01/21/2023 11:20 AM
+hi!
+[infowski]
+infowski 01/21/2023 11:20 AM
+sup @Smx
+01/21/2023 11:19 AM
+Which is... pretty normal, for internal services.
+01/21/2023 11:19 AM
+They have their own CA 
+ 1
+01/21/2023 11:19 AM
+It's not invalid.
+[astur3l]
+astur3l 01/21/2023 11:19 AM
+does it care about the cert? i got invalid cert for that domain.. with
+curl
+[infowski]
+infowski 01/21/2023 11:18 AM
+I was thinking about it in regards to diy NTP implementation (edited)
+01/21/2023 11:18 AM
+We could write some minimal HTTP proxy that uses its own TLS
+certificates injected into the system...
+[astur3l]
+astur3l 01/21/2023 11:18 AM
+i tried to add my cert but i gave up once
+[infowski]
+infowski 01/21/2023 11:18 AM
+It's... somewhere.
+[astur3l]
+astur3l 01/21/2023 11:18 AM
+ah
+[infowski]
+infowski 01/21/2023 11:17 AM
+you'll need to add/replace sdp certificate
+01/21/2023 11:17 AM
+https
+[astur3l]
+[] infowski `initservices` is one of the initial calls so it'll
+definitely break something.
+astur3l 01/21/2023 11:16 AM
+is this http btw? or how could i "sniff" the request + response? :d just
+fire up some http proxy with logging? :d
+[infowski]
+infowski 01/21/2023 11:11 AM
+initservices is one of the initial calls so it'll definitely break
+something.
+[infowski]
+[] astur3l but u know which one ?:D i saw only these ```GET
+/rest/apps/webos6.0/serverstatus/status GET /rest/s...
+infowski 01/21/2023 11:11 AM
+Isn't it notice? 
+[astur3l]
+[] infowski I *think* we could patch up some sdx config to just
+remove/break some URLs that are responsible for ...
+astur3l 01/21/2023 10:45 AM
+but u know which one ?:D i saw only these
+    GET /rest/apps/webos6.0/serverstatus/status
+    GET /rest/sdp/v12.0/eula?voice=Y
+    GET /rest/sdp/v12.0/notice
+    POST /rest/sdp/v12.0/initservices
+probably /status or /initservices ? (edited)
+[infowski]
+[] astur3l <@501722020434673674> is the *.lgtvsdp.com responsible those
+notification advertisements?:/ is it po...
+infowski 01/21/2023 10:00 AM
+I think we could patch up some sdx config to just remove/break some URLs
+that are responsible for ads notifications.
+[parkerlreed]
+parkerlreed 01/21/2023 5:42 AM
+(no content)
+ 20230120_234017.mp4
+3.9 MB External
+January 20, 2023
+[astur3l]
+astur3l 01/20/2023 11:06 PM
+also what the heck
+`2023-01-20T22:02:56.914087Z [11679.532692444] user.info ervice_server [] com.webos.service.secondscreen.gateway API_STATS {"clientApp":"com.lge.test/1.1","stats":{"org.webosbrew.hyperion.ng.loader.service/status":1,"org.webosbrew.piccap.service/getSettings":1,"org.webosbrew.piccap.service/status":1}} call stats `
+[astur3l]
+astur3l 01/20/2023 10:59 PM
+@infowski is the *.lgtvsdp.com responsible those notification
+advertisements?:/ is it possible to allow access to lg store via nginx
+(like acting reverse proxy for that path..?)
+[astur3l]
+astur3l 01/20/2023 9:16 PM
+i thought i can omit the service suffix but didnt worked without it, ah
+and on my screenshot the endpoint wasnt visible  (edited)
+01/20/2023 9:13 PM
+(no content)
+[image.png]
+ image.png
+33.66 KB External
+[astur3l]
+[] infowski Yes, you need to modify ssap service config and restart it.
+astur3l 01/20/2023 9:12 PM
+just tried now, works with dev services too 
+`/home/root/extra-interfaces/org.webosbrew.piccap.interface`
+      "service": "org.webosbrew.piccap.service",
+      "methods": [
+        {
+          "path": "/start",
+          "description": "Start the daemon.",
+          "requiredPermissions": []
+        },
+        {
+          "path": "/stop",
+          "description": "Stop the daemon.",
+          "requiredPermissions": []
+        },
+        {
+          "path": "/status",
+          "description": "Status of the daemon.",
+          "requiredPermissions": []
+        },
+        {
+          "path": "/getSettings",
+          "description": "Returns the settings.",
+          "requiredPermissions": []
+        },
+        {
+          "path": "/setSettings",
+          "description": "Changes daemon's settings",
+          "requiredPermissions": []
+        }
+      ]
+    }
+    ``/home/root/extra-interfaces/org.webosbrew.hyperion.ng.loader.interface``
+    {
+      "service": "org.webosbrew.hyperion.ng.loader.service",
+      "methods": [
+        {
+          "path": "/start",
+          "description": "Start the daemon.",
+          "requiredPermissions": []
+        },
+        {
+          "path": "/stop",
+          "description": "Stop the daemon.",
+          "requiredPermissions": []
+        },
+        {
+          "path": "/status",
+          "description": "Status of the daemon.",
+          "requiredPermissions": []
+        }
+      ]
+    }
+[parkerlreed]
+parkerlreed 01/20/2023 8:47 AM
+:( puter.com doesn't load
+01/20/2023 8:45 AM
+(no content)
+ 20230120_024455.mp4
+8.59 MB External
+[parkerlreed]
+parkerlreed 01/20/2023 8:29 AM
+Since we have a little bit of processing power has anybody tried doing
+like a very basic Wayland desktop?
+ 1
+[nwhorls]
+[] infowski Haven't checked. So far we didn't see any firmware that had
+crashd exploit patched.
+nwhorls 01/20/2023 6:10 AM
+Is there some sort of feed I can sub to?
+[nwhorls]
+nwhorls 01/20/2023 6:06 AM
+Turning it off then on a couple times with 30 second pauses didn't fix
+it, but unplugging it for 20 or 30 did.
+01/20/2023 6:05 AM
+The panel faded to black from top right corner to bottom right with the
+backlight seemingly still on and audio passthrough working as well.
+(edited)
+01/20/2023 6:04 AM
+Has anyone had their TV panel shut off while the TV is still on?
+January 19, 2023
+[.ilucha]
+.ilucha 01/19/2023 8:54 AM
+I will check whats new and will wait for feedback before I upgarde
+[infowski]
+[] .ilucha Obligatory question: is rooting still possible?
+infowski 01/19/2023 8:54 AM
+Haven't checked. So far we didn't see any firmware that had crashd
+exploit patched.
+ 2
+[.ilucha]
+[] infowski
+https://su-ssl.lge.com/GlobalSWDownloadCdn.laf?IMG=/202301/lib32-starfish-global-secured-o22-mebbin-...
+.ilucha 01/19/2023 8:53 AM
+Obligatory question: is rooting still possible?
+[infowski]
+infowski 01/19/2023 8:21 AM
+https://su-ssl.lge.com/GlobalSWDownloadCdn.laf?IMG=/202301/lib32-starfish-global-secured-o22-mebbin-16-03.30.16_prS8vsWgjbodkey_nsu_V3_SECURED.epk
+there's an epk 
+[.ilucha]
+.ilucha 01/19/2023 8:16 AM
+https://reddit.com/r/OLED_Gaming/comments/10fc8rx/lg_firmware_033016_fixed_my_vrr_flickering_issue/
+r/OLED_Gaming - LG Firmware 03.30.16 fixed my VRR flickering issue ...
+30 votes and 22 comments so far on Reddit
+01/19/2023 8:16 AM
+Did anyone receive a new FW update 03.30.16?
+[infowski]
+infowski 01/19/2023 8:05 AM
+mind you 50mb is not that much :^)
+hellobox. 01/19/2023 1:45 AM
+that's node v0.12.2 on webos 4.1.0 (lm18a)
+01/19/2023 1:44 AM
+@asturel node sitting at a repl:
+    VmPeak:    47764 kB
+    VmSize:    46740 kB
+    VmLck:         0 kB
+    VmPin:         0 kB
+    VmHWM:     11776 kB
+    VmRSS:     11776 kB
+    RssAnon:            6324 kB
+    RssFile:            5452 kB
+    RssShmem:              0 kB
+    VmData:    35836 kB
+    VmStk:       132 kB
+    VmExe:      5872 kB
+    VmLib:      3924 kB
+    VmPTE:        62 kB
+    VmPMD:         0 kB
+    VmSwap:        0 kB
+ 1
+[astur3l]
+hellobox. is there a builtin js service i could launch to see how much
+memory it uses?
+astur3l 01/19/2023 1:33 AM
+https://github.com/webosose/samples/tree/master/js-services
+samples/js-services at master · webosose/samples
+sample codes in OSE site. Contribute to webosose/samples development by
+creating an account on GitHub.
+[]
+[astur3l]
+astur3l 01/19/2023 1:32 AM
+specially calling executable, doing http calls, parse JSON, in nodejs i
+could do it within few lines.. c .. 
+hellobox. 01/19/2023 1:32 AM
+is there a builtin js service i could launch to see how much memory it
+uses?
+[astur3l]
+astur3l 01/19/2023 1:30 AM
+yeah but i don't know that its worth the effort, making service + app,
+meanwhile I just edit the ash script by vi..  but nodejs could
+suitable
+hellobox. 01/19/2023 1:29 AM
+you could write it in c
+[astur3l]
+astur3l 01/19/2023 1:28 AM
+because if it took 50 mb for a single task, i won't even open vscode :dd
+01/19/2023 1:28 AM
+I just curious how much memory does it use
+Deleted User 01/19/2023 1:28 AM
+the node js service just calls ezinject
+hellobox. 01/19/2023 1:28 AM
+so you were just asking about the part that's not injected
+01/19/2023 1:27 AM
+oh
+[astur3l]
+astur3l 01/19/2023 1:27 AM
+the php interpreter injected into the actual service, not into the
+nodejs, so it doesn't increase the memory consumption
+hellobox. 01/19/2023 1:27 AM
+it's what's injected into RELEASE or whatever
+[astur3l]
+astur3l 01/19/2023 1:27 AM
+how comes php interpreter into the nodejs service
+hellobox. 01/19/2023 1:27 AM
+what does that have to do with @Deleted User's service then?
+01/19/2023 1:26 AM
+i don't understand
+[astur3l]
+astur3l 01/19/2023 1:25 AM
+yeah, but then how comes php interpreter into the picture :dd i just
+want to make shitty ash scripts (mostly luna calls) an service+ app
+hellobox. 01/19/2023 1:24 AM
+i thought you were trying to write something else?
+[astur3l]
+hellobox. if you're worried about memory consumption, i'd avoid
+embedding a php interpreter
+astur3l 01/19/2023 1:24 AM
+its worth it, well it's like either this or nothing, for me it would
+took a lot of effort to implement the actual hooking in other language
+(s), since this was written by infoswiki :d it took small effort to make
+my mr perfect
+hellobox. 01/19/2023 1:20 AM
+if you're worried about memory consumption, i'd avoid embedding a php
+interpreter
+Deleted User 01/19/2023 1:20 AM
+i doubt it uses that much
+[] astur3l what is your inputhook service memory consumption?
+Deleted User 01/19/2023 1:20 AM
+how do i check?
+[astur3l]
+astur3l 01/19/2023 1:19 AM
+i wanna write a service but it if eats 50mb memory just for loading
+shits to heap I'll pass
+01/19/2023 1:18 AM
+what is your inputhook service memory consumption?
+[] astur3l <@456226577798135808> how much memory use the nodejs service?
+Deleted User 01/19/2023 1:17 AM
+what?
+[astur3l]
+astur3l 01/19/2023 1:17 AM
+@Deleted User how much memory use the nodejs service?
+January 18, 2023
+[ministrodelajusticia]
+ministrodelajusticia 01/18/2023 5:49 AM
+Could someone suggest an app or other way, maybe through the browser, to
+comfortably watch movies free, like there are free streaming apps on
+Android? However, WebOS cannot install Android apps.
+January 17, 2023
+hellobox. 01/17/2023 7:06 PM
+how to do that depends on the webos version
+ 1
+01/17/2023 7:06 PM
+you might need to enable collectDevLogs
+[] reyqn Maybe I can get some logs from the LG player to understand
+what's happening? I have no idea if they ...
+hellobox. 01/17/2023 7:06 PM
+in general, logs are in /var/log
+[reyqn]
+reyqn 01/17/2023 5:45 PM
+Maybe I can get some logs from the LG player to understand what's
+happening? I have no idea if they even exist or where to find those.
+01/17/2023 5:44 PM
+Hi, I've got this issue where my LG BX tv will read a file correctly but
+the sound will always cut at the same timestamp. The files plays ok from
+an USB support, but not from the network (jellyfin: http, LG smartshare:
+dlna) . LG support said since the file plays from USB, they can't
+help... Anyone with ideas? I would love to fix this... (edited)
+January 16, 2023
+[ashlar4242]
+[] almostidiot Did you try resetting?
+ashlar4242 01/16/2023 9:36 PM
+Resetting how? I moved to a new apartment. The TV (LG C1) had been
+disconnected from power for several days. I can't update apps with this
+situation and Prime Video is not allowing me to activate subs. I thought
+about an update for the app and that's how I found out I could not
+access the app store anymore.
+[shelbygt25]
+shelbygt25 01/16/2023 6:53 PM
+Not help. Double HDMI 1 i can not remove. (edited)
+timcook4825 01/16/2023 6:03 PM
+Just edit the inputs by long pressing on the inputs button
+[shelbygt25]
+shelbygt25 01/16/2023 5:38 PM
+if I switch off simplink it works, but as soon as I switch it on again,
+HDMI 1 is double m again
+[shelbygt25]
+shelbygt25 01/16/2023 5:27 PM
+Dont have other devices
+01/16/2023 5:27 PM
+On 1 is the apple tv and on 2 the Receiver
+01/16/2023 5:26 PM
+No only 1 device on 1 and 2
+[yolofant]
+yolofant 01/16/2023 5:22 PM
+mine shows multiple as well which are connected through an avr
+01/16/2023 5:21 PM
+do you have multiple devices connected on hdmi1?
+[shelbygt25]
+shelbygt25 01/16/2023 5:18 PM
+I can not remove the double hdmi 1. Have the LG C1. I have reset av
+setting but not help. (edited)
+01/16/2023 5:17 PM
+(no content)
+[IMG20230116165054.jpg]
+ IMG20230116165054.jpg
+455.34 KB External
+01/16/2023 5:17 PM
+?why do I see HDMI 1 twice? and uno4kse with hdmi 1 is also not correct
+because the receiver is on HDMI 2. (edited)
+January 15, 2023
+[gammaray05]
+gammaray05 01/15/2023 8:48 PM
+super super annoying
+01/15/2023 8:48 PM
+(almost 3 months since the warning started)
+[gammaray05]
+az2740 hi. have you found a solution?)
+gammaray05 01/15/2023 8:47 PM
+no. incredibly, the batteries from that message are still working
+[] gammaray05 guys is there a way to hide the stupid "low battery" magic
+remote notification? i'm rooted. it appea...
+az2740 01/15/2023 8:36 PM
+hi. have you found a solution?)
+[grumbolde]
+grumbolde 01/15/2023 2:44 PM
+ezAdjust rang a bell, dug out my old HTC one phone with IR blaster, it
+add the LG service remote app, found the Continent ID set to South
+Africa and its working great. Thanks for the help
+[infowski]
+infowski 01/15/2023 2:08 PM
+...or if you are not rooted, this will actually work directly from webOS
+browser → https://dropbox.inf.re/webos-downgrade/
+ 1
+[grumbolde]
+grumbolde 01/15/2023 2:06 PM
+Ill give it a try thanks
+hellobox. 01/15/2023 2:03 PM
+probably
+luna-send -n 1 'luna://com.webos.service.applicationManager/launch' '{"id":"com.webos.app.factorywin","params":{"id":"executeFactory","irKey":"ezAdjust"}}'
+ 1  1
+01/15/2023 2:03 PM
+ezadjust is something similar
+[] grumbolde I think i can change region settings but I am having
+trouble accessing the service menu with the nor...
+hellobox. 01/15/2023 2:03 PM
+luna-send -n 1 'luna://com.webos.service.applicationManager/launch' '{"id":"com.webos.app.factorywin","params":{"id":"executeFactory","irKey":"inStart"}}'
+[grumbolde]
+grumbolde 01/15/2023 1:56 PM
+I think i can change region settings but I am having trouble accessing
+the service menu with the normal "magic remote"
+01/15/2023 1:55 PM
+I bought it locally in South Africa its a 55NANO79VND, Netflix and Prime
+work fine but Disney+ give a location error
+[infowski]
+infowski 01/15/2023 1:53 PM
+So... your TV is from north american region, but you are not? What model
+is that?
+01/15/2023 1:52 PM
+Did you actually check that's the case?
+[grumbolde]
+grumbolde 01/15/2023 1:51 PM
+I can but then i would have to run a VPN so it thinks i am in the US
+[infowski]
+infowski 01/15/2023 1:47 PM
+I am guessing you can't just select UNITED STATES?
+[grumbolde]
+grumbolde 01/15/2023 1:46 PM
+I seen other LG TV have full list of countries in the location settings.
+Mine is limited to North America. Disney+ is available in my country but
+the app wont work because tv list country as other.
+[infowski]
+infowski 01/15/2023 1:27 PM
+lists where? that's a chance you can force change the region via certain
+root commands.
+[grumbolde]
+grumbolde 01/15/2023 1:18 PM
+Can i install a custom WebOS that lists othre countries besides
+USA/CANADA and MEXICO?
+mrsupickumaterinu55 01/15/2023 11:06 AM
+youtube ads free works fine  I will sell it better with it 
+01/15/2023 11:05 AM
+is there way around to use hyperion or piccap
+01/15/2023 11:05 AM
+so webos update not possible damn
+01/15/2023 11:04 AM
+I am so hoked up on this ambient light i will sell tv and buy new one xD
+01/15/2023 11:04 AM
+[infowski]
+infowski 01/15/2023 10:52 AM
+Ooooof. It's kinda old. I don't think we have any webOS 2.x TV
+supported.
+mrsupickumaterinu55 01/15/2023 10:50 AM
+[]
+01/15/2023 10:50 AM
+does somebody know can hyperion and piccap work on this
+01/15/2023 10:49 AM
+hello @hellobox
+whynot73 01/15/2023 9:46 AM
+Thanks @hellobox 
+hellobox. 01/15/2023 9:45 AM
+see pinned messages in # unknown-channel
+whynot73 01/15/2023 9:43 AM
+Ok, i must find a Description to do that
+hellobox. 01/15/2023 9:43 AM
+rootmytv is probably patched; use crashd
+whynot73 01/15/2023 9:42 AM
+I canˋ t See a changing After rooting, what should i do?
+hellobox. 01/15/2023 9:39 AM
+no
+whynot73 01/15/2023 9:39 AM
+Downgrade First?
+whynot73 I have Version 7.2.0-42 on my Lg Can i Root it?
+hellobox. 01/15/2023 9:38 AM
+yes
+whynot73 01/15/2023 9:36 AM
+I have Version 7.2.0-42 on my Lg Can i Root it?
+[gammaray05]
+[] darki_404
+https://drive.google.com/file/d/1mH7WvglYh_BA718MM9pdxzy57Sn4kR8K/view?usp=sharing
+LATEST com.webos....
+gammaray05 01/15/2023 3:14 AM
+Thanks. I've used this to upgrade the browser without upgrading the fw,
+but the browser crashes at the start. The problem is lib/libcbe.so, if I
+leave the old one it starts but the icons are quite broken. Also Geforce
+Now still doesn't work.
+[darki_404]
+darki_404 01/15/2023 12:12 AM
+I rooted latest 04.40.70 with crashd
+01/15/2023 12:11 AM
+https://drive.google.com/file/d/1mH7WvglYh_BA718MM9pdxzy57Sn4kR8K/view?usp=sharing
+LATEST com.webos.app.browser from webos5
+com.webos.app.browser.7z
+January 14, 2023
+[infowski]
+infowski 01/14/2023 5:36 PM
+Crap, it may be more problematic than I anticipated, if your video is
+already muxed.
+01/14/2023 5:33 PM
+(https://webostv.developer.lge.com/develop/specifications/streaming-protocol-drm#media-source-extensions)
+01/14/2023 5:33 PM
+I haven't used it, but note that worst case you may use Media Source
+Extensions - that LG officially supports since webOS 3.0
+[czsnp]
+czsnp 01/14/2023 5:29 PM
+Hi. If anyone knows how can i play videos on my webapp from local files
+like indexeddb to bufferarray, or blobs intro webos 3.0 ... ? when i
+feed the <video> source with url is playing without problems, but the
+same video fetched to a blob or bufferarray don't want to start play in
+mediasource or url-blob on webos 3.0. Maybe someone hit this problem and
+knows why i cannot play local videos  (edited)
+ww8543 01/14/2023 8:37 AM
+tho the lm14 should be webos 2 right?
+01/14/2023 8:37 AM
+the webos1.x one
+[] smx2460 <@524362336644104215> ?
+ww8543 01/14/2023 8:36 AM
+i gave it away
+hellobox. 01/14/2023 1:33 AM
+assuming they still support <=2.x
+01/14/2023 1:33 AM
+should have looked at lg's own app for it i guess
+[infowski]
+infowski 01/14/2023 1:32 AM
+Nope.
+[] infowski (by releasing a new version that breaks 2.x :P)
+hellobox. 01/14/2023 1:32 AM
+so 2.x doesn't support https?
+[infowski]
+infowski 01/14/2023 1:29 AM
+(by releasing a new version that breaks 2.x :P)
+01/14/2023 1:29 AM
+home assistant folks already fount it out the hard way
+01/14/2023 1:29 AM
+too late 
+[smx2460]
+[] infowski Hey, anyone with webOS 1.x or 2.x TV on hand? I need someone
+to check if the TV accepts `https` conn...
+smx2460 01/14/2023 1:29 AM
+@ww ?
+January 13, 2023
+[infowski]
+infowski 01/13/2023 10:53 AM
+???
+01/13/2023 10:53 AM
+and on 6.x you get gray, and also gray
+ 1
+01/13/2023 10:53 AM
+on 3.x/5.x it was trivial - gray (similar shade to prompt background) is
+idle, pink is selected
+01/13/2023 10:52 AM
+and button highlight on that menu is so unobvious it hurts.
+01/13/2023 10:51 AM
+I really love the fact back/exit button doesn't actually close update
+prompt on webOS 6.x
+January 12, 2023
+[infowski]
+infowski 01/12/2023 10:38 AM
+It'll present with an obviously invalid certificate, but should respond
+with "Hello world" text after accepting an exemption
+01/12/2023 10:37 AM
+Hey, anyone with webOS 1.x or 2.x TV on hand? I need someone to check if
+the TV accepts https connections on port 3001 after enabling LG Connect
+Apps.
+[il6shat]
+il6shat 01/12/2023 2:35 AM
+(no content)
+[IMG_20230111_173944.jpg]
+ IMG_20230111_173944.jpg
+1.93 MB External
+01/12/2023 2:35 AM
+(no content)
+[IMG_20230111_175056.jpg]
+ IMG_20230111_175056.jpg
+2.49 MB External
+01/12/2023 2:34 AM
+(no content)
+[IMG_20230111_175114.jpg]
+ IMG_20230111_175114.jpg
+1.69 MB External
+01/12/2023 2:34 AM
+(no content)
+[IMG_20230111_175122.jpg]
+ IMG_20230111_175122.jpg
+2.07 MB External
+01/12/2023 2:34 AM
+(no content)
+[IMG_20230111_175127.jpg]
+ IMG_20230111_175127.jpg
+1.88 MB External
+01/12/2023 2:34 AM
+(no content)
+[IMG_20230111_182552.jpg]
+ IMG_20230111_182552.jpg
+2.01 MB External
+01/12/2023 2:34 AM
+(no content)
+[IMG_20230111_182556.jpg]
+ IMG_20230111_182556.jpg
+2.22 MB External
+01/12/2023 2:30 AM
+А почему то, я не могу собрать матрицу обратно в тв LG43LJ594V. Не
+подскажите в сем может быть дело? (edited)
+[infowski]
+infowski 01/12/2023 1:04 AM
+tfw none of my USB drives does webOS consider worthy of recording TV
+onto... 
+[almostidiot]
+almostidiot 01/12/2023 12:45 AM
+Did you try resetting?
+[ashlar4242]
+ashlar4242 01/12/2023 12:14 AM
+I changed DNS and it didn't make a difference
+01/12/2023 12:14 AM
+Is there some way for me to check through web browser?
+[infowski]
+infowski 01/12/2023 12:06 AM
+It depends, there are multiple different domains they use.
+January 11, 2023
+[ashlar4242]
+ashlar4242 01/11/2023 11:52 PM
+I am also downloading a new theme from the Art Gallery app. If LG was
+blocked it wouldn't download, would it?
+[infowski]
+infowski 01/11/2023 11:50 PM
+I don't tihnk so.
+[ashlar4242]
+ashlar4242 01/11/2023 11:50 PM
+Is this something I could have done directly on the tv when I had root?
+[ashlar4242]
+[] infowski Are you rooted?
+ashlar4242 01/11/2023 11:49 PM
+I did root but I don't think I have root now. The TV uodated after a
+blackout. (edited)
+[ashlar4242]
+ashlar4242 01/11/2023 11:48 PM
+I am in a new apartment where I have not touched the router. Tomorrow
+it'll get changed to a new ISP's.
+[infowski]
+infowski 01/11/2023 11:47 PM
+Are you rooted?
+01/11/2023 11:47 PM
+Sounds like behaviour you get whenever you block LG services.
+[ashlar4242]
+ashlar4242 01/11/2023 11:47 PM
+Already tried changing LG Services Country, did not solve anything.
+[infowski]
+[] ashlar4242 I get this whenever I try to access LG App store.
+infowski 01/11/2023 11:46 PM
+Did you do some DNS blocking shenaningans?
+[ashlar4242]
+ashlar4242 01/11/2023 11:40 PM
+I get this whenever I try to access LG App store.
+[rn_image_picker_lib_temp_d1637111-878a-486e-9d36-4ca0d0a6475b.jpg]
+ rn_image_picker_lib_temp_d1637111-878a-486e-9d36-4ca0d0a6475b.jpg
+197.29 KB External
+Deleted User 01/11/2023 10:43 PM
+yeah, i shortly after realized the problem with my idea
+[infowski]
+infowski 01/11/2023 10:27 PM
+That's just embedding a HDMI input, you won't be able to capture it that
+way.
+01/11/2023 10:27 PM
+Oh, definitely not that way.
+Deleted User 01/11/2023 9:02 PM
+you might be able to grab it and stream it over a web server
+01/11/2023 9:01 PM
+i figured, if you could embed it as something like ext://hdmi:1 or tv://
+[] infowski Exposing HDMI video capture as a video stream in audio/video
+chat?
+Deleted User 01/11/2023 9:00 PM
+thats exactly what i was trying to see if it would be possible, a few
+months ago
+[infowski]
+infowski 01/11/2023 7:36 PM
+(yes, this is partially related lol)
+01/11/2023 7:36 PM
+I don't even have an aerial at home that'd pick anything up so can't
+even test 
+01/11/2023 7:36 PM
+Hey, quick question for some actual webOS users... Is anyone here using
+recording capabilities on webOS? Does it work on HDMI or other inputs
+besides TV stream?
+01/11/2023 7:35 PM
+Generally - no.
+01/11/2023 7:34 PM
+Exposing HDMI video capture as a video stream in audio/video chat?
+01/11/2023 7:34 PM
+What do you mean?
+[haxor7973]
+haxor7973 01/11/2023 6:44 PM
+is it possible to share tv inputs to discord?
+January 10, 2023
+[astur3l]
+astur3l 01/10/2023 8:52 PM
+mtk
+Deleted User 01/10/2023 8:52 PM
+a1 is not LG chipset 
+[astur3l]
+Deleted User vtcapture supports different capture location e.g capturing
+display output/scaler output/scaler inpu...
+astur3l 01/10/2023 8:51 PM
+on a1 with dump loc 1 :
+https://discord.com/channels/407937994037919756/931706504627773450/1040026997449031830
+Deleted User 01/10/2023 8:51 PM
+if we just had access to the raw framebuffer it would be possible to
+carry out the tonemapping properly (even though that might be
+challenging for dv)
+01/10/2023 8:50 PM
+but of course that sucks for hyperion-webos
+01/10/2023 8:50 PM
+that may even be intentional to prevent piracy
+01/10/2023 8:50 PM
+I believe the main culprit is that vtcapture only gives 8 bit output and
+there must be some really bad tonemapping in place
+[infowski]
+infowski 01/10/2023 8:49 PM
+:/
+Deleted User 01/10/2023 8:49 PM
+none of them improved colors significantly
+[infowski]
+infowski 01/10/2023 8:49 PM
+That's the name I was thinking of - capture location...
+Deleted User 01/10/2023 8:49 PM
+vtcapture supports different capture location e.g capturing display
+output/scaler output/scaler input/vdec input
+01/10/2023 8:48 PM
+there's a lot of capture related code inside the kernel source but most
+of it is #ifdef 0 
+[infowski]
+infowski 01/10/2023 8:47 PM
+Oh crap, I forgot o18+ already only supports libvtcapture 
+Deleted User 01/10/2023 8:47 PM
+vtcapture related?
+[infowski]
+infowski 01/10/2023 8:46 PM
+I don't remember however was it even called at this point...
+01/10/2023 8:46 PM
+@Deleted User have you looked into changing "capture targets" option?
+Deleted User 01/10/2023 8:46 PM
+My intention is to improve capturing for hyperion-webos because the
+colors aren't great especially for hdr/dv content
+[infowski]
+infowski 01/10/2023 8:45 PM
+I haven't dug into vdec, though someone here may be kinda knowledgeable
+about this.
+01/10/2023 8:44 PM
+I think that may be pretty accurate.
+Deleted User 01/10/2023 8:44 PM
+Is my understanding incorrect? Afaik the vdec is controlled by the main
+ARM chip, however all decoding, scaling etc. happen inside the XTENSA
+chip and buffers are only passed by pointers across vdec, vo etc.
+[infowski]
+infowski 01/10/2023 8:24 PM
+[] mariotaku Do you want to utilize LG's media API?
+Deleted User 01/10/2023 8:22 PM
+Not so much, I want to accesss the internal decoded frames which I
+believe do not leave the XTENSA chip
+ 1
+[mariotaku]
+Deleted User Has someone tried to get access to the XTENSA chip inside
+LG's chipset on o18/20/22? The kernel pack...
+mariotaku 01/10/2023 4:30 PM
+Do you want to utilize LG's media API?
+Deleted User 01/10/2023 12:46 PM
+Has someone tried to get access to the XTENSA chip inside LG's chipset
+on o18/20/22? The kernel packages have a blob for vdec firmware which in
+my understanding runs linux on the XTENSA chip
+January 8, 2023
+[t_u_x_]
+t_u_x_ 01/08/2023 6:00 PM
+Awesome! Thanks for pointing me into the right direction 
+[infowski]
+infowski 01/08/2023 5:59 PM
+https://www.webosbrew.org/pages/filesystem-overlays.html there with some
+tips on how to make filesystem overlays (edited)
+ 1
+01/08/2023 5:59 PM
+I think "new" LG just revamped the style to turn it dark. It should be
+possible but you'll need to patch up
+/usr/palm/applications/com.palm.settings - there are probably js and css
+files with relevant colors.
+ 2
+[t_u_x_]
+t_u_x_ 01/08/2023 5:57 PM
+Is there a way to change the styling of these menus? I do have root
+access. The goal is not needing to be blinded at night. My old LG
+doesn't have dark mode support
+    "board_type": "M14_DVB",
+    "hardware_id": "HE_DTV_W15M_AFAAABAA",
+    "product_id": "49LF632V-ZC",
+    "core_os_release": "2.2.3-178",
+    "webos_manufacturing_version": "04.06.75"
+[P_20230108_175151.jpg]
+ P_20230108_175151.jpg
+819.76 KB External
+[astur3l]
+astur3l 01/08/2023 10:53 AM
+nice, too bad that lg doesnt provide api for it :/
+[infowski]
+infowski 01/08/2023 9:54 AM
+https://www.webosbrew.org/pages/filesystem-overlays.html#adding-files-to-an-existing-directory
+there's even an accidental example here
+[infowski]
+[] astur3l is it possible to expose to ssap as well my registered luna
+service from dev service?
+infowski 01/08/2023 9:53 AM
+Yes, you need to modify ssap service config and restart it.
+ 1
+[astur3l]
+astur3l 01/08/2023 2:25 AM
+is it possible to expose to ssap as well my registered luna service from
+dev service?
+[ddepau]
+ddepau 01/08/2023 1:06 AM
+nice, it actually works, it was a very dumb mistake
+[ddepau]
+ddepau 01/08/2023 12:57 AM
+(no content)
+[PXL_20230107_235716071.jpg]
+ PXL_20230107_235716071.jpg
+430 KB External
+ 1
+01/08/2023 12:56 AM
+I'm trying to make a remote control app for WearOS
+01/08/2023 12:55 AM
+I'm definitely doing something wrong anyway, there's commands that
+should be working that aren't
+01/08/2023 12:55 AM
+gotcha
+hellobox. 01/08/2023 12:55 AM
+you'll have to look at the code
+[ddepau]
+ddepau 01/08/2023 12:55 AM
+I see. What filters are applied?
+hellobox. 01/08/2023 12:55 AM
+and filters them
+[] ddepau I'm trying to fetch the mac address over the mobile app
+websocket; I see that `luna-send -n 1 -f lun...
+hellobox. 01/08/2023 12:55 AM
+the ssap gateway service has an "adapter" that modifies requests
+[ddepau]
+ddepau 01/08/2023 12:51 AM
+I'm trying to fetch the mac address over the mobile app websocket; I see
+that
+luna-send -n 1 -f luna://com.webos.service.connectionmanager/getinfo '{}'
+does give the correct info, but the same command over the websocket
+fails and I'm trying to figure out if I made a mistake or if there's
+actual differences I'm not aware of
+01/08/2023 12:50 AM
+Hey, what's the difference between the "mobile app" ssap:// commands and
+the luna:// ones? I see some services match, but some don't
+January 6, 2023
+[] akdm_ Click to see attachment
+_nurikk_ 01/06/2023 10:39 AM
+yeah, and this request is translated to following luna bus call
+    luna-send -n 1 -a "com.webos.app.home" luna://com.webos.service.sdx/send '{
+        "bodyData": "{\"requester\":\"ai_home\"}",
+        "contentType": "application/json",
+        "methodType": "REQ_SSL_POST_METHOD",
+        "serviceName": "service_setting_secure",
+        "url": "getConfig"
+    }'
+which is responded by /usr/sbin/sdx service, but on webos6 I can't find
+the way how sdx service persists data on disk (edited)
+ 1
+[shelbygt25]
+[] astur3l how do you "generate" the download url?
+shelbygt25 01/06/2023 10:26 AM
+good question
+[astur3l]
+hellobox.
+<https://su-ssl.lge.com/GlobalSWDownloadCdn.laf?IMG=/202212/lib32bnVPq7H2-starfish-global-secured-o2...
+astur3l 01/06/2023 9:39 AM
+how do you "generate" the download url?
+[shelbygt25]
+shelbygt25 01/06/2023 7:38 AM
+great, big thx
+hellobox. 01/06/2023 7:37 AM
+https://su-ssl.lge.com/GlobalSWDownloadCdn.laf?IMG=/202212/lib32bnVPq7H2-starfish-global-secured-o20n-4.kinglake-423-03.34.55_prodkey_nsu_V3_SECURED.epk
+ 1
+[shelbygt25]
+hellobox. run `nyx-cmd DeviceInfo query hardware_id`
+shelbygt25 01/06/2023 7:36 AM
+HE_DTV_W21O_AFABATAA
+hellobox. 01/06/2023 7:31 AM
+run nyx-cmd DeviceInfo query hardware_id
+ 1
+[shelbygt25]
+shelbygt25 01/06/2023 7:31 AM
+the latest offline firmware what i have is
+lib32-starfish-global-secured-o20n-4.kinglake-411-03.33.11_prodkey_usb_V3_SECURED
+01/06/2023 7:30 AM
+otaid?
+01/06/2023 7:30 AM
+i prefer to install via usb
+hellobox. 01/06/2023 7:29 AM
+if you tell me the otaid, i can download it
+[shelbygt25]
+shelbygt25 01/06/2023 7:29 AM
+there is no firmware available for download at lg itself.
+hellobox. 01/06/2023 7:29 AM
+what's the otaid?
+[shelbygt25]
+shelbygt25 01/06/2023 7:28 AM
+does anyone have the firmware 03.34.55 for the LG C1 as offline version
+for Europe Germany?
+[parkerlreed]
+parkerlreed 01/06/2023 4:23 AM
+Is there a way to trick the user interface and regular applications to
+run at 120 Hz?
+[akdm_]
+akdm_ 01/06/2023 1:48 AM
+/usr/palm/applications/com.webos.app.home/qml/Interfaces/AppInterfaces/AppInterfaces.qml
+01/06/2023 1:48 AM
+(no content)
+[image.png]
+ image.png
+296.6 KB External
+01/06/2023 1:48 AM
+I can see some references to a json file, but it looks like it is never
+actually perm stored
+hellobox. 01/06/2023 1:47 AM
+but i have basically all lg servers blocked
+01/06/2023 1:46 AM
+i don't see /mnt/lg/cmn_data/sdp/sdx/detailconfig.json on webos 6.3.2
+[akdm_]
+_nurikk_ There are parameters what to render on Home Screen app, I only
+have found this file on webos7
+akdm_ 01/06/2023 1:45 AM
+Yeah that's what I understood from the source code, but I have no idea
+where I can find this on webOS 6.x
+[] akdm_ I don't find any `detailconfig.json` file under webOS 6. What's
+its content?
+_nurikk_ 01/06/2023 1:44 AM
+There are parameters what to render on Home Screen app, I only have
+found this file on webos7
+[akdm_]
+_nurikk_ yeah, I understand. but currently your'e just blanking/removing
+some code from exising files, but yo...
+akdm_ 01/06/2023 1:32 AM
+I don't find any detailconfig.json file under webOS 6. What's its
+content?
+January 5, 2023
+hellobox. omg i lost root; you owe me a new tv
+mattl0. 01/05/2023 8:28 PM
+Hahaha
+[] kitsuned my main goal is to get an overlay menu like in the good old
+webOS 3/4 :D
+_nurikk_ 01/05/2023 3:27 PM
+yeah, I understand. but currently your'e just blanking/removing some
+code from exising files, but you can completely disable redundant shelf
+loading and only patch shelf of choice, without need in patching extra
+files
+[kitsuned]
+_nurikk_ hey mate! terrific job! You can check also this code,
+https://github.com/nurikk/lg-webos-ad-killer i...
+kitsuned 01/05/2023 12:58 PM
+my main goal is to get an overlay menu like in the good old webOS 3/4 :D
+[] kitsuned if anyone would be interested... there are my patches for
+the home app: https://gist.github.com/kits...
+_nurikk_ 01/05/2023 12:54 PM
+hey mate! terrific job! You can check also this code,
+https://github.com/nurikk/lg-webos-ad-killer it work a bit different
+way, id completely disables ad shelf from configuration, without
+patching qml files, it will help you to not bother with Edit button,
+since layout wouldn't load extra shelfs
+GitHub - nurikk/lg-webos-ad-killer: Remove advertisement from lg we...
+Remove advertisement from lg webos Home Screen. Contribute to
+nurikk/lg-webos-ad-killer development by creating an account on GitHub.
+[]
+ 1
+[kitsuned]
+kitsuned 01/05/2023 12:27 PM
+anyway, I'll try to write the home app from scratch. LG engineers' code
+is insane.
+01/05/2023 12:26 PM
+these customizations are still wip (the edit button is broken)
+01/05/2023 12:25 PM
+(C2) (edited)
+[PXL_20230105_112304257.jpg]
+ PXL_20230105_112304257.jpg
+328.83 KB External
+01/05/2023 12:25 PM
+if anyone would be interested... there are my patches for the home app:
+https://gist.github.com/kitsuned/10e16110bfc9f7ede1b9c2cb999cefe9
+GlobalStyle.qml
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+ 1
+January 4, 2023
+hellobox. 01/04/2023 9:52 PM
+Interesting. I thought it might be rtk-specific, but I guess not. I did
+it on k7lp
+[urkman5000]
+[] astur3l which model is this? i got only 0.34.50 :/ on A1
+urkman5000 01/04/2023 7:55 PM
+G1
+[astur3l]
+[] urkman5000 Version Safe to Update atm?
+astur3l 01/04/2023 7:48 PM
+which model is this? i got only 0.34.50 :/ on A1
+caracolo3000 01/04/2023 7:25 PM
+OK thanks
+[urkman5000]
+caracolo3000 Do u update TV? Still root?
+urkman5000 01/04/2023 7:14 PM
+Yes still got root
+[] arren._. yep
+Deleted User 01/04/2023 6:22 PM
+can you show what settings youre using in dev manager?
+[] urkman5000 Version Safe to Update atm?
+caracolo3000 01/04/2023 5:44 PM
+Do u update TV? Still root?
+[arren._.]
+arren._. 01/04/2023 9:56 AM
+but i dont see the app
+01/04/2023 9:56 AM
+from homebrew
+01/04/2023 9:56 AM
+the other day i got a popup saying happy new years
+[arren._.]
+Deleted User so, developer mode is on, the key server is on, AND you
+have quick start + disabled?
+arren._. 01/04/2023 9:56 AM
+yep
+[urkman5000]
+hellobox. yes
+urkman5000 01/04/2023 8:48 AM
+Thx for your help
+hellobox. 01/04/2023 8:48 AM
+yes
+[urkman5000]
+hellobox. actually everything's fine
+urkman5000 01/04/2023 8:48 AM
+OK so i can Go ahead?
+hellobox. 01/04/2023 8:47 AM
+actually everything's fine
+01/04/2023 8:47 AM
+omg i lost root; you owe me a new tv
+[urkman5000]
+hellobox. i'm trying it just for you
+urkman5000 01/04/2023 8:47 AM
+Thx 
+[] urkman5000 Version Safe to Update atm?
+hellobox. 01/04/2023 8:42 AM
+i'm trying it just for you
+[urkman5000]
+urkman5000 01/04/2023 7:57 AM
+Version Safe to Update atm?
+[IMG_20230103_102452.jpg]
+ IMG_20230103_102452.jpg
+591.64 KB External
+January 3, 2023
+_nurikk_ hey guys, does anyone knows/exists(?) luna endpoint from which
+you can get list of available service...
+hellobox. 01/03/2023 4:07 AM
+look at how ls-monitor does it:
+https://github.com/webosose/luna-service2/tree/master/src/ls-monitor
+_nurikk_ 01/03/2023 1:25 AM
+hey guys, does anyone knows/exists(?) luna endpoint from which you can
+get list of available services/methods/parameters for all registered
+services? idea is to create a simple frontend app to poke this services
+January 2, 2023
+[chmod666]
+chmod666 01/02/2023 4:22 AM
+Oh that's a good idea thanks
+[] chmod666 I just got my TV rooted with the crashd exploid. Is there a
+way to disable the "would you like to up...
+hellobox. 01/02/2023 4:20 AM
+block the update domains on your router
+[chmod666]
+chmod666 01/02/2023 4:19 AM
+I just got my TV rooted with the crashd exploid. Is there a way to
+disable the "would you like to update?" Popup when you turn the TV on?
+January 1, 2023
+tobi.z 01/01/2023 4:51 PM
+has anyone successfully set up time syncing via ntp on a rooted tv?
+Deleted User 01/01/2023 12:29 AM
+so it just says
+    - Your TV will be bricked, guaranteed! See https://rootmy.tv/warning for more info.
+(edited)
+[] shelbygt25 Ok make it
+Deleted User 01/01/2023 12:28 AM
+i like how the warning message is cut off at the top
+ 2
+December 31, 2022
+hellobox. 12/31/2022 6:06 PM
+(no content)
+[image.png]
+ image.png
+73.58 KB External
+ 1
+[astur3l]
+[] ddepau I just noticed the TV (OLED C1 2021) happily accepts the
+following inputs when told to switch to the...
+astur3l 12/31/2022 5:46 PM
+i also remember that i had these on A1 (which also doesn't have these
+ports), well not sure about scart (edited)
+hellobox. 12/31/2022 5:40 PM
+i recall seeing references to more hdmi ports than actually present on
+various boards, but i don't think i've ever seen anything about scart
+(on us models)
+12/31/2022 5:35 PM
+although i don't think 2021 models are likely to actually have one
+[] ddepau I was setting up the available inputs for openHAB and I was
+too lazy to get up and check, so I added...
+hellobox. 12/31/2022 5:29 PM
+if it's a european model, maybe
+[ddepau]
+ddepau 12/31/2022 5:16 PM
+I was setting up the available inputs for openHAB and I was too lazy to
+get up and check, so I added all the listed ones and I was like mmmh
+does it really have a SCART port?
+12/31/2022 5:14 PM
+I just noticed the TV (OLED C1 2021) happily accepts the following
+inputs when told to switch to them - com.webos.app.externalinput.av1 -
+com.webos.app.externalinput.av2 - com.webos.app.externalinput.scart -
+com.webos.app.externalinput.component but I don't see the ports. Am I
+missing some hidden input panel or are they not there?
+[] shelbygt25 Ok make it
+_nurikk_ 12/31/2022 1:52 PM
+I’ve sent a a direct message. Let’s not flood with debugging in this
+channel
+ 1
+[shelbygt25]
+shelbygt25 12/31/2022 1:51 PM
+Ok make it
+[Screenshot_2022-12-31-13-50-48-51_61c78dc80ee02b53007c815fefe993e3.jpg]
+Screenshot_2022-12-31-13-50-48-51_61c78dc80ee02b53007c815fefe993e3.jpg
+75.9 KB External
+[] shelbygt25 you have to zoom
+_nurikk_ 12/31/2022 1:50 PM
+Press enter, last command weren’t executed
+[shelbygt25]
+shelbygt25 12/31/2022 1:49 PM
+you have to zoom
+[Screenshot_2022-12-31-13-48-58-59_61c78dc80ee02b53007c815fefe993e3.jpg]
+Screenshot_2022-12-31-13-48-58-59_61c78dc80ee02b53007c815fefe993e3.jpg
+102.14 KB External
+[] shelbygt25 In the ssh terminal? something came up but it was too
+small to be able to read it.
+_nurikk_ 12/31/2022 1:48 PM
+Yes, in ssh terminal. I’ve sent you a DM message
+[shelbygt25]
+shelbygt25 12/31/2022 1:46 PM
+should I run it again?
+12/31/2022 1:46 PM
+In the ssh terminal? something came up but it was too small to be able
+to read it.
+[] shelbygt25 I have use this curl -o
+/var/lib/webosbrew/init.d/ad_killer
+https://raw.githubusercontent.com/nurikk...
+_nurikk_ 12/31/2022 1:32 PM
+Did you see any text output from script?
+[shelbygt25]
+shelbygt25 12/31/2022 1:26 PM
+I have use this curl -o /var/lib/webosbrew/init.d/ad_killer
+https://raw.githubusercontent.com/nurikk/lg-webos-ad-killer/master/ad_killer
+chmod +x /var/lib/webosbrew/init.d/ad_killer
+/var/lib/webosbrew/init.d/ad_killer
+[shelbygt25]
+_nurikk_ It should work on c1 as well, if any issues let me know. I’ll
+help you with it
+shelbygt25 12/31/2022 1:25 PM
+I have execute the script and reboot but you see i have ads
+[] shelbygt25 This can i use on c1 too or only for c2?
+_nurikk_ 12/31/2022 1:24 PM
+It should work on c1 as well, if any issues let me know. I’ll help you
+with it
+[shelbygt25]
+shelbygt25 12/31/2022 12:54 PM
+(no content)
+[IMG20221231125428.jpg]
+ IMG20221231125428.jpg
+409.4 KB External
+12/31/2022 12:54 PM
+I have test the script now but not work
+12/31/2022 12:48 PM
+I see failsafe mode is now on. Is this ok or must disabled?
+ww8543 12/31/2022 12:48 PM
+if lg implemented it the same way on webos6, then yea
+[shelbygt25]
+_nurikk_ Created convenience script available here:
+https://github.com/nurikk/lg-webos-ad-killer#installation
+shelbygt25 12/31/2022 12:47 PM
+This can i use on c1 too or only for c2?
+[shelbygt25]
+shelbygt25 12/31/2022 12:46 PM
+Thx all
+ 2
+12/31/2022 12:46 PM
+Perfect working
+12/31/2022 12:46 PM
+Ok root is ok now. Test Connection again
+12/31/2022 12:45 PM
+Ok reboot
+12/31/2022 12:45 PM
+Ok its update but root say now unelevated
+ww8543 12/31/2022 12:45 PM
+dont forget to reboot (edited)
+ 1
+[shelbygt25]
+shelbygt25 12/31/2022 12:43 PM
+(no content)
+[IMG20221231124337.jpg]
+ IMG20221231124337.jpg
+479.06 KB External
+12/31/2022 12:43 PM
+Ok update to 0.5.1
+[akdm_]
+akdm_ 12/31/2022 12:43 PM
+Yep 0.5.1 is the latest
+ww8543 12/31/2022 12:42 PM
+no it is not the latest
+[shelbygt25]
+shelbygt25 12/31/2022 12:42 PM
+Yes its the last
+ww8543 12/31/2022 12:42 PM
+can you try to update to 0.5.1?
+12/31/2022 12:42 PM
+ah 0.5.0
+[shelbygt25]
+shelbygt25 12/31/2022 12:42 PM
+All enabled
+12/31/2022 12:42 PM
+(no content)
+[IMG20221231124208.jpg]
+ IMG20221231124208.jpg
+399.56 KB External
+ww8543 12/31/2022 12:42 PM
+what homebrew version are you on?
+12/31/2022 12:41 PM
+thats a little strange
+[shelbygt25]
+shelbygt25 12/31/2022 12:41 PM
+Not work
+12/31/2022 12:41 PM
+I have now enabled telnet on settings in homebrew and test again. Tv is
+reboot now
+ww8543 12/31/2022 12:40 PM
+because telnet is port 23
+12/31/2022 12:39 PM
+but just now you tried telnet
+12/31/2022 12:39 PM
+and rebooted the tv through homebrew?
+[shelbygt25]
+shelbygt25 12/31/2022 12:39 PM
+Not now but ssh, see picture above
+[] shelbygt25 Click to see attachment
+ww8543 12/31/2022 12:39 PM
+and you enabled telnet?
+[shelbygt25]
+shelbygt25 12/31/2022 12:38 PM
+Yes
+ww8543 12/31/2022 12:38 PM
+and the tv shows that same ip in its network settings?
+[shelbygt25]
+shelbygt25 12/31/2022 12:38 PM
+YouTube and all other working
+12/31/2022 12:38 PM
+Tv is connect over lan
+[akdm_]
+akdm_ 12/31/2022 12:38 PM
+I once unplugged the ethernet cable without noticing
+12/31/2022 12:37 PM
+Make sure the IP is correct or even if the TV is actually connected to
+your network
+[shelbygt25]
+shelbygt25 12/31/2022 12:37 PM
+(no content)
+[Screenshot_2022-12-31-12-37-10-15_61c78dc80ee02b53007c815fefe993e3.jpg]
+Screenshot_2022-12-31-12-37-10-15_61c78dc80ee02b53007c815fefe993e3.jpg
+82.14 KB External
+12/31/2022 12:36 PM
+Connection failed: connection refused. No more addresses to try.
+ww8543 12/31/2022 12:36 PM
+what error do you get? (edited)
+12/31/2022 12:36 PM
+then ssh should just work
+[shelbygt25]
+shelbygt25 12/31/2022 12:36 PM
+There is no other version for c1
+12/31/2022 12:35 PM
+Webos is 6,. Its c1 not c2
+ww8543 12/31/2022 12:35 PM
+thats your firmware version, not the webos version
+[shelbygt25]
+shelbygt25 12/31/2022 12:35 PM
+03.33.11
+ww8543 12/31/2022 12:35 PM
+c1 is webos6 i think?
+[shelbygt25]
+shelbygt25 12/31/2022 12:35 PM
+Latest for c1
+ww8543 12/31/2022 12:34 PM
+webos7/22?
+12/31/2022 12:34 PM
+what webos are you on?
+[shelbygt25]
+shelbygt25 12/31/2022 12:34 PM
+Never tested
+ww8543 12/31/2022 12:34 PM
+did ssh ever work?
+[shelbygt25]
+shelbygt25 12/31/2022 12:34 PM
+I have use crashd for rooting
+[akdm_]
+akdm_ 12/31/2022 12:32 PM
+Telnet works? If so check the sshd configuration
+[shelbygt25]
+shelbygt25 12/31/2022 12:29 PM
+Dont have changed the password
+[akdm_]
+akdm_ 12/31/2022 12:28 PM
+Maybe you changed the password for root account? If you activated
+somehow the ssh keys auth, the root login is disabled
+[shelbygt25]
+shelbygt25 12/31/2022 12:26 PM
+Ok then it should actually work
+[akdm_]
+akdm_ 12/31/2022 12:26 PM
+Telnet is on port 23 by default, SSH on 22
+[shelbygt25]
+shelbygt25 12/31/2022 12:25 PM
+See only ip without port
+12/31/2022 12:25 PM
+Port is 22? Dont see on network connection which port is in use
+12/31/2022 12:24 PM
+Telnet i have not enanled see picture. But also get no connection
+12/31/2022 12:23 PM
+Dev mode app i have uninstall after root like it says in the
+instructions here
+ 1
+[akdm_]
+akdm_ 12/31/2022 12:23 PM
+Telnet works?
+[shelbygt25]
+shelbygt25 12/31/2022 12:21 PM
+(no content)
+[IMG20221231122116.jpg]
+ IMG20221231122116.jpg
+339.69 KB External
+[akdm_]
+akdm_ 12/31/2022 12:21 PM
+Have you disabled the developer mode ?
+[shelbygt25]
+shelbygt25 12/31/2022 12:20 PM
+Yes
+[akdm_]
+[] shelbygt25 Ok but can not connect. Ip is the right one though
+akdm_ 12/31/2022 12:20 PM
+It is enabled on the homebrew channel?
+[akdm_]
+_nurikk_ Created convenience script available here:
+https://github.com/nurikk/lg-webos-ad-killer#installation
+akdm_ 12/31/2022 12:20 PM
+Interesting! However I don't have the file detailconfig.json , I am
+using the following model:
+{ "modelName": "OLED65C15LA", "firmwareVersion": "03.20.80", "sdkVersion": "6.2.0" }
+[shelbygt25]
+shelbygt25 12/31/2022 12:18 PM
+Ok but can not connect. Ip is the right one though
+[akdm_]
+akdm_ 12/31/2022 12:15 PM
+By default, but it is recommended to enable passwordless login, please
+see:
+https://github.com/RootMyTV/RootMyTV.github.io#post-installation-advice-important
+GitHub - RootMyTV/RootMyTV.github.io: RootMyTV is a user-friendly e...
+RootMyTV is a user-friendly exploit for rooting/jailbreaking LG webOS
+smart TVs. - GitHub - RootMyTV/RootMyTV.github.io: RootMyTV is a
+user-friendly exploit for rooting/jailbreaking LG webOS smart ...
+[]
+12/31/2022 12:14 PM
+root / alpine
+[shelbygt25]
+shelbygt25 12/31/2022 12:13 PM
+How can connect over ssh on C1? What is the username and password? My tv
+have root.
+December 30, 2022
+derpyherpy 12/30/2022 5:46 PM
+Has anyone come up with any creative ways of disabling the mouse
+pointer, but leaving the remote connected via bluetooth? Maybe disabling
+/dev/input/mouse0 ?
+_nurikk_ Hey guys, I've found a way how to remove annoying
+advertisements shelfs from webos homescreen Curren...
+_nurikk_ 12/30/2022 3:43 PM
+Created convenience script available here:
+https://github.com/nurikk/lg-webos-ad-killer#installation
+GitHub - nurikk/lg-webos-ad-killer: Remove advertisement from lg we...
+Remove advertisement from lg webos Home Screen. Contribute to
+nurikk/lg-webos-ad-killer development by creating an account on GitHub.
+[]
+ 3
+_nurikk_ Hey guys, I've found a way how to remove annoying
+advertisements shelfs from webos homescreen Curren...
+_nurikk_ 12/30/2022 1:27 PM
+(no content)
+[IMG_3278.jpg]
+ IMG_3278.jpg
+1.24 MB External
+[IMG_3277.jpg]
+ IMG_3277.jpg
+1.28 MB External
+_nurikk_ 12/30/2022 1:26 PM
+Hey guys, I've found a way how to remove annoying advertisements shelfs
+from webos homescreen Currently it's quite crude solution but I want to
+share with you. The Idea is that we're going to override
+/mnt/lg/cmn_data/sdp/sdx/detailconfig.json which is database for sdx
+service used to render home app layout how do we do that? 1) copy file
+/mnt/lg/cmn_data/sdp/sdx/detailconfig.json somewhere else like
+/home/root
+cp /mnt/lg/cmn_data/sdp/sdx/detailconfig.json /home/root/detailconfig.json
+2) Edit /home/root/detailconfig.json find ai_home_info and remove all
+garbage from ai_home_info key, I personally keep HOME_SH_APPS,
+HOME_SH_HOMEDASHBOARD, HOME_SH_BROWSER make sure that you didn't make
+any syntax mistakes, feel free to use online tools like
+https://jsoneditoronline.org/ 3) Bind mount file
+mount --bind /home/root/detailconfig.json /mnt/lg/cmn_data/sdp/sdx/detailconfig.json
+4) restart services pkill -f sdx pkill -f com.webos.app.home As result
+ad shelf are completely gone. You can add command from (3) into your
+/var/lib/webosbrew/init.d executing commands 1 by 1:
+    echo 'pkill -f sdx' > /var/lib/webosbrew/init.d/ad_killer
+    echo 'mount --bind /home/root/detailconfig.json /mnt/lg/cmn_data/sdp/sdx/detailconfig.json' >> /var/lib/webosbrew/init.d/ad_killer
+    echo 'pkill -f sdx' >> /var/lib/webosbrew/init.d/ad_killer
+    echo 'pkill -f com.webos.app.home' >> /var/lib/webosbrew/init.d/ad_killer
+    chmod +x /var/lib/webosbrew/init.d/ad_killer
+OR run automated script:
+https://github.com/nurikk/lg-webos-ad-killer#installation Tested on my
+C2 with webos7. Make sure that you've cleaned up in step (2) (edited)
+GitHub - nurikk/lg-webos-ad-killer: Remove advertisement from lg we...
+Remove advertisement from lg webos Home Screen. Contribute to
+nurikk/lg-webos-ad-killer development by creating an account on GitHub.
+[]
+ 6
+[] infowski I think there was a Luna call that was able to switch
+channels.
+pub615 12/30/2022 9:55 AM
+Thank you, i will try this
+December 29, 2022
+[infowski]
+infowski 12/29/2022 11:27 PM
+there's also the same method in com.webos.service.utp.broadcast, hmmm...
+12/29/2022 11:26 PM
+it accepts broadcastId, whatever it is, and channel arguments...
+12/29/2022 11:22 PM
+luna://com.webos.service.tv.broadcast/changeChannel this is one that
+sounds viable
+12/29/2022 11:19 PM
+as always - tip: use ls-monitor and see what happens whenever you switch
+tv channels.
+[infowski]
+pub615 Hello, TV stream can be embedded with this code: <video autoplay
+style="width:100%;height:100%"> ...
+infowski 12/29/2022 11:19 PM
+I think there was a Luna call that was able to switch channels.
+pub615 12/29/2022 7:37 PM
+Hello, TV stream can be embedded with this code: <video autoplay
+style="width:100%;height:100%"> <source type="service/webos-broadcast"
+src="tv:"></source> </video> I wish I could play whatever channel I
+want. Do you know how to do it ? For example, the SS iptv application is
+able to do this. Thank you.
+[.ilucha]
+derpyherpy I've implemented this by actually sending the button presses
+straight to the input event device, so ...
+.ilucha 12/29/2022 7:19 PM
+Awesome! I will try it ASAP
+[] .ilucha Another user already did something similar, you might be
+interested: https://discord.com/channels/4...
+derpyherpy 12/29/2022 7:18 PM
+I've implemented this by actually sending the button presses straight to
+the input event device, so the TV thinks you actually pressed those
+buttons. I tested this on C2 that has the remote without play/pause
+buttons and it does work.
+https://github.com/andrewfraley/magic_mapper#press_button
+GitHub - andrewfraley/magic_mapper: Remap LG Magic Remote buttons
+Remap LG Magic Remote buttons. Contribute to andrewfraley/magic_mapper
+development by creating an account on GitHub.
+[]
+ 1
+_nurikk_ hey guys, who know how this script supposed to work? WAR -
+WebOS Ad Removal (Version 1.00) https://...
+_nurikk_ 12/29/2022 3:46 PM
+found working one for my 65OLEDC2
+https://github.com/aaayd/webos-remove-ads
+GitHub - aaayd/webos-remove-ads: Customize WebOS home screen
+Customize WebOS home screen. Contribute to aaayd/webos-remove-ads
+development by creating an account on GitHub.
+[]
+_nurikk_ 12/29/2022 2:47 PM
+hey guys, who know how this script supposed to work? WAR - WebOS Ad
+Removal (Version 1.00)
+https://github.com/bashalarmist/war-webos-ad-remover/blob/0f45f925fd6777204de717a6fa9e486d30918363/webos_ad_remover#L86
+from my understanding it adds return statement right after class
+definition? should it look like this?
+[Screenshot_2022-12-29_at_13.46.37.png]
+ Screenshot_2022-12-29_at_13.46.37.png
+69.6 KB External
+war-webos-ad-remover/webos_ad_remover at 0f45f925fd6777204de717a6fa...
+Removes Ads on WebOS home screen. Contribute to
+bashalarmist/war-webos-ad-remover development by creating an account on
+GitHub.
+[]
+December 28, 2022
+[.ilucha]
+derpyherpy In the meantime I will look into adding a function to fire
+the play/pause command
+.ilucha 12/28/2022 9:02 PM
+Another user already did something similar, you might be interested:
+https://discord.com/channels/407937994037919756/408006551656333312/1057686995641573377
+ 1
+derpyherpy 12/28/2022 9:00 PM
+In the meantime I will look into adding a function to fire the
+play/pause command
+ 1
+[.ilucha]
+.ilucha 12/28/2022 8:59 PM
+Dont be sorry, I love what you have done and step by step it will be
+improved. Until then I either wait or try to play around with it (which
+can take some time as I am very new to all of this).
+[] .ilucha Here was written trash. Ideally mic would be play/pause as it
+is very convenient but the colored but...
+derpyherpy 12/28/2022 8:57 PM
+Yeah sorry I don't have a way to disable the built in functionality, I'm
+just watching the input device for key presses and firing actions.
+[.ilucha]
+derpyherpy If you hold down the mic button for longer than 1s, say 2s
+and then release, does anything happen? ...
+.ilucha 12/28/2022 8:44 PM
+Here was written trash. Ideally mic would be play/pause as it is very
+convenient but the colored buttons do it I guess (edited)
+[] .ilucha I just want to have a play/pause button instead if the mic
+button. A long press of the mic button is...
+derpyherpy 12/28/2022 8:41 PM
+If you hold down the mic button for longer than 1s, say 2s and then
+release, does anything happen? If not, then yeah you could use a long
+press for that. You can more easily use the color buttons or one the
+number buttons instead, though.
+[.ilucha]
+.ilucha 12/28/2022 8:21 PM
+I just want to have a play/pause button instead if the mic button. A
+long press of the mic button is not needed. Does this work?
+[] .ilucha So not possible to change the mic button on the remote for
+example?
+derpyherpy 12/28/2022 8:20 PM
+Only if it ignores long presses by default, then we can do something but
+I don’t have support for long presses yet
+[.ilucha]
+derpyherpy Nah the built in will still fire
+.ilucha 12/28/2022 8:10 PM
+So not possible to change the mic button on the remote for example?
+derpyherpy 12/28/2022 8:02 PM
+Nah the built in will still fire
+[infowski]
+infowski 12/28/2022 7:54 PM
+@derpyherpy hmmm, that remapper tool... it isn't able to remap buttons
+that already have built-in actions, does it?
+derpyherpy 12/28/2022 7:49 PM
+Curious if anyone has managed to modify the irdbmanager databases to add
+unsupported devices?
+12/28/2022 7:49 PM
+Made this to remap the magic remote buttons if anyone is interested:
+https://github.com/andrewfraley/magic_mapper
+GitHub - andrewfraley/magic_mapper: Remap LG Magic Remote buttons
+Remap LG Magic Remote buttons. Contribute to andrewfraley/magic_mapper
+development by creating an account on GitHub.
+[]
+[itsyogsothoth]
+itsyogsothoth 12/28/2022 4:05 PM
+I don't like this notification
+[PXL_20221228_150355185.jpg]
+ PXL_20221228_150355185.jpg
+362.75 KB External
+December 27, 2022
+[ddepau]
+ddepau 12/27/2022 10:19 PM
+nevermind, no units in /var/systemd sadly
+[ddepau]
+ddepau 12/27/2022 10:01 PM
+changing the environment worked, but it unfortunately did not load my
+image. but this discovery means I can just add another unit that mounts
+the png and make it so it runs before the surface manager. I need to be
+careful to not break the compositor I guess  (edited)
+12/27/2022 9:57 PM
+also /var/systemd is writable in general and I think it's usable for
+persistently adding new systemd units
+12/27/2022 9:57 PM
+Well well well, apparently surface-manager-daemon.service takes an
+environment file in /var/systemd/system/env/surface-manager.env which is
+writable
+    overlay on /var type overlay (ro,relatime,lowerdir=/overlay/bsppart/bsp/var:/var)
+    /dev/mmcblk0p55 on /var type ext4 (rw,nosuid,relatime,data=ordered)
+[ddepau]
+[] smx2460 What if you use `execve` to relaunch it with the new env?
+ddepau 12/27/2022 9:47 PM
+Well if the problem is restarting it I could restart the systemd unit
+fwiw
+[ddepau]
+[] smx2460 We need to look the C++ portion that handles disk caching in
+QT
+ddepau 12/27/2022 9:47 PM
+That's a good idea
+[] infowski Try retroarch - it may be an issue with missing gamepad
+mappings, which should be fairly easy tofix.
+.sooor 12/27/2022 9:03 PM
+Doesnt work in retroarch also
+[infowski]
+infowski 12/27/2022 8:41 PM
+Try retroarch - it may be an issue with missing gamepad mappings, which
+should be fairly easy tofix.
+[] aabytt Which app are trying it with?
+.sooor 12/27/2022 8:41 PM
+Moonlight
+[aabytt]
+.sooor Anyone managed to connect gamepad? I bought easysmx 9110. It
+connects but dont work. Any models that...
+aabytt 12/27/2022 8:39 PM
+Which app are trying it with?
+.sooor 12/27/2022 7:21 PM
+Anyone managed to connect gamepad? I bought easysmx 9110. It connects
+but dont work. Any models that work for sure? But not simple, better
+like xbox"s
+[smx2460]
+smx2460 12/27/2022 1:43 PM
+What if you use execve to relaunch it with the new env?
+12/27/2022 1:43 PM
+Here's a silly idea
+12/27/2022 1:38 PM
+But i guess if it's already loaded, we need to find another way
+12/27/2022 1:37 PM
+    bool QQmlTypeData::tryLoadFromDiskCache()
+    {
+        if (disableDiskCache() && !forceDiskCache())
+            return false;
+        if (isDebugging())
+            return false;
+        QV4::ExecutionEngine *v4 = typeLoader()->engine()->handle();
+        if (!v4)
+            return false;
+        QQmlRefPointer<QV4::CompiledData::CompilationUnit> unit = QV4::Compiler::Codegen::createUnitForLoading();
+        {
+            QString error;
+            if (!unit->loadFromDisk(url(), m_backupSourceCode.sourceTimeStamp(), &error)) {
+                qCDebug(DBG_DISK_CACHE) << "Error loading" << urlString() << "from disk cache:" << error;
+                return false;
+            }
+        }
+        if (unit->unitData()->flags & QV4::CompiledData::Unit::PendingTypeCompilation) {
+            restoreIR(unit);
+            return true;
+        }
+    ...
+[smx2460]
+smx2460 12/27/2022 1:30 PM
+We need to look the C++ portion that handles disk caching in QT
+12/27/2022 1:26 PM
+But what do you do in there 
+[smx2460]
+[] ddepau It appears that that view is indeed part of the
+`surface-manager` since it exposes that service ID, ...
+smx2460 12/27/2022 1:26 PM
+Looks like you're gonna need an ezinject module
+[ddepau]
+ddepau 12/27/2022 12:32 AM
+    HUB CLIENTS:
+    PID           SERVICE NAME                      EXE                                    TYPE                    UNIQUE NAME         
+    1886          com.webos.app.masterbrand         /usr/bin/surface-manager               unknown/client only     FH4edwaf            
+12/27/2022 12:31 AM
+It appears that that view is indeed part of the surface-manager since it
+exposes that service ID, and the surface-manager itself is a QML app. I
+can't find, however, a good way to start it without the on-disk cache.
+It seems that /etc/surface-manager.d/product.env controls its
+environment via /usr/bin/surface-manager.sh but at the time
+/var/lib/webosbrew/startup.sh is executed it's too late and the
+compositor is already running. Any ideas on how to prevent this to be
+cached?
+December 26, 2022
+[ddepau]
+ddepau 12/26/2022 11:01 PM
+found it!
+/usr/lib/qml/WebOSCompositor/controllers/StarfishViewStateController.qml:
+           onOffLogoRequest: {
+               Utils.pmLog.info("POWER", {"msg": "off logo will be displayed", "state": powerService.powerState, "processing": powerService.powerProcessing, "onOff": powerService.powerOnOff}, "", true);
+               //block cursor during power off animation is displayed
+               compositor.blockPointer();
+               //launch power off animation
+               views.sysuiManager.launch("com.webos.app.masterbrand", {"appId": "com.webos.app.masterbrand"});
+           }
+com.webos.app.masterbrand now I need to figure out how it's
+started/stopped and find a way to wipe its QML cache (edited)
+[ddepau]
+ddepau 12/26/2022 10:51 PM
+maybe I need to pass that variable to the compositor, I'm not sure how
+since the /var/lib/webosbrew/init.d scripts seem to be executed
+late-ish, I'd need to install an override to /run/systemd and
+systemctl daemon-reload
+12/26/2022 10:50 PM
+mmh I changed it so that it's mounted before com.webos.app.home is
+restarted with the env var but nope, it's still not loaded
+[ddepau]
+[] infowski Maybe try killing/restarting `com.webos.app.home` as well?
+ddepau 12/26/2022 10:48 PM
+I actually noticed in the past that in order to change the home layout
+QML I had to export QML_DISABLE_DISK_CACHE=1
+[ddepau]
+[] smx2460 Someone familiar here 
+ddepau 12/26/2022 10:47 PM
+hey there 
+[smx2460]
+[] ddepau hey, does anyone know what's responsible for displaying the
+shutdown logo? I found the logo at `/usr...
+smx2460 12/26/2022 8:54 PM
+Someone familiar here 
+hellobox. 12/26/2022 5:59 PM
+i think that screen is also present on my UP76 (2021)
+[infowski]
+infowski 12/26/2022 4:48 PM
+I only researched these general UI things on 3.x and home was a part of
+surface manager there, so... these functionalities were kinda mixed
+together.
+12/26/2022 4:47 PM
+Maybe try killing/restarting com.webos.app.home as well?
+12/26/2022 4:47 PM
+Mhmmmm... I guess we'd need to dig where is it actually stored.
+timcook4825 12/26/2022 4:29 PM
+But I don‘t know how to replace it
+12/26/2022 4:29 PM
+You can disable it by pressing the mute button three times
+[ddepau]
+ddepau 12/26/2022 4:18 PM
+(no content)
+ PXL_20221226_150855399.mp4
+3.62 MB External
+[ddepau]
+ddepau 12/26/2022 4:11 PM
+it displays it regardless of whether QS+ is enabled, it's enabled though
+[ddepau]
+[] infowski Also - never seen a shutdown logo - is that with QuickStart+
+disabled? Which year is it?
+ddepau 12/26/2022 4:11 PM
+OLED C1 bought last christmas, I guess it's a 2021 or 2020 model
+[ddepau]
+[] infowski I am guessing they load up that image on compositor startup?
+You may need to kill/restart `surface-m...
+ddepau 12/26/2022 4:10 PM
+that didn't help
+bttdn webos: 2.2.3
+hellobox. 12/26/2022 4:00 PM
+have you tried GetMeIn?
+[infowski]
+infowski 12/26/2022 3:47 PM
+Also - never seen a shutdown logo - is that with QuickStart+ disabled?
+Which year is it?
+12/26/2022 3:47 PM
+I am guessing they load up that image on compositor startup? You may
+need to kill/restart surface-manager-starfish process \(or some similar
+name) (edited)
+[ddepau]
+ddepau 12/26/2022 3:44 PM
+hey, does anyone know what's responsible for displaying the shutdown
+logo? I found the logo at /usr/lib/qml/MasterBrand/LG_logo_4k.png and I
+want to replace it with something silly, but bind-mounting a picture
+over it on boot doesn't appear to work
+[infowski]
+infowski 12/26/2022 1:25 PM
+Yes, it does.
+bttdn 12/26/2022 1:15 PM
+and the weboaspp.club devmode timer reset do it automatically?
+bttdn 12/26/2022 12:25 PM
+Thanks
+[infowski]
+infowski 12/26/2022 12:17 PM
+There was also "devmode timer reset" app which did just that above, but
+sends the token to webosapp.club maintainer maintained automation that
+renews the sessions. https://webosapp.club/apps/
+12/26/2022 12:14 PM
+https://github.com/webosbrew/dev-manager-desktop/blob/master/ui/src/app/info/renew-script/renew-script.component.html
+yep, there's a guide on how to set it up with cron or IFTTT
+dev-manager-desktop/renew-script.component.html at master · webosbr...
+Device/DevMode Manager for webOS TV. Contribute to
+webosbrew/dev-manager-desktop development by creating an account on
+GitHub.
+[]
+12/26/2022 12:13 PM
+You can use some automation to renew devmode token via cron / calls to a
+specific HTTP URL. I think there was a guide on how to do this in
+dev-manager-desktop..
+bttdn 12/26/2022 12:11 PM
+and any way wich prevent to reset the dev access? I want to install
+jellyfin on the tv, but nopw its deleting it after 48hour
+[infowski]
+infowski 12/26/2022 12:08 PM
+There are no public exploits supporting that webOS version sadly.
+bttdn 12/26/2022 12:08 PM
+webos: 2.2.3
+12/26/2022 12:07 PM
+hi! i have an LG t with software version 04.06.75, and rootmy.tv wont
+work wit it. I think this is an older os. How can I get permanent root
+access for this tv?
+December 23, 2022
+[m0nk3man]
+m0nk3man 12/23/2022 3:32 AM
+I have the B1 65 inch
+12/23/2022 3:27 AM
+anyone else having issues with lipsync on just the netflix app using
+dolby surround or atmos through eARC? There is no issues with any other
+app with the same settings weirdly enough
+December 22, 2022
+Deleted User 12/22/2022 11:53 PM
+by channel i mean the app, # unknown-channel is discussion/development
+of homebrew
+[] teflondon1789 Where I can find apps for homebrew
+Deleted User 12/22/2022 11:52 PM
+in the homebrew channel
+ 1
+[teflondon1789]
+teflondon1789 12/22/2022 11:32 PM
+Where I can find apps for homebrew
+Deleted User 12/22/2022 10:39 PM
+and you rebooted after disabling quick start+?
+[] arren._. i turned off quick start
+Deleted User 12/22/2022 10:39 PM
+so, developer mode is on, the key server is on, AND you have quick
+start + disabled?
+[arren._.]
+arren._. 12/22/2022 10:27 AM
+i turned off quick start
+12/22/2022 10:25 AM
+didnt work
+[arren._.]
+arren._. 12/22/2022 7:09 AM
+ill check
+Deleted User 12/22/2022 7:09 AM
+in the tvs settings
+12/22/2022 7:09 AM
+do you have quick start+ enabled?
+[arren._.]
+arren._. 12/22/2022 7:09 AM
+power button
+Deleted User 12/22/2022 7:08 AM
+how?
+[arren._.]
+arren._. 12/22/2022 7:08 AM
+then on
+12/22/2022 7:08 AM
+turned it off
+Deleted User 12/22/2022 7:08 AM
+how did you reboot it?
+[arren._.]
+arren._. 12/22/2022 7:08 AM
+yep
+Deleted User 12/22/2022 7:08 AM
+and the tv has developer mode and the key server on?
+[arren._.]
+arren._. 12/22/2022 7:07 AM
+(no content)
+[image.png]
+ image.png
+24.78 KB External
+[] arren._. its saying this, i've done the steps so is it because my tv
+is unsupported or should i try again
+Deleted User 12/22/2022 7:07 AM
+show the settings you typed in
+Deleted User 12/22/2022 7:07 AM
+hmm
+[arren._.]
+arren._. 12/22/2022 7:06 AM
+thats what it says
+[] arren._. is it meant to say hello world
+Deleted User 12/22/2022 7:06 AM
+yes
+[arren._.]
+Deleted User can you connect to <tv_ip>:3000 on your webbrowser?
+arren._. 12/22/2022 7:01 AM
+is it meant to say hello world
+[] arren._. didnt work
+Deleted User 12/22/2022 6:58 AM
+can you connect to <tv_ip>:3000 on your webbrowser?
+[arren._.]
+arren._. 12/22/2022 6:44 AM
+12/22/2022 6:44 AM
+didnt work
+[arren._.]
+arren._. 12/22/2022 5:38 AM
+alright
+Deleted User 12/22/2022 5:37 AM
+turn it on then reboot
+[arren._.]
+arren._. 12/22/2022 5:37 AM
+i dont think so
+Deleted User 12/22/2022 5:37 AM
+and the key server is on?
+[arren._.]
+arren._. 12/22/2022 5:37 AM
+ye
+[] arren._. i turn on developer mode from the app then when i put in the
+ip and passphrase
+Deleted User 12/22/2022 5:37 AM
+did you reboot after turning on developer mode?
+[arren._.]
+Deleted User at what point do you see that?
+arren._. 12/22/2022 5:37 AM
+i turn on developer mode from the app then when i put in the ip and
+passphrase
+Deleted User 12/22/2022 4:35 AM
+im assuming its step 3.d
+12/22/2022 4:35 AM
+at what point do you see that?
+12/22/2022 4:35 AM
+wait
+[] arren._. its saying this, i've done the steps so is it because my tv
+is unsupported or should i try again
+Deleted User 12/22/2022 4:35 AM
+make sure "Developer Mode" is installed and turn on
+[arren._.]
+arren._. 12/22/2022 4:27 AM
+its saying this, i've done the steps so is it because my tv is
+unsupported or should i try again
+[image.png]
+ image.png
+46.82 KB External
+[nintend00m]
+nintend00m 12/22/2022 4:07 AM
+I noticed the same. I was thinking there's additional IPs I need to
+block but I can't find any other ones than what I already have
+Deleted User 12/22/2022 4:03 AM
+youre right, i dont remember this happening before
+12/22/2022 4:03 AM
+all of them were ads or other related stuff
+12/22/2022 4:03 AM
+and about 5 notifications popped up one after the other
+netham45 Anyone else's TV start shotgunning them with toast notification
+ads every time it's turned on?
+Deleted User 12/22/2022 4:03 AM
+i just turned on the tv
+December 21, 2022
+netham45 12/21/2022 5:24 PM
+It started a couple weeks ago, I'm getting like 10 random notifications
+for game services and that LG Channels is losing channels
+12/21/2022 5:23 PM
+Anyone else's TV start shotgunning them with toast notification ads
+every time it's turned on?
+December 20, 2022
+timcook4825 12/20/2022 8:20 PM
+I also have three light instances so I have to try if usb serial still
+works with a usb hub
+[_g1g4_]
+_g1g4_ 12/20/2022 8:18 PM
+Of course, one less device on the 2.4ghz network and the improvements
+you mentioned

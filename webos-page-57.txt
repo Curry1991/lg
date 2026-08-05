@@ -1,0 +1,1382 @@
+September 7, 2022
+[smx2460]
+smx2460 09/07/2022 11:52 PM
+(no content)
+ eglinfo
+12.52 KB External
+09/07/2022 11:52 PM
+who wants to try it? 
+09/07/2022 11:51 PM
+like eglinfo
+09/07/2022 11:51 PM
+by doing this, i can compile stuff
+09/07/2022 11:51 PM
+instead of including the EGL headers
+09/07/2022 11:51 PM
+by using
+    #define SDL_USE_BUILTIN_OPENGL_DEFINITIONS
+    #include <SDL2/SDL_egl.h>
+09/07/2022 11:51 PM
+you can force the SDL2 builtin headers over the EGL provider ones
+09/07/2022 11:51 PM
+update
+[smx2460]
+[] yolofant yeah, probably not worth the hassle
+smx2460 09/07/2022 11:28 PM
+probably easier to find other demos
+[smx2460]
+smx2460 09/07/2022 11:27 PM
+and just stick to khronos standard headers
+09/07/2022 11:27 PM
+essentially you'd need to patch mesa3d-demos to not use mesa specific
+bits
+[yolofant]
+yolofant 09/07/2022 11:27 PM
+yeah, probably not worth the hassle
+[smx2460]
+smx2460 09/07/2022 11:27 PM
+and glx is very likely mesa-only
+09/07/2022 11:27 PM
+i'm not sure if they are compatible tho
+09/07/2022 11:26 PM
+    $ ls output/build/rpi-userland-14b90ff9d9f031391a299e6e006965d02bfd1bb1/interface/khronos/include/GLES
+    glext.h  gl.h  glplatform.h
+09/07/2022 11:25 PM
+    output/build/rpi-userland-14b90ff9d9f031391a299e6e006965d02bfd1bb1/interface/khronos
+09/07/2022 11:25 PM
+specifically, khronos headers
+09/07/2022 11:25 PM
+we're using the one from the Raspberry PI (Broadcom) since the APIs and
+headers are mostly the same
+09/07/2022 11:24 PM
+those headers should be offered by the EGL provider
+09/07/2022 11:24 PM
+but i might have partially lied
+[yolofant]
+yolofant 09/07/2022 11:23 PM
+oh
+[smx2460]
+smx2460 09/07/2022 11:23 PM
+those are part of mesa
+09/07/2022 11:23 PM
+    #include <assert.h>
+    #include <X11/Xlib.h>
+    #include <X11/Xutil.h>
+    #include <GL/gl.h> <-- 
+    #include <GL/glx.h> <--
+    #include <stdio.h>
+    #include <string.h>
+    #include <stdlib.h>
+    #include "glinfo_common.h"
+09/07/2022 11:22 PM
+so instead you need something agnostic
+09/07/2022 11:22 PM
+demos expect to be able to use Mesa headers
+09/07/2022 11:21 PM
+and since mesa is an alternative OpenGL implementation, it conflicts
+09/07/2022 11:20 PM
+instead we have proprietary kernel modules that expose the GPU to the
+proprietary GLES implementation
+09/07/2022 11:20 PM
+assuming we did, this would expose the GPU to the userland which then
+needs a gallium driver
+09/07/2022 11:20 PM
+basically we don't have KMS/DRM (do we?)
+09/07/2022 11:19 PM
+https://upload.wikimedia.org/wikipedia/commons/9/99/Linux_kernel_and_OpenGL_video_games.svg
+09/07/2022 11:19 PM
+the linux graphics subsystem is quite messy
+09/07/2022 11:18 PM
+specifically gallium
+09/07/2022 11:17 PM
+and we don't have mesa drivers for WebOS
+09/07/2022 11:17 PM
+these depend on mesa
+[smx2460]
+[] smx2460 ``` select BR2_PACKAGE_MESA3D_DEMOS # glxinfo```
+smx2460 09/07/2022 11:17 PM
+just checked
+[smx2460]
+smx2460 09/07/2022 10:38 PM
+finding refs to bus registration and tracing them back
+09/07/2022 10:38 PM
+that's more or less what i was scripting for dbus
+09/07/2022 10:37 PM
+yeah
+[infowski]
+infowski 09/07/2022 10:37 PM
+Look for LSRegister* and friends. (edited)
+[infowski]
+hellobox. it lists the methods, but i don't see any options for getting
+parameters
+infowski 09/07/2022 10:37 PM
+Nope, there's nothing like this - luna-service2 only has an internal
+method that lists registered methods/categories, but everything else
+(incl. just plain JSON message string parsing) is done by application
+code, and every application does this differently - you'll need to pop
+relevant binaries into IDA/Ghidra sadly.
+[friya]
+friya 09/07/2022 6:55 PM
+I wonder if that key is required or missing
+ 2
+hellobox. 09/07/2022 6:35 PM
+ "errorText": "Missing required key is required but it is missing"
+[smx2460]
+smx2460 09/07/2022 6:29 PM
+i have vivid memories of looking in sbin binaries when we were figuring
+out the parameters for lowlevelstorage (with @infowski )
+09/07/2022 6:28 PM
+but it's in general not a straightforward thing
+hellobox. 09/07/2022 6:28 PM
+there are a couple schemas in /etc/palm/schemas, and maybe elsewhere,
+but it looks like that info isn't available for the vast majority of
+services
+[smx2460]
+smx2460 09/07/2022 6:28 PM
+i was working on a script that would sorta automate that - for dbus
+(edited)
+09/07/2022 6:27 PM
+you need to decompile the receiver to figure out
+hellobox. 09/07/2022 6:27 PM
+unless the schema is registered somehow
+09/07/2022 6:27 PM
+yeah
+[smx2460]
+smx2460 09/07/2022 6:27 PM
+and then handles it
+09/07/2022 6:27 PM
+because it's the method that unpacks the payload
+hellobox. 09/07/2022 6:27 PM
+it's probably not then
+[smx2460]
+smx2460 09/07/2022 6:26 PM
+it wasn't on dbus
+09/07/2022 6:26 PM
+i'm not totally sure it's possible
+hellobox. 09/07/2022 6:26 PM
+that's what lists the methods
+[smx2460]
+smx2460 09/07/2022 6:26 PM
+with -i ? (edited)
+hellobox. 09/07/2022 6:25 PM
+it lists the methods, but i don't see any options for getting parameters
+[smx2460]
+smx2460 09/07/2022 6:25 PM
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1#luna-service-bus-debugging
+openlgtv webOS hacking notes
+openlgtv webOS hacking notes. GitHub Gist: instantly share code, notes,
+and snippets.
+[]
+09/07/2022 6:25 PM
+have you tried ls-monitor?
+hellobox. 09/07/2022 6:24 PM
+is there any way to introspect parameters for luna methods?
+[yolofant]
+yolofant 09/07/2022 6:22 PM
+[akdm_]
+[] yolofant yes, I think you can specify width and height parameters
+akdm_ 09/07/2022 6:21 PM
+Thanks. Works with height and width parameters with a number as a value
+luna-send -n 1 -f 'luna://com.webos.service.capture/executeOneShot' '{"path":"/home/root/capture.png","method":"DISPLAY","height":2160,"width":3840,"format":"PNG"}'
+[smx2460]
+smx2460 09/07/2022 6:21 PM
+i don't think this exists on A64, so they chose A32
+09/07/2022 6:21 PM
+as the ISA was 64bit but pointers were 32
+09/07/2022 6:21 PM
+which is however different
+09/07/2022 6:21 PM
+it's the same reason why the Xbox 360 and PS3 used 64bit CPUs with 32bit
+pointers
+09/07/2022 6:19 PM
+i'd say it's barely fast for what it needs to do (edited)
+09/07/2022 6:19 PM
+and the CPU isn't that fast either
+09/07/2022 6:19 PM
+agreed
+[yolofant]
+yolofant 09/07/2022 6:19 PM
+there's not enough memory for a64 to make sense
+[smx2460]
+smx2460 09/07/2022 6:17 PM
+even Sony Bravia is A32
+09/07/2022 6:17 PM
+or even MTK for that matter (edited)
+[smx2460]
+hellobox. but do you have aarch64 userspace?
+smx2460 09/07/2022 6:16 PM
+i don't think there's any LG device having a64 userland
+[yolofant]
+yolofant 09/07/2022 6:16 PM
+no
+[] yolofant kernel is 64 bit on mine
+hellobox. 09/07/2022 6:15 PM
+but do you have aarch64 userspace?
+[yolofant]
+[] akdm_ Was it this same command?
+yolofant 09/07/2022 6:14 PM
+yes, I think you can specify width and height parameters
+[akdm_]
+[] yolofant yes, I've used it to capture 4k some weeks ago
+akdm_ 09/07/2022 6:14 PM
+Was it this same command?
+hellobox. 09/07/2022 6:13 PM
+Linux LGwebOSTV 4.4.84-723.13.1.kinglake.2 #1 SMP PREEMPT Thu Aug 18 04:39:32 UTC 2022 armv7l GNU/Linux
+[yolofant]
+yolofant 09/07/2022 6:13 PM
+Linux LGwebOSTV 5.4.96-266.mlt4tv.1 #1 SMP PREEMPT Tue Aug 9 13:19:38
+UTC 2022 aarch64 GNU/Linux
+09/07/2022 6:13 PM
+kernel is 64 bit on mine
+hellobox. 09/07/2022 6:12 PM
+are there aarch64 webos devices?
+[yolofant]
+[] akdm_ Hey. Is there a way to capture a full resolution screenshot?
+The method won't change anything for me...
+yolofant 09/07/2022 6:12 PM
+yes, I've used it to capture 4k some weeks ago
+[friya]
+[] smx2460 believe me or not guys, but i don't have a WebOS device 
+friya 09/07/2022 6:12 PM
+I still don't
+ 2
+hellobox. 09/07/2022 6:11 PM
+it also comes with (part of) x64 and aarch64 toolchains
+[akdm_]
+akdm_ 09/07/2022 6:11 PM
+Hey. Is there a way to capture a full resolution screenshot? The method
+won't change anything for me. It is always capturing at 540x960 (edited)
+[unknown.png]
+ unknown.png
+177.48 KB External
+[smx2460]
+smx2460 09/07/2022 6:05 PM
+[yolofant]
+yolofant 09/07/2022 6:05 PM
+mostly systemd service files
+[smx2460]
+smx2460 09/07/2022 6:05 PM
+xD
+09/07/2022 6:05 PM
+or it was config files
+[yolofant]
+yolofant 09/07/2022 6:05 PM
+I saw some
+[smx2460]
+smx2460 09/07/2022 6:05 PM
+on the TV filesystem
+09/07/2022 6:05 PM
+wait until you see scripts with "confidential and proprietary"
+copyrights
+hellobox. 09/07/2022 6:04 PM
+    # This script are steps on how to search for files with
+    # LG Copyright and BSD-style license
+[smx2460]
+smx2460 09/07/2022 6:03 PM
+yeah that's the surprise 
+hellobox. 09/07/2022 6:03 PM
+i downloaded the 3rd opensource tarball first because it's smaller than
+the other two (1.7gb vs 3gb), and it's... chromium
+[yolofant]
+yolofant 09/07/2022 6:00 PM
+[smx2460]
+smx2460 09/07/2022 6:00 PM
+and watch the gears spinning (build times i mean) (edited)
+09/07/2022 6:00 PM
+just put "BR2_PACKAGE_MESA3D_DEMOS=y" in .config
+09/07/2022 6:00 PM
+if you enable that package, you should get it
+09/07/2022 6:00 PM
+mesa3d demo to be exact
+09/07/2022 5:59 PM
+        select BR2_PACKAGE_MESA3D_DEMOS # glxinfo
+09/07/2022 5:59 PM
+glxinfo is part of MESA i think
+09/07/2022 5:59 PM
+sooo
+09/07/2022 5:59 PM
+i've worked with various people on their WebOS devices including
+unattended SSH access, but don't have one of my own yet 
+09/07/2022 5:58 PM
+believe me or not guys, but i don't have a WebOS device 
+09/07/2022 5:58 PM
+i know i could get various GPU info on Netcast4 once i built DirectFB
+and SDL samples
+09/07/2022 5:58 PM
+or rather
+09/07/2022 5:58 PM
+we do have it i think
+[yolofant]
+yolofant 09/07/2022 5:58 PM
+we need glxinfo 
+[smx2460]
+smx2460 09/07/2022 5:56 PM
+it's typically not beefy enough
+09/07/2022 5:56 PM
+i've yet to be proven wrong in a 4k TV's GPU outputting graphics at 4k
+(edited)
+09/07/2022 5:55 PM
+1080p screen --> 720p gpu resolution
+09/07/2022 5:55 PM
+4k screen --> 1080p gpu resolution
+09/07/2022 5:55 PM
+the GPU is typically i say "screen-1 tier" (or VPU-1 you could also say)
+(edited)
+[yolofant]
+yolofant 09/07/2022 5:54 PM
+ok, in that case mine is probably mali
+hellobox. 09/07/2022 5:54 PM
+libmali.so.0.17.0 (28mb)
+09/07/2022 5:53 PM
+mali_fb.ko, mali_kbase.ko
+[smx2460]
+smx2460 09/07/2022 5:53 PM
+dynamic: you make an EGL/GLES program that requests the GPU info (and
+pulls said strings dynamically)
+09/07/2022 5:53 PM
+static3: you disassemble the EGL/GLES libraries and look for the vendor
+strings
+hellobox. 09/07/2022 5:53 PM
+i'm just going by all the drivers/libraries with mali in their name
+[smx2460]
+smx2460 09/07/2022 5:52 PM
+static2: you look if you have evidently PowerVR libraries and files like
+powervr.ini or pvrsrvkm (edited)
+09/07/2022 5:52 PM
+static: you look at the kernel sources or gpl package
+09/07/2022 5:52 PM
+both static and dynamic
+09/07/2022 5:52 PM
+there are several ways
+[yolofant]
+yolofant 09/07/2022 5:52 PM
+how do you even find out the gpu if lshw is not available?
+[smx2460]
+smx2460 09/07/2022 5:51 PM
+https://github.com/erfanoabdi/android_device_lg_lg1154
+GitHub - erfanoabdi/android_device_lg_lg1154
+Contribute to erfanoabdi/android_device_lg_lg1154 development by
+creating an account on GitHub.
+[]
+hellobox. 09/07/2022 5:50 PM
+mine is mali
+[smx2460]
+smx2460 09/07/2022 5:50 PM
+it depends on the SOC
+09/07/2022 5:50 PM
+both iirc (edited)
+hellobox. 09/07/2022 5:50 PM
+does lx use mali or powervr?
+[smx2460]
+smx2460 09/07/2022 5:50 PM
+it didn't help that he was dealing with the worst possible GPU, PowerVR
+09/07/2022 5:49 PM
+he made a build that wouldn't do much besides crashing, but assuming
+it'd boot it and somehow (assuming an already impossible feat) have
+working graphics, it would lack all the rest like tuners, input, VPU
+hellobox. 09/07/2022 5:48 PM
+yet, anyway
+09/07/2022 5:48 PM
+definitely nothing that involved
+[smx2460]
+smx2460 09/07/2022 5:47 PM
+but without GPU drivers it turned out to be impossible
+09/07/2022 5:47 PM
+erfanoabdi tried to port Android to an LX SOC
+09/07/2022 5:47 PM
+that's the first main choice you make
+09/07/2022 5:47 PM
+i mean are you planning to work on the existing system or do something
+radically different
+hellobox. 09/07/2022 5:46 PM
+no specific plans
+[smx2460]
+hellobox. so does anybody have datasheets/programming manuals/whatever
+for realtek socs?
+smx2460 09/07/2022 5:46 PM
+what do you plan to do btw?
+[smx2460]
+smx2460 09/07/2022 5:44 PM
+NC4 probably also drives the tuners in userland 
+09/07/2022 5:43 PM
+    [i2c]MICOM:4:0x52:1
+    [i2c]NVM:3:0xA8:1
+    [i2c]TUA:6:0xFF:1
+    [i2c]TUD:5:0xFF:1
+    [i2c]TUS:5:0xFF:1
+    [i2c]TU_LNB:5:0xFF:1
+    [i2c]NTP7400:1:0x54:1
+    [i2c]NTP7500:1:0x54:1
+    [i2c]NTP2AMP_M:1:0x54:1
+    [i2c]NTP2AMP_W:1:0x56:1
+    [i2c]STA380:1:0x38:1
+    [i2c]TAS5733:1:0x54:1
+    [i2c]NTP7513:1:0x54:1
+    [i2c]TAS5733_2AMP_M:1:0x54:1
+    [i2c]TAS5733_2AMP_W:1:0x56:1
+    [i2c]FRCMST7323S:1:0xB4:1
+    [i2c]FRCMST7398Q:1:0xB4:1
+    [i2c]FRCSPIFLASH:1:0x98:1
+    [i2c]FRCURSA5DDC:1:0x40:1
+    [i2c]LG1122:1:0xB2:1
+    [i2c]LG1131:1:0x8E:1
+    [i2c]MAX17139:2:0x42:1
+    [i2c]SHARP_TCON:2:0xB4:1
+    [i2c]HDMISIL1292_D0:5:0xD0:1
+    [i2c]HDMISIL1292_C8:5:0xC8:1
+    [i2c]HDMISIL9134_72:1:0x72:1
+    [i2c]HDMISIL9134_7A:1:0x7A:1
+    [i2c]HDCP:1:0xA0:1
+    [i2c]MAX9668:4:0xE8:1
+    [i2c]MAX9668B:4:0xEA:1
+    [i2c]BUF16821:4:0xe8:1
+    [i2c]LG5111:1:0x1E:1
+    [i2c]LG5811:1:0x72:1
+    [i2c]WIRELESS_DONGLE:4:0x20:0
+    [i2c]LEDDRIVER1:1:0x46:0
+    [i2c]LEDDRIVER2:1:0x48:0
+    [i2c]LG5812:1:0x70:1
+    [i2c]LG5822:1:0x70:1
+    [i2c]LG1132:1:0x12:1
+    [i2c]TPS65178:2:0x40:0
+    [i2c]BUF08630A:1:0xE8:1
+    [i2c]BUF08630B:1:0xEA:1
+    [i2c]HDMI_A_EDID:7:0xA0:0
+    [i2c]HDMI_B_EDID:8:0xA0:0
+    [i2c]HDMI_C_EDID:9:0xA0:0
+    [i2c]HDMI_D_EDID:10:0xA0:0
+09/07/2022 5:43 PM
+like it always has
+09/07/2022 5:43 PM
+i'd be surprised if MICOM communication doesn't occur on I2C in userland
+(edited)
+09/07/2022 5:42 PM
+at least the I2C part
+09/07/2022 5:42 PM
+it's likely used for MICOM communication
+hellobox. 09/07/2022 5:41 PM
+and seeing if i can monitor what they're used for
+[smx2460]
+smx2460 09/07/2022 5:41 PM
+and the file looks like this
+09/07/2022 5:41 PM
+(no content)
+ RELEASE.cfg
+5 KB External
+hellobox. 09/07/2022 5:41 PM
+i'm planning on taking a look at libhal_{i2c,spi,uart}
+[smx2460]
+smx2460 09/07/2022 5:41 PM
+if it's there, it's typically a JFFS2 partition
+09/07/2022 5:41 PM
+you can check in /proc/partinfo
+09/07/2022 5:40 PM
+but i don't remember for sure (edited)
+09/07/2022 5:40 PM
+it should still be there on WebOS
+09/07/2022 5:40 PM
+where you'll find RELEASE.cfg (edited)
+09/07/2022 5:40 PM
+or model in full
+09/07/2022 5:40 PM
+the address of those devices is specified in the mode partition
+09/07/2022 5:39 PM
+it's read and written to in userland code by RELEASE itself, which calls
+HAL functions to do I2C
+09/07/2022 5:39 PM
+i saw that when first looking up the EEPROM on NC4
+09/07/2022 5:38 PM
+some devices on LG are implemented in userland I2C 
+09/07/2022 5:38 PM
+another thing worth mentioning
+09/07/2022 5:37 PM
+    adsldd                478312  0
+    bcmxtmcfg              65672  1 adsldd
+    bdmf                  122196 10 bcmspu,dhd,wfd,rdpa_cmd,pktrunner,bcm_enet,bcmxtmrtdrv,rdpa_mw,rdpa,rdpa_gpl
+    hwswitch               23020  1 bcm_enet
+09/07/2022 5:35 PM
+where the xDSL part is a heavily customized kernel module (i'm looking
+at you, Broadcom)
+09/07/2022 5:35 PM
+same issue on xDSL modems
+09/07/2022 5:35 PM
+it's much easier for the vendor to make their own .ko and hal than
+adhere to kernel standards
+09/07/2022 5:33 PM
+right now this is very very far, with closed source HALs and heavily
+modified kernels
+09/07/2022 5:33 PM
+in the kernel perspective i mean
+09/07/2022 5:33 PM
+i wonder if we'll ever see a "mainline" and "open" TV
+09/07/2022 5:29 PM
+(no content)
+[unknown.png]
+ unknown.png
+17.83 KB External
+09/07/2022 5:29 PM
+yes, or the vend partition if your TV is old enough
+hellobox. 09/07/2022 5:29 PM
+and the low-level hal libraries are in the bsppart section of the epk
+instead of rootfs
+[smx2460]
+smx2460 09/07/2022 5:28 PM
+they do it this way so they can swap the underlying vendor hal (CPU)
+between MStar, LG, Realtek, etc..
+[yolofant]
+yolofant 09/07/2022 5:28 PM
+yeah, I tried invoking some functions from libkadaptor
+hellobox. 09/07/2022 5:28 PM
+yeah, i saw when i was getting my sfu keys
+[smx2460]
+smx2460 09/07/2022 5:27 PM
+it goes through libkadaptor which then talks to the LG kdriver
+09/07/2022 5:27 PM
+DIL is supposedly Device Interface Layer
+09/07/2022 5:27 PM
+all LG TVs have 2 HALS: a vendor HAL and the LG HAL (DILE) (edited)
+09/07/2022 5:26 PM
+same as /dev/lg*
+[yolofant]
+yolofant 09/07/2022 5:26 PM
+yes it is
+[smx2460]
+smx2460 09/07/2022 5:26 PM
+/proc/lg is surely exposed by kdriver
+09/07/2022 5:26 PM
+probably for convenience reasons (proprietary modules can't use GPL
+symbols)
+09/07/2022 5:25 PM
+iirc it's open on everything except MTK
+09/07/2022 5:25 PM
+if the "kdriver" (kernel driver) is open source, you'll find plenty of
+code to interface with all SOC components
+[yolofant]
+yolofant 09/07/2022 5:24 PM
+and there is /proc/lg/de/vt_get_addr but the address returned is not a
+valid memory address
+[smx2460]
+smx2460 09/07/2022 5:24 PM
+@hellobox BSP sources is the manual in most cases (unless you can find
+an single board computer with the same SOC and then it will typically
+have a datasheet) (edited)
+hellobox. 09/07/2022 5:23 PM
+so does anybody have datasheets/programming manuals/whatever for realtek
+socs?
+[yolofant]
+yolofant 09/07/2022 5:23 PM
+I found some references to VTM (video to memory) which is accessable via
+ioctl
+[smx2460]
+smx2460 09/07/2022 5:22 PM
+and RTK uses MIPS CPUs for VPU tasks
+09/07/2022 5:22 PM
+it might have its own permissions
+09/07/2022 5:22 PM
+RTK has a dedicated RPC bus, controlled by the CPU
+[retr0id]
+retr0id 09/07/2022 5:21 PM
+I believe they share memory, but the main CPU might not be able to
+access some of it from outside of tz
+[smx2460]
+smx2460 09/07/2022 5:21 PM
+or it's otherwise an xtensa CPU
+09/07/2022 5:21 PM
+on LG it runs xtensa linux iirc
+09/07/2022 5:21 PM
+depending on the SOC you're on, the VPU might be its own CPU
+09/07/2022 5:20 PM
+also it's worth mentioning
+[retr0id]
+retr0id 09/07/2022 5:20 PM
+I dumped the entire 4GB address space (easier on a 32-bit SoC!)
+[smx2460]
+smx2460 09/07/2022 5:20 PM
+probably it's a double buffered GPU surface
+[yolofant]
+yolofant 09/07/2022 5:20 PM
+intersting, I tried to read different memory areas but so far no success
+[retr0id]
+retr0id 09/07/2022 5:20 PM
+yup, it's only the GUI stuff tho, not video
+[smx2460]
+smx2460 09/07/2022 5:19 PM
+https://github.com/DavidBuchanan314/webos-vncserver
+GitHub - DavidBuchanan314/webos-vncserver: An extremely hacky VNC s...
+An extremely hacky VNC server for WebOS - Works by reading directly from
+the GPU&#39;s framebuffer. - GitHub - DavidBuchanan314/webos-vncserver:
+An extremely hacky VNC server for WebOS - Works ...
+[]
+09/07/2022 5:19 PM
+@retr0id did so via /dev/mem
+[yolofant]
+yolofant 09/07/2022 5:19 PM
+do you know if someone already tried to access the framebuffer directly
+instead of going through vtcapture / dile_vt?
+[smx2460]
+smx2460 09/07/2022 5:18 PM
+actually 16bit, sorry
+09/07/2022 5:18 PM
+they are Renesas RL78 units
+09/07/2022 5:18 PM
+in SREC format
+09/07/2022 5:18 PM
+mico.pak on the EPK is the firmware for MICOM
+09/07/2022 5:17 PM
+MICOM turns on the SoC
+09/07/2022 5:17 PM
+you're signaling MICOM
+09/07/2022 5:17 PM
+when you push the power button on the remote
+09/07/2022 5:17 PM
+it's an 8bit MCU that manages the inverter, remote, power management
+hellobox. 09/07/2022 5:17 PM
+what kind of stuff does the "micom" do?
+[smx2460]
+smx2460 09/07/2022 5:15 PM
+LG uses OMX to feed audio/video to the VPU, and as @Yolofant pointed
+out, a patched gstreamer
+09/07/2022 5:14 PM
+and so the tuner was already "set up"
+09/07/2022 5:14 PM
+provided you were watching DTV
+09/07/2022 5:14 PM
+audio and video will keep running normally
+09/07/2022 5:13 PM
+if you disable the watchdog and kill RELEASE
+09/07/2022 5:13 PM
+in what is a pretty custom pipeline
+09/07/2022 5:13 PM
+the tuner and demuxer are wired to the panel via that
+09/07/2022 5:13 PM
+which controls various OSD layers and mode switching between the VPU and
+GPU
+09/07/2022 5:13 PM
+the Netcast kernel has a kernel based OSD muxer
+09/07/2022 5:12 PM
+we've started to see this only recently i think with latest RTK or LX
+chipsets
+09/07/2022 5:12 PM
+tuners historically never used dbvapi
+[yolofant]
+yolofant 09/07/2022 5:12 PM
+if kodi just used gstreamer 
+[smx2460]
+smx2460 09/07/2022 5:12 PM
+problem is that it'd be quite useless from a TV standpoint
+09/07/2022 5:11 PM
+and Wayland
+hellobox. 09/07/2022 5:11 PM
+well, at least it also uses qt
+[smx2460]
+smx2460 09/07/2022 5:11 PM
+(if at all)
+09/07/2022 5:10 PM
+just curious how well it'd run
+09/07/2022 5:10 PM
+i'd like to see this ported to WebOS at some point
+09/07/2022 5:10 PM
+https://plasma-bigscreen.org
+Plasma Bigscreen
+The most popular HTML, CSS, and JS library in the world.
+09/07/2022 5:08 PM
+because all the actual missing pieces (patches) weren't in open webos
+(edited)
+09/07/2022 5:08 PM
+it also lacked hardware acceleration and didn't work properly with
+pulseaudio
+09/07/2022 5:08 PM
+(no content)
+[IMG_20140922_001624.jpg]
+ IMG_20140922_001624.jpg
+3 MB External
+09/07/2022 5:07 PM
+it wasn't reproducible by any means
+09/07/2022 5:07 PM
+but we had to do MASSIVE hacks
+09/07/2022 5:07 PM
+we used the Open WebOS environment back in 2014 to build Kodi (then
+XBMC) for the TV WebOS (edited)
+09/07/2022 5:07 PM
+it's quite different yes
+hellobox. 09/07/2022 5:07 PM
+i started doing that before i realized how different it was
+09/07/2022 5:06 PM
+yeah
+[smx2460]
+smx2460 09/07/2022 5:06 PM
+ah nvm, you need to build it yourself from source
+09/07/2022 5:06 PM
+(no content)
+[unknown.png]
+ unknown.png
+188.07 KB External
+09/07/2022 5:06 PM
+i wonder if someone has ever tried them
+09/07/2022 5:06 PM
+apparently they have Raspberry PI images for OpenWebOS
+hellobox. 09/07/2022 5:05 PM
+it's pretty bad
+[smx2460]
+smx2460 09/07/2022 5:04 PM
+it doesn't surprise me, Netcast UI is quite bloated and slow
+09/07/2022 5:04 PM
+people actually liked the new UI so they kept it
+09/07/2022 5:03 PM
+but they didn't do it for time constraints iirc
+09/07/2022 5:03 PM
+LG wanted a more bloated UI than what ended up in WebOS
+09/07/2022 5:03 PM
+i read stories about developers being against LG's ideals
+09/07/2022 5:03 PM
+it was more open and general purpose under Palm/HP
+09/07/2022 5:03 PM
+LG pretty much plagiarized WebOS for their needs
+hellobox. 09/07/2022 5:02 PM
+there's a lot of old webos stuff on github from palm/hp
+[smx2460]
+smx2460 09/07/2022 5:02 PM
+so that probably helped them in transitioning
+09/07/2022 5:02 PM
+at least in Netcast LG doesn't use dbus directly, they have their own
+abstraction layer in between
+hellobox. 09/07/2022 5:01 PM
+i guess i must have read some old documentation that mentioned dbus and
+didn't know it was dropped
+09/07/2022 5:01 PM
+according to that page
+09/07/2022 5:00 PM
+i think luna was based on dbus in webos 1.x?
+[smx2460]
+smx2460 09/07/2022 5:00 PM
+it's similar in concept to dbus-send
+09/07/2022 5:00 PM
+yep
+hellobox. 09/07/2022 5:00 PM
+https://www.webos-internals.org/wiki/Luna_Send
+Luna Send
+[smx2460]
+smx2460 09/07/2022 5:00 PM
+luna was probably inherited from WebOS
+hellobox. 09/07/2022 4:59 PM
+i thought luna was based on dbus or something, but apparently that's not
+the case
+[smx2460]
+smx2460 09/07/2022 4:58 PM
+and dbus for IPC instead of luna
+09/07/2022 4:58 PM
+it uses DirectFB for output
+09/07/2022 4:57 PM
+they were too lazy to add an ALSA driver
+09/07/2022 4:57 PM
+mine doesn't even have ALSA
+[smx2460]
+hellobox. worse than webos?
+smx2460 09/07/2022 4:57 PM
+ok so we don't have pulseaudio
+[smx2460]
+smx2460 09/07/2022 4:56 PM
+you can get out of that only by dropping in the bootloader and wiping
+the log mask setting from EEPROM manually
+09/07/2022 4:56 PM
+because it will enter an endless debug spam of registers
+09/07/2022 4:55 PM
+if you actually enable all the debug print options, you will soft-brick
+the TV (edited)
+09/07/2022 4:55 PM
+DEBUG adds some overhead in printing stuff (edited)
+09/07/2022 4:55 PM
+mine is probably even worse because i enabled DEBUG
+09/07/2022 4:55 PM
+much worse
+hellobox. 09/07/2022 4:55 PM
+worse than webos?
+[smx2460]
+smx2460 09/07/2022 4:55 PM
+it's a pretty buggy and slow os
+09/07/2022 4:54 PM
+i have a Netcast 4.0 Mediatek TV
+09/07/2022 4:54 PM
+which i have
+09/07/2022 4:54 PM
+and then it became 4.x in ARM models
+09/07/2022 4:54 PM
+then it started becoming Netcast in Broadcom Mips models (iirc Netcast
+3.x) (edited)
+09/07/2022 4:54 PM
+before Netcast it was called something like "Broadband TV" iirc
+09/07/2022 4:53 PM
+yes
+hellobox. 09/07/2022 4:53 PM
+so netcast is lg's os from before they bought webos?
+09/07/2022 4:52 PM
+lol
+[smx2460]
+smx2460 09/07/2022 4:51 PM
+we in fact found about it shortly before it was fixed
+09/07/2022 4:50 PM
+before it was fixed in i think WebOS 1.2 (edited)
+09/07/2022 4:50 PM
+it actually carried over to WebOS
+[yolofant]
+yolofant 09/07/2022 4:50 PM
+[smx2460]
+smx2460 09/07/2022 4:49 PM
+despite implementing secureboot and Access USB, there was an option to
+blindly run a script from the USB pendrive as root, left in the service
+menu accessible at RELEASE debug level
+[smx2460]
+hellobox. it seems like a lot of work for minimal benefit, as long as
+the rest of their security is so weak
+smx2460 09/07/2022 4:47 PM
+Netcast4 had even more absurd vulns btw
+[smx2460]
+smx2460 09/07/2022 4:46 PM
+which we can't forge since it's signed
+09/07/2022 4:46 PM
+https server and actual verification of the EPK header against the
+server response
+09/07/2022 4:45 PM
+no longer possible since they fixed both issues
+09/07/2022 4:45 PM
+aka https://github.com/openlgtv/nsu_emu
+GitHub - openlgtv/nsu_emu: An emulator for LG Network Software Upda...
+An emulator for LG Network Software Update servers (Smart TVs) -
+GitHub - openlgtv/nsu_emu: An emulator for LG Network Software Update
+servers (Smart TVs)
+[]
+09/07/2022 4:45 PM
+and the TV would blindly trust the server reply
+09/07/2022 4:45 PM
+btw the firmware updates used to be served on plain http
+09/07/2022 4:42 PM
+etc..
+09/07/2022 4:42 PM
+Secure boot:  encryption: 
+hellobox. 09/07/2022 4:42 PM
+encrypted with 256 bits!!!
+ 2
+[smx2460]
+smx2460 09/07/2022 4:42 PM
+as long as some boxes are ticket
+09/07/2022 4:42 PM
+yeah i was about to say
+hellobox. 09/07/2022 4:42 PM
+more of a box-checking exercise
+09/07/2022 4:42 PM
+i figured it was something like that
+[smx2460]
+smx2460 09/07/2022 4:41 PM
+i don't know how the auditing of this security works tho
+09/07/2022 4:41 PM
+it's a prerequisite
+09/07/2022 4:41 PM
+or netflix
+[smx2460]
+hellobox. it seems like a lot of work for minimal benefit, as long as
+the rest of their security is so weak
+smx2460 09/07/2022 4:41 PM
+they have to secure the system to get CI/CI+ certifications
+[smx2460]
+smx2460 09/07/2022 4:40 PM
+if your firmware version is old enough it will typically offer a full
+update
+09/07/2022 4:40 PM
+partial updates don't contain all partitions and are reasonably smaller
+hellobox. 09/07/2022 4:39 PM
+it seems like a lot of work for minimal benefit, as long as the rest of
+their security is so weak
+[smx2460]
+smx2460 09/07/2022 4:39 PM
+also it has some checks to know if it should propose a partial update or
+a full update
+09/07/2022 4:39 PM
+and proposes the latest compatible with that key
+09/07/2022 4:39 PM
+the server knows which EPK it can install based on that
+hellobox. 09/07/2022 4:39 PM
+fair enough
+[smx2460]
+smx2460 09/07/2022 4:39 PM
+when the TV searches for an update, it posts its current EPK version
+09/07/2022 4:38 PM
+and the updater will force you to install that first (edited)
+09/07/2022 4:38 PM
+they typically roll a milestone update when doing this
+hellobox. 09/07/2022 4:38 PM
+but then if they only distribute the subsequent EPKs encrypted with the
+new key, devices that missed a previous update wouldn't be able to
+decrypt them
+[smx2460]
+smx2460 09/07/2022 4:37 PM
+once the EPK is flashed, the new key is in effect
+09/07/2022 4:37 PM
+they just need to ship a new sedata inside the old EPK (edited)
+hellobox. 09/07/2022 4:37 PM
+they would have to distribute it via a fw update, right?
+[smx2460]
+smx2460 09/07/2022 4:37 PM
+i think so
+hellobox. 09/07/2022 4:36 PM
+but is it practical for them to change the epk key for a given model?
+[smx2460]
+smx2460 09/07/2022 4:36 PM
+which includes among others the EPK key
+09/07/2022 4:36 PM
+they use this key to encrypt the keybox (which they call "sedata")
+09/07/2022 4:36 PM
+CPU does hardware AES encryption via a fused in key
+09/07/2022 4:35 PM
+aes
+hellobox. 09/07/2022 4:35 PM
+are you talking about the rsa key or the aes key?
+[smx2460]
+smx2460 09/07/2022 4:35 PM
+and it's the same key they are using to encrypt system settings such as
+debug status in recent WebOS
+09/07/2022 4:35 PM
+because they are stored encrypted by this "oracle" key
+09/07/2022 4:34 PM
+basically LG can change the EPK keys if they want to
+09/07/2022 4:34 PM
+unless someone fucked really badly
+09/07/2022 4:33 PM
+the key never leaves the CPU in plaintext
+09/07/2022 4:33 PM
+but getting to that requires side channel attacks
+09/07/2022 4:33 PM
+the real key is the OTP key inside the CPU
+09/07/2022 4:33 PM
+the EPK keys are ephemeral
+hellobox. 09/07/2022 4:33 PM
+but they seem to put a lot of emphasis on security, judging by the
+semi-recent leaked code (lots of internal fuzzing tools...)
+09/07/2022 4:31 PM
+i think samsung phones are locked down a lot tighter than webos, and
+they don't bother encrypting their firmware
+09/07/2022 4:30 PM
+but in the end it's just an inconvenience
+09/07/2022 4:30 PM
+like encrypting the firmware with 256-bit model-specific keys
+09/07/2022 4:28 PM
+or at least aren't worth the trouble
+09/07/2022 4:28 PM
+it seems like they apply encryption in ways that don't make a ton of
+sense
+[smx2460]
+smx2460 09/07/2022 4:27 PM
+but we surely didn't crack AES128  (edited)
+09/07/2022 4:27 PM
+they also upped the EPK key from 128bit to 256bit
+09/07/2022 4:26 PM
+i mean they made quite a few oversight
+hellobox. 09/07/2022 4:26 PM
+they have all this fancy tech, but stuff like the crashd exploit is
+laughable
+[smx2460]
+smx2460 09/07/2022 4:26 PM
+the OS-level security is not that strong
+hellobox. 09/07/2022 4:25 PM
+but lg doesn't seem to do security very well
+[smx2460]
+smx2460 09/07/2022 4:25 PM
+and it also has its unique VID/PID
+09/07/2022 4:25 PM
+it talks to the TV with a scrambled protocol (just in case i guess, lol)
+(edited)
+09/07/2022 4:24 PM
+AUSB is just a CDC serial device
+09/07/2022 4:24 PM
+and btw
+09/07/2022 4:23 PM
+with this change, if you brick the TV and you're not in DEBUG it's oooof
+time (edited)
+09/07/2022 4:22 PM
+so you could access uboot and flash the system back
+09/07/2022 4:22 PM
+that was a thing, but it was mostly used to recover bricked TVs
+09/07/2022 4:21 PM
+i think they changed it because they thought people were rooting the TVs
+by reprogramming the EEPROM
+hellobox. 09/07/2022 4:21 PM
+why do they bother?
+09/07/2022 4:21 PM
+it seems like they go through so much effort, but all of this is
+relatively easily defeated
+[smx2460]
+smx2460 09/07/2022 4:21 PM
+and in recent WebOS it's not even stored in an EEPROM anymore
+09/07/2022 4:20 PM
+but then LG encrypted it (with the CPU key) (edited)
+09/07/2022 4:20 PM
+this setting used to be stored in an EEPROM
+09/07/2022 4:19 PM
+to EVENT or DEBUG
+hellobox. 09/07/2022 4:19 PM
+public key crypto, a blessing and a curse
+[smx2460]
+smx2460 09/07/2022 4:19 PM
+if, and only if, that passes, you can change the debug status
+09/07/2022 4:19 PM
+and the TV contains the public key to verify it
+09/07/2022 4:19 PM
+they are hardware tokens that present a signed message to the TV
+09/07/2022 4:18 PM
+with the accompanying password
+09/07/2022 4:18 PM
+but yeah NORMALLY you need to have one of those dongles
+09/07/2022 4:18 PM
+we've known about that way before 2022 
+09/07/2022 4:18 PM
+yes that's exactly that
+hellobox. 09/07/2022 4:18 PM
+https://hackaday.com/2022/03/30/whats-that-accessusb-menu-in-my-lg-smarttv/
+i have some stm32 dev boards too
+Arya Voronova
+What’s That AccessUSB Menu In My LG SmartTV?
+One boring evening, [XenRE] was looking through service menus on their
+LG Smart TV (Russian, Google Translate), such menus accessible through
+use of undocumented IR remote codes. In other words, a …
+[]
+[smx2460]
+smx2460 09/07/2022 4:17 PM
+https://cdn.discordapp.com/attachments/484820611928162322/729109721457360896/unknown.png
+https://media.discordapp.net/attachments/484820611928162322/613849939994345667/unknown.png
+[][]
+09/07/2022 4:15 PM
+each [:ausb:] is individually signed by LG
+hellobox. 09/07/2022 4:15 PM
+that's a better idea than what i was thinking (design a board for
+pl2303+eeprom)
+[smx2460]
+smx2460 09/07/2022 4:15 PM
+but it's not very useful as there is no known key to use
+09/07/2022 4:14 PM
+some guy did exactly that to emulate an AUSB device
+hellobox. 09/07/2022 4:14 PM
+i can work on that
+[smx2460]
+smx2460 09/07/2022 4:14 PM
+and programming in a driver to respond as an Aten UC232A
+09/07/2022 4:13 PM
+it means taking a Raspberry PI Zero or anything else capable of USB
+Guest
+09/07/2022 4:13 PM
+an alternative i didn't explore (maybe you can help with this?) is
+emulating a PL2303 with a USB OTG gadget
+09/07/2022 4:12 PM
+(that's why we have this emoji :D)
+09/07/2022 4:12 PM
+[:aten:]
+hellobox. 09/07/2022 4:12 PM
+i just know i have a non-ftdi uart board around somewhere
+09/07/2022 4:11 PM
+actually i don't even know if i have a pl2303, it might be a cp2102
+[smx2460]
+smx2460 09/07/2022 4:11 PM
+eeprom clearly visible in this picture
+09/07/2022 4:11 PM
+[]
+09/07/2022 4:11 PM
+https://sites.google.com/site/klaasdc/modify-pl2303-pid-vid
+KlaasDC - Modify PL2303 PID & VID
+Following an article on hackaday I ordered this cheap USB GSM modem.
+Inside is a pre-assembled GSM module from BenQ (BenQ M32, command
+manual) with some support electronics for the SIM card holder and a
+PL2303 USB to serial converter chip. Unfortunately, the Chinese
+manufacturer decided that you
+[]
+09/07/2022 4:10 PM
+or otherwise force the shell to open on any tty
+hellobox. 09/07/2022 4:10 PM
+oh, if it needs an external eeprom then i'm sure mine doesn't have one
+either
+[smx2460]
+smx2460 09/07/2022 4:10 PM
+but again, if you're root you can remove the PID whitelist
+09/07/2022 4:10 PM
+and has none
+09/07/2022 4:10 PM
+mine is a chinese clone
+[smx2460]
+hellobox. isn't there a way to reprogram a pl2303's vid/pid?
+smx2460 09/07/2022 4:10 PM
+only if it has an EEPROM
+[smx2460]
+smx2460 09/07/2022 4:09 PM
+and before that they were in tvservice/RELEASE
+hellobox. 09/07/2022 4:09 PM
+isn't there a way to reprogram a pl2303's vid/pid?
+[smx2460]
+smx2460 09/07/2022 4:09 PM
+before that they were hardcoded in the physical-device-manager binary
+09/07/2022 4:09 PM
+in the latest WebOS they are udev rules
+09/07/2022 4:09 PM
+the way this check is implemented changed throughout the years
+09/07/2022 4:09 PM
+and limited the TV to work with just that adapter
+09/07/2022 4:08 PM
+LG implemented it like that
+09/07/2022 4:08 PM
+but yeah the adapter's only purpose is to act as a "uart enable switch"
+09/07/2022 4:08 PM
+if you want to hook it to say a Raspi
+09/07/2022 4:08 PM
+or any equivalent level shifter
+09/07/2022 4:08 PM
+but the Aten outputs RS232 level voltages, so you'd need a MAX232
+09/07/2022 4:07 PM
+or Aten + anything else
+09/07/2022 4:07 PM
+if you want USB to USB, you need 2 of them in nullmodem config
+hellobox. 09/07/2022 4:07 PM
+lol
+[smx2460]
+smx2460 09/07/2022 4:07 PM
+USB in TV, RS232 in PC
+09/07/2022 4:07 PM
+and they used the adapter in reverse
+09/07/2022 4:07 PM
+so they implemented a VID/PID check for Aten VID/PID
+09/07/2022 4:07 PM
+when the Smart TVs came, they probably had a pile of those adapters
+around
+09/07/2022 4:07 PM
+RS232 in TV, USB in PC
+hellobox. 09/07/2022 4:07 PM
+how does it know? usb vid/pid?
+[smx2460]
+smx2460 09/07/2022 4:06 PM
+LG used the Aten historically on MIPS TVs that had a DB9 port
+09/07/2022 4:06 PM
+but this check is implemented only in the OS
+09/07/2022 4:06 PM
+i.e. the RELEASE/tvservice console will refuse to operate on anything
+else
+09/07/2022 4:06 PM
+the system instead accepts only Aten UC232A
+[smx2460]
+hellobox. i don't know if i have a pl2303 board; i might have one
+somewhere that i never use because i prefer ...
+smx2460 09/07/2022 4:05 PM
+the bootloader accepts any PL2303
+[smx2460]
+smx2460 09/07/2022 4:05 PM
+then it's simpler to enable (edited)
+hellobox. 09/07/2022 4:05 PM
+yeah
+09/07/2022 4:05 PM
+i don't know if i have a pl2303 board; i might have one somewhere that i
+never use because i prefer the ftdi ones
+[smx2460]
+smx2460 09/07/2022 4:04 PM
+you said you have WebOS 6?
+09/07/2022 4:04 PM
+you can override that if you are root
+09/07/2022 4:04 PM
+which is called "Access USB"
+09/07/2022 4:04 PM
+LG officially demands a RSA dongle
+hellobox. 09/07/2022 4:03 PM
+and how do i enable debug mode?
+[smx2460]
+smx2460 09/07/2022 4:03 PM
+and for shell to be enabled
+09/07/2022 4:03 PM
+and you also have to be in DEBUG mode for said drivers to be loaded
+09/07/2022 4:02 PM
+yes
+hellobox. 09/07/2022 4:02 PM
+has to be pl2303?
+[smx2460]
+smx2460 09/07/2022 4:02 PM
+uboot has PL2303 drivers
+09/07/2022 4:02 PM
+you just plug in a PL2303 to the side USB port
+09/07/2022 4:02 PM
+no need
+hellobox. 09/07/2022 4:02 PM
+i'll have to open my tv and look for a uart header
+[smx2460]
+smx2460 09/07/2022 4:02 PM
+the most important use of uboot is to recover a partial brick tho
+09/07/2022 4:01 PM
+because trustzone is loaded by uboot itself
+09/07/2022 4:01 PM
+most run above tho
+09/07/2022 4:00 PM
+i.e. some boards have uboot run above trustzone, others have it run
+below
+09/07/2022 4:00 PM
+depending on the board, trustzone might not yet be loaded in uboot
+hellobox. 09/07/2022 3:59 PM
+hmm
+[smx2460]
+smx2460 09/07/2022 3:59 PM
+i made it as a playground to test code exec
+09/07/2022 3:58 PM
+but they are hello worlds mostly
+09/07/2022 3:58 PM
+this repo contains some samples to run in uboot/lxboot
+09/07/2022 3:58 PM
+https://github.com/openlgtv/bootSdk
+GitHub - openlgtv/bootSdk: Run custom binaries in lxboot or uboot
+Run custom binaries in lxboot or uboot. Contribute to openlgtv/bootSdk
+development by creating an account on GitHub.
+[]
+09/07/2022 3:58 PM
+again, depends on how uboot is implemented
+09/07/2022 3:58 PM
+and it's not necessarily going to be untethered
+09/07/2022 3:57 PM
+the "how" depends on the board
+09/07/2022 3:57 PM
+boot a custom kernel
+09/07/2022 3:57 PM
+boot from USB
+09/07/2022 3:57 PM
+well you can run code at uboot level
+09/07/2022 3:57 PM
+#define interesting
+hellobox. 09/07/2022 3:57 PM
+e.g. in uboot
+09/07/2022 3:57 PM
+anything interesting possible with uart access?
+[smx2460]
+smx2460 09/07/2022 3:55 PM
+that's why they are squashfs and readonly
+09/07/2022 3:54 PM
+NEVER TOUCH THE SYSTEM OR KERNEL PARTITIONS as they are not meant to be
+modified (they are signed)
+09/07/2022 3:54 PM
+in any case there's little risk of bricking unless you willingly mess
+with system partitions
+09/07/2022 3:51 PM
+i find a USB pendrive convenient, you can always unplug it to revert
+09/07/2022 3:51 PM
+ofc be careful before you make anything persistent
+09/07/2022 3:51 PM
+the system is mounted readonly, so you need to use bind/overlay mounts
+if you want to "replace" (or shadow) anything
+[smx2460]
+[] alesx2io like a safe one where there's no risk of bricking or smth
+smx2460 09/07/2022 3:50 PM
+as for the location to use on TV, i recommend a USB pendrive
+[smx2460]
+smx2460 09/07/2022 3:46 PM
+Mariotaku's NDK is based on Yocto, but it's more tedious to customize to
+fit your needs compared to buildroot
+09/07/2022 3:45 PM
+Yocto lets you create IPKs that you can distribute individually, but
+buildroot does not
+09/07/2022 3:44 PM
+and maintain individual packages
+[alesx2io]
+alesx2io 09/07/2022 3:43 PM
+[smx2460]
+smx2460 09/07/2022 3:43 PM
+it's not feasible for us to maintain a full repo ourselves
+09/07/2022 3:43 PM
+you need to download the repo on your PC and run the steps on the PC to
+get binaries that you can then copy to the TV
+09/07/2022 3:43 PM
+yeah there's no "prebuilt package manager" you can readily install,
+sorry
+[yolofant]
+yolofant 09/07/2022 3:42 PM
+that's not meant to be used on the tv
+09/07/2022 3:42 PM
+huh?
+[alesx2io]
+alesx2io 09/07/2022 3:41 PM
+like a safe one where there's no risk of bricking or smth
+09/07/2022 3:41 PM
+@Smx quick question, what directory would you suggest for downloading
+and setting up stuff?
+hellobox. 09/07/2022 3:35 PM
+https://www.google.com/search?q=tv+%22service+manual%22+site%3Agscs-b2c.lge.com
+[alesx2io]
+[] smx2460 then just `make`
+alesx2io 09/07/2022 3:34 PM
+thank you!
+[smx2460]
+smx2460 09/07/2022 3:32 PM
+xD
+hellobox. 09/07/2022 3:32 PM
+google
+[smx2460]
+smx2460 09/07/2022 3:32 PM
+where did you get the link from?
+09/07/2022 3:32 PM
+they have a new service manual in the wild?
+09/07/2022 3:32 PM
+wut
+hellobox. 09/07/2022 3:31 PM
+this is what i was looking at:
+https://gscs-b2c.lge.com/downloadFile?fileId=gM271COpifl01kJCcC9pDQ
+09/07/2022 3:28 PM
+or a MAX3232
+09/07/2022 3:27 PM
+lol the service manual says MAX323, which is an analog switch, but it
+almost certainly does mean MAX232 (edited)
+[smx2460]
+smx2460 09/07/2022 3:26 PM
+we've seen NA models also typically have MAX232
+hellobox. 09/07/2022 3:26 PM
+and a MAX323! i guess it must be the commercial/hotel version then?
+09/07/2022 3:25 PM
+and has a microphone
+09/07/2022 3:24 PM
+and maybe it supports 120Hz refresh?
+[smx2460]
+smx2460 09/07/2022 3:22 PM
+ah
+hellobox. 09/07/2022 3:22 PM
+in some random model i'm looking at, the K6Lp version uses DDR3 and K6Hp
+uses DDR4
+09/07/2022 3:20 PM
+so there's KxL, KxLp, and KxLpp?
+[smx2460]
+smx2460 09/07/2022 3:16 PM
+    #define PLATFORM_KXLP    PLATFORM_RTD288O
+    #define PLATFORM_KXL    PLATFORM_OTHER
+    #define PLATFORM_KXLPP    PLATFORM_OTHER
+09/07/2022 3:15 PM
+then it's just equivalent to K6L
+09/07/2022 3:15 PM
+if that's the case
+09/07/2022 3:15 PM
+    - W20H - Realtek K6HP (rtd288o)
+09/07/2022 3:15 PM
+i had also marked it
+09/07/2022 3:14 PM
+so maybe W20H GPL package will hold some clue
+09/07/2022 3:14 PM
+W20H is K6HP
+09/07/2022 3:14 PM
+https://github.com/webosbrew/hyperion-webos/issues/16#issuecomment-1049077902
+Version Support Tracker · Issue #16 · webosbrew/hyperion-webos
+System info: grep -h -E
+&#39;&quot;(hardware_id|core_os_release|product_id|webos_manufacturing_version|board_type)&quot;&#39;
+/var/run/nyx/* Template: | **hyperion-webos commit** | ...
+[]
+09/07/2022 3:11 PM
+only 2 refs, both commented
+09/07/2022 3:11 PM
+        //if(get_platform() == PLATFORM_K6HP){
+        //    gdma_config_line_buffer_for_AI();
+            picObj->plane = VO_GRAPHIC_OSD2;
+            patlayerAI.layer[0].onlineOrder = C0;
+            //picObj->plane = VO_GRAPHIC_OSD1;
+            //patlayerAI.layer[0].onlineOrder = C0;
+        //}else{
+        //    picObj->plane = VO_GRAPHIC_OSD2;
+        //    patlayerAI.layer[0].onlineOrder = C1;
+        //}
+hellobox. 09/07/2022 3:10 PM
+no mention of KxHP...
+09/07/2022 3:10 PM
+nice find
+[] Smx pinned a message to this channel. See all pinned messages.
+9/7/22, 3:09 PM

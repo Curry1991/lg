@@ -1,0 +1,1698 @@
+December 11, 2024
+hellobox. 12/11/2024 1:08 AM
+ok!
+[KrMzwev.png]
+ KrMzwev.png
+47.5 KB External
+12/11/2024 1:08 AM
+[7DaWuGd.png]
+ 7DaWuGd.png
+80.47 KB External
+December 10, 2024
+hellobox. 12/10/2024 10:39 PM
+Oh yeah, what about the emergency flag?
+[smx2460]
+smx2460 12/10/2024 10:35 PM
+same thing i did with buildroot-nc4 (edited)
+12/10/2024 10:35 PM
+it's basically running a rootfs from RAM (edited)
+12/10/2024 10:35 PM
+which does the same
+12/10/2024 10:35 PM
+while on NC4 it runs a big static binary
+12/10/2024 10:34 PM
+SWUE runs update on WebOS
+12/10/2024 10:34 PM
+yep
+[] smx2460 SWUE's purpose is to load and flash the EPK
+hellobox. 12/10/2024 10:34 PM
+How the hell does it work? Like the bootloader boots into the swue Linux
+environment, which writes the EPK to eMMC?
+[smx2460]
+smx2460 12/10/2024 10:26 PM
+i mean there's no point in using EPKs if we don't want to make it usable
+by official tools (and we can't anyways due to signing) (edited)
+12/10/2024 10:26 PM
+since there should be already packers/unpackers/flashes from openwrt
+codebase
+12/10/2024 10:26 PM
+which at that point would be more like a port
+12/10/2024 10:25 PM
+you could implement say https://openwrt.org/docs/techref/headers
+12/10/2024 10:25 PM
+don't implement EPK lol
+12/10/2024 10:25 PM
+if you really want to write bootloader code
+12/10/2024 10:24 PM
+we had the MStar old ass toolchains
+12/10/2024 10:24 PM
+and besides, we didn't have buildroot-nc4 
+12/10/2024 10:24 PM
+but back then i didn't have the knowledge i have now
+12/10/2024 10:23 PM
+we should have done this back in the day instead of suggesting people to
+stare at ZModem for ages 
+12/10/2024 10:23 PM
+once you have linux running...
+12/10/2024 10:23 PM
+or just grab your partitions from anywhere (edited)
+12/10/2024 10:22 PM
+compiled natively for ARM
+12/10/2024 10:22 PM
+and in the latter case you could even use a modified epk2extract to do
+so (edited)
+12/10/2024 10:22 PM
+- boot from RAM and flash the partitions from there
+12/10/2024 10:22 PM
+- use TFTP
+12/10/2024 10:22 PM
+so imo you could
+12/10/2024 10:21 PM
+since the driver to do that is in-kernel
+12/10/2024 10:21 PM
+and would have the capability to read and write flash
+12/10/2024 10:21 PM
+then i had a system i could boot off RAM
+12/10/2024 10:21 PM
+by compiling buildroot-nc4 and bundling it with the LG stock kernel
+12/10/2024 10:21 PM
+i once made something similar
+12/10/2024 10:21 PM
+SWUE's purpose is to load and flash the EPK
+12/10/2024 10:21 PM
+an alternative is to have an SWUE like solution
+12/10/2024 10:20 PM
+TFTP loading is good enough
+12/10/2024 10:20 PM
+(unless you feel like making it)
+12/10/2024 10:20 PM
+in the end you're not gonna need a super easy polished solution
+12/10/2024 10:20 PM
+and all you really need if you want is automation for these commands
+12/10/2024 10:19 PM
+3) load remaining partitions
+12/10/2024 10:19 PM
+2) reboot or reload partinfo
+12/10/2024 10:19 PM
+1) load partition table
+12/10/2024 10:19 PM
+so that's basically very easy
+12/10/2024 10:19 PM
+we used it
+12/10/2024 10:19 PM
+there is a load variant that iirc can load from TFTP to flash
+12/10/2024 10:19 PM
+the safest and not totally slow way was tftp
+hellobox. 12/10/2024 10:19 PM
+Yeah, but mstar has like 20 years worth of legacy shit
+[smx2460]
+smx2460 12/10/2024 10:19 PM
+and we had all sort of crashes
+12/10/2024 10:18 PM
+i remember trying with @ww
+12/10/2024 10:18 PM
+in MStar they were extremely buggy if not outright broken
+12/10/2024 10:18 PM
+if they work
+hellobox. 12/10/2024 10:18 PM
+Aren't there USB commands?
+[smx2460]
+smx2460 12/10/2024 10:18 PM
+but the slowest
+12/10/2024 10:18 PM
+in MStar days loading it from ZModem was the easiest way
+12/10/2024 10:18 PM
+you need to think about how you'll read the firmware data
+12/10/2024 10:17 PM
+if your use case is bootloader specifically
+12/10/2024 10:17 PM
+in uboot it wasn't a given
+12/10/2024 10:17 PM
+because i'm not so sure
+12/10/2024 10:17 PM
+i'd check if lxboot actually handles the EPK properly
+12/10/2024 10:17 PM
+well first of all
+hellobox. 12/10/2024 10:15 PM
+Yeah
+[smx2460]
+smx2460 12/10/2024 10:15 PM
+to flash the EPK from lxboot?
+hellobox. 12/10/2024 10:14 PM
+Maybe I'll just write the parts manually in lxboot
+12/10/2024 10:12 PM
+I may actually just do something like that though, because I don't feel
+like figuring out how to re-sign the EPK
+[smx2460]
+smx2460 12/10/2024 10:12 PM
+i would probably build a repro in qemu
+hellobox. 12/10/2024 10:11 PM
+True, but that's less fun
+[smx2460]
+smx2460 12/10/2024 10:11 PM
+you could just patch update
+[smx2460]
+hellobox. I'm just talking about replacing the SFU RSA key in sedata so
+that `update` will accept a modified E...
+smx2460 12/10/2024 10:11 PM
+well if that's the goal
+[smx2460]
+smx2460 12/10/2024 10:10 PM
+but it also prevents anything from happening at boot time
+12/10/2024 10:10 PM
+mostly to save on time i guess (edited)
+12/10/2024 10:10 PM
+it won't even init the USB bus if DEBUG is not set
+12/10/2024 10:09 PM
+and DEBUG (before PL2303) (edited)
+12/10/2024 10:09 PM
+their revised implementation checks for PL2303 instead
+[] smx2460 but i have never seen such trigger code left in LG uboots
+hellobox. 12/10/2024 10:09 PM
+Yeah, even [:lg:] is (usually) not that bad
+[smx2460]
+smx2460 12/10/2024 10:08 PM
+they got rid of it (edited)
+12/10/2024 10:08 PM
+but i have never seen such trigger code left in LG uboots (edited)
+[] smx2460 i've seen some implementations that just load uboot scripts
+from USB
+hellobox. 12/10/2024 10:08 PM
+My oscilloscope does that
+[smx2460]
+smx2460 12/10/2024 10:08 PM
+and probably on cheap Chinese TVs you can easily trigger it
+12/10/2024 10:08 PM
+would even be pwnable
+12/10/2024 10:08 PM
+i've seen some implementations that just load uboot scripts from USB
+12/10/2024 10:07 PM
+not meant to be used
+12/10/2024 10:07 PM
+it's likely a leftover from the BSP
+hellobox. 12/10/2024 10:07 PM
+Yeah, I doubt that works
+[smx2460]
+smx2460 12/10/2024 10:07 PM
+but that's the MStar update code
+hellobox. 12/10/2024 10:07 PM
+custar(d)
+[smx2460]
+smx2460 12/10/2024 10:07 PM
+but i never checked if the new code is sane
+12/10/2024 10:07 PM
+then at some point i think LG updated them
+12/10/2024 10:06 PM
+but flash the partitions manually
+12/10/2024 10:06 PM
+and the rule of thumb on old-openlgtv was to never use them
+12/10/2024 10:06 PM
+because LG never updated them to support EPK2
+12/10/2024 10:06 PM
+those EPK commands have always been broken on Mips Mstar
+hellobox. 12/10/2024 10:06 PM
+Although... Do the EPK-related commands check the EPK signature?
+[smx2460]
+smx2460 12/10/2024 10:06 PM
+but i don't remember the details anymore (edited)
+12/10/2024 10:06 PM
+i actually did look at all of this
+12/10/2024 10:05 PM
+yeah me neither
+12/10/2024 10:05 PM
+but in practice i guess it'll be the same
+hellobox. 12/10/2024 10:05 PM
+I doubt {u,lx}boot is going into sedata to grab the SFU keys
+[smx2460]
+smx2460 12/10/2024 10:05 PM
+in theory it could
+hellobox. 12/10/2024 10:04 PM
+You think it uses different keys for boot and the other partitions?
+[smx2460]
+smx2460 12/10/2024 10:04 PM
+while the SFU key would be the one that checks the partitions (edited)
+12/10/2024 10:04 PM
+secureboot checks the bootloader
+12/10/2024 10:04 PM
+i'm saying to verify the partitions
+[] smx2460 i mean i can't think of any other key besides `sfu_rsa` that
+would be used
+hellobox. 12/10/2024 10:04 PM
+The one(s) in secureboot, like you said (for LX anyway) (edited)
+[smx2460]
+smx2460 12/10/2024 10:04 PM
+and stripes of other partitions
+12/10/2024 10:04 PM
+the MStar bootloader checks kernel in full
+12/10/2024 10:03 PM
+i mean i can't think of any other key besides sfu_rsa that would be used
+hellobox. 12/10/2024 10:03 PM
+I'm just talking about replacing the SFU RSA key in sedata so that
+update will accept a modified EPK
+[smx2460]
+smx2460 12/10/2024 10:03 PM
+and it would make sense for it to use sfu_rsa
+12/10/2024 10:03 PM
+because there is verification on boot
+12/10/2024 10:03 PM
+hmmm it depends
+hellobox. 12/10/2024 10:02 PM
+That's not involved with boot-time verification, right?
+[smx2460]
+smx2460 12/10/2024 10:02 PM
+sfu_aes/rsa (edited)
+[] smx2460 the EPK key would then be something that gets checkd after
+all of this
+hellobox. 12/10/2024 10:02 PM
+What do you mean by "EPK key"?
+hellobox. 12/10/2024 10:01 PM
+I think some tzfw may be encrypted
+[smx2460]
+smx2460 12/10/2024 10:01 PM
+sorry i meant verify
+[] smx2460 then this customer key is used to decrypt the bootloader
+hellobox. 12/10/2024 10:01 PM
+What bootloader is encrypted?
+[smx2460]
+smx2460 12/10/2024 10:00 PM
+is sedata signed?
+[] smx2460 i also think `sedata` is encrypted with the OTP key iirc
+hellobox. 12/10/2024 10:00 PM
+I'm not worried about that part
+[smx2460]
+smx2460 12/10/2024 10:00 PM
+i also think sedata is encrypted with the OTP key iirc
+[] smx2460 hmm you mean replacing the installed one
+hellobox. 12/10/2024 10:00 PM
+Not the boot verification one, just the SFU one. So I can change the
+OTAID in an EPK
+[smx2460]
+smx2460 12/10/2024 9:59 PM
+you cannot do anything
+12/10/2024 9:59 PM
+- but if the EPK key is signed with the LG key - and the LG key is
+signed by the SOC vendor
+12/10/2024 9:59 PM
+the EPK key would then be something that gets checkd after all of this
+(edited)
+12/10/2024 9:58 PM
+holds the signed keyslots
+12/10/2024 9:57 PM
+the first partition, normally secureboot
+12/10/2024 9:56 PM
+then this customer key is used to decrypt the bootloader
+12/10/2024 9:56 PM
+and verify it on boot
+12/10/2024 9:56 PM
+is that the SOC vendor will sign the customer key
+12/10/2024 9:55 PM
+the way secure boot normally works
+12/10/2024 9:55 PM
+in any case
+[smx2460]
+hellobox. But doesn't lxboot have an EPK install command? I've never
+used it
+smx2460 12/10/2024 9:54 PM
+there might be swub
+[smx2460]
+smx2460 12/10/2024 9:54 PM
+i'd expect the keyslot to be otherwise signed by the LG key
+12/10/2024 9:53 PM
+but they fixed it in the new revision (edited)
+12/10/2024 9:53 PM
+there was a bug in the MTK ROM that allowed to do that because the
+keyslot wasn't verified
+12/10/2024 9:52 PM
+hmm you mean replacing the installed one
+12/10/2024 9:51 PM
+just for fun?
+[smx2460]
+hellobox. I was also thinking about installing my own SFU RSA key and
+making my own EPK... <@31015818072870092...
+smx2460 12/10/2024 9:51 PM
+why
+ww8543 ah we didnt check? hmmmm... might have also been for a specific
+platform, not necessarily lx? maybe ...
+hellobox. 12/10/2024 7:47 PM
+I don't remember checking at least. I'm thinking of LX
+hellobox. 12/10/2024 7:47 PM
+And I'm sure we didn't check whether DVB/ATSC has different keys
+hellobox. Well, we did find the other keys. I don't know if we checked
+whether they're different than the SFU ...
+ww8543 12/10/2024 7:46 PM
+ah we didnt check? hmmmm... might have also been for a specific
+platform, not necessarily lx? maybe mstar?
+ww8543 didnt we establish at some point that they use another key for
+verification?
+hellobox. 12/10/2024 7:46 PM
+Well, we did find the other keys. I don't know if we checked whether
+they're different than the SFU one
+hellobox. Actually, do we know whether DVB and ATSC models use the same
+RSA keys for verification at boot? The...
+ww8543 12/10/2024 7:44 PM
+didnt we establish at some point that they use another key for
+verification?
+hellobox. 12/10/2024 7:04 PM
+But doesn't lxboot have an EPK install command? I've never used it
+12/10/2024 7:04 PM
+I believe I will be able to recover even if lxboot breaks...
+12/10/2024 7:04 PM
+I can always do it manually, but ugh. Although if I write code to
+automate the process, it could theoretically be used to recover if I
+break something
+12/10/2024 7:02 PM
+Actually, do we know whether DVB and ATSC models use the same RSA keys
+for verification at boot? They share SFU keys, but I don't know if
+they're used for anything beyond the update process
+12/10/2024 7:01 PM
+I was also thinking about installing my own SFU RSA key and making my
+own EPK... @Smx thoughts?
+12/10/2024 7:00 PM
+Can you change otaid in software like that?
+hellobox. <@606907427480272897> do you know if installing a DVB firmware
+image on an ATSC board will ~work (as...
+.kriilunaus 12/10/2024 6:52 PM
+The update service should prevent such an installation, even in expert
+mode. What you might be able to do is to change the respective OTA ID
+and tool options in EZ-ADJUST. It may then be possible to install the
+DVB firmware on an ATSC board. Needless to say that this could cause all
+sorts of issues. However, this information is from memory, so I would
+have to look up the exact checks that the update service performs
+(particularly in webOS 4.5). So take this piece of information with a
+grain of salt. (edited)
+hellobox. 12/10/2024 5:50 PM
+Will expert mode allow me to install it, or will I have to do it
+manually?
+12/10/2024 5:43 PM
+Talking about webOS 4.5 specifically (edited)
+hellobox. 12/10/2024 5:21 PM
+@KriiLunAus do you know if installing a DVB firmware image on an ATSC
+board will ~work (assuming you're not worried about receiving TV
+signals)?
+[] annplusplus No USB storage
+hellobox. 12/10/2024 5:20 PM
+There was though. I saw it in /tmp/usb/sda. Maybe I had screwed
+something else up though
+[annplusplus]
+annplusplus 12/10/2024 7:36 AM
+Happened to me on webOS 4.10 without a flash stick
+[annplusplus]
+hellobox. wtf is this?
+annplusplus 12/10/2024 7:33 AM
+No USB storage
+Deleted User 12/10/2024 5:21 AM
+webos downgrade hack noway
+hellobox. 12/10/2024 4:41 AM
+dunno
+[tDYiKyc.png]
+ tDYiKyc.png
+45.48 KB External
+12/10/2024 4:40 AM
+huh, moving it to a different USB port fixed it?
+12/10/2024 4:38 AM
+wtf is this?
+[5Oma0UD.png]
+ 5Oma0UD.png
+33.26 KB External
+December 9, 2024
+[] utku92 I also tried it in developer mode, everything is deleted when
+I turn the TV off and on.
+legendzshot. 12/09/2024 8:28 PM
+Did you follow this guide? Do not forget to Block th renewal. To do this
+creatie an account at github.com first, otherwise you do not see the
+green button. I followed this on my tv from 2024 G4. And it works very
+well. My current firmware version is 23.20.42 Webos24 / 9.2.2-1903 Here
+is the link:
+https://gist.github.com/VVispy/044cd8005260b270728e1d9aa8f6af51 Hope
+this helps. (edited)
+LG TV Homebrew Guide
+LG TV Homebrew Guide. GitHub Gist: instantly share code, notes, and
+snippets.
+[]
+[annplusplus]
+[] aabytt This app ```<!DOCTYPE html> <html> <head> <meta
+charset="utf-8"> <meta http-equi...
+annplusplus 12/09/2024 9:58 AM
+Yeah I already made an IPK for it with the webinspector
+ 1
+[aabytt]
+[] annplusplus Cause I stole the IPK for another content store app and
+installed it with Luna, except of course.. `...
+aabytt 12/09/2024 9:53 AM
+This app
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <meta charset="utf-8">
+            <meta http-equiv="refresh" content="0;url=https://vk.ru/tv-app/lib?version=2.3.0&platform=webos">
+        </head>
+        <body></body>
+    </html>
+[annplusplus]
+[] aabytt No, you will be able to check decrypted contents of html/js
+files with chromium inspector at http://...
+annplusplus 12/09/2024 9:43 AM
+Yeah I got a hint to that. Trying out right now
+[aabytt]
+[] annplusplus If I correctly understand the approach behind this, do I
+just add this, reboot the system and then d...
+aabytt 12/09/2024 9:42 AM
+No, you will be able to check decrypted contents of html/js files with
+chromium inspector at http://<tv_ip>:9998 Then you can save necessary
+files and rebuild ipk (edited)
+December 8, 2024
+[annplusplus]
+annplusplus 12/08/2024 9:15 PM
+Unless of course there is a way to decrypt IPKs
+12/08/2024 9:13 PM
+Cause I stole the IPK for another content store app and installed it
+with Luna, except of course..
+    {"id":"com.ares.defaultName","statusValue":30,"details":{"receivedSize":"0","packageId":"vkvideo","modifiedTime":"","unpackFileSize":"3906898","client":"com.webos.lunasendpub-8306","totalSize":"0","verified":false,"progress":100,"installBasePath":"/media/developer","downgrade":true,"paused":false,"permissionLevel":"none","simpleStatus":"install","state":"installed","pkgType":"","update":false,"ipkFile":"/tmp/38181563.ipk"}}
+    sh: getcwd: No such file or directory
+it installed, but being encrypted, it didn't work and launching throws a
+error -2
+[annplusplus]
+[] aabytt you can add `"inspectable":true` parameter into `appinfo.json`
+of the app in cryptofs. It will be av...
+annplusplus 12/08/2024 9:12 PM
+If I correctly understand the approach behind this, do I just add this,
+reboot the system and then dump the entire app from cryptofs to then
+rebuild it with ares-package? Okay hint to future-comers: no, cryptofs
+stays cryptofs. Remember the "web" part of webOS. (edited)
+orcad98 12/08/2024 3:42 PM
+i need stremio.ipk ??
+ 2
+December 7, 2024
+[f0li0]
+[] 33a89b72_c922_493c_be76_b4353f4 For what it's worth, I have a 48B4
+that has never been online. webOS24, Firmware 3.11.10. If by chan...
+f0li0 12/07/2024 11:41 PM
+My 48B4 came with 3.11.10 and I updated it to 23.20.24 webOS 24 /
+9.2.1-1707 ( I wasn't aware of rooting a TV until a few days ago) But
+same as you I'd also like to help if its required.
+[33a89b72_c922_493c_be76_b4353f4]
+33a89b72_c922_493c_be76_b4353f4 12/07/2024 7:12 PM
+For what it's worth, I have a 48B4 that has never been online. webOS24,
+Firmware 3.11.10. If by chance I can be of any use let me know
+[exiladem]
+.kriilunaus Universal solutions usually require tapping into the HDMI
+signal. Depending on your setup, you may n...
+exiladem 12/07/2024 10:50 AM
+Hi mate, as i said im currently running a cheap setup from Action. (30€)
+Philips Sync Box 330€ without anything. The cheapest for me acceptable
+"premium" Solution for plug and play is the fancyleds one (310€ with
+strips). I did not mean ATV+ but the device. I like the remote and the
+Ethernet feature but it is 180€. So this alltogether easily accumulates
+to 500€. Now going for a DIY solution i am not against it. (I have seen
+some of HyperHDR) but i havent found the right piece of hardware yet.
+Running it with a Rpi would mean it is on the whole time right? Do you
+know the Powerdraw? Oh and as far as i know a RPI cannot go 4k120hz?
+(edited)
+[utku92]
+hellobox. no
+utku92 12/07/2024 1:12 AM
+Okey, Thanks
+hellobox. 12/07/2024 1:12 AM
+no
+ 1
+[utku92]
+utku92 12/07/2024 1:10 AM
+webos
+12/07/2024 1:10 AM
+Can't I downgrade?
+[utku92]
+hellobox. there will be exploits in the future. don't update the
+firmware
+utku92 12/07/2024 1:09 AM
+Yes, I will
+hellobox. 12/07/2024 1:09 AM
+there will be exploits in the future. don't update the firmware
+ 1
+[utku92]
+hellobox. yeah, that's not going to work
+utku92 12/07/2024 1:08 AM
+Will there be a patch in the future?
+[] utku92 I downloaded it from Github and extracted it to USB. I pressed
+play on both files with media player....
+hellobox. 12/07/2024 1:07 AM
+yeah, that's not going to work
+ 1
+[utku92]
+utku92 12/07/2024 1:06 AM
+I downloaded it from Github and extracted it to USB. I pressed play on
+both files with media player. But it did not root. Webos is in the
+latest version.
+[utku92]
+hellobox. Are you blocking any LG domains?
+utku92 12/07/2024 1:02 AM
+No, I dont blocked
+[] exiladem Which do you mean? Currently I'm running a cheap LSC setup
+with a hdmi in and out. But all solutions...
+.kriilunaus 12/07/2024 12:32 AM
+Universal solutions usually require tapping into the HDMI signal.
+Depending on your setup, you may need an HDMI switch if you want to
+connect multiple devices and don't already have an AVR. An 8K HDMI 2.1
+switch for 5 input devices is available for as little as €50. There are
+DIY solutions (e.g. by using a RPi) for ambient lighting and
+off-the-shelf solutions such as those from Philips, Govee etc. I'm not
+sure how you came up with €500, but if you want ATV+, you can get it
+with a basic FireTV Stick for around €50.
+December 6, 2024
+hellobox. 12/06/2024 7:39 PM
+I don't remember much about dev mode tbh
+[] utku92 I also tried it in developer mode, everything is deleted when
+I turn the TV off and on.
+hellobox. 12/06/2024 7:39 PM
+Are you blocking any LG domains?
+[utku92]
+utku92 12/06/2024 7:26 PM
+LG OLED48C34 my tv
+12/06/2024 7:25 PM
+I also tried it in developer mode, everything is deleted when I turn the
+TV off and on.
+12/06/2024 7:24 PM
+No root method works for my LG Oled TV.
+12/06/2024 7:22 PM
+hi
+December 5, 2024
+[exiladem]
+exiladem 12/05/2024 7:56 AM
+Also it seems like not everyone is really positive about fancyleds so i
+am hesitant. If you got another alternative I'm open for it.
+[exiladem]
+.kriilunaus If that's so important to you, why don't you just buy one of
+the Ambilight solutions that are availa...
+exiladem 12/05/2024 7:55 AM
+Which do you mean? Currently I'm running a cheap LSC setup with a hdmi
+in and out. But all solutions are the same: having to run it over
+another extra device which makes it just more convoluted. The only
+really attractive setup I have seen by now was the fancyleds 2.1 3hdmi
+in. With that I still would need a hdmi splitter (switch, ps5, PC, apple
+TV) and the aforementioned ATV which would total me at around 500€.
+[] exiladem Damn. Thanks for the answer. Is there any estimate when or
+if it is ever going to happen? Not sure w...
+.kriilunaus 12/05/2024 12:36 AM
+If that's so important to you, why don't you just buy one of the
+Ambilight solutions that are available and work with every TV?
+December 4, 2024
+[] exiladem Damn. Thanks for the answer. Is there any estimate when or
+if it is ever going to happen? Not sure w...
+hellobox. 12/04/2024 10:12 PM
+It will happen eventually
+ 1
+[exiladem]
+hellobox. Not atm
+exiladem 12/04/2024 10:10 PM
+Damn. Thanks for the answer. Is there any estimate when or if it is ever
+going to happen? Not sure why it updated since it is unchecked for auto
+updates... I just want ambilight 
+[] exiladem Anyway to root a Cx3la on 04.50.90? Or way to downgrade the
+firmware to root able? The caniroot site...
+hellobox. 12/04/2024 10:00 PM
+Not atm
+[exiladem]
+exiladem 12/04/2024 9:45 PM
+Anyway to root a Cx3la on 04.50.90? Or way to downgrade the firmware to
+root able? The caniroot site says it's not being able to be rooted?
+December 3, 2024
+[dogelition]
+dogelition 12/03/2024 11:13 PM
+idk why they didn't add it to the hdmi diagnostics menu which does give
+you a bunch of other info
+[dogelition]
+vampirarrow Hi all, I have rooted LG C2, So my question is quite
+unusual, but I hope to get an answer. I would...
+dogelition 12/03/2024 11:12 PM
+doesn't really answer your question, but afaict information like this
+isn't available in any normal or hidden menu at least. not even basic
+stuff like hdr10 metadata
+0verr1de_ 12/03/2024 9:28 PM
+maybe someone know if there is a way to enable hdmi earc and also
+optical toslink at the same time? i saw a app on the homebrew for sound
+settings but unfor. i have a c9 and i think the app works not on my
+webos version. i saw some post that users says on there old c7 and so on
+that there was this setup working and lg removed this option....
+hellobox. 12/03/2024 6:20 PM
+Usually
+ 1
+hellobox. `luna-send`
+vampirarrow 12/03/2024 6:19 PM
+if i run the command, then if i want to "disable" something, how do i do
+it? just restart the TV?
+[] mariotaku
+https://www.webosose.org/docs/reference/ls2-api/com-webos-media/ this
+could be something related
+vampirarrow 12/03/2024 6:18 PM
+that's interesting... Maybe my case would be getActivePipelines
+[image.png]
+ image.png
+40.32 KB External
+hellobox. 12/03/2024 6:12 PM
+I would expect media stuff to be completely different on OSE
+vampirarrow I'm trying to figure out, I don't know which service works
+for me maybe com.webos.service.videooutpu...
+hellobox. 12/03/2024 6:12 PM
+luna-send
+ 1
+[mariotaku]
+mariotaku 12/03/2024 6:11 PM
+https://www.webosose.org/docs/reference/ls2-api/com-webos-media/ this
+could be something related
+com.webos.media
+Note This API has been available since API level 11. API Summary
+Provides access to the functionality provided by the webOS media server.
+The webOS media server supports both managed and unmanaged
+pipelines. For managed pipelines, com.webos.media provides
+high-level methods to control the playback of media content (e.g. load,
+play, seek). For un...
+[]
+hellobox. Use `ls-monitor -l` to find Luna services and `ls-monitor -i`
+to enumerate methods
+vampirarrow 12/03/2024 6:08 PM
+I'm trying to figure out, I don't know which service works for me maybe
+com.webos.service.videooutput, I got the methods and how can I use them?
+vampirarrow is there any command i should try?
+hellobox. 12/03/2024 5:57 PM
+Use ls-monitor -l to find Luna services and ls-monitor -i to enumerate
+methods
+hellobox. There may be information accessible via Luna
+vampirarrow 12/03/2024 5:40 PM
+is there any command i should try?
+[] mariotaku Maybe you can hook up the internal media pipeline
+(gstreamer) to find out
+vampirarrow 12/03/2024 5:40 PM
+if I may ask how it is done?
+hellobox. 12/03/2024 5:13 PM
+There may be information accessible via Luna
+[mariotaku]
+mariotaku 12/03/2024 4:51 PM
+Maybe you can hook up the internal media pipeline (gstreamer) to find
+out
+[mariotaku]
+vampirarrow I'm not sure if my question is in the right place
+mariotaku 12/03/2024 4:50 PM
+This is quite new because IIRC no one has done it before
+vampirarrow 12/03/2024 4:48 PM
+I'm not sure if my question is in the right place
+vampirarrow 12/03/2024 3:45 PM
+Hi all, I have rooted LG C2, So my question is quite unusual, but I hope
+to get an answer. I would like to know if there is a way to get out the
+information i.e. the statistics of the video being played. For example,
+if I am watching a movie in 4K Dolby Vision, is there a way to
+understand which technical profile of Dolby Vision I am seeing? It was
+to understand if it is Profile 7 FEL or Profile 8.1. The movie is in the
+BD Full 4K DV, but here I am playing it from the box device but I wanted
+to make sure that it has not converted anything to the 8.1 profile and
+see the real DV profile 7 FEL. Thanks in advance
+December 1, 2024
+.kriilunaus 12/01/2024 7:50 PM
+I have just seen that you have cross-posted the question. Please don't
+do that!
+12/01/2024 7:49 PM
+Nothing has changed regarding update notifications. All you need to do
+is block the snu.lge.com domain. If this does not work, it is not
+because of the TV, but because the network traffic is not reliably
+blocked by the solution of your choice. With a DNS-based solution, you
+need to ensure that both IPv4 and IPv6 address resolution are working
+properly and that no fallback DNS server is set. So before you ask for
+help, make sure that your TV is not sending any network traffic to
+mentioned domain.
+[jclsn]
+jclsn 12/01/2024 4:31 PM
+Any way to block update notifications? Pi-Hole and Homebrew blocking
+doesn't work for me anymore
+12/01/2024 4:30 PM
+https://discord.com/channels/407937994037919756/408006551656333312/1312802784780881920
+November 30, 2024
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 8:48 PM
+Also I have a little update! Today I was running the new motherboard a
+bit and I set debug level to 'DEBUG' (maximum verbosity), I let it turn
+on and observed if something happens. The projector overheated and
+shutdown due to high temp (like it behaved before the brick). Somehow
+when it restarted everything initialised correctly and I have picture
+again! It unbricked itself. This motherboard's issues of displaying only
+red and overheating are still here of course, but now I know all the
+hardware for the screen, lights etc. is intact.
+[20241130_151928.jpg]
+ 20241130_151928.jpg
+51.28 KB External
+[invisiblecupcake]
+[] smx2460 for this purpose i once made a PHP fopen wrapper that
+converts `fread`, `fseek`, `fwrite` into uboot...
+invisiblecupcake 11/30/2024 7:10 PM
+Sounds great! Having send over ethernet functionality would be
+wonderful, but perhaps not needed in the end. Maybe if I will want to do
+a full emmc backup. Btw I already backed up the contents of the 5
+partitions hellobox mentioned (sedata, sestore, wossestore, env_nvm,
+macadr) by reading from mmc to RAM and then displaying that part of RAM
+on screen and logging the output to a txt file through Putty. I used mmc
+read and memory display commands only. Pretty much like you described
+but without automatization since I'm not doing a full backup. (edited)
+[annplusplus]
+annplusplus 11/30/2024 6:21 PM
+I have an alexa+google assistant key and like, yeah, no, we don't have
+alexa here! Would much rather have that be something like "reboot the
+TV"
+11/30/2024 6:20 PM
+Can LG input hook rebind the "advertising" buttons on a magic remote OR
+can they be rewritten on the remocon itself?
+[smx2460]
+smx2460 11/30/2024 3:37 PM
+it was made for M2 though so it should be valid
+11/30/2024 3:36 PM
+but it might need editing to fit the board
+[smx2460]
+[] smx2460 what i'd probably do is use `emmc` to dump it as hex
+smx2460 11/30/2024 3:36 PM
+for this purpose i once made a PHP fopen wrapper that converts fread,
+fseek, fwrite into uboot commands
+[smx2460]
+smx2460 11/30/2024 3:34 PM
+this brings up the NIC
+11/30/2024 3:34 PM
+    estart  - EMAC start
+11/30/2024 3:33 PM
+but there are higher abstractions available
+11/30/2024 3:33 PM
+(no content)
+[image.png]
+ image.png
+39.37 KB External
+11/30/2024 3:32 PM
+worst case we could just send ethernet frames
+11/30/2024 3:32 PM
+or maybe even TFTP requests
+11/30/2024 3:31 PM
+so that we can send TCP/IP packets (edited)
+11/30/2024 3:31 PM
+then reverse engineering it to find the exact offsets of the functions
+responsible for the NIC initialization
+11/30/2024 3:31 PM
+but that would require first dumping the bootloader partition
+11/30/2024 3:31 PM
+a piece of C code could be written to send it over the network using
+bootSdk
+11/30/2024 3:31 PM
+if the stuff to backup is too large
+11/30/2024 3:30 PM
+a script can automate all of that (edited)
+11/30/2024 3:30 PM
+and then you can dump it as hex
+11/30/2024 3:30 PM
+but there is a command to load eMMC to RAM
+11/30/2024 3:30 PM
+in case of doubt i always check the UBoot sources themselves
+11/30/2024 3:29 PM
+and then pipe it to a file
+11/30/2024 3:29 PM
+what i'd probably do is use emmc to dump it as hex
+11/30/2024 3:28 PM
+hmm
+[invisiblecupcake]
+[] smx2460 then "loady" could be used, but "load" also supports TFTP
+invisiblecupcake 11/30/2024 3:28 PM
+Exactly, for receiving an update image from my pc. Can't backup my
+internal emmc this way tho
+[invisiblecupcake]
+[] invisiblecupcake Here's the partinfo if it's of interest:
+invisiblecupcake 11/30/2024 3:28 PM
+Here's my partinfo, no "Mode"
+[smx2460]
+[] invisiblecupcake There is "loady", not "loadz", but similar. Sending
+data from the projector seems unavailable via th...
+smx2460 11/30/2024 3:27 PM
+then "loady" could be used, but "load" also supports TFTP
+[smx2460]
+hellobox. <@524362336644104215> <@310158180728700929> anything i'm
+missing?
+smx2460 11/30/2024 3:26 PM
+"mode" if he has it (edited)
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 3:25 PM
+There is "loady", not "loadz", but similar. Sending data from the
+projector seems unavailable via these fancy methods.
+[smx2460]
+smx2460 11/30/2024 3:24 PM
+but not sure if it's available in the other direction
+11/30/2024 3:24 PM
+there is "loadz"
+11/30/2024 3:24 PM
+doubt
+11/30/2024 3:24 PM
+ah but "transmit"
+[smx2460]
+hellobox. you'll need to just dump them as hex (unless there is some
+kind of [xyz]modem transmit support, whic...
+smx2460 11/30/2024 3:24 PM
+there is
+[smx2460]
+[] invisiblecupcake I mean surely there's a way to ftp this file, no?
+smx2460 11/30/2024 3:23 PM
+you'd need to use zmodem
+[smx2460]
+hellobox. stock uboot provides some kind of interface for "standalone"
+applications, but i think LG broke it. ...
+smx2460 11/30/2024 3:14 PM
+it's more like MStar that broke it
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 11:22 AM
+These are some load options in uboot. I highlighted the interesting ones
+to me. I would really prefer to use tftp over serial. What about "swu" -
+just installs the whole epk from tftp? Why do I have to manually copy
+over each partition instead of using this? load - load - downlaod image
+file using tftp, and write on flash loadb - load binary file over serial
+line (kermit mode) loadm - loadm - downlaod image file using memory
+stick, and write on flash loads - load S-Record file over serial line
+loadspi - load data from SPI loady - load binary file over serial line
+(ymodem mode) swu - swu - downlaod epk image file from tftp, and write
+on flash swub - swub - downlaod raw image file from tftp, and write on
+flash swup - swup - partial downlaod epk image file from tftp, and write
+on flash mmc write[.boot|.gp] [bootpart|gppart] addr blk# size
+[empty_skip:0-disable,1-enable] So far I was using "mmc read" to dump
+from mmc to RAM. Now I could load an image into RAM and write to MMC.
+But some big pak files could be hard to fit into RAM. (edited)
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 10:37 AM
+I suppose it would be hard to find the physical address of a file on
+emmc from a shell in linux? But by extracting the software update and
+looking at which offset in which partition the file device_info.json is
+located, maybe I can find it on the old MB too. (edited)
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 10:16 AM
+OTAID of new MB: HE_PJT_W17Z_AAAAABAA
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 10:02 AM
+So it's a beta update as you said, not released
+11/30/2024 9:59 AM
+Update 03.00.09.01 - NSU 03.00.14.01 and 03.00.17.01 - USB type
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:36 AM
+3.7.0-3020 actually
+11/30/2024 4:35 AM
+Well good night
+ 1
+hellobox. 11/30/2024 4:35 AM
+right
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:35 AM
+Not useful?
+hellobox. 11/30/2024 4:35 AM
+user/group IDs
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:35 AM
+There are other numbers here like 777(crashd), 509(se) etc. What's that?
+hellobox. 11/30/2024 4:34 AM
+so definitely m2r
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:33 AM
+I forgot already but I just had this idea of where it could be - i
+rooted my device (old MB( with dejavuln's autoroot and it makes that
+autoroot.log file. It was 3.7.0 on my old MB before update
+11/30/2024 4:32 AM
+Oh you meant WebOS version of my projector before I updated it? (edited)
+hellobox. 11/30/2024 4:15 AM
+yes
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:15 AM
+I am flying tomorrow so no more work on this project. I'll try to do a
+bit in the morning to flash this 3.00.09. You said I need to extract
+using "-n" and copy some paks?
+11/30/2024 4:14 AM
+I'll check tomorrow, turned off everything now
+hellobox. 11/30/2024 4:14 AM
+is the image you have NSU or USB?
+11/30/2024 4:14 AM
+yeah and i don't know if the 03.00.09 one was ever actually released
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:13 AM
+Wish I dumped it lol
+[invisiblecupcake]
+hellobox. were there even any updates for this model?
+invisiblecupcake 11/30/2024 4:13 AM
+Possibly not, cause it was on 3.00.06 when it came out of the box
+(nobody used this projector before me one month ago) and I went to check
+for available updates and there were 0 (edited)
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:12 AM
+I'm not getting any more files via serial haha
+hellobox. 11/30/2024 4:12 AM
+were there even any updates for this model?
+11/30/2024 4:12 AM
+so you'd have to get it from one of the filesystems i guess
+11/30/2024 4:12 AM
+i don't think uboot knows anything about it
+11/30/2024 4:11 AM
+not really
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:11 AM
+Idea about how to get otaid from uboot?
+hellobox. 11/30/2024 4:10 AM
+03.00.09 is the only firmware i currently have for it
+[invisiblecupcake]
+hellobox. ffffff so maybe `HE_PJT_W17X_AAAAGLAA`
+invisiblecupcake 11/30/2024 4:10 AM
+Yeah somebody on one forum linked to this file in a conversation about
+PF50KG, European one (edited)
+[] invisiblecupcake The 3.00.09 one is HE_PJT_W17X_AAAAGLAA 3.00.14 and
+3.00.17 from the Korean website have: HE_PJT_W17...
+hellobox. 11/30/2024 4:09 AM
+i believe HE_PJT_W17Z_AAAAAAAA is korea-only
+hellobox. 11/30/2024 4:08 AM
+ffffff so maybe HE_PJT_W17X_AAAAGLAA
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:07 AM
+I think it's m2r (edited)
+hellobox. 11/30/2024 4:07 AM
+do you know the webOS version?
+11/30/2024 4:07 AM
+or was it M2R? i don't remember
+[] invisiblecupcake The 3.00.09 one is HE_PJT_W17X_AAAAGLAA 3.00.14 and
+3.00.17 from the Korean website have: HE_PJT_W17...
+hellobox. 11/30/2024 4:07 AM
+those are M2R... isn't yours M2?
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 4:06 AM
+I'm done for today, thanks again for the help. Have a great rest of your
+day.
+ 1
+11/30/2024 4:05 AM
+I can check tomorrow the other motherboard's OTAID, but id like to know
+this old one's too
+11/30/2024 4:04 AM
+The 3.00.09 one is HE_PJT_W17X_AAAAGLAA 3.00.14 and 3.00.17 from the
+Korean website have: HE_PJT_W17Z_AAAAAAAA
+[] invisiblecupcake Also I can't find the an epk that was made
+specifically for my device (PF50KG), just Korean 3.00.14,...
+hellobox. 11/30/2024 3:53 AM
+check what these are with epk2extract -S
+ 1
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 3:52 AM
+Idk I am not connecting that right now
+hellobox. 11/30/2024 3:52 AM
+what does the other board have?
+11/30/2024 3:52 AM
+uhh it may not be (easily) visible from uboot
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 3:51 AM
+I know I saw that name (OTAID) somewhere but right now I can't tell you.
+Where is OTAID visible in uboot do you maybe know? I checked now online
+but all these methods require a device that boots or access to the
+filesystem. (edited)
+hellobox. 11/30/2024 3:25 AM
+although the USB serial puts you at a disadvantage
+11/30/2024 3:25 AM
+you can also try to increase the amount of logging during boot
+11/30/2024 3:24 AM
+if you flash the wrong otaid it should still boot (i've never tried),
+but stuff may be broken (i mean one using the same firmware RSA key)
+(edited)
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 3:23 AM
+Maybe I'll try the oldest 3.00.09 one. I had 3.00.06 before update.
+hellobox. 11/30/2024 3:23 AM
+what's the otaid?
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 3:21 AM
+Also I can't find the an epk that was made specifically for my device
+(PF50KG), just Korean 3.00.14, 3.00.17 for PF50KA and one
+starfish_dvb_3.00.09 idk for which device. LG's website doesn't have any
+downloads. (edited)
+[] invisiblecupcake Okay I have finished backing up the partitions you
+suggested. Took a while! There were 2 sedata part...
+hellobox. 11/30/2024 3:20 AM
+it already has the SFU (firmware) keys (edited)
+hellobox. 11/30/2024 3:20 AM
+oh yeah, it died during a firmware update
+ 1
+[] invisiblecupcake Okay I have finished backing up the partitions you
+suggested. Took a while! There were 2 sedata part...
+hellobox. 11/30/2024 3:20 AM
+one wasn't encrypted?
+[invisiblecupcake]
+invisiblecupcake 11/30/2024 3:19 AM
+Okay I have finished backing up the partitions you suggested. Took a
+while! There were 2 sedata partitions - one encrypted one not. I backed
+up both. I see mentioned epk2extract needs some keys/.pem files to
+extract? But they are already in the folder with the epk2extract binary?
+Do I need to dump sth from my projector as well or is everything already
+set up?
+[colombianito346]
+colombianito346 11/30/2024 1:37 AM
+But yeah, normally while updating you don't see it
+[colombianito346]
+hellobox. I wonder what this screen is... You don't usually see it,
+right?
+colombianito346 11/30/2024 1:36 AM
+Same screen appeared at the time I downgraded mine, that's why I said
+the logo changed
+November 29, 2024
+hellobox. 11/29/2024 9:34 PM
+or it dies when it tried to initialize some SoC peripheral
+11/29/2024 9:33 PM
+i fear it may be a memory issue
+ 1
+11/29/2024 9:33 PM
+except it seems to be passing signature checks, so... wtf
+11/29/2024 9:33 PM
+btw i don't think it's failing to boot because of incompatible firmware
+but rather some kind of data corruption
+11/29/2024 9:32 PM
+like you might be able to send an uncorrupted kernel and write it to
+eMMC
+ 1
+[] invisiblecupcake this section specifically: loadb - load binary file
+over serial line (kermit mode) loadenv - loade...
+hellobox. 11/29/2024 9:32 PM
+you can try these
+hellobox. 11/29/2024 9:27 PM
+it's too old for bootdb
+11/29/2024 9:27 PM
+@ww @Smx anything i'm missing?
+[invisiblecupcake]
+[] invisiblecupcake Here's the partinfo if it's of interest:
+invisiblecupcake 11/29/2024 9:15 PM
+Here are all the partitions as a reminder (edited)
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 9:13 PM
+Doing it via serial, slow and steady
+11/29/2024 9:13 PM
+Good day again! Hope you're all well. Any other partitions I should back
+up except env_nvm, macadr, sedata, wossestore and sestore?
+[invisiblecupcake]
+[] invisiblecupcake I didn't get any output from pins 3 or 4 when trying
+echo "test" > /dev/ttyS0-5
+invisiblecupcake 11/29/2024 5:33 AM
+I confirmed that the correct commands were sent after reconnecting RX on
+USB serial and scrolling through previous commands
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 5:32 AM
+Thanks for all your help hellobox I really appreciate your knowledge and
+patience 
+ 1
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 5:24 AM
+or just try to flash an EPK and hope for the best
+11/29/2024 5:24 AM
+this 10pin connector is therefore useless, only option is to back up
+some important partitions via serial and try to flash a new EPK
+11/29/2024 5:23 AM
+or ttyUSB0 which is just USB serial
+11/29/2024 5:23 AM
+I didn't get any output from pins 3 or 4 when trying echo "test" >
+/dev/ttyS0-5
+11/29/2024 5:22 AM
+Time's up for today
+11/29/2024 5:22 AM
+It is 5:20 AM here, I am prone to mistakes though
+11/29/2024 5:22 AM
+I believe I tried everything and that I did it correctly
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 4:56 AM
+only ttyUSB0 is left, and what I echo there appears on my USB serial
+(edited)
+11/29/2024 4:55 AM
+lol
+hellobox. 11/29/2024 4:55 AM
+and any others with letters
+[] invisiblecupcake what about ttyS0 through ttyS5 ?
+hellobox. 11/29/2024 4:55 AM
+yes, these
+[] invisiblecupcake So I'm supposed to echo to all these tty0, tty1, etc
+blindly by sending those commands via USB seria...
+hellobox. 11/29/2024 4:55 AM
+not those ones
+ 1
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 4:54 AM
+what about ttyS0 through ttyS5 ?
+11/29/2024 4:51 AM
+How many ttys should I check? I think I did the first 20 (edited)
+11/29/2024 4:50 AM
+Nah not getting anything when RX is on pin3, I think the commands should
+be going through alright?
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 4:41 AM
+echo to /dev/tty works, I get the text back. Through the numbered
+terminals I don't. Gotta connect to pin3 (edited)
+11/29/2024 4:40 AM
+stty shows 115200, it's fine
+11/29/2024 4:39 AM
+and connect RX to pin 3 of the connector and watch the terminal?
+11/29/2024 4:39 AM
+So I'm supposed to echo to all these tty0, tty1, etc blindly by sending
+those commands via USB serial (using TX) (edited)
+hellobox. 11/29/2024 4:30 AM
+stty
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 4:30 AM
+ohhhhhhhhhhhhhhhh alright, where's the baud?
+hellobox. 11/29/2024 4:29 AM
+you may have to set baud rate
+11/29/2024 4:29 AM
+i mean like echoing stuff to different tty devices to see if it shows up
+on those pins
+11/29/2024 4:29 AM
+no
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 4:28 AM
+Like this, in shell? / # /dev/tty /bin/sh: /dev/tty: Permission denied
+hellobox. 11/29/2024 4:13 AM
+you can try /dev/tty*
+[] invisiblecupcake with this MB I can enter DebugMain and shell and
+stuff, maybe here I can check via software which UA...
+hellobox. 11/29/2024 4:12 AM
+maybe...
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 4:12 AM
+with this MB I can enter DebugMain and shell and stuff, maybe here I can
+check via software which UART is being used and change it?
+11/29/2024 4:11 AM
+Same results
+11/29/2024 4:11 AM
+I tried now everything again with the other MB (edited)
+11/29/2024 4:11 AM
+Yeah I know you're right
+[] invisiblecupcake There are 2 more 10 pin connectors, same as this one
+on the PCB, next to one is "PD & CONV F/W", not...
+hellobox. 11/29/2024 3:40 AM
+pretty sure P100 is the same connector as in the schematic based on the
+traces
+[invisiblecupcake]
+hellobox. DLP pico processor i think
+invisiblecupcake 11/29/2024 3:30 AM
+Yeah makes sense looking at the schematic
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 3:30 AM
+There are 2 more 10 pin connectors, same as this one on the PCB, next to
+one is "PD & CONV F/W", nothing next to the other one (edited)
+hellobox. 11/29/2024 3:28 AM
+DLP pico processor i think
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 3:28 AM
+What does DPP stand for btw?
+hellobox. 11/29/2024 3:24 AM
+power management or something
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 3:23 AM
+What does PM in PM_RXD stand for?
+hellobox. 11/29/2024 3:23 AM
+not easily
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 3:22 AM
+Could I check which UART is active in software?
+hellobox. 11/29/2024 3:17 AM
+maybe it's on UART1 (which isn't connected) or something
+11/29/2024 3:16 AM
+idk
+11/29/2024 3:16 AM
+no
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 3:15 AM
+What could be the reason for no output? Does the connector know that
+it's not connected? Do I need to ground something?
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 3:06 AM
+That would have been great to see on 09/26!  thanks though
+hellobox. 11/29/2024 3:03 AM
+oh, forgot i posted this
+https://discord.com/channels/407937994037919756/713852484170547222/1156040922195312760
+[] invisiblecupcake The address in EEPROM was 0x2DB.
+hellobox. 11/29/2024 3:02 AM
+that is the correct address
+ 1
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 3:00 AM
+The address in EEPROM was 0x2DB.
+11/29/2024 2:59 AM
+And perhaps if I didn't activate it, as soon as USB sees a PL2303 device
+it starts using it as serial... Maybe (edited)
+11/29/2024 2:58 AM
+I thought I activated it because it worked with USB, but I am not 100%
+sure. All I did is flip one byte in EEPROM from 00 to 01. It is the only
+address on the entire EEPROM that had a value 00 on the old MB and 01 on
+the new MB. Not sure it correlates to RS232C at all!
+hellobox. 11/29/2024 2:57 AM
+not sure
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 2:55 AM
+Could USB serial work normally if RS232C Control in InStart wasn't
+properly activated? (edited)
+11/29/2024 2:55 AM
+from 3 or 4...
+11/29/2024 2:55 AM
+It is strange, I am not getting any output at all
+hellobox. 11/29/2024 2:51 AM
+but at least in that older one, PM_[RT]XD is also connected to UART2 on
+the SoC (edited)
+11/29/2024 2:51 AM
+it's weird because i don't know if the PM UART is usually the one that's
+brought out to the edge connector...
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 2:50 AM
+I'll check again pins 3 and 4
+hellobox. 11/29/2024 2:48 AM
+but i doubt it
+11/29/2024 2:48 AM
+well, i guess it's possible that they changed the pinout of that
+connector
+11/29/2024 2:48 AM
+probably pins 3 and 4
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 2:45 AM
+aha, then where should I look? I have tried pins 3,4,5,6 and 8 and 9
+btw, only pins 5 and 6 gave ANY output
+[] invisiblecupcake Now I have tried pins 5 and 6 by masking the rest
+with electrical tape and placing a probe on pins 5...
+hellobox. 11/29/2024 2:45 AM
+UART0 is the wrong one
+[invisiblecupcake]
+[] invisiblecupcake I got a list of all the partitions and their sizes
+invisiblecupcake 11/29/2024 2:44 AM
+this is where I said I have the partitions, this was by partinfo
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 2:43 AM
+▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒8▒▒(▒ This is the output from pin 6 for example...
+11/29/2024 2:43 AM
+Tried the loopback test, my serial is configured correctly
+11/29/2024 2:43 AM
+And I am having an issue. I get strange output into my terminal from
+both pins 5 and 6 (6 should be transmit and 5 should be receive?)
+(edited)
+11/29/2024 2:42 AM
+Unplugged the serial USB ofc
+11/29/2024 2:42 AM
+Now I have tried pins 5 and 6 by masking the rest with electrical tape
+and placing a probe on pins 5 and 6 individually
+[invisiblecupcake]
+hellobox. <@259777674321330188> i think i found your pinout
+invisiblecupcake 11/29/2024 2:41 AM
+and hellobox you maaaaad DOGG this is brilliant! Thank you a lot!
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 2:41 AM
+I was wrong! That was "mmc partinfo" which didn't give results. Only
+occured to me today to do "partinfo" by itself and everything is fine
+there!
+[] invisiblecupcake Here's the partinfo if it's of interest:
+hellobox. 11/29/2024 2:40 AM
+i thought you said you didn't get any results from partinfo?
+[invisiblecupcake]
+invisiblecupcake 11/29/2024 2:40 AM
+And the environment variables (this is before I added bootcmd=reset and
+bootdelay=35): KERNEL_PROTECT= DRAM_SIZE1=0x40000000 DRAM_SIZE2=0x0
+UARTOnOff=on appxip=y autoboot=y baudrate=115200
+bootargs=console=ttyS0,115200 lginit=/dev/mmcblk0p17
+root=/dev/mmcblk0p16 rootfstype=squashfs BOOTLOGO_IN_MBOOT
+ENV_VAR_OFFSET=0x0 ENV_VAR_SIZE=0x10000 ENV=EMMC SECURITY=ON bootdelay=0
+bootmode=boot enable_probe=0 ethaddr=A8:23:FE:F2:C3:17 fontxip=n
+gatewayip=192.168.0.1 hostname=mtk5369 info_exchange=emmc
+ipaddr=192.168.0.10 lock_time=0 lpj=4440064 macaddr=A8:23:FE:F2:C3:17
+mmcrelwr=2 mmcslcmode=0 netmask=255.255.255.0 print=on rootfs=flash
+serverip=192.168.0.1 silent=y silent_app=y silent_ker=y stderr=serial
+stdin=serial stdout=serial u16DivPWM=0x1FF u32PWMPeriod=0xC350
+upgrade_mode=null verify=n Environment size: 777/65532 bytes
+11/29/2024 2:39 AM
+Here's the partinfo if it's of interest:
+ message.txt
+5.9 KB External
+[invisiblecupcake]
+[] e99.tuxuser Hi, Can you paste the full output of - printenv - help ?
+(Unless I missed it)
+invisiblecupcake 11/29/2024 2:38 AM
+Hi everyone! Firstly here's the help section of uboot:
+ message.txt
+10.51 KB External
+November 28, 2024
+hellobox. 11/28/2024 10:18 PM
+the DPP6401 is kind of interesting... ARM926 core
+hellobox. 11/28/2024 10:08 PM
+so it's DDP2230 but DPP6401...
+11/28/2024 10:03 PM
+anyone know what "scramble" is? > Scerur MIPS
+[E04zdA5.png]
+ E04zdA5.png
+107.27 KB External
+11/28/2024 10:01 PM
+this seems accurate. i believe it boots from SPI flash, likely because
+it can't boot directly from NAND
+[NPmqb20.png]
+ NPmqb20.png
+418.01 KB External
+11/28/2024 10:00 PM
+oh wait, there is no MICOM!
+11/28/2024 9:59 PM
+i'm very surprised that USB_S[01] are controlled by the SoC rather than
+MICOM
+11/28/2024 9:58 PM
+anyway, i think you can get either PM_[RT]XD (SoC) or UART0_[RT]XD(DDP)
+on the USB port
+11/28/2024 9:55 PM
+huh, wtf... PM_[RT]XD are connected to two different UARTs on the SoC
+(PM and 2) (edited)
+[twsj1E1.png]
+ twsj1E1.png
+33.73 KB External
+[cEUMWot.png]
+ cEUMWot.png
+27.1 KB External
+11/28/2024 9:53 PM
+i don't think that table is right? if USB_S1 is low, USB_x is connected
+to SIDE_USB_Dx. and USB_S0 only controls those analog switches, so how
+could it affect anything? (edited)
+[wOnlxcH.png]
+ wOnlxcH.png
+97.42 KB External
+[benjamelon]
+benjamelon 11/28/2024 9:50 PM
+ah
+hellobox. 11/28/2024 9:49 PM
+it's for a significantly older model (PB63UJE) (edited)
+11/28/2024 9:49 PM
+google
+[benjamelon]
+benjamelon 11/28/2024 9:49 PM
+where'd you get this schematic?
+hellobox. 11/28/2024 9:48 PM
+so this is "side USB" on the S7LR
+[SqMeq8q.png]
+ SqMeq8q.png
+12.35 KB External
+11/28/2024 9:46 PM
+what's S6? Saturn6? but there's also BCM...
+[RhW6waM.png]
+ RhW6waM.png
+20.11 KB External
+11/28/2024 9:45 PM
+while UART0 goes to DPP but also some... USB switch? wtf? (edited)
+[ZWG7L8G.png]
+ ZWG7L8G.png
+3.83 KB External
+11/28/2024 9:43 PM
+on this older model (LM1 SoC; DPP6401), that USB pair goes directly to
+the DPP6401 (only) (edited)
+11/28/2024 9:41 PM
+D-E-B-U-double-G
+11/28/2024 9:41 PM
+(no content)
+[DTipiGP.png]
+ DTipiGP.png
+35.14 KB External
+11/28/2024 9:40 PM
+@InvisibleCupcake i think i found your pinout
+11/28/2024 9:38 PM
+so if you can figure out the pinmux registers, you might be able to use
+that
+11/28/2024 9:38 PM
+oh, it's MStar... it should have the ability to have a UART on VGA/HDMI
+DDC pins
+11/28/2024 9:36 PM
+huh. why is SDRAM "For S/W Debug"?
+[ZxgBnrt.png]
+ ZxgBnrt.png
+14.1 KB External
+11/28/2024 9:33 PM
+you may be able to use the MICOM one for quick resets though
+11/28/2024 9:31 PM
+1 and 2 are power; 6 and 10 are ground
+11/28/2024 9:30 PM
+well, you only have 6 pins to check
+11/28/2024 9:27 PM
+seems to match this pretty well
+[jHHQhYC.png]
+ jHHQhYC.png
+46.08 KB External
+11/28/2024 9:27 PM
+do you know if it's a renesas (NEC) MICOM (RL78 or maybe 78K0)?
+11/28/2024 9:21 PM
+it's probably some MCU-specific debug thing
+[] invisiblecupcake Btw this is the connector on the lower right. Any
+intuition for what's TX or RX?
+hellobox. 11/28/2024 8:48 PM
+probably neither (oops. thought you were talking about MICOM debug)
+(edited)
+[e99.tuxuser]
+e99.tuxuser 11/28/2024 8:36 PM
+ gotta wait for somebody else with those specific LG HW questions,
+sorry
+ 1
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 8:30 PM
+Btw this is the connector on the lower right. Any intuition for what's
+TX or RX?
+[20241106_165733.jpg]
+ 20241106_165733.jpg
+215.68 KB External
+[e99.tuxuser]
+e99.tuxuser 11/28/2024 8:26 PM
+Yeah it's hard to spot if there is only a very short burst of activity
+(edited)
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 8:24 PM
+I tried with a multimeter to see if the value changes at all but it's so
+tiny I couldn't tell much (edited)
+[e99.tuxuser]
+e99.tuxuser 11/28/2024 8:22 PM
+The pins would usually fluctuate between 2.5V (activity) and 3.3V (idle)
+ 1
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 8:19 PM
+Even if I touch the wrong pin (like VCC), there shouldn't be damage if
+the TX pin is usually 3.3V meaning 0 bit and drops to 2.5V for 1bit or
+sth (edited)
+11/28/2024 8:18 PM
+I will do so when i get home, thank you for your interest in what I'm
+doing! I actually thought to try pin by pin all 10 UART pins and see
+which one gives me an output... I'm getting desperate already  Is
+there a chance of damage? They should all be at max 3.3V anyway so I
+think it's safe? (edited)
+[e99.tuxuser]
+e99.tuxuser 11/28/2024 7:58 PM
+Hi, Can you paste the full output of - printenv - help ? (Unless I
+missed it) (edited)
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 5:17 PM
+funny idea - what if i erase the hibernation image? or snapshots? (not
+sure what they are) (edited)
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:47 PM
+bootmode=boot
+[invisiblecupcake]
+hellobox. there may be a setting so it runs `bootcmd` automatically if
+you don't interrupt it
+invisiblecupcake 11/28/2024 3:45 PM
+I can't see much. There's an env var "autoboot=y"
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:45 PM
+I would love to
+hellobox. 11/28/2024 3:43 PM
+and maybe it supports the USB C port
+11/28/2024 3:43 PM
+e.g., the kernel for that model
+11/28/2024 3:42 PM
+i wonder if you could download a linux kernel with initrd
+11/28/2024 3:42 PM
+oh, via tftp? hmm no
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:41 PM
+haha sorry I mean from uboot I can boot into any image, like you said
+yesterday, so do you have any image I can use? Into something with more
+functionality than this?
+hellobox. 11/28/2024 3:40 PM
+how would that work?
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:40 PM
+like uboot with tftp functionality
+hellobox. 11/28/2024 3:39 PM
+there's swue, i guess... i don't think anyone has explored it
+11/28/2024 3:38 PM
+what do you mean?
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:37 PM
+instead of using this uboot?
+11/28/2024 3:37 PM
+is there any boot image ready that I can boot into?
+11/28/2024 3:36 PM
+aha
+hellobox. 11/28/2024 3:36 PM
+including with no PL2303
+[] invisiblecupcake I mean that's what it does now if I don't unplug
+USB, it continues to run bootcmd correctly
+hellobox. 11/28/2024 3:36 PM
+i mean without interrupting with \`
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:35 PM
+but the countdown is started after pressing ` (for which I need USB)
+11/28/2024 3:35 PM
+I mean that's what it does now if I don't unplug USB, it continues to
+run bootcmd correctly (edited)
+hellobox. 11/28/2024 3:35 PM
+there may be a setting so it runs bootcmd automatically if you don't
+interrupt it
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:33 PM
+The fans don't spin up
+11/28/2024 3:33 PM
+sigh unfortunately I tried now bootdelay=35 and then a "reset" command.
+I need to start uboot while USB serial is connected by pressing ` and
+then the countdown starts until it resets. If I unplug USB Serial before
+the countdown ends it AGAIN doesn't want to move on to the reset command
+(edited)
+hellobox. 11/28/2024 3:30 PM
+huh wtf. if the signature check failed, i don't think it would get that
+far
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:29 PM
+maybe it loads the image but stops right after
+11/28/2024 3:29 PM
+Except sometimes it gets stuck at "smp_cpu_not_released_1???!"
+11/28/2024 3:28 PM
+idk this is the last output I get: secondary_start_uboot_cleanup
+smp_cpu_not_released_1???!
+Booting kernel from Legacy Image at 25000000 ...
+Image Name: Linux-4.4.3-pjtr.m2r.drto.57402. Image Type: ARM Linux
+Kernel Image (uncompressed) Data Size: 10772028 Bytes = 10.3 MiB Load
+Address: 20208000 Entry Point: 20208000 and that's all she wrote
+hellobox. 11/28/2024 3:26 PM
+signature error or what?
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:23 PM
+btw this MB fails at loading the kernel image, that's where it stops
+hellobox. 11/28/2024 3:21 PM
+bootdelay is the time it waits for you to hit the interrupt key
+11/28/2024 3:21 PM
+probably
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 3:03 PM
+you think bootcmd runs after bootdelay?
+11/28/2024 3:03 PM
+if it was 10 (I guess seconds?)... i wouldnt need the "delay 10000"
+command (edited)
+11/28/2024 3:03 PM
+it is 0 now
+11/28/2024 3:03 PM
+there is an environment variable called "bootdelay"
+hellobox. 11/28/2024 3:01 PM
+i think so, actually
+[] invisiblecupcake can i enter uboot by pressing ` before the command
+runs?
+hellobox. 11/28/2024 3:01 PM
+good question
+[invisiblecupcake]
+hellobox. can you interrupt it?
+invisiblecupcake 11/28/2024 3:00 PM
+btw i cant interrupt the delay command too, or a sequence of commands.
+they always run until the end
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 2:56 PM
+can i enter uboot by pressing ` before the command runs?
+11/28/2024 2:55 PM
+is there anything unsafe about adding a bootcmd command? when I delete
+it everything goes back to normal? when does it run specifically?
+hellobox. 11/28/2024 2:53 PM
+The uboot interpreter has some rudimentary scripting support (if it's
+enabled)
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 2:49 PM
+This is the usage of emmcbin: emmcbin [usbportnum] [pad] [binname]
+[offset/partitionname] [dumpsize] pad I guess is 'padding' usbportnum
+for USB Serial is '1' so I guess a USB Fat device would have '1' as well
+binname is filename on USB offset and dumpsize are obvious but idk if it
+will be in hex or decimal, or maybe number of sectors/blocks? (edited)
+[invisiblecupcake]
+hellobox. mmmmmm maybe make it look for a file on a USB drive
+invisiblecupcake 11/28/2024 2:46 PM
+wdym?
+hellobox. 11/28/2024 2:45 PM
+idk if that level of scripting is enabled
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 2:45 PM
+The emmc dump which restarts USB (and this is where I lose connection)?
+Not by Ctrl+C, I tried
+hellobox. 11/28/2024 2:45 PM
+mmmmmm maybe make it look for a file on a USB drive
+11/28/2024 2:45 PM
+can you interrupt it?
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 2:45 PM
+hmm, but during delay I can't do anything
+hellobox. 11/28/2024 2:45 PM
+wait
+[] invisiblecupcake Now I'm wondering can I set up a bootcmd variable to
+start the emmc dump immediately when uboot star...
+hellobox. 11/28/2024 2:44 PM
+have it delay for a long time before resetting usb
+[] invisiblecupcake Nope, the "tftpput" command is unavailable. Only
+booting from an image downloaded from a server "tft...
+ww8543 11/28/2024 2:41 PM
+oof 
+ 1
+[invisiblecupcake]
+invisiblecupcake 11/28/2024 2:37 PM
+Now I'm wondering can I set up a bootcmd variable to start the emmc dump
+immediately when uboot starts? is that unsafe? When I run that command
+while USB Serial is connected, it Restarts the USB and I lose USB serial
+access completely until restart. I need to be able to go into uboot via
+USB serial BEFORE the bootcmd command is run. And then be able to delete
+it. (edited)
+11/28/2024 2:36 PM
+I checked that by running a command 'delay 10000; reset' Which when run,
+first delays by 10s then starts the normal boot. During normal boot the
+fans spin up loudly. When I try that and unplug the Serial USB device
+during the 10s wait, the fans never spin up so it never does the second
+part of the command (never resets) (edited)
+11/28/2024 2:35 PM
+But when I disconnect the serial USB device the command stops running,
+probably it interrupts
+11/28/2024 2:35 PM
+Also, I tried setting up environment variables with a sequence of
+commands inside like - delay 10s, reset usb, dump emmc to USB
+11/28/2024 2:34 PM
+I got a list of all the partitions and their sizes
+[invisiblecupcake]
+ww8543 can you not send via tftp?
+invisiblecupcake 11/28/2024 2:34 PM
+Nope, the "tftpput" command is unavailable. Only booting from an image
+downloaded from a server "tftpboot".
+[lightfire]
+lightfire 11/28/2024 1:50 PM
+maybe its a 'chromecast only works after casting from youtube app' kinda
+issue  did you try screen sharing with the lg app
+Deleted User 11/28/2024 1:41 PM
+but yeah it should support it
+11/28/2024 1:41 PM
+chatgpt isnt really a reliable source of info
+[matthew6870]
+matthew6870 11/28/2024 1:38 PM
+according to ChatGPT both S24 and C1 support Miracast 
+[annplusplus]
+annplusplus 11/28/2024 12:44 PM
+and my phone is connected to the amplifi, whereas the tv is wired to the
+zte.. so, lol
+11/28/2024 12:43 PM
+Of course I ended up fucking up my wifi, so now whatever is connected to
+the amplifi is not connected to the ZTE
+[annplusplus]
+[] matthew6870 Hi. How do you screen share your android to LG C1? It
+drives me crazy that such expensive TV seems t...
+annplusplus 11/28/2024 12:43 PM
+I just connect to my wifi and I'm done, it works
+[Screenshot_20241128_144252.jpg]
+ Screenshot_20241128_144252.jpg
+35.33 KB External
+[matthew6870]
+[] mariotaku Chromecast only phone right? If you have C2 you could
+upgrade to webOS 24 and get that feature but f...
+matthew6870 11/28/2024 11:20 AM
+galaxy s24. I think it also has miracast. but still cant see my tv in
+smartview
+[mariotaku]
+[] matthew6870 Hi. How do you screen share your android to LG C1? It
+drives me crazy that such expensive TV seems t...
+mariotaku 11/28/2024 11:18 AM
+Chromecast only phone right? If you have C2 you could upgrade to webOS
+24 and get that feature but for older models you're out of luck 
+[matthew6870]
+matthew6870 11/28/2024 11:16 AM
+Hi. How do you screen share your android to LG C1? It drives me crazy
+that such expensive TV seems to not by capable of such basic thing.

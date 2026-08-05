@@ -1,0 +1,1865 @@
+October 9, 2022
+[smx2460]
+smx2460 10/09/2022 12:20 PM
+but you'll be limited to whatever feature glibc 2.5 had
+10/09/2022 12:19 PM
+it will run on anything lol
+[astur3l]
+astur3l 10/09/2022 12:19 PM
+[smx2460]
+smx2460 10/09/2022 12:19 PM
+with gcc 12
+10/09/2022 12:19 PM
+xD
+10/09/2022 12:19 PM
+glibc 2.5
+10/09/2022 12:19 PM
+https://github.com/frida/crosstool-ng/tree/main/packages/glibc/2.5
+crosstool-ng/packages/glibc/2.5 at main · frida/crosstool-ng
+A versatile (cross-)toolchain generator. Contribute to
+frida/crosstool-ng development by creating an account on GitHub.
+[]
+10/09/2022 12:19 PM
+OT, but the guy behind Frida did this
+10/09/2022 12:19 PM
+[astur3l]
+astur3l 10/09/2022 12:19 PM
+`find ${TOOLCHAIN_DIR}/bin -type f -iname "perl*" -delete`
+[smx2460]
+smx2460 10/09/2022 12:18 PM
+because the code compiled by the toolchain explicitly targets glibc
+2.12, which means it will run on anything from NC4 onwards
+10/09/2022 12:18 PM
+great
+[astur3l]
+astur3l 10/09/2022 12:18 PM
+no, the released, just removed the perl
+[smx2460]
+smx2460 10/09/2022 12:18 PM
+or the other
+10/09/2022 12:18 PM
+are you using the "unreleased" one?
+[astur3l]
+astur3l 10/09/2022 12:18 PM
+yeah, for compiliing, but its already solved, i guess it was the ccache
+or something like that, since i switched the toolchain meanwhile 3 times
+[smx2460]
+smx2460 10/09/2022 12:17 PM
+wait you mean to run gcc? or to run the compiled code
+[smx2460]
+[] astur3l well newer gcc requires newer glibc, no?:D and gcc is updated
+smx2460 10/09/2022 12:17 PM
+no
+[astur3l]
+astur3l 10/09/2022 12:38 AM
+i went back to the 'official' since both had the same perl 'issue',
+didnt checked the cirrus's one afterwards (edited)
+hellobox. 10/09/2022 12:22 AM
+but with the released buildroot-nc4 and not the one from smx on
+cirrus-ci?
+[astur3l]
+astur3l 10/09/2022 12:21 AM
+now it just compiled.... 
+hellobox. 10/09/2022 12:21 AM
+anyway, glibc-2.17+ shouldn't need -lrt for clock_gettime
+10/09/2022 12:17 AM
+or did you switch back to the old buildroot?
+10/09/2022 12:17 AM
+so when does the build fail?
+hellobox. 10/09/2022 12:09 AM
+not significantly newer glibc anyway
+10/09/2022 12:09 AM
+at least i don't think so
+10/09/2022 12:09 AM
+no
+[astur3l]
+astur3l 10/09/2022 12:08 AM
+well newer gcc requires newer glibc, no?:D and gcc is updated (edited)
+[yolofant]
+yolofant 10/09/2022 12:06 AM
+it should still be the same glibc no?
+hellobox. 10/09/2022 12:05 AM
+what version of glibc?
+[astur3l]
+astur3l 10/09/2022 12:03 AM
+seems like it would link againts librt then it just some glibc issue
+what i cant fix anyway (edited)
+10/09/2022 12:02 AM
+hyperion
+        # Glibc compatibilty check
+            check_c_source_compiles("
+                #include <time.h>
+                #include <sys/time.h>
+                int main() {
+                    struct timespec t;
+                    return clock_gettime(CLOCK_REALTIME, &t);
+                }
+                " GLIBC_HAS_CLOCK_GETTIME)
+            IF(NOT GLIBC_HAS_CLOCK_GETTIME)
+                target_link_libraries(leddevice rt)
+            endif()
+(edited)
+hellobox. 10/09/2022 12:01 AM
+what glibc tests?
+[astur3l]
+astur3l 10/09/2022 12:00 AM
+https://github.com/webosbrew/hyperion.ng-webos-loader github ci doesnt
+compile with the newest buildroot
+October 8, 2022
+hellobox. 10/08/2022 11:59 PM
+what are you trying to do?
+[astur3l]
+astur3l 10/08/2022 11:58 PM
+well, now another trouble: glibc fails on clock gettime tests..... 
+now no clue, do i need to link againts librt, or just give up 
+(edited)
+[yolofant]
+yolofant 10/08/2022 11:50 PM
+why not? usually binaries from the toolchain cannot run on the host's
+system anyway
+[astur3l]
+astur3l 10/08/2022 8:57 PM
+hmm and it doesnt even use env setup :/ just the toolchain file jaj
+set(CMAKE_PROGRAM_PATH "${RELOCATED_HOST_DIR}/bin")
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)  btw perl wasnt included
+in prev. buildroot, but i have no idea howto exclude just the perl from
+the program path...  using host path for every program wouldnt be good
+either, guess i just gonna use the my old friend rm  (edited)
+[smx2460]
+smx2460 10/08/2022 8:56 PM
+Or that
+[astur3l]
+astur3l 10/08/2022 8:56 PM
+ah 
+10/08/2022 8:56 PM
+i could just save the path env and after the env setup just
+$PATH=${OLDPATHPATH}:${PATH} so np:D
+[smx2460]
+smx2460 10/08/2022 8:56 PM
+And DIY
+10/08/2022 8:56 PM
+You could avoid using environment setup script
+10/08/2022 8:55 PM
+Maybe tomorrow
+[astur3l]
+astur3l 10/08/2022 8:55 PM
+oh sorry  im totally noob for this
+[smx2460]
+smx2460 10/08/2022 8:55 PM
+But not today
+10/08/2022 8:55 PM
+I could patch that
+[smx2460]
+[] astur3l but this is the buildroot env-setup: export
+"PATH=$SDK_PATH/bin:$SDK_PATH/sbin:$PATH" why does it pr...
+smx2460 10/08/2022 8:54 PM
+It's s buildroot decision...
+[astur3l]
+[] smx2460 Probably the default cmake toolchain file always prepends
+astur3l 10/08/2022 8:52 PM
+but this is the buildroot env-setup: export
+"PATH=$SDK_PATH/bin:$SDK_PATH/sbin:$PATH" why does it prepend then?:D
+btw this is not what i easily can workaround (edited)
+[snorska]
+snorska 10/08/2022 8:11 PM
+Hi, I'm kind of a newbie in all this, and I wanted to decrypt a TV
+recording that I made with a USB, I do not know very well what to do
+with these files, can someone give me a hand? (edited)
+[unknown.png]
+ unknown.png
+45.08 KB External
+[astur3l]
+astur3l 10/08/2022 7:21 PM
+i cannot really test because i didnt set up dev env for building this...
+ and i dont wanna trash github with my shit  probably i wait until
+the maintainer fix it  until the prev. buildroot works just fine,
+thanks (edited)
+[smx2460]
+smx2460 10/08/2022 7:20 PM
+Probably the default cmake toolchain file always prepends
+10/08/2022 7:20 PM
+This is similar to the cmake "issue" but it's not a true bug, it can be
+worked around by using the toolchain differently
+10/08/2022 7:19 PM
+move/rename/delete
+10/08/2022 7:19 PM
+Otherwise move "perl" from bin to somewhere else
+[smx2460]
+[] astur3l ah, but the previos buildroot doesnt included perl?
+smx2460 10/08/2022 7:17 PM
+Not sure, maybe not
+[smx2460]
+smx2460 10/08/2022 7:17 PM
+Which apparently misses things
+[astur3l]
+astur3l 10/08/2022 7:17 PM
+ah, but the previos buildroot doesnt included perl?
+[smx2460]
+smx2460 10/08/2022 7:17 PM
+Otherwise it will use the one within buildroot
+10/08/2022 7:17 PM
+You want to use the system perl
+[astur3l]
+astur3l 10/08/2022 7:16 PM
+its out of my skills to fix it without doing 10000 failed workflows 
+[smx2460]
+smx2460 10/08/2022 7:15 PM
+Not prepend
+10/08/2022 7:14 PM
+Try to attend the toolchain path
+[astur3l]
+astur3l 10/08/2022 7:14 PM
+yeah, but seems its now related to perl version or cpan, or idk 
+(edited)
+[smx2460]
+smx2460 10/08/2022 7:13 PM
+Ahhh your using it from GitHub actions
+[astur3l]
+astur3l 10/08/2022 7:12 PM
+yeah, that gaves me now that perl strict.pm error
+[smx2460]
+smx2460 10/08/2022 7:12 PM
+Did you try the build i sent?
+[astur3l]
+astur3l 10/08/2022 7:11 PM
+but as i said, its the same github ci which works with the previous
+buildroot, so i dont think thats my fault (?):D (edited)
+10/08/2022 7:11 PM
+yeah
+[smx2460]
+smx2460 10/08/2022 7:11 PM
+right?
+[smx2460]
+[] astur3l thanks, sorry, just for some reason for first attempt github
+throw: ```gzip: stdin: unexpected end o...
+smx2460 10/08/2022 7:11 PM
+You did ./relocate-sdk
+[astur3l]
+[] smx2460 <@433352458694033428> try this
+https://cirrus-ci.com/task/6178858230611968
+astur3l 10/08/2022 7:09 PM
+thanks, sorry, just for some reason for first attempt github throw:
+    gzip: stdin: unexpected end of file
+    tar: Unexpected EOF in archive
+    tar: Unexpected EOF in archive
+    tar: Error is not recoverable: exiting now
+    did a re-run now works, this error gone but run into another
+    Can't locate strict.pm in @INC (you may need to install the strict module) (@INC contains: /tmp/cirrus-ci-build/output/host/lib/perl5/site_perl/5.34.1/x86_64-linux /tmp/cirrus-ci-build/output/host/lib/perl5/site_perl/5.34.1 /tmp/cirrus-ci-build/output/host/lib/perl5/5.34.1/x86_64-linux /tmp/cirrus-ci-build/output/host/lib/perl5/5.34.1) at /home/runner/work/hyperion.ng-webos-loader/hyperion.ng-webos-loader/hyperion.ng/dependencies/external/mbedtls/library/../scripts/generate_features.pl line 18.
+    BEGIN failed--compilation aborted at /home/runner/work/hyperion.ng-webos-loader/hyperion.ng-webos-loader/hyperion.ng/dependencies/external/mbedtls/library/../scripts/generate_features.pl line 18.
+    make[2]: *** [dependencies/external/mbedtls/build/library/CMakeFiles/mbedcrypto.dir/build.make:216: dependencies/external/mbedtls/build/library/version_features.c] Error 2
+    make[1]: *** [CMakeFiles/Makefile2:922: dependencies/external/mbedtls/build/library/CMakeFiles/mbedcrypto.dir/all] Error 2
+    make: *** [Makefile:156: all] Error 2
+->
+https://github.com/asturel/hyperion.ng-webos-loader/actions/runs/3210963934/jobs/5249088930#step:9:446
+btw run into in https://github.com/webosbrew/hyperion.ng-webos-loader
+github CI (edited)
+[smx2460]
+smx2460 10/08/2022 5:51 PM
+Latest but built on older os
+10/08/2022 5:51 PM
+@asturel try this https://cirrus-ci.com/task/6178858230611968
+Cirrus CI
+Cirrus CI makes your development cycle fast, efficient, and secure by
+leveraging modern cloud technologies.
+[]
+[astur3l]
+astur3l 10/08/2022 5:10 PM
+@Smx the latest buildroot doesn't works for me:
+`/opt/arm-webos-linux-gnueabi_sdk-buildroot/bin/perl: error while loading shared libraries: libnsl.so.2: cannot open shared object file: No such file or directory`
+previosly it wasnt an issue,
+https://github.com/openlgtv/buildroot-nc4/releases/tag/webos-9f5b1a1
+works fine (edited)
+Release webos: Added QT5 and libusb · openlgtv/buildroot-nc4
+[dogelition]
+dogelition 10/08/2022 12:39 PM
+(e.g. com.webos.app.livetv works, and iirc it then opens that input in
+the background if it wasn't active already) (edited)
+10/08/2022 12:39 PM
+and annoyingly, on webos 2.x that request doesn't actually work because
+it expects id to be the current input (?) instead of
+com.webos.app.factorywin
+10/08/2022 12:38 PM
+https://dropbox.inf.re/webos-downgrade/ has buttons you can click to
+send requests to open instart and ezadjust btw, so you can just
+replicate that if you're unsure about the exact request
+[samcday]
+samcday 10/08/2022 12:32 PM
+@ww thx! I just remembered I'm co-maintaining the AUR package of
+https://github.com/klattimer/LGWebOSRemote ... maybe I'll try and add an
+inStart method there  As for the PIN, yeah, I got it + that luna-send
+command from here:
+https://gist.github.com/Informatic/1983f2e501444cf1cbd182e50820d6c1#factory-mode--instart--instop
+... now that I actually look at that page properly (rather than just the
+linked section) I realize it might be worth reading in full actually 
+GitHub - klattimer/LGWebOSRemote: Command line webOS remote for LGTVs
+Command line webOS remote for LGTVs. Contribute to
+klattimer/LGWebOSRemote development by creating an account on GitHub.
+[]
+openlgtv webOS hacking notes
+openlgtv webOS hacking notes. GitHub Gist: instantly share code, notes,
+and snippets.
+[]
+ 1
+ww8543 10/08/2022 12:28 PM
+@samcday the password for those service menus is 0413 btw (edited)
+10/08/2022 12:25 PM
+under factorywin
+10/08/2022 12:24 PM
+has the payloads you can send either via luna-send locally on the tv or
+remotely through ssap
+10/08/2022 12:24 PM
+https://www.webosbrew.org/pages/commands-cheatsheet.html
+[] samcday I am intrigued, do you mean I could just issue a command from
+something like this? https://github.co...
+ww8543 10/08/2022 12:23 PM
+thats exactly what he meant
+[samcday]
+[] dogelition note: that can also be done without root and over SSAP
+samcday 10/08/2022 12:21 PM
+I am intrigued, do you mean I could just issue a command from something
+like this? https://github.com/SaschaWessel/lgtv What would such an SSAP
+command look like?
+GitHub - SaschaWessel/lgtv: A command line webOS remote for LGTVs
+A command line webOS remote for LGTVs. Contribute to SaschaWessel/lgtv
+development by creating an account on GitHub.
+[]
+[dogelition]
+dogelition 10/08/2022 11:52 AM
+note: that can also be done without root and over SSAP
+[samcday]
+samcday 10/08/2022 10:18 AM
+Hello!  Hopefully a simple question: is there an easy/straightforward
+way to do service menu things with a rooted C1? I want to disable
+ASBL/TPC but I don't have a remote.... figure root ought to be enough,
+right?  EDIT: figured it out,
+luna-send -n 1 -f luna://com.webos.service.applicationManager/launch '{"id":"com.webos.app.factorywin","params":{"id":"executeFactory","irKey":"inStart"}}'
+wheeeee (edited)
+[astur3l]
+[] infowski I ended up using Nginx running on a localserver:
+https://discord.com/channels/407937994037919756/843...
+astur3l 10/08/2022 2:33 AM
+sadly this makes lg store unavailable error code: 15.43.XF  actually
+it saved me from installing prime videos by accident :d (edited)
+October 7, 2022
+[] illixion I think it's the "smart tips" option in Settings → General →
+AI Service → AI Recommendation, at leas...
+netham45 10/07/2022 7:07 PM
+I don't have a smart tips option under AI Recommendation. I already had
+all the options under there disabled.
+[illixion]
+netham45 Anyone know if there's any way to disable this nag screen?
+illixion 10/07/2022 3:54 PM
+I think it's the "smart tips" option in Settings → General → AI Service
+→ AI Recommendation, at least on my TV
+[alexn1ght]
+alexn1ght 10/07/2022 1:17 PM
+Hi everyone! I have a question. Is there any way I can enable AirPlay
+for WebOs 3.9? Maybe some UxPlay ports for WebOs or something else. And
+what else would you recommend for screen mirroring from a mac (or an
+iPad) if not AirPlay?
+netham45 10/07/2022 12:16 AM
+Anyone know if there's any way to disable this nag screen?
+[20221006_161535.jpg]
+ 20221006_161535.jpg
+45.32 KB External
+October 6, 2022
+mattl0. 10/06/2022 11:49 PM
+Anyone know a luna call that connect/select a specific bluetooth device
+to lg tv?
+[ashlar4242]
+[] ashlar4242 I have to say, though, that Live Replay that you need to
+activate every time you want to use it... i...
+ashlar4242 10/06/2022 2:59 PM
+Just wanted to correct what I wrote here. I don't know what changed
+while I was experimenting but now the Live Replay works exactly as I
+thought it would/should. Every time you switch channel, a new recording
+starts, so you can pause or rewind without the need to activate it
+beforehand.
+[smx2460]
+smx2460 10/06/2022 1:43 AM
+Deduplication has a chance of being helpful here
+10/06/2022 1:42 AM
+I plan on making a 16TB raid10 (4 disks x 8Tb)
+10/06/2022 1:41 AM
+My last 8TB disk arrived today
+[smx2460]
+hellobox. i'm going to need a new disk for all this lg garbage
+smx2460 10/06/2022 1:41 AM
+Eheh welcome on board
+[smx2460]
+smx2460 10/06/2022 1:41 AM
+If it's just a dumb way of preventing rip-offs/requiring expensive
+certifications
+[smx2460]
+[] infowski miracast is fucked. miracast generally only goes over wifi
+direct, so no - no ethernet...
+smx2460 10/06/2022 1:40 AM
+Yeah i never really understood that
+October 5, 2022
+[astur3l]
+astur3l 10/05/2022 10:29 PM
+just rebooted the tv and miracast works......
+hellobox. 10/05/2022 9:25 PM
+i'm going to need a new disk for all this lg garbage
+hellobox. 10/05/2022 9:13 PM
+    sym=`cat /proc/kallsyms | grep sys_init_module | awk '{ print $1 }'`
+    grep -q '^webos_tv' /proc/modules || insmod webos_tv.ko module_path=@kernel_path init_module_addr=0x$sym
+[] astur3l for screen sharing/android miracast the tv most be connected
+over wlan?:D and ethernet has to be dis...
+ww8543 10/05/2022 8:08 PM
+on this one lg tv i have here, i have only ethernet connected and
+miracast works just fine
+[astur3l]
+astur3l 10/05/2022 7:47 PM
+also there was a 'screen sharing' app 
+10/05/2022 7:46 PM
+basically thats why i had to use lan instead of wlan 
+10/05/2022 7:46 PM
+so generally enabled wifi on the tv is enought?:D but im sure that i
+miss something.. on my previous tv, all my neighbors tried to cast to my
+tv, i always had to disable the wifi.. and now nothing 
+[infowski]
+infowski 10/05/2022 7:39 PM
+miracast is fucked. miracast generally only goes over wifi direct, so
+no - no ethernet...
+[astur3l]
+astur3l 10/05/2022 7:35 PM
+for screen sharing/android miracast the tv most be connected over
+wlan?:D and ethernet has to be disconnected? the phone just stuck at
+connecting and no model popup on the tv :/
+[infowski]
+infowski 10/05/2022 7:05 PM
+lol
+[yolofant]
+yolofant 10/05/2022 6:21 PM
+lg was so kind to put a target sysroot including kadaptor headers in
+some random source package 
+bddddd 10/05/2022 6:11 PM
+hello, could somebody with access to a tv help me download the netflix
+ipk?
+[astur3l]
+astur3l 10/05/2022 5:11 PM
+is there a way to mount nfs/smb share without plugging usb drive in?:D
+-- i mean to able to browse via native mediaplayer:D cant i just launch
+it somehow with the path e.g.  (edited)
+[smx2460]
+smx2460 10/05/2022 12:03 AM
+and Netcast's version of SSAP is called ROAP
+10/05/2022 12:03 AM
+https://github.com/openlgtv/roap-pvr/
+GitHub - openlgtv/roap-pvr: ROAP APIs with second screen support
+ROAP APIs with second screen support. Contribute to openlgtv/roap-pvr
+development by creating an account on GitHub.
+[]
+10/05/2022 12:03 AM
+Netcast here 
+10/05/2022 12:02 AM
+October 4, 2022
+[youhouka]
+youhouka 10/04/2022 10:51 PM
+ah
+[infowski]
+infowski 10/04/2022 10:51 PM
+Netcast was LGs "legacy" platform, one they had before webOS
+[youhouka]
+youhouka 10/04/2022 10:51 PM
+what is netcast on this server?
+[infowski]
+infowski 10/04/2022 10:50 PM
+(they called it SSAP externally too - in here for example:
+https://connectsdk.com/en/latest/discover/overview.html)
+10/04/2022 10:50 PM
+SSAP is what LG calls it internally - some reverse engineered client
+libraries use direct "method names" which are URIs with ssap://
+protocol...
+10/04/2022 10:49 PM
+Yeah, probably more generic "lg webos remote control library" would be
+better.
+[youhouka]
+youhouka 10/04/2022 10:49 PM
+thanks for a link
+10/04/2022 10:49 PM
+SSAP is horrible to search for, will try
+10/04/2022 10:48 PM
+U.S. Soy Sustainability Assurance Protocol
+10/04/2022 10:48 PM
+huhhhhhh
+[infowski]
+infowski 10/04/2022 10:48 PM
+there are libraries for that ffor most languages:
+https://github.com/hobbyquaker/lgtv2
+GitHub - hobbyquaker/lgtv2: Control LG WebOS TV using node.js
+Control LG WebOS TV using node.js :tv:. Contribute to hobbyquaker/lgtv2
+development by creating an account on GitHub.
+[]
+[youhouka]
+youhouka 10/04/2022 10:48 PM
+ah, ok
+10/04/2022 10:48 PM
+source code is fine, but I don't even know where to start
+[infowski]
+infowski 10/04/2022 10:48 PM
+For general remote control - your best bet is "SSAP" protocol.
+[youhouka]
+youhouka 10/04/2022 10:47 PM
+I'm new to webos usage... can you automate startup tasks? can you
+remotely trigger loading things?
+[infowski]
+infowski 10/04/2022 10:47 PM
+Or... maybe you could write a NodeJS service (that's what "background
+stuff" is made in on webOS) that'd receive RTP and pass it into the
+browser to something like MSE (or remux it into hls/dash/whatever)
+[youhouka]
+youhouka 10/04/2022 10:47 PM
+webrtc would be fine... is there any documentation of any kind on
+triggering these automatically?
+[infowski]
+infowski 10/04/2022 10:46 PM
+You could also probably make some native rtp receiver app based on
+mariotakus media APIs reverse engineering.
+[youhouka]
+youhouka 10/04/2022 10:45 PM
+I would really like to be able to make "channels" be available on a
+local network... but the terms "IPTV" and "streaming" have been so
+overloaded that it's impossible to search for it
+[infowski]
+infowski 10/04/2022 10:45 PM
+You could probably try something based on webrtc for lowest latency and
+lowest effort possible.
+[youhouka]
+youhouka 10/04/2022 10:44 PM
+I'm just interested in any automation you can do on webos without being
+an lg partner
+10/04/2022 10:44 PM
+all good
+[infowski]
+infowski 10/04/2022 10:43 PM
+That's unrelated (lgtvsdp is LG's "backend" service for their TVs),
+sorry.
+[youhouka]
+youhouka 10/04/2022 10:42 PM
+it makes SDP calls?
+[infowski]
+infowski 10/04/2022 10:41 PM
+@mits RTP is only supported on Signage displays from what I could tell
+from my glancing at webOS webappmgr/media stack some time ago.
+[infowski]
+[] astur3l nice, even at turning off the tv it makes call ``"POST
+/rest/sdp/v12.0/initservices HTTP/1.1" 200 0 ...
+infowski 10/04/2022 10:40 PM
+I think it's just a side effect of the TV really wanting to initialize
+sdp stack. After initservices they do other requests that are actually
+meaningful.
+[youhouka]
+youhouka 10/04/2022 5:47 PM
+not RF... RTP is over IP
+10/04/2022 5:46 PM
+like mpeg content over RTP
+10/04/2022 5:45 PM
+I'm talking about RTP
+[roughdraught]
+roughdraught 10/04/2022 5:45 PM
+Or content like recording yourself gaming?
+10/04/2022 5:45 PM
+Or live recordings like from a video camera?
+10/04/2022 5:44 PM
+Depends, are you taking about over the air or cable to you computer then
+streaming that to the TV?
+[youhouka]
+youhouka 10/04/2022 5:44 PM
+but I can't find how
+10/04/2022 5:44 PM
+RTP and UDP multicast are supported somehow
+10/04/2022 5:44 PM
+"Real-time Video Streaming Various types of IP video streaming protocols
+such as RTSP/RTP/HLS and UDP Multicast are supported for real-time
+content streaming. It is easy to manage content as it is free from
+capacity limits for content playback, and provides live broadcasts. *The
+availability of features may vary by versions of webOS platform"
+10/04/2022 5:42 PM
+I'm not aware of an app for just 'receive video'
+10/04/2022 5:42 PM
+sure, but what app?
+10/04/2022 5:41 PM
+I guess the difference might be that I'm talking about streams of live
+content, not a recorded media file streamed to the TV
+[roughdraught]
+roughdraught 10/04/2022 5:41 PM
+You can play any media type you want, but you need a program running on
+your Linux server and an App on the TV to stream
+[youhouka]
+youhouka 10/04/2022 5:40 PM
+I mean like ffmpeg
+[roughdraught]
+roughdraught 10/04/2022 5:33 PM
+There are lots of ways to do that mits
+10/04/2022 5:32 PM
+You mean like with a Kodi or Plex setup or Jellyfin?
+[youhouka]
+youhouka 10/04/2022 4:54 PM
+LG says it does, but hides it behind commercial partnerships I guess?
+I'm not sure if that's just a way to make developers talk to them first,
+or if it's just badly documented
+https://www.lg.com/global/business/webos
+webOS | Software / Service | Information Display | Business | LG Gl...
+LG Smart Signage Platform webOS allows easy integration and expansion
+with intuitive UX and various value-added solutions. Learn more now.
+[]
+10/04/2022 4:51 PM
+Does webos have any concept of presenting a network stream as a TV
+channel? When I say network stream I sorta mean any protocol, I want to
+push video to a TV or multiple TVs in my house from a linux server, thus
+I can use just about codec/container/protocol. Ideally I'm looking for
+something multicastable like RTP.
+[roughdraught]
+roughdraught 10/04/2022 4:33 PM
+I wanted to know if it was worth the risk/hassle before I did it
+10/04/2022 4:33 PM
+I dunno, I got the update notification on the TV, but didn't accept it
+[smx2460]
+smx2460 10/04/2022 4:16 PM
+And not a new ad-hoc release
+10/04/2022 4:15 PM
+It's quite possible they just added a link and nothing more
+10/04/2022 4:15 PM
+Aka
+10/04/2022 4:15 PM
+Just don't remember if at r3186
+10/04/2022 4:15 PM
+DMP has been seem before
+10/04/2022 4:15 PM
+It's per-SoC
+10/04/2022 4:15 PM
+There is no "per-model" package
+10/04/2022 4:14 PM
+I mean
+[smx2460]
+[] pauloneves5226 unfortunately it is just an archive of code, no SDK
+The tree contents https://pastebin.com/EURKXyDr
+smx2460 10/04/2022 4:14 PM
+Is it really updated?
+[roughdraught]
+roughdraught 10/04/2022 4:09 PM
+Is there any chance it's a security update? "important" is just not
+helpful
+[yolofant]
+yolofant 10/04/2022 4:07 PM
+quite often they don't go into details
+[roughdraught]
+roughdraught 10/04/2022 4:06 PM
+My c7p has just announced an update to 06.05.10 which is not listed on
+the LG support site. Anyone know how long they take to tell us what's in
+this "important update"?
+hellobox. 10/04/2022 3:11 PM
+look at the sizes for any that are like 100mb+ too big
+[] pauloneves5226 unfortunately it is just an archive of code, no SDK
+The tree contents https://pastebin.com/EURKXyDr
+hellobox. 10/04/2022 3:11 PM
+might be a sdk in one of the packages; check connman and chromium
+[pauloneves5226]
+pauloneves5226 10/04/2022 2:37 PM
+unfortunately it is just an archive of code, no SDK The tree contents
+https://pastebin.com/EURKXyDr
+.└── DMP-r3186 ├── FreeRTOSLicense │   ├── 00006102-Bee1_SDK_...
+Pastebin.com is the number one paste tool since 2002. Pastebin is a
+website where you can store text online for a set period of time.
+10/04/2022 2:34 PM
+funny thing the file has a .gz extension but is actually a tar file. No
+wonder it is huge
+10/04/2022 2:32 PM
+yep. The email is very boilerplate, and that is why i thought the link
+was an dud.
+[yolofant]
+yolofant 10/04/2022 1:48 PM
+at least they were helpful in your case 
+[] pauloneves5226 I got an answer from LG opensource request and they
+added it! When i saw the link they sent i though...
+ww8543 10/04/2022 1:35 PM
+neat!
+[pauloneves5226]
+pauloneves5226 10/04/2022 1:31 PM
+so the request form actually works.
+[pauloneves5226]
+hellobox. what version of glibc does your tv have?
+pauloneves5226 10/04/2022 1:30 PM
+I got an answer from LG opensource request and they added it! When i saw
+the link they sent i thought it was going to be a waste of time as i
+knew there was nothing on that link....before, but now there is:
+http://opensource.lge.com/product/list?page=&keyword=oled55b7v
+[zelminar]
+zelminar 10/04/2022 2:13 AM
+Question Anyone aware of a method of having my TV (C1) auto-off/sleep
+after a 4 hour period? - Currently the TV will auto-sleep after 4 hours
+IF no user input is detected. - Sleep feature seems to only activate
+once (that session) if I set for 4 hours. I wish this to actually be set
+at all times even after shutoff/sleep Ideally I'd like to set the sleep
+timer to be a fixed/permanent 4 hour period even after shutdown. So that
+next bootup would incur that same "4 hour" value again Sorry bad english
+(edited)
+ 2  2
+[astur3l]
+astur3l 10/04/2022 1:02 AM
+nice, even at turning off the tv it makes call
+`"POST /rest/sdp/v12.0/initservices HTTP/1.1" 200 0 "-" "-"`
+October 3, 2022
+ww8543 10/03/2022 10:53 PM
+it would matter if the client actually looked at that header and acted
+accordingly to it, which it does not i think
+[astur3l]
+astur3l 10/03/2022 10:38 PM
+btw added `default_type text/plain;` because i didnt liked octet stream
+content type  or it should be text/html ? if it matters at all 
+(edited)
+ww8543 10/03/2022 10:37 PM
+none others are required. no.
+[astur3l]
+ww8543 thats http in the beginning even, because no time also means no
+ssl, since you cant say for certain ...
+astur3l 10/03/2022 10:36 PM
+i was about to create overlay  btw is there other lg service which
+requires proper response too?:D because i just created dnsmasq for that
+`address=/*.lgtvsdp.com/192.168.1.xx` but the leftovers..
+    address=/recommend.lgtvcommon.com/
+    address=/service.lgtvcommon.com/
+    address=/nudge.lgtvcommon.com/
+    address=/netflixvoice.lgtvcommon.com/
+    address=/homeprv.lgtvcommon.com/
+    address=/cdpsvc.lgtvcommon.com/
+    address=/snu.lge.com/
+    address=/su-dev.lge.com/
+    address=/su.lge.com/
+    address=/su-ssl.lge.com/
+    address=/lgad.cjpowercast.com.edgesuite.net/
+    address=/ad.lgsmartad.com/
+    address=/info.lgsmartad.com/
+    #address=/lgtvsdp.com/
+    address=/*.lgtvsdp.com/192.168.1.151
+    address=/eic.lgtviot.com/
+    address=/discovery.meethue.com/
+ww8543 10/03/2022 10:26 PM
+and the difference is between webos which is the graphical user
+interface and the firmware which is everything including webos
+cimadawa9663 Hi Everyone, I am pretty sure you guys answered this many
+times, But I need a WebOS 3.* TV, but I ha...
+ww8543 10/03/2022 10:25 PM
+no down- or upgrading is possible unfortunately
+[] astur3l self signed ssl works?  or it can't even verify the cert at
+that time
+ww8543 10/03/2022 10:25 PM
+thats http in the beginning even, because no time also means no ssl,
+since you cant say for certain if a cert is still valid or not
+ 1
+[astur3l]
+astur3l 10/03/2022 7:41 PM
+i have to concat my self signed cert with
+/usr/share/ca-certificates/sdp/sdp-ca.pem or i can just throw my cert
+near to it?:D or just bindmount the whole file with my cert?:D (edited)
+[astur3l]
+[] infowski I ended up using Nginx running on a localserver:
+https://discord.com/channels/407937994037919756/843...
+astur3l 10/03/2022 7:03 PM
+self signed ssl works?  or it can't even verify the cert at that time
+[infowski]
+[] reyqn Is this available somewhere?
+infowski 10/03/2022 5:42 PM
+I ended up using Nginx running on a localserver:
+https://discord.com/channels/407937994037919756/843456930726805528/1024025404664709181
+ 2
+[reyqn]
+[] infowski The issue is that if you *just* block it, it will also break
+automatic time synchronization. I state...
+reyqn 10/03/2022 5:41 PM
+Is this available somewhere?
+cimadawa9663 10/03/2022 4:47 PM
+Hi Everyone, I am pretty sure you guys answered this many times, But I
+need a WebOS 3.* TV, but I have a WebOS 6.2 TV (43UP81006LR). Is it
+possible to downgrade it into WebOS 3? Also, what is the difference
+between the Software and WebOS versions?
+[pauloneves5226]
+[] newlinersseries Does anyone have a rooted webOS 3.5 TV, if so can you
+extract the camera app so I can try porting it...
+pauloneves5226 10/03/2022 10:26 AM
+i do. Let me know if you need somethnig
+hellobox. 10/03/2022 6:12 AM
+so if you want to update, i'd recommend doing it while there's a
+working, easy exploit like crashd
+10/03/2022 6:11 AM
+also, lg hasn't patched crashd yet so you can always root it again if
+there's a problem
+10/03/2022 6:10 AM
+i updated after rooting, and it was unaffected
+10/03/2022 6:10 AM
+it might list some changes, but generally they're pretty vague
+10/03/2022 6:09 AM
+you can try checking the "reference notes" or whatever on the lg support
+page for your model
+10/03/2022 6:09 AM
+it's up to you
+[isabell121]
+isabell121 10/03/2022 6:03 AM
+How can I know what this update features?
+10/03/2022 6:03 AM
+Should I update it?
+10/03/2022 6:02 AM
+03.20.36 update since I got it
+10/03/2022 6:02 AM
+My tv has been asking for
+[astur3l]
+astur3l 10/03/2022 12:40 AM
+whats the 'difference' between meta lg webos ndk vs buildroot? or which
+should i use if i just want to compile for myself for newer tv? i'm
+totally noob for this, just want to compile few simple tool/app 
+October 2, 2022
+[friya]
+friya 10/02/2022 10:34 PM
+yeah, i just got curious about the @hellobox question too, so clicked
+around on their wiki
+[infowski]
+infowski 10/02/2022 10:33 PM
+>libhybris but that's for webosports stuff, right? I think "Luna next"
+was never an official thing
+[friya]
+friya 10/02/2022 10:30 PM
+(no content)
+[unknown.png]
+ unknown.png
+67.13 KB External
+hellobox. 10/02/2022 8:12 PM
+or surface manager thing?
+10/02/2022 8:12 PM
+https://github.com/webOS-ports/luna-next
+GitHub - webOS-ports/luna-next: Next generation UI for webOS
+Next generation UI for webOS. Contribute to webOS-ports/luna-next
+development by creating an account on GitHub.
+[]
+10/02/2022 8:11 PM
+was luna originally like a GUI environment or something?
+[smx2460]
+smx2460 10/02/2022 8:03 PM
+the thing you should worry about is the HAL compatibility
+10/02/2022 8:02 PM
+and run it through epk2extract
+10/02/2022 8:02 PM
+grab the EPK
+10/02/2022 8:02 PM
+just lookup a WebOS 3.5 TV
+10/02/2022 8:02 PM
+but you don't need to look for someone having the TV
+10/02/2022 8:02 PM
+@Oofers you're welcome to try
+[newlinersseries]
+newlinersseries 10/02/2022 6:50 PM
+It’s not like porting Palm/HP webOS apps to televisions
+[newlinersseries]
+[] m.ksy imposible
+newlinersseries 10/02/2022 6:50 PM
+It might be possible
+[m.ksy]
+[] newlinersseries Does anyone have a rooted webOS 3.5 TV, if so can you
+extract the camera app so I can try porting it...
+m.ksy 10/02/2022 6:50 PM
+imposible
+[newlinersseries]
+newlinersseries 10/02/2022 6:47 PM
+Does anyone have a rooted webOS 3.5 TV, if so can you extract the camera
+app so I can try porting it to later televisions
+hegelstad 10/02/2022 10:19 AM
+Is there a safe way to remove any of the default gallery themes?
+ 1
+October 1, 2022
+[smx2460]
+[] infowski rooting "blind" should be fairly simple, as long as it's not
+updated already. you can actually even ...
+smx2460 10/01/2022 10:06 PM
+@hellobox
+[] Smx pinned a message to this channel. See all pinned messages.
+10/1/22, 10:06 PM
+[sniperczar]
+sniperczar 10/01/2022 3:48 AM
+Lawyer types respond well to that kind of "hello"
+[sniperczar]
+[] pauloneves5226 do you think LG answers to direct email requests?
+sniperczar 10/01/2022 3:47 AM
+maybe better luck with certified mail to their head of legal
+ 1
+September 30, 2022
+[smx2460]
+smx2460 09/30/2022 11:27 PM
+then flip whatever extra you need
+[smx2460]
+[] pauloneves5226 is the kconfig already available? or i there is some
+manual work on the menuconfig-
+smx2460 09/30/2022 11:26 PM
+make webos_tv_defconfig
+ 1
+[dogelition]
+dogelition 09/30/2022 10:19 PM
+so... if you're in game mode, have oled care off, and either brightness
+(as in oled light) or contrast at 100, it's gonna show that message at
+some point? (+ need to be in SDR as well) (edited)
+09/30/2022 10:19 PM
+and those settings it gets are brightness and contrast
+09/30/2022 10:19 PM
+v0 should be the picture mode (with 5 = game)
+[unknown.png]
+ unknown.png
+16.64 KB External
+[dogelition]
+dogelition 09/30/2022 10:10 PM
+which makes this even weirder imo (edited)
+09/30/2022 10:10 PM
+unless i'm reading the code wrong, it seems like that popup actually
+only gets shown in game mode (which is what i always use) (edited)
+09/30/2022 10:10 PM
+well, it's the objectively correct (or closest thing to that) brightness
+for SDR
+ww8543 09/30/2022 10:05 PM
+that seems rather dim
+ 1
+[dogelition]
+dogelition 09/30/2022 10:05 PM
+it's not like i have them at unreasonable values though, i'm running
+~100 nits
+09/30/2022 10:04 PM
+from the code it looks like pressing yes on that popup would result in
+oled light and contrast getting reset to their default values
+ww8543 09/30/2022 10:04 PM
+possibly
+[dogelition]
+dogelition 09/30/2022 10:01 PM
+though i'm pretty sure i have all care/ai/etc. stuff off
+09/30/2022 10:01 PM
+also found a function PQDB_OCP_GetCarePictureModeData, so i guess it
+could stand for oled care picture? (edited)
+ww8543 09/30/2022 9:51 PM
+oled control p....anel?
+[dogelition]
+dogelition 09/30/2022 9:38 PM
+the code for it is implemented in pqcontroller and the functions have
+ocp in their name, and i have no idea what that could stand for
+09/30/2022 9:37 PM
+only thing i can find about it online is a single reddit post (with no
+real answers)
+09/30/2022 9:36 PM
+anyone know wtf that's about and what exactly triggers it?
+09/30/2022 9:36 PM
+just got a popup on my c1 that said: Panel brightness and contrast will
+be automatically adjusted to maintain optimal picture quality. Do you
+want to adjust now?
+[denimjeans7620]
+denimjeans7620 09/30/2022 6:09 PM
+this is what I am looking in aswell
+[pauloneves5226]
+[] smx2460 https://github.com/openlgtv/buildroot-nc4
+pauloneves5226 09/30/2022 11:07 AM
+is the kconfig already available? or i there is some manual work on the
+menuconfig-
+September 29, 2022
+[smx2460]
+smx2460 09/29/2022 11:36 PM
+Minimum glibc 2.12
+09/29/2022 11:36 PM
+Go to releases
+09/29/2022 11:36 PM
+https://github.com/openlgtv/buildroot-nc4
+GitHub - openlgtv/buildroot-nc4
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+[smx2460]
+[] pauloneves5226 eh, The oldest build-ose points to an OE commit that
+has glibc 2.24. So it definitely does not go ba...
+smx2460 09/29/2022 11:35 PM
+You can use buildroot-nc4
+hellobox. 09/29/2022 7:51 PM
+wtf!
+09/29/2022 7:51 PM
+lg opensource packages are back to taking 12+ hours to download
+09/29/2022 7:51 PM
+noooooo
+[reyqn]
+[] reyqn I have some files that my TV can play without issue when
+reading from a USB stick, however whenever ...
+reyqn 09/29/2022 7:05 PM
+Are the capabilities of the player different while streaming from
+network or reading from local media? Is there some kind of buffer that
+could be responsible for this?
+[pauloneves5226]
+pauloneves5226 09/29/2022 4:54 PM
+eh, The oldest build-ose points to an OE commit that has glibc 2.24. So
+it definitely does not go back enough for my case 
+[pauloneves5226]
+pauloneves5226 09/29/2022 4:40 PM
+If I understand https://github.com/webosbrew/meta-lg-webos-ndk
+correctly, it uses webose which uses dunfell, which in turn for sure has
+a very recent libc
+GitHub - webosbrew/meta-lg-webos-ndk: Most important tool to brew s...
+Most important tool to brew some native app for webOS TV - GitHub -
+webosbrew/meta-lg-webos-ndk: Most important tool to brew some native app
+for webOS TV
+[]
+hellobox. 09/29/2022 4:39 PM
+too bad, this is 2.20 something
+[pauloneves5226]
+hellobox. what version of glibc does your tv have?
+pauloneves5226 09/29/2022 4:38 PM
+2.19
+hellobox. 09/29/2022 4:35 PM
+the one i use is from a webos 6 package, but it's for webos 5
+09/29/2022 4:35 PM
+what i'd really like to find is a webos 6.x toolchain+sysroot
+09/29/2022 4:34 PM
+found a webos 4.0 toolchain, but no extra sysroot
+09/29/2022 4:31 PM
+what version of glibc does your tv have?
+09/29/2022 4:26 PM
+btw webos has a bunch of modifications to wayland
+[pauloneves5226]
+[] yolofant try waylandsink
+pauloneves5226 09/29/2022 4:26 PM
+i do not have that sink in my tv
+[yolofant]
+yolofant 09/29/2022 4:24 PM
+try waylandsink
+[pauloneves5226]
+[] pauloneves5226 Heh! gst-launch is in the rootfs and it has v4l2src.
+It could use a webcam 
+pauloneves5226 09/29/2022 4:23 PM
+sadly the simple gst-launch-1.0 playbin
+uri=https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4
+does not use the correct sink and i did not see anything in the TV
+[pauloneves5226]
+pauloneves5226 09/29/2022 4:11 PM
+Heh! gst-launch is in the rootfs and it has v4l2src. It could use a
+webcam 
+hellobox. 09/29/2022 4:10 PM
+and decided it wasn't for me
+ 1
+[] pauloneves5226 If by setting the right version you mean manually
+setting the versions on the recipe that is not rea...
+hellobox. 09/29/2022 4:10 PM
+yeah, i started looking into it before i found the lg sdk
+[yolofant]
+yolofant 09/29/2022 4:05 PM
+yep, webos 22 is chromium 87
+hellobox. 09/29/2022 4:04 PM
+webOS 22 KHP 1.0 has chromium 87
+09/29/2022 4:04 PM
+diff chromium from an opensource package against the stock source
+[pauloneves5226]
+hellobox. just put together an OE setup with all the right versions
+pauloneves5226 09/29/2022 4:03 PM
+If by setting the right version you mean manually setting the versions
+on the recipe that is not really a fast task 
+hellobox. 09/29/2022 4:03 PM
+yeah, idk
+[yolofant]
+yolofant 09/29/2022 4:02 PM
+but is building chrome enough? I think LG added some modifications which
+you would also need to port
+[pauloneves5226]
+hellobox. i want to see what your tv's OTAID is; can you try `grep
+'board_type\|device_name\|hardware_id' /var...
+pauloneves5226 09/29/2022 4:02 PM
+root@LGwebOSTV:~# grep 'board_type\|device_name\|hardware_id'
+/var/run/nyx/device_info.json "board_type": "M16P_DVB", "device_name":
+"m16p", "hardware_id": "HE_DTV_W17H_AFADABAA", "keyboard_type":
+"virtual",
+hellobox. 09/29/2022 4:02 PM
+just put together an OE setup with all the right versions
+09/29/2022 4:01 PM
+the APIs of chromium's dependencies should be the same
+09/29/2022 4:01 PM
+you can always build your own sdk
+[pauloneves5226]
+hellobox. lg seems to have just not released opensource packages for a
+lot of 2017 models
+pauloneves5226 09/29/2022 4:00 PM
+i just sent them a an OSS request. Even the website did not allow it for
+my model. I needed to inject my model name in the URL and then the form
+autopopulated my non existing model 
+hellobox. 09/29/2022 4:00 PM
+if i want mine to stay on i run an app, turn on the screensaver, and
+then power off the screen
+[pauloneves5226]
+hellobox. i want to see what your tv's OTAID is; can you try `grep
+'board_type\|device_name\|hardware_id' /var...
+pauloneves5226 09/29/2022 3:59 PM
+sure. Is there a way to keep the ssh server on the tv on while in
+standaby?
+hellobox. 09/29/2022 3:59 PM
+lg seems to have just not released opensource packages for a lot of 2017
+models
+[] pauloneves5226 > { "returnValue": false, "firmwareVersion":
+"06.00.25", "sdkVersion": "3.9.0", "modelName": "OLED55...
+hellobox. 09/29/2022 3:58 PM
+i want to see what your tv's OTAID is; can you try
+grep 'board_type\|device_name\|hardware_id' /var/run/nyx/device_info.json
+?
+hellobox. 09/29/2022 3:55 PM
+i don't know if they have all the dependencies
+09/29/2022 3:55 PM
+you can always try to build chromium with
+https://github.com/openlgtv/buildroot-nc4 or
+https://github.com/webosbrew/meta-lg-webos-ndk
+GitHub - openlgtv/buildroot-nc4
+Contribute to openlgtv/buildroot-nc4 development by creating an account
+on GitHub.
+[]
+GitHub - webosbrew/meta-lg-webos-ndk: Most important tool to brew s...
+Most important tool to brew some native app for webOS TV - GitHub -
+webosbrew/meta-lg-webos-ndk: Most important tool to brew some native app
+for webOS TV
+[]
+[yolofant]
+yolofant 09/29/2022 3:46 PM
+I have some commits in gstreamer maybe it's worth it to ask them for the
+gstreamer modifications / additions
+[pauloneves5226]
+pauloneves5226 09/29/2022 3:45 PM
+genius  a high tech solution for a legal problem
+hellobox. 09/29/2022 3:44 PM
+Yeah
+[pauloneves5226]
+hellobox. Like the kernel "adapter" driver that just re-exports gpl
+symbols
+pauloneves5226 09/29/2022 3:44 PM
+eheheh it is a kernel module?
+[yolofant]
+yolofant 09/29/2022 3:44 PM
+they even release all their gstreamer modifications even though it's
+LGPL
+09/29/2022 3:43 PM
+it's a giant mess
+hellobox. 09/29/2022 3:42 PM
+Like the kernel "adapter" driver that just re-exports gpl symbols
+[pauloneves5226]
+pauloneves5226 09/29/2022 3:41 PM
+that is really odd. I never worked on a company where GPL code was not
+taken seriously
+hellobox. 09/29/2022 3:41 PM
+Plenty of other examples of lg "creatively" interpreting the GPL for
+their own benefit
+[yolofant]
+yolofant 09/29/2022 3:40 PM
+[pauloneves5226]
+pauloneves5226 09/29/2022 3:40 PM
+well that is the case for PR work, with some blogpost getting into
+hackernews/slashdot for example. I came here today from a post on hacker
+news actually
+hellobox. 09/29/2022 3:38 PM
+Hey, at least lg releases some code. Siglent uses linux, uboot, and
+busybox but refuses to release anything
+[yolofant]
+yolofant 09/29/2022 3:37 PM
+yeah
+hellobox. 09/29/2022 3:37 PM
+Aren't there organizations that people have assigned their copyrights to
+that go after gpl violators?
+[yolofant]
+yolofant 09/29/2022 3:37 PM
+it's not correct but technically you can't do anything unless you have
+some commits in the kernel
+09/29/2022 3:36 PM
+Yes
+hellobox. 09/29/2022 3:36 PM
+Lg doesn't really understand the GPL
+[pauloneves5226]
+[] yolofant Yes, but it's not helpful. This is the response I got back
+couple of days ago after like 6 weeks ask...
+pauloneves5226 09/29/2022 3:36 PM
+if they have patches that is not a correct answer.
+[yolofant]
+[] pauloneves5226 do you think LG answers to direct email requests?
+yolofant 09/29/2022 3:35 PM
+Yes, but it's not helpful. This is the response I got back couple of
+days ago after like 6 weeks asking for the kernel source for different
+firmwares:
+    Dear Customer,
+    Thanks for reaching out to us with your query.
+    All of firmware versions 03.00.56, 03.10.38, 03.10.43, 03.10.75, 03.11.10, 03.11.35 and 03.20.24 are the same Kernel version 5.4.
+    so, we are only offering one kernel source for download.
+hellobox. 09/29/2022 3:34 PM
+My browser is currently upset about having to download all this junk
+from lg
+ 1
+09/29/2022 3:34 PM
+You can try
+[pauloneves5226]
+pauloneves5226 09/29/2022 3:33 PM
+do you think LG answers to direct email requests?
+hellobox. 09/29/2022 3:26 PM
+that's the hard part
+[pauloneves5226]
+pauloneves5226 09/29/2022 3:22 PM
+honestly the sysroot is the most important. I do not think the gcc
+version is relevant.
+hellobox. 09/29/2022 3:21 PM
+i'm downloading a bunch of opensource packages looking for something
+that will work
+[pauloneves5226]
+pauloneves5226 09/29/2022 3:20 PM
+where can i find such package? I work on build systems and am a
+contributor to OE but do not know TV specific knowlege
+hellobox. 09/29/2022 3:19 PM
+they only made it to gcc 9 with webos 22
+09/29/2022 3:19 PM
+it's in the m16+ commercial tv package
+[pauloneves5226]
+hellobox. actually, i found a toolchain:
+`arm-lg115x-linux-gnueabi-4.8-2014.11-x86_64.tar.xz`
+pauloneves5226 09/29/2022 3:18 PM
+do not know but doubt it. If the 4.8 in that tar name is the gcc version
+then it must have been an ancient version. 4.8 is really old and OE
+keeps quite up to date on the gcc version. Where did you find that
+archive url?
+hellobox. 09/29/2022 3:15 PM
+maybe they weren't using openembedded back then?
+09/29/2022 3:15 PM
+actually, i found a toolchain:
+arm-lg115x-linux-gnueabi-4.8-2014.11-x86_64.tar.xz
+[pauloneves5226]
+hellobox. i actually don't see chromium in that commercial tv package
+pauloneves5226 09/29/2022 3:13 PM
+ok i thought the web browser was chromium based.
+[pauloneves5226]
+pauloneves5226 09/29/2022 3:11 PM
+the armv7 is the same arch as rpi2
+hellobox. 09/29/2022 3:11 PM
+i actually don't see chromium in that commercial tv package
+[pauloneves5226]
+pauloneves5226 09/29/2022 3:10 PM
+where exactly can i look for the SDKs?
+hellobox. 09/29/2022 3:10 PM
+there's also M16pp and M16p3
+09/29/2022 3:10 PM
+M16 is an earlier revision
+09/29/2022 3:09 PM
+M16p
+[pauloneves5226]
+pauloneves5226 09/29/2022 3:07 PM
+and you were right it is the M16 SOC
+09/29/2022 3:07 PM
+quite more detailed info
+09/29/2022 3:07 PM
+> { "returnValue": false, "firmwareVersion": "06.00.25", "sdkVersion":
+"3.9.0", "modelName": "OLED55B7V-Z", "boardType": "M16P_DVB_EU",
+"hardwareVersion": "1", "errorCode": "ERROR_06", "errorText": "Invalid
+argument" }
+09/29/2022 3:06 PM
+processor : 1 model name : ARMv7 Processor rev 4 (v7l) BogoMIPS : 48.00
+Features : half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt
+vfpd32 lpae evtstrm aes pmull sha1 sha2 crc32 CPU implementer : 0x41 CPU
+architecture: 7 CPU variant : 0x0 CPU part : 0xd03 CPU revision : 4
+hellobox. 09/29/2022 2:59 PM
+it might have the sdk
+09/29/2022 2:58 PM
+you could try downloading webOS3.5_M16+_CommercialTV
+09/29/2022 2:57 PM
+but i think your SoC is M16p
+09/29/2022 2:57 PM
+you don't have to in order to run that
+[pauloneves5226]
+pauloneves5226 09/29/2022 2:57 PM
+hehe, let me root the tv first 
+hellobox. 09/29/2022 2:52 PM
+run this:
+luna-send-pub -n 1 'luna://com.webos.service.tv.systemproperty/getSystemInfo' '{"keys":["otaId","firmwareVersion","sdkVersion","modelName","boardType","hardwareVersion"]}'
+09/29/2022 2:52 PM
+kind of
+[pauloneves5226]
+pauloneves5226 09/29/2022 2:52 PM
+from what i see it is ancient 
+09/29/2022 2:51 PM
+the webos TV version is 3.9.0 dreadlocks2-dudhwa
+09/29/2022 2:48 PM
+https://www.lg.com/uk/tvs/lg-OLED55B7V. Let me check
+hellobox. 09/29/2022 2:47 PM
+what version of webos do you have?
+09/29/2022 2:47 PM
+today it's taking a couple minutes
+09/29/2022 2:46 PM
+usually it takes ~12 hours to download each ~1gb file
+09/29/2022 2:46 PM
+it's actually really fast for me today
+[pauloneves5226]
+pauloneves5226 09/29/2022 2:46 PM
+i am downloading some random model webOS IMP.tar.gz and it is very slow
+09/29/2022 2:45 PM
+yes i think it was 2017 model
+09/29/2022 2:45 PM
+ 2.3 would be quite ancient
+hellobox. 09/29/2022 2:45 PM
+i think they meant 2.31
+09/29/2022 2:45 PM
+lol the 2022 k8hp package includes glibc-2.3.1
+09/29/2022 2:43 PM
+2017 model?
+09/29/2022 2:43 PM
+because they're lazy about releasing opensource packages
+[pauloneves5226]
+hellobox. https://opensource.lge.com/product/list?ctgr=005&subCtgr=006
+pauloneves5226 09/29/2022 2:42 PM
+i put my model OLED55B7V and it does not show. Any ideas why?
+hellobox. 09/29/2022 2:10 PM
+so maybe the guy went down the list to make sure everything was included
+09/29/2022 2:10 PM
+actually most of those things are in the same package as that
+spreadsheet
+[pauloneves5226]
+hellobox. lol
+pauloneves5226 09/29/2022 2:08 PM
+"Yes: Not included"  Not confusing at all
+hellobox. 09/29/2022 2:07 PM
+it'll have, usually, an sdk installer (.sh file), a
+target_sysroot.tar.gz or whatever, and a script that runs the sdk
+installer then extracts the tarball over it
+09/29/2022 2:05 PM
+in the opensource package
+[pauloneves5226]
+pauloneves5226 09/29/2022 2:04 PM
+good. Where can i find the sysroots then? I assume they are not the same
+as webose? Or are you talking about dumping the rootfs of a working tv?
+hellobox. 09/29/2022 2:01 PM
+well, not for the purposes of building chromium at least
+09/29/2022 2:01 PM
+i don't think so
+[pauloneves5226]
+pauloneves5226 09/29/2022 2:01 PM
+ok, are the sdk sysroots model specific?
+hellobox. 09/29/2022 1:59 PM
+with the possible exception of "Advanced technology related code
+developed for the first time in the world which need protection"
+09/29/2022 1:58 PM
+i've found literally all of those things
+09/29/2022 1:58 PM
+lol
+ Security_CheckList_B4Publish_v3.0.xlsx
+10.8 KB External
+09/29/2022 1:56 PM
+sometimes with additional modifications
+09/29/2022 1:56 PM
+and has their build scripts for individual packages run the sdk
+installer, then extract additional dependencies to the sysroot
+09/29/2022 1:54 PM
+lg only seems to use the oe build system to generate binaries for the
+sdk
+[pauloneves5226]
+pauloneves5226 09/29/2022 1:51 PM
+Yeah..
+https://github.com/webosose/build-webos/blob/master/weboslayers.py only
+mentions generic machines + rpi. Regardless of not being able to build a
+whole new image if we get the arch and the sources with the patches it
+should be doable. I assume the Webosse includes the patches, but not in
+a specific diff
+build-webos/weboslayers.py at master · webosose/build-webos
+webOS OSE build layer. Contribute to webosose/build-webos development by
+creating an account on GitHub.
+[]
+hellobox. 09/29/2022 1:47 PM
+webos ose is only loosely related to what lg actually uses on tvs
+09/29/2022 1:46 PM
+https://opensource.lge.com/product/list?ctgr=005&subCtgr=006
+[pauloneves5226]
+pauloneves5226 09/29/2022 1:44 PM
+https://github.com/webosose/chromium53 ?
+GitHub - webosose/chromium53: Open source Chromium project used by ...
+Open source Chromium project used by webOS. Contribute to
+webosose/chromium53 development by creating an account on GitHub.
+[]
+09/29/2022 1:44 PM
+Ohhh that is very good! Do you have it on hand or should i search for
+them?
+hellobox. 09/29/2022 1:43 PM
+yes
+09/29/2022 1:43 PM
+no
+[pauloneves5226]
+pauloneves5226 09/29/2022 1:43 PM
+or do you mean LG's opensource compliance repos?
+[pauloneves5226]
+hellobox. the opensource packages contain chromium source with the
+necessary sdk (plus extra dependencies for ...
+pauloneves5226 09/29/2022 1:43 PM
+so if i install the homebrew channel it will be available?
+hellobox. 09/29/2022 1:43 PM
+not sure if the chromium source is modified
+[] pauloneves5226 Hey all, is there a way to rebuild the webbrowser
+using more recent sources? I have experience with ...
+hellobox. 09/29/2022 1:42 PM
+the opensource packages contain chromium source with the necessary sdk
+(plus extra dependencies for the sysroot)
+[pauloneves5226]
+pauloneves5226 09/29/2022 1:32 PM
+Hey all, is there a way to rebuild the webbrowser using more recent
+sources? I have experience with build systems and yocto. Also with IPK
+if needed
+[reyqn]
+reyqn 09/29/2022 10:18 AM
+Yes it is, other Dolby Vision files work without any issue though
+[yolofant]
+yolofant 09/29/2022 10:16 AM
+is that a dolby vision file?
+[reyqn]
+reyqn 09/29/2022 10:13 AM
+Here is ffprobe relevant output:
+    [hevc @ 000001b341939a40] Skipping NAL unit 62
+    Input #0, mov,mp4,m4a,3gp,3g2,mj2 :
+    Metadata:
+    major_brand : mp42
+    minor_version : 0
+    compatible_brands: isommp42dby1
+    creation_time : 2022-09-21T07:14:20.000000Z
+    Duration: 00:39:10.59, start: 0.000000, bitrate: 15883 kb/s
+    Stream #0:0(und): Video: hevc (Main 10) (dvhe / 0x65687664), yuv420p10le(pc), 3840x2160 [SAR 1:1 DAR 16:9], 15110 kb/s, 24 fps, 24 tbr, 24 tbn, 24 tbc (default)
+    Metadata:
+    creation_time : 2022-09-21T07:14:08.000000Z
+    handler_name : video handler
+    encoder : DOVI Coding
+    Side data:
+    DOVI configuration record: version: 1.0, profile: 5, level: 6, rpu flag: 1, el flag: 0, bl flag: 1, compatibility id: 0
+    Stream #0:1(eng): Audio: eac3 (ec-3 / 0x332D6365), 48000 Hz, 5.1(side), fltp, 768 kb/s (default)
+    Metadata:
+    handler_name : English
+    Side data:
+    audio service type: main
+(edited)
+[penne_best_noodles]
+penne_best_noodles 09/29/2022 9:36 AM
+what format and bitrate is it?
+September 28, 2022
+[reyqn]
+reyqn 09/28/2022 10:59 PM
+I have some files that my TV can play without issue when reading from a
+USB stick, however whenever I stream them from my local network
+(jellyfin, smartshare), sound will cut at some precise timestamp, and
+come back later. It's reproducible every time at the same timestamps.
+Any idea how I could fix this?
+[smx2460]
+smx2460 09/28/2022 9:24 PM
+I read it after i replied
+[smx2460]
+hellobox. i'm not a lawyer, but i think this at least arguably violates
+the gpl
+smx2460 09/28/2022 9:24 PM
+I agree
+[smx2460]
+smx2460 09/28/2022 9:23 PM
+Otherwise i could "modify" a library by re-exporting all symbols and
+private types without releasing my changes
+09/28/2022 9:22 PM
+Taking GPL symbols and aliasing them to a proprietary library is a GPL
+violation
+09/28/2022 9:22 PM
+The GPL doesn't specify linking explicitly
+[smx2460]
+hellobox. instead, they have a GPL "adaptor" module that takes gpl
+symbols and basically re-exports them to th...
+smx2460 09/28/2022 9:22 PM
+That's not necessarily legal
+hellobox. 09/28/2022 8:27 PM
+they're kind of confused about the purpose of g_strdup_printf
+09/28/2022 8:25 PM
+ // palm://com.hhahha.haha/com/palm/luna/private/cancel {"token":17}
+09/28/2022 8:25 PM
+https://github.com/openwebos/luna-service2/blob/master/src/libluna-service2/callmap.c
+luna-service2/callmap.c at master · openwebos/luna-service2
+Contribute to openwebos/luna-service2 development by creating an account
+on GitHub.
+[]
+[jclsn]
+jclsn 09/28/2022 7:42 PM
+Ah now I tried reinstalling Piccap and it stopped working :/
+[jclsn]
+jclsn 09/28/2022 7:19 PM
+Hmm since the WebOS update autostart of Hyperion and Piccap don’t work
+anymore. Any ideas how to fix this? Root again?
+September 27, 2022
+[alfagun74]
+hellobox. except there are two modules, and while the makefile refers to
+both, the main module's source isn't ...
+alfagun74 09/27/2022 1:33 PM
+oof
+[] jclsn Where can I find the hostnames then?
+ww8543 09/27/2022 12:44 PM
+https://discord.com/channels/407937994037919756/822443030761046017/992435101818425455
+ 1
+[jclsn]
+jclsn 09/27/2022 12:01 PM
+Where can I find the hostnames then?
+[] jclsn Or just turn off automatic updates in the webos settings I
+guess
+ww8543 09/27/2022 11:55 AM
+that is not a guarantee for them not silently doing it anyway
+[jclsn]
+jclsn 09/27/2022 11:46 AM
+Or just turn off automatic updates in the webos settings I guess
+ww8543 09/27/2022 11:34 AM
+if you want to be 100% sure for the next time, you should block the
+relevant hostnames in your router/dns server
+[] jclsn My WebOS version on my 2018 OLED TV was just updated. It says
+5.50.10 now. Shouldn't this be blocked...
+ww8543 09/27/2022 11:33 AM
+in theory it should be, yes, of course only if you have the option
+enabled...
+[jclsn]
+jclsn 09/27/2022 11:27 AM
+Everything still works, but I was worried at first
+09/27/2022 11:26 AM
+My WebOS version on my 2018 OLED TV was just updated. It says 5.50.10
+now. Shouldn't this be blocked by homebrew?
+ww8543 09/27/2022 10:32 AM
+maybe @hellobox has a good idea?
+ww8543 09/27/2022 10:18 AM
+hmm interesting
+[aabytt]
+ww8543 did you swap one too many lib files, or why did video break?
+gstreamer should be high enough in abst...
+aabytt 09/27/2022 10:17 AM
+swapped /usr/lib/gstreamer-1.0/libgstlibav.so and
+/usr/lib/gstreamer-1.0/libgstmatroska.so and then removed
+/usr/lib/libreformatter.so.2.0.0 otherwise there is no effect and
+gstreamer gives "No DTS decoder error". So video codec break is related
+to libreformatter lib.
+[] aabytt Swapped couple of libs on my oled cx (2020) with libs from c9
+(2019). This made my TV able to play D...
+ww8543 09/27/2022 10:11 AM
+did you swap one too many lib files, or why did video break? gstreamer
+should be high enough in abstraction above the vendor layer that it
+should be interchangeable.... maybe some of the video libs require other
+abi versions of other libs that you dont have on the cx?
+[aabytt]
+aabytt 09/27/2022 8:44 AM
+Swapped couple of libs on my oled cx (2020) with libs from c9 (2019).
+This made my TV able to play DTS audiotrack when launched with gstreamer
+in shell. Unfortunately the trick breaks video decoders. In general,
+does it mean DTS is supported by hardware and we can theoretically add
+it's support?
+hellobox. 09/27/2022 4:58 AM
+i'm not a lawyer, but i think this at least arguably violates the gpl
+09/27/2022 4:57 AM
+fuck lg
+09/27/2022 4:56 AM
+instead, they have a GPL "adaptor" module that takes gpl symbols and
+basically re-exports them to the real module
+09/27/2022 4:56 AM
+except there are two modules, and while the makefile refers to both, the
+main module's source isn't included
+09/27/2022 4:55 AM
+wow, so lg has the source for an "enhanced-flash-swap" kernel module in
+their opensource package...
+September 26, 2022
+[astur3l]
+ww8543 rather than trying to bootstrap pip into somewhere writable
+astur3l 09/26/2022 5:15 PM
+thanks that was my main concern (also it was missing some python
+"dependency" ), but its a pity to install all module deps :d (edited)
+ww8543 09/26/2022 5:10 PM
+rather than trying to bootstrap pip into somewhere writable
+[] astur3l is there a way to use python pip on webos / install python
+modules?:D
+ww8543 09/26/2022 5:10 PM
+it is probably easier if you copy your own python onto the tv
+[astur3l]
+astur3l 09/26/2022 4:08 PM
+is there a way to use python pip on webos / install python modules?:D
+[sonic8x]
+sonic8x 09/26/2022 2:34 AM
+how to automatic connect bluetooth speaker when i turn on TV without
+accepting the pop-up dialog (edited)
+September 25, 2022
+[deadllysin]
+[] infowski <@251807857715052546> do you have "Update blocking" enabled
+in Homebrew Channel settings? If it does...
+deadllysin 09/25/2022 10:25 PM
+The homebrew app has "block system updates" enabled which I assume is
+the same as your update blocking.
+September 24, 2022
+[infowski]
+infowski 09/24/2022 7:39 PM
+@Eddie | DeadllySin do you have "Update blocking" enabled in Homebrew
+Channel settings? If it doesn't work, you can block these domains on
+your local DNS server:
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/services/startup.sh#L54
+[deadllysin]
+deadllysin 09/24/2022 1:37 AM
+Is it possible to disable the update available pop up at tv boot?
+September 23, 2022
+[yolofant]
+hellobox. can someone send me a copy of `libcrypto.so.2` from webos
+22/7?
+yolofant 09/23/2022 10:34 PM
+(no content)
+ libcrypt.so.2.0.0
+193.44 KB External
+hellobox. 09/23/2022 8:19 PM
+anyone tried this guy's toolchain?
+https://ddscentral.org/2018/01/unusual-linux-devices-hacking-tvs-part-4-instructions/
+DDSCentral
+Unusual Linux devices: Hacking TVs – Part 4: Instructions
+hellobox. 09/23/2022 5:37 PM
+i want to see how the abi differs from libcrypto.so.1
+09/23/2022 5:37 PM
+can someone send me a copy of libcrypto.so.2 from webos 22/7?
+ww8543 09/23/2022 3:32 PM
+lol ok, fair enough
+[infowski]
+infowski 09/23/2022 3:32 PM
+Ah, you mean all apps? Yeah, that's probably more of a crash than a
+restart, since nobody expects sam to die during TVs lifetime...
+[] infowski I don't think that's sam - sam is essentially responsible
+for application listing, but does not star...
+ww8543 09/23/2022 3:32 PM
+apps close whenever i do a sam restart
+[infowski]
+infowski 09/23/2022 10:04 AM
+If you bindmounted it in that jail directory then it's definitely
+wrong - since that's a jail of some nlp service, that's unrelated.
+Webapps run unjailed directly off main filesystem. (edited)
+ 1
+09/23/2022 10:03 AM
+@parkerlreed Oh! btw it's supposed to be in /usr/palm/applications not
+in /var/palm/jail/...
+09/23/2022 10:03 AM
+I don't think that's sam - sam is essentially responsible for
+application listing, but does not start anything up...
+[] parkerlreed Yeah I can never find it in the running processes list
+ww8543 09/23/2022 9:54 AM
+maybe initctl restart sam
+[parkerlreed]
+[] infowski <@160387111843790849> have you tried killing gameoptimizer
+binary so that it restarts properly to re...
+parkerlreed 09/23/2022 9:09 AM
+Yeah I can never find it in the running processes list
+[infowski]
+infowski 09/23/2022 9:08 AM
+@parkerlreed have you tried killing gameoptimizer binary so that it
+restarts properly to reload the code? since it's a webapp it'll probably
+relaunch...
+[parkerlreed]
+parkerlreed 09/23/2022 3:10 AM
+Either it loads into memory before I have the chance to mount the file
+or I'm looking in the wrong place
+09/23/2022 3:09 AM
+Tried editing the main.js and snapshot bin and bind over mounting but no
+luck
+[parkerlreed]
+parkerlreed 09/23/2022 2:51 AM
+    root@LGwebOSTV:/var/palm/jail/com.webos.service.voice.nlp/usr/palm/applications/com.webos.app.gameoptimizer# cat resources/en/UG/strings.json 
+    {
+            "Adjust the number of frame to minimize cracking and interruptions of screen.": "Adjust the number of frame to minimise cracking and interruptions of screen.",
+            "Adjust the scan rate to minimize cracking and interruptions of screen.": "Adjust the scan rate to minimise cracking and interruptions of screen.",
+            "Adjusts the color temperature automatically to reduce eye strain due to the blue light.": "Adjusts the colour temperature automatically to reduce eye strain due to the blue light.",
+            "Black Stabilizer": "Black Stabiliser",
+            "Do you want to reset the Black and White Stabilizer values?": "Do you want to reset the Black and White Stabiliser values?",
+            "Game Optimizer": "Game Optimiser",
+            "If you turn on Game Optimizer, Dynamic Action Sync and HDMI Deep Color will be turned on automatically.": "If you turn on Game Optimiser, Dynamic Action Sync and HDMI Deep Colour will be turned on automatically.",
+            "It minimizes the input delays (Input Lag) by matching the frame rate of the game console.": "It minimises the input delays (Input Lag) by matching the frame rate of the game console.",
+            "Menu Color": "Menu Colour",
+            "Menu color of Game Optimizer and Game Dashboard can be changed.": "Menu colour of Game Optimiser and Game Dashboard can be changed.",
+            "Optimize image quality for fast-phased games.": "Optimise image quality for fast-phased games.",
+            "Prevent Input Delay(Input Lag) setting will return to Standard if 'Game Optimizer' is not used.": "Prevent Input Delay(Input Lag) setting will return to Standard if 'Game Optimiser' is not used.",
+            "Reduces the input delays (Input Lag) by optimizing for a type of game content.": "Reduces the input delays (Input Lag) by optimising for a type of game content.",
+            "Reset the Black and White Stabilizer settings.": "Reset the Black and White Stabiliser settings.",
+            "Support AMD's adaptive synchronization.": "Support AMD's adaptive synchronisation.",
+            "Support NVIDIA's adaptive synchronization.": "Support NVIDIA's adaptive synchronisation.",
+            "White Stabilizer": "White Stabiliser"
+    }
+09/23/2022 2:50 AM
+Oh that's not what I need anyways. It's basically the descriptors for
+game optimizer within the settings menu
+09/23/2022 2:49 AM
+    root@LGwebOSTV:/var/palm/jail/com.webos.service.voice.nlp/usr/palm/applications/com.webos.app.gameoptimizer# cat resources/en/
+    AM/           AZ/           ET/           GE/           GM/           IE/           IS/           KE/           MM/           MY/           NZ/           RW/           SG/           TZ/           ZA/           appinfo.json
+    AU/           CN/           GB/           GH/           HK/           IN/           JP/           LK/           MW/           NG/           PK/           SD/           SL/           UG/           ZM/
+09/23/2022 2:49 AM
+I wonder what it's using by default
+09/23/2022 2:48 AM
+So the game optimizer HTML program has a resources with strings for each
+language but it doesn't have en US...
+[siggijarl]
+siggijarl 09/23/2022 2:46 AM
+yeah, the position is random
+[parkerlreed]
+parkerlreed 09/23/2022 2:45 AM
+I like how it popped up on the top left the first time but all of the
+next invocations are on the top right
+[siggijarl]
+siggijarl 09/23/2022 2:45 AM
+np 
+[parkerlreed]
+parkerlreed 09/23/2022 2:45 AM
+Thank you
+09/23/2022 2:44 AM
+VERY COOL
+[siggijarl]
+siggijarl 09/23/2022 2:44 AM
+that one actually says Hz
+[parkerlreed]
+parkerlreed 09/23/2022 2:44 AM
+Ill try it out
+[parkerlreed]
+[] siggijarl do you know about the overlay that comes up when you spam
+the green button like 10 times?
+parkerlreed 09/23/2022 2:44 AM
+I do not
+[parkerlreed]
+parkerlreed 09/23/2022 2:44 AM
+/var/palm/jail/com.webos.service.voice.nlp/usr/palm/applications/com.webos.app.gameoptimizer/
+09/23/2022 2:44 AM
+There we are
+[siggijarl]
+siggijarl 09/23/2022 2:43 AM
+do you know about the overlay that comes up when you spam the green
+button like 10 times?
+[parkerlreed]
+parkerlreed 09/23/2022 2:43 AM
+So I want to fix their label
+09/23/2022 2:42 AM
+It's good to know at least what mode you're in
+09/23/2022 2:42 AM
+Well that's what I mean it just displays the panel refresh rate and not
+the actual FPS obviously
+[siggijarl]
+siggijarl 09/23/2022 2:42 AM
+I've found that it's also completely useless
+[parkerlreed]
+parkerlreed 09/23/2022 2:41 AM
+I assume this almost just has to be some HTML overlay
+09/23/2022 2:37 AM
+Today I learned grep can completely freeze the TV even though the video
+output still works
+09/23/2022 2:34 AM
+This crime shall not go unpunished
+09/23/2022 2:33 AM
+(no content)
+[20220922_200548.jpg]
+ 20220922_200548.jpg
+430.29 KB External
+09/23/2022 2:33 AM
+Is it bad when I am annoyed enough at the gaming overlay listing Hz as
+FPS that I am now grepping all of the system files trying to figure out
+where this is located
+September 22, 2022
+Deleted User hi
+Deleted User 09/22/2022 12:11 AM
+hi
+Deleted User 09/22/2022 12:11 AM
+hi
+September 21, 2022
+tomasz235 09/21/2022 5:32 PM
+I have a suspicion that this way of mounting causes me recording
+problems and I wanted to change it to test. I can manually (from root
+via SSH) mount the flash drive with the fat driver (not tfat) and it
+works, but when I turn the TV off and on again the device is mounted as
+tfat so I have no way to test recording from the schedule.
+09/21/2022 5:25 PM
+Currently WebOS mounts using the odd tfat or tntfs drivers:
+    /dev/sda1 on /tmp/usb/sda/sda1 type tfat (rw,relatime,uid=0,gid=5000,umask=0002,allow_utime=0020,codepage=437,iocharset=utf8,shortname=winnt,min_prealloc_size=64k,max_prealloc_size=32M,writeback_boundary=4M,readahead=4M,fail_safe,fastmount,hidden=show,errors=continue)
+09/21/2022 5:24 PM
+Hi I have a question if it is possible to change permanently the
+parameters of mounting fat32 or ntfs, or enable ext4 mounting for USB
+flash drive?
+[smx2460]
+smx2460 09/21/2022 12:49 AM
+or even within the chipset models themselves
+09/21/2022 12:49 AM
+LX, MStar, Realtek
+09/21/2022 12:49 AM
+considering said key surely changes between the 3 major vendors
+09/21/2022 12:48 AM
+for LG boards it's probably not worth it
+09/21/2022 12:48 AM
+you'd need a bucket of spare boards, proper equipment, and time
+09/21/2022 12:48 AM
+maybe slowing the chip down could make this simpler... or not
+09/21/2022 12:48 AM
+so you would somehow need to figure out the key characteristics by
+measuring power
+09/21/2022 12:47 AM
+and the software only feeds data to it
+09/21/2022 12:47 AM
+it's selected with a special register that switches the internal key on
+09/21/2022 12:47 AM
+you can't really power glitch the chip because the key is never used by
+software
+09/21/2022 12:47 AM
+but i heard/saw talks of people doing so
+09/21/2022 12:47 AM
+never done this myself
+09/21/2022 12:47 AM
+with power measures and accurate EMF capturing
+09/21/2022 12:46 AM
+and capture the EMI footprint
+09/21/2022 12:46 AM
+you trick the chip into doing AES with a key you control
+09/21/2022 12:46 AM
+more than fault injection, you need EMI analysis (edited)
+09/21/2022 12:46 AM
+but it's not an easy setup to pull off
+[smx2460]
+[] sniperczar hypothetically speaking you might be able to power glitch
+the chip
+smx2460 09/21/2022 12:46 AM
+yes, i'm aware
+[smx2460]
+smx2460 09/21/2022 12:45 AM
+(no content)
+[unknown.png]
+ unknown.png
+225.29 KB External
+09/21/2022 12:45 AM
+(no content)
+[unknown.png]
+ unknown.png
+112.98 KB External
+09/21/2022 12:44 AM
+https://translate.yandex.com/ocr
+Translate text from photos from English and other languages – Yande...
+Use Yandex Translate to translate text from photos into Czech, English,
+French, German, Italian, Polish, Portuguese, Russian, Spanish, Turkish,
+Ukrainian and other languages (only available when you are online).
+[smx2460]
+hellobox. anyone read korean? (not that it's likely to say anything
+interesting)
+smx2460 09/21/2022 12:44 AM
+yandex?
+[astur3l]
+astur3l 09/21/2022 12:24 AM
+is there some native nodejs service which exposes luna bus as api
+/call/?:D
+September 20, 2022
+[sniperczar]
+sniperczar 09/20/2022 5:35 PM
+hey now you're the one with the workbench... my mainboards live on the
+wall where my kids watch all day
+ 1  1 [:lg:] 1
+[] sniperczar hypothetically speaking you might be able to power glitch
+the chip
+ww8543 09/20/2022 3:52 PM
+i am very interested in your findings! keep us posted 
+[sniperczar]
+sniperczar 09/20/2022 3:00 PM
+27 minutes in this vid https://www.youtube.com/watch?v=Ec4NgWRE8ik
+media.ccc.de
+34C3 - Console Security - Switch
+https://media.ccc.de/v/34c3-8941-console_security_-_switch Homebrew on
+the Horizon Nintendo has a new console, and it's more secure than ever.
+The Switch was released less than a year ago, and we've been all over
+it. Nintendo has designed a custom OS that is one of the most secure
+we've ever seen, making the game harder than it has ever been...
+[] Watch video
+09/20/2022 2:53 PM
+frequently used to divulge keys from secure enclaves when jailbreaking
+consoles
+[sniperczar]
+[] smx2460 su mode would actually let you read the fused keys
+sniperczar 09/20/2022 2:53 PM
+hypothetically speaking you might be able to power glitch the chip
+September 19, 2022
+[isabell121]
+[] andrew.od TV model LG 55UJ635V (webOS). does it have airplay or
+bluetooth? please answer exactly, otherwise ...
+isabell121 09/19/2022 1:23 AM
+Make sure you're on the latest version. If it does, then it will show up
+in the list of apps.
