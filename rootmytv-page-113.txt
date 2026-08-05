@@ -1,0 +1,1866 @@
+May 2, 2021
+[] rhinoswirl Keep in mind that the WebOS emulator runs WebOS OSE, which
+may have some differences from WebOS TV.
+aatt12 05/02/2021 11:01 AM
+Thanks, will try on TV
+[rhinoswirl]
+rhinoswirl 05/02/2021 10:59 AM
+Keep in mind that the WebOS emulator runs WebOS OSE, which may have some
+differences from WebOS TV.
+[rhinoswirl]
+aatt12 So seems it just can not call it
+rhinoswirl 05/02/2021 10:55 AM
+Ok, fair enough. x)
+[rhinoswirl]
+rhinoswirl 05/02/2021 10:54 AM
+But after you're rooted, you no longer have to rely on DownloadManager
+and can create your own version like what's done in Homebrew Channel
+service. As long as the service is unjailed, it can run everything with
+root permissions. It is just limited in terms of luna api calls it can
+do in more recent versions of WebOS, which is the problem that I'm
+facing currently even with some workarounds.
+aatt12 05/02/2021 10:53 AM
+So seems it just can not call it
+05/02/2021 10:53 AM
+But it tried with webos emulator and got something like “method denied”
+error
+[rhinoswirl]
+rhinoswirl 05/02/2021 10:52 AM
+Yes, yes. That's right. What I meant was that you can't specify the
+target location with a regular app.
+ 1
+aatt12 05/02/2021 10:51 AM
+“If this check fails, the service will disregard any parameter except
+target, which specifies the file to download, and will instead download
+the file to the default location /media/internal/downloads on the
+filesystem.” I thought it means custom app will fail a check but succeed
+to download to default location
+[rhinoswirl]
+aatt12 Privileged system app can download files to any specific
+location. And what about custom app? Can it...
+rhinoswirl 05/02/2021 10:46 AM
+They can't do it:
+https://blog.recurity-labs.com/2021-02-03/webOS_Pt1.html "This method is
+callable by any application and accepts a number of parameters, but
+implements its own restrictions with regard to where the file will be
+downloaded, and what it will be called. This is enforced by checking
+that the calling application has one of the privileged prefixes
+com.palm., com.webos., or com.palm., which third-party applications are
+not allowed to use." (edited)
+aatt12 05/02/2021 10:35 AM
+Sorry if it is a stupid question
+05/02/2021 10:35 AM
+Privileged system app can download files to any specific location. And
+what about custom app? Can it download any files to standard location
+like media/internal/downloads/ with
+luna://com.webos.service.downloadmanager?
+[rhinoswirl]
+rhinoswirl 05/02/2021 9:37 AM
+webOS.service.request('luna://com.webos.service.downloadmanager', {
+method: 'download', parameters: { target:
+"file:///media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/start-devmode.sh",
+targetDir: "/home/root/", targetFilename: "start-devmode.sh.bak" },
+onSuccess: function (res) { logmsg("Downloaded devmode startup script");
+enable_devmode(); }, onFailure: function (res) { logmsg("Failed to
+download: " + JSON.stringify(res)); }, }); }
+ 1
+05/02/2021 9:37 AM
+Something like this:
+[] rhinoswirl Since DownloadManager uses curl internally, wouldn't it
+work to tell it to download the current star...
+aatt12 05/02/2021 9:35 AM
+Will try, thanks
+[rhinoswirl]
+rhinoswirl 05/02/2021 9:33 AM
+Since DownloadManager uses curl internally, wouldn't it work to tell it
+to download the current start-devmode to a different location using
+file://?
+[infowski]
+infowski 05/02/2021 8:18 AM
+@AndreiA good question, honestly no idea, but it's still possible to
+extract an arbitrary ipk off the content store by MITMing content store
+traffic for some application download, changing the application id and
+then just extracting said ipk
+aatt12 05/02/2021 12:41 AM
+Is it possible to backup default start-devmode script before rewriting
+it with rootmytv? I mean kind of opposite direction download with upload
+method of downloadmanager?
+April 28, 2021
+[zopieux]
+zopieux 04/28/2021 11:24 PM
+I hate everything about these headlines
+https://www.nielsen.com/eu/en/insights/digital/
+Insights
+In our latest research, we examine the challenges and accelerators
+affecting how and when consumers around the world will engage with the
+myriad forms of emerging technologies primed to make their lives easier
+and more efficient.
+[]
+04/28/2021 11:22 PM
+"libsamba" like, don't, it's already Something Else 
+04/28/2021 11:22 PM
+oof okay
+[infowski]
+infowski 04/28/2021 9:05 PM
+tl;dr extensive displayed content fingerprinting (edited)
+[infowski]
+[] zopieux ???
+infowski 04/28/2021 9:04 PM
+I've just been lurking through some firmware dumps, and found a bunch of
+shared objects: libsambasolution.so and libnielsensolution.so. You might
+now the latter one. The former is → https://samba.tv/
+[zopieux]
+[] infowski `libsambasolution.so.1`
+zopieux 04/28/2021 9:04 PM
+???
+[infowski]
+infowski 04/28/2021 9:03 PM
+libsambasolution.so.1
+[zopieux]
+zopieux 04/28/2021 9:03 PM
+if this is what they meant by this, that wording is a lawsuit waiting to
+happen…
+04/28/2021 9:03 PM
+I mean what about not selling personal data in the first place, but just
+personalized ads (edited)
+[infowski]
+infowski 04/28/2021 9:02 PM
+lel
+04/28/2021 9:02 PM
+el
+[zopieux]
+zopieux 04/28/2021 9:02 PM
+(from the xda thread)
+04/28/2021 9:02 PM
+"doNotSellMyPersonalInformation":"off"  oh for fuck's sake LG
+04/28/2021 9:01 PM
+ah! ok
+[infowski]
+infowski 04/28/2021 8:58 PM
+I think he meant just dropping a binary into the rootfs somewhere and
+running it manually? (edited)
+ 1
+[zopieux]
+[] smx2460 Apps can be tested without installing and in general can be
+uninstalled
+zopieux 04/28/2021 8:57 PM
+wait what? can you clarify?
+[infowski]
+infowski 04/28/2021 3:28 PM
+nice
+[aaroncarson]
+aaroncarson 04/28/2021 3:26 PM
+it worked, i am one of you
+[:lg:] 1
+04/28/2021 3:21 PM
+life Is good LG, you’re right
+[image0.jpg]
+ image0.jpg
+2.95 MB External
+ 5
+[infowski]
+infowski 04/28/2021 3:21 PM
+i really hope we'll be able to release the final exploit this weekend...
+ 2 [:Nice:] 1
+[aaroncarson]
+aaroncarson 04/28/2021 3:20 PM
+I am being Tested on this day
+[image0.jpg]
+ image0.jpg
+673.2 KB External
+ 1
+aatt12 04/28/2021 3:20 PM
+It works for 3.8.0 as well (there is no Amazon button)
+[aaroncarson]
+aaroncarson 04/28/2021 3:19 PM
+ooo nice
+aatt12 04/28/2021 3:17 PM
+I mean from Settings->LG account login page you can go with google
+instead of Amazon. Use “create new account” link and follow the process
+till terms of use page. Privacy policy link there will lead to page with
+9 dots button
+[aaroncarson]
+aaroncarson 04/28/2021 3:15 PM
+i guess it's the same as a chrome extension tho really
+[retr0id]
+retr0id 04/28/2021 3:14 PM
+injecting JS into a login page is sketchy af
+04/28/2021 3:14 PM
+oh lol, I bet that violates google/amazon/facebook's ToS or something
+[infowski]
+infowski 04/28/2021 3:14 PM
+and there are some rules...
+04/28/2021 3:14 PM
+@retr0id there's a userscript in that app that replaces the links.
+[aaroncarson]
+aaroncarson 04/28/2021 3:14 PM
+actually no you'd see it in strings
+04/28/2021 3:13 PM
+they know that a google help page is linked to from the google sign in
+page
+04/28/2021 3:13 PM
+i bet they're hardcoded
+[retr0id]
+retr0id 04/28/2021 3:13 PM
+I never figured it out
+04/28/2021 3:13 PM
+I'd be curious to know why some links kick you out to the browser, and
+others don't
+[aaroncarson]
+aaroncarson 04/28/2021 3:11 PM
+by going to the lg privacy policy?
+aatt12 04/28/2021 3:11 PM
+You can break out with google login page as well
+[aaroncarson]
+aaroncarson 04/28/2021 3:11 PM
+i'll write this up on xda shortly
+04/28/2021 3:09 PM
+fucked it, i ended up on the google login page and it kicked me to the
+browser  at least i know how to get back there, lol
+04/28/2021 3:08 PM
+slowmium more like
+[infowski]
+infowski 04/28/2021 3:08 PM
+chromium
+[aaroncarson]
+aaroncarson 04/28/2021 3:07 PM
+what on earth kinda browser is this? 
+04/28/2021 3:07 PM
+heck yeeeeaaaah
+[infowski]
+infowski 04/28/2021 3:07 PM
+@aaron you have about → help → 9 dots in upper right corner → searcch
+[retr0id]
+retr0id 04/28/2021 3:05 PM
+noice
+[infowski]
+infowski 04/28/2021 3:05 PM
+so you're very close
+[aaroncarson]
+aaroncarson 04/28/2021 3:05 PM
+made it to youtube [:sunglas:]
+[infowski]
+infowski 04/28/2021 3:04 PM
+mmmmmm
+[aaroncarson]
+aaroncarson 04/28/2021 3:04 PM
+And now I've made it to the LG homepage... . hm mm m
+04/28/2021 3:02 PM
+The Cloud Photos + Video app has access to the third-party-login
+browser..I wonder if I can use that to break out. I've managed to get to
+the LG Account terms + conditions in there but there are no links out 
+ww8543 04/28/2021 11:39 AM
+but lg wont like that at all
+04/28/2021 11:39 AM
+nice!
+[infowski]
+infowski 04/28/2021 11:30 AM
+>https://forum.xda-developers.com/t/rootmy-tv-coming-soon-developer-pre-release-available-now.4232223/post-84879561
+holy cow, they actually figured something useful out already  (edited)
+RootMy.TV: Coming soon! (Developer "pre-release" available now!)
+TL;DR; If you want root on any* current WebOS LG TV, do not install
+updates for the time being, and wait patiently. If you're a developer or
+researcher, read the latest update below. *The exploit requires "ThinQ"
+support, which seems to only be...
+[]
+[smx2460]
+smx2460 04/28/2021 2:34 AM
+Apps can be tested without installing and in general can be uninstalled
+04/28/2021 2:33 AM
+If I have a boot script that causes problems and it's on a USB pendrive,
+i Just unplug it
+04/28/2021 2:32 AM
+And if you keep your modifications onto a USB pendrive or the user
+partition they can be easily removed
+04/28/2021 2:32 AM
+@marsch can be dumped after root, but in general you don't risk anything
+as the root filesystem is read only
+ww8543 04/28/2021 1:54 AM
+if you just bought it, it might even be a little tricky even to get
+debug mode and uart enabled
+04/28/2021 1:53 AM
+uart is quite locked down in the recent years
+04/28/2021 1:53 AM
+but if it does not boot anymore you need to make sure you have working
+access to boot loader before things go wrong
+04/28/2021 1:52 AM
+oh yea
+[marschr]
+marschr 04/28/2021 1:52 AM
+Nah, actually after rooting it.. I have some experience with QT and
+wayland and wanted to try a few things but you never know...
+[] marschr Hey everyone! Found the discord on the xda topic. Many thanks
+to Retr0id for the work! I just bought...
+ww8543 04/28/2021 1:51 AM
+dumping emmc without root? only if you can unsolder it and have a reader
+for it
+[marschr]
+marschr 04/28/2021 1:46 AM
+Hey everyone! Found the discord on the xda topic. Many thanks to Retr0id
+for the work! I just bought a 43UN7300 running webOS 5.2.0-2508, I'm
+still waiting a few more days to check if the hardware and panel are
+working 100% and then I'll sure give the rooting a try, I'll let you
+know how it goes. Only question for now is if there's any recommended
+way to dump the eMMC or something? So I could flash it back if anything
+goes wrong later on..
+April 25, 2021
+[zopieux]
+zopieux 04/25/2021 5:18 PM
+wtf not there 
+[] rhinoswirl ``` [[22;34m[CA]session does exist [[0m ``` is actually
+part of the json file. weird. triple check...
+ww8543 04/25/2021 5:16 PM
+it is not weird, it is [:lg:] (edited)
+[rhinoswirl]
+rhinoswirl 04/25/2021 4:41 PM
+    [[22;34m[CA]session does exist
+    [[0m
+is actually part of the json file. weird. triple checked. (edited)
+04/25/2021 4:41 PM
+    {
+        "board_type": "LM18A_DVB",
+        "device_name": "lm18a",
+        "hardware_id": "HE_DTV_W18A_AFADABAA",
+        "hardware_revision": "BOARD_DV_1ST",
+        "keyboard_type": "virtual",
+        "modem_present": "N",
+        "nduid": "f80a63c910a79e8f37e91fc39cc121c9e1139ad8",
+        "product_id": "49UK6200PLA",
+        "ram_size": "1.5 GB",
+        "serial_number": "904MAUA79694",
+        "storage_size": "4 GB",
+        "wifi_addr": "(redacted)",
+        "wired_addr": "(redacted)"
+    }
+    [[22;34m[CA]session does exist
+    [[0m
+(edited)
+04/25/2021 4:40 PM
+    {
+        "core_os_kernel_version": "4.4.84-636.glacier.26",
+        "core_os_name": "Rockhopper",
+        "core_os_release": "4.3.0-9703",
+        "core_os_release_codename": "goldilocks-goobang",
+        "encryption_key_type": "prodkey",
+        "webos_api_version": "4.1.0",
+        "webos_build_datetime": "20210107010305",
+        "webos_build_id": "9703",
+        "webos_imagename": "starfish-dvb-secured",
+        "webos_manufacturing_version": "05.30.10",
+        "webos_name": "webOS TV Lite",
+        "webos_prerelease": "",
+        "webos_release": "4.3.0",
+        "webos_release_codename": "goldilocks-goobang"
+    }
+[infowski]
+infowski 04/25/2021 4:32 PM
+AFK. CYa.
+04/25/2021 4:32 PM
+also there's product_id and hardware_id in device_info.json which are
+only model numbers.
+[zopieux]
+zopieux 04/25/2021 4:31 PM
+well of course there is python (2 sadly) on that tv (edited)
+[infowski]
+infowski 04/25/2021 4:31 PM
+@rhinoswirl It'd be nice if you dropped /var/run/nyx/os_info.json as
+well later.
+04/25/2021 4:30 PM
+OK, cool.
+[zopieux]
+zopieux 04/25/2021 4:30 PM
+no unique identifier in these, so that's nice.
+[infowski]
+infowski 04/25/2021 4:30 PM
+webos_manufacturing_version, webos_build_datetime are pretty valuable as
+well. (edited)
+[zopieux]
+zopieux 04/25/2021 4:30 PM
+     {  "core_os_kernel_version": "4.4.84-150.glacier.2",
+        "core_os_name": "Rockhopper",
+        "core_os_release": "4.2.0-7902",
+        "core_os_release_codename": "goldilocks-gomolsha",
+        "encryption_key_type": "prodkey",
+        "webos_api_version": "4.1.0",
+        "webos_build_datetime": "20200625015501",
+        "webos_build_id": "7902",
+        "webos_imagename": "starfish-dvb-secured",
+        "webos_manufacturing_version": "05.20.02",
+        "webos_name": "webOS TV",
+        "webos_prerelease": "",
+        "webos_release": "4.2.0",
+        "webos_release_codename": "goldilocks-gomolsha"  }
+[infowski]
+infowski 04/25/2021 4:29 PM
+/var/run/nyx/os_info.json → core_os_release
+04/25/2021 4:28 PM
+There was a bunch of info files in /var/run/nyx IIRC? These included all
+valuable identifiers (+ serial number...) (edited)
+[zopieux]
+zopieux 04/25/2021 4:28 PM
+what's the best way to get a version summary with root btw?
+[infowski]
+infowski 04/25/2021 4:28 PM
+OK. rel: https://github.com/webosbrew/webos-homebrew-channel/issues/23
+Limited access to luna://com.webos.appInstallService/dev/install · ...
+I just got a report of a webOS 4.3 device where access to install method
+from homebrew channel app gets denied. { returnValue: false, errorCode:
+-1, errorText: &#39;Denied method call &quot...
+[]
+[zopieux]
+zopieux 04/25/2021 4:28 PM
+not installing anything just yet
+[infowski]
+infowski 04/25/2021 4:27 PM
+@zopieux ah! quick question - which webOS version are you running on,
+and were you able to install anything via homebrew channel service?
+(moonlight in test repo...)
+04/25/2021 4:25 PM
+No, not really. Just wanted to note it down. I'll try to make some
+summary issue for that (in 2h or so - feel free to take it up now, if
+you have some time), at least so that we don't loose all the info in the
+history here. (edited)
+[zopieux]
+zopieux 04/25/2021 4:24 PM
+ah! ok, thought you found something in particular from people who used
+devmode before
+[infowski]
+[] zopieux why is it relevant though?
+infowski 04/25/2021 4:24 PM
+@zopieux well... we're stumbling upon a bug which is completely random
+and gets affected by length of a sleep in our init script... the more
+info the better i guess 
+[zopieux]
+zopieux 04/25/2021 4:19 PM
+why is it relevant though?
+[rhinoswirl]
+rhinoswirl 04/25/2021 4:11 PM
+Yay, I'm not alone! :D
+[zopieux]
+zopieux 04/25/2021 3:58 PM
+(which got wiped out after devmode expired, long ago)
+04/25/2021 3:57 PM
+I also have
+/var/luna-service2-dev/{roles,manifests,client-permissions}.d non-empty
+with stuff from the 2 apps I installed using normal developer mode
+[infowski]
+infowski 04/25/2021 3:51 PM
+another case in point that we've discussed out of band with
+@rhinoswirl - he already had devmode installed some time ago, but its
+session expired and all his applications were removed - but
+/var/luna-service2-dev was not wiped, and still seemingly contains some
+configuration of inexistent applications.
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:47 PM
+probably too soon for the elevate service? could also be an issue.
+04/25/2021 3:47 PM
+but again, the weird thing is that it was working before with all.
+04/25/2021 3:47 PM
+sure. btw, I also tried appinstalld.internal.
+[infowski]
+infowski 04/25/2021 3:45 PM
+OK. We can do one more test of setting our services' permissions to
+["public","ares.webos.cli"]
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:45 PM
+so, any additional questions that you have or files that you want to
+check, feel free to ask.
+04/25/2021 3:44 PM
+still the same.
+04/25/2021 3:44 PM
+now that I've updated it, let me see if I can getAppInfo
+04/25/2021 3:44 PM
+yes.
+[infowski]
+infowski 04/25/2021 3:44 PM
+but you mean install via ares-install, right?
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:43 PM
+ok, I could install an update by not running the elevate on startup and
+keeping the permission of the service as public.
+04/25/2021 3:41 PM
+I don't know. the tv is working, I have root, I can install my ipks.
+maybe one day I will try to delete everything related with hbc and start
+from scratch.
+04/25/2021 3:40 PM
+hbc is not installing now despite killing the service.
+04/25/2021 3:40 PM
+yeah, something here is not right.
+[infowski]
+infowski 04/25/2021 3:39 PM
+Well, honestly it shouldn't crash luna :/
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:38 PM
+maybe the service is corrupted due to a bad install?
+04/25/2021 3:38 PM
+ok, now ares-install is crashing luna even when I kill the service.
+interesting.
+[infowski]
+infowski 04/25/2021 3:34 PM
+Mhmmm...
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:33 PM
+again, the code for service.js should be the same. I didn't change
+anything.
+04/25/2021 3:32 PM
+like it can't talk to the service.
+04/25/2021 3:32 PM
+and the hbc app can't check for root status.
+04/25/2021 3:32 PM
+same with install, also does not work.
+[infowski]
+infowski 04/25/2021 3:32 PM
+yeah, seems right.
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:32 PM
+the command is correct, right?
+04/25/2021 3:31 PM
+tried several times and had to ctrl + c
+luna-send -i -f luna://org.webosbrew.hbchannel.service/getAppInfo '{"id":"com.limelight.webos"}'
+04/25/2021 3:31 PM
+    ~ # /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service -k -n /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+    SERVICE_PATH is /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+    <13>Apr 25 14:30:36 LOGIN: [run-js-service] FULL_SERVICE_NAME  org.webosbrew.hbchannel.service
+    creating activity
+    Creating activity for getAppInfo1
+    no active activities, would exit, but timeout is disabled
+    creating activity
+    Creating activity for getAppInfo2
+    creating activity
+    Creating activity for getAppInfo3
+04/25/2021 3:31 PM
+stays stuck.
+04/25/2021 3:31 PM
+the same.
+04/25/2021 3:30 PM
+(no content)
+ stopped.txt
+5.18 KB External
+04/25/2021 3:30 PM
+output of ps aux when luna was running and crashed
+ running.txt
+4.99 KB External
+[infowski]
+infowski 04/25/2021 3:30 PM
+What happens when you retry the getAppInfo call?
+04/25/2021 3:29 PM
+OK, that... seems fine.
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:29 PM
+    root@LGwebOSTV:~# luna-send -n 1 luna://com.palm.activitymanager/create '{}'
+    {"errorCode":22,"errorText":"Activity specification not present","returnValue":false}
+[infowski]
+infowski 04/25/2021 3:29 PM
+try luna-send -n 1 luna://com.palm.activitymanager/create '{}' (args
+intentionally left blank, it should just error out) (edited)
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:29 PM
+I asked a friend for some help regarding trying to get some output logs
+and whatnot for the luna crash caused in install. we checked dmesg,
+tried running luna manually after the crash:
+    /usr/bin/LunaDownloadMgr
+    and
+      /usr/sbin/ls-hubd --conf /etc/luna-service2/ls-hubd.conf  
+[infowski]
+infowski 04/25/2021 3:28 PM
+It hanged on activityManager communication...
+04/25/2021 3:28 PM
+Now I see it.
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:28 PM
+    root@LGwebOSTV:~# luna-send -i -f luna://com.webos.applicationManager/getAppInfo '{"id":"com.limelight.webos"}'
+    {
+        "appInfo": {
+            "defaultWindowType": "card",
+            "CPApp": false,
+            "systemApp": false,
+            "version": "0.6.10",
+            "vendor": "Mariotaku Lee",
+            "hasPromotion": false,
+            "tileSize": "normal",
+            "icon": "icon.png",
+            "lockable": true,
+            "transparent": false,
+            "appDescription": "Open Source NVIDIA GameStream Client",
+            "checkUpdateOnLaunch": true,
+            "spinnerOnLaunch": true,
+            "handlesRelaunch": false,
+            "unmovable": false,
+            "id": "com.limelight.webos",
+            "inspectable": true,
+            "noSplashOnLaunch": false,
+            "privilegedJail": false,
+            "trustLevel": "default",
+            "title": "Moonlight",
+            "deeplinkingParams": "",
+            "inAppSetting": false,
+            "visible": true,
+            "folderPath": "/media/developer/apps/usr/palm/applications/com.limelight.webos",
+            "accessibility": {
+                "supportsAudioGuidance": false
+            },
+            "main": "moonlight",
+            "removable": true,
+            "type": "native",
+            "disableBackHistoryAPI": false,
+            "installTime": 0
+        },
+        "appId": "com.limelight.webos",
+        "returnValue": true
+    }
+[infowski]
+infowski 04/25/2021 3:27 PM
+ah, hang on...
+04/25/2021 3:27 PM
+Nevermind, that's the same service as
+luna://com.webos.applicationManager/getAppInfo
+04/25/2021 3:26 PM
+OK. Does the luna://com.webos.applicationManager/dev/listApps work?
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:26 PM
+yes.
+[infowski]
+infowski 04/25/2021 3:26 PM
+@rhinoswirl *right now*?
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:26 PM
+the official getAppInfo, install, etc. works correctly. (edited)
+04/25/2021 3:25 PM
+while trying to
+     luna-send -i -f luna://org.webosbrew.hbchannel.service/getAppInfo '{"id":"com.limelight.webos"}'
+[infowski]
+infowski 04/25/2021 3:25 PM
+One explanation I could have for the first time wizard to kick in, was
+that maybe ls-control scan-services might've caused a luna-service
+crash, which made some service think that there's some essential setting
+created in first-time wizard missing.
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:25 PM
+    ~ # /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/run-js-service -k -n /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+    SERVICE_PATH is /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service
+    <13>Apr 25 14:24:44 LOGIN: [run-js-service] FULL_SERVICE_NAME  org.webosbrew.hbchannel.service
+    no active activities, would exit, but timeout is disabled
+    creating activity
+    Creating activity for getAppInfo1
+and now it's stuck.
+04/25/2021 3:25 PM
+here's some additional info:
+04/25/2021 3:22 PM
+I mean, it could also be that I'm really doing something stupid (as it
+already happened several times) and I may have replaced something in the
+source that I'm not seeing, but I highly doubt it. I've checked
+differences with git, recompiled, checked if the files were in the right
+place and their contents after install,... so yeah, let's see if anyone
+experiences a similar issue.
+04/25/2021 3:20 PM
+I can provide any file of the filesystem that you wish to check or any
+log you may find relevant.
+04/25/2021 3:19 PM
+it's like there's something happening that at least I'm not aware that
+is doing something. some kind of blacklist that it has for services or
+something like that, but again, this is just speculation. I have no
+concrete evidence to back my possibilities.
+[zopieux]
+zopieux 04/25/2021 3:19 PM
+with reboots between each attempt right?
+04/25/2021 3:19 PM
+I haven't looked much at the emulator, do you folks believe we could
+replicate some issues there or is it too different from the real thing?
+[rhinoswirl]
+rhinoswirl 04/25/2021 3:18 PM
+don't ask. this also doesn't make any sense to me.
+04/25/2021 3:18 PM
+correct. even though the first time I tried to run the setup, luna was
+crashed so I couldn't pick a coutry as the list is fetched from luna, if
+I'm not mistaken. I had to put back the code to run the elevate-service
+in start-devmode.sh in order to be able to finish the setup.
+[zopieux]
+zopieux 04/25/2021 3:17 PM
+it was a soft factory reset tho, once you did the wizard your settings
+were back, correct?
+[retr0id]
+retr0id 04/25/2021 3:14 PM
+Thanks for the information, it's definitely not a bother at all.
+Hopefully we can figure out what happened
+[rhinoswirl]
+rhinoswirl 04/25/2021 2:58 PM
+hey guys. so, just a status update about my journey with webOS 4.3.0 and
+the hbc. until yesterday, everything was working ok as long as the
+service permission was set correctly in
+/var/luna-service2-dev/client-permissions.d/org.webosbrew.hbchannel.service.service.json
+(i.e., all). there was also the issue that when installing an update to
+the hbc while org.webosbrew.hbchannel.service was running crashed luna.
+then I tried disabling running the command to elevate the service in
+start-devmode.sh, which lead to the factory reset picture I sent to this
+channel yesterday. today I was trying to check what caused this reset
+and I tried the different combinations of run-js (original vs the edited
+one that changes the jail mode) with the permissions of the
+org.webosbrew.hbchannel.service (public vs private) to see if any would
+trigger this same behavior. I couldn't. I also see that with everything
+set as it should (reinstalled hbc - I can send any files you need to
+verify I'm not doing anything extra). currently the system is not giving
+enough permissions to org.webosbrew.hbchannel.service despite the all
+group being set in the service:
+    {"org.webosbrew.hbchannel.service*":["all"]}
+everything else is working as before, ares-install works (still crashes
+luna if the service permission is set to all) but the service is not
+being elevated. I'm not going to make any suppositions here regarding
+timings or whatnot, as I honestly don't understand what went wrong. I
+also don't know if the factory reset that happened yesterday for some
+reason could be related with this issue or not, as I don't know what
+triggered it in the first place. so, at the moment, being unable to
+diagnose any further, I will leave you with this remarks, hoping someone
+with a newer or similar version of webOS can replicate my experience and
+provide any valuable feedback. feel free to ask any additional
+questions. thank you for your help and sorry if I'm bothering with this.
+April 24, 2021
+[smx2460]
+smx2460 04/24/2021 2:56 PM
+It might crap out or even crash for some
+04/24/2021 2:55 PM
+Plain C libraries work best, C++ is a mixed bag
+04/24/2021 2:55 PM
+Because it depends on how complex a library is
+ww8543 04/24/2021 2:55 PM
+why wouldnt you?
+[smx2460]
+smx2460 04/24/2021 2:55 PM
+@ww I wonder if you can feed some libraries to CppSharp and get bindings
+out of them
+04/24/2021 2:54 PM
+ww8543 04/24/2021 2:54 PM
+people are going bonkers with the homebrew project :)
+ 2
+[smx2460]
+smx2460 04/24/2021 2:54 PM
+For me to handle that is (edited)
+04/24/2021 2:54 PM
+Yes, too much
+ww8543 04/24/2021 2:54 PM
+there is a lot
+[smx2460]
+smx2460 04/24/2021 2:54 PM
+Not keeping up with all these talks lately
+04/24/2021 2:53 PM
+Hi @ww
+ww8543 04/24/2021 2:53 PM
+hey @Smx 
+[smx2460]
+smx2460 04/24/2021 2:51 PM
+I've already ported .NET on Netcast but I haven't written any binding
+for the APIs
+04/24/2021 2:50 PM
+And I am ofc limited to the emulator as I don't have a webOS TV
+04/24/2021 2:50 PM
+More the latter than the former
+04/24/2021 2:50 PM
+Ofc I need a proper emulator setup and time to pull it off
+[smx2460]
+[] zopieux Yeah Typescript is one option. I've already found (almost
+full) bindings for webos-service. I'll sen...
+smx2460 04/24/2021 2:50 PM
+I've been wondering about using .NET for WebOS / luna services
+[rhinoswirl]
+rhinoswirl 04/24/2021 2:27 PM
+But enough research for today. Seeing the wizard was enough for me to
+say "I'm gonna go outside". Thank you all for your help. I'll be here in
+case you want some logs or details about something. (edited)
+ 2
+04/24/2021 2:26 PM
+Again, I think there may be a timer issue somewhere here.
+04/24/2021 2:22 PM
+yeah, now it rebooted normally. so commenting the service appears to
+trigger the tv to delete the flag that says that it already passed
+setup. (Wtf?) (edited)
+04/24/2021 2:22 PM
+trying for a new reboot.
+[zopieux]
+zopieux 04/24/2021 2:20 PM
+cool we have # unknown-channel now!
+ 2
+[rhinoswirl]
+rhinoswirl 04/24/2021 2:19 PM
+I'm laughing really hard right now because I have no fuckin' clue on
+what's going on.
+04/24/2021 2:19 PM
+apparently.
+[zopieux]
+zopieux 04/24/2021 2:19 PM
+ugh weird failure mode?
+[rhinoswirl]
+rhinoswirl 04/24/2021 2:18 PM
+weird shit.
+04/24/2021 2:18 PM
+ok, I finished the setup. it still has all my settings configured.
+04/24/2021 2:16 PM
+is there any risk it will delete anything if I finish the setup?
+04/24/2021 2:16 PM
+still in the setup wizard though, but at least I can set it up.
+04/24/2021 2:16 PM
+now I have the list of countries.
+04/24/2021 2:16 PM
+ok, putting it back.
+[] infowski <@!243123490599731200> so... what channel name do we want?
+#homebrew?
+ww8543 04/24/2021 2:15 PM
+there you go
+[rhinoswirl]
+rhinoswirl 04/24/2021 2:14 PM
+let me revert this.
+04/24/2021 2:14 PM
+it's always starting the setup wizard.
+04/24/2021 2:13 PM
+oh god.
+04/24/2021 2:12 PM
+the tv is not allowing me to pick countries.
+04/24/2021 2:12 PM
+I guess luna is down?
+[infowski]
+infowski 04/24/2021 2:12 PM
+that's... unexpected.
+[rhinoswirl]
+rhinoswirl 04/24/2021 2:11 PM
+telnet and ssh are still on, though.
+04/24/2021 2:11 PM
+it went to the first time setup.
+04/24/2021 2:11 PM
+(no content)
+[IMG_20210424_131102.jpg]
+ IMG_20210424_131102.jpg
+5.58 MB External
+04/24/2021 2:10 PM
+wtf?
+04/24/2021 2:10 PM
+rebooting
+04/24/2021 2:09 PM
+commenting this
+[Screenshot_2021-04-24_at_13.09.16.png]
+ Screenshot_2021-04-24_at_13.09.16.png
+69.86 KB External
+ 1
+04/24/2021 2:08 PM
+ok, I will comment the elevate. I think this will work.
+[infowski]
+infowski 04/24/2021 2:08 PM
+...or commenting out the actual rescan command in elevate-service
+04/24/2021 2:07 PM
+@rhinoswirl have you tried commenting out elevate-service call in
+start-devmode.sh?
+[rhinoswirl]
+rhinoswirl 04/24/2021 2:07 PM
+if the service is updated, it kills luna (used to be not always, but now
+it's doing it always).
+04/24/2021 2:06 PM
+but only if running as all instead of public.
+04/24/2021 2:06 PM
+yes, apparently, under some obscure unknown circumstances.
+[zopieux]
+zopieux 04/24/2021 2:05 PM
+so wait tl;dr our service running prevents stuff from working?
+[rhinoswirl]
+rhinoswirl 04/24/2021 2:05 PM
+in the latest version is 2. after the first reboot couldn't open hbc.
+changed it back to 3, rebooted and could start hbc. in any case, I can't
+install updates unless I kill the process.
+04/24/2021 2:04 PM
+    touch /var/luna/preferences/webosbrew_failsafe
+        sync
+        sleep 3 <- this was the only relevant change besides checking files and whatnot
+04/24/2021 2:03 PM
+yeah, yeah.
+[zopieux]
+zopieux 04/24/2021 2:03 PM
+(stating the obvious – sorry I have no idea what's wrong lol)
+[rhinoswirl]
+rhinoswirl 04/24/2021 2:03 PM
+but never to install an update.
+04/24/2021 2:03 PM
+it allowed me to start hbc from the tv menu.
+[zopieux]
+zopieux 04/24/2021 2:02 PM
+if changing a timer fixes a problem we're in for a lot of trouble and
+should ideally find a way of polling for a readiness signal
+ 1
+[rhinoswirl]
+rhinoswirl 04/24/2021 2:01 PM
+currently, luna is crashed and the permissions group is set to public.
+04/24/2021 2:01 PM
+I see this could be related with the new version of hbc (the one
+installed from ares) updating
+    /var/luna-service2-dev/client-permissions.d/org.webosbrew.hbchannel.service.service.json
+and setting the permissions back to public (edited)
+04/24/2021 1:59 PM
+additionally, the first time I installed this version, the hbc couldn't
+open. the only relevant change in start-devmode.sh was the timer that
+changed from 3 to 2.
+04/24/2021 1:58 PM
+however, if before installing the new version of hbc I do in a
+ssh/telnet session:
+    pkill -f org.webosbrew.hbchannel.service
+and start the ssh server manually ares-install works properly.
+04/24/2021 1:57 PM
+can't find anything relevant in /var/log/messages
+04/24/2021 1:57 PM
+now luna is dead. every menu in the TV does nothing. no apps can be
+opened and no commands can be issued.
+04/24/2021 1:56 PM
+now that this is out of the way, for some reason, this is happening: if
+I ares-install org.webosbrew.hbchannel_0.0.1_all.ipk the process gets
+stuck when I CTRL+C it and try again, I get this error:
+    ares-install ERR! Error: Command '/usr/bin/luna-send-pub -i luna://com.webos.appInstallService/dev/install '{"id":"com.ares.defaultName","ipkUrl":"/media/developer/temp/org.webosbrew.hbchannel_0.0.1_all.ipk","subscribe":true}'' exited with code=1 (signal: undefined)
+04/24/2021 1:55 PM
+I also updated start-devmode.sh according to that.
+04/24/2021 1:55 PM
+so, here's my codebase (it contains the code from all the pull
+requests):
+https://github.com/rhinoswirl/webos-homebrew-channel/tree/latest
+04/24/2021 1:54 PM
+ok, guys, I have some things to discuss here regarding
+installing/updating hbc and issues with luna.
+[zopieux]
+zopieux 04/24/2021 1:53 PM
+sure! I mean whatever works 
+[infowski]
+infowski 04/24/2021 1:40 PM
+@zopieux so... what channel name do we want? #homebrew?
+04/24/2021 1:35 PM
+oh, honestly didn't know you had admin rights 
+[] infowski maybe we can gently ask <@!310158180728700929> to create a
+separate homebrew/development-related cha...
+ww8543 04/24/2021 1:34 PM
+you can also ask me 
+[infowski]
+infowski 04/24/2021 1:27 PM
+maybe we can gently ask @Smx to create a separate
+homebrew/development-related channel for us? :3
+04/24/2021 1:27 PM
+Not sure honestly. Not the best, but # unknown-channel is not great for
+that either
+[zopieux]
+zopieux 04/24/2021 1:26 PM
+btw is this room the best place for discussing homebrew stuff?
+[zopieux]
+[] infowski That's me. Sure, I don't really mind, if you mean
+typescript. Service code is passed through webpack...
+zopieux 04/24/2021 1:23 PM
+Yeah Typescript is one option. I've already found (almost full) bindings
+for webos-service. I'll send a PR so we can discuss further. Thanks!
+ 1
+[infowski]
+infowski 04/24/2021 9:34 AM
+ie. which service queries the content store in the background.
+ls-monitor may come in handy - all communication with LG services goes
+through sdx
+04/24/2021 9:33 AM
+it'd be best to find what's the actual origin of these requests
+04/24/2021 9:33 AM
+sadly, a little annoying and error-prone, I feel. :/ (edited)
+[zelbat]
+zelbat 04/24/2021 9:33 AM
+your idea is probably easier to implement
+[infowski]
+infowski 04/24/2021 9:32 AM
+...or that, yeah.
+04/24/2021 9:32 AM
+ie. we'd most probably need to inject some "firewall" into luna-service2
+that's used by content store (or one of its sub-services) to fetch app
+list.
+[zelbat]
+zelbat 04/24/2021 9:32 AM
+i suppose you could MITM the traffic
+[infowski]
+infowski 04/24/2021 9:29 AM
+@zel it's not. and I think it's a little non-trivial to fix, unless you
+want to disable the content store altogether. :/
+[zelbat]
+zelbat 04/24/2021 9:24 AM
+@infowski do you know if that is blocked with the bind mounts to
+/var/spool/{rdxd,uploadd}
+[infowski]
+infowski 04/24/2021 9:10 AM
+@zopieux also regarding telemetry - content store app update requests
+contain a list of all installed apps and their versions (including
+system ones as well) (edited)
+04/24/2021 9:09 AM
+https://github.com/webosbrew/webos-homebrew-channel/blob/main/services/service.js#L62
+guess we can replace that
+04/24/2021 9:08 AM
+(that's something I noticed after putting that example up)
+[zelbat]
+zelbat 04/24/2021 9:08 AM
+lol good to know
+[infowski]
+infowski 04/24/2021 9:05 AM
+@zel yeah, I have no idea why they use that - in ares-install it's all
+defaulted to com.ares.defaultName and is unchangeable lol
+[zelbat]
+zelbat 04/24/2021 9:05 AM
+For some reason I thought the ID was set on install > luna-send -i -f
+luna://com.webos.appInstallService/dev/install
+'{"id":"com.limelight.webos","ipkUrl":"/media/internal/downloads/app.ipk","subscribe":true}' > >
+the "id":"com.limelight.webos" part
+04/24/2021 9:04 AM
+Ah ok fair enough
+[infowski]
+infowski 04/24/2021 9:00 AM
+Frontend part is a little problematic (mostly because we can't use any
+modern syntax, let alone typescript), but that's manageable as well -
+but needs some work too:
+https://github.com/webosbrew/webos-homebrew-channel/issues/8
+webpack build infrastructure · Issue #8 · webosbrew/webos-homebrew-...
+There seems to be a webpack plugin that implements quirks required to
+properly bundle enyo projects:
+https://www.npmjs.com/package/enyo-webpack-plugin Using webpack instead
+of enyo-dev would be app...
+[]
+[infowski]
+[] zopieux not sure who's Informatic on https://github.com/webosbrew,
+but quick question: would you accept PR f...
+infowski 04/24/2021 8:59 AM
+That's me. Sure, I don't really mind, if you mean typescript. Service
+code is passed through webpack+babel already, so any syntax could work.
+You'd need to write your own bindings for webos-service and add some
+schema validation (as, well, static typing doesn't do shit if you only
+get any type on the input to the service requests :D)
+[infowski]
+infowski 04/24/2021 8:56 AM
+i mean... eh... i don't feel like supporting this setup - worst case
+i'll just add a single app in my repository before release with a link
+to "release" version, that could work.
+[infowski]
+[] zelbat If I build and install the homebrew channel, will it be
+automatically updated in the future? What sh...
+infowski 04/24/2021 8:56 AM
+Package id is set in the appinfo.json - but, in general - most probably
+it won't, as we are still using a very temporary repo i've quickly set
+up on my domain
+[] zopieux hmm I got disconnected from my Netflix account after applying
+the exploit
+ww8543 04/24/2021 6:27 AM
+this seems to happen whenever you enable dev mode too, btw, i noticed
+this here as well, you can just login again, no problems
+[zopieux]
+zopieux 04/24/2021 5:08 AM
+not sure who's Informatic on https://github.com/webosbrew, but quick
+question: would you accept PR for an attempt at using modern js (with
+appropriate polyfills ofc)? I believe sensitive parts, like the elevated
+service running as root, deserve extra care/typechecking which are quite
+mature and elegant nowadays.
+[zopieux]
+[] rhinoswirl but ideally either the TV sends a list of packages to
+check and the server returns a personalized re...
+zopieux 04/24/2021 5:02 AM
+A common pattern is to query the current "registry" as a large blob (I
+mean, it's not gonna be megabytes anytime soon) and locally check for
+outdated packages. That's how most package repositories do it anyway,
+afaict -- think debian, arch.
+[rhinoswirl]
+[] zelbat <@!243123490599731200> There is a work around posted for that
+broken method posted on the same threa...
+rhinoswirl 04/24/2021 2:08 AM
+oh, I think I got it.
+[zelbat]
+zelbat 04/24/2021 2:07 AM
+If I build and install the homebrew channel, will it be automatically
+updated in the future? What should the package ID be when installing?
+[zopieux]
+zopieux 04/24/2021 1:52 AM
+maybe I missed something on that thread though, do you have a link?
+[zelbat]
+zelbat 04/24/2021 1:51 AM
+@zopieux There is a work around posted for that broken method posted on
+the same thread, but anyway. if they can't find it, they should wait for
+public release
+[zopieux]
+[] zelbat There is a public way. It's on the xda thread
+zopieux 04/24/2021 1:51 AM
+I think the point was that the XDA thread explains the "normal" way
+through the login app and clicking on Amazon login – but for some people
+this is broken, and the non-broken (and simpler) method is not yet
+public, but being released by JohnPaul & cie
+[rhinoswirl]
+rhinoswirl 04/24/2021 1:50 AM
+@zopieux fully agree. I am also personally against the idea of sending
+the apps list to a server. I am just enumerating options here. (edited)
+04/24/2021 1:50 AM
+in any case, we can do it over the manifest or have a specific url for
+versions. the second option could make more sense if we were able
+control the payload (list all versions or just latest). that way we
+wouldn't need to download all the info about the app and could just get
+the latest version in an update or I could query for all the versions if
+I wanted to install a specific one without having to download one
+manifest per each.
+[zopieux]
+zopieux 04/24/2021 1:49 AM
+@rhinoswirl the lazy method (“here are my apps, am I up to date?”)
+sounds great but is bad for user privacy, if this is something you care
+about, since it leaks what the user has installed (edited)
+ 1
+04/24/2021 1:47 AM
+ffs the more code I read, the less I want to keep even one byte of LG
+code running on this TV (edited)
+04/24/2021 1:47 AM
+lgrecommends.lgappstv.com/view/init2018 well that explains why I was
+getting network connectivity errors
+[rhinoswirl]
+rhinoswirl 04/24/2021 1:47 AM
+but ideally either the TV sends a list of packages to check and the
+server returns a personalized response or we need to list all the
+installed apps and make several requests to query for an update.
+[zelbat]
+[] infowski <@!243123490599731200> there's a way but it's not public
+yet. if you get a firmware dump and look cl...
+zelbat 04/24/2021 1:45 AM
+There is a public way. It's on the xda thread
+[rhinoswirl]
+rhinoswirl 04/24/2021 1:42 AM
+I am asking because I'm looking at how the update feature could be
+implemented, and I'm thinking on comparing the current installed version
+against the version in the repo.
+04/24/2021 1:39 AM
+guys, how do you want to handle versions for the same app in the repo?
+(edited)
+[retr0id]
+retr0id 04/24/2021 1:15 AM
+other than that, I can't think of any reason beyond coincidence. My
+netflix account stayed signed in
+04/24/2021 1:15 AM
+Possibly just because it forces a reboot at the end of the exploit 
+[zopieux]
+zopieux 04/24/2021 12:18 AM
+i don't think it's broken, I just find it suspicious that I got logged
+out out after literally 1+ y 
+[infowski]
+infowski 04/24/2021 12:14 AM
+Heh. Netflix works for me.
+[zopieux]
+zopieux 04/24/2021 12:08 AM
+oh well.
+04/24/2021 12:08 AM
+nope
+April 23, 2021
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:53 PM
+didn't you recently changed your password or something?
+04/23/2021 11:53 PM
+weird. didn't happen to me.
+[zopieux]
+zopieux 04/23/2021 11:53 PM
+:dubious looks:
+04/23/2021 11:53 PM
+hmm I got disconnected from my Netflix account after applying the
+exploit
+04/23/2021 11:52 PM
+ah, yes! it's ok!
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:50 PM
+it's been a very rough start. xD
+04/23/2021 11:50 PM
+things like ares-installing an empty file, writing "app" instead of
+"all", losing myself several times inside the os and forgetting where
+things are, etc.
+04/23/2021 11:50 PM
+these past few days I've been doing a lot of stupid mistakes while
+trying to do something here.
+[zopieux]
+[] rhinoswirl if I was with him, I'd already invented a way (or tried to
+and failed miserably like what's been hap...
+zopieux 04/23/2021 11:48 PM
+what did you fail miserably on openlgtv? 
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:47 PM
+@zopieux glad to help.
+04/23/2021 11:47 PM
+if someone is interested in enyo docs, they are available at
+http://nightly.enyojs.com/latest/docs/ not using nightly redirects to
+enact.
+[zopieux]
+zopieux 04/23/2021 11:45 PM
+and thanks @rhinoswirl for noticing my screen transition question!!
+04/23/2021 11:45 PM
+    # id
+    uid=0(root) gid=0(root)
+thanks everyone 
+ww8543 04/23/2021 11:31 PM
+or use an arduino instead of a headphone cable and audio player
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:31 PM
+he doesn't seem to be that interested. he kinda already lives with it
+and bought an Android TV box.
+ww8543 04/23/2021 11:30 PM
+if he has an old remote he can use the ir diode from it, and connected
+to a headphone cable you can play the service menu codes wav file and
+enter it that way
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:30 PM
+if I was with him, I'd already invented a way (or tried to and failed
+miserably like what's been happening since I started trying to
+contribute to this project xD).
+ww8543 04/23/2021 11:29 PM
+you can do ir in a lot of different ways
+04/23/2021 11:29 PM
+yea service menues
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:29 PM
+I tried finding some additional info online, found the full settings
+manual. they talk about some things you can do to disable, but it needs
+the use of a remote, which he doesn't have (also no Android with IR
+blaster). (edited)
+04/23/2021 11:28 PM
+but according to the manual there should be a way to leave pro:centric
+by resetting the TV and selecting the option to continue without a
+pro:centric server, but he says it doesn't appear to him.
+[zopieux]
+zopieux 04/23/2021 11:27 PM
+makes sense, guess it's much cheaper
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:27 PM
+he bought it second-hand if I'm not mistaken.
+[zopieux]
+zopieux 04/23/2021 11:26 PM
+well that sucks; did they steal it from a hotel? 
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:19 PM
+literally nothing more than some settings and 3 or 4 apps.
+04/23/2021 11:18 PM
+I have a friend whose TV has pro:centric enabled (hotel mode) and he
+said he has no way of disabling it to try the exploit. (edited)
+[zopieux]
+zopieux 04/23/2021 11:14 PM
+fun fact: I have an ad dns backhole (similar to pihole) on my home
+server, so the Account app crashed because it could not load an Amazon
+ad  jesus.
+ 2
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:12 PM
+I used Canada, but any amazon with Alexa skills works. it's easier to
+use skills than finding apps in the general search.
+[zopieux]
+zopieux 04/23/2021 11:11 PM
+sure, ty!
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:11 PM
+find some skill made by them and click in the privacy policy or contact
+developer or something like that.
+04/23/2021 11:10 PM
+Amazon Canada > Alexa Skills > Search Google (edited)
+[zopieux]
+zopieux 04/23/2021 11:10 PM
+do you remember how you went amazon→google?
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:10 PM
+but still in the app.
+04/23/2021 11:10 PM
+yup, does that transition when you open amazon.
+[zopieux]
+zopieux 04/23/2021 11:09 PM
+for that nice tab button?  yeah I have an Unity keyboard since day 1
+on that tv
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:09 PM
+or just a mouse.
+04/23/2021 11:09 PM
+but let me check again. btw, if you don't have a magic remote, I
+recommend you using a mouse and keyboard.
+[infowski]
+infowski 04/23/2021 11:09 PM
+huh, weird.
+[zopieux]
+zopieux 04/23/2021 11:09 PM
+sigh need to unblock everything again
+04/23/2021 11:08 PM
+nice, let me try finding an escape then
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:08 PM
+I had the same question as you.
+04/23/2021 11:08 PM
+yup. you're still inside the app. 
+[zopieux]
+zopieux 04/23/2021 11:08 PM
+clicking on amazon shows the animation, but then no scrollbar and no url
+bar
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:08 PM
+again, as far as I remember. let me confirm.
+[zopieux]
+zopieux 04/23/2021 11:08 PM
+then I'm not affected and just need to find a worker escape
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:08 PM
+but that's not the case on Amazon.
+[infowski]
+infowski 04/23/2021 11:08 PM
+huh
+[zopieux]
+zopieux 04/23/2021 11:08 PM
+ahhh OK
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:08 PM
+when the browser is opened, you see the url bar on the top.
+[zopieux]
+zopieux 04/23/2021 11:07 PM
+oh srsly? should try harder then
+[rhinoswirl]
+rhinoswirl 04/23/2021 11:07 PM
+@zopieux as far as I remember, my TV also did the animation, but stayed
+in the app.
+[zopieux]
+zopieux 04/23/2021 11:07 PM
+SNMP as a service 
+ww8543 04/23/2021 11:07 PM
+yea i figured out how it communicates with lg servers
+04/23/2021 11:07 PM
+it is basically offering an authenticated http client to other services
+and apps through the luna bus
+[zopieux]
+zopieux 04/23/2021 11:07 PM
+anything fun?
+[] zopieux should be easier than RE `sdx` itself
+ww8543 04/23/2021 11:06 PM
+i partly reversed sdx
+[infowski]
+infowski 04/23/2021 11:05 PM
+into /usr/share/ca-certificates/sdp/*.crt
+[zopieux]
+zopieux 04/23/2021 11:05 PM
+oh well, fun times ahead once i get that crap rooted
+04/23/2021 11:04 PM
+true
+[infowski]
+infowski 04/23/2021 11:04 PM
+@zopieux you can actually just inject your own CA certificate
+[zopieux]
+zopieux 04/23/2021 11:04 PM
+should be easier than RE sdx itself
+04/23/2021 11:04 PM
+/usr/sbin/sdx has references to server_addr_version.conf, so it could be
+fun to overlay a config that uses a self-hosted server, see what the
+payloads look like
+[infowski]
+infowski 04/23/2021 11:00 PM
+whole settings view is a webapp on 3.8
+04/23/2021 10:59 PM
+...and enact/enyo webapps
+[zopieux]
+zopieux 04/23/2021 10:59 PM
+yeah most of the TV is Qml apps it seems
+[] zopieux oh cool the screensaver is actually just some
+`QtQuick.Particles`
+ww8543 04/23/2021 10:57 PM
+yea there is actually quite a lot of qml stuff
+[infowski]
+[] smx2460 Yes, we are aware
+infowski 04/23/2021 10:57 PM
+misphrased that, I meant the efuse part.
+[zopieux]
+zopieux 04/23/2021 10:55 PM
+oh cool the screensaver is actually just some QtQuick.Particles
+04/23/2021 10:55 PM
+ah! okay
+[smx2460]
+smx2460 04/23/2021 10:54 PM
+Without the telemetry block
+04/23/2021 10:54 PM
+And I'm not saying this just because, we have had actual warranty voids
+04/23/2021 10:53 PM
+But boot and crash logs are
+04/23/2021 10:53 PM
+Don't remember if bash history is included
+04/23/2021 10:53 PM
+I think they also collect boot and crash logs
+ww8543 04/23/2021 10:53 PM
+bash history?
+[zopieux]
+zopieux 04/23/2021 10:52 PM
+@Smx how would they tell that apart from just using devmod though, given
+what the exploit uses
+[smx2460]
+[] infowski nobody's aware of such thing.
+smx2460 04/23/2021 10:51 PM
+Yes, we are aware
+[zopieux]
+zopieux 04/23/2021 10:51 PM
+why the fukc do they have one app per livezoom HDMI input -_- (edited)
+04/23/2021 10:51 PM
+yeah I did that
+[smx2460]
+smx2460 04/23/2021 10:51 PM
+Which is better to block with dns aswell
+04/23/2021 10:50 PM
+rdx2 related stuff
+04/23/2021 10:50 PM
+Which @retr0id blocks in the installation steps
+04/23/2021 10:49 PM
+Through telemetry
+[smx2460]
+[] zopieux btw do we know if this blows any efuse or something? Retr0id
+said this "voids the warranty", but can...
+smx2460 04/23/2021 10:49 PM
+Yes, they can
+[infowski]
+infowski 04/23/2021 10:04 PM
+but bragging is allowed.
+04/23/2021 10:03 PM
+whispers don't ruin the fun for people in case you find it...
+[zopieux]
+zopieux 04/23/2021 10:00 PM
+no need to waste time looking for escape-to-linkr paths then!
+04/23/2021 9:59 PM
+thanks
+[infowski]
+infowski 04/23/2021 9:59 PM
+Yes.
+[zopieux]
+zopieux 04/23/2021 9:58 PM
+just checking, does a transition animation indeed mean I'm screwed bc it
+opens the browser?
+[infowski]
+infowski 04/23/2021 9:57 PM
+tl;dr that's a part of ~three-click exploit chain
+[zopieux]
+zopieux 04/23/2021 9:57 PM
+oh, ok.
+[infowski]
+infowski 04/23/2021 9:56 PM
+@zopieux there's a way but it's not public yet. if you get a firmware
+dump and look closely you'll very likely find it.
+[zopieux]
+[] infowski that's nice. my tv only has LG Account Management login via
+facebook and google (no thinq at all) an...
+zopieux 04/23/2021 9:52 PM
+any success escaping the account mgmt app in that situation? I think my
+model/version has a similar issue, every link opens externally, despite
+preventing updates since way before the pre-release exploit was
+published (Feb 1)
+[zopieux]
+zopieux 04/23/2021 9:43 PM
+>This doesn't work on my TV (the amazon link opens in the web browser),
+god damnit, I'm affected by this. I see the "app change" transition
+effect so I'm p sure it launches the browser (edited)
+04/23/2021 9:37 PM
+yes, that's what I mean by backdoor sorry (edited)
+[infowski]
+infowski 04/23/2021 9:37 PM
+Yeah.
+[zopieux]
+zopieux 04/23/2021 9:37 PM
+I think this is a pretty safe exploit looking at it
+[infowski]
+infowski 04/23/2021 9:37 PM
+Not rebooting - removing devmode_enabled preference and cleaning up
+start-devmode.sh script path.
+[zopieux]
+zopieux 04/23/2021 9:36 PM
+ok -- I mean, it's not permanent anyway, rebooting without installing
+some "backdoor" removes root access
+[infowski]
+infowski 04/23/2021 9:36 PM
+Does it void the warranty itself? I don't think so.
+04/23/2021 9:36 PM
+and honestly, this is pretty much the same as installing the devmode
+app.
+[infowski]
+[] zopieux btw do we know if this blows any efuse or something? Retr0id
+said this "voids the warranty", but can...
+infowski 04/23/2021 9:35 PM
+nobody's aware of such thing. (edited)
+[zopieux]
+zopieux 04/23/2021 9:35 PM
+btw do we know if this blows any efuse or something? Retr0id said this
+"voids the warranty", but can they actually see that root was acquired?
+(edited)
+[infowski]
+infowski 04/23/2021 9:33 PM
+we need to replace it with yep for final release.
+https://www.youtube.com/watch?v=vh3tuL_DVsE
+ 2
+ww8543 04/23/2021 9:33 PM
+yup
+[infowski]
+infowski 04/23/2021 9:32 PM
+yup
+[zopieux]
+zopieux 04/23/2021 9:29 PM
+    $ cat devmode_enabled
+    yup
+ww8543 04/23/2021 9:26 PM
+yay
+[zopieux]
+zopieux 04/23/2021 9:26 PM
+let's root!
+04/23/2021 9:25 PM
+allright, go it to think it's online by unblocking lgtvonline.lge.com
+(who would have guessed lol) (edited)
+04/23/2021 9:25 PM
+OK -- the random delay is weird tho, can be seconds or minutes
+ww8543 04/23/2021 9:24 PM
+it is still in the shut down process, it is linux after all, shutdown is
+not instant
+[zopieux]
+zopieux 04/23/2021 9:22 PM
+is "before the tick" a special soft-sleep mode?
+04/23/2021 9:22 PM
+small tangent, I'm sure I'm not the only to have noticed: there is a
+seemingly random delay between pressing the poweroff button and the TV
+internal relay going "tick". powering back on before or after the tick
+has a slightly different behavior
+[infowski]
+infowski 04/23/2021 9:19 PM
+OK.
+[zopieux]
+zopieux 04/23/2021 9:19 PM
+did that, even removed power
+[infowski]
+infowski 04/23/2021 9:18 PM
+shouldn't reboot drop the caches though?
+[zopieux]
+zopieux 04/23/2021 9:18 PM
+so yeah I don't know, maybe it's because the TV dns caches are still
+poisoned (ttl is 3h, should have used a very small value  )
+04/23/2021 9:15 PM
+indeed it's trying to reach ch.rdx2.lgtvsdp.com (edited)
+[:lg:] 1  1
+ww8543 04/23/2021 9:13 PM
+much easier to figure things out if you have the filesystem in front of
+you
+ 1
+[] zopieux OK <@!524362336644104215> will try that if all else fails 
+ww8543 04/23/2021 9:13 PM
+you should do that either way tbh
+[zopieux]
+zopieux 04/23/2021 9:12 PM
+OK @ww will try that if all else fails 
+04/23/2021 9:12 PM
+yeah I mean once I have root I can re-blackhole everything, but I need
+the TV to think it has connectivity right now  (edited)
+[] zopieux I don't have root yet <@!524362336644104215> or do you mean
+getting the FW from LG? Isn't that encr...
+ww8543 04/23/2021 9:12 PM
+we should have the decryption key for your tv's firmware already so you
+can try to unpack it with epk2extract
+[smx2460]
+smx2460 04/23/2021 9:11 PM
+(telemetry related)
+04/23/2021 9:11 PM
+rdx2.lgtvsdp.com is another one I'd keep on the watchlist
+[zopieux]
+zopieux 04/23/2021 9:11 PM
+I don't have root yet @ww or do you mean getting the FW from LG? Isn't
+that encrypted? Or from flash as developer? (edited)
+[smx2460]
+smx2460 04/23/2021 9:10 PM
+@zopieux
+https://gist.github.com/wassname/78eeaaad299dc4cddd04e372f20a9aa7
+LG Smart-TV Blocklist Adlist (for PiHole)
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+[zopieux]
+zopieux 04/23/2021 9:10 PM
+reading back lgtv-sdp README, the whole purpose of having a fake http
+server for /initservices is precisely to serve the X-Server-Time header
+so the TV thinks it's online. There is something weird going on, because
+now I think it used to say "network is connected" properly with my
+project  but i did not change anything
+[] zopieux hm, then do we know what purpose `lgtvonline.lge.com` serves?
+the TV really wants to reach it
+ww8543 04/23/2021 9:09 PM
+have you grep'd your firmware to see what tries to access that? (edited)
+[infowski]
+infowski 04/23/2021 9:08 PM
+no idea.
+[zopieux]
+zopieux 04/23/2021 9:08 PM
+hm, then do we know what purpose lgtvonline.lge.com serves? the TV
+really wants to reach it
+[zopieux]
+zopieux 04/23/2021 8:48 PM
+my model is HE_DTV_W18O_AFABABAA / OLED55C8PLA, webOSTV 4.0 (edited)
+04/23/2021 8:48 PM
+well as I said, since updates are only through snu.lge.com  I can block
+only this and go back to normal lgtvsdp so i get connectivity back
+[infowski]
+infowski 04/23/2021 8:48 PM
+i dunno.
+04/23/2021 8:47 PM
+oh, but i didn't use the account management thing with dns cut off...
+[zopieux]
+zopieux 04/23/2021 8:47 PM
+are you saying the fact the certificate is invalid is what makes the
+status "not connected"? that's so dumb
+[infowski]
+infowski 04/23/2021 8:46 PM
+Oh. I think it may depend on the tv model? I think it returns connected
+in my case. (edited)
+[zopieux]
+zopieux 04/23/2021 8:46 PM
+that's sad :/ guess I'll temporary disable this so I can open the
+Account manager app
+04/23/2021 8:46 PM
+oh but I see, they say a side effect is > Network connection tests
+always returned "not connected". (edited)
+04/23/2021 8:44 PM
+but I cannot identify what is necessary for the TV to consider that DNS
+is working; it is working since I can launch youtube etc. without issue
+[zopieux]
+[] infowski tl;dr initial request to `REGION.lgtvsdp.com` seems to not
+verify tls certificates validity - and ba...
+zopieux 04/23/2021 8:44 PM
+yeah I know I wrote https://github.com/Zopieux/lgtv-tbc that does
+something similar  it's how I override the initservices reply with my
+unbloated stuff; and I set the X-Time whatever header too (edited)
+Zopieux/lgtv-tbc
+“LG TV: Take Back Control” is a replacement HTTP server for LG webOS
+bootstrap mechanism that prevents unwanted forced updates, disables
+bloatware and prevents phoning home with unique device IDs. ...
+[]
+[] zopieux so I reduced the amount of DNS poisoning to just
+`snu.lge.com` (for `CheckSWAutoUpdate.laf`) & `*.lg...
+ww8543 04/23/2021 8:29 PM
+you need to allow lgtvsdp.com for the content store to work
+[infowski]
+infowski 04/23/2021 8:25 PM
+also that request is used for time synchronization
+04/23/2021 8:25 PM
+tl;dr initial request to REGION.lgtvsdp.com seems to not verify tls
+certificates validity - and based on that request the TV figures out
+whether or not it has network connection. (edited)
+04/23/2021 8:24 PM
+@zopieux https://github.com/wisq/lgtv-sdp
+wisq/lgtv-sdp
+Fake server for LG TV. Contribute to wisq/lgtv-sdp development by
+creating an account on GitHub.
+[]
+[zopieux]
+zopieux 04/23/2021 8:24 PM
+but I still can't get the tv to say "dns & internet" is working, and
+therefore the account management app doesn't open
+04/23/2021 8:24 PM
+so I reduced the amount of DNS poisoning to just snu.lge.com (for
+CheckSWAutoUpdate.laf) & *.lgtvsdp.com (for initservices)
+[aaroncarson]
+aaroncarson 04/23/2021 4:20 PM
+this discord is crack cocaine for my adhd 
+[infowski]
+infowski 04/23/2021 4:19 PM
+sure, yeah
+[aaroncarson]
+aaroncarson 04/23/2021 4:19 PM
+fair point but now I’m not gonna know if that’s the case or not without
+losing another 6 hours what a shame x bye time x (edited)
+[infowski]
+infowski 04/23/2021 4:18 PM
+i mean, honestly, not gonna guarantee it 100% that's the case with your
+TV.
+[aaroncarson]
+aaroncarson 04/23/2021 4:18 PM
+[infowski]
+infowski 04/23/2021 4:17 PM
+:^)
+[aaroncarson]
+[] infowski tip: it's not (always) all https.
+aaroncarson 04/23/2021 4:16 PM
+don’t tell me that, I have things to do
+[infowski]
+infowski 04/23/2021 4:03 PM
+tip: it's not (always) all https.
+[aaroncarson]
+[] aaroncarson I wonder if they use HSTS....I bet DNS poisoning could be
+possible
+aaroncarson 04/23/2021 4:02 PM
+update on this: hsts is all well and good until you remember that HTTPS
+exists too and you can’t SSLstrip because it connects directly to the
+https page 
+[zopieux]
+zopieux 04/23/2021 1:48 PM
+I mean. people have been using hosts to 127.0.0.1 as a way to block
+ads/registration/... for decades (edited)
+ 1  2
+ww8543 04/23/2021 10:36 AM
+so, as this is not used in the process of hostname resolving, i dont see
+why this would even affect us
+04/23/2021 10:35 AM
+the issue seems to be with reverse lookups only...
+[infowski]
+infowski 04/23/2021 10:35 AM
+It's up to decide by anyone who decides to take up this task.
+04/23/2021 10:34 AM
+Yeah, sure. In general - i don't mind, as long as it works. (and I am
+95+% sure "duplicates" won't make any difference) My point is that I
+don't see any actual concrete answer to support either claim 
+ww8543 04/23/2021 10:33 AM
+but we dont really care about reverse lookups, and we especially dont
+care about them on the tv
+[] infowski OK, i've only found some mentions of weirdness in case of
+`gethostbyaddr`.
+ww8543 04/23/2021 10:33 AM
+of course it could confuse that, since that is a reverse lookup, if
+indeed the hosts file is used for that
+ww8543 04/23/2021 10:32 AM
+hmmm
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/23/2021 10:32 AM
+not sure
+ww8543 04/23/2021 10:32 AM
+actually
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/23/2021 10:32 AM
+uh, I might have actually done that on my DNS server
+ww8543 04/23/2021 10:32 AM
+or both
+[] _._._._._._._._._._._. I guess it might screw up reverse lookups but
+I've never had that kind of problem
+ww8543 04/23/2021 10:32 AM
+isnt that file only used for forward lookups tho?
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/23/2021 10:28 AM
+I mean I've seen someadserver.evilinc.com:2411 in netstat when it was
+actually localhost but I always use it with lookups disabled anyway
+[infowski]
+infowski 04/23/2021 10:27 AM
+OK, i've only found some mentions of weirdness in case of gethostbyaddr.
+[_._._._._._._._._._._.]
+_._._._._._._._._._._. 04/23/2021 10:27 AM
+I guess it might screw up reverse lookups but I've never had that kind
+of problem
+ww8543 04/23/2021 10:25 AM
+i see nothing in there that would support your claim
+[infowski]
+infowski 04/23/2021 10:12 AM
+@ww i mean, i may be talking bullshit as well
+https://www.man7.org/linux/man-pages/man5/hosts.5.html
+[] infowski I don't think that's guaranteed to work properly?
+ww8543 04/23/2021 10:10 AM
+why? where do you get this knowledge from?
+ww8543 04/23/2021 10:09 AM
+and how do you define "not well"?
+[infowski]
+infowski 04/23/2021 10:09 AM
+I don't think that's guaranteed to work properly?
+ww8543 04/23/2021 10:09 AM
+why would they not
+[infowski]
+infowski 04/23/2021 10:09 AM
+I am not sure honestly.
+[] infowski maybe 127.1.1.1, as 127.0.0.1 is there by default (and iirc
+resolvers don't handle ip duplicates in ...
+ww8543 04/23/2021 10:09 AM
+they dont?
+[infowski]
+infowski 04/23/2021 9:53 AM
+maybe 127.1.1.1, as 127.0.0.1 is there by default (and iirc resolvers
+don't handle ip duplicates in /etc/hosts very well...?)
+04/23/2021 9:53 AM
+yeah, basically
+ww8543 04/23/2021 9:44 AM
+bind mount the /etc/hosts file with those domains set to 0.0.0.0 or
+127.0.0.1?
+[infowski]
+[] zopieux good to know
+infowski 04/23/2021 9:02 AM
+https://github.com/webosbrew/webos-homebrew-channel/issues/16 also
+actually relevant  feel free to take it up
+Software update lock · Issue #16 · webosbrew/webos-homebrew-channel
+We should add an option to lock software updates - so far following
+domains seem to be related: snu.lge.com, su-dev.lge.com (update servers)
+su.lge.com, su-ssl.lge.com (cdn) An overlay of /etc/host...
+[]
+[rhinoswirl]
+rhinoswirl 04/23/2021 12:07 AM
+guys, sorry. it was just a bad compilation.
+[infowski]
+infowski 04/23/2021 12:05 AM
+so for plain runs I just use ssh (edited)
+04/23/2021 12:05 AM
+but yeah, ares-shell seems partially broken for me
+04/23/2021 12:05 AM
+i mean, i don't mind, similar to adb install vs
+adb push ... && adb shell pm something something... (edited)
+[zopieux]
+zopieux 04/23/2021 12:04 AM
+that ares stuff seems so over-the-top unnecessary bs.
+04/23/2021 12:03 AM
+yeah I wouldn't trust any already built-in tooling from LG :-)
+[infowski]
+infowski 04/23/2021 12:03 AM
+except for ares-shell which outputs some garbage onto my terminal on
+startup/finish, not sure what's that for.
+[zopieux]
+zopieux 04/23/2021 12:02 AM
+cool
+[infowski]
+infowski 04/23/2021 12:02 AM
+we are going to bundle dropbear - at least on my TV it seems to work
+well with ares-* tools
+04/23/2021 12:02 AM
+let's hope this is just some weirdness of manually starting up opensshd
+[rhinoswirl]
+rhinoswirl 04/23/2021 12:02 AM
+it copied it to /media/developer/temp and didn't work. again, maybe
+incorrect ssh configuration.
+04/23/2021 12:01 AM
+yeah, but the weird thing is that I just did an ares-install and this is
+what happened.
+[zopieux]
+zopieux 04/23/2021 12:01 AM
+definitely recopy it.
+04/23/2021 12:01 AM
+wait your file seems completely empty
+04/23/2021 12:00 AM
+check some digest maybe
+April 22, 2021
+[rhinoswirl]
+rhinoswirl 04/22/2021 11:59 PM
+let me try to upload it again.
+04/22/2021 11:59 PM
+    Installing org.webosbrew.hbchannel (0.0.1) on root.
+    Collected errors:
+     * read_header: Failed to read archive header: Truncated input file (needed 1049600 bytes, only 0 available)
+     * pkg_extract_data_file_names_to_stream: Failed to extract data file names from package '/media/developer/temp/org.webosbrew.hbchannel_0.0.1_all.ipk'.
+     * pkg_get_installed_files: Error extracting file list from /media/developer/temp/org.webosbrew.hbchannel_0.0.1_all.ipk.
+     * opkg_solver_install: Cannot install package org.webosbrew.hbchannel.
+[zopieux]
+zopieux 04/22/2021 11:59 PM
+good to know
+[infowski]
+infowski 04/22/2021 11:59 PM
+@zopieux software updates are only on su.lge.com / snu.lge.com
+[zopieux]
+zopieux 04/22/2021 11:58 PM
+does anyone know which domain the account management app hits? I've DNS
+poisoned everything LG for the purpose of blocking updates, but of
+course the Account Management requires phoning home before I can do the
+interaction for rooting. I need to whitelist that domain. (edited)
+aatt12 04/22/2021 11:58 PM
+Will opkg installation work? Like opkg -o /media/developer/apps install
+media/internal/downloads/app.ipk
+[rhinoswirl]
+rhinoswirl 04/22/2021 11:53 PM
+4.3.0
+[infowski]
+infowski 04/22/2021 11:53 PM
+@rhinoswirl out of curiosity - which webos version are you using?
+[rhinoswirl]
+rhinoswirl 04/22/2021 11:51 PM
+so... FAILED_IPKG_INSTALL.
+04/22/2021 11:51 PM
+ah, ok. that makes sense.
+[] rhinoswirl the reason why I linked the forum is because they already
+have the script to block the updates and w...
+aatt12 04/22/2021 11:49 PM
+Most fresh scripting stuff in that topic was already there for several
+years since webos 1.0 -3.0 root exploit was found. For now 4+ users just
+enjoining root and rework scripts
+[infowski]
+infowski 04/22/2021 11:48 PM
+@rhinoswirl you can try manually installing it with:
+luna-send -i -f luna://com.webos.appInstallService/dev/install '{"id":"com.limelight.webos","ipkUrl":"/media/internal/downloads/app.ipk","subscribe":true}'
+04/22/2021 11:47 PM
+Hmmmm...
+[rhinoswirl]
+rhinoswirl 04/22/2021 11:47 PM
+maybe my ssh connection is not properly configured on the tv.
+04/22/2021 11:46 PM
+anyway, I'm having trouble installing the homebrew channel. I already
+configured ares to connect to the tv as root and as developer. in both
+cases, the file is stored in /media/developer/tmp but the installation
+itself never happens.

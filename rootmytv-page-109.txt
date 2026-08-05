@@ -1,0 +1,1691 @@
+August 20, 2021
+[smx2460]
+smx2460 08/20/2021 2:27 PM
+so you are saying
+08/20/2021 2:27 PM
+hm
+ww8543 08/20/2021 2:26 PM
+thats where it reads the updateType
+08/20/2021 2:26 PM
+it does this
+[smx2460]
+smx2460 08/20/2021 2:26 PM
+or, at worst, reading garbage (but i think the signature is checked)
+(edited)
+ww8543 08/20/2021 2:26 PM
+_Var4 = USBUPDATE_UTIL_GetUSBEpkFileInfo(__dest,&epkVersion,otaId,updateType);
+[smx2460]
+smx2460 08/20/2021 2:26 PM
+so reading it incorrectly would still result in a failure
+08/20/2021 2:26 PM
+i'm pretty sure one of them is the signature for packageinfo
+08/20/2021 2:26 PM
+notice how there is a new signature (of unknown use) in the new
+structure
+08/20/2021 2:25 PM
+    struct  __attribute__((packed)) epk3_structure {
+        struct epk3_head_structure head;
+        signature_t packageInfo_signature;
+        PAK_V3_LISTHEADER_T packageInfo;
+    };
+    struct __attribute__((packed)) epk3_new_structure {
+        signature_t signature;
+        struct epk3_new_head_structure head;
+        signature_t packageInfo_signature;
+        signature_t sig2;
+        PAK_V3_NEW_LISTHEADER_T packageInfo;
+    };
+08/20/2021 2:25 PM
+if they don't, you risk reading more or reading less
+08/20/2021 2:25 PM
+if they match, it'd be perfect
+ww8543 08/20/2021 2:25 PM
+would need to look at the "header" function and what it all stores in
+global vars
+08/20/2021 2:25 PM
+yea that one
+[smx2460]
+smx2460 08/20/2021 2:24 PM
+potentially the one i marked
+08/20/2021 2:24 PM
+    typedef struct __attribute__((packed)) {
+        char epkMagic[4];
+        char epkVersion[4];
+        char otaId[32];
+        uint32_t packageInfoSize; <-- 
+        uint32_t bChunked;
+        uint32_t pakInfoMagic;
+        uint8_t encryptType[6];
+        uint8_t updateType[3];
+        uint8_t reserved[1399];
+    } EPK_V3_NEW_HEADER_T;
+ww8543 08/20/2021 2:24 PM
+change the amount of PILs? (edited)
+[smx2460]
+smx2460 08/20/2021 2:24 PM
+i.e. we need to see if there's any field that might compromise the
+update
+08/20/2021 2:23 PM
+what would the different header cause to the body
+08/20/2021 2:23 PM
+which would then pass verification
+ww8543 08/20/2021 2:23 PM
+it has a "header" function that checks the header before it does
+anything else
+[smx2460]
+smx2460 08/20/2021 2:23 PM
+assume that you can swap the header with another one
+08/20/2021 2:23 PM
+ok so
+ww8543 08/20/2021 2:23 PM
+cause thats what it does
+[smx2460]
+smx2460 08/20/2021 2:23 PM
+and N reads for the body
+ww8543 08/20/2021 2:23 PM
+we are in luck
+[smx2460]
+smx2460 08/20/2021 2:23 PM
+one that reads the whole header at once
+08/20/2021 2:23 PM
+there must be 2 distinct reads
+ww8543 08/20/2021 2:23 PM
+they locked it down this time around
+[smx2460]
+smx2460 08/20/2021 2:23 PM
+this means that, for this to work
+ww8543 08/20/2021 2:23 PM
+yea
+[smx2460]
+smx2460 08/20/2021 2:22 PM
+rip
+08/20/2021 2:22 PM
+yes, it's verified
+08/20/2021 2:22 PM
+there is a "signature" right before the header
+08/20/2021 2:21 PM
+maybe i'm wrong
+08/20/2021 2:21 PM
+    struct __attribute__((packed)) epk3_head_structure {
+        signature_t signature;
+        EPK_V3_HEADER_T epkHeader;
+        uint32_t crc32Info[384];
+        uint32_t reserved; //or unknown
+        char platformVersion[16];
+        char sdkVersion[16];
+    };
+    struct __attribute__((packed)) epk3_new_head_structure {
+        signature_t signature;
+        EPK_V3_NEW_HEADER_T epkHeader;
+        char platformVersion[16];
+        char sdkVersion[16];
+    };
+08/20/2021 2:21 PM
+would need to recheck
+08/20/2021 2:21 PM
+just decrypted i think (edited)
+08/20/2021 2:20 PM
+previously the header wasn't signature checked
+08/20/2021 2:20 PM
+not sure it can be done
+08/20/2021 2:20 PM
+there is also a header signature in the new epk format
+08/20/2021 2:20 PM
+hmmm but
+08/20/2021 2:20 PM
+because LG uses AES-ECB (edited)
+08/20/2021 2:20 PM
+you can make your own modified EPK
+08/20/2021 2:19 PM
+you don't really need a usb gadget for this
+08/20/2021 2:19 PM
+thinking about it (edited)
+08/20/2021 2:19 PM
+but
+08/20/2021 2:19 PM
+yeah
+ww8543 08/20/2021 2:19 PM
+but yea, gadget would be more precise with the timing i guess
+[smx2460]
+smx2460 08/20/2021 2:19 PM
+nah
+ww8543 08/20/2021 2:19 PM
+i think he actually suggested swapping the file on a regular usb drive
+[smx2460]
+smx2460 08/20/2021 2:18 PM
+to use a usb gadget pendrive
+08/20/2021 2:18 PM
+i think @NightBreeze still
+08/20/2021 2:18 PM
+then the only alternative is what someone here suggested
+ww8543 08/20/2021 2:17 PM
+i believe it does
+[smx2460]
+smx2460 08/20/2021 2:17 PM
+(it would have to, to write device nodes)
+08/20/2021 2:16 PM
+doesn't it run as root?
+ww8543 08/20/2021 2:16 PM
+maybe someone can come up with something that works from prisoner
+08/20/2021 2:16 PM
+as far as i know anyway
+[smx2460]
+smx2460 08/20/2021 2:16 PM
+but how, with magic? 
+ww8543 08/20/2021 2:16 PM
+which is only possible if you have elevated rights
+08/20/2021 2:16 PM
+unless you can somehow patch the update binary
+[smx2460]
+smx2460 08/20/2021 2:15 PM
+> yes it is rip then, none of this is possible
+08/20/2021 2:15 PM
+and the remainder of the downgrade file onwards
+[] smx2460 <@!524362336644104215> i guess NSU is over https now?
+ww8543 08/20/2021 2:15 PM
+yes it is
+[smx2460]
+smx2460 08/20/2021 2:15 PM
+if so, send the matching header on request #1
+08/20/2021 2:14 PM
+does it use a ranged HTTP transfer to retrieve the header? (edited)
+08/20/2021 2:14 PM
+how does the update process work over NSU
+08/20/2021 2:14 PM
+for example
+08/20/2021 2:14 PM
+unless you can do a TOCTOU
+08/20/2021 2:14 PM
+as long as the server replies with the same version stored in the EPK
+08/20/2021 2:13 PM
+because if it's still http, we can apply NSU upgrades as-is (edited)
+08/20/2021 2:13 PM
+the other is http/https
+08/20/2021 2:13 PM
+which prohibits downgrade by faking the reply
+08/20/2021 2:13 PM
+i mean one thing is checking the EPK header
+08/20/2021 2:13 PM
+so nsu_emu can't be used anymore?
+08/20/2021 2:13 PM
+@ww i guess NSU is over https now?
+08/20/2021 2:12 PM
+it means the .epk from the support site will always be different than
+the one over NSU
+08/20/2021 2:12 PM
+and also has another implication
+08/20/2021 2:12 PM
+the fact that they check and block NSU over USB is ridiculous
+08/20/2021 2:12 PM
+but ugh...
+08/20/2021 2:09 PM
+unless i missed it before
+08/20/2021 2:09 PM
+> new epk3 files definitely have this, i was looking at the old epk3
+format at first hmm yes, it's a EPK3 r2 addition (edited)
+08/20/2021 2:08 PM
+and updateType is the field @NightBreeze is talking about
+08/20/2021 2:08 PM
+EncryptType will (should) always be "prodkey"
+08/20/2021 2:08 PM
+        if(epkType == EPK_V3_NEW){    
+            printf("EncryptType: %.*s\n",
+                sizeof(epkHeaderNew->encryptType),
+                epkHeaderNew->encryptType
+            );
+            printf("UpdateType:  %.*s\n",
+                sizeof(epkHeaderNew->updateType),
+                epkHeaderNew->updateType
+            );
+        }
+08/20/2021 2:07 PM
+and it's handled in epk2extract too
+08/20/2021 2:07 PM
+> sorry but there is no such field in the epk header. where did you
+supposedly see that? @ww there is
+ww8543 08/20/2021 2:06 PM
+it seems to flash them before reboot
+[aabytt]
+aabytt 08/20/2021 1:04 PM
+Just a dumb question about update process. Does it extract .pak files
+when update is started? And then on reboot flashes these pak files?
+ww8543 08/20/2021 12:48 PM
+it indeed checks for it, and skips if it is not usb
+08/20/2021 12:48 PM
+              iVar11 = strncasecmp(updateType,"usb",3);
+              if (iVar11 == 0) break;
+              USBUPDATE_PRINTF("Update file type is not usb!. SKIP.\n");
+(edited)
+08/20/2021 12:47 PM
+ah crap, was looking at the wrong function
+ww8543 08/20/2021 11:42 AM
+@NightBreeze what say you? have you seen it differently?
+ww8543 08/20/2021 11:10 AM
+but since nsu uses the same keys as usb, it should never even go into
+that path
+08/20/2021 11:09 AM
+it only does a printf and continues actually
+08/20/2021 11:08 AM
+it only checks that if the signing key is different
+08/20/2021 11:08 AM
+however
+08/20/2021 11:06 AM
+new epk3 files definitely have this, i was looking at the old epk3
+format at first
+ 1
+08/20/2021 11:06 AM
+    iVar4 = strncasecmp((pImageUpdate->epkHeader).updateType,"USB",3);
+[nightbreeze0]
+nightbreeze0 08/20/2021 11:05 AM
+Saw it whilst walking through the updater in Ghidra. Haven’t looked at
+the actual EPK 
+ww8543 08/20/2021 11:04 AM
+the new epk3 format indeed has update type in the header
+08/20/2021 11:04 AM
+ah wait, sorry, i was looking at the old epk3 format
+08/20/2021 11:03 AM
+there is update type, but that is not in the header
+[] nightbreeze0 Apart from the missing content, they also have different
+headers. The USB update looks at the EPK he...
+ww8543 08/20/2021 10:59 AM
+sorry but there is no such field in the epk header. where did you
+supposedly see that?
+August 19, 2021
+[nightbreeze0]
+nightbreeze0 08/19/2021 12:09 AM
+Ok, I must've understood that part wrong
+[infowski]
+infowski 08/19/2021 12:09 AM
+I've only seen one aes encryption key and one rsa signing pubkey
+(edited)
+08/19/2021 12:08 AM
+I don't think they do...?
+[nightbreeze0]
+nightbreeze0 08/19/2021 12:08 AM
+Ah, that would explain it. I'm guessing it failed to decrypt the image
+after having copied it because USB and NSU use different keys
+[aabytt]
+[] nightbreeze0 This is interesting though, didn't think that could
+happen 
+aabytt 08/19/2021 12:05 AM
+I have firstly put a normal usb file of newer version and tv prompted an
+update. Then I renamed the downgrade nsu file with the same name as
+newer usb and it actually recognized it and did not exit from the app. I
+have clicked update and progress bar ran to 100% in just 5-10 seconds
+showing “can not apply update” in the end.
+August 18, 2021
+[nightbreeze0]
+[] aabytt I tried to play with filename of nsu file like renaming it
+with the name of newer usb fw from lg web...
+nightbreeze0 08/18/2021 11:57 PM
+This is interesting though, didn't think that could happen 
+[nightbreeze0]
+nightbreeze0 08/18/2021 11:46 PM
+And since we can't modify the header and re-sign/encrypt the EPK, don't
+think we can make NSUs work
+[nightbreeze0]
+ww8543 i think the latter should work as well, might have to fudge the
+filename a bit, but epk is epk
+nightbreeze0 08/18/2021 11:44 PM
+Apart from the missing content, they also have different headers. The
+USB update looks at the EPK header and needs to see "USB" type to
+continue. At least that's what I got from a quick analyze in Ghidra.
+ww8543 08/18/2021 11:28 PM
+missing some
+[aabytt]
+aabytt 08/18/2021 11:25 PM
+(no content)
+[unknown.png]
+ unknown.png
+98.9 KB External
+ww8543 08/18/2021 11:25 PM
+interesting
+[aabytt]
+aabytt 08/18/2021 11:23 PM
+(no content)
+[unknown.png]
+ unknown.png
+21.52 KB External
+ww8543 08/18/2021 10:55 PM
+08/18/2021 10:55 PM
+do it!
+[aabytt]
+ww8543 is your nsu epk missing secureboot too?
+aabytt 08/18/2021 10:55 PM
+Have not unpacked it yet
+[] aabytt I tried to play with filename of nsu file like renaming it
+with the name of newer usb fw from lg web...
+ww8543 08/18/2021 10:52 PM
+is your nsu epk missing secureboot too?
+ww8543 08/18/2021 10:50 PM
+nsu sometimes is missing secureboot partition, maybe it checks for that
+[aabytt]
+aabytt 08/18/2021 10:49 PM
+I tried to play with filename of nsu file like renaming it with the name
+of newer usb fw from lg website. For couple of times it recognized the
+file and started the process but ended it in several seconds with “can
+not apply this update” message. The same fw version but usb type has
+different size (+20mb). Downgrade was successful with usb file.
+ww8543 08/18/2021 10:35 PM
+just have to be careful about partial updates that are missing
+partitions maybe
+08/18/2021 10:35 PM
+i think the latter should work as well, might have to fudge the filename
+a bit, but epk is epk
+[infowski]
+infowski 08/18/2021 10:33 PM
+Regarding downgrades... I am a little bit lost - does the update need to
+be the one served on LG's support site as the one to be installed via
+USB drive, or can you just get the NSU update .epk and put it on a USB
+drive?
+ww8543 08/18/2021 9:44 PM
+so you can start looking at its docs
+ 1
+08/18/2021 9:43 PM
+well lg's webos is simar enough to the webos opensource edition
+08/18/2021 9:43 PM
+he got far
+[honk_tm]
+honk_tm 08/18/2021 9:43 PM
+or what I can change/run/do
+ww8543 08/18/2021 9:42 PM
+yes he is
+[honk_tm]
+honk_tm 08/18/2021 9:42 PM
+i have no clue what the system is capable yet
+08/18/2021 9:42 PM
+but i just saw today, that tbsniller is doing exactly that
+08/18/2021 9:42 PM
+then i wanned to implement screen capture for hyperion
+[infowski]
+infowski 08/18/2021 9:42 PM
+heh
+[honk_tm]
+honk_tm 08/18/2021 9:42 PM
+lol
+08/18/2021 9:41 PM
+block fking youtube ads
+[] honk_tm yep, works
+ww8543 08/18/2021 9:41 PM
+so what are you gonna do now with your long anticipated root rights?
+[honk_tm]
+honk_tm 08/18/2021 9:39 PM
+weird
+08/18/2021 9:39 PM
+yep, works
+[infowski]
+infowski 08/18/2021 9:34 PM
+Remove developer mode app, remove homebrew launcher, launch rootmy.tv,
+let it reboot and do its thing, wait for final "Do you want to reboot"
+prompt - then you can try telnet. (since telnetd is always launched in
+stage3 / homebrew channel install phase) If telnet works, then let it
+reboot, and it should run the startup script with sshd/telnet/whatever
+you selected. (edited)
+[honk_tm]
+honk_tm 08/18/2021 9:33 PM
+or remove dev app, reflash system and reroot
+[infowski]
+infowski 08/18/2021 9:33 PM
+You can remove it since you won't need it / it won't work.
+[honk_tm]
+honk_tm 08/18/2021 9:33 PM
+re-root
+08/18/2021 9:33 PM
+should I remove the dev app
+[infowski]
+infowski 08/18/2021 9:33 PM
+Hmmmm... I'd still just try rerooting. (edited)
+[honk_tm]
+honk_tm 08/18/2021 9:33 PM
+before
+[infowski]
+infowski 08/18/2021 9:33 PM
+Ohhhhhhhhhh... Have you installed devmode app after rooting?
+[honk_tm]
+honk_tm 08/18/2021 9:32 PM
+dev app is installed
+08/18/2021 9:32 PM
+okay, what can I do ?
+[infowski]
+infowski 08/18/2021 9:32 PM
+If "root status" says OK it means homebrew app permisions are OK, but
+the startup script doesn't run for some reason.
+[honk_tm]
+honk_tm 08/18/2021 9:32 PM
+tv seems to be working fine, internet works, apps work, settings too,
+settings were even kept to some degree
+ww8543 08/18/2021 9:31 PM
+paging @infowski
+08/18/2021 9:31 PM
+or that your firmware is somehow different
+08/18/2021 9:31 PM
+hmm sounds to me like homebrew is not properly elevated or something
+[honk_tm]
+honk_tm 08/18/2021 9:27 PM
+also checking the "block system updates" doesnt seem to do anything, as
+the system update popup still shows up
+08/18/2021 9:26 PM
+yeah
+ww8543 08/18/2021 9:25 PM
+tried enabling ssh through homebrew?
+08/18/2021 9:25 PM
+thats weird
+[honk_tm]
+honk_tm 08/18/2021 9:23 PM
+tho, root access is working as homebrew is installed and reports that
+root status is "ok", but telnet doesnt seem to be working as I cant
+connect
+[] honk_tm Oh. My. God. lets brick my tv  thanks a lot, immediately
+going to try
+ww8543 08/18/2021 9:14 PM
+HONK!
+ 2
+ww8543 08/18/2021 9:04 PM
+[honk_tm]
+honk_tm 08/18/2021 9:00 PM
+Sir, you have made my day
+08/18/2021 9:00 PM
+It works
+08/18/2021 9:00 PM
+Wow
+[honk_tm]
+[] aabytt should be rootable
+honk_tm 08/18/2021 8:20 PM
+Oh. My. God. lets brick my tv  thanks a lot, immediately going to try
+[aabytt]
+[] honk_tm rootable then ?
+aabytt 08/18/2021 8:20 PM
+should be rootable
+[honk_tm]
+honk_tm 08/18/2021 8:20 PM
+rootable then ?
+[aabytt]
+aabytt 08/18/2021 8:19 PM
+03.21.80 17/03/2021
+[aabytt]
+[] honk_tm anyone knows about lg oled55bx ? if that sh*t has somewhere
+older firm that I can steal and try
+aabytt 08/18/2021 8:19 PM
+https://gscs-b2c.lge.com/downloadFile?fileId=XHahWPprqjgE6KVmVUA
+ 1
+[honk_tm]
+honk_tm 08/18/2021 8:16 PM
+anyone knows about lg oled55bx ? if that sh*t has somewhere older firm
+that I can steal and try
+08/18/2021 8:16 PM
+wait, so we can downgrade firmware ?
+August 16, 2021
+wes93. 08/16/2021 8:13 PM
+From FW 05.10.05 to 05.00.02
+[:meep:] 1
+wes93. 08/16/2021 8:02 PM
+The downgrade works well on 43UM7300
+ww8543 08/16/2021 6:53 PM
+nice
+[durigdimko]
+durigdimko 08/16/2021 6:52 PM
+got root on 05.00.15
+[:partyparrot:] 1
+ww8543 08/16/2021 6:41 PM
+.15 might be too new actually
+[durigdimko]
+durigdimko 08/16/2021 6:41 PM
+thanks to web-archive managed to pull firmware for usb for 49UM7490
+Version 05.00.15 and currently downgrade my TV
+[aabytt]
+[] nightbreeze0 Judging by the code path that the updater takes for
+listing available USB EPKs in the updater, NSU w...
+aabytt 08/16/2021 2:58 PM
+so this should be a reason, I tried with nsu file, thanks
+[nightbreeze0]
+nightbreeze0 08/16/2021 2:18 PM
+ww8543 08/16/2021 2:16 PM
+yes for forcing a downgrade nsu does not work, but that does not have
+anything to do with the fact where an epk came from
+[nightbreeze0]
+nightbreeze0 08/16/2021 2:14 PM
+Judging by the code path that the updater takes for listing available
+USB EPKs in the updater, NSU won't work. It decrypts and checks the
+header.
+ww8543 08/16/2021 2:13 PM
+usb and nsu/ota update
+08/16/2021 2:12 PM
+you can use an epk in both contexts
+08/16/2021 2:12 PM
+there is really no difference when it comes to the epk file what they
+were meant for
+[durigdimko]
+durigdimko 08/16/2021 2:12 PM
+sorry if I'm get it wrong
+[durigdimko]
+ww8543 what do you mean by "nsu type"?
+durigdimko 08/16/2021 2:11 PM
+If I understand correctly USB-types - for old versions of TV ( or one
+without ethernet/wifi) there was usb types of epk packages. NSU ones -
+they can only be installed via online update
+ww8543 08/16/2021 2:10 PM
+there are beta softwares, normal software, and then those are divided
+into complete updates with all partitions, and partial updates that are
+missing some partitions
+[] durigdimko is it fine that I can only find nsu types of firmwares?
+ww8543 08/16/2021 2:09 PM
+what do you mean by "nsu type"?
+[nightbreeze0]
+nightbreeze0 08/16/2021 1:58 PM
+I'll take a quick peek at the NSU code path
+08/16/2021 1:56 PM
+And tbh no idea what would happen, maybe it will blow up the TV 
+ 1
+08/16/2021 1:55 PM
+It could work in theory. The filename checks happen before
+softwareupdate is launched I think. But perhaps you still need to rename
+the NSU file to include usb.
+[durigdimko]
+durigdimko 08/16/2021 1:53 PM
+is it fine that I can only find nsu types of firmwares?
+[nightbreeze0]
+nightbreeze0 08/16/2021 1:52 PM
+mode: "user" shows up as Expert mode 1, and mode: "expert" shows up as
+Expert mode 2.
+08/16/2021 1:52 PM
+That looks correct @aabytt
+[aabytt]
+aabytt 08/16/2021 1:24 PM
+may be due to some syntax error, will check later
+08/16/2021 1:18 PM
+(no content)
+[photo_2021-08-16_14-15-58.jpg]
+ photo_2021-08-16_14-15-58.jpg
+50.25 KB External
+[durigdimko]
+durigdimko 08/16/2021 1:17 PM
+also want to add that, got same mode
+[aabytt]
+[] durigdimko on 4.9.3 got 'newer version detected' and kick-off from
+update process)
+aabytt 08/16/2021 1:17 PM
+I had some time today in the morning to do one attempt. Tried to
+downgrade my 4.3.0 05.30.10 to 05.30.02 (released 12.2020). Got the same
+behaviour - exit from update app in just couple of seconds. Seems mode
+param was ignored for some reason as it displayed "Expert mode 1 (Alert
+mode)"
+[durigdimko]
+[] aabytt you should start an own local http server on your PC or just
+wait when this option will be available...
+durigdimko 08/16/2021 12:37 PM
+thanks, for anyone (like me) that cant access their self-hosted PC -
+just shutdown your firewall ( in my case windows firewall)
+[durigdimko]
+durigdimko 08/16/2021 12:35 PM
+on 4.9.3 got 'newer version detected' and kick-off from update process)
+[aabytt]
+[] durigdimko to visit self-hosted site on TV I should connect to
+PC-ip:8000? TV and PC connected through wifi
+aabytt 08/16/2021 12:35 PM
+you should start an own local http server on your PC or just wait when
+this option will be available online with rootmy.tv
+[durigdimko]
+durigdimko 08/16/2021 12:22 PM
+to visit self-hosted site on TV I should connect to PC-ip:8000? TV and
+PC connected through wifi
+[infowski]
+infowski 08/16/2021 12:11 PM
+@NightBreeze i think we may add an option to rootmy.tv for that...
+ 4
+[nightbreeze0]
+nightbreeze0 08/16/2021 9:28 AM
+Perhaps there's a better/easier way to execute the SSAP command for this
+purpose.
+08/16/2021 9:27 AM
+I wrote up a quick set of step-by-step instructions yesterday for the
+downgrade method: 1. Find a copy of a vulnerable firmware version (USB)
+2. Put *.epk under LG_DTV on FAT32 formatted USB drive (possibly NTFS)
+Example:
+E:\LG_DTV\starfish-dvb-secured-lm18a-97.goobang.lm18a-9703-05.30.10_prodkey_usb_V3_SECURED.epk
+3. Plug USB drive into TV 4.
+git clone https://github.com/RootMyTV/RootMyTV.github.io 5. Modify
+RootMyTV.github.io\index.html (see below) 6. Self host e.g. via:
+python3 -m http.server 8000 7. Visit self-hosted site on TV and execute
+"root".
+    diff --git index.html index.html
+    index bfb59e9..49cf3ea 100644
+    --- index.html
+    +++ index.html
+    @@ -177,9 +176,10 @@
+                   type: "request",
+                   uri: "ssap://system.launcher/launch",
+                   payload: {
+    -                id: "com.webos.app.facebooklogin",
+    +                id: "com.webos.app.softwareupdate",
+                     params: {
+    -                  server: url.replace('http://', '').replace('https://', '') + "#",
+    +                  mode: "user",
+    +                  flagUpdate: true,
+                     }
+                   },
+                 }));
+(edited)
+ 2  5  1
+[aabytt]
+skyboii19865436 Alright thanks! I tried the exploit and it didn’t go
+through. My webos version is 4.9.2…I can’t figu...
+aabytt 08/16/2021 9:02 AM
+4.9.2 is already patched and can not be rooted this way. Check out the
+latest discussion in this channel, seems firmware downgrade method just
+been found
+skyboii19865436 08/16/2021 8:37 AM
+Alright thanks! I tried the exploit and it didn’t go through. My webos
+version is 4.9.2…I can’t figure out what I’ve got wrong.
+[aabytt]
+skyboii19865436 What’s good everyone? Hope all is well. I was seeing if
+I could get some help? I have a LG WebOs 49u...
+aabytt 08/16/2021 8:32 AM
+It should be enabled by default for your webOS version. And even the
+setting itself may not exist. Normally it is located in network tab of
+settings (edited)
+skyboii19865436 08/16/2021 8:16 AM
+What’s good everyone? Hope all is well. I was seeing if I could get some
+help? I have a LG WebOs 49um7300pua I can’t figure out where the “LG
+connect apps” are located to see if they’re enabled or disabled.
+[nightbreeze0]
+nightbreeze0 08/16/2021 12:39 AM
+Yeah, they do close it after checking (or in the version I'm looking at
+anyway) (edited)
+[smx2460]
+smx2460 08/16/2021 12:34 AM
+i don't remember if they then reopen the file
+08/16/2021 12:34 AM
+to check the supplied version (edited)
+08/16/2021 12:34 AM
+but since i think webOS 4 they fetch the EPK header and decrypt it
+08/16/2021 12:34 AM
+they previously didn't check the file at all
+[smx2460]
+[] nightbreeze0 Pretty sure they wouldn't re-validate 
+smx2460 08/16/2021 12:33 AM
+hmm good point
+[] infowski ||We may or may not have some archives of all the firmware
+releases...||
+ww8543 08/16/2021 12:29 AM
+i somehow feel my ears burning
+ 1
+[infowski]
+infowski 08/16/2021 12:27 AM
+We may or may not have some archives of all the firmware releases...
+ 1  1  2
+[nightbreeze0]
+nightbreeze0 08/16/2021 12:27 AM
+Speaking of having root. I was lucky enough to find the last rootable
+firmware version on Wayback Machine, but is there some other way to get
+older firmware? LG seems to only list the most recent ones on the web
+pages and the URLs are not guessable. (edited)
+[retr0id]
+retr0id 08/16/2021 12:23 AM
+well, it's supported if you have root 
+[dustyangel47]
+dustyangel47 08/16/2021 12:15 AM
+sad
+[infowski]
+infowski 08/16/2021 12:14 AM
+nope.
+[dustyangel47]
+dustyangel47 08/16/2021 12:14 AM
+is ext* supported?
+[nightbreeze0]
+nightbreeze0 08/16/2021 12:12 AM
+Ah, I let the TV format it so thought FAT32 was what was supported
+[retr0id]
+retr0id 08/16/2021 12:11 AM
+hm I think NTFS is supported as a fs, and NTFS supports symlinks
+[nightbreeze0]
+nightbreeze0 08/16/2021 12:10 AM
+How would a symlink work on a USB though?
+[retr0id]
+retr0id 08/16/2021 12:09 AM
+no messing with rpi etc.
+08/16/2021 12:09 AM
+then you only need to switch out the symlink
+[nightbreeze0]
+nightbreeze0 08/16/2021 12:09 AM
+Anyway, glad it turned out to be this easy in the end. Spent half a day
+trying to turn my TVs country into Korea (KOR) as I saw references in
+the code that it would bypass expert mode checks, but that turned out to
+be impossible 
+[retr0id]
+retr0id 08/16/2021 12:09 AM
+actually, a better race condition would be to have two actual fw images,
+and a symlink
+[dustyangel47]
+dustyangel47 08/16/2021 12:07 AM
+also systemd and pulse
+08/16/2021 12:06 AM
+~~i would imagine that chromium takes up a bunch of ram~~
+ 2
+[retr0id]
+retr0id 08/16/2021 12:06 AM
+well the easiest way to clobber the fs cache is to read a bunch of large
+files in a loop
+ 1
+[nightbreeze0]
+nightbreeze0 08/16/2021 12:06 AM
+Not sure what operations consume a lot of RAM on the LG, but opening a
+bunch of apps could perhaps help clear it?
+[retr0id]
+retr0id 08/16/2021 12:04 AM
+Perhaps there's some way to race it and flush the cache
+[nightbreeze0]
+nightbreeze0 08/16/2021 12:04 AM
+Ah, on the LG right? Good point, didn't think of that.
+[infowski]
+infowski 08/16/2021 12:03 AM
+you might have some issues with linux filesystem caching, but not 100%
+sure
+[nightbreeze0]
+nightbreeze0 08/16/2021 12:03 AM
+Pretty sure they wouldn't re-validate 
+08/16/2021 12:02 AM
+My next attempt would've been to use a rPI to emulate USB mass storage,
+and after it has detected the update and done the initial verification,
+overwrite the underlying data in that file
+[retr0id]
+retr0id 08/16/2021 12:01 AM
+The hardest part about finding bugs in LG stuff is overriding your
+instinct of "surely they wouldn't do something that stupid"
+ 6
+August 15, 2021
+[dustyangel47]
+dustyangel47 08/15/2021 11:59 PM
+doing terrible software engineering so we dont have to expend the effort
+(edited)
+08/15/2021 11:59 PM
+lg
+ww8543 08/15/2021 11:58 PM
+[:lg:]
+[] nightbreeze0 I did try to peruse `/usr/sbin/update` in ghidra (from
+an older version) and saw validations there, ...
+ww8543 08/15/2021 11:58 PM
+what the actual fuck. lg at its finest again
+[nightbreeze0]
+nightbreeze0 08/15/2021 11:55 PM
+I did try to peruse /usr/sbin/update in ghidra (from an older version)
+and saw validations there, but at the end of the day, it looks like
+/usr/sbin/update hands over execution to softwareupdate, perhaps that's
+why it could bypass the firmware check  (edited)
+08/15/2021 11:53 PM
+Oh and USB has to be plugged before opening softwareupdate
+08/15/2021 11:52 PM
+In user mode it will only show the most recent update from the USB
+though, can't select between two, so there needs to be only the one.
+08/15/2021 11:51 PM
+Anyway, that's what worked, pretty sure SSAP would work too but didn't
+try it.
+[infowski]
+infowski 08/15/2021 11:50 PM
+Sure. That sounds interesting. Need to research that further.
+[nightbreeze0]
+nightbreeze0 08/15/2021 11:50 PM
+(But the problem was mode)
+08/15/2021 11:50 PM
+Yeah, I used that at first, but was wondering if I needed more
+permissions or something, which is why I ended up doing it in stage2 
+[infowski]
+infowski 08/15/2021 11:50 PM
+ie. in stage1
+08/15/2021 11:50 PM
+Cool. FYI you can launch any app with any params using SSAP directly
+[nightbreeze0]
+nightbreeze0 08/15/2021 11:49 PM
+Essentially just modify stage2 of rootmytv exploit with:
+    webOS.service.request('luna://com.webos.service.applicationManager', {
+      method: 'launch',
+      parameters: {
+        id: "com.webos.app.softwareupdate",
+        params: { mode: "user", flagUpdate: true, }
+      },
+      onSuccess: function (res) { log("We good?"); },
+      onFailure: function (res) { log("Failed to launch: " + JSON.stringify(res)); },
+    });
+(edited)
+08/15/2021 11:49 PM
+Was struggling first since I tried to launch it in expert mode, turns
+out it checked for that and exited. But normal user mode worked fine.
+08/15/2021 11:48 PM
+I thought so too, had some other ideas for bypassing it too but this
+turned out to be the easiest once I got softwareupdate launched. Color
+me surprised that it was like "hey, there's a new update, wanna apply
+it?" 
+[infowski]
+infowski 08/15/2021 11:47 PM
+so far we were pretty sure the anti-downgrade check is carried out in
+the underlying service that actually applies the update...
+08/15/2021 11:46 PM
+huh, wat
+[nightbreeze0]
+nightbreeze0 08/15/2021 11:45 PM
+Piggybacked on the cleverness of this exploit to launch
+com.webos.app.softwareupdate
+[aabytt]
+[] nightbreeze0 From 4.3.0-9704 (goldilocks-goobang) -> 4.3.0-9703
+(goldilocks-goobang)
+aabytt 08/15/2021 11:44 PM
+How did you manage to downgrade? I thought it is not possible
+[nightbreeze0]
+nightbreeze0 08/15/2021 11:44 PM
+From 4.3.0-9704 (goldilocks-goobang) -> 4.3.0-9703 (goldilocks-goobang)
+[aabytt]
+[] nightbreeze0 Phew, managed to downgrade my firmware from 05.30.15 to
+05.30.10 via USB and got root restored.  O...
+aabytt 08/15/2021 11:32 PM
+Which webos version is it?
+[nightbreeze0]
+nightbreeze0 08/15/2021 11:31 PM
+Phew, managed to downgrade my firmware from 05.30.15 to 05.30.10 via USB
+and got root restored.  Oh, and mad props for this exploit, I had
+pretty much given up hope on ever seeing root on this device  Thanks!
+August 11, 2021
+[guntrada]
+guntrada 08/11/2021 8:26 AM
+great - thank you! 
+ww8543 08/11/2021 8:11 AM
+root/alpine i think
+[guntrada]
+guntrada 08/11/2021 7:47 AM
+Hi, i successfully rooted my LG with RootMy.tv and enabled ssh. what are
+the standard credentials for ssh login?
+August 7, 2021
+[_itay]
+_itay 08/07/2021 3:16 PM
+I see, Thank you.
+[tbsniller]
+[] infowski Wait for the next release.
+tbsniller 08/07/2021 3:11 PM
+This. Just scroll a bit to the top :)
+[_itay]
+_itay 08/07/2021 2:27 PM
+Hey y'all, any idea what to do? Also sorry for the horrible blurring I
+tried to remove myself from the reflection.
+[IMG_20210807_152451.jpg]
+ IMG_20210807_152451.jpg
+2.27 MB External
+August 4, 2021
+bomohbo 08/04/2021 10:34 PM
+@aabytt thanks à lot.
+08/04/2021 10:33 PM
+@dqTransporter24 thank you for your prompt réponse !
+[aabytt]
+bomohbo <@646647865753600000> Hello, i'am in the same situation. Could
+you explain how you managed successfu...
+aabytt 08/04/2021 8:19 PM
+Rootmytv will work for webos 3.4+
+[dqraider24]
+bomohbo <@646647865753600000> Hello, i'am in the same situation. Could
+you explain how you managed successfu...
+dqraider24 08/04/2021 8:17 PM
+I'm thinking maybe my router was blocking the port needed by the root.
+So I connected directly to my modem and the root was successful.
+bomohbo 08/04/2021 5:35 PM
+@dqTransporter24 Hello, i'am in the same situation. Could you explain
+how you managed successfully the root please ? I have 49uh668v with
+Webos 3 from 2016 and a Orange Livebox. Thanks ! (edited)
+Deleted User 08/04/2021 5:15 PM
+*Prints hello world *gets LG paycheck
+08/04/2021 5:14 PM
+[:meep:] 
+08/04/2021 5:14 PM
+Never underestimate hello world developer
+08/04/2021 5:14 PM
+See
+[dustyangel47]
+dustyangel47 08/04/2021 11:24 AM
+once again LG
+[infowski]
+infowski 08/04/2021 11:23 AM
+Honestly this looked like a nodejs http server example code just
+evolving into some critical infrastructure
+[dustyangel47]
+dustyangel47 08/04/2021 11:20 AM
+LG
+[infowski]
+infowski 08/04/2021 11:19 AM
+...unless you actually establish WebSocket connection they use to
+communicate.
+08/04/2021 11:19 AM
+Port 3000 is exposed by the service used by "LG Connect Apps" and it
+just returns "Hello world" as a test, lol.
+ 1
+[infowski]
+[] dqraider24 So the TV has a index file with hello world?
+infowski 08/04/2021 11:19 AM
+Yes, this exactly.
+[dqraider24]
+dqraider24 08/04/2021 10:17 AM
+So the TV has a index file with hello world?
+[dustyangel47]
+dustyangel47 08/04/2021 10:15 AM
+not your routers ip
+08/04/2021 10:14 AM
+127.0.0.1 is your tv's local ip
+[dqraider24]
+dqraider24 08/04/2021 10:14 AM
+Nevermind lol I got it. This made me realize my router must have some
+sort of server up bc where the hell did hello world come from lol.
+Briefly connected TV directly to modem and voila. Thanks.
+[dqraider24]
+[] infowski <@!646647865753600000> ↑
+dqraider24 08/04/2021 9:59 AM
+(no content)
+[IMG_20210804_025753.jpg]
+ IMG_20210804_025753.jpg
+1.06 MB External
+[infowski]
+infowski 08/04/2021 9:33 AM
+@dqTransporter24 ↑
+08/04/2021 9:33 AM
+Then check if anything pops up if you enter this address in the browser
+on your TV: http://127.0.0.1:3000
+08/04/2021 9:33 AM
+Interesting. Try doing a reboot? (ie. unplug the tv from the wall and
+turn on again)
+August 3, 2021
+[dqraider24]
+dqraider24 08/03/2021 10:20 PM
+Hey guys, new here . What am I missing?
+08/03/2021 10:20 PM
+(no content)
+[IMG_20210803_1515422.jpg]
+ IMG_20210803_1515422.jpg
+735.03 KB External
+[IMG_20210803_1515552.jpg]
+ IMG_20210803_1515552.jpg
+452.86 KB External
+July 28, 2021
+[deterrence_dispersed]
+deterrence_dispersed 07/28/2021 9:18 PM
+I'll keep an eye out then! Thanks again, and don't push it :D
+ww8543 07/28/2021 9:18 PM
+those pesky update notices are really annoying
+[infowski]
+infowski 07/28/2021 9:18 PM
+ETA a couple of weeks...
+[deterrence_dispersed]
+deterrence_dispersed 07/28/2021 9:17 PM
+Thanks for the fast reply :) I saw that coming, since a relative got to
+the TV before me and updated it...
+[infowski]
+infowski 07/28/2021 9:17 PM
+as in pretty much have it working already but needs some minor final
+patches, but I am exhausted and busy with $dayjob 
+07/28/2021 9:15 PM
+we are working on it.
+07/28/2021 9:15 PM
+Screwed, for now 
+[deterrence_dispersed]
+deterrence_dispersed 07/28/2021 9:15 PM
+Is there something i can do, or am I screwed? btw. the tv webOS version
+is 5.2.3
+[20210728_211401.jpg]
+ 20210728_211401.jpg
+2.19 MB External
+pelayaco 07/28/2021 3:32 PM
+Anyone with a CX or GX television knows if it still works with the
+version 03.23.15? It brings a lot of news and if root continues to work,
+it would be interested in updating. Thanks.
+July 27, 2021
+ww8543 07/27/2021 4:01 PM
+why do you need the root?
+[kenny0093]
+ww8543 if you feel like you can do this, i can help you through it
+kenny0093 07/27/2021 4:00 PM
+Thanks ww I'll try and check it out but opening the tv will be abit
+tricky for me  anyway i need the Root so I'll try it out
+ww8543 07/27/2021 2:41 PM
+(it will require opening up the tv tho)
+07/27/2021 2:40 PM
+if you feel like you can do this, i can help you through it
+07/27/2021 2:39 PM
+you should be able to locate this eeprom ic, and clip on to it while the
+board is off, and write the debug byte, which will give you permanent
+root
+[] kenny0093 Its Webos 2.0( tv software 04.26.10)
+ww8543 07/27/2021 2:39 PM
+(no content)
+[unknown.png]
+ unknown.png
+147.03 KB External
+[] kenny0093 Model is 43UF680T-TA
+ww8543 07/27/2021 2:34 PM
+ah thats a 2014 mstar model it seems, lm14a
+[kenny0093]
+ww8543 what model do you have btw?
+kenny0093 07/27/2021 2:18 PM
+Model is 43UF680T-TA
+[kenny0093]
+ww8543 what model do you have btw?
+kenny0093 07/27/2021 2:17 PM
+Its Webos 2.0( tv software 04.26.10)
+[kenny0093]
+kenny0093 07/27/2021 2:15 PM
+I tried the GetMein but did work at all plus it's too complicated
+[aabytt]
+[] kenny0093 We really need Root my tv in lower firmware please webos
+2.0 I think this is the only active communi...
+aabytt 07/27/2021 1:55 PM
+Why don’t you root with GetMeIn?
+[] kenny0093 We really need Root my tv in lower firmware please webos
+2.0 I think this is the only active communi...
+ww8543 07/27/2021 12:51 PM
+what model do you have btw?
+[kenny0093]
+kenny0093 07/27/2021 12:49 PM
+We really need Root my tv in lower firmware please webos 2.0 I think
+this is the only active community group out there.
+July 25, 2021
+[ra3iel_]
+[] infowski Wait for the next release.
+ra3iel_ 07/25/2021 1:53 PM
+ty!
+[infowski]
+[] ra3iel_ Hi! I try to patch my TV (LG 7500, WebOS 4.5) and i have this
+error. What can i do?
+infowski 07/25/2021 1:32 PM
+Wait for the next release.
+[ra3iel_]
+ra3iel_ 07/25/2021 1:10 PM
+Hi! I try to patch my TV (LG 7500, WebOS 4.5) and i have this error.
+What can i do? (edited)
+[unknown.png]
+ unknown.png
+1.25 MB External
+July 22, 2021
+[b1acking]
+b1acking 07/22/2021 9:26 PM
+i didnt do anything with HomeBrow
+07/22/2021 9:25 PM
+my family get crazy 
+07/22/2021 9:25 PM
+every time i am going to setting of Homebrow
+07/22/2021 9:25 PM
+again
+07/22/2021 9:25 PM
+then agaib
+07/22/2021 9:25 PM
+i am doing
+[aabytt]
+[] b1acking because when every restart my tv i am getting error (
+Failsafe mode )
+aabytt 07/22/2021 9:23 PM
+Disable failsafe mode in hbc settings
+[b1acking]
+b1acking 07/22/2021 9:21 PM
+because when every restart my tv i am getting error ( Failsafe mode )
+07/22/2021 9:21 PM
+how i can remove Homebrow from mytv totally?
+07/22/2021 9:21 PM
+hello there
+[infowski]
+[] francesco75 Click to see attachment
+infowski 07/22/2021 11:58 AM
+Yeah, your TV is patched. We'll be releasing an update that should fix
+that some time in the future, though, so stay tuned.
+July 21, 2021
+ww8543 07/21/2021 8:12 PM
+also: you read the # unknown-channel right?
+Deleted User cardserver
+ww8543 07/21/2021 8:11 PM
+what does that have to do with anything? 
+Deleted User 07/21/2021 8:10 PM
+cardserver
+[francesco75]
+francesco75 07/21/2021 6:36 PM
+Hi, so actually it's not possible to root my tv?
+07/21/2021 6:36 PM
+(no content)
+[IMG_20210721_181305.jpg]
+ IMG_20210721_181305.jpg
+96.07 KB External
+July 12, 2021
+[dustyangel47]
+dustyangel47 07/12/2021 7:52 PM
+https://github.com/RootMyTV/RootMyTV.github.io (edited)
+ 1
+[] dustyangel47 is there a reason why you can't?
+Deleted User 07/12/2021 7:52 PM
+I dunno where is the source for root my tv
+[dustyangel47]
+Deleted User Il would be nice if rootmy.tv could be hosted locally
+dustyangel47 07/12/2021 7:41 PM
+is there a reason why you can't?
+Deleted User 07/12/2021 1:17 PM
+One thing is noticeable here The fact that lg can update system apps
+anytime they want to even with nsu server blocked and appstore
+autoupdate set to off They could have been updated the web browser to
+support adblock on webos4 before but they just did not want to That’s
+their respect for final customer
+07/12/2021 1:15 PM
+Even if you somehow block forced thinq update It will not let you sign
+in until you update ,,An inportant update needs to be applied before
+sign in with Google account,, ,,Update / Cancel” (edited)
+[retr0id]
+retr0id 07/12/2021 1:07 PM
+Haven't checked what it actually was yet
+07/12/2021 1:07 PM
+I disabled my dns blacklist for a few minutes yesterday, to install
+something from the store, and I got a notification about something being
+updated
+ww8543 07/12/2021 9:41 AM
+or that, yes
+ww8543 if you really didnt want any updates you would have blocked *ALL*
+lg servers
+Deleted User 07/12/2021 9:35 AM
+Cut the ethernet cord
+Deleted User 07/12/2021 8:18 AM
+Il would be nice if rootmy.tv could be hosted locally (edited)
+07/12/2021 8:17 AM
+But shortly after connecting to the internet to rootmy.tv Updates were
+applied again
+07/12/2021 8:16 AM
+Factory reset did remove system app updates (edited)
+[infowski]
+infowski 07/12/2021 7:50 AM
+also you may verify if factory reset doesn't happen to remove system app
+updates
+07/12/2021 7:49 AM
+@Deleted User if you still have root you should be able to remove an
+update from one of the partitions in /media (don't remember which
+one...)
+Deleted User How the h$%^ did lg updated my thirdparty login app
+ww8543 07/12/2021 7:44 AM
+if you really didnt want any updates you would have blocked ALL lg
+servers
+[infowski]
+Deleted User But I am still confused how lg pushed the update
+infowski 07/12/2021 7:42 AM
+well that's a little inconvenient
+July 11, 2021
+Deleted User 07/11/2021 2:36 PM
+My webbrowser did not autoupdate
+[aabytt]
+Deleted User But I am still confused how lg pushed the update
+aabytt 07/11/2021 2:36 PM
+And what about web browser update? AFAIR they asked to accept some
+policies update. Browser and ThinQ got autoupdated right after that
+Deleted User 07/11/2021 2:34 PM
+Because now i was checking app updates and thinq login automatically
+updated
+07/11/2021 2:34 PM
+But I am still confused how lg pushed the update
+07/11/2021 2:33 PM
+Yup browser inject worked
+[aabytt]
+aabytt 07/11/2021 2:29 PM
+Btw, Amazon still works on 4.3.0
+07/11/2021 2:29 PM
+And yes, you can not escape to google search from the app itself on most
+webos versions now
+[aabytt]
+Deleted User Iot third party app can no longer open any webpage
+aabytt 07/11/2021 2:28 PM
+It can just study technical details of rootmy.tv
+https://github.com/RootMyTV/RootMyTV.github.io#step-0---getting-in-indexhtml
+RootMyTV/RootMyTV.github.io
+RootMyTV is a user-friendly exploit for rooting/jailbreaking LG webOS
+smart TVs. - RootMyTV/RootMyTV.github.io
+[]
+Deleted User 07/11/2021 2:25 PM
+That is what I an trying to say
+07/11/2021 2:25 PM
+Iot third party app can no longer open any webpage (edited)
+[aabytt]
+Deleted User I can not browse any website
+aabytt 07/11/2021 2:24 PM
+I mean using rootmy.tv method you can open any page with system browser
+(iot-third party app)
+Deleted User 07/11/2021 2:02 PM
+When you click conditions of use on Amazon login it will open normal
+browser
+07/11/2021 2:01 PM
+What do you mean
+[] aabytt You can still get there with rootmy.tv
+Deleted User 07/11/2021 2:01 PM
+I can not browse any website
+[aabytt]
+Deleted User now i can't get into the exploit server
+aabytt 07/11/2021 2:00 PM
+You can still get there with rootmy.tv
+Deleted User 07/11/2021 1:58 PM
+and amazon patched all external links
+07/11/2021 1:58 PM
+google and facebook sign-in will give you a code instead of webstie
+07/11/2021 1:58 PM
+now i can't get into the exploit server (edited)
+07/11/2021 1:57 PM
+if auto updates are off
+07/11/2021 1:57 PM
+How the h$%^ did lg updated my thirdparty login app
+Deleted User 07/11/2021 12:39 PM
+Ugh
+[IMG_1067.jpg]
+ IMG_1067.jpg
+1.78 MB External
+July 9, 2021
+[] infowski Not sure. 
+ww8543 07/09/2021 5:57 PM
+well you said it, not me :)
+[infowski]
+infowski 07/09/2021 5:54 PM
+Not sure. 
+ww8543 07/09/2021 1:33 PM
+i am not sure how this applies to getmein?
+[] infowski <@!524362336644104215> I am not entirely sure, but since the
+bug used by getmein was in jailer confi...
+ww8543 07/09/2021 1:32 PM
+doesnt that apply to apps installed through devmode??
+ww8543 07/09/2021 1:30 PM
+this you mean?
+07/09/2021 1:29 PM
+    devUtil.copyJailConf(watchPath, addedDir, function(err)
+(edited)
+[] infowski it's handled by devmode-helper.js from devmode app iirc
+ww8543 07/09/2021 1:25 PM
+hmmmm i have not looked at that recently
+[retr0id]
+retr0id 07/09/2021 12:50 PM
+ah
+[infowski]
+[] retr0id TIL jail config updates dynamically
+infowski 07/09/2021 12:49 PM
+it's handled by devmode-helper.js from devmode app iirc
+[retr0id]
+retr0id 07/09/2021 12:41 PM
+is that something we should care about in terms of update blocking,
+maybe?
+07/09/2021 12:40 PM
+TIL jail config updates dynamically
+ww8543 07/09/2021 12:06 PM
+not much to lose except a bit of time
+07/09/2021 12:06 PM
+well worth a try
+[infowski]
+infowski 07/09/2021 12:05 PM
+...unless that dynamic jailer config fetching doesn't work on older
+firmwares, we'll see.
+07/09/2021 12:04 PM
+@ww I am not entirely sure, but since the bug used by getmein was in
+jailer configuration, and they now dynamically update jail config on
+devmode app startup... this may not work.
+[kenny0093]
+kenny0093 07/09/2021 12:03 PM
+Thanks  I'll check it out today but it looks so complicated I'll try
+though
+ww8543 07/09/2021 12:00 PM
+if you have a firmware on it from after january/2019 it is likely fixed
+already
+07/09/2021 11:59 AM
+well in that case, give it a try i guess
+07/09/2021 11:59 AM
+you did.....not upgrade? (edited)
+[kenny0093]
+kenny0093 07/09/2021 11:58 AM
+No i did it's been year's without seen new update
+ww8543 07/09/2021 11:58 AM
+or even semi-recently
+07/09/2021 11:58 AM
+(hoping you didnt upgrade your firmware recently)
+[kenny0093]
+kenny0093 07/09/2021 11:58 AM
+Woow there's another one? Ok let me check this out
+ww8543 07/09/2021 11:57 AM
+https://forum.xda-developers.com/t/getmein-one-time-rooting-jailbreaking-tool-for-webos-lg-tvs.3887904/
+GetMeIn : One time rooting/jailbreaking tool for webOS LG TV's
+Hello XDA, After a long thinking i've decided to create a root or
+jailbreak tool for LG's awesome webOS, today am stating this thread to
+release this new root tool, but before that! am gonna ask you for some
+logs from webOS 3.5 and lower...
+[]
+07/09/2021 11:56 AM
+have you tried that?
+07/09/2021 11:56 AM
+maybe that getmein root method works for you?
+[kenny0093]
+kenny0093 07/09/2021 11:56 AM
+Ok ..I really wanted this root to work gess it's No No
+[infowski]
+infowski 07/09/2021 11:43 AM
+Underlying vulnerability is not present before webOS 3.4. (edited)
+07/09/2021 11:43 AM
+I don't think we'll in the near future.
+[kenny0093]
+kenny0093 07/09/2021 11:40 AM
+When is rootmytv supporting weobs 2.0 2015 webos tv
+[infowski]
+infowski 07/09/2021 10:15 AM
+but then we also don't have a reliable way of keeping failsafe mode
+working as intended
+07/09/2021 10:14 AM
+I mean, if you often just turn on and off your tv from a cold boot, then
+yeah, it's going to get triggered :/
+07/09/2021 10:14 AM
+but I'd rather figure out why it triggers for you
+07/09/2021 10:12 AM
+eh, sort of. check the start-devmode.sh script - you can just remove /
+comment out the touch /var/luna/preferences/webosbrew_failsafe line
+ 1
+Deleted User 07/09/2021 10:11 AM
+I do exact same thing on my webos4 tv and nevers falls on failsafe mode
+[infowski]
+infowski 07/09/2021 10:11 AM
+(reboot, or power off...)
+Deleted User 07/09/2021 10:11 AM
+Can this be disabled?
+07/09/2021 10:11 AM
+Oh
+[infowski]
+infowski 07/09/2021 10:10 AM
+In general - failsafe mode triggers if you reboot <30 seconds after
+initial startup
+Deleted User 07/09/2021 10:10 AM
+But i hardreboot with power cord
+[] infowski <@456226577798135808> do you have quickstart+ enabled?
+Deleted User 07/09/2021 10:09 AM
+Yes
+[infowski]
+infowski 07/09/2021 10:08 AM
+@Deleted User do you have quickstart+ enabled?
+Deleted User 07/09/2021 8:57 AM
+kinda sus
+07/09/2021 8:57 AM
+I switch it off from homebrew app and after several days fallback mode
+with notification shows up again
+07/09/2021 8:56 AM
+on webos5 tv randomly falls into failsafe mode
+July 7, 2021
+ptcode 07/07/2021 11:46 AM
+ok, sorry. my bad
+ww8543 07/07/2021 11:36 AM
+@ptcode to quote from # unknown-channel:
+Any talk about TV related piracy, as well as discussions about DRM protected content and applications, is strictly forbidden By DRM, we refer to a type of service that is bound to a particular device or special hardware and works with unique keys.
+ptcode 07/07/2021 11:10 AM
+there is any tutorial? 
+07/07/2021 11:10 AM
+How can i get the decrypt key to DVR records?
+July 5, 2021
+[smx2460]
+smx2460 07/05/2021 5:08 PM
+If I don't forget about it, I'll do it myself.
+ 1
+[smx2460]
+[] kingsyphilis Thanks, it worked. You may want to update your Cygwin
+instructions "openssl-devel" -> "libssl-devel"...
+smx2460 07/05/2021 5:07 PM
+PR welcome
+ww8543 07/05/2021 1:31 PM
+@jevz see here
+https://discord.com/channels/407937994037919756/822443030761046017/858627212885753867
+[jevz]
+jevz 07/05/2021 1:13 PM
+did anyone try 5.23-252105 jhericul-jardine yet?
+July 4, 2021
+ww8543 07/04/2021 10:47 PM
+this aint chinese noodles 
+July 3, 2021
+[soliver84]
+soliver84 07/03/2021 5:00 PM
+I seem to need the developer app for webos 3
+07/03/2021 4:59 PM
+the app store is missing on the beamer. does someone have to install
+after?
+[mariotaku]
+[] soliver84 when i get the latest version of the browser for webos3 i
+could try it.
+mariotaku 07/03/2021 4:44 PM
+What about GetMeIn?
+https://forum.xda-developers.com/t/getmein-one-time-rooting-jailbreaking-tool-for-webos-lg-tvs.3887904/
+GetMeIn : One time rooting/jailbreaking tool for webOS LG TV's
+Hello XDA, After a long thinking i've decided to create a root or
+jailbreak tool for LG's awesome webOS, today am stating this thread to
+release this new root tool, but before that! am gonna ask you for some
+logs from webOS 3.5 and lower...
+[]
+[infowski]
+infowski 07/03/2021 4:31 PM
+No, it doesn't work this way.
+[soliver84]
+soliver84 07/03/2021 4:29 PM
+then I can test it
+07/03/2021 4:29 PM
+when i get the latest version of the browser for webos3 i could try it.
+[infowski]
+infowski 07/03/2021 4:25 PM
+I think it is too old for rootmytv.
+[soliver84]
+soliver84 07/03/2021 4:25 PM
+https://www.lg.com/de/beamer/lg-LARGO
+[]
+07/03/2021 4:24 PM
+LG Largo PF1500-EU
+07/03/2021 4:23 PM
+should be 3.00 if I'm not mistaken
+ww8543 07/03/2021 4:23 PM
+but it is a projector
+07/03/2021 4:23 PM
+no
+[infowski]
+infowski 07/03/2021 4:22 PM
+isn't this webos 1.x or 2.x? (edited)
+[soliver84]
+soliver84 07/03/2021 4:22 PM
+with the browser the page doesn’t just get ssl errors
+07/03/2021 4:22 PM
+[]
+07/03/2021 4:21 PM
+[]
+07/03/2021 4:21 PM
+hello i would like to root the device, but it doesn't work because an
+old browser is on it does someone have the last one for the webos?
+ww8543 07/03/2021 4:20 PM
+uh no
+[infowski]
+ww8543 but that is not trivial
+infowski 07/03/2021 4:16 PM
+LD_PRELOAD
+[] kingsyphilis My only concern would be risk of bricking/losing
+access...
+ww8543 07/03/2021 1:37 PM
+exactly :)
+ww8543 07/03/2021 1:37 PM
+but if i were you i would not try flashing anything custom without
+having bootloader access
+[kingsyphilis]
+kingsyphilis 07/03/2021 1:37 PM
+My only concern would be risk of bricking/losing access...
+ww8543 07/03/2021 1:36 PM
+you can be the first!
+07/03/2021 1:36 PM
+i know of nobody who has tried
+[kingsyphilis]
+kingsyphilis 07/03/2021 1:36 PM
+TBH, I have not even rooted my TV yet. Has this been attempted before?
+ww8543 07/03/2021 1:35 PM
+but that is not trivial
+07/03/2021 1:35 PM
+you could try replacing lg's public key with your own tho
+07/03/2021 1:35 PM
+since the tv checks the signature
+07/03/2021 1:34 PM
+that is somewhat unrealistic
+[kingsyphilis]
+kingsyphilis 07/03/2021 1:34 PM
+Hmm. Currently, is it realistic to modify latest firmwares (remove
+protection) and upload them to TV, unsigned? I only ask because mine is
+never connected to Internet.
+ww8543 07/03/2021 1:33 PM
+lg or our community
+07/03/2021 1:33 PM
+just a question who loses interest first in "fixing" it
+07/03/2021 1:32 PM
+i believe we started a cat and mouse game here
+[kingsyphilis]
+kingsyphilis 07/03/2021 1:32 PM
+Are there any other indicators to look out for? Should we be trying to
+compile a more exhaustive list? (Yes, I saw the posts on the GitHub
+issue) Or, is it expected that the current patch will be defeated?
+07/03/2021 1:30 PM
+Yep, that was my fear.
+ww8543 07/03/2021 1:29 PM
+then better not upgrade
+[kingsyphilis]
+kingsyphilis 07/03/2021 1:29 PM
+Thanks again. The above path is present in the latest Aus BX/NANO
+firmware "03.21.96" (released 2021-06-22) It is not present in the
+previous firmware "03.21.75" (released 2021-03-05)
+[infowski]
+infowski 07/03/2021 1:16 PM
+@KingSyphilis and a good indicator if the firmware got the initial
+patch, is the existence of file
+rootfs.pak.unsquashfs/etc/palm/luna-downloadmgr/download.json
+[kingsyphilis]
+kingsyphilis 07/03/2021 1:07 PM
+Thanks, it worked. You may want to update your Cygwin instructions
+"openssl-devel" -> "libssl-devel"
+https://cygwin.com/packages/summary/openssl-devel.html
+[] kingsyphilis Nah, I'm lazy. I couldn't make much sense of AES.key on
+GitHub and so I figured I'd ask here about k...
+ww8543 07/03/2021 12:05 PM
+you can just simply build it with cygwin if you are on windows
+ww8543 07/03/2021 12:01 PM
+and to extract the firmware you need epk2extract either way
+07/03/2021 12:00 PM
+we most likely already have your decryption key
+[kingsyphilis]
+kingsyphilis 07/03/2021 11:59 AM
+Nah, I'm lazy. I couldn't make much sense of AES.key on GitHub and so I
+figured I'd ask here about key retrieval before I bothered to set up a
+build env.
+ww8543 07/03/2021 9:24 AM
+have you even tried extracting it yet?
+[kingsyphilis]
+kingsyphilis 07/03/2021 9:06 AM
+Is there any information on how to dump?
+ww8543 07/03/2021 8:22 AM
+then you dont need to dump it
+[] kingsyphilis Hi, is there a trivial way to determine whether a newer
+EPK firmware offering via LG support website...
+ww8543 07/03/2021 8:22 AM
+not unless we already have the key for your tv
+[kingsyphilis]
+kingsyphilis 07/03/2021 7:14 AM
+Hi, is there a trivial way to determine whether a newer EPK firmware
+offering via LG support website has been patched? Also, I imagine I'd at
+least need to retrieve a private key from my BX TV, in order to utilise
+epk2extract for this purpose... My current firmware is exploitable,
+FWIW.
+June 27, 2021
+[honk_tm]
+[] infowski Your firmware is already patched, so unrootable. Disable
+automatic software update and wait for a ne...
+honk_tm 06/27/2021 1:13 PM
+damn, will do, thanks
+[infowski]
+[] honk_tm hi, I am trying the "one click" root via internal internet
+browser and rootmy.tv but it fails, becau...
+infowski 06/27/2021 1:10 PM
+Your firmware is already patched, so unrootable. Disable automatic
+software update and wait for a new exploit version, eta ~1 month.
+(edited)
+[honk_tm]
+honk_tm 06/27/2021 10:38 AM
+hi, I am trying the "one click" root via internal internet browser and
+rootmy.tv but it fails, because it downloads the files to
+/media/internal/downloads, any tips ? is my tv not rootable ?
+    {
+        "core_os_kernel_version": "4.4.84-612.21.6.jardine.2",
+        "core_os_name": "Rockhopper",
+        "core_os_release": "5.2.3-252105",
+        "core_os_release_codename": "jhericurl-jardine",
+        "encryption_key_type": "prodkey",
+        "webos_build_datetime": "20210520071734",
+        "webos_build_id": "252105",
+        "webos_imagename": "starfish-dvb-secured",
+        "webos_manufacturing_version": "03.23.05",
+        "webos_name": "webOS TV",
+        "webos_prerelease": "",
+        "webos_release": "5.2.3",
+        "webos_release_codename": "jhericurl-jardine"
+    }
+[dustyangel47]
+dustyangel47 06/27/2021 7:55 AM
+What is the entry number /s
+06/27/2021 7:55 AM
+well i gotta read the entry to know whether i hate it
+June 26, 2021
+[smx2460]
+[] infowski not sure about winscp, plain scp and rsync is supported
+smx2460 06/26/2021 10:08 PM
+I hate winscp
+June 25, 2021
+[smx2460]
+[] dustyangel47 we just gotta compile a web server and/or php
+smx2460 06/25/2021 9:39 PM
+[infowski]
+infowski 06/25/2021 9:20 PM
+not sure about winscp, plain scp and rsync is supported
+06/25/2021 9:20 PM
+root
+[soliver84]
+soliver84 06/25/2021 8:08 PM
+WinSCP can that already run?
+[soliver84]
+soliver84 06/25/2021 7:55 PM
+it's nowhere, at least I haven't found it
+06/25/2021 7:54 PM
+what is the ssh username after root?
+[infowski]
+ww8543 you mean luna itself? cause that is pretty well documented on the
+webosose website. if you mean all ...
+infowski 06/25/2021 8:16 AM
+Yeah. I think I'll try starting working on this over theweekend...
+[] infowski inb4 emmc decapping
+ww8543 06/25/2021 8:15 AM
+fuck yea  that one hahahaha
+[dustyangel47]
+dustyangel47 06/25/2021 8:15 AM
+no more proprietary services to worry about then (edited)
+06/25/2021 8:15 AM
+just replace webos with webosose in the initial rootmytv exploit 
+(edited)
+[] infowski <@!262805549995917313> if you're interested in documenting
+luna APIs I have some initial draft on ho...
+ww8543 06/25/2021 8:15 AM
+you mean luna itself? cause that is pretty well documented on the
+webosose website. if you mean all the proprietary lg services, then yes,
+definitely document those 
+[infowski]
+infowski 06/25/2021 8:13 AM
+inb4 emmc decapping
+06/25/2021 8:13 AM
+I think exploiting the bootrom to give some early code execution to
+deploy a dumper payload may be an even worse solution. (edited)
+[] dustyangel47 True worst case: desolder the storage chip from the TV
+and connect it to a hardware based (EMMC?) du...
+ww8543 06/25/2021 8:12 AM
+yes! how could i forget about that one! 
+[dustyangel47]
+dustyangel47 06/25/2021 7:56 AM
+~~although we could just use someone's phone~~
+[dustyangel47]
+[] infowski [remote control plane]
+dustyangel47 06/25/2021 7:55 AM
+Now we're thinking with our available materials
+[dustyangel47]
+dustyangel47 06/25/2021 7:55 AM
+maybe the homebrew channel can add your tv to the ~~botnet~~ mediawiki
+hosting platform (edited)
+[infowski]
+infowski 06/25/2021 7:55 AM
+[remote control plane]
+[dustyangel47]
+dustyangel47 06/25/2021 7:54 AM
+Run it on someone's tv
+[zelbat]
+zelbat 06/25/2021 7:54 AM
+would still need a server to coordinate a tv-cloud

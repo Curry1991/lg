@@ -1,0 +1,385 @@
+January 10, 2022
+[infowski]
+infowski 01/10/2022 4:00 PM
+Workaround for that is just removing DST Root CA X3 from full chain that
+is sent out to clients (serving that now is technically considered a
+bug) - but well, you can't do that with Plex. (edited)
+01/10/2022 3:59 PM
+Turns out that "edge case" of handling CA certificates is very common. I
+had that exact same issue with latest Electron, right when Let's Encrypt
+CA expired. (edited)
+01/10/2022 3:57 PM
+and curl just so happens to handle that case properly. ("lower" level CA
+being expired, while intermediate/upper one is valid and trusted)
+(edited)
+01/10/2022 3:57 PM
+OK, then I'll just assume your device has that cert still in their CA
+store somehow - probably under a different name.
+01/10/2022 3:56 PM
+>Common Name:DST Root CA X3
+[tphipps]
+tphipps 01/10/2022 3:51 PM
+    Common Name:DST Root CA X3
+    Organization: Digital Signature Trust Co.
+    Valid: September 30, 2000 to September 30, 2021
+    Issuer: DST Root CA X3
+    Illo certificate intermediate    
+    Common Name:ISRG Root X1
+    Organization: Internet Security Research Group
+    Valid: January 20, 2021 to September 30, 2024
+    Issuer: DST Root CA X3
+    Illo certificate intermediate    
+    Common Name:R3
+    Organization: Let's Encrypt
+    Valid: September 04, 2020 to September 15, 2025
+    Issuer: ISRG Root X1
+    Illo certificate intermediate    
+    Common Name:*.<<GUID REMOVED>>.plex.direct
+    Organization:
+    Valid: January 06, 2022 to April 06, 2022
+    Issuer: R3
+01/10/2022 3:51 PM
+Looks like they flipped it to LetsEncrypt since that was written. The
+current chain returned by my local Plex server is:
+[infowski]
+infowski 01/10/2022 3:24 PM
+So it's not even Let's Encrypt.
+01/10/2022 3:24 PM
+oh...
+01/10/2022 3:24 PM
+>Digicert high assurance CA
+[tphipps]
+tphipps 01/10/2022 3:19 PM
+Will be calling it a night in a few minutes (1:20am here) and continuing
+tomorrow. Will get the PR in for the logs doc page first thing and
+update here on how things go. At the moment I can see the Plex app
+trying to open one of Plex's "magic hostnames"
+(IP-ADDRESS.<guid>.plex.direct) and that's working just fine on the LG
+Projector via Curl but not via Chromium where it throws a cert error.
+Will dig into why next. If you fancy some light reading, this is really
+interesting and is the basis for what I'll be pursuing next:
+https://blog.filippo.io/how-plex-is-doing-https-for-all-its-users/
+How Plex is doing HTTPS for all its users
+This week Plex, a self-hosted media server, announced that they now
+offer TLS to secure all connections, including those to the user's
+servers. This is actually pretty interesting. Background A quick
+overview of the Plex architecture to understand why this is different
+from the average HTTPS deployment. The server is
+01/10/2022 3:17 PM
+Hey, i VERY much appreciate the help. I'm in the remote Chrome inspector
+now connected to the Plex app. Incredibly impressive. Can thank you
+enough for getting me this far.
+[infowski]
+infowski 01/10/2022 3:06 PM
+In case you have any questions just ping me - and if you find some
+missing docs don't hesitate to extend webosbrew.org site.
+[tphipps]
+tphipps 01/10/2022 2:35 PM
+Very possibly. Digging into that now.
+[infowski]
+infowski 01/10/2022 2:32 PM
+https://gist.github.com/Informatic/d7bcdd59eac16ffbffd3a5b5c24b4195#file-50-customca-L73
+50-customca
+GitHub Gist: instantly share code, notes, and snippets.
+[]
+01/10/2022 2:32 PM
+we remove the old ones based on hardcoded name - it may be in some other
+file still...
+01/10/2022 2:32 PM
+Yes - and they likely have "old" root certs removed
+[tphipps]
+tphipps 01/10/2022 2:32 PM
+Possibly, but it supposedly works OK from WebOS 5.0 devices that have
+the new LE roots.
+01/10/2022 2:31 PM
+Going to see if I can extract the host it's trying to connect to and
+lookat the cert chain.
+[infowski]
+infowski 01/10/2022 2:31 PM
+The thing is that they may have expired cert in their chain still - we
+try to alleviate that by removing that one, but... i dunno. (edited)
+01/10/2022 2:31 PM
+Huh, ok.
+[tphipps]
+tphipps 01/10/2022 2:31 PM
+It is, but Plex does some magic in real-time creating local server certs
+that are LetsEncrypt trusted.
+01/10/2022 2:30 PM
+OK, now I've basically got the Chrome inspector, let me hit at the Plex
+app a bit and see what's going on. Will see if I can extract the
+host/port it's hitting.
+[infowski]
+infowski 01/10/2022 2:30 PM
+Also - is that your own server? (you are hitting) (edited)
+01/10/2022 2:30 PM
+Just as if there was the expired certificate still in the trust store.
+[infowski]
+[] tphipps "2022-01-10T13:25:21.107666Z [200.757208794] user.info
+WebAppMgr [] chromium.raw Network {"INFO":"un...
+infowski 01/10/2022 2:30 PM
+That one is weird... Hmmmm...
+[tphipps]
+tphipps 01/10/2022 2:29 PM
+Aah. It's "cdp-30".
+[infowski]
+infowski 01/10/2022 2:29 PM
+grep -i 'plex' */appinfo.json
+01/10/2022 2:29 PM
+I guess you'd guess.
+[tphipps]
+tphipps 01/10/2022 2:29 PM
+Would I need to guess as to its name?
+01/10/2022 2:28 PM
+I don't see plex as an app at all here:
+root@LGwebOSTV:/media/cryptofs/apps/usr/palm/applications# ls -l total
+24 drwxr-xr-x 3 root 5000 4096 Jul 25 05:51 accuweather drwxr-xr-x 2
+root 5000 4096 Nov 13 03:16 cdp-30 drwxr-xr-x 2 root 5000 4096 Jul 25
+05:41 com.5403008.196062 drwxr-xr-x 3 root 5000 4096 Nov 29 2019 hulu
+drwxr-xr-x 4 root 5000 4096 Sep 7 2019 netflix-pjtr drwxr-xr-x 4 root
+5000 4096 Aug 8 2019 youtube.leanback.v4
+[infowski]
+infowski 01/10/2022 2:28 PM
+Yeah - sorry.
+[tphipps]
+tphipps 01/10/2022 2:28 PM
+Ah - so you're talking the remote Chrome inspector. Got it now. I was
+tring to figure out how that URL would work inside the app.
+[infowski]
+infowski 01/10/2022 2:28 PM
+That may help you with Plex debugging, though since you already got that
+log message...
+01/10/2022 2:27 PM
+So I just did:
+vi /media/cryptofs/apps/usr/palm/applications/spotify-beehive/appinfo.json
+→ add "inspectable":true to the JSON file → initctl restart sam to
+restart the daemon that caches appinfo (or just a reboot would work as
+well probably) → open Spotify - it is inspectable as expected on
+http://TV:9998
+01/10/2022 2:26 PM
+well that was easier than anticipated
+[spotify.png]
+ spotify.png
+5.92 KB External
+[tphipps]
+tphipps 01/10/2022 2:26 PM
+"2022-01-10T13:25:21.107666Z [200.757208794] user.info WebAppMgr []
+chromium.raw Network {"INFO":"unable to get local issuer certificate(20)
+: depth(2) : status(4) : date(Mon Jan 10 05:25:21 2022\n)"}"
+01/10/2022 2:26 PM
+Just set all logging to info except for WAM at debug and getting solid
+gold in /var/log/messages now
+[infowski]
+infowski 01/10/2022 2:25 PM
+well there you go. let's try if that actually works.
+01/10/2022 2:25 PM
+    root@lgwebostv:/etc/palm/schemas# grep -ri inspect .
+    ./sam/ApplicationDescription.schema:        "inspectable" : {
+    ./sam/ApplicationDescription.schema:            "description": "This field is used to tell WAM if an application should be inspectable in DevMode, based on the app's install location (/media/developer) or the presence of an \"inspectable\" field (if true) in the app's appinfo.json file."
+01/10/2022 2:24 PM
+I am talking about the whole dev toolbar access. Let me check it right
+now actually.
+[infowski]
+[] tphipps When I find/add enableInspection, the aim is to dump the JS
+console into the logs, or somehow to ena...
+infowski 01/10/2022 2:24 PM
+No, I think console logs should still be dumped into
+pmloglib//var/log/messages by default (after you enable "devlogs", aka.
+disable whitelisting)
+[infowski]
+infowski 01/10/2022 2:23 PM
+Sure. appinfo.json files are in
+/media/cryptofs/apps/usr/palm/applications/...
+[tphipps]
+tphipps 01/10/2022 2:23 PM
+When I find/add enableInspection, the aim is to dump the JS console into
+the logs, or somehow to enable the console?
+01/10/2022 2:22 PM
+That's a great start. I'm very comfortable on linux but brand new to
+WebOs and that explanation REALLY helps.
+[infowski]
+infowski 01/10/2022 2:22 PM
+probably adding enableInspection or some similar flag I don't remember
+into appinfo.json (+ reboot) would be enough
+01/10/2022 2:21 PM
+on development apps you could just go to http://TV:9998 and get a normal
+dev toolbar, but it's limited on content store apps, and nobody tried
+working around that yet.
+01/10/2022 2:21 PM
+WAM is just chrome/blink/webkit wrapper, so you will probably get logs
+somewhat similar to what you get in devtoolbar console.
+01/10/2022 2:19 PM
+Well that's great! You probably can reduce it, and only increase WAM
+[tphipps]
+tphipps 01/10/2022 2:19 PM
+OK, I'm getting hammered with logs now. Phew.
+01/10/2022 2:18 PM
+Will do.
+[infowski]
+[] tphipps I know the feeling. Very well
+infowski 01/10/2022 2:18 PM
+https://github.com/webosbrew/webosbrew.github.io/blob/main/content/pages/logging.md
+you can send a PR against that if you want 
+webosbrew.github.io/logging.md at main · webosbrew/webosbrew.github...
+Contribute to webosbrew/webosbrew.github.io development by creating an
+account on GitHub.
+[]
+[tphipps]
+tphipps 01/10/2022 2:18 PM
+Trying again now with
+    luna-send -n 1 -f 'luna://com.webos.pmlogd/setdevlogstatus' '{"recordDevLogs":true}'
+01/10/2022 2:18 PM
+I know the feeling. Very well
+[infowski]
+infowski 01/10/2022 2:18 PM
+I ~~was~~ am very tired
+01/10/2022 2:18 PM
+yeah, same, of course.
+01/10/2022 2:17 PM
+I had enable and disable commands next to each other
+[tphipps]
+tphipps 01/10/2022 2:17 PM
+Also, the line
+    PmLogCtl '*' none
+is missing "set"
+01/10/2022 2:17 PM
+[infowski]
+infowski 01/10/2022 2:17 PM
+it's supposed to say true
+01/10/2022 2:17 PM
+of course I miscopied the command... 
+01/10/2022 2:17 PM
+god dammit
+01/10/2022 2:17 PM
+did i fuck up
+01/10/2022 2:17 PM
+why is it false
+01/10/2022 2:17 PM
+wait
+[tphipps]
+tphipps 01/10/2022 2:16 PM
+Nothing new there for a while now
+01/10/2022 2:16 PM
+    root@LGwebOSTV:/tmp/var/log# ls -l /tmp/var/log
+    total 24
+    -rw-------    1 root     root          9115 Jan 10 05:06 bootd.log
+    drwxrwx---    2 root     crashd           0 Dec 31  2016 crashd
+    lrwxrwxrwx    1 root     root            25 Jan 10 05:05 klog-formatter -> /var/spool/klog-formatter
+    -rw-r--r--    1 root     root          2726 Jan 10 05:06 messages
+    lrwxrwxrwx    1 root     root            15 Dec 31  2016 rdxd -> /var/spool/rdxd
+    drwxr-xr-x    3 root     root             0 Dec 31  2016 reports
+    -rw-r--r--    1 root     root          3337 Dec 31  2016 tvconfig-gen.log
+    drwxr-xr-x    2 root     root             0 Dec 31  2016 uploadd
+    -rw-rw-r--    1 root     utmp           384 Jan 10 05:07 wtmp
+01/10/2022 2:15 PM
+    root@LGwebOSTV:/tmp/var/log# luna-send -n 1 -f 'luna://com.webos.pmlogd/setdevlogstatus' '{"recordDevLogs":false}'
+    {
+        "returnValue": true,
+        "recordDevLogs": false
+    }
+01/10/2022 2:15 PM
+In /var/log/* ?
+[infowski]
+infowski 01/10/2022 2:15 PM
+weird.
+01/10/2022 2:15 PM
+you should be getting a lot of logs.
+[tphipps]
+tphipps 01/10/2022 2:15 PM
+Yep.
+[infowski]
+infowski 01/10/2022 2:15 PM
+You executed the command meant for webOS 3.x, right?
+[tphipps]
+tphipps 01/10/2022 2:15 PM
+Not seeing much under /var/log/messages though
+01/10/2022 2:15 PM
+Checking outputs again. Have turned off the whitelists. And set
+everything to debug
+[infowski]
+infowski 01/10/2022 2:15 PM
+There's a chance your TV has DST Root X3 (or whatever was the name of
+the expired one) under a different name
+01/10/2022 2:14 PM
+Yes - it should.
+[tphipps]
+tphipps 01/10/2022 2:14 PM
+Ah. But as long as webappmgr hes been restarted after the overlay has
+been mounted, it should pick up the new certs?
+[infowski]
+infowski 01/10/2022 2:14 PM
+(after running that recorddevlogs option - which makes pmlogd ignore
+whitelists)
+01/10/2022 2:14 PM
+but you'll still get WebAppMgr logs, which should probably include
+whatever errors are happening in Plex app
+01/10/2022 2:13 PM
+so it won't be visible.
+01/10/2022 2:13 PM
+Yeah - it's very likely just running in webappmgr
+[tphipps]
+tphipps 01/10/2022 2:13 PM
+Could it be running as a site in the native browser somehow packaged
+like an app (and therefore using the browser's CA roots store?)
+01/10/2022 2:12 PM
+No processes with "plex" in their name (ps -ef|grep -i plex)
+01/10/2022 2:12 PM
+Plex seems to be almost invisible - nothing mounted with plex in its
+name (so no jail), no options for it in /etc/PmLogDaemon/whitelist.txt,
+nothing showing up containing Plex (or plex) in the output of "PmLogCtl
+show"
+[infowski]
+infowski 01/10/2022 2:03 PM
+That's sometimes the case with native apps.
+01/10/2022 2:03 PM
+another thing you could try is check mount | grep -i plex - maybe they
+are running in a jail, and our bindmount is not properly populated
+there...
+[tphipps]
+[] infowski Plex is installed from content store, right?
+tphipps 01/10/2022 2:03 PM
+Yep. Will check to ensure it's the latest ver though.
+[infowski]
+infowski 01/10/2022 2:00 PM
+https://www.webosbrew.org/pages/logging.html you may be able to increase
+logging level and check tail -F /var/log/messages to see if you get any
+specific errors.
+01/10/2022 1:59 PM
+Plex is installed from content store, right?
+[tphipps]
+tphipps 01/10/2022 1:59 PM
+Plex still not happy though. Trying
+    initctl restart WebAppMgr
+and it restarts the projector UI but Plex still not able to connect to
+server. Going to look closer at Plex and assume the roots are OK now
+given that Curl is happy...
+01/10/2022 1:58 PM
+    root@LGwebOSTV:~# curl https://valid-isrgrootx1.letsencrypt.org/
+    curl: (60) SSL certificate problem: unable to get local issuer certificate
+    More details here: https://curl.haxx.se/docs/sslcerts.html
+    curl performs SSL certificate verification by default, using a "bundle"
+     of Certificate Authority (CA) public keys (CA certs). If the default
+     bundle file isn't adequate, you can specify an alternate file
+     using the --cacert option.
+    If this HTTPS server uses a certificate signed by a CA represented in
+     the bundle, the certificate verification probably failed due to a
+     problem with the certificate (it might be expired, or the name might
+     not match the domain name in the URL).
+    If you'd like to turn off curl's verification of the certificate, use
+     the -k (or --insecure) option.
+    root@LGwebOSTV:~# /var/lib/webosbrew/init.d/overlay-letsencrypt-ca-certs-fix
+    Updating certificates in /etc/ssl/certs... 0 added, 0 removed; done.
+    Running hooks in /etc/ca-certificates/update.d....done.
+    root@LGwebOSTV:~# curl https://valid-isrgrootx1.letsencrypt.org/
+    <!DOCTYPE html>
+01/10/2022 1:57 PM
+OK, looks like the TLS roots are updating correctly. Just removed the
+init.d script and tried this:
+[infowski]
+infowski 01/10/2022 1:57 PM
+01/10/2022 1:57 PM
+sup
+[tphipps]
+tphipps 01/10/2022 1:56 PM
+Not really. I made my own before that script got updated
+(https://github.com/webosbrew/apps-repo/issues/29#issuecomment-1003778789)
+but they are fairly similar.
