@@ -1,0 +1,412 @@
+January 14, 2023
+[thecode2]
+thecode2 01/14/2023 6:12 PM
+Thanks for the extensive testing 
+[infowski]
+infowski 01/14/2023 5:30 PM
+icon URLs are correct - https on wss connection, as to be expected too.
+01/14/2023 5:30 PM
+on ssl-fallback branch, with extra print's added to be absolutely sure
+it's falling back 
+01/14/2023 5:29 PM
+FYI tested on webOS 6.x just now and it works correctly (and chooses
+http/ws) on default configuration, and properly falls back to https
+whenever I add only_from = 127.0.0.1 to xinetd config as on webOS 22.
+[thecode2]
+thecode2 01/14/2023 12:19 PM
+Yeah I agree, I would expect it to allow passing SSL and act upon the
+URI, the opposite direction is fine, like if you pass wss:// without SLL
+[infowski]
+[] thecode2 ``` ValueError: connect() received a ssl argument for a
+ws:// URI, use a wss:// URI to enable TLS ``...
+infowski 01/14/2023 12:18 PM
+I was wrong then. Kind of a weird API but ok... 
+[thecode2]
+[] infowski anyways, looks great. I'll test that on my 6.x board where I
+can hack up the config to behave just l...
+thecode2 01/14/2023 11:27 AM
+Thanks!
+[thecode2]
+thecode2 01/14/2023 11:26 AM
+    ValueError: connect() received a ssl argument for a ws:// URI, use a wss:// URI to enable TLS
+01/14/2023 11:25 AM
+I will try it again, would be easier, but for some reason I remember
+passing SSL with ws:// returned that the URI doesn't match the
+connection type, checking now...
+[infowski]
+infowski 01/14/2023 11:24 AM
+anyways, looks great. I'll test that on my 6.x board where I can hack up
+the config to behave just like the latest webOS 22... (edited)
+01/14/2023 11:23 AM
+ssl option doesn't seem to indicate it'd force TLS connection, it's just
+a context used whenever URI is wss
+01/14/2023 11:22 AM
+I mean - you can always create ssl_context and always pass it in
+_ws_connect, regardless of the connection being tls or not →
+https://websockets.readthedocs.io/en/stable/reference/client.html#websockets.client.connect
+Client
+asyncio: Opening a connection: Using a connection: Sans-I/O:
+[thecode2]
+thecode2 01/14/2023 11:20 AM
+It is easier to compare like this:
+https://github.com/home-assistant-libs/aiowebostv/compare/ssl-fallback?expand=1
+01/14/2023 11:20 AM
+the reason I pass none is that I used a combined function for all the 3
+connection tries
+[infowski]
+infowski 01/14/2023 11:19 AM
+It'd probably make the code a little simpler.
+01/14/2023 11:18 AM
+I don't think you necessarily need to pass None as ssl_context
+everywhere, if you're not using TLS.
+[thecode2]
+thecode2 01/14/2023 11:16 AM
+https://github.com/home-assistant/core/issues/85118#issuecomment-1382707086
+01/14/2023 11:16 AM
+https://github.com/home-assistant-libs/aiowebostv/tree/ssl-fallback
+January 13, 2023
+[thecode2]
+thecode2 01/13/2023 7:58 PM
+https://github.com/home-assistant/core/pull/85841 fixes the image
+fetching, had a short discussion with core members which suggested it is
+better to override _async_fetch_image
+ 1
+[infowski]
+infowski 01/13/2023 12:34 PM
+see you in ~6-8h.
+ 1
+[thecode2]
+[] infowski Do you have it published anywhere? I could take a look at it
+maybe.
+thecode2 01/13/2023 12:34 PM
+I'll push it to a branch (need to find it first  )
+[infowski]
+infowski 01/13/2023 12:34 PM
+Anyways, I gotta go, I am technically in my $dayjob right now 
+ 1
+[infowski]
+[] thecode2 I had already implemented in the past an option to stream a
+video from HA to the TV but did not rele...
+infowski 01/13/2023 12:34 PM
+Do you have it published anywhere? I could take a look at it maybe.
+[thecode2]
+thecode2 01/13/2023 12:33 PM
+I am mainly developing the Shelly integration, but took over this one
+since original code owner stopped maintaining it
+[infowski]
+[] thecode2 I had already implemented in the past an option to stream a
+video from HA to the TV but did not rele...
+infowski 01/13/2023 12:33 PM
+Oh! There's a ssap method for media playback that should be fairly
+universal. Not sure how deep that integration is, but it is still
+technically "usable" via direct SSAP method call service, however it was
+called.
+[thecode2]
+thecode2 01/13/2023 12:32 PM
+I had already implemented in the past an option to stream a video from
+HA to the TV but did not release it since I had no idea if my
+implementation would work across different webOS versions and did not
+find too much testers
+[infowski]
+infowski 01/13/2023 12:32 PM
+To be perfectly honest, I am not a great fan, but it mostly works 
+[thecode2]
+thecode2 01/13/2023 12:32 PM
+would be nice to have you contributing
+[infowski]
+infowski 01/13/2023 12:31 PM
+Yeah,.
+[thecode2]
+thecode2 01/13/2023 12:31 PM
+Do you use HA?
+[infowski]
+infowski 01/13/2023 12:31 PM
+Sure - I have not really contributed to hass so don't know what their
+policy is, just sounding my... opinions and suspicions  (edited)
+[thecode2]
+thecode2 01/13/2023 12:31 PM
+[infowski]
+infowski 01/13/2023 12:31 PM
+ah, code review politics. 
+[thecode2]
+thecode2 01/13/2023 12:31 PM
+adding kwargs should be find I think as it doesn't break anything for
+anyone
+[infowski]
+infowski 01/13/2023 12:30 PM
+the latter is better technically, but theoretically affects code used by
+all integrations. (though I don't really see how it could break
+anything, since kwargs will just default to "no overrides"...) (edited)
+01/13/2023 12:30 PM
+the former (copy code) will probably be easier to push through the
+review, since it's just a normal integration change
+01/13/2023 12:29 PM
+but technically best solution, IMO, is adding kwargs to
+async_fetch_image and override _async_fetch_image in integration to add
+custom ssl context
+01/13/2023 12:29 PM
+_async_fetch_image is probably the best to override here - we then
+essentially just copy async_fetch_image internals in there and add our
+ssl context.
+01/13/2023 12:28 PM
+async_get_media_image → _async_fetch_image_from_cache →
+_async_fetch_image → async_fetch_image
+[thecode2]
+thecode2 01/13/2023 12:28 PM
+well adding just kwargs there would probably be fine, than override the
+function and call the original one with ssl
+[infowski]
+infowski 01/13/2023 12:27 PM
+ie. _async_fetch_image in integration class, which calls
+async_fetch_image function
+01/13/2023 12:27 PM
+Just a parent class method?
+01/13/2023 12:27 PM
+I think technically it is called by the integration?
+01/13/2023 12:27 PM
+to be perfectly honest, I am surprised they don't have kwargs in there.
+[thecode2]
+[] infowski I guess... We could also just prompt home assistant core to
+add `**kwargs` to `async_fetch_image` th...
+thecode2 01/13/2023 12:27 PM
+This is more complicated since I don't call this method directly, the
+integration only reports the URL which is later used by the core
+[thecode2]
+thecode2 01/13/2023 12:26 PM
+Actually this might be acceptable as it will only affect the specific
+integration, it is allowed to override base class methods as long as you
+don't change their signature
+[infowski]
+infowski 01/13/2023 12:25 PM
+I guess... We could also just prompt home assistant core to add **kwargs
+to async_fetch_image that'd pass all the args to websession.get?
+01/13/2023 12:24 PM
+I have a suspicion it'll have lower friction than extending
+async_fetch_image
+01/13/2023 12:24 PM
+And won't impact anything else.
+01/13/2023 12:23 PM
+Again - not the prettiest, but it'll work for sure.
+01/13/2023 12:23 PM
+https://github.com/home-assistant/core/blob/cf5fca0464b47feb58fb29c4ea1c97d1d9f6a359/homeassistant/components/media_player/init.py#L1097
+this - it's overridable by the integration. 
+core/__init__.py at cf5fca0464b47feb58fb29c4ea1c97d1d9f6a359 · home...
+:house_with_garden: Open source home automation that puts local control
+and privacy first. - core/__init__.py at
+cf5fca0464b47feb58fb29c4ea1c97d1d9f6a359 · home-assistant/core
+[]
+01/13/2023 12:22 PM
+isn't this method overridable in the integration itself?
+01/13/2023 12:22 PM
+https://github.com/home-assistant/core/blob/cf5fca0464b47feb58fb29c4ea1c97d1d9f6a359/homeassistant/components/media_player/init.py#L581-L586
+core/__init__.py at cf5fca0464b47feb58fb29c4ea1c97d1d9f6a359 · home...
+:house_with_garden: Open source home automation that puts local control
+and privacy first. - core/__init__.py at
+cf5fca0464b47feb58fb29c4ea1c97d1d9f6a359 · home-assistant/core
+[]
+[thecode2]
+thecode2 01/13/2023 12:20 PM
+The commented out code was a test I did which fix the issue, but this
+method relies in core not in the integration and currently the URL is a
+string
+01/13/2023 12:20 PM
+    async def async_fetch_image(
+        logger: logging.Logger, hass: HomeAssistant, url: str
+    ) -> tuple[bytes | None, str | None]:
+        """Retrieve an image."""
+        content, content_type = (None, None)
+        websession = async_get_clientsession(hass)
+        # ssl_context = ssl.SSLContext()
+        with suppress(asyncio.TimeoutError), async_timeout.timeout(10):
+            response = await websession.get(url)  # , ssl=ssl_context)
+            if response.status == HTTPStatus.OK:
+                content = await response.read()
+                if content_type := response.headers.get(CONTENT_TYPE):
+                    content_type = content_type.split(";")[0]
+[thecode2]
+[] infowski Yeah, it's sketchy. I need to look up how webOS integration
+actually works. Do you pass an url from ...
+thecode2 01/13/2023 12:19 PM
+Exactly = first part, pass an image URL (edited)
+[infowski]
+infowski 01/13/2023 12:19 PM
+Yeah, it's sketchy. I need to look up how webOS integration actually
+works. Do you pass an url from the integration to "the core", or do you
+call "the core" to fetch and cache the image? (edited)
+[thecode2]
+[] infowski iirc if we use non-tls connection we get plain `http` links,
+so it should be ok. it's just webOS 22 ...
+thecode2 01/13/2023 12:18 PM
+Yes
+[thecode2]
+thecode2 01/13/2023 12:18 PM
+well doing the same patch you did inside the method which fetch images
+in core fixed it, but I am not sure it will be easily accepted
+[infowski]
+infowski 01/13/2023 12:18 PM
+iirc if we use non-tls connection we get plain http links, so it should
+be ok. it's just webOS 22 that'll be broken for a while.
+[thecode2]
+[] infowski I think defaulting to http with fallback to https makes most
+sense at this point.
+thecode2 01/13/2023 12:18 PM
+That only solves the connection to the TV (which is the most important)
+but not for the ... yeah
+[infowski]
+infowski 01/13/2023 12:17 PM
+and can work around this at some point somehow...
+01/13/2023 12:17 PM
+We'll just end up with broken images on webOS 22
+[thecode2]
+thecode2 01/13/2023 12:17 PM
+I see, I was wondering if they even parse the request since it contains
+a valid token
+[infowski]
+infowski 01/13/2023 12:17 PM
+I think defaulting to http with fallback to https makes most sense at
+this point.
+[thecode2]
+thecode2 01/13/2023 12:16 PM
+I am not sure if this would be a good solution but making changes in
+Home Assistant core for supporting non-SSL for the image fetching will
+take a while
+[infowski]
+infowski 01/13/2023 12:16 PM
+they reject the request on 3000 completely, regardless of protocol used,
+be it HTTP or WebSockets...
+01/13/2023 12:16 PM
+It won't work on webOS 22 though
+[thecode2]
+thecode2 01/13/2023 12:16 PM
+I am still thinking how to handle the icon URL, so I did this test
+(although this is a dirty workaround), I used the same URL reported by
+the TV and replaced the https with http and the port to 3000 and my TV
+accepted this although I did not authenticate using HTTP first
+[infowski]
+infowski 01/13/2023 12:14 PM
+A close friend has 2.x but he just moved and is not planning to unpack
+it for a couple of weeks...
+01/13/2023 12:14 PM
+I can help with testing at least. I have webOS 3.x, 5.x and 6.x on hand
+right now. (edited)
+[thecode2]
+[] infowski I am guessing you're not rooted?
+thecode2 01/13/2023 12:13 PM
+Not rooted
+[infowski]
+infowski 01/13/2023 12:13 PM
+If you were, it should be fairly simple to simulate webOS 22 behaviour
+on older versions.
+01/13/2023 12:13 PM
+I am guessing you're not rooted?
+01/13/2023 12:12 PM
+or to get connection refused.
+[thecode2]
+thecode2 01/13/2023 12:12 PM
+My TV accepts both SSL & non-SSL so it is a little bit complicated for
+me to test
+[infowski]
+infowski 01/13/2023 12:12 PM
+I'd expect it to just connection reset
+01/13/2023 12:12 PM
+That webOS 2.x behaviour is indeed kinda weird.
+[thecode2]
+[] infowski Yep. Will you be able to implement this, or do you need my
+help? 
+thecode2 01/13/2023 12:12 PM
+Yes I can do that, mostly needs help with testing
+[thecode2]
+thecode2 01/13/2023 12:12 PM
+I wonder if there is a way to know if the device support SSL, I would
+expect that the device will at least answer for the hello request
+[infowski]
+infowski 01/13/2023 12:11 PM
+Yep. Will you be able to implement this, or do you need my help? 
+[thecode2]
+[] infowski I guess we'll need to add some fallback mechanism? :/
+thecode2 01/13/2023 12:11 PM
+I guess so, maybe start with port 3000 since it answers fast with
+connection reset, than try 3001
+[thecode2]
+thecode2 01/13/2023 12:10 PM
+I also encounter< a different problem which is related to how Home
+Assistant fetch images from the device, I can't turn off SSL there
+(yet): https://github.com/home-assistant/core/issues/85814
+[infowski]
+infowski 01/13/2023 12:10 PM
+I guess we'll need to add some fallback mechanism? :/
+01/13/2023 12:10 PM
+I didn't, sorry.
+[thecode2]
+[] infowski I can check on 1.x and 2.x if they supported SSL back then
+later today.
+thecode2 01/13/2023 12:09 PM
+Did you had time to check? I am afraid 2 doesn't work:
+https://github.com/home-assistant/core/issues/85813
+January 12, 2023
+[infowski]
+infowski 01/12/2023 10:29 AM
+I can check on 1.x and 2.x if they supported SSL back then later today.
+ 1
+01/12/2023 10:28 AM
+It definitely works on webOS 3.x
+[thecode2]
+thecode2 01/12/2023 10:14 AM
+The only thing I am worried is how much backward compatibility we have
+when we switch to SSL, so that we can at least support webOS 3
+01/12/2023 10:13 AM
+Thanks, I saw your PR, I was actually tesing port 3001 but did not
+change the SSL and one of the users commented that he tested 3001 and
+got connection reset but it is probably not related
+[infowski]
+infowski 01/12/2023 2:19 AM
+I've filed a PR against aiowebostv
+01/12/2023 2:18 AM
+Wonder why input websocket connection is always established, not just on
+demand 
+01/12/2023 2:17 AM
+Got it, it was a silly mistake in your patch actually - missing 3000 →
+3001 port change (webOS/SSG service was just trying to parse TLS
+handshake as a HTTP request), wrong tlscontext configuration (aiowebostv
+was still attempting to validate the certificate) and missing tls
+context passed to the other input websocket. (edited)
+[infowski]
+infowski 01/12/2023 1:47 AM
+Too bad I don't have any webOS 22 TV on hand :/
+01/12/2023 1:47 AM
+I actually may be wrong about that client cert validation.
+[infowski]
+infowski 01/12/2023 12:56 AM
+You'll likely need to extract the certificate from Thinq app, assuming
+it's not generated on the fly.
+[infowski]
+infowski 01/12/2023 12:35 AM
+OK, and they do client certificate validation :/
+01/12/2023 12:30 AM
+They added only_from = 127.0.0.1 directive.
+01/12/2023 12:26 AM
+Ha! Got it. They accept connections via xinetd and you'll need need to
+use HTTPS/port 3001. I'll debug why doesn't https work in your case.
+(edited)
+[infowski]
+infowski 01/12/2023 12:18 AM
+they pass raw tcp socket fd's around that they seemingly get from some
+parent service via unix sockets???
+01/12/2023 12:18 AM
+Oh crap, the things they do to handle these connections are... weird.
+I've only looked at SSAP on webOS 3.x and 5.x
+[infowski]
+infowski 01/12/2023 12:09 AM
+Hmmmm... 03.21.20 looks clean too...
+[thecode2]
+thecode2 01/12/2023 12:06 AM
+Thanks
+[infowski]
+infowski 01/12/2023 12:05 AM
+I'll report whatever I find... 
+01/12/2023 12:04 AM
+Let's keep this in a thread maybe.
+[infowski]
+infowski 01/12/2023 12:04 AM
+This might help testing:
+https://github.com/home-assistant-libs/aiowebostv/blob/main/examples/basic.py
